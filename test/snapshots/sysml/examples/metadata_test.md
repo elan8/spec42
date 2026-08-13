@@ -67,12 +67,6 @@ package MetadataTest {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_reference")
-        (source "semantic")
-        (range (start 12 11) (end 12 27))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 12 30) (end 12 42))
@@ -137,12 +131,13 @@ package MetadataTest {
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::Classified::annotatedElement"))) (kind redefinition) (ordinal 0))
       (authored-target "annotatedElement")
-      (outcome (status unsupported)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::Classified::annotatedElement")))))
     (reference (id (source (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::Classified::classificationLevel"))) (kind featureTyping) (ordinal 0))
       (authored-target "ClassificationLevel")
       (outcome (status resolved) (target (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::ClassificationLevel")))))
   )
   (relationships
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::Classified::annotatedElement"))) (target (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::Classified::annotatedElement"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::Classified::annotatedElement"))) (kind redefinition) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::Classified::classificationLevel"))) (target (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::ClassificationLevel"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::Classified::classificationLevel"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
@@ -166,7 +161,7 @@ package MetadataTest {
   )
   (query (document "memory://snapshot/metadata_test.md") (range (start 12 11) (end 12 27)) (probe (position 12 11))
     (reference (id (source (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::Classified::annotatedElement"))) (kind redefinition) (ordinal 0) (authored-target "annotatedElement")
-      (outcome (status unsupported)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::Classified::annotatedElement")))))
   )
   (query (document "memory://snapshot/metadata_test.md") (range (start 13 29) (end 13 48)) (probe (position 13 29))
     (reference (id (source (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::Classified::classificationLevel"))) (kind featureTyping) (ordinal 0) (authored-target "ClassificationLevel")

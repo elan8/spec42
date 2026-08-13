@@ -75,12 +75,6 @@ package IndividualTest {
         (range (start 14 2) (end 14 30))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_reference")
-        (source "semantic")
-        (range (start 25 22) (end 25 23))
-      )
-      (diagnostic
         (severity error)
         (code "unexpected_keyword_in_scope")
         (source "parser")
@@ -144,7 +138,7 @@ package IndividualTest {
       (outcome (status resolved) (target (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::IP2")))))
     (reference (id (source (node (document "memory://snapshot/individual_test.md") (anonymous (kind part) (ordinal 0))))) (kind redefinition) (ordinal 0))
       (authored-target "p")
-      (outcome (status unsupported)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::P::p")))))
     (reference (id (source (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::P::p"))) (kind featureTyping) (ordinal 0))
       (authored-target "P")
       (outcome (status resolved) (target (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::P")))))
@@ -158,6 +152,7 @@ package IndividualTest {
     (relationship (kind typing) (source (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::IP1::p"))) (target (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::IP1"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::IP1::p"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::IP2"))) (target (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::P"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::IP2"))) (kind specialization) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/individual_test.md") (anonymous (kind part) (ordinal 0))))) (target (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::IP2"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/individual_test.md") (anonymous (kind part) (ordinal 0))))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/individual_test.md") (anonymous (kind part) (ordinal 0))))) (target (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::P::p"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/individual_test.md") (anonymous (kind part) (ordinal 0))))) (kind redefinition) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::P::p"))) (target (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::P"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::P::p"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
@@ -205,7 +200,7 @@ package IndividualTest {
   )
   (query (document "memory://snapshot/individual_test.md") (range (start 25 22) (end 25 23)) (probe (position 25 22))
     (reference (id (source (node (document "memory://snapshot/individual_test.md") (anonymous (kind part) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "p")
-      (outcome (status unsupported)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::P::p")))))
   )
   (query (document "memory://snapshot/individual_test.md") (range (start 22 11) (end 22 12)) (probe (position 22 11))
     (reference (id (source (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::P::p"))) (kind featureTyping) (ordinal 0) (authored-target "P")

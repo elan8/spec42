@@ -538,6 +538,27 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             (reference.kind() == ReferenceKind::FeatureTyping).then_some(index)
         })
         .collect();
+    // `Subsetting` (`:>`) and `Redefinition` (`:>>`) targets are always features, never types, so
+    // they resolve against `DeclarationDomain::Any` -- like `AliasBinding`/`ConnectorEnd` -- rather
+    // than joining the Subclassification/FeatureTyping `Type` domain pass. They do read the same
+    // ancestor-scoped `inherited_names` index as `FeatureTyping` (built from settled
+    // Subclassification outcomes below), because both explicit redefinition (`:>> status = ...;`)
+    // and subsetting of an inherited feature must be able to reach a same-named or differently-named
+    // feature owned by an ancestor, not just a directly owned member.
+    let subsetting_slots: Vec<usize> = references
+        .iter()
+        .enumerate()
+        .filter_map(|(index, reference)| {
+            (reference.kind() == ReferenceKind::Subsetting).then_some(index)
+        })
+        .collect();
+    let redefinition_slots: Vec<usize> = references
+        .iter()
+        .enumerate()
+        .filter_map(|(index, reference)| {
+            (reference.kind() == ReferenceKind::Redefinition).then_some(index)
+        })
+        .collect();
     // An alias target can be any element (not just a Type), so `AliasBinding` resolves against
     // `DeclarationDomain::Any` rather than joining the Subclassification/FeatureTyping `Type`
     // domain passes; it does not read inherited scope either, so it can settle alongside
@@ -631,6 +652,8 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             .iter()
             .chain(&subclass_slots)
             .chain(&typing_slots)
+            .chain(&subsetting_slots)
+            .chain(&redefinition_slots)
             .chain(&alias_slots)
             .chain(&connector_end_slots)
             .copied()
@@ -756,6 +779,68 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                 paths,
                 reference,
                 DeclarationDomain::Type,
+                ResolutionIndexes {
+                    direct_names: &direct_names,
+                    exported_names: &exported_names,
+                    effective_imports: Some(&effective_imports),
+                    exported_imports: Some(&exported_imports),
+                    inherited_names: Some(&inherited_names),
+                },
+                ResolutionScratch {
+                    ambiguous_candidates: &mut ambiguous_candidates,
+                    candidates: &mut candidates,
+                    next_candidates: &mut next_candidates,
+                    work: &mut work,
+                },
+            )?;
+        }
+
+        for index in subsetting_slots.iter().copied() {
+            work.downstream_evaluations = work
+                .downstream_evaluations
+                .checked_add(1)
+                .ok_or(ResolutionError::Capacity)?;
+            let reference = &references[index];
+            if owner_chain_is_cyclic(declarations, reference.source(), &cyclic_ancestry)? {
+                outcomes[index] = ResolutionStatus::NonConverged;
+                continue;
+            }
+            outcomes[index] = resolve_reference(
+                declarations,
+                paths,
+                reference,
+                DeclarationDomain::Any,
+                ResolutionIndexes {
+                    direct_names: &direct_names,
+                    exported_names: &exported_names,
+                    effective_imports: Some(&effective_imports),
+                    exported_imports: Some(&exported_imports),
+                    inherited_names: Some(&inherited_names),
+                },
+                ResolutionScratch {
+                    ambiguous_candidates: &mut ambiguous_candidates,
+                    candidates: &mut candidates,
+                    next_candidates: &mut next_candidates,
+                    work: &mut work,
+                },
+            )?;
+        }
+
+        for index in redefinition_slots.iter().copied() {
+            work.downstream_evaluations = work
+                .downstream_evaluations
+                .checked_add(1)
+                .ok_or(ResolutionError::Capacity)?;
+            let reference = &references[index];
+            if owner_chain_is_cyclic(declarations, reference.source(), &cyclic_ancestry)? {
+                outcomes[index] = ResolutionStatus::NonConverged;
+                continue;
+            }
+            outcomes[index] = resolve_reference(
+                declarations,
+                paths,
+                reference,
+                DeclarationDomain::Any,
                 ResolutionIndexes {
                     direct_names: &direct_names,
                     exported_names: &exported_names,
@@ -2187,6 +2272,143 @@ mod tests {
         fixture.memberships = memberships.into_boxed_slice();
         let (_, _, resolution) = resolve_fixture(&fixture);
         assert!(resolution.implied_relationships.is_empty());
+    }
+
+    /// Like `redefinition_fixture`, but exposes an unqualified single-segment `mass` symbol path
+    /// (in addition to the `Base` path used for the Subclassification reference) so callers can
+    /// author an unqualified `Subsetting`/`Redefinition` reference to the inherited `mass`
+    /// feature, resolved through lexical/ancestor lookup rather than a qualified path. `Child`'s
+    /// own redefining/subsetting attribute (`DeclarationId(4)`) is deliberately left unnamed --
+    /// matching an authored `attribute :>> mass = ...;`/`attribute :> mass;`, whose usage has no
+    /// name of its own -- so it is never itself indexed under the `mass` name and cannot shadow
+    /// the inherited `Base::mass` target it is trying to reach.
+    fn redefinition_fixture_with_mass_path() -> (ResolverFixture, SymbolPathId) {
+        let mut symbols = SymbolTableBuilder::default();
+        let p_name = symbols.intern("P").unwrap();
+        let base_name = symbols.intern("Base").unwrap();
+        let child_name = symbols.intern("Child").unwrap();
+        let mass_name = symbols.intern("mass").unwrap();
+        let mut paths = SymbolPathArenaBuilder::default();
+        let base_path = paths.push(&[base_name], false).unwrap();
+        let mass_path = paths.push(&[mass_name], false).unwrap();
+
+        let package = DeclarationId(0);
+        let base = DeclarationId(1);
+        let child = DeclarationId(3);
+        let declarations = vec![
+            declaration(DocumentId(0), None, Some(p_name), DeclarationKind::Package),
+            declaration(
+                DocumentId(0),
+                Some(package),
+                Some(base_name),
+                DeclarationKind::PartDefinition,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(base),
+                Some(mass_name),
+                DeclarationKind::AttributeUsage,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(package),
+                Some(child_name),
+                DeclarationKind::PartDefinition,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(child),
+                None,
+                DeclarationKind::AttributeUsage,
+            ),
+        ];
+        let memberships = declarations
+            .iter()
+            .enumerate()
+            .map(|(index, declaration)| {
+                let member = DeclarationId::from_index(index).unwrap();
+                let kind = if matches!(
+                    declaration.kind,
+                    DeclarationKind::AttributeUsage | DeclarationKind::PartUsage
+                ) {
+                    MembershipKind::Feature
+                } else {
+                    MembershipKind::Owning
+                };
+                MembershipRecord {
+                    member,
+                    kind,
+                    visibility: Visibility::Default,
+                    span: Span::dummy(),
+                }
+            })
+            .collect::<Vec<_>>()
+            .into_boxed_slice();
+        let references = vec![reference(
+            child,
+            ReferenceKind::Subclassification,
+            base_path,
+            false,
+        )];
+        let _symbols = symbols.freeze();
+        (
+            ResolverFixture {
+                declarations: declarations.into_boxed_slice(),
+                memberships,
+                paths: paths.freeze(),
+                references: references.into_boxed_slice(),
+            },
+            mass_path,
+        )
+    }
+
+    #[test]
+    fn explicit_redefinition_resolves_through_inherited_ancestor_lookup() {
+        // `attribute :>> mass = ...;` on `Child` (which specializes `Base`) must resolve its
+        // authored `Redefinition` reference against `Base::mass`, an inherited member reachable
+        // only through the ancestor-closure lookup built for Subclassification -- not just a
+        // directly owned member of `Child` itself.
+        let (mut fixture, mass_path) = redefinition_fixture_with_mass_path();
+        let mut references = fixture.references.into_vec();
+        let redefinition_index = u32::try_from(references.len()).unwrap();
+        references.push(reference(
+            DeclarationId(4),
+            ReferenceKind::Redefinition,
+            mass_path,
+            false,
+        ));
+        fixture.references = references.into_boxed_slice();
+        let (_, _, resolution) = resolve_fixture(&fixture);
+        assert_eq!(resolution.solver_status, SolverStatus::Converged);
+        assert_eq!(
+            resolution.outcome(AuthoredReferenceId(redefinition_index)),
+            Some(ResolutionStatus::Resolved(DeclarationId(2)))
+        );
+    }
+
+    #[test]
+    fn subsetting_reference_resolves_to_an_inherited_feature_target() {
+        // `attribute simpleMass :> mass;` subsets another *feature*, not a type/definition, so
+        // `Subsetting` must resolve against `DeclarationDomain::Any` rather than the
+        // Subclassification/FeatureTyping `Type` domain, and must reach the inherited `Base::mass`
+        // feature through the same ancestor-scoped inherited lookup used by
+        // `FeatureTyping`/`Redefinition`.
+        let (mut fixture, mass_path) = redefinition_fixture_with_mass_path();
+        let mut references = fixture.references.into_vec();
+        let subsetting_index = u32::try_from(references.len()).unwrap();
+        references.push(reference(
+            DeclarationId(4),
+            ReferenceKind::Subsetting,
+            mass_path,
+            false,
+        ));
+        fixture.references = references.into_boxed_slice();
+        let (_, _, resolution) = resolve_fixture(&fixture);
+        assert_eq!(resolution.solver_status, SolverStatus::Converged);
+        assert_eq!(
+            resolution.outcome(AuthoredReferenceId(subsetting_index)),
+            Some(ResolutionStatus::Resolved(DeclarationId(2)))
+        );
     }
 
     #[test]

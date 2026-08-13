@@ -34,12 +34,6 @@ package 'Enumeration Definitions-1' {
         (source "semantic")
         (range (start 1 16) (end 1 34))
       )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_reference")
-        (source "semantic")
-        (range (start 14 22) (end 14 34))
-      )
     )
   )
 )
@@ -72,11 +66,12 @@ package 'Enumeration Definitions-1' {
       (outcome (status resolved) (target (node (document "memory://snapshot/06_enumeration_definitions_1.md") (qualified-name "Enumeration Definitions-1::TrafficLight")))))
     (reference (id (source (node (document "memory://snapshot/06_enumeration_definitions_1.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0))
       (authored-target "currentColor")
-      (outcome (status unsupported)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/06_enumeration_definitions_1.md") (qualified-name "Enumeration Definitions-1::TrafficLight::currentColor")))))
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/06_enumeration_definitions_1.md") (qualified-name "Enumeration Definitions-1::TrafficLight::currentColor"))) (target (node (document "memory://snapshot/06_enumeration_definitions_1.md") (qualified-name "Enumeration Definitions-1::TrafficLightColor"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/06_enumeration_definitions_1.md") (qualified-name "Enumeration Definitions-1::TrafficLight::currentColor"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/06_enumeration_definitions_1.md") (qualified-name "Enumeration Definitions-1::TrafficLightGo"))) (target (node (document "memory://snapshot/06_enumeration_definitions_1.md") (qualified-name "Enumeration Definitions-1::TrafficLight"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/06_enumeration_definitions_1.md") (qualified-name "Enumeration Definitions-1::TrafficLightGo"))) (kind specialization) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/06_enumeration_definitions_1.md") (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/06_enumeration_definitions_1.md") (qualified-name "Enumeration Definitions-1::TrafficLight::currentColor"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/06_enumeration_definitions_1.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0)))
   )
   (evaluation
   )
@@ -99,7 +94,7 @@ package 'Enumeration Definitions-1' {
   )
   (query (document "memory://snapshot/06_enumeration_definitions_1.md") (range (start 14 22) (end 14 34)) (probe (position 14 22))
     (reference (id (source (node (document "memory://snapshot/06_enumeration_definitions_1.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "currentColor")
-      (outcome (status unsupported)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/06_enumeration_definitions_1.md") (qualified-name "Enumeration Definitions-1::TrafficLight::currentColor")))))
   )
 )
 ~~~

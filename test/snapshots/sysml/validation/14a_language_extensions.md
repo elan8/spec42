@@ -44,12 +44,6 @@ package '14a-Language Extensions' {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_reference")
-        (source "semantic")
-        (range (start 12 11) (end 12 27))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 12 30) (end 12 46))
@@ -93,12 +87,13 @@ package '14a-Language Extensions' {
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::Classified::annotatedElement"))) (kind redefinition) (ordinal 0))
       (authored-target "annotatedElement")
-      (outcome (status unsupported)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::Classified::annotatedElement")))))
     (reference (id (source (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::Classified::classificationLevel"))) (kind featureTyping) (ordinal 0))
       (authored-target "ClassificationLevel")
       (outcome (status resolved) (target (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel")))))
   )
   (relationships
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::Classified::annotatedElement"))) (target (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::Classified::annotatedElement"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::Classified::annotatedElement"))) (kind redefinition) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::Classified::classificationLevel"))) (target (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::Classified::classificationLevel"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
@@ -118,7 +113,7 @@ package '14a-Language Extensions' {
   )
   (query (document "memory://snapshot/14a_language_extensions.md") (range (start 12 11) (end 12 27)) (probe (position 12 11))
     (reference (id (source (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::Classified::annotatedElement"))) (kind redefinition) (ordinal 0) (authored-target "annotatedElement")
-      (outcome (status unsupported)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::Classified::annotatedElement")))))
   )
   (query (document "memory://snapshot/14a_language_extensions.md") (range (start 13 35) (end 13 54)) (probe (position 13 35))
     (reference (id (source (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::Classified::classificationLevel"))) (kind featureTyping) (ordinal 0) (authored-target "ClassificationLevel")

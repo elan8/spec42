@@ -26,7 +26,7 @@ package Demo {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_reference")
+        (code "unresolved_reference")
         (source "semantic")
         (range (start 10 22) (end 10 28))
       )
@@ -64,7 +64,7 @@ package Demo {
       (outcome (status resolved) (target (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::Need")))))
     (reference (id (source (node (document "memory://snapshot/enum_status_redefinition.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0))
       (authored-target "status")
-      (outcome (status unsupported)))
+      (outcome (status unresolved)))
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::ManagedRequirement::status"))) (target (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::RequirementStatusKind"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::ManagedRequirement::status"))) (kind featureTyping) (ordinal 0)))
@@ -97,7 +97,7 @@ package Demo {
   )
   (query (document "memory://snapshot/enum_status_redefinition.md") (range (start 10 22) (end 10 28)) (probe (position 10 22))
     (reference (id (source (node (document "memory://snapshot/enum_status_redefinition.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "status")
-      (outcome (status unsupported)))
+      (outcome (status unresolved)))
   )
 )
 ~~~

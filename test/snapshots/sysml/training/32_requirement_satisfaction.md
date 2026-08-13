@@ -70,7 +70,7 @@ package 'Requirement Satisfaction' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_reference")
+        (code "unresolved_reference")
         (source "semantic")
         (range (start 12 12) (end 12 22))
       )
@@ -132,7 +132,7 @@ package 'Requirement Satisfaction' {
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/32_requirement_satisfaction.md") (anonymous (kind port) (ordinal 0))))) (kind redefinition) (ordinal 0))
       (authored-target "clutchPort")
-      (outcome (status unsupported)))
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -161,7 +161,7 @@ package 'Requirement Satisfaction' {
   )
   (query (document "memory://snapshot/32_requirement_satisfaction.md") (range (start 12 12) (end 12 22)) (probe (position 12 12))
     (reference (id (source (node (document "memory://snapshot/32_requirement_satisfaction.md") (anonymous (kind port) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "clutchPort")
-      (outcome (status unsupported)))
+      (outcome (status unresolved)))
   )
 )
 ~~~

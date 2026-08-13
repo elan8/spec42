@@ -242,7 +242,7 @@ standard library package States {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_reference")
+        (code "unresolved_reference")
         (source "semantic")
         (range (start 55 55) (end 55 64))
       )
@@ -308,7 +308,7 @@ standard library package States {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_reference")
+        (code "unresolved_reference")
         (source "semantic")
         (range (start 96 61) (end 96 68))
       )
@@ -379,7 +379,7 @@ standard library package States {
       (outcome (status resolved) (target (node (document "memory://snapshot/states.md") (qualified-name "States::StateAction")))))
     (reference (id (source (node (document "memory://snapshot/states.md") (qualified-name "States::StateAction::exclusiveStates"))) (kind subsetting) (ordinal 0))
       (authored-target "substates")
-      (outcome (status unsupported)))
+      (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/states.md") (qualified-name "States::StateTransitionAction"))) (kind specialization) (ordinal 0))
       (authored-target "TransitionAction")
       (outcome (status unresolved)))
@@ -391,7 +391,7 @@ standard library package States {
       (outcome (status resolved) (target (node (document "memory://snapshot/states.md") (qualified-name "States::StateAction")))))
     (reference (id (source (node (document "memory://snapshot/states.md") (qualified-name "States::stateActions"))) (kind subsetting) (ordinal 0))
       (authored-target "actions")
-      (outcome (status unsupported)))
+      (outcome (status unresolved)))
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/states.md") (qualified-name "States::StateAction::exclusiveStates"))) (target (node (document "memory://snapshot/states.md") (qualified-name "States::StateAction"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/states.md") (qualified-name "States::StateAction::exclusiveStates"))) (kind featureTyping) (ordinal 0)))
@@ -458,7 +458,7 @@ standard library package States {
   )
   (query (document "memory://snapshot/states.md") (range (start 55 55) (end 55 64)) (probe (position 55 55))
     (reference (id (source (node (document "memory://snapshot/states.md") (qualified-name "States::StateAction::exclusiveStates"))) (kind subsetting) (ordinal 0) (authored-target "substates")
-      (outcome (status unsupported)))
+      (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/states.md") (range (start 79 37) (end 79 53)) (probe (position 79 37))
     (reference (id (source (node (document "memory://snapshot/states.md") (qualified-name "States::StateTransitionAction"))) (kind specialization) (ordinal 0) (authored-target "TransitionAction")
@@ -474,7 +474,7 @@ standard library package States {
   )
   (query (document "memory://snapshot/states.md") (range (start 96 61) (end 96 68)) (probe (position 96 61))
     (reference (id (source (node (document "memory://snapshot/states.md") (qualified-name "States::stateActions"))) (kind subsetting) (ordinal 0) (authored-target "actions")
-      (outcome (status unsupported)))
+      (outcome (status unresolved)))
   )
 )
 ~~~

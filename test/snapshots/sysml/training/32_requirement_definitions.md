@@ -109,12 +109,6 @@ package 'Requirement Definitions' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_reference")
-        (source "semantic")
-        (range (start 24 22) (end 24 32))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_requirement_definition_member")
         (source "semantic")
         (range (start 26 2) (end 26 48))
@@ -184,10 +178,11 @@ package 'Requirement Definitions' {
       (outcome (status resolved) (target (node (document "memory://snapshot/32_requirement_definitions.md") (qualified-name "Requirement Definitions::MassLimitationRequirement")))))
     (reference (id (source (node (document "memory://snapshot/32_requirement_definitions.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0))
       (authored-target "massActual")
-      (outcome (status unsupported)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/32_requirement_definitions.md") (qualified-name "Requirement Definitions::MassLimitationRequirement::massActual")))))
   )
   (relationships
     (relationship (kind specialization) (source (node (document "memory://snapshot/32_requirement_definitions.md") (qualified-name "Requirement Definitions::VehicleMassLimitationRequirement"))) (target (node (document "memory://snapshot/32_requirement_definitions.md") (qualified-name "Requirement Definitions::MassLimitationRequirement"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/32_requirement_definitions.md") (qualified-name "Requirement Definitions::VehicleMassLimitationRequirement"))) (kind specialization) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/32_requirement_definitions.md") (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/32_requirement_definitions.md") (qualified-name "Requirement Definitions::MassLimitationRequirement::massActual"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/32_requirement_definitions.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0)))
   )
   (evaluation
   )
@@ -230,7 +225,7 @@ package 'Requirement Definitions' {
   )
   (query (document "memory://snapshot/32_requirement_definitions.md") (range (start 24 22) (end 24 32)) (probe (position 24 22))
     (reference (id (source (node (document "memory://snapshot/32_requirement_definitions.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "massActual")
-      (outcome (status unsupported)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/32_requirement_definitions.md") (qualified-name "Requirement Definitions::MassLimitationRequirement::massActual")))))
   )
 )
 ~~~

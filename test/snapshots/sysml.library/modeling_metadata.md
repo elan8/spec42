@@ -210,12 +210,6 @@ standard library package ModelingMetadata {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_reference")
-        (source "semantic")
-        (range (start 139 6) (end 139 22))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 139 25) (end 139 42))
@@ -272,7 +266,7 @@ standard library package ModelingMetadata {
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/modeling_metadata.md") (qualified-name "ModelingMetadata::Refinement::annotatedElement"))) (kind redefinition) (ordinal 0))
       (authored-target "annotatedElement")
-      (outcome (status unsupported)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/modeling_metadata.md") (qualified-name "ModelingMetadata::Refinement::annotatedElement")))))
     (reference (id (source (node (document "memory://snapshot/modeling_metadata.md") (qualified-name "ModelingMetadata::StatusInfo::originator"))) (kind featureTyping) (ordinal 0))
       (authored-target "String")
       (outcome (status unresolved)))
@@ -284,6 +278,7 @@ standard library package ModelingMetadata {
       (outcome (status resolved) (target (node (document "memory://snapshot/modeling_metadata.md") (qualified-name "ModelingMetadata::StatusKind")))))
   )
   (relationships
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/modeling_metadata.md") (qualified-name "ModelingMetadata::Refinement::annotatedElement"))) (target (node (document "memory://snapshot/modeling_metadata.md") (qualified-name "ModelingMetadata::Refinement::annotatedElement"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/modeling_metadata.md") (qualified-name "ModelingMetadata::Refinement::annotatedElement"))) (kind redefinition) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/modeling_metadata.md") (qualified-name "ModelingMetadata::StatusInfo::status"))) (target (node (document "memory://snapshot/modeling_metadata.md") (qualified-name "ModelingMetadata::StatusKind"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/modeling_metadata.md") (qualified-name "ModelingMetadata::StatusInfo::status"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
@@ -319,7 +314,7 @@ standard library package ModelingMetadata {
   )
   (query (document "memory://snapshot/modeling_metadata.md") (range (start 139 6) (end 139 22)) (probe (position 139 6))
     (reference (id (source (node (document "memory://snapshot/modeling_metadata.md") (qualified-name "ModelingMetadata::Refinement::annotatedElement"))) (kind redefinition) (ordinal 0) (authored-target "annotatedElement")
-      (outcome (status unsupported)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/modeling_metadata.md") (qualified-name "ModelingMetadata::Refinement::annotatedElement")))))
   )
   (query (document "memory://snapshot/modeling_metadata.md") (range (start 65 25) (end 65 31)) (probe (position 65 25))
     (reference (id (source (node (document "memory://snapshot/modeling_metadata.md") (qualified-name "ModelingMetadata::StatusInfo::originator"))) (kind featureTyping) (ordinal 0) (authored-target "String")

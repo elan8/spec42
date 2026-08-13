@@ -56,7 +56,7 @@ package '15_08-Range Restriction' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_reference")
+        (code "unresolved_reference")
         (source "semantic")
         (range (start 10 47) (end 10 51))
       )
@@ -105,7 +105,7 @@ package '15_08-Range Restriction' {
       (outcome (status resolved) (target (node (document "memory://snapshot/15_08_range_restriction.md") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue")))))
     (reference (id (source (node (document "memory://snapshot/15_08_range_restriction.md") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue::angle"))) (kind redefinition) (ordinal 0))
       (authored-target "self")
-      (outcome (status unsupported)))
+      (outcome (status unresolved)))
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/15_08_range_restriction.md") (qualified-name "15_08-Range Restriction::HeadLightsTiltKnob::headLightsTile"))) (target (node (document "memory://snapshot/15_08_range_restriction.md") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/15_08_range_restriction.md") (qualified-name "15_08-Range Restriction::HeadLightsTiltKnob::headLightsTile"))) (kind featureTyping) (ordinal 0)))
@@ -144,7 +144,7 @@ package '15_08-Range Restriction' {
   )
   (query (document "memory://snapshot/15_08_range_restriction.md") (range (start 10 47) (end 10 51)) (probe (position 10 47))
     (reference (id (source (node (document "memory://snapshot/15_08_range_restriction.md") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue::angle"))) (kind redefinition) (ordinal 0) (authored-target "self")
-      (outcome (status unsupported)))
+      (outcome (status unresolved)))
   )
 )
 ~~~

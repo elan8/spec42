@@ -53,12 +53,6 @@ package AliasTest {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_reference")
-        (source "semantic")
-        (range (start 10 21) (end 10 24))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_part_usage_member")
         (source "semantic")
         (range (start 15 8) (end 15 28))
@@ -106,13 +100,14 @@ package AliasTest {
       (outcome (status resolved) (target (node (document "memory://snapshot/alias_test.md") (qualified-name "AliasTest::P1")))))
     (reference (id (source (node (document "memory://snapshot/alias_test.md") (qualified-name "AliasTest::p1::po1"))) (kind redefinition) (ordinal 0))
       (authored-target "po1")
-      (outcome (status unsupported)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/alias_test.md") (qualified-name "AliasTest::p1::po1")))))
     (reference (id (source (node (document "memory://snapshot/alias_test.md") (qualified-name "AliasTest::p2"))) (kind featureTyping) (ordinal 0))
       (authored-target "P1")
       (outcome (status resolved) (target (node (document "memory://snapshot/alias_test.md") (qualified-name "AliasTest::P1")))))
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/alias_test.md") (qualified-name "AliasTest::p1"))) (target (node (document "memory://snapshot/alias_test.md") (qualified-name "AliasTest::P1"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/alias_test.md") (qualified-name "AliasTest::p1"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/alias_test.md") (qualified-name "AliasTest::p1::po1"))) (target (node (document "memory://snapshot/alias_test.md") (qualified-name "AliasTest::p1::po1"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/alias_test.md") (qualified-name "AliasTest::p1::po1"))) (kind redefinition) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/alias_test.md") (qualified-name "AliasTest::p2"))) (target (node (document "memory://snapshot/alias_test.md") (qualified-name "AliasTest::P1"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/alias_test.md") (qualified-name "AliasTest::p2"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
@@ -136,7 +131,7 @@ package AliasTest {
   )
   (query (document "memory://snapshot/alias_test.md") (range (start 10 21) (end 10 24)) (probe (position 10 21))
     (reference (id (source (node (document "memory://snapshot/alias_test.md") (qualified-name "AliasTest::p1::po1"))) (kind redefinition) (ordinal 0) (authored-target "po1")
-      (outcome (status unsupported)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/alias_test.md") (qualified-name "AliasTest::p1::po1")))))
   )
   (query (document "memory://snapshot/alias_test.md") (range (start 13 14) (end 13 16)) (probe (position 13 14))
     (reference (id (source (node (document "memory://snapshot/alias_test.md") (qualified-name "AliasTest::p2"))) (kind featureTyping) (ordinal 0) (authored-target "P1")

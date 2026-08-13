@@ -118,12 +118,6 @@ package 'Verification Case Usage Example' {
         (range (start 34 25) (end 34 35))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_reference")
-        (source "semantic")
-        (range (start 34 39) (end 34 61))
-      )
-      (diagnostic
         (severity error)
         (code "unexpected_keyword_in_scope")
         (source "parser")
@@ -170,7 +164,7 @@ package 'Verification Case Usage Example' {
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/34_verification_case_usage_example.md") (qualified-name "Verification Case Usage Example::testSystem"))) (kind subsetting) (ordinal 0))
       (authored-target "massVerificationSystem")
-      (outcome (status unsupported)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/34_verification_case_usage_example.md") (qualified-name "Verification Case Usage Example::massVerificationSystem")))))
     (reference (id (source (node (document "memory://snapshot/34_verification_case_usage_example.md") (qualified-name "Verification Case Usage Example::vehicleTestConfig"))) (kind featureTyping) (ordinal 0))
       (authored-target "Vehicle")
       (outcome (status unresolved)))
@@ -178,6 +172,7 @@ package 'Verification Case Usage Example' {
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/34_verification_case_usage_example.md") (qualified-name "Verification Case Usage Example::massVerificationSystem"))) (target (node (document "memory://snapshot/34_verification_case_usage_example.md") (qualified-name "Verification Case Usage Example::MassVerificationSystem"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/34_verification_case_usage_example.md") (qualified-name "Verification Case Usage Example::massVerificationSystem"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/34_verification_case_usage_example.md") (qualified-name "Verification Case Usage Example::massVerificationSystem::scale"))) (target (node (document "memory://snapshot/34_verification_case_usage_example.md") (qualified-name "Verification Case Usage Example::Scale"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/34_verification_case_usage_example.md") (qualified-name "Verification Case Usage Example::massVerificationSystem::scale"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/34_verification_case_usage_example.md") (qualified-name "Verification Case Usage Example::testSystem"))) (target (node (document "memory://snapshot/34_verification_case_usage_example.md") (qualified-name "Verification Case Usage Example::massVerificationSystem"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/34_verification_case_usage_example.md") (qualified-name "Verification Case Usage Example::testSystem"))) (kind subsetting) (ordinal 0)))
   )
   (evaluation
   )
@@ -204,7 +199,7 @@ package 'Verification Case Usage Example' {
   )
   (query (document "memory://snapshot/34_verification_case_usage_example.md") (range (start 34 39) (end 34 61)) (probe (position 34 39))
     (reference (id (source (node (document "memory://snapshot/34_verification_case_usage_example.md") (qualified-name "Verification Case Usage Example::testSystem"))) (kind subsetting) (ordinal 0) (authored-target "massVerificationSystem")
-      (outcome (status unsupported)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/34_verification_case_usage_example.md") (qualified-name "Verification Case Usage Example::massVerificationSystem")))))
   )
   (query (document "memory://snapshot/34_verification_case_usage_example.md") (range (start 6 26) (end 6 33)) (probe (position 6 26))
     (reference (id (source (node (document "memory://snapshot/34_verification_case_usage_example.md") (qualified-name "Verification Case Usage Example::vehicleTestConfig"))) (kind featureTyping) (ordinal 0) (authored-target "Vehicle")

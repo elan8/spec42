@@ -77,12 +77,6 @@ package RequirementMetadataExample {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_reference")
-        (source "semantic")
-        (range (start 9 9) (end 9 17))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_requirement_definition_member")
         (source "semantic")
         (range (start 15 8) (end 25 9))
@@ -150,12 +144,13 @@ package RequirementMetadataExample {
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goal::baseType"))) (kind redefinition) (ordinal 0))
       (authored-target "baseType")
-      (outcome (status unsupported)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goal::baseType")))))
     (reference (id (source (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goals"))) (kind featureTyping) (ordinal 0))
       (authored-target "Goal")
       (outcome (status resolved) (target (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::Goal")))))
   )
   (relationships
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goal::baseType"))) (target (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goal::baseType"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goal::baseType"))) (kind redefinition) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goals"))) (target (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::Goal"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goals"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
@@ -187,7 +182,7 @@ package RequirementMetadataExample {
   )
   (query (document "memory://snapshot/requirement_metadata_example.md") (range (start 9 9) (end 9 17)) (probe (position 9 9))
     (reference (id (source (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goal::baseType"))) (kind redefinition) (ordinal 0) (authored-target "baseType")
-      (outcome (status unsupported)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goal::baseType")))))
   )
   (query (document "memory://snapshot/requirement_metadata_example.md") (range (start 7 21) (end 7 25)) (probe (position 7 21))
     (reference (id (source (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goals"))) (kind featureTyping) (ordinal 0) (authored-target "Goal")

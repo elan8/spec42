@@ -60,7 +60,7 @@ package 'Verification Case Definition Example' {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_reference")
+        (code "unresolved_reference")
         (source "semantic")
         (range (start 3 20) (end 3 29))
       )
@@ -142,7 +142,7 @@ package 'Verification Case Definition Example' {
   (references
     (reference (id (source (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::Vehicle::mass"))) (kind subsetting) (ordinal 0))
       (authored-target "ISQ::mass")
-      (outcome (status unsupported)))
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -155,7 +155,7 @@ package 'Verification Case Definition Example' {
 (navigation
   (query (document "memory://snapshot/34_verification_case_definition_example.md") (range (start 3 20) (end 3 29)) (probe (position 3 20))
     (reference (id (source (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::Vehicle::mass"))) (kind subsetting) (ordinal 0) (authored-target "ISQ::mass")
-      (outcome (status unsupported)))
+      (outcome (status unresolved)))
   )
 )
 ~~~

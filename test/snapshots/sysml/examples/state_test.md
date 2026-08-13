@@ -163,12 +163,6 @@ package StateTest {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_reference")
-        (source "semantic")
-        (range (start 67 13) (end 67 15))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_state_definition_member")
         (source "semantic")
         (range (start 68 4) (end 69 1))
@@ -208,9 +202,10 @@ package StateTest {
   (references
     (reference (id (source (node (document "memory://snapshot/state_test.md") (qualified-name "StateTest::s5"))) (kind subsetting) (ordinal 0))
       (authored-target "s4")
-      (outcome (status unsupported)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/state_test.md") (qualified-name "StateTest::s4")))))
   )
   (relationships
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/state_test.md") (qualified-name "StateTest::s5"))) (target (node (document "memory://snapshot/state_test.md") (qualified-name "StateTest::s4"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/state_test.md") (qualified-name "StateTest::s5"))) (kind subsetting) (ordinal 0)))
   )
   (evaluation
   )
@@ -221,7 +216,7 @@ package StateTest {
 (navigation
   (query (document "memory://snapshot/state_test.md") (range (start 67 13) (end 67 15)) (probe (position 67 13))
     (reference (id (source (node (document "memory://snapshot/state_test.md") (qualified-name "StateTest::s5"))) (kind subsetting) (ordinal 0) (authored-target "s4")
-      (outcome (status unsupported)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/state_test.md") (qualified-name "StateTest::s4")))))
   )
 )
 ~~~

@@ -44,10 +44,20 @@ package 'Metadata Example-1' {
   (document "memory://snapshot/39_metadata_example_1.md"
     (diagnostics
       (diagnostic
-        (severity warning)
-        (code "unsupported_reference")
+        (severity error)
+        (code "ambiguous_reference")
         (source "semantic")
         (range (start 4 5) (end 4 21))
+        (related-information
+          (related
+            (uri "memory://snapshot/39_metadata_example_1.md")
+            (range (start 4 2) (end 4 46))
+          )
+          (related
+            (uri "memory://snapshot/39_metadata_example_1.md")
+            (range (start 5 2) (end 5 41))
+          )
+        )
       )
       (diagnostic
         (severity warning)
@@ -56,10 +66,20 @@ package 'Metadata Example-1' {
         (range (start 4 24) (end 4 45))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_reference")
+        (severity error)
+        (code "ambiguous_reference")
         (source "semantic")
         (range (start 5 5) (end 5 21))
+        (related-information
+          (related
+            (uri "memory://snapshot/39_metadata_example_1.md")
+            (range (start 4 2) (end 4 46))
+          )
+          (related
+            (uri "memory://snapshot/39_metadata_example_1.md")
+            (range (start 5 2) (end 5 41))
+          )
+        )
       )
       (diagnostic
         (severity warning)
@@ -103,10 +123,10 @@ package 'Metadata Example-1' {
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/39_metadata_example_1.md") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement"))) (kind subsetting) (ordinal 0))
       (authored-target "annotatedElement")
-      (outcome (status unsupported)))
+      (outcome (status ambiguous) (candidates (node (document "memory://snapshot/39_metadata_example_1.md") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement")) (node (document "memory://snapshot/39_metadata_example_1.md") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement")))))
     (reference (id (source (node (document "memory://snapshot/39_metadata_example_1.md") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement"))) (kind subsetting) (ordinal 0))
       (authored-target "annotatedElement")
-      (outcome (status unsupported)))
+      (outcome (status ambiguous) (candidates (node (document "memory://snapshot/39_metadata_example_1.md") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement")) (node (document "memory://snapshot/39_metadata_example_1.md") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement")))))
   )
   (relationships
   )
@@ -127,11 +147,11 @@ package 'Metadata Example-1' {
   )
   (query (document "memory://snapshot/39_metadata_example_1.md") (range (start 4 5) (end 4 21)) (probe (position 4 5))
     (reference (id (source (node (document "memory://snapshot/39_metadata_example_1.md") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement"))) (kind subsetting) (ordinal 0) (authored-target "annotatedElement")
-      (outcome (status unsupported)))
+      (outcome (status ambiguous) (candidates (node (document "memory://snapshot/39_metadata_example_1.md") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement")) (node (document "memory://snapshot/39_metadata_example_1.md") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement")))))
   )
   (query (document "memory://snapshot/39_metadata_example_1.md") (range (start 5 5) (end 5 21)) (probe (position 5 5))
     (reference (id (source (node (document "memory://snapshot/39_metadata_example_1.md") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement"))) (kind subsetting) (ordinal 0) (authored-target "annotatedElement")
-      (outcome (status unsupported)))
+      (outcome (status ambiguous) (candidates (node (document "memory://snapshot/39_metadata_example_1.md") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement")) (node (document "memory://snapshot/39_metadata_example_1.md") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement")))))
   )
 )
 ~~~

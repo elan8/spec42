@@ -113,7 +113,7 @@ package '10a-Analysis' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_reference")
+        (code "unresolved_reference")
         (source "semantic")
         (range (start 11 7) (end 11 11))
       )
@@ -241,7 +241,7 @@ package '10a-Analysis' {
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/10a_analysis.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0))
       (authored-target "mass")
-      (outcome (status unsupported)))
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -274,7 +274,7 @@ package '10a-Analysis' {
   )
   (query (document "memory://snapshot/10a_analysis.md") (range (start 11 7) (end 11 11)) (probe (position 11 7))
     (reference (id (source (node (document "memory://snapshot/10a_analysis.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "mass")
-      (outcome (status unsupported)))
+      (outcome (status unresolved)))
   )
 )
 ~~~
