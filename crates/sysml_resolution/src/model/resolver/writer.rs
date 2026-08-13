@@ -678,6 +678,7 @@ fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::AttributeDefinition => "attribute-def",
         DeclarationKind::AttributeUsage => "attribute",
         DeclarationKind::Import => "import",
+        DeclarationKind::Alias => "alias",
     }
 }
 
@@ -686,6 +687,7 @@ fn membership_kind(kind: MembershipKind) -> &'static str {
         MembershipKind::Owning => "owning",
         MembershipKind::Feature => "feature",
         MembershipKind::Import => "import",
+        MembershipKind::Alias => "alias",
     }
 }
 
@@ -710,6 +712,7 @@ fn reference_kind(kind: ReferenceKind) -> &'static str {
         ReferenceKind::References => "referenceSubsetting",
         ReferenceKind::Crosses => "crossSubsetting",
         ReferenceKind::Intersects => "intersects",
+        ReferenceKind::AliasBinding => "aliasBinding",
     }
 }
 
@@ -722,6 +725,7 @@ fn relationship_kind(kind: ReferenceKind) -> Option<&'static str> {
         ReferenceKind::References => Some("referenceSubsetting"),
         ReferenceKind::Crosses => Some("crossSubsetting"),
         ReferenceKind::Intersects => Some("intersects"),
+        ReferenceKind::AliasBinding => Some("aliasBinding"),
         ReferenceKind::NamespaceImport
         | ReferenceKind::MembershipImport
         | ReferenceKind::FilterImport => None,

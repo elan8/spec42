@@ -27,15 +27,9 @@ package 'Documentation Example' {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 9 1) (end 11 2))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 12 1) (end 12 35))
+        (range (start 12 18) (end 12 34))
       )
     )
   )
@@ -44,14 +38,23 @@ package 'Documentation Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:32ecc55bb2194619a264cda408f62f9556562d3826918fcd0b37ee8bacfc6ed1") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:32ecc55bb2194619a264cda408f62f9556562d3826918fcd0b37ee8bacfc6ed1") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/01_documentation_example.md") (qualified-name "Documentation Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/01_documentation_example.md") (qualified-name "Documentation Example::Automobile"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/01_documentation_example.md") (qualified-name "Documentation Example::Car"))) (kind alias) (membership (kind alias) (visibility default)) (authored (membership (kind alias) (visibility default)) (relationships (aliasBinding (reference "Automobile"))))
+    (declaration (id (node (document "memory://snapshot/01_documentation_example.md") (qualified-name "Documentation Example::Torque"))) (kind alias) (membership (kind alias) (visibility default)) (authored (membership (kind alias) (visibility default)) (relationships (aliasBinding (reference "ISQ::TorqueValue"))))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/01_documentation_example.md") (qualified-name "Documentation Example::Car"))) (kind aliasBinding) (ordinal 0))
+      (authored-target "Automobile")
+      (outcome (status resolved) (target (node (document "memory://snapshot/01_documentation_example.md") (qualified-name "Documentation Example::Automobile")))))
+    (reference (id (source (node (document "memory://snapshot/01_documentation_example.md") (qualified-name "Documentation Example::Torque"))) (kind aliasBinding) (ordinal 0))
+      (authored-target "ISQ::TorqueValue")
+      (outcome (status unresolved)))
   )
   (relationships
+    (relationship (kind aliasBinding) (source (node (document "memory://snapshot/01_documentation_example.md") (qualified-name "Documentation Example::Car"))) (target (node (document "memory://snapshot/01_documentation_example.md") (qualified-name "Documentation Example::Automobile"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/01_documentation_example.md") (qualified-name "Documentation Example::Car"))) (kind aliasBinding) (ordinal 0)))
   )
   (evaluation
   )
@@ -60,5 +63,13 @@ package 'Documentation Example' {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/01_documentation_example.md") (range (start 9 15) (end 9 25)) (probe (position 9 15))
+    (reference (id (source (node (document "memory://snapshot/01_documentation_example.md") (qualified-name "Documentation Example::Car"))) (kind aliasBinding) (ordinal 0) (authored-target "Automobile")
+      (outcome (status resolved) (target (node (document "memory://snapshot/01_documentation_example.md") (qualified-name "Documentation Example::Automobile")))))
+  )
+  (query (document "memory://snapshot/01_documentation_example.md") (range (start 12 18) (end 12 34)) (probe (position 12 18))
+    (reference (id (source (node (document "memory://snapshot/01_documentation_example.md") (qualified-name "Documentation Example::Torque"))) (kind aliasBinding) (ordinal 0) (authored-target "ISQ::TorqueValue")
+      (outcome (status unresolved)))
+  )
 )
 ~~~

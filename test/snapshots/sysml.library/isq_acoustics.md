@@ -644,12 +644,6 @@ standard library package ISQAcoustics {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 160 4) (end 160 44))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")
         (range (start 163 45) (end 163 64))
@@ -1267,7 +1261,7 @@ standard library package ISQAcoustics {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:5f9973660df4abce2416fa65cd9bb620d81764cbf79b7019f0df075e9d13d3c4") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:5f9973660df4abce2416fa65cd9bb620d81764cbf79b7019f0df075e9d13d3c4") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/isq_acoustics.md") (qualified-name "ISQAcoustics"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/isq_acoustics.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false)))))
@@ -1404,6 +1398,7 @@ standard library package ISQAcoustics {
     (declaration (id (node (document "memory://snapshot/isq_acoustics.md") (qualified-name "ISQAcoustics::soundPressure"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "PressureValue"))))
     (declaration (id (node (document "memory://snapshot/isq_acoustics.md") (qualified-name "ISQAcoustics::soundPressureLevel"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "SoundPressureLevelValue"))))
     (declaration (id (node (document "memory://snapshot/isq_acoustics.md") (qualified-name "ISQAcoustics::staticPressure"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "PressureValue"))))
+    (declaration (id (node (document "memory://snapshot/isq_acoustics.md") (qualified-name "ISQAcoustics::volumeFlowRate"))) (kind alias) (membership (kind alias) (visibility default)) (authored (membership (kind alias) (visibility default)) (relationships (aliasBinding (reference "volumeVelocity"))))
     (declaration (id (node (document "memory://snapshot/isq_acoustics.md") (qualified-name "ISQAcoustics::volumeVelocity"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "SpeedValue"))))
   )
   (references
@@ -1878,6 +1873,9 @@ standard library package ISQAcoustics {
     (reference (id (source (node (document "memory://snapshot/isq_acoustics.md") (qualified-name "ISQAcoustics::staticPressure"))) (kind featureTyping) (ordinal 0))
       (authored-target "PressureValue")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/isq_acoustics.md") (qualified-name "ISQAcoustics::volumeFlowRate"))) (kind aliasBinding) (ordinal 0))
+      (authored-target "volumeVelocity")
+      (outcome (status resolved) (target (node (document "memory://snapshot/isq_acoustics.md") (qualified-name "ISQAcoustics::volumeVelocity")))))
     (reference (id (source (node (document "memory://snapshot/isq_acoustics.md") (qualified-name "ISQAcoustics::volumeVelocity"))) (kind featureTyping) (ordinal 0))
       (authored-target "SpeedValue")
       (outcome (status unresolved)))
@@ -1907,6 +1905,7 @@ standard library package ISQAcoustics {
     (relationship (kind typing) (source (node (document "memory://snapshot/isq_acoustics.md") (qualified-name "ISQAcoustics::soundIntensity"))) (target (node (document "memory://snapshot/isq_acoustics.md") (qualified-name "ISQAcoustics::SoundIntensityValue"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/isq_acoustics.md") (qualified-name "ISQAcoustics::soundIntensity"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/isq_acoustics.md") (qualified-name "ISQAcoustics::soundPowerLevel"))) (target (node (document "memory://snapshot/isq_acoustics.md") (qualified-name "ISQAcoustics::SoundPowerLevelValue"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/isq_acoustics.md") (qualified-name "ISQAcoustics::soundPowerLevel"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/isq_acoustics.md") (qualified-name "ISQAcoustics::soundPressureLevel"))) (target (node (document "memory://snapshot/isq_acoustics.md") (qualified-name "ISQAcoustics::SoundPressureLevelValue"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/isq_acoustics.md") (qualified-name "ISQAcoustics::soundPressureLevel"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind aliasBinding) (source (node (document "memory://snapshot/isq_acoustics.md") (qualified-name "ISQAcoustics::volumeFlowRate"))) (target (node (document "memory://snapshot/isq_acoustics.md") (qualified-name "ISQAcoustics::volumeVelocity"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/isq_acoustics.md") (qualified-name "ISQAcoustics::volumeFlowRate"))) (kind aliasBinding) (ordinal 0)))
   )
   (evaluation
   )
@@ -2542,6 +2541,10 @@ standard library package ISQAcoustics {
   (query (document "memory://snapshot/isq_acoustics.md") (range (start 53 30) (end 53 43)) (probe (position 53 30))
     (reference (id (source (node (document "memory://snapshot/isq_acoustics.md") (qualified-name "ISQAcoustics::staticPressure"))) (kind featureTyping) (ordinal 0) (authored-target "PressureValue")
       (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/isq_acoustics.md") (range (start 160 29) (end 160 43)) (probe (position 160 29))
+    (reference (id (source (node (document "memory://snapshot/isq_acoustics.md") (qualified-name "ISQAcoustics::volumeFlowRate"))) (kind aliasBinding) (ordinal 0) (authored-target "volumeVelocity")
+      (outcome (status resolved) (target (node (document "memory://snapshot/isq_acoustics.md") (qualified-name "ISQAcoustics::volumeVelocity")))))
   )
   (query (document "memory://snapshot/isq_acoustics.md") (range (start 145 30) (end 145 40)) (probe (position 145 30))
     (reference (id (source (node (document "memory://snapshot/isq_acoustics.md") (qualified-name "ISQAcoustics::volumeVelocity"))) (kind featureTyping) (ordinal 0) (authored-target "SpeedValue")

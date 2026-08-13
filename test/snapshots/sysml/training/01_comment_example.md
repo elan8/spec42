@@ -37,15 +37,9 @@ package 'Comment Example' {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 13 1) (end 18 2))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 22 1) (end 22 35))
+        (range (start 22 18) (end 22 34))
       )
     )
   )
@@ -54,14 +48,23 @@ package 'Comment Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:28c2d48f5427c64c78239d51d094404aed41b924871a7a17ba5f795e6c1b7b47") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:28c2d48f5427c64c78239d51d094404aed41b924871a7a17ba5f795e6c1b7b47") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/01_comment_example.md") (qualified-name "Comment Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/01_comment_example.md") (qualified-name "Comment Example::Automobile"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/01_comment_example.md") (qualified-name "Comment Example::Car"))) (kind alias) (membership (kind alias) (visibility default)) (authored (membership (kind alias) (visibility default)) (relationships (aliasBinding (reference "Automobile"))))
+    (declaration (id (node (document "memory://snapshot/01_comment_example.md") (qualified-name "Comment Example::Torque"))) (kind alias) (membership (kind alias) (visibility default)) (authored (membership (kind alias) (visibility default)) (relationships (aliasBinding (reference "ISQ::TorqueValue"))))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/01_comment_example.md") (qualified-name "Comment Example::Car"))) (kind aliasBinding) (ordinal 0))
+      (authored-target "Automobile")
+      (outcome (status resolved) (target (node (document "memory://snapshot/01_comment_example.md") (qualified-name "Comment Example::Automobile")))))
+    (reference (id (source (node (document "memory://snapshot/01_comment_example.md") (qualified-name "Comment Example::Torque"))) (kind aliasBinding) (ordinal 0))
+      (authored-target "ISQ::TorqueValue")
+      (outcome (status unresolved)))
   )
   (relationships
+    (relationship (kind aliasBinding) (source (node (document "memory://snapshot/01_comment_example.md") (qualified-name "Comment Example::Car"))) (target (node (document "memory://snapshot/01_comment_example.md") (qualified-name "Comment Example::Automobile"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/01_comment_example.md") (qualified-name "Comment Example::Car"))) (kind aliasBinding) (ordinal 0)))
   )
   (evaluation
   )
@@ -70,5 +73,13 @@ package 'Comment Example' {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/01_comment_example.md") (range (start 13 15) (end 13 25)) (probe (position 13 15))
+    (reference (id (source (node (document "memory://snapshot/01_comment_example.md") (qualified-name "Comment Example::Car"))) (kind aliasBinding) (ordinal 0) (authored-target "Automobile")
+      (outcome (status resolved) (target (node (document "memory://snapshot/01_comment_example.md") (qualified-name "Comment Example::Automobile")))))
+  )
+  (query (document "memory://snapshot/01_comment_example.md") (range (start 22 18) (end 22 34)) (probe (position 22 18))
+    (reference (id (source (node (document "memory://snapshot/01_comment_example.md") (qualified-name "Comment Example::Torque"))) (kind aliasBinding) (ordinal 0) (authored-target "ISQ::TorqueValue")
+      (outcome (status unresolved)))
+  )
 )
 ~~~

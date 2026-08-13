@@ -538,6 +538,17 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             (reference.kind() == ReferenceKind::FeatureTyping).then_some(index)
         })
         .collect();
+    // An alias target can be any element (not just a Type), so `AliasBinding` resolves against
+    // `DeclarationDomain::Any` rather than joining the Subclassification/FeatureTyping `Type`
+    // domain passes; it does not read inherited scope either, so it can settle alongside
+    // Subclassification, independently of the ancestor closures built below.
+    let alias_slots: Vec<usize> = references
+        .iter()
+        .enumerate()
+        .filter_map(|(index, reference)| {
+            (reference.kind() == ReferenceKind::AliasBinding).then_some(index)
+        })
+        .collect();
     let mut work = ResolutionWork {
         direct_index_entries: u64::try_from(direct_names.candidates.len())
             .map_err(|_| ResolutionError::Capacity)?,
@@ -609,6 +620,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             .iter()
             .chain(&subclass_slots)
             .chain(&typing_slots)
+            .chain(&alias_slots)
             .copied()
         {
             outcomes[index] = ResolutionStatus::NonConverged;
@@ -642,6 +654,45 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     work: &mut work,
                 },
             )?;
+        }
+
+        for index in alias_slots.iter().copied() {
+            work.downstream_evaluations = work
+                .downstream_evaluations
+                .checked_add(1)
+                .ok_or(ResolutionError::Capacity)?;
+            outcomes[index] = resolve_reference(
+                declarations,
+                paths,
+                &references[index],
+                DeclarationDomain::Any,
+                ResolutionIndexes {
+                    direct_names: &direct_names,
+                    exported_names: &exported_names,
+                    effective_imports: Some(&effective_imports),
+                    exported_imports: Some(&exported_imports),
+                    inherited_names: None,
+                },
+                ResolutionScratch {
+                    ambiguous_candidates: &mut ambiguous_candidates,
+                    candidates: &mut candidates,
+                    next_candidates: &mut next_candidates,
+                    work: &mut work,
+                },
+            )?;
+        }
+
+        // Alias bindings form a functional graph (each alias has at most one outgoing edge, its
+        // own resolved target). A cycle (`alias A for B; alias B for A;`) is detected explicitly,
+        // bounded by declaration count, and published as a typed `NonConverged` outcome on each
+        // implicated alias's own `AliasBinding` reference -- mirroring the Subclassification
+        // ancestor-closure cycle handling above -- rather than looping or panicking.
+        let cyclic_alias_sources =
+            detect_cyclic_alias_bindings(declarations, references, &outcomes)?;
+        for index in alias_slots.iter().copied() {
+            if cyclic_alias_sources.contains(&references[index].source()) {
+                outcomes[index] = ResolutionStatus::NonConverged;
+            }
         }
 
         // Ancestor-scoped inherited-member lookup is built once here, over the now-settled
@@ -694,13 +745,26 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     // import/typing fixed point above and therefore runs once, after that fixed point settles,
     // rather than joining it as another per-pass family.
     let implied_relationships = if converged {
-        synthesize_implied_redefinitions(
+        let mut implied = synthesize_implied_redefinitions(
             declarations,
             membership_records,
             references,
             &direct_names,
             &outcomes,
         )?
+        .into_vec();
+        let cyclic_alias_sources =
+            detect_cyclic_alias_bindings(declarations, references, &outcomes)?;
+        implied.extend(
+            synthesize_implied_alias_bindings(
+                declarations,
+                references,
+                &outcomes,
+                &cyclic_alias_sources,
+            )?
+            .into_vec(),
+        );
+        implied.into_boxed_slice()
     } else {
         Box::default()
     };
@@ -781,6 +845,138 @@ fn synthesize_implied_redefinitions<R: ResolutionReferenceFact>(
                     target: single_match,
                 });
             }
+        }
+    }
+    implied.sort_by_key(|relationship| (relationship.source.0, relationship.target.0));
+    implied.dedup();
+    Ok(implied.into_boxed_slice())
+}
+
+/// Detects `alias` targets that eventually cycle back to their own starting alias declaration
+/// (`alias A for B; alias B for A;`). Alias bindings form a functional graph -- each alias
+/// declaration has at most one outgoing edge, its own resolved `AliasBinding` target -- so a walk
+/// from any alias source bounded by `declarations.len() + 1` hops either terminates at a non-alias
+/// target, runs off an unresolved edge, or revisits its own start, which is the only case flagged
+/// here. Only alias declarations that themselves author a resolved `AliasBinding` reference are
+/// candidates, so the returned set is always a subset of alias declarations.
+fn detect_cyclic_alias_bindings<R: ResolutionReferenceFact>(
+    declarations: &[Declaration],
+    references: &[R],
+    outcomes: &[ResolutionStatus],
+) -> Result<std::collections::BTreeSet<DeclarationId>, ResolutionError> {
+    let mut direct_target: Vec<Option<DeclarationId>> = vec![None; declarations.len()];
+    for (index, reference) in references.iter().enumerate() {
+        if reference.kind() != ReferenceKind::AliasBinding {
+            continue;
+        }
+        if let ResolutionStatus::Resolved(target) = outcomes[index] {
+            if let Some(slot) = direct_target.get_mut(reference.source().index()) {
+                *slot = Some(target);
+            }
+        }
+    }
+    let pass_limit = declarations
+        .len()
+        .checked_add(1)
+        .ok_or(ResolutionError::Capacity)?;
+    let mut cyclic = std::collections::BTreeSet::new();
+    for index in 0..declarations.len() {
+        let Some(mut current) = direct_target[index] else {
+            continue;
+        };
+        let start = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        let mut steps = 0usize;
+        loop {
+            if current == start {
+                cyclic.insert(start);
+                break;
+            }
+            let Some(next) = direct_target.get(current.index()).copied().flatten() else {
+                break;
+            };
+            current = next;
+            steps = steps.checked_add(1).ok_or(ResolutionError::Capacity)?;
+            if steps > pass_limit {
+                // Defensive only: a functional graph over a bounded declaration count cannot
+                // require more hops than there are declarations without having already revisited
+                // `start` above.
+                cyclic.insert(start);
+                break;
+            }
+        }
+    }
+    Ok(cyclic)
+}
+
+/// Synthesizes implied "typing/specialization/... through an alias" relationship facts: when an
+/// authored reference (for example a `FeatureTyping` on `device : DeviceAlias`) resolves to an
+/// alias declaration, this follows that alias's own resolved `AliasBinding` chain -- transitively,
+/// through alias-of-alias -- to the ultimate non-alias target and publishes an `implied` (per
+/// RESOLUTION_LAYER_DESIGN.md's provenance vocabulary) relationship of the *same* reference kind
+/// straight from the original source to that ultimate target. This makes aliasing "transparent"
+/// for downstream typing without weakening or replacing the alias's own authored `AliasBinding`
+/// fact, which remains published as its own (authored-provenance) reference/relationship. A cycle
+/// in the alias chain (already reported via `detect_cyclic_alias_bindings`) or an unresolved link
+/// simply yields no implied fact for that source, rather than guessing.
+fn synthesize_implied_alias_bindings<R: ResolutionReferenceFact>(
+    declarations: &[Declaration],
+    references: &[R],
+    outcomes: &[ResolutionStatus],
+    cyclic_alias_sources: &std::collections::BTreeSet<DeclarationId>,
+) -> Result<Box<[ImpliedRelationship]>, ResolutionError> {
+    let mut alias_target: std::collections::BTreeMap<DeclarationId, DeclarationId> =
+        Default::default();
+    for (index, reference) in references.iter().enumerate() {
+        if reference.kind() != ReferenceKind::AliasBinding {
+            continue;
+        }
+        if cyclic_alias_sources.contains(&reference.source()) {
+            continue;
+        }
+        if let ResolutionStatus::Resolved(target) = outcomes[index] {
+            alias_target.insert(reference.source(), target);
+        }
+    }
+    let is_alias = |id: DeclarationId| {
+        declarations
+            .get(id.index())
+            .is_some_and(|declaration| declaration.kind == DeclarationKind::Alias)
+    };
+
+    let mut implied = Vec::new();
+    for (index, reference) in references.iter().enumerate() {
+        if reference.kind() == ReferenceKind::AliasBinding {
+            continue;
+        }
+        let ResolutionStatus::Resolved(mut current) = outcomes[index] else {
+            continue;
+        };
+        if !is_alias(current) {
+            continue;
+        }
+        let mut visited = std::collections::BTreeSet::new();
+        let mut ultimate = None;
+        loop {
+            if !visited.insert(current) {
+                // Cyclic alias chain: leave unresolved rather than guess.
+                ultimate = None;
+                break;
+            }
+            match alias_target.get(&current) {
+                Some(&next) if is_alias(next) => current = next,
+                Some(&next) => {
+                    ultimate = Some(next);
+                    break;
+                }
+                None => break,
+            }
+        }
+        if let Some(target) = ultimate {
+            implied.push(ImpliedRelationship {
+                kind: reference.kind(),
+                source: reference.source(),
+                target,
+            });
         }
     }
     implied.sort_by_key(|relationship| (relationship.source.0, relationship.target.0));
@@ -943,7 +1139,8 @@ fn supported_import_domain(reference: &impl ResolutionReferenceFact) -> Option<D
         | ReferenceKind::Redefinition
         | ReferenceKind::References
         | ReferenceKind::Crosses
-        | ReferenceKind::Intersects => None,
+        | ReferenceKind::Intersects
+        | ReferenceKind::AliasBinding => None,
     }
 }
 
@@ -964,9 +1161,16 @@ impl DeclarationDomain {
                     | DeclarationKind::Package
                     | DeclarationKind::LibraryPackage
             ),
+            // An alias is a transparent proxy: whether it is Type-domain-compatible is a property
+            // of its (possibly not-yet-resolved) ultimate target, not of the alias declaration
+            // itself, so it is provisionally accepted here. `synthesize_implied_alias_bindings`
+            // below chases the alias's own resolved `AliasBinding` reference to publish the real
+            // (implied) typing/specialization fact against the ultimate non-alias target.
             Self::Type => matches!(
                 kind,
-                DeclarationKind::PartDefinition | DeclarationKind::AttributeDefinition
+                DeclarationKind::PartDefinition
+                    | DeclarationKind::AttributeDefinition
+                    | DeclarationKind::Alias
             ),
         }
     }
@@ -1070,7 +1274,8 @@ fn build_effective_import_indexes<R: ResolutionReferenceFact>(
             | ReferenceKind::Redefinition
             | ReferenceKind::References
             | ReferenceKind::Crosses
-            | ReferenceKind::Intersects => {}
+            | ReferenceKind::Intersects
+            | ReferenceKind::AliasBinding => {}
         }
     }
     Ok((
@@ -2433,6 +2638,172 @@ mod tests {
             resolution.outcome(AuthoredReferenceId(2)),
             Some(ResolutionStatus::NonConverged)
         );
+    }
+
+    /// `package P { part def Device; alias DeviceAlias for Device; part device : DeviceAlias; }`
+    /// — mirrors `test/snapshots/resolution/alias_target_binding.md`.
+    fn alias_binding_fixture() -> ResolverFixture {
+        let mut symbols = SymbolTableBuilder::default();
+        let package_name = symbols.intern("P").unwrap();
+        let device_name = symbols.intern("Device").unwrap();
+        let alias_name = symbols.intern("DeviceAlias").unwrap();
+        let device_usage_name = symbols.intern("device").unwrap();
+
+        let mut paths = SymbolPathArenaBuilder::default();
+        let device_path = paths.push(&[device_name], false).unwrap();
+        let alias_path = paths.push(&[alias_name], false).unwrap();
+
+        let package = DeclarationId(0);
+        let alias = DeclarationId(2);
+        let device_usage = DeclarationId(3);
+        let declarations = vec![
+            declaration(
+                DocumentId(0),
+                None,
+                Some(package_name),
+                DeclarationKind::Package,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(package),
+                Some(device_name),
+                DeclarationKind::PartDefinition,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(package),
+                Some(alias_name),
+                DeclarationKind::Alias,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(package),
+                Some(device_usage_name),
+                DeclarationKind::PartUsage,
+            ),
+        ];
+        let references = vec![
+            reference(alias, ReferenceKind::AliasBinding, device_path, false),
+            reference(
+                device_usage,
+                ReferenceKind::FeatureTyping,
+                alias_path,
+                false,
+            ),
+        ];
+        let memberships = memberships_for(&declarations, &[]);
+        let _symbols = symbols.freeze();
+        ResolverFixture {
+            declarations: declarations.into_boxed_slice(),
+            memberships,
+            paths: paths.freeze(),
+            references: references.into_boxed_slice(),
+        }
+    }
+
+    #[test]
+    fn alias_binding_resolves_through_the_shared_lexical_lookup_fixed_point() {
+        let fixture = alias_binding_fixture();
+        let (_, _, resolution) = resolve_fixture(&fixture);
+        assert_eq!(resolution.solver_status, SolverStatus::Converged);
+        // DeviceAlias's own authored `AliasBinding` reference resolves to Device (id 1), using
+        // the same fixed point as every other authored reference kind rather than a separate
+        // ad hoc path.
+        assert_eq!(
+            resolution.outcome(AuthoredReferenceId(0)),
+            Some(ResolutionStatus::Resolved(DeclarationId(1)))
+        );
+    }
+
+    #[test]
+    fn typing_through_an_alias_resolves_transitively_to_the_ultimate_target() {
+        let fixture = alias_binding_fixture();
+        let (_, _, resolution) = resolve_fixture(&fixture);
+        assert_eq!(resolution.solver_status, SolverStatus::Converged);
+        // `device : DeviceAlias`'s own FeatureTyping outcome targets the alias declaration (id 2)
+        // itself -- the alias's own authored fact is never weakened or bypassed.
+        assert_eq!(
+            resolution.outcome(AuthoredReferenceId(1)),
+            Some(ResolutionStatus::Resolved(DeclarationId(2)))
+        );
+        // Downstream typing is nonetheless transparent: an implied FeatureTyping fact chases the
+        // alias chain to publish device -> Device directly, with implied provenance.
+        assert_eq!(
+            resolution.implied_relationships.as_ref(),
+            &[ImpliedRelationship {
+                kind: ReferenceKind::FeatureTyping,
+                source: DeclarationId(3),
+                target: DeclarationId(1),
+            }],
+        );
+    }
+
+    /// `package P { alias A for B; alias B for A; }` — a two-hop alias cycle, mirroring the
+    /// specialization-cycle shape of `cyclic_specialization_fixture` above.
+    fn cyclic_alias_binding_fixture() -> ResolverFixture {
+        let mut symbols = SymbolTableBuilder::default();
+        let package_name = symbols.intern("P").unwrap();
+        let a_name = symbols.intern("A").unwrap();
+        let b_name = symbols.intern("B").unwrap();
+
+        let mut paths = SymbolPathArenaBuilder::default();
+        let a_path = paths.push(&[a_name], false).unwrap();
+        let b_path = paths.push(&[b_name], false).unwrap();
+
+        let package = DeclarationId(0);
+        let a = DeclarationId(1);
+        let b = DeclarationId(2);
+        let declarations = vec![
+            declaration(
+                DocumentId(0),
+                None,
+                Some(package_name),
+                DeclarationKind::Package,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(package),
+                Some(a_name),
+                DeclarationKind::Alias,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(package),
+                Some(b_name),
+                DeclarationKind::Alias,
+            ),
+        ];
+        let references = vec![
+            reference(a, ReferenceKind::AliasBinding, b_path, false),
+            reference(b, ReferenceKind::AliasBinding, a_path, false),
+        ];
+        let memberships = memberships_for(&declarations, &[]);
+        let _symbols = symbols.freeze();
+        ResolverFixture {
+            declarations: declarations.into_boxed_slice(),
+            memberships,
+            paths: paths.freeze(),
+            references: references.into_boxed_slice(),
+        }
+    }
+
+    #[test]
+    fn alias_cycle_yields_a_typed_non_converged_outcome_not_a_hang() {
+        // Bounded by `detect_cyclic_alias_bindings`'s `declarations.len() + 1` hop limit: this
+        // test would time out (rather than merely fail an assertion) if alias cycle detection
+        // ever degenerated into an unbounded chase.
+        let fixture = cyclic_alias_binding_fixture();
+        let (_, _, resolution) = resolve_fixture(&fixture);
+        assert_eq!(resolution.solver_status, SolverStatus::Converged);
+        assert_eq!(
+            resolution.outcome(AuthoredReferenceId(0)),
+            Some(ResolutionStatus::NonConverged)
+        );
+        assert_eq!(
+            resolution.outcome(AuthoredReferenceId(1)),
+            Some(ResolutionStatus::NonConverged)
+        );
+        assert!(resolution.implied_relationships.is_empty());
     }
 
     /// `package A { part def T; } package C { import A::*; part T; part p : T; }` — mirrors

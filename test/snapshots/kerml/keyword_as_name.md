@@ -93,9 +93,9 @@ package KeywordAsName {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 22 1) (end 22 37))
+        (range (start 22 24) (end 22 36))
       )
       (diagnostic
         (severity warning)
@@ -131,8 +131,12 @@ package KeywordAsName {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:00159580b8a880f642649626ab8582199534da466003ec034252e9ff802726fd") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::multiplicity"))) (kind alias) (membership (kind alias) (visibility default)) (authored (membership (kind alias) (visibility default)) (relationships (aliasBinding (reference "SpatialFrame"))))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::multiplicity"))) (kind aliasBinding) (ordinal 0))
+      (authored-target "SpatialFrame")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -143,5 +147,9 @@ package KeywordAsName {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/keyword_as_name.md") (range (start 22 24) (end 22 36)) (probe (position 22 24))
+    (reference (id (source (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::multiplicity"))) (kind aliasBinding) (ordinal 0) (authored-target "SpatialFrame")
+      (outcome (status unresolved)))
+  )
 )
 ~~~

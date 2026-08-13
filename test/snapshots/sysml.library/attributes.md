@@ -47,15 +47,15 @@ standard library package Attributes {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 9 4) (end 14 5))
+        (range (start 9 29) (end 9 38))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 16 4) (end 20 5))
+        (range (start 16 30) (end 16 40))
       )
     )
   )
@@ -64,11 +64,13 @@ standard library package Attributes {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:cada5bf0e4466e5bac58e24d7c47b92a4742f379f473bae01e84dd27744dd34c") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:cada5bf0e4466e5bac58e24d7c47b92a4742f379f473bae01e84dd27744dd34c") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/attributes.md") (qualified-name "Attributes"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/attributes.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Base::DataValue") (import (shape membership) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/attributes.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Base::dataValues") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/attributes.md") (qualified-name "Attributes::AttributeValue"))) (kind alias) (membership (kind alias) (visibility default)) (authored (membership (kind alias) (visibility default)) (relationships (aliasBinding (reference "DataValue"))))
+    (declaration (id (node (document "memory://snapshot/attributes.md") (qualified-name "Attributes::attributeValues"))) (kind alias) (membership (kind alias) (visibility default)) (authored (membership (kind alias) (visibility default)) (relationships (aliasBinding (reference "dataValues"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/attributes.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
@@ -76,6 +78,12 @@ standard library package Attributes {
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/attributes.md") (anonymous (kind import) (ordinal 1))))) (kind membershipImport) (ordinal 0))
       (authored-target "Base::dataValues")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/attributes.md") (qualified-name "Attributes::AttributeValue"))) (kind aliasBinding) (ordinal 0))
+      (authored-target "DataValue")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/attributes.md") (qualified-name "Attributes::attributeValues"))) (kind aliasBinding) (ordinal 0))
+      (authored-target "dataValues")
       (outcome (status unresolved)))
   )
   (relationships
@@ -93,6 +101,14 @@ standard library package Attributes {
   )
   (query (document "memory://snapshot/attributes.md") (range (start 7 19) (end 7 35)) (probe (position 7 19))
     (reference (id (source (node (document "memory://snapshot/attributes.md") (anonymous (kind import) (ordinal 1))))) (kind membershipImport) (ordinal 0) (authored-target "Base::dataValues")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/attributes.md") (range (start 9 29) (end 9 38)) (probe (position 9 29))
+    (reference (id (source (node (document "memory://snapshot/attributes.md") (qualified-name "Attributes::AttributeValue"))) (kind aliasBinding) (ordinal 0) (authored-target "DataValue")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/attributes.md") (range (start 16 30) (end 16 40)) (probe (position 16 30))
+    (reference (id (source (node (document "memory://snapshot/attributes.md") (qualified-name "Attributes::attributeValues"))) (kind aliasBinding) (ordinal 0) (authored-target "dataValues")
       (outcome (status unresolved)))
   )
 )

@@ -98,9 +98,9 @@ package '3a-Function-based Behavior-2' {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 5 2) (end 5 36))
+        (range (start 5 19) (end 5 35))
       )
       (diagnostic
         (severity warning)
@@ -154,6 +154,7 @@ package '3a-Function-based Behavior-2' {
     (declaration (id (node (document "memory://snapshot/3a_function_based_behavior_2.md") (qualified-name "3a-Function-based Behavior-2::Definitions::EngineOff"))) (kind attribute-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/3a_function_based_behavior_2.md") (qualified-name "3a-Function-based Behavior-2::Definitions::EngineStart"))) (kind attribute-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/3a_function_based_behavior_2.md") (qualified-name "3a-Function-based Behavior-2::Definitions::FuelCmd"))) (kind attribute-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/3a_function_based_behavior_2.md") (qualified-name "3a-Function-based Behavior-2::Definitions::Torque"))) (kind alias) (membership (kind alias) (visibility default)) (authored (membership (kind alias) (visibility default)) (relationships (aliasBinding (reference "ISQ::TorqueValue"))))
     (declaration (id (node (document "memory://snapshot/3a_function_based_behavior_2.md") (qualified-name "3a-Function-based Behavior-2::Usages"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
@@ -163,6 +164,9 @@ package '3a-Function-based Behavior-2' {
     (reference (id (source (node (document "memory://snapshot/3a_function_based_behavior_2.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0))
       (authored-target "Usages")
       (outcome (status resolved) (target (node (document "memory://snapshot/3a_function_based_behavior_2.md") (qualified-name "3a-Function-based Behavior-2::Usages")))))
+    (reference (id (source (node (document "memory://snapshot/3a_function_based_behavior_2.md") (qualified-name "3a-Function-based Behavior-2::Definitions::Torque"))) (kind aliasBinding) (ordinal 0))
+      (authored-target "ISQ::TorqueValue")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -180,6 +184,10 @@ package '3a-Function-based Behavior-2' {
   (query (document "memory://snapshot/3a_function_based_behavior_2.md") (range (start 2 15) (end 2 24)) (probe (position 2 15))
     (reference (id (source (node (document "memory://snapshot/3a_function_based_behavior_2.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0) (authored-target "Usages")
       (outcome (status resolved) (target (node (document "memory://snapshot/3a_function_based_behavior_2.md") (qualified-name "3a-Function-based Behavior-2::Usages")))))
+  )
+  (query (document "memory://snapshot/3a_function_based_behavior_2.md") (range (start 5 19) (end 5 35)) (probe (position 5 19))
+    (reference (id (source (node (document "memory://snapshot/3a_function_based_behavior_2.md") (qualified-name "3a-Function-based Behavior-2::Definitions::Torque"))) (kind aliasBinding) (ordinal 0) (authored-target "ISQ::TorqueValue")
+      (outcome (status unresolved)))
   )
 )
 ~~~

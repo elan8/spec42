@@ -201,9 +201,9 @@ standard library package VectorCalculations {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 43 4) (end 43 35))
+        (range (start 43 18) (end 43 34))
       )
       (diagnostic
         (severity warning)
@@ -239,6 +239,7 @@ standard library package VectorCalculations {
     (declaration (id (node (document "memory://snapshot/vector_calculations.md") (anonymous (kind import) (ordinal 3))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Quantities::VectorQuantityValue") (import (shape membership) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/vector_calculations.md") (anonymous (kind import) (ordinal 4))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "MeasurementReferences::VectorMeasurementReference") (import (shape membership) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/vector_calculations.md") (anonymous (kind import) (ordinal 5))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "MeasurementReferences::CoordinateTransformation") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/vector_calculations.md") (qualified-name "VectorCalculations::*"))) (kind alias) (membership (kind alias) (visibility default)) (authored (membership (kind alias) (visibility default)) (relationships (aliasBinding (reference "scalarVectorMult"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/vector_calculations.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
@@ -258,6 +259,9 @@ standard library package VectorCalculations {
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/vector_calculations.md") (anonymous (kind import) (ordinal 5))))) (kind membershipImport) (ordinal 0))
       (authored-target "MeasurementReferences::CoordinateTransformation")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/vector_calculations.md") (qualified-name "VectorCalculations::*"))) (kind aliasBinding) (ordinal 0))
+      (authored-target "scalarVectorMult")
       (outcome (status unresolved)))
   )
   (relationships
@@ -291,6 +295,10 @@ standard library package VectorCalculations {
   )
   (query (document "memory://snapshot/vector_calculations.md") (range (start 11 19) (end 11 66)) (probe (position 11 19))
     (reference (id (source (node (document "memory://snapshot/vector_calculations.md") (anonymous (kind import) (ordinal 5))))) (kind membershipImport) (ordinal 0) (authored-target "MeasurementReferences::CoordinateTransformation")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/vector_calculations.md") (range (start 43 18) (end 43 34)) (probe (position 43 18))
+    (reference (id (source (node (document "memory://snapshot/vector_calculations.md") (qualified-name "VectorCalculations::*"))) (kind aliasBinding) (ordinal 0) (authored-target "scalarVectorMult")
       (outcome (status unresolved)))
   )
 )

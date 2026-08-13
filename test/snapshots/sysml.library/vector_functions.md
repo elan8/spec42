@@ -418,9 +418,9 @@ standard library package VectorFunctions {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 100 1) (end 100 32))
+        (range (start 100 15) (end 100 31))
       )
       (diagnostic
         (severity warning)
@@ -658,6 +658,7 @@ standard library package VectorFunctions {
     (declaration (id (node (document "memory://snapshot/vector_functions.md") (anonymous (kind import) (ordinal 7))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "SequenceFunctions::size") (import (shape membership) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/vector_functions.md") (anonymous (kind import) (ordinal 8))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ControlFunctions") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/vector_functions.md") (anonymous (kind import) (ordinal 9))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "VectorValues") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/vector_functions.md") (qualified-name "VectorFunctions::*"))) (kind alias) (membership (kind alias) (visibility default)) (authored (membership (kind alias) (visibility default)) (relationships (aliasBinding (reference "scalarVectorMult"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/vector_functions.md") (anonymous (kind import) (ordinal 4))))) (kind namespaceImport) (ordinal 0))
@@ -689,6 +690,9 @@ standard library package VectorFunctions {
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/vector_functions.md") (anonymous (kind import) (ordinal 7))))) (kind membershipImport) (ordinal 0))
       (authored-target "SequenceFunctions::size")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/vector_functions.md") (qualified-name "VectorFunctions::*"))) (kind aliasBinding) (ordinal 0))
+      (authored-target "scalarVectorMult")
       (outcome (status unresolved)))
   )
   (relationships
@@ -738,6 +742,10 @@ standard library package VectorFunctions {
   )
   (query (document "memory://snapshot/vector_functions.md") (range (start 15 16) (end 15 39)) (probe (position 15 16))
     (reference (id (source (node (document "memory://snapshot/vector_functions.md") (anonymous (kind import) (ordinal 7))))) (kind membershipImport) (ordinal 0) (authored-target "SequenceFunctions::size")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/vector_functions.md") (range (start 100 15) (end 100 31)) (probe (position 100 15))
+    (reference (id (source (node (document "memory://snapshot/vector_functions.md") (qualified-name "VectorFunctions::*"))) (kind aliasBinding) (ordinal 0) (authored-target "scalarVectorMult")
       (outcome (status unresolved)))
   )
 )

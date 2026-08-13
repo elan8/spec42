@@ -14,12 +14,12 @@ use std::{
 use hashbrown::HashTable;
 use sysml_v2_parser_next::{
     ast::{
-        AttributeBody, AttributeBodyElement, AttributeDef, AttributeUsage, Import, ImportShape,
-        LibraryPackage, Membership, MembershipKind as ParserMembershipKind, NamespaceDecl, Node,
-        Package, PackageBody, PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement,
-        PartUsage, PartUsageBody, PartUsageBodyElement, QualifiedIdentification,
-        QualifiedReferenceId, RootElement, Span, SubsettingKind, SubsettingRelationship,
-        Visibility as ParserVisibility,
+        AliasDef, AttributeBody, AttributeBodyElement, AttributeDef, AttributeUsage, Import,
+        ImportShape, LibraryPackage, Membership, MembershipKind as ParserMembershipKind,
+        NamespaceDecl, Node, Package, PackageBody, PackageBodyElement, PartDef, PartDefBody,
+        PartDefBodyElement, PartUsage, PartUsageBody, PartUsageBodyElement,
+        QualifiedIdentification, QualifiedReferenceId, RootElement, Span, SubsettingKind,
+        SubsettingRelationship, Visibility as ParserVisibility,
     },
     ParseError, ParsedDocument,
 };
@@ -69,6 +69,7 @@ enum DeclarationKind {
     AttributeDefinition,
     AttributeUsage,
     Import,
+    Alias,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -76,6 +77,7 @@ enum MembershipKind {
     Owning,
     Feature,
     Import,
+    Alias,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -98,6 +100,11 @@ enum ReferenceKind {
     References,
     Crosses,
     Intersects,
+    /// The authored target of an `alias X for Y;` member (`AliasDef::target`), resolved through
+    /// the same lexical lookup fixed point as every other authored reference kind. Named
+    /// `AliasBinding` to match RESOLUTION_LAYER_DESIGN.md's "alias binding" vocabulary (section
+    /// 10.1) rather than inventing new terminology.
+    AliasBinding,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -614,11 +621,7 @@ impl SemanticModelBuilder {
                 UnsupportedFamily::PackageMember,
                 node.span.clone(),
             ),
-            PackageBodyElement::AliasDef(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::AliasDef(node) => self.lower_alias_def(document, owner, node)?,
             PackageBodyElement::AttributeDef(node) => {
                 self.lower_attribute_def(document, owner, node)?
             }
@@ -1341,6 +1344,57 @@ impl SemanticModelBuilder {
                 import: None,
             })?;
         }
+        Ok(())
+    }
+
+    /// Lowers a package-level `alias X for Y;` member into a declaration plus an authored
+    /// `AliasBinding` reference for `Y`, following the Subclassification/typing lowering pattern
+    /// above: `target` is already a structured `QualifiedReferenceId` (not a flattened string), so
+    /// it resolves through the same lexical lookup fixed point as every other authored reference.
+    fn lower_alias_def(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<AliasDef>,
+    ) -> Result<(), ConstructionError> {
+        let name = node
+            .value
+            .identification
+            .name
+            .as_deref()
+            .filter(|name| !name.is_empty())
+            .map(|name| self.intern_name(name))
+            .transpose()?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::Alias,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Alias,
+            self.member_visibility(&node.value.membership, ParserMembershipKind::Alias)?,
+            node.value.membership.span.clone(),
+        )?;
+        let target = node.value.target;
+        let span = self.documents[document.index()]
+            .parsed
+            .qualified_reference(target)
+            .ok_or(ConstructionError::InvalidParserReference)?
+            .metadata
+            .span
+            .clone();
+        self.push_reference(PendingReference {
+            source: declaration,
+            kind: ReferenceKind::AliasBinding,
+            document,
+            local: target,
+            flags: RelationshipFlags::default(),
+            span,
+            import: None,
+        })?;
         Ok(())
     }
 
