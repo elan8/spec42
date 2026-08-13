@@ -705,6 +705,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     | ReferenceKind::SatisfyViewpoint
                     | ReferenceKind::AcceptPayloadType
                     | ReferenceKind::TypeCheckTarget
+                    | ReferenceKind::MetaCastTarget
             )
             .then_some(index)
         })
@@ -1744,6 +1745,7 @@ fn supported_import_domain(reference: &impl ResolutionReferenceFact) -> Option<D
         | ReferenceKind::FlowSource
         | ReferenceKind::FlowTarget
         | ReferenceKind::TypeCheckTarget
+        | ReferenceKind::MetaCastTarget
         | ReferenceKind::StakeholderTarget
         | ReferenceKind::PurposeTarget
         | ReferenceKind::VerifyRequirementTarget => None,
@@ -1941,6 +1943,7 @@ fn build_effective_import_indexes<R: ResolutionReferenceFact>(
             | ReferenceKind::FlowSource
             | ReferenceKind::FlowTarget
             | ReferenceKind::TypeCheckTarget
+            | ReferenceKind::MetaCastTarget
             | ReferenceKind::StakeholderTarget
             | ReferenceKind::PurposeTarget
             | ReferenceKind::VerifyRequirementTarget => {}

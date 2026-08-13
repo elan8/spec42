@@ -986,6 +986,20 @@ enum ReferenceKind {
     /// so `EvalNode::Invocation` (reused rather than adding a distinct variant, exactly like
     /// `Expression::Tuple`) always folds to `EvaluatedValue::NonConstant`.
     TypeCheckTarget,
+    /// The `metaclass` of an `Expression::MetaCast` (KerML reflective meta cast, `expr meta
+    /// Metaclass`, e.g. `Atom meta KerML::Classifier`), which names a type -- specifically a
+    /// metaclass -- exactly like `TypeCheckTarget`/`AcceptPayloadType`, so it joins the same
+    /// Subclassification/FeatureTyping `DeclarationDomain::Type` lexical lookup fixed point rather
+    /// than a separate one, kept as a distinct `ReferenceKind` purely so a meta-cast target stays
+    /// distinct from ordinary typing/annotation relationships in query output. The `base` operand
+    /// (`Atom`) recurses back into the same operand-resolution dispatch (`lower_constraint_expression`/
+    /// `lower_calc_expression`/`lower_filter_expression`) the meta cast itself was reached through,
+    /// pushing whatever `ReferenceKind` its own shape resolves to (typically `ExpressionOperand`/
+    /// `MemberAccessOperand`). Evaluating the cast itself (computing the reflective metaobject) is
+    /// out of scope -- it denotes a metaclass relationship, not a computable scalar value -- so
+    /// `EvalNode::Invocation` (reused rather than adding a distinct variant, exactly like
+    /// `Expression::TypeCheck`/`Expression::Tuple`) always folds to `EvaluatedValue::NonConstant`.
+    MetaCastTarget,
     /// The `target` concern reference of a `stakeholder` member found in a requirement/viewpoint
     /// def body (`StakeholderMember.target`, BNF `StakeholderMember`'s bare `stakeholder Concern;`
     /// reference form, `is_redefinition == false`), resolved through the same `DeclarationDomain::
@@ -1490,6 +1504,10 @@ fn classify_constraint_node(node: &Expression, ordinal: &mut u32) -> Option<Eval
             }
             Some(EvalNode::Invocation(children))
         }
+        Expression::MetaCast { base, .. } => {
+            let base = classify_constraint_node(&base.value, ordinal)?;
+            Some(EvalNode::Invocation(vec![base]))
+        }
         _ => None,
     }
 }
@@ -1553,6 +1571,10 @@ fn classify_calc_node(node: &Expression, ordinal: &mut u32) -> Option<EvalNode> 
                 children.push(classify_calc_node(&operand.value, ordinal)?);
             }
             Some(EvalNode::Invocation(children))
+        }
+        Expression::MetaCast { base, .. } => {
+            let base = classify_calc_node(&base.value, ordinal)?;
+            Some(EvalNode::Invocation(vec![base]))
         }
         _ => None,
     }
@@ -2300,6 +2322,36 @@ impl SemanticModelBuilder {
         self.push_reference(PendingReference {
             source: declaration,
             kind: ReferenceKind::InvocationCallee,
+            document,
+            local: target,
+            flags: RelationshipFlags::default(),
+            span,
+            import: None,
+        })?;
+        Ok(())
+    }
+
+    /// Pushes one `ReferenceKind::MetaCastTarget` reference for an `Expression::MetaCast`'s
+    /// `metaclass` (e.g. `KerML::Classifier` in `Atom meta KerML::Classifier`), mirroring
+    /// `push_type_check_target_reference`'s shape but its own `ReferenceKind` since a meta-cast
+    /// target joins the `DeclarationDomain::Type` fixed point rather than `TypeCheckTarget`
+    /// directly (kept distinct purely for query-output clarity).
+    fn push_meta_cast_target_reference(
+        &mut self,
+        document: DocumentId,
+        declaration: DeclarationId,
+        target: QualifiedReferenceId,
+    ) -> Result<(), ConstructionError> {
+        let span = self.documents[document.index()]
+            .parsed
+            .qualified_reference(target)
+            .ok_or(ConstructionError::InvalidParserReference)?
+            .metadata
+            .span
+            .clone();
+        self.push_reference(PendingReference {
+            source: declaration,
+            kind: ReferenceKind::MetaCastTarget,
             document,
             local: target,
             flags: RelationshipFlags::default(),
@@ -5645,6 +5697,10 @@ impl SemanticModelBuilder {
                 }
                 self.push_type_check_target_reference(document, declaration, *type_name)
             }
+            Expression::MetaCast { base, metaclass } => {
+                self.lower_constraint_expression(document, declaration, family, base)?;
+                self.push_meta_cast_target_reference(document, declaration, *metaclass)
+            }
             _ => {
                 self.push_unsupported(document, family, node.span.clone());
                 Ok(())
@@ -5750,6 +5806,10 @@ impl SemanticModelBuilder {
                     self.lower_calc_expression(document, declaration, family, operand)?;
                 }
                 self.push_type_check_target_reference(document, declaration, *type_name)
+            }
+            Expression::MetaCast { base, metaclass } => {
+                self.lower_calc_expression(document, declaration, family, base)?;
+                self.push_meta_cast_target_reference(document, declaration, *metaclass)
             }
             _ => {
                 self.push_unsupported(document, family, node.span.clone());
@@ -5886,6 +5946,10 @@ impl SemanticModelBuilder {
                     self.lower_filter_expression(document, declaration, operand)?;
                 }
                 self.push_type_check_target_reference(document, declaration, *type_name)
+            }
+            Expression::MetaCast { base, metaclass } => {
+                self.lower_filter_expression(document, declaration, base)?;
+                self.push_meta_cast_target_reference(document, declaration, *metaclass)
             }
             _ => {
                 self.push_unsupported(
@@ -13798,6 +13862,70 @@ mod tests {
             ),
             "expected undeclared type target `MissingType` to stay explicitly unresolved, \
              got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn value_assignment_meta_cast_resolves_base_and_metaclass_target() {
+        // `Expression::MetaCast` (`Base meta Ns::Metaclass`) resolves the base operand through
+        // the ordinary ExpressionOperand recursion and the qualified `Ns::Metaclass` target
+        // through the new MetaCastTarget reference, mirroring `TypeCheckTarget`'s Type-domain
+        // lookup and supporting a multi-segment qualified reference exactly like other
+        // Type-domain targets (e.g. `KerML::Classifier`).
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpackage Meta {\n\
+             \t\tclass Classifier;\n\
+             \t}\n\
+             \tattribute a : ScalarValues::Integer;\n\
+             \tattribute check = a meta Meta::Classifier;\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind expressionOperand) (ordinal 0))\n      (authored-target \"a\")\n      \
+                 (outcome (status resolved) (target (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::a\")))))"
+            ),
+            "expected `a` to resolve as an expressionOperand reference, got:\n{output}"
+        );
+        assert!(
+            output.contains("(kind metaCastTarget)")
+                && output.contains(
+                    "(outcome (status resolved) (target (node (document \
+                     \"memory://test/enum.sysml\") (qualified-name \"Demo::Meta::Classifier\")))))"
+                ),
+            "expected `Meta::Classifier` to resolve as a metaCastTarget reference, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::check\"))) (value (kind non-constant)))"
+            ),
+            "expected `a meta Meta::Classifier` to publish NonConstant (denotes a metaclass \
+             relationship, not a computable scalar value), got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn value_assignment_meta_cast_with_unresolvable_base_and_metaclass_stays_unresolved() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tattribute check = missingOperand meta Missing::Metaclass;\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind expressionOperand) (ordinal 0))\n      (authored-target \
+                 \"missingOperand\")\n      (outcome (status unresolved))"
+            ),
+            "expected undeclared base `missingOperand` to stay explicitly unresolved, \
+             got:\n{output}"
+        );
+        assert!(
+            output.contains("(kind metaCastTarget)") && output.contains("(status unresolved)"),
+            "expected undeclared metaclass target `Missing::Metaclass` to stay explicitly \
+             unresolved, got:\n{output}"
         );
     }
 
