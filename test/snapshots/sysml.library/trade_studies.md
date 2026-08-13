@@ -208,9 +208,27 @@ standard library package TradeStudies {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_calc_definition_member")
         (source "semantic")
-        (range (start 11 1) (end 32 2))
+        (range (start 19 2) (end 24 3))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_calc_definition_member")
+        (source "semantic")
+        (range (start 26 2) (end 26 18))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_calc_definition_member")
+        (source "semantic")
+        (range (start 26 19) (end 26 25))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_calc_definition_member")
+        (source "semantic")
+        (range (start 26 26) (end 32 1))
       )
       (diagnostic
         (severity warning)
@@ -310,6 +328,7 @@ standard library package TradeStudies {
     (declaration (id (node (document "memory://snapshot/trade_studies.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/trade_studies.md") (anonymous (kind import) (ordinal 2))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarFunctions") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/trade_studies.md") (anonymous (kind import) (ordinal 3))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ControlFunctions") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/trade_studies.md") (qualified-name "TradeStudies::EvaluationFunction"))) (kind calc-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/trade_studies.md") (qualified-name "TradeStudies::MaximizeObjective"))) (kind requirement-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "TradeStudyObjective"))))
     (declaration (id (node (document "memory://snapshot/trade_studies.md") (qualified-name "TradeStudies::MinimizeObjective"))) (kind requirement-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "TradeStudyObjective"))))
     (declaration (id (node (document "memory://snapshot/trade_studies.md") (qualified-name "TradeStudies::TradeStudy"))) (kind analysis-def) (membership (kind owning) (visibility default)))

@@ -17,7 +17,8 @@ use sysml_v2_parser_next::{
         ActionDef, ActionDefBody, ActionDefBodyElement, ActionUsage as ParserActionUsage,
         ActionUsageBody, ActionUsageBodyElement, AliasDef, AllocationDef, AnalysisCaseDef,
         AnalysisCaseUsage as ParserAnalysisCaseUsage, AttributeBody, AttributeBodyElement,
-        AttributeDef, AttributeUsage, CaseDef, CaseUsage as ParserCaseUsage,
+        AttributeDef, AttributeUsage, CalcDef, CalcDefBody, CalcDefBodyElement,
+        CalcUsage as ParserCalcUsage, CaseDef, CaseUsage as ParserCaseUsage,
         ConcernUsage as ParserConcernUsage, ConnectStmt, ConnectionDef, ConnectionDefBody,
         ConnectionDefBodyElement, ConnectionEnd, ConnectionUsageMember as ParserConnectionUsage,
         ConstraintDef, ConstraintDefBody, ConstraintDefBodyElement,
@@ -352,6 +353,23 @@ enum DeclarationKind {
     /// `subsets`/`redefines` subsetting relationships. Resolved upstream in `0757de13`
     /// (UPSTREAM_PARSER_GAPS.md #9).
     ConcernUsage,
+    /// `calc def` (BNF CalculationDefinition, Clause 8.2.2.14): a type whose owned members
+    /// participate in the shared Subclassification/FeatureTyping `DeclarationDomain::Type` fixed
+    /// point, mirroring `lower_view_def`/`lower_action_def`. Resolved upstream in `0757de13`
+    /// (UPSTREAM_PARSER_GAPS.md #3): `CalcDef` previously dropped its parsed `:>` specialization
+    /// clause; it now carries `specializes: Option<Node<TypingRelationship>>` with full parity to
+    /// `ActionDef`/`ViewDef`. Genuinely new: `calc def`/`calc usage` lowering was never attempted
+    /// before this gap was resolved. Calculation-expression body content, `in`/`out`/`return`
+    /// parameters, and nested `calc` structure are out of scope and fall through to
+    /// `UnsupportedFamily::CalcDefinitionMember`.
+    CalcDefinition,
+    /// A package/definition/usage-level `calc` feature member (BNF CalculationUsage), mirroring
+    /// `lower_analysis_case_usage`: ownership, membership, a `:` typing target, and `redefines`
+    /// (a bare `Vec<QualifiedReferenceId>`, not a `SubsettingRelationship` node the way other
+    /// usage kinds' `redefines` field is shaped -- `CalcUsage` has no `subsets` field at all).
+    /// Direction (`in`/`out`/`inout`)/value-binding/body content are out of scope, sharing
+    /// `UnsupportedFamily::CalcDefinitionMember` with the `def` form.
+    CalcUsage,
     Import,
     Alias,
 }
@@ -458,6 +476,10 @@ enum UnsupportedFamily {
     /// expression content, nested constraint members). Shared by both forms since
     /// `ConstraintDefBody`/`ConstraintDefBodyElement` is the same typed AST shape for both.
     ConstraintDefinitionMember,
+    /// `calc def`/`calc` usage body members not modeled by this slice (calculation expression
+    /// content, in/out/return parameters, nested calc structure). Shared by both forms since
+    /// `CalcDefBody`/`CalcDefBodyElement` is the same typed AST shape for both.
+    CalcDefinitionMember,
     /// `interface def` body members not modeled by this slice; shares the same `end`/`connect`/
     /// attribute/item/port/flow member set as `ConnectionDefinitionMember`, kept as its own family
     /// name so interface def diagnostics stay distinct from connection def ones at the same span
@@ -1012,11 +1034,7 @@ impl SemanticModelBuilder {
             PackageBodyElement::ConstraintUsage(node) => {
                 self.lower_constraint_usage(document, owner, node)?
             }
-            PackageBodyElement::CalcDef(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::CalcDef(node) => self.lower_calc_def(document, owner, node)?,
             PackageBodyElement::ViewDef(node) => self.lower_view_def(document, owner, node)?,
             PackageBodyElement::ViewpointDef(node) => {
                 self.lower_viewpoint_def(document, owner, node)?
@@ -1437,6 +1455,12 @@ impl SemanticModelBuilder {
                     PartDefBodyElement::ConstraintUsage(constraint_usage) => {
                         self.lower_constraint_usage(document, Some(declaration), constraint_usage)?;
                     }
+                    PartDefBodyElement::CalcDef(calc_def) => {
+                        self.lower_calc_def(document, Some(declaration), calc_def)?;
+                    }
+                    PartDefBodyElement::CalcUsage(calc_usage) => {
+                        self.lower_calc_usage(document, Some(declaration), calc_usage)?;
+                    }
                     PartDefBodyElement::Doc(_) | PartDefBodyElement::Comment(_) => {}
                     PartDefBodyElement::Annotation(_)
                     | PartDefBodyElement::MetadataAnnotation(_)
@@ -1450,11 +1474,9 @@ impl SemanticModelBuilder {
                     | PartDefBodyElement::Perform(_)
                     | PartDefBodyElement::Allocate(_)
                     | PartDefBodyElement::ExhibitState(_)
-                    | PartDefBodyElement::CalcUsage(_)
                     | PartDefBodyElement::AssertConstraint(_)
                     | PartDefBodyElement::Satisfy(_)
                     | PartDefBodyElement::VariantUsage(_)
-                    | PartDefBodyElement::CalcDef(_)
                     | PartDefBodyElement::AllocationUsage(_)
                     | PartDefBodyElement::ViewpointUsage(_)
                     | PartDefBodyElement::RenderingUsage(_)
@@ -1606,6 +1628,12 @@ impl SemanticModelBuilder {
                     PartUsageBodyElement::ConstraintUsage(constraint_usage) => {
                         self.lower_constraint_usage(document, Some(declaration), constraint_usage)?;
                     }
+                    PartUsageBodyElement::CalcDef(calc_def) => {
+                        self.lower_calc_def(document, Some(declaration), calc_def)?;
+                    }
+                    PartUsageBodyElement::CalcUsage(calc_usage) => {
+                        self.lower_calc_usage(document, Some(declaration), calc_usage)?;
+                    }
                     PartUsageBodyElement::Doc(_) => {}
                     PartUsageBodyElement::Annotation(_)
                     | PartUsageBodyElement::DefaultReferenceUsage(_)
@@ -1620,9 +1648,7 @@ impl SemanticModelBuilder {
                     | PartUsageBodyElement::MetadataAnnotation(_)
                     | PartUsageBodyElement::MetadataKeywordUsage(_)
                     | PartUsageBodyElement::VariantUsage(_)
-                    | PartUsageBodyElement::CalcDef(_)
                     | PartUsageBodyElement::AssertConstraint(_)
-                    | PartUsageBodyElement::CalcUsage(_)
                     | PartUsageBodyElement::AliasDef(_)
                     | PartUsageBodyElement::IncludeUseCase(_)
                     | PartUsageBodyElement::UseCaseUsage(_)
@@ -4076,6 +4102,163 @@ impl SemanticModelBuilder {
         self.lower_constraint_def_body(document, declaration, &node.value.body)
     }
 
+    /// Lowers a `calc def` (BNF CalculationDefinition), mirroring `lower_action_def`: ownership,
+    /// membership, an optional `:>` specialization relationship participating in the shared
+    /// `DeclarationDomain::Type` fixed point. Resolved upstream in `0757de13`
+    /// (UPSTREAM_PARSER_GAPS.md #3): `CalcDef` previously dropped its parsed `:>` clause.
+    /// Calculation-expression body content is out of scope and falls through to
+    /// `UnsupportedFamily::CalcDefinitionMember`.
+    fn lower_calc_def(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<CalcDef>,
+    ) -> Result<(), ConstructionError> {
+        let name = node
+            .value
+            .identification
+            .name
+            .as_deref()
+            .filter(|name| !name.is_empty())
+            .map(|name| self.intern_name(name))
+            .transpose()?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::CalcDefinition,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Owning,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::OwningMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(relationship) = &node.value.specializes {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        self.lower_calc_def_body(document, declaration, &node.value.body)
+    }
+
+    /// Shared body walker for `calc def`/`calc` usage bodies (both use `CalcDefBody`/
+    /// `CalcDefBodyElement` in the typed AST -- there is no separate `CalcUsageBody`), mirroring
+    /// `lower_constraint_def_body`. Calculation-expression content, in/out/return parameters, and
+    /// nested calc structure fall through to `unsupported_calc_definition_member`.
+    fn lower_calc_def_body(
+        &mut self,
+        document: DocumentId,
+        _declaration: DeclarationId,
+        body: &CalcDefBody,
+    ) -> Result<(), ConstructionError> {
+        if let CalcDefBody::Brace { elements } = body {
+            for element in elements {
+                match &element.value {
+                    CalcDefBodyElement::Error(error) => {
+                        self.push_recovery(document, error.span.clone());
+                    }
+                    CalcDefBodyElement::Doc(_) => {}
+                    CalcDefBodyElement::InOutDecl(_)
+                    | CalcDefBodyElement::ReturnDecl(_)
+                    | CalcDefBodyElement::MetadataAnnotation(_)
+                    | CalcDefBodyElement::Expression(_)
+                    | CalcDefBodyElement::CalcUsage(_)
+                    | CalcDefBodyElement::CalcDef(_)
+                    | CalcDefBodyElement::PartUsage(_)
+                    | CalcDefBodyElement::Other(_) => self.push_unsupported(
+                        document,
+                        UnsupportedFamily::CalcDefinitionMember,
+                        element.span.clone(),
+                    ),
+                }
+            }
+        }
+        Ok(())
+    }
+
+    /// Lowers a package/definition/usage-level `calc` feature member (BNF CalculationUsage),
+    /// mirroring `lower_analysis_case_usage`: ownership, membership, a `:` typing target, and
+    /// `redefines` targets. Unlike other usage kinds, `CalcUsage::redefines` is a bare
+    /// `Vec<QualifiedReferenceId>` rather than a `Node<SubsettingRelationship>` (and there is no
+    /// `subsets` field at all), so each target is pushed as its own `Redefinition` reference
+    /// using that target's own resolved span (via `qualified_reference`) rather than through
+    /// `lower_subsetting_relationship`. `in`/`out`/`inout` direction, value binding, and
+    /// calculation-expression body content are out of scope, sharing
+    /// `UnsupportedFamily::CalcDefinitionMember` with the `def` form.
+    fn lower_calc_usage(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<ParserCalcUsage>,
+    ) -> Result<(), ConstructionError> {
+        let name = node
+            .value
+            .identification
+            .name
+            .as_deref()
+            .filter(|name| !name.is_empty())
+            .map(|name| self.intern_name(name))
+            .transpose()?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::CalcUsage,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::FeatureMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(type_name) = node.value.type_name {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(type_name)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span
+                .clone();
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::FeatureTyping,
+                document,
+                local: type_name,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
+        if let Some(targets) = &node.value.redefines {
+            for target in targets.iter().copied() {
+                let span = self.documents[document.index()]
+                    .parsed
+                    .qualified_reference(target)
+                    .ok_or(ConstructionError::InvalidParserReference)?
+                    .metadata
+                    .span
+                    .clone();
+                self.push_reference(PendingReference {
+                    source: declaration,
+                    kind: ReferenceKind::Redefinition,
+                    document,
+                    local: target,
+                    flags: RelationshipFlags::default(),
+                    span,
+                    import: None,
+                })?;
+            }
+        }
+        self.lower_calc_def_body(document, declaration, &node.value.body)
+    }
+
     fn lower_rendering_def(
         &mut self,
         document: DocumentId,
@@ -5454,6 +5637,94 @@ mod tests {
                 "(kind subsetting) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::derivedConcern\")))"
             ),
             "expected derivedConcern's subsetting of baseConcern to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn calc_def_lowers_to_a_declaration() {
+        // UPSTREAM_PARSER_GAPS.md #3 was resolved upstream in `0757de13`: `CalcDef` now carries a
+        // `specializes` field. `calc def`/`calc` usage are only reachable inside a part body in
+        // the typed AST (`calc_usage` is not dispatched at package level).
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpart def P {\n\
+             \t\tcalc def Calc;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::P::Calc\"))) (kind calc-def)"),
+            "expected a calc-def declaration, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn calc_def_specializing_another_calc_def_resolves_its_specialization_reference() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpart def P {\n\
+             \t\tcalc def Base;\n\
+             \t\tcalc def Derived :> Base;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind specialization) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::P::Derived\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::P::Base\")))"
+            ),
+            "expected Derived's specialization of Base to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn calc_usage_typed_by_a_calc_def_resolves() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpart def P {\n\
+             \t\tcalc def Calc;\n\
+             \t\tcalc c : Calc;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::P::c\"))) (kind calc)"),
+            "expected calc c to lower to a declaration with kind calc, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind typing) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::P::c\")))"
+            ) && output.contains(
+                "(target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::P::Calc\")))"
+            ),
+            "expected c's featureTyping of Calc to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn calc_usage_redefining_another_calc_usage_resolves() {
+        // `CalcUsage::redefines` is a bare `Vec<QualifiedReferenceId>`, not a
+        // `Node<SubsettingRelationship>` -- lowered as direct `Redefinition` references rather
+        // than through `lower_subsetting_relationship`.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpart def P {\n\
+             \t\tcalc def Calc;\n\
+             \t\tcalc calcA : Calc;\n\
+             \t\tcalc calcB : Calc :>> calcA;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::P::calcB\"))) (kind calc)"),
+            "expected a calc usage declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind redefinition) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::P::calcB\")))"
+            ) && output.contains(
+                "(target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::P::calcA\")))"
+            ),
+            "expected calcB's redefinition of calcA to resolve, got:\n{output}"
         );
     }
 

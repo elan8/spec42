@@ -223,6 +223,7 @@ fn unsupported_code(family: UnsupportedFamily) -> &'static str {
         UnsupportedFamily::InterfaceDefinitionMember => "unsupported_interface_definition_member",
         UnsupportedFamily::ViewDefinitionMember => "unsupported_view_definition_member",
         UnsupportedFamily::ConstraintDefinitionMember => "unsupported_constraint_definition_member",
+        UnsupportedFamily::CalcDefinitionMember => "unsupported_calc_definition_member",
         UnsupportedFamily::RenderingDefinitionMember => "unsupported_rendering_definition_member",
         UnsupportedFamily::OccurrenceDefinitionMember => "unsupported_occurrence_definition_member",
         UnsupportedFamily::AnalysisCaseDefinitionMember => {
@@ -745,6 +746,8 @@ fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::ConstraintUsage => "constraint",
         DeclarationKind::ConcernDefinition => "concern-def",
         DeclarationKind::ConcernUsage => "concern",
+        DeclarationKind::CalcDefinition => "calc-def",
+        DeclarationKind::CalcUsage => "calc",
     }
 }
 

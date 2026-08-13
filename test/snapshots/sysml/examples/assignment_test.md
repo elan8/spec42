@@ -137,9 +137,33 @@ package AssignmentTest {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_calc_definition_member")
         (source "semantic")
-        (range (start 38 1) (end 44 2))
+        (range (start 39 2) (end 39 17))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_calc_definition_member")
+        (source "semantic")
+        (range (start 40 2) (end 40 19))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_calc_definition_member")
+        (source "semantic")
+        (range (start 42 2) (end 42 9))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_calc_definition_member")
+        (source "semantic")
+        (range (start 42 10) (end 42 17))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_calc_definition_member")
+        (source "semantic")
+        (range (start 43 2) (end 43 3))
       )
       (diagnostic
         (severity warning)
@@ -172,6 +196,7 @@ package AssignmentTest {
     (declaration (id (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::Counting::increment"))) (kind state) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::Decr"))) (kind attribute-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::Incr"))) (kind attribute-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::Increment"))) (kind calc-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::a"))) (kind action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::a::counting"))) (kind state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Counting"))))
   )

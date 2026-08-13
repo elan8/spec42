@@ -170,9 +170,33 @@ package '10b-Trade-off Among Alternative Configurations' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_calc_definition_member")
         (source "semantic")
-        (range (start 64 2) (end 72 3))
+        (range (start 66 3) (end 66 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_calc_definition_member")
+        (source "semantic")
+        (range (start 67 3) (end 67 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_calc_definition_member")
+        (source "semantic")
+        (range (start 68 3) (end 68 24))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_calc_definition_member")
+        (source "semantic")
+        (range (start 69 3) (end 69 18))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_calc_definition_member")
+        (source "semantic")
+        (range (start 70 3) (end 70 28))
       )
       (diagnostic
         (severity warning)
@@ -219,6 +243,7 @@ package '10b-Trade-off Among Alternative Configurations' {
     (declaration (id (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (anonymous (kind import) (ordinal 2))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Definitions") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (anonymous (kind import) (ordinal 3))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Usages") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::EngineEvaluation"))) (kind calc-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::engineTradeStudy"))) (kind analysis) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "TradeStudy"))))
     (declaration (id (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (qualified-name "10b-Trade-off Among Alternative Configurations::Definitions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (qualified-name "10b-Trade-off Among Alternative Configurations::Definitions::4CylCrankShaft"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "CrankShaft"))))

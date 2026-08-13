@@ -161,12 +161,6 @@ standard library package Interfaces {
         (range (start 17 19) (end 17 46))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 19 4) (end 30 5))
-      )
-      (diagnostic
         (severity error)
         (code "recovered_calc_body_element")
         (source "parser")
@@ -177,6 +171,42 @@ standard library package Interfaces {
         (code "recovery_cascade_suppressed")
         (source "parser")
         (range (start 25 8) (end 26 8))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_calc_definition_member")
+        (source "semantic")
+        (range (start 28 8) (end 28 15))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_calc_definition_member")
+        (source "semantic")
+        (range (start 28 16) (end 28 25))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_calc_definition_member")
+        (source "semantic")
+        (range (start 28 26) (end 28 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_calc_definition_member")
+        (source "semantic")
+        (range (start 28 35) (end 28 99))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_calc_definition_member")
+        (source "semantic")
+        (range (start 28 99) (end 29 8))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_calc_definition_member")
+        (source "semantic")
+        (range (start 29 8) (end 29 34))
       )
       (diagnostic
         (severity warning)
@@ -263,6 +293,7 @@ standard library package Interfaces {
     (declaration (id (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::BinaryInterface::target"))) (kind connection) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Port"))))
     (declaration (id (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::Interface"))) (kind interface-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Connection"))))
     (declaration (id (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::binaryInterfaces"))) (kind interface-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "interfaces")) (specialization (reference "binaryConnections"))))
+    (declaration (id (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::excludingOnce"))) (kind calc-def) (membership (kind owning) (visibility private)))
     (declaration (id (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::interfaces"))) (kind interface-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "connections"))))
   )
   (references

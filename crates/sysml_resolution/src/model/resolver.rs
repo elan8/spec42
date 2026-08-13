@@ -1394,6 +1394,7 @@ impl DeclarationDomain {
                     | DeclarationKind::FlowDefinition
                     | DeclarationKind::ConstraintDefinition
                     | DeclarationKind::ConcernDefinition
+                    | DeclarationKind::CalcDefinition
                     | DeclarationKind::Alias
             ),
         }
