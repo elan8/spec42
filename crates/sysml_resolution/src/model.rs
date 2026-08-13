@@ -17,18 +17,18 @@ use sysml_v2_parser_next::{
         ActionDef, ActionDefBody, ActionDefBodyElement, ActionUsage as ParserActionUsage,
         ActionUsageBody, ActionUsageBodyElement, AliasDef, Allocate, AllocationDef,
         AnalysisCaseDef, AnalysisCaseUsage as ParserAnalysisCaseUsage, AttributeBody,
-        AttributeBodyElement, AttributeDef, AttributeUsage, BinaryOperator, CalcDef, CalcDefBody,
-        CalcDefBodyElement, CalcUsage as ParserCalcUsage, CaseDef, CaseUsage as ParserCaseUsage,
-        ClassDef, ConcernUsage as ParserConcernUsage, ConnectStmt, ConnectionDef,
-        ConnectionDefBody, ConnectionDefBodyElement, ConnectionEnd,
-        ConnectionUsageMember as ParserConnectionUsage, ConstraintDef, ConstraintDefBody,
-        ConstraintDefBodyElement, ConstraintUsage as ParserConstraintUsage, DefinitionBody,
-        DefinitionBodyElement, DefinitionPrefix, DoAction, EndDecl, EndIdentity, EntryAction,
-        EnumDef, EnumerationBody, EnumerationUsage as ParserEnumerationUsage, ExitAction,
-        Expression, FeatureValue, FirstStmt, FlowDef, Import, ImportShape, InOut, InOutDecl,
-        InterfaceDef, InterfaceDefBody, InterfaceDefBodyElement,
-        InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement, ItemDef,
-        ItemUsage as ParserItemUsage, LibraryPackage, Membership,
+        AttributeBodyElement, AttributeDef, AttributeUsage, BinaryOperator, Bind,
+        BindingConnectorUsage, CalcDef, CalcDefBody, CalcDefBodyElement,
+        CalcUsage as ParserCalcUsage, CaseDef, CaseUsage as ParserCaseUsage, ClassDef,
+        ConcernUsage as ParserConcernUsage, ConnectStmt, ConnectionDef, ConnectionDefBody,
+        ConnectionDefBodyElement, ConnectionEnd, ConnectionUsageMember as ParserConnectionUsage,
+        ConstraintDef, ConstraintDefBody, ConstraintDefBodyElement,
+        ConstraintUsage as ParserConstraintUsage, DefinitionBody, DefinitionBodyElement,
+        DefinitionPrefix, DoAction, EndDecl, EndIdentity, EntryAction, EnumDef, EnumerationBody,
+        EnumerationUsage as ParserEnumerationUsage, ExitAction, Expression, FeatureValue,
+        FirstStmt, FlowDef, Import, ImportShape, InOut, InOutDecl, InterfaceDef, InterfaceDefBody,
+        InterfaceDefBodyElement, InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement,
+        ItemDef, ItemUsage as ParserItemUsage, LibraryPackage, Membership,
         MembershipKind as ParserMembershipKind, MetadataAnnotation, MetadataDef,
         MetadataUsage as ParserMetadataUsage, NamespaceDecl, Node, OccurrenceBodyElement,
         OccurrenceDef, OccurrenceUsage as ParserOccurrenceUsage, OccurrenceUsageBody, Package,
@@ -477,6 +477,18 @@ enum DeclarationKind {
     /// references it carries are distinguishable per-statement (multiple `allocate` statements
     /// can share one owner) even though the statement introduces no name of its own.
     Allocate,
+    /// An anonymous feature synthesized for a `bind <source> = <target>;` body element (BNF
+    /// `Bind`, `ast::Bind`, found in part def/part usage/action def/action usage bodies) or a
+    /// package-level `binding ... left = right;` element (BNF `BindingConnectorUsage`,
+    /// `ast::BindingConnectorUsage`) -- both assert a binding-connector relationship between two
+    /// existing declarations, mirroring `Allocate`/`Satisfy`'s "statement, not a new named usage"
+    /// shape. Owned by the enclosing declaration, mirroring `Allocate`'s nested-declaration shape,
+    /// so the `BindSource`/`BindTarget` references it carries are distinguishable per-statement
+    /// (multiple `bind`/`binding` statements can share one owner) even though the statement
+    /// introduces no name of its own (the optional `binding <name>` prefix on `Bind`, and the
+    /// optional name on `BindingConnectorUsage`, are both left out of scope -- see their
+    /// `ReferenceKind` doc comments).
+    Bind,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -678,6 +690,25 @@ enum ReferenceKind {
     /// `inline_requirement` form -- and left as an explicit unsupported-member diagnostic; so is
     /// any optional nested body on the untyped reference form (`VariantUsage.body`).
     Variant,
+    /// The authored `source` operand (`left`) of a `bind <source> = <target>;` body element (BNF
+    /// `Bind`, `ast::Bind.left`) or a package-level `binding` statement (BNF
+    /// `BindingConnectorUsage`, `ast::BindingConnectorUsage.left`) -- both the shorthand
+    /// binding-connector *statement* form, asserting a relationship between two already-declared
+    /// elements without introducing a new named binding-connector usage. Resolved through the
+    /// same `DeclarationDomain::Any` lexical lookup as `AllocateSource`: the bound source can be
+    /// any owned feature, not just a Type. Sourced at an anonymous `DeclarationKind::Bind` feature
+    /// owned by the enclosing declaration, mirroring `Allocate`'s nested-declaration shape.
+    /// `Bind.left` is a structured `Expression`, resolved only when it is a simple/qualified name
+    /// (`Expression::FeatureRef`) exactly like `AllocateSource`; `BindingConnectorUsage.left` is
+    /// already a `QualifiedReferenceId`, resolved directly like `AliasBinding`. Left/right
+    /// multiplicities, the optional `binding <name>`/`: Type` prefix on either AST shape, and
+    /// `Bind`'s optional braced body (`Bind.body_elements`) are out of scope -- only the two
+    /// operand references themselves are resolved.
+    BindSource,
+    /// The authored `target` operand (`right`) of a `bind <source> = <target>;` body element or a
+    /// package-level `binding` statement (`Bind.right` / `BindingConnectorUsage.right`), same
+    /// shape and scope as `BindSource`.
+    BindTarget,
 }
 
 /// The computed or explicit outcome of evaluating one supported constraint/calc expression
@@ -1934,11 +1965,14 @@ impl SemanticModelBuilder {
                 ),
             },
             PackageBodyElement::PerformUsage(node) => self.lower_perform(document, owner, node)?,
-            PackageBodyElement::BindingConnectorUsage(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::BindingConnectorUsage(node) => match owner {
+                Some(owner) => self.lower_binding_connector_usage(document, owner, node)?,
+                None => self.push_unsupported(
+                    document,
+                    UnsupportedFamily::PackageMember,
+                    node.span.clone(),
+                ),
+            },
             PackageBodyElement::ClassDef(node) => self.lower_class_def(document, owner, node)?,
             PackageBodyElement::Succession(node) => match owner {
                 Some(owner) => {
@@ -2241,6 +2275,14 @@ impl SemanticModelBuilder {
                             node,
                         )?;
                     }
+                    PartDefBodyElement::Bind(node) => {
+                        self.lower_bind(
+                            document,
+                            declaration,
+                            UnsupportedFamily::PartDefinitionMember,
+                            node,
+                        )?;
+                    }
                     PartDefBodyElement::FirstStmt(first_stmt) => {
                         self.lower_first_stmt(
                             document,
@@ -2271,8 +2313,7 @@ impl SemanticModelBuilder {
                     | PartDefBodyElement::ViewpointUsage(_)
                     | PartDefBodyElement::RenderingUsage(_)
                     | PartDefBodyElement::UseCaseUsage(_)
-                    | PartDefBodyElement::VerificationCaseUsage(_)
-                    | PartDefBodyElement::Bind(_) => self.push_unsupported(
+                    | PartDefBodyElement::VerificationCaseUsage(_) => self.push_unsupported(
                         document,
                         UnsupportedFamily::PartDefinitionMember,
                         element.span.clone(),
@@ -2461,9 +2502,16 @@ impl SemanticModelBuilder {
                             node,
                         )?;
                     }
+                    PartUsageBodyElement::Bind(node) => {
+                        self.lower_bind(
+                            document,
+                            declaration,
+                            UnsupportedFamily::PartUsageMember,
+                            node,
+                        )?;
+                    }
                     PartUsageBodyElement::Annotation(_)
                     | PartUsageBodyElement::DefaultReferenceUsage(_)
-                    | PartUsageBodyElement::Bind(_)
                     | PartUsageBodyElement::Ref(_)
                     | PartUsageBodyElement::Connect(_)
                     | PartUsageBodyElement::FlowUsage(_)
@@ -3361,11 +3409,18 @@ impl SemanticModelBuilder {
                 ActionDefBodyElement::MetadataAnnotation(node) => {
                     self.lower_metadata_annotation(document, owner, node)?;
                 }
+                ActionDefBodyElement::Bind(node) => {
+                    self.lower_bind(
+                        document,
+                        owner,
+                        UnsupportedFamily::ActionDefinitionMember,
+                        node,
+                    )?;
+                }
                 ActionDefBodyElement::Annotation(_)
                 | ActionDefBodyElement::MetadataKeywordUsage(_)
                 | ActionDefBodyElement::TextualRep(_)
                 | ActionDefBodyElement::RefDecl(_)
-                | ActionDefBodyElement::Bind(_)
                 | ActionDefBodyElement::FlowUsage(_)
                 | ActionDefBodyElement::MergeStmt(_)
                 | ActionDefBodyElement::DecisionStmt(_)
@@ -3484,11 +3539,13 @@ impl SemanticModelBuilder {
                 ActionUsageBodyElement::MetadataAnnotation(node) => {
                     self.lower_metadata_annotation(document, owner, node)?;
                 }
+                ActionUsageBodyElement::Bind(node) => {
+                    self.lower_bind(document, owner, UnsupportedFamily::ActionUsageMember, node)?;
+                }
                 ActionUsageBodyElement::Annotation(_)
                 | ActionUsageBodyElement::MetadataKeywordUsage(_)
                 | ActionUsageBodyElement::TextualRep(_)
                 | ActionUsageBodyElement::RefDecl(_)
-                | ActionUsageBodyElement::Bind(_)
                 | ActionUsageBodyElement::FlowUsage(_)
                 | ActionUsageBodyElement::MergeStmt(_)
                 | ActionUsageBodyElement::DecisionStmt(_)
@@ -4379,6 +4436,131 @@ impl SemanticModelBuilder {
             ReferenceKind::AllocateTarget,
             &node.value.target,
         )?;
+        Ok(())
+    }
+
+    /// Lowers a `bind <source> = <target>;` body element (BNF `Bind`, `ast::Bind`) found inside a
+    /// part def/part usage/action def/action usage body -- the shorthand binding-connector
+    /// *statement* form, which asserts a binding-connector relationship between two
+    /// already-declared elements without introducing a new named binding-connector usage. Mirrors
+    /// `lower_allocate`: an anonymous `DeclarationKind::Bind` feature owned by `owner`, with
+    /// `left`/`right` lowered as authored `BindSource`/`BindTarget` references when they are a
+    /// simple/qualified name (`Expression::FeatureRef`), resolved through the same
+    /// `DeclarationDomain::Any` lexical lookup fixed point `Satisfy`/`Allocate` use (reusing
+    /// `lower_satisfy_operand` directly). The optional `binding <name>`/`: Type`/multiplicity
+    /// prefix on either end and the whole construct itself, and any real content in the optional
+    /// braced body (`Bind.body_elements`), are out of scope and flagged as unsupported per
+    /// element, mirroring `lower_satisfy`'s `body_elements` handling.
+    fn lower_bind(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        family: UnsupportedFamily,
+        node: &Node<Bind>,
+    ) -> Result<(), ConstructionError> {
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::Bind,
+            None,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span.clone(),
+        )?;
+        self.lower_satisfy_operand(
+            document,
+            declaration,
+            family,
+            ReferenceKind::BindSource,
+            &node.value.left,
+        )?;
+        self.lower_satisfy_operand(
+            document,
+            declaration,
+            family,
+            ReferenceKind::BindTarget,
+            &node.value.right,
+        )?;
+        for element in &node.value.body_elements {
+            self.push_unsupported(document, family, element.span.clone());
+        }
+        Ok(())
+    }
+
+    /// Lowers a package-level `binding ... left = right;` element (BNF `BindingConnectorUsage`,
+    /// `ast::BindingConnectorUsage`) -- the keyword-less sibling of `Bind` (see its doc comment),
+    /// same binding-connector-statement semantics as `lower_bind` but with `left`/`right` already
+    /// structured `QualifiedReferenceId`s rather than `Expression`s, so they resolve directly
+    /// through the same `DeclarationDomain::Any` lexical lookup fixed point as `AliasBinding`
+    /// (mirroring `lower_alias_def`'s single-reference shape, applied twice). The `all`/name/
+    /// multiplicity prefix and any real content in the braced body are out of scope, matching
+    /// `Bind`'s own scope boundary.
+    fn lower_binding_connector_usage(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        node: &Node<BindingConnectorUsage>,
+    ) -> Result<(), ConstructionError> {
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::Bind,
+            None,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span.clone(),
+        )?;
+        self.lower_binding_connector_operand(
+            document,
+            declaration,
+            ReferenceKind::BindSource,
+            node.value.left,
+        )?;
+        self.lower_binding_connector_operand(
+            document,
+            declaration,
+            ReferenceKind::BindTarget,
+            node.value.right,
+        )?;
+        Ok(())
+    }
+
+    /// Lowers one `BindingConnectorUsage` operand (`left`/`right`), mirroring `lower_alias_def`'s
+    /// `AliasDef::target` handling: an already-structured `QualifiedReferenceId` resolves directly
+    /// as an authored reference of `kind` through the shared `DeclarationDomain::Any` lexical
+    /// lookup, with no expression-shape gating (`BindingConnectorUsage`'s ends are never a general
+    /// `Expression`, unlike `Bind`'s).
+    fn lower_binding_connector_operand(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        kind: ReferenceKind,
+        target: QualifiedReferenceId,
+    ) -> Result<(), ConstructionError> {
+        let span = self.documents[document.index()]
+            .parsed
+            .qualified_reference(target)
+            .ok_or(ConstructionError::InvalidParserReference)?
+            .metadata
+            .span
+            .clone();
+        self.push_reference(PendingReference {
+            source: owner,
+            kind,
+            document,
+            local: target,
+            flags: RelationshipFlags::default(),
+            span,
+            import: None,
+        })?;
         Ok(())
     }
 
@@ -9683,6 +9865,57 @@ mod tests {
             output.contains("(kind allocateSource)")
                 && output.contains("(authored-target \"a\")\n      (outcome (status resolved)"),
             "expected the allocate source to still resolve independently, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn bind_statement_inside_a_part_usage_resolves_source_and_target() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpart def A;\n\
+             \tpart def B;\n\
+             \tpart a : A;\n\
+             \tpart b : B {\n\
+             \t\tbind a = b;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(kind bindSource)") && output.contains("(kind bindTarget)"),
+            "expected bindSource/bindTarget relationship kinds, got:\n{output}"
+        );
+        assert!(
+            output.contains("(kind bind)"),
+            "expected an owned bind declaration, got:\n{output}"
+        );
+        assert!(
+            !output.contains("(status unresolved)"),
+            "expected both bind operands to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn bind_statement_with_an_unresolvable_target_stays_explicitly_unresolved() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpart def A;\n\
+             \tpart a : A;\n\
+             \tpart b : A {\n\
+             \t\tbind a = missingTarget;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(kind bindTarget)")
+                && output.contains("(authored-target \"missingTarget\")")
+                && output.contains("(status unresolved)"),
+            "expected the unresolvable bind target to stay explicitly unresolved (not \
+             fabricated), got:\n{output}"
+        );
+        assert!(
+            output.contains("(kind bindSource)")
+                && output.contains("(authored-target \"a\")\n      (outcome (status resolved)"),
+            "expected the bind source to still resolve independently, got:\n{output}"
         );
     }
 

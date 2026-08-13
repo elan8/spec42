@@ -789,6 +789,8 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     | ReferenceKind::SatisfyTarget
                     | ReferenceKind::AllocateSource
                     | ReferenceKind::AllocateTarget
+                    | ReferenceKind::BindSource
+                    | ReferenceKind::BindTarget
                     | ReferenceKind::Variant
             )
             .then_some(index)
@@ -1660,6 +1662,8 @@ fn supported_import_domain(reference: &impl ResolutionReferenceFact) -> Option<D
         | ReferenceKind::SatisfyViewpoint
         | ReferenceKind::AllocateSource
         | ReferenceKind::AllocateTarget
+        | ReferenceKind::BindSource
+        | ReferenceKind::BindTarget
         | ReferenceKind::Variant => None,
     }
 }
@@ -1837,6 +1841,8 @@ fn build_effective_import_indexes<R: ResolutionReferenceFact>(
             | ReferenceKind::SatisfyViewpoint
             | ReferenceKind::AllocateSource
             | ReferenceKind::AllocateTarget
+            | ReferenceKind::BindSource
+            | ReferenceKind::BindTarget
             | ReferenceKind::Variant => {}
         }
     }

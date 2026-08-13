@@ -475,7 +475,13 @@ package 'Vehicle Analysis Demo' {
         (severity warning)
         (code "unsupported_part_usage_member")
         (source "semantic")
-        (range (start 74 9) (end 74 57))
+        (range (start 74 14) (end 74 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_usage_member")
+        (source "semantic")
+        (range (start 74 32) (end 74 56))
       )
       (diagnostic
         (severity warning)
@@ -955,6 +961,7 @@ package 'Vehicle Analysis Demo' {
     (declaration (id (node (document "memory://snapshot/vehicle_analysis_demo.md") (qualified-name "Vehicle Analysis Demo::VehicleModel::Wheel::diameter"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "LengthValue"))))
     (declaration (id (node (document "memory://snapshot/vehicle_analysis_demo.md") (qualified-name "Vehicle Analysis Demo::VehicleModel::vehicle_c1"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Vehicle"))))
     (declaration (id (node (document "memory://snapshot/vehicle_analysis_demo.md") (anonymous (kind port) (ordinal 0))))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "fuelInPort"))))
+    (declaration (id (node (document "memory://snapshot/vehicle_analysis_demo.md") (anonymous (kind bind) (ordinal 0))))) (kind bind) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/vehicle_analysis_demo.md") (qualified-name "Vehicle Analysis Demo::VehicleModel::vehicle_c1::fuelTank"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "FuelTank"))))
     (declaration (id (node (document "memory://snapshot/vehicle_analysis_demo.md") (anonymous (kind port) (ordinal 0))))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "fuelInPort"))))
     (declaration (id (node (document "memory://snapshot/vehicle_analysis_demo.md") (qualified-name "Vehicle Analysis Demo::VehicleModel::vehicle_c1::wheel"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Wheel"))))

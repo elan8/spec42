@@ -837,6 +837,7 @@ fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::Transition => "transition",
         DeclarationKind::Satisfy => "satisfy",
         DeclarationKind::Allocate => "allocate",
+        DeclarationKind::Bind => "bind",
     }
 }
 
@@ -888,6 +889,8 @@ fn reference_kind(kind: ReferenceKind) -> &'static str {
         ReferenceKind::SatisfyTarget => "satisfyTarget",
         ReferenceKind::AllocateSource => "allocateSource",
         ReferenceKind::AllocateTarget => "allocateTarget",
+        ReferenceKind::BindSource => "bindSource",
+        ReferenceKind::BindTarget => "bindTarget",
         ReferenceKind::SatisfyViewpoint => "satisfyViewpoint",
         ReferenceKind::Variant => "variant",
     }
@@ -920,6 +923,8 @@ fn relationship_kind(kind: ReferenceKind) -> Option<&'static str> {
         ReferenceKind::SatisfyTarget => Some("satisfyTarget"),
         ReferenceKind::AllocateSource => Some("allocateSource"),
         ReferenceKind::AllocateTarget => Some("allocateTarget"),
+        ReferenceKind::BindSource => Some("bindSource"),
+        ReferenceKind::BindTarget => Some("bindTarget"),
         ReferenceKind::SatisfyViewpoint => Some("satisfyViewpoint"),
         ReferenceKind::Variant => Some("variant"),
         ReferenceKind::NamespaceImport

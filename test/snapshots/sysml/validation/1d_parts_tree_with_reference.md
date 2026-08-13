@@ -72,7 +72,13 @@ package '1d-Parts Tree with Reference' {
         (severity warning)
         (code "unsupported_part_usage_member")
         (source "semantic")
-        (range (start 26 3) (end 31 4))
+        (range (start 26 8) (end 26 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_usage_member")
+        (source "semantic")
+        (range (start 26 32) (end 26 54))
       )
       (diagnostic
         (severity warning)
@@ -99,6 +105,7 @@ package '1d-Parts Tree with Reference' {
     (declaration (id (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (qualified-name "1d-Parts Tree with Reference::Usages"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Definitions") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system"))) (kind part) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (anonymous (kind bind) (ordinal 0))))) (kind bind) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailer1"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Trailer"))))
     (declaration (id (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailerHitch"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "TrailerHitch"))))
     (declaration (id (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailerHitch::hitchBall"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "HitchBall"))))
