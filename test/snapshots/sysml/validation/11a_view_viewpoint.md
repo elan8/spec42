@@ -82,33 +82,15 @@ package '11a-View-Viewpoint' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 11 33) (end 11 45))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 13 22) (end 13 31))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 13 34) (end 13 41))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 21 22) (end 21 31))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 21 34) (end 21 41))
       )
       (diagnostic
         (severity warning)
@@ -159,7 +141,7 @@ package '11a-View-Viewpoint' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:71e7053996960d8442c98420d9efb3db30302b03e498769531a06e20a1f9e94b") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:71e7053996960d8442c98420d9efb3db30302b03e498769531a06e20a1f9e94b") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel"))) (kind package) (membership (kind owning) (visibility default)))
@@ -238,6 +220,9 @@ package '11a-View-Viewpoint' {
     (relationship (kind typing) (source (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::rearAxleAssembly::rearWheel"))) (target (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::Wheel"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::rearAxleAssembly::rearWheel"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::frontAxleAssembly::mass"))) (value (kind quantity) (magnitude (value (kind integer) (integer 150))) (unit "kg")))
+    (evaluated (declaration (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::mass"))) (value (kind quantity) (magnitude (value (kind integer) (integer 2500))) (unit "SI::kg")))
+    (evaluated (declaration (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::rearAxleAssembly::mass"))) (value (kind quantity) (magnitude (value (kind integer) (integer 250))) (unit "kg")))
   )
 )
 ~~~

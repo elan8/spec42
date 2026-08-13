@@ -160,18 +160,6 @@ package '1a-Parts Tree' {
         (source "semantic")
         (range (start 20 28) (end 20 46))
       )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 38 44) (end 38 53))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 81 44) (end 81 53))
-      )
     )
   )
 )
@@ -179,7 +167,7 @@ package '1a-Parts Tree' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:1d065cf8f178a7b346286e07981ccda27e7bc28a0a8c39dbb86d123417ba9106") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:1d065cf8f178a7b346286e07981ccda27e7bc28a0a8c39dbb86d123417ba9106") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/1a_parts_tree.md") (qualified-name "1a-Parts Tree"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/1a_parts_tree.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "SI::kg") (import (shape membership) (recursive false)))))
@@ -319,6 +307,8 @@ package '1a-Parts Tree' {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/1a_parts_tree.md") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1::rearAxleAssembly::rearWheel_2"))) (target (node (document "memory://snapshot/1a_parts_tree.md") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1::rearAxleAssembly::rearWheel"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/1a_parts_tree.md") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1::rearAxleAssembly::rearWheel_2"))) (kind subsetting) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/1a_parts_tree.md") (qualified-name "1a-Parts Tree::Usages::vehicle1::mass"))) (value (kind quantity) (magnitude (value (kind integer) (integer 1750))) (unit "kg")))
+    (evaluated (declaration (node (document "memory://snapshot/1a_parts_tree.md") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1::mass"))) (value (kind quantity) (magnitude (value (kind integer) (integer 2000))) (unit "kg")))
   )
 )
 ~~~

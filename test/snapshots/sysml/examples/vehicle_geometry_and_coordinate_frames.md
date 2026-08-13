@@ -275,21 +275,9 @@ package VehicleGeometryAndCoordinateFrames {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 37 37) (end 37 45))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 38 16) (end 38 22))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 38 25) (end 38 33))
       )
       (diagnostic
         (severity warning)
@@ -314,12 +302,6 @@ package VehicleGeometryAndCoordinateFrames {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 49 52) (end 49 58))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 49 67) (end 49 74))
       )
       (diagnostic
         (severity warning)
@@ -377,21 +359,9 @@ package VehicleGeometryAndCoordinateFrames {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 68 19) (end 68 26))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 69 10) (end 69 16))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 69 19) (end 69 26))
       )
       (diagnostic
         (severity warning)
@@ -988,7 +958,12 @@ package VehicleGeometryAndCoordinateFrames {
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (qualified-name "VehicleGeometryAndCoordinateFrames::vehicle::datum"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (anonymous (kind attribute) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 14))) (unit "mm")))
+    (evaluated (declaration (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind quantity) (magnitude (value (kind integer) (integer 40))) (unit "mm")))
+    (evaluated (declaration (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind quantity) (magnitude (value (kind integer) (integer 220))) (unit "mm")))
     (evaluated (declaration (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel::lugBoltDistributionAngle"))) (value (kind integer) (integer 72)))
+    (evaluated (declaration (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel::lugBoltPlacementRadius"))) (value (kind quantity) (magnitude (value (kind integer) (integer 60))) (unit "mm")))
     (evaluated (declaration (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel::numberOfBolts"))) (value (kind integer) (integer 5)))
     (evaluated (declaration (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (qualified-name "VehicleGeometryAndCoordinateFrames::vehicle::frontWheelXShift"))) (value (kind integer) (integer 1670)))

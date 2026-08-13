@@ -117,12 +117,6 @@ package TimeVaryingAttribute {
         (range (start 16 25) (end 16 30))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 17 33) (end 17 38))
-      )
-      (diagnostic
         (severity error)
         (code "recovered_occurrence_body_element")
         (source "parser")
@@ -142,21 +136,9 @@ package TimeVaryingAttribute {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 21 33) (end 21 38))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 34 25) (end 34 30))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 35 33) (end 35 38))
       )
     )
   )
@@ -249,7 +231,10 @@ package TimeVaryingAttribute {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/time_varying_attribute.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/time_varying_attribute.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 0))) (unit "s")))
+    (evaluated (declaration (node (document "memory://snapshot/time_varying_attribute.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 2))) (unit "s")))
     (evaluated (declaration (node (document "memory://snapshot/time_varying_attribute.md") (qualified-name "TimeVaryingAttribute::Transport2::startTime"))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/time_varying_attribute.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 1))) (unit "s")))
   )
 )
 ~~~

@@ -209,12 +209,6 @@ package '15_13-Discretely Sampled Function Value' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 22 25) (end 22 32))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 31 35) (end 31 38))
@@ -317,12 +311,6 @@ package '15_13-Discretely Sampled Function Value' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 67 54) (end 67 64))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 67 70) (end 67 80))
@@ -353,12 +341,6 @@ package '15_13-Discretely Sampled Function Value' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 69 54) (end 69 64))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 69 70) (end 69 80))
@@ -386,12 +368,6 @@ package '15_13-Discretely Sampled Function Value' {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 71 40) (end 71 51))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 71 54) (end 71 64))
       )
       (diagnostic
         (severity warning)
@@ -713,9 +689,13 @@ package '15_13-Discretely Sampled Function Value' {
     (evaluated (declaration (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind string) (value "time instant zero at launch")))
     (evaluated (declaration (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind unresolved-operand)))
     (evaluated (declaration (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind quantity) (magnitude (value (kind integer) (integer 1))) (unit "UTC")))
     (evaluated (declaration (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind real) (real 0))) (unit "mets")))
     (evaluated (declaration (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind real) (real 2.5))) (unit "mets")))
     (evaluated (declaration (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind real) (real 5.1))) (unit "mets")))
     (evaluated (declaration (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind string) (value "2020-08-23T22:42:32.924534Z")))
     (evaluated (declaration (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (qualified-name "15_13-Discretely Sampled Function Value::velocityCF"))) (value (kind unresolved-operand)))

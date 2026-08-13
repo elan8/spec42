@@ -527,18 +527,6 @@ package 'Vehicle Analysis Demo' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 91 35) (end 91 43))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 95 35) (end 95 43))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 100 36) (end 100 46))
@@ -1664,6 +1652,8 @@ package 'Vehicle Analysis Demo' {
     (evaluated (declaration (node (document "memory://snapshot/vehicle_analysis_demo.md") (anonymous (kind parameter) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/vehicle_analysis_demo.md") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::FuelEconomyAnalysis::fuelConsumptionAnalysis::fuelEconomy"))) (value (kind unresolved-operand)))
     (evaluated (declaration (node (document "memory://snapshot/vehicle_analysis_demo.md") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::NominalScenario::n"))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/vehicle_analysis_demo.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 25))) (unit "mpg")))
+    (evaluated (declaration (node (document "memory://snapshot/vehicle_analysis_demo.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 30))) (unit "mpg")))
     (evaluated (declaration (node (document "memory://snapshot/vehicle_analysis_demo.md") (qualified-name "Vehicle Analysis Demo::VehicleModel::FuelTank::fuelLevel"))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/vehicle_analysis_demo.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind unresolved-operand)))
     (evaluated (declaration (node (document "memory://snapshot/vehicle_analysis_demo.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))

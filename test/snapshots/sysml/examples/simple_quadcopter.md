@@ -350,21 +350,9 @@ package SimpleQuadcopter {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 15 25) (end 15 32))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 16 16) (end 16 22))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 16 25) (end 16 32))
       )
       (diagnostic
         (severity warning)
@@ -398,33 +386,15 @@ package SimpleQuadcopter {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 27 29) (end 27 37))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 28 20) (end 28 25))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 28 28) (end 28 35))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 29 20) (end 29 26))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 29 29) (end 29 35))
       )
       (diagnostic
         (severity warning)
@@ -530,21 +500,9 @@ package SimpleQuadcopter {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 61 29) (end 61 36))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 62 20) (end 62 26))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 62 29) (end 62 35))
       )
       (diagnostic
         (severity warning)
@@ -638,21 +596,9 @@ package SimpleQuadcopter {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 89 29) (end 89 36))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 90 20) (end 90 26))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 90 29) (end 90 36))
       )
       (diagnostic
         (severity warning)
@@ -695,12 +641,6 @@ package SimpleQuadcopter {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 101 20) (end 101 26))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 101 29) (end 101 37))
       )
       (diagnostic
         (severity warning)
@@ -782,33 +722,15 @@ package SimpleQuadcopter {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 128 33) (end 128 41))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 129 24) (end 129 29))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 129 32) (end 129 39))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 130 24) (end 130 30))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 130 33) (end 130 39))
       )
       (diagnostic
         (severity warning)
@@ -860,33 +782,15 @@ package SimpleQuadcopter {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 142 33) (end 142 41))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 143 24) (end 143 29))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 143 32) (end 143 40))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 144 24) (end 144 30))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 144 33) (end 144 40))
       )
       (diagnostic
         (severity warning)
@@ -932,21 +836,9 @@ package SimpleQuadcopter {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 164 49) (end 164 58))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 165 35) (end 165 46))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 165 49) (end 165 58))
       )
       (diagnostic
         (severity warning)
@@ -956,21 +848,9 @@ package SimpleQuadcopter {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 166 49) (end 166 55))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 167 36) (end 167 47))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 167 50) (end 167 56))
       )
       (diagnostic
         (severity warning)
@@ -1777,7 +1657,27 @@ package SimpleQuadcopter {
     (relationship (kind typing) (source (node (document "memory://snapshot/simple_quadcopter.md") (qualified-name "SimpleQuadcopter::quadCopter::strut4"))) (target (node (document "memory://snapshot/simple_quadcopter.md") (qualified-name "SimpleQuadcopter::Strut"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/simple_quadcopter.md") (qualified-name "SimpleQuadcopter::quadCopter::strut4"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/simple_quadcopter.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 15))) (unit "mm")))
+    (evaluated (declaration (node (document "memory://snapshot/simple_quadcopter.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind quantity) (magnitude (value (kind integer) (integer 24))) (unit "mm")))
     (evaluated (declaration (node (document "memory://snapshot/simple_quadcopter.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/simple_quadcopter.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind quantity) (magnitude (value (kind integer) (integer 500))) (unit "mm")))
+    (evaluated (declaration (node (document "memory://snapshot/simple_quadcopter.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 80))) (unit "mm")))
+    (evaluated (declaration (node (document "memory://snapshot/simple_quadcopter.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind quantity) (magnitude (value (kind integer) (integer 6))) (unit "mm")))
+    (evaluated (declaration (node (document "memory://snapshot/simple_quadcopter.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 160))) (unit "mm")))
+    (evaluated (declaration (node (document "memory://snapshot/simple_quadcopter.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind quantity) (magnitude (value (kind integer) (integer 15))) (unit "mm")))
+    (evaluated (declaration (node (document "memory://snapshot/simple_quadcopter.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind quantity) (magnitude (value (kind integer) (integer 8))) (unit "mm")))
+    (evaluated (declaration (node (document "memory://snapshot/simple_quadcopter.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 18))) (unit "mm")))
+    (evaluated (declaration (node (document "memory://snapshot/simple_quadcopter.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind quantity) (magnitude (value (kind integer) (integer 30))) (unit "mm")))
+    (evaluated (declaration (node (document "memory://snapshot/simple_quadcopter.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 105))) (unit "mm")))
+    (evaluated (declaration (node (document "memory://snapshot/simple_quadcopter.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind quantity) (magnitude (value (kind integer) (integer 105))) (unit "mm")))
+    (evaluated (declaration (node (document "memory://snapshot/simple_quadcopter.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind quantity) (magnitude (value (kind integer) (integer 60))) (unit "mm")))
+    (evaluated (declaration (node (document "memory://snapshot/simple_quadcopter.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 160))) (unit "mm")))
+    (evaluated (declaration (node (document "memory://snapshot/simple_quadcopter.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind quantity) (magnitude (value (kind integer) (integer 15))) (unit "mm")))
+    (evaluated (declaration (node (document "memory://snapshot/simple_quadcopter.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind quantity) (magnitude (value (kind integer) (integer 8))) (unit "mm")))
+    (evaluated (declaration (node (document "memory://snapshot/simple_quadcopter.md") (qualified-name "SimpleQuadcopter::quadCopter::xStrut"))) (value (kind quantity) (magnitude (value (kind real) (real 49.6))) (unit "mm")))
+    (evaluated (declaration (node (document "memory://snapshot/simple_quadcopter.md") (qualified-name "SimpleQuadcopter::quadCopter::yStrut"))) (value (kind quantity) (magnitude (value (kind real) (real 24.65))) (unit "mm")))
+    (evaluated (declaration (node (document "memory://snapshot/simple_quadcopter.md") (qualified-name "SimpleQuadcopter::quadCopter::zPMAssy"))) (value (kind quantity) (magnitude (value (kind integer) (integer 12))) (unit "mm")))
+    (evaluated (declaration (node (document "memory://snapshot/simple_quadcopter.md") (qualified-name "SimpleQuadcopter::quadCopter::zStrut"))) (value (kind quantity) (magnitude (value (kind integer) (integer 25))) (unit "mm")))
   )
 )
 ~~~

@@ -117,21 +117,9 @@ package '15_05-Unification of Expression and Constraint Definition' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 21 34) (end 21 43))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 22 21) (end 22 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 22 38) (end 22 46))
       )
       (diagnostic
         (severity warning)
@@ -144,12 +132,6 @@ package '15_05-Unification of Expression and Constraint Definition' {
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 53 21) (end 53 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 53 38) (end 53 45))
       )
     )
   )
@@ -255,7 +237,10 @@ package '15_05-Unification of Expression and Constraint Definition' {
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (qualified-name "15_05-Unification of Expression and Constraint Definition::WheelAssy::discBrakeFitConstraint_Alt::wheel"))) (target (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (qualified-name "15_05-Unification of Expression and Constraint Definition::WheelAssy::wheel"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (qualified-name "15_05-Unification of Expression and Constraint Definition::WheelAssy::discBrakeFitConstraint_Alt::wheel"))) (kind expressionOperand) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (qualified-name "15_05-Unification of Expression and Constraint Definition::DiscBrakeAssy::radius"))) (value (kind quantity) (magnitude (value (kind integer) (integer 95))) (unit "mm")))
     (evaluated (declaration (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (qualified-name "15_05-Unification of Expression and Constraint Definition::Vehicle_2::discBrakeConstraint::wheelAssy"))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (qualified-name "15_05-Unification of Expression and Constraint Definition::Vehicle_2::length"))) (value (kind quantity) (magnitude (value (kind real) (real 4.82))) (unit "m")))
+    (evaluated (declaration (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (qualified-name "15_05-Unification of Expression and Constraint Definition::Vehicle_2::mass"))) (value (kind quantity) (magnitude (value (kind integer) (integer 1200))) (unit "kg")))
     (evaluated (declaration (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (qualified-name "15_05-Unification of Expression and Constraint Definition::WheelAssy::discBrakeFitConstraint_Alt::discBrakeAssy"))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (qualified-name "15_05-Unification of Expression and Constraint Definition::WheelAssy::discBrakeFitConstraint_Alt::wheel"))) (value (kind non-constant)))
   )

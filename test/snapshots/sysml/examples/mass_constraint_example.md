@@ -340,12 +340,6 @@ package MassConstraintExample {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_constraint_definition_member")
-        (source "semantic")
-        (range (start 102 16) (end 102 25))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 105 16) (end 105 25))
@@ -658,6 +652,7 @@ package MassConstraintExample {
     (evaluated (declaration (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::MassLimit"))) (value (kind unresolved-operand)))
     (evaluated (declaration (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::Vehicle3::massConstraint::totalMass"))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::Vehicle5::ml::mass"))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::Vehicle5::ml::maxMass"))) (value (kind quantity) (magnitude (value (kind integer) (integer 2500))) (unit "kg")))
     (evaluated (declaration (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::mc"))) (value (kind unresolved-operand)))
   )
 )

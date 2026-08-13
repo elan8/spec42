@@ -158,12 +158,6 @@ package VehicleIndividuals {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 13 30) (end 13 39))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")
         (range (start 16 34) (end 16 41))
@@ -173,12 +167,6 @@ package VehicleIndividuals {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 22 23) (end 22 27))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 22 30) (end 22 39))
       )
       (diagnostic
         (severity warning)
@@ -440,6 +428,8 @@ package VehicleIndividuals {
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/vehicle_individuals.md") (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/vehicle_individuals.md") (qualified-name "VehicleIndividuals::IndividualSnapshots::t1"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_individuals.md") (anonymous (kind attribute) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/vehicle_individuals.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 1800))) (unit "kg")))
+    (evaluated (declaration (node (document "memory://snapshot/vehicle_individuals.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 1700))) (unit "kg")))
     (evaluated (declaration (node (document "memory://snapshot/vehicle_individuals.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/vehicle_individuals.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
   )

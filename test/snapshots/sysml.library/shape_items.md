@@ -1128,21 +1128,9 @@ standard library package ShapeItems {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 77 68) (end 77 73))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 78 21) (end 78 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 78 68) (end 78 73))
       )
       (diagnostic
         (severity warning)
@@ -5777,6 +5765,8 @@ standard library package ShapeItems {
     (evaluated (declaration (node (document "memory://snapshot/shape_items.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind boolean) (boolean true)))
     (evaluated (declaration (node (document "memory://snapshot/shape_items.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/shape_items.md") (qualified-name "ShapeItems::Triangle::base::length"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/shape_items.md") (qualified-name "ShapeItems::xoffset"))) (value (kind quantity) (magnitude (value (kind integer) (integer 0))) (unit "m")))
+    (evaluated (declaration (node (document "memory://snapshot/shape_items.md") (qualified-name "ShapeItems::yoffset"))) (value (kind quantity) (magnitude (value (kind integer) (integer 0))) (unit "m")))
   )
 )
 ~~~

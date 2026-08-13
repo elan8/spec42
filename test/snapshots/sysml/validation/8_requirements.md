@@ -254,18 +254,6 @@ package '8-Requirements' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 43 24) (end 43 33))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 60 24) (end 60 33))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 76 25) (end 76 34))
@@ -290,12 +278,6 @@ package '8-Requirements' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 104 28) (end 104 37))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_requirement_definition_member")
         (source "semantic")
         (range (start 110 3) (end 117 4))
@@ -305,12 +287,6 @@ package '8-Requirements' {
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 125 29) (end 125 38))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 126 28) (end 126 37))
       )
       (diagnostic
         (severity warning)
@@ -361,7 +337,7 @@ package '8-Requirements' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:760d4cca14b7207e41c47f068c6e60ee38e86987fb47fca722a89b7f9b5ae549") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:760d4cca14b7207e41c47f068c6e60ee38e86987fb47fca722a89b7f9b5ae549") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/8_requirements.md") (qualified-name "8-Requirements"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/8_requirements.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false)))))
@@ -654,6 +630,10 @@ package '8-Requirements' {
     (relationship (kind typing) (source (node (document "memory://snapshot/8_requirements.md") (qualified-name "8-Requirements::vehicle1_c2 Specification Context::vehicle1-c2 Specification::vehicle"))) (target (node (document "memory://snapshot/8_requirements.md") (qualified-name "8-Requirements::Vehicle Definitions::Vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/8_requirements.md") (qualified-name "8-Requirements::vehicle1_c2 Specification Context::vehicle1-c2 Specification::vehicle"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/8_requirements.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind quantity) (magnitude (value (kind integer) (integer 2000))) (unit "kg")))
+    (evaluated (declaration (node (document "memory://snapshot/8_requirements.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind quantity) (magnitude (value (kind integer) (integer 2500))) (unit "kg")))
+    (evaluated (declaration (node (document "memory://snapshot/8_requirements.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 2000))) (unit "kg")))
+    (evaluated (declaration (node (document "memory://snapshot/8_requirements.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 2500))) (unit "kg")))
   )
 )
 ~~~

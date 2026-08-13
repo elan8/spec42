@@ -5865,12 +5865,6 @@ standard library package <USCU> USCustomaryUnits {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 254 95) (end 254 102))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 255 54) (end 255 78))
@@ -9106,6 +9100,7 @@ standard library package <USCU> USCustomaryUnits {
     (evaluated (declaration (node (document "memory://snapshot/us_customary_units.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/us_customary_units.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind real) (real 32)))
     (evaluated (declaration (node (document "memory://snapshot/us_customary_units.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind string) (value "temperature in degree Fahrenheit of pure water at freezing point")))
+    (evaluated (declaration (node (document "memory://snapshot/us_customary_units.md") (qualified-name "USCustomaryUnits::degree fahrenheit (absolute temperature scale)::zeroDegreeFahrenheitInKelvin"))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/us_customary_units.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind unresolved-operand)))
     (evaluated (declaration (node (document "memory://snapshot/us_customary_units.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/us_customary_units.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind unresolved-operand)))

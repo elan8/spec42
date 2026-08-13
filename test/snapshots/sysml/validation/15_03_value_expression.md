@@ -61,21 +61,9 @@ package '15_03-Value Expression' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 5 36) (end 5 45))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 6 26) (end 6 37))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 6 40) (end 6 48))
       )
       (diagnostic
         (severity warning)
@@ -85,21 +73,9 @@ package '15_03-Value Expression' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 12 42) (end 12 51))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 13 25) (end 13 36))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 13 39) (end 13 47))
       )
       (diagnostic
         (severity warning)
@@ -115,27 +91,9 @@ package '15_03-Value Expression' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 25 49) (end 25 57))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_constraint_definition_member")
-        (source "semantic")
-        (range (start 26 57) (end 26 65))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 27 23) (end 27 34))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 27 37) (end 27 44))
       )
     )
   )
@@ -144,7 +102,7 @@ package '15_03-Value Expression' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:ab6e6b6a6cd6a866eb38d6f8518d8a43a43df59027973ba7299092fb8c8c5b88") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:ab6e6b6a6cd6a866eb38d6f8518d8a43a43df59027973ba7299092fb8c8c5b88") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/15_03_value_expression.md") (qualified-name "15_03-Value Expression"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/15_03_value_expression.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "SI") (import (shape namespace) (recursive false)))))
@@ -220,6 +178,13 @@ package '15_03-Value Expression' {
     (relationship (kind typing) (source (node (document "memory://snapshot/15_03_value_expression.md") (qualified-name "15_03-Value Expression::Wheel::tire"))) (target (node (document "memory://snapshot/15_03_value_expression.md") (qualified-name "15_03-Value Expression::Tire"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/15_03_value_expression.md") (qualified-name "15_03-Value Expression::Wheel::tire"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/15_03_value_expression.md") (qualified-name "15_03-Value Expression::Tire::hasLegalProfileDepth"))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/15_03_value_expression.md") (qualified-name "15_03-Value Expression::Tire::height"))) (value (kind quantity) (magnitude (value (kind integer) (integer 45))) (unit "mm")))
+    (evaluated (declaration (node (document "memory://snapshot/15_03_value_expression.md") (qualified-name "15_03-Value Expression::Tire::profileDepth"))) (value (kind quantity) (magnitude (value (kind real) (real 6))) (unit "mm")))
+    (evaluated (declaration (node (document "memory://snapshot/15_03_value_expression.md") (qualified-name "15_03-Value Expression::Vehicle_1::length"))) (value (kind quantity) (magnitude (value (kind real) (real 4.82))) (unit "m")))
+    (evaluated (declaration (node (document "memory://snapshot/15_03_value_expression.md") (qualified-name "15_03-Value Expression::Vehicle_1::mass"))) (value (kind quantity) (magnitude (value (kind integer) (integer 1200))) (unit "kg")))
+    (evaluated (declaration (node (document "memory://snapshot/15_03_value_expression.md") (qualified-name "15_03-Value Expression::Wheel::hubDiameter"))) (value (kind quantity) (magnitude (value (kind integer) (integer 18))) (unit "in")))
+    (evaluated (declaration (node (document "memory://snapshot/15_03_value_expression.md") (qualified-name "15_03-Value Expression::Wheel::width"))) (value (kind quantity) (magnitude (value (kind integer) (integer 245))) (unit "mm")))
   )
 )
 ~~~

@@ -90,12 +90,6 @@ package '15_12-Compound Value Type' {
         (source "semantic")
         (range (start 21 25) (end 21 32))
       )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 27 33) (end 27 43))
-      )
     )
   )
 )
@@ -103,7 +97,7 @@ package '15_12-Compound Value Type' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:767f47c2c6e2ae319e0161421c9a488e978c3d9927883dea7367747fe290e617") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:767f47c2c6e2ae319e0161421c9a488e978c3d9927883dea7367747fe290e617") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/15_12_compound_value_type.md") (qualified-name "15_12-Compound Value Type"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/15_12_compound_value_type.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
@@ -177,6 +171,7 @@ package '15_12-Compound Value Type' {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/15_12_compound_value_type.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind string) (value "Michelin")))
+    (evaluated (declaration (node (document "memory://snapshot/15_12_compound_value_type.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind quantity) (magnitude (value (kind real) (real 18))) (unit "in")))
     (evaluated (declaration (node (document "memory://snapshot/15_12_compound_value_type.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind integer) (integer 245)))
   )
 )

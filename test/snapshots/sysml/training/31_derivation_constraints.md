@@ -174,12 +174,6 @@ package 'Derivation Constraints' {
         (source "semantic")
         (range (start 21 2) (end 21 6))
       )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_constraint_definition_member")
-        (source "semantic")
-        (range (start 21 9) (end 21 14))
-      )
     )
   )
 )
@@ -187,7 +181,7 @@ package 'Derivation Constraints' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:b103183131f6dc9065479456841ca5d51390221aaf1718370a2dd0d824fff34b") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b103183131f6dc9065479456841ca5d51390221aaf1718370a2dd0d824fff34b") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/31_derivation_constraints.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "SI") (import (shape namespace) (recursive false)))))
@@ -282,6 +276,7 @@ package 'Derivation Constraints' {
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/31_derivation_constraints.md") (anonymous (kind constraint) (ordinal 0))))) (target (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::vehicle1::totalMass"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/31_derivation_constraints.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::Dynamics"))) (value (kind unresolved-operand)))
   )
 )
 ~~~

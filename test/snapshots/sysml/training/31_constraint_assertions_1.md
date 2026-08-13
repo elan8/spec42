@@ -99,12 +99,6 @@ package 'Constraint Assertions-1' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_constraint_definition_member")
-        (source "semantic")
-        (range (start 18 18) (end 18 26))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 21 26) (end 21 35))
@@ -200,6 +194,7 @@ package 'Constraint Assertions-1' {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/31_constraint_assertions_1.md") (qualified-name "Constraint Assertions-1::MassConstraint"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/31_constraint_assertions_1.md") (qualified-name "Constraint Assertions-1::Vehicle::massConstraint::massLimit"))) (value (kind quantity) (magnitude (value (kind integer) (integer 2500))) (unit "kg")))
   )
 )
 ~~~

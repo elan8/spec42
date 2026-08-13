@@ -60,18 +60,6 @@ package '15_08-Range Restriction' {
         (source "semantic")
         (range (start 10 47) (end 10 51))
       )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_constraint_definition_member")
-        (source "semantic")
-        (range (start 16 31) (end 16 40))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_constraint_definition_member")
-        (source "semantic")
-        (range (start 16 54) (end 16 63))
-      )
     )
   )
 )
@@ -79,7 +67,7 @@ package '15_08-Range Restriction' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:0a23013531728ed48d4775509e224cbd04a0426ce5db9318477f567c43e3d0c1") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:0a23013531728ed48d4775509e224cbd04a0426ce5db9318477f567c43e3d0c1") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/15_08_range_restriction.md") (qualified-name "15_08-Range Restriction"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/15_08_range_restriction.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ISQ") (import (shape namespace) (recursive false)))))
@@ -127,6 +115,7 @@ package '15_08-Range Restriction' {
     (relationship (kind typing) (source (node (document "memory://snapshot/15_08_range_restriction.md") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue::angle"))) (target (node (document "memory://snapshot/15_08_range_restriction.md") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/15_08_range_restriction.md") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue::angle"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/15_08_range_restriction.md") (anonymous (kind constraint) (ordinal 0))))) (value (kind non-constant)))
   )
 )
 ~~~

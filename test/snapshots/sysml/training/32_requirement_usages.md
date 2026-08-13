@@ -68,12 +68,6 @@ package 'Requirement Usages' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 6 27) (end 6 35))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_requirement_definition_member")
         (source "semantic")
         (range (start 8 2) (end 11 3))
@@ -98,12 +92,6 @@ package 'Requirement Usages' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 16 27) (end 16 35))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_requirement_definition_member")
         (source "semantic")
         (range (start 18 2) (end 21 3))
@@ -115,7 +103,7 @@ package 'Requirement Usages' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:7330865c3611c2ae66217b7db3030ee73531944bf191d84e5f789335317febb9") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:7330865c3611c2ae66217b7db3030ee73531944bf191d84e5f789335317febb9") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/32_requirement_usages.md") (qualified-name "Requirement Usages"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/32_requirement_usages.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "SI") (import (shape namespace) (recursive false)))))
@@ -156,6 +144,8 @@ package 'Requirement Usages' {
   (relationships
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/32_requirement_usages.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 1500))) (unit "kg")))
+    (evaluated (declaration (node (document "memory://snapshot/32_requirement_usages.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 2000))) (unit "kg")))
   )
 )
 ~~~

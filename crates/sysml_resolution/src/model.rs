@@ -918,6 +918,22 @@ pub(crate) enum EvaluatedValue {
     /// LiteralString`). Only equality comparison (`==`/`!=`, see `fold_literal_comparison`) is
     /// folded for strings; `Lt`/`Le`/`Gt`/`Ge` are out of scope (no lexicographic ordering).
     String(String),
+    /// A genuinely computed constant quantity-with-unit result: a literal leaf carrying both a
+    /// numeric magnitude and an authored unit token, e.g. `0[kg]`, `27316/100[K]`'s numerator
+    /// literal `27316[K]`... (`Expression::LiteralWithUnit`, see `quantity_unit_text`). The unit is
+    /// stored as the raw authored token text (`kg`, `SI::s`, `m/s^2`), never as a resolved
+    /// declaration reference: the parser hands the bracketed text to this layer as an opaque
+    /// string (`Expression::Unit(String)`), not a `QualifiedReferenceId` that lexical lookup could
+    /// resolve (units may contain operators like `/`/`^`, so they are deliberately not qualified
+    /// references upstream either). The magnitude is boxed so it stays exactly the `Boolean`/
+    /// `Integer`/`Real`/`String` variant the wrapped literal would have folded to on its own --
+    /// this is a widen, not a new numeric type, matching the minimal-but-honest posture of not
+    /// fabricating a richer "physical quantity" concept `RESOLUTION_LAYER_DESIGN.md` never
+    /// anticipates. `fold_literal_comparison`/`fold_arithmetic`/`fold_unary` do not special-case
+    /// this variant: their generic numeric-widening fallback (`as_f64`) does not match it, so any
+    /// operation involving a `Quantity` conservatively folds to `NonConstant` rather than silently
+    /// comparing/arithmetic-ing across mismatched or unmodeled units.
+    Quantity(Box<EvaluatedValue>, String),
     /// Evaluation did not run for this expression. Reserved for a future evaluation-policy gate;
     /// the current pass attempts evaluation for every slice-1-supported expression whenever
     /// resolution itself converges (see `SemanticModelStorage::resolve`), so no fact currently
@@ -1225,6 +1241,29 @@ fn literal_expression_value(node: &Expression) -> Option<EvaluatedValue> {
         Expression::LiteralInteger(value) => Some(EvaluatedValue::Integer(*value)),
         Expression::LiteralReal(text) => text.parse::<f64>().ok().map(EvaluatedValue::Real),
         Expression::LiteralString(value) => Some(EvaluatedValue::String(value.clone())),
+        Expression::LiteralWithUnit { value, unit } => {
+            let magnitude = literal_expression_value(&value.value)?;
+            let unit_text = quantity_unit_text(&unit.value)?;
+            Some(EvaluatedValue::Quantity(Box::new(magnitude), unit_text))
+        }
+        _ => None,
+    }
+}
+
+/// Extracts the raw unit token text authored inside `[...]` for a `value [unit]` quantity literal
+/// (`Expression::LiteralWithUnit`). The parser wraps the token as `Expression::Bracket(Box<
+/// Expression::Unit(String)>)` (see `sysml_v2_parser_next::ast::core::Expression::Unit`'s doc
+/// comment: "Units may contain operators such as `/` and `^`, so they are not qualified
+/// references"), i.e. the unit is captured as free text, never as a `QualifiedReferenceId` that
+/// could participate in lexical name resolution -- `kg`/`SI::s`/`m/s^2` are all just opaque
+/// strings at this layer, not resolved declaration references. `None` defensively covers any
+/// other shape (unreachable via `literal_with_unit` in the parser today, but this stays a private
+/// helper feeding an `Option`-returning classifier, so a mismatched shape falls through to
+/// `Unsupported`/`NonConstant` rather than panicking).
+fn quantity_unit_text(node: &Expression) -> Option<String> {
+    match node {
+        Expression::Bracket(inner) => quantity_unit_text(&inner.value),
+        Expression::Unit(text) => Some(text.clone()),
         _ => None,
     }
 }
@@ -1238,7 +1277,10 @@ fn classify_constraint_node(node: &Expression, ordinal: &mut u32) -> Option<Eval
         Expression::LiteralInteger(_)
         | Expression::LiteralReal(_)
         | Expression::LiteralBoolean(_)
-        | Expression::LiteralString(_) => literal_expression_value(node).map(EvalNode::Literal),
+        | Expression::LiteralString(_)
+        | Expression::LiteralWithUnit { .. } => {
+            literal_expression_value(node).map(EvalNode::Literal)
+        }
         Expression::FeatureRef(_) | Expression::FeatureChainRef(_) => {
             let leaf = EvalNode::Operand(*ordinal);
             *ordinal += 1;
@@ -1303,7 +1345,10 @@ fn classify_calc_node(node: &Expression, ordinal: &mut u32) -> Option<EvalNode> 
         Expression::LiteralInteger(_)
         | Expression::LiteralReal(_)
         | Expression::LiteralBoolean(_)
-        | Expression::LiteralString(_) => literal_expression_value(node).map(EvalNode::Literal),
+        | Expression::LiteralString(_)
+        | Expression::LiteralWithUnit { .. } => {
+            literal_expression_value(node).map(EvalNode::Literal)
+        }
         Expression::FeatureRef(_) | Expression::FeatureChainRef(_) => {
             let leaf = EvalNode::Operand(*ordinal);
             *ordinal += 1;
@@ -4954,7 +4999,8 @@ impl SemanticModelBuilder {
             Expression::LiteralInteger(_)
             | Expression::LiteralReal(_)
             | Expression::LiteralBoolean(_)
-            | Expression::LiteralString(_) => Ok(()),
+            | Expression::LiteralString(_)
+            | Expression::LiteralWithUnit { .. } => Ok(()),
             Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => {
                 let span = self.documents[document.index()]
                     .parsed
@@ -5049,7 +5095,8 @@ impl SemanticModelBuilder {
             Expression::LiteralInteger(_)
             | Expression::LiteralReal(_)
             | Expression::LiteralBoolean(_)
-            | Expression::LiteralString(_) => Ok(()),
+            | Expression::LiteralString(_)
+            | Expression::LiteralWithUnit { .. } => Ok(()),
             Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => {
                 let span = self.documents[document.index()]
                     .parsed
@@ -5148,7 +5195,8 @@ impl SemanticModelBuilder {
             Expression::LiteralInteger(_)
             | Expression::LiteralReal(_)
             | Expression::LiteralBoolean(_)
-            | Expression::LiteralString(_) => Ok(()),
+            | Expression::LiteralString(_)
+            | Expression::LiteralWithUnit { .. } => Ok(()),
             Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => {
                 let span = self.documents[document.index()]
                     .parsed
@@ -9773,6 +9821,44 @@ mod tests {
                  (qualified-name \"Demo::C\"))) (value (kind boolean) (boolean false)))"
             ),
             "expected `2 < 1` to fold to a published Boolean(false) evaluation fact, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn attribute_quantity_literal_default_value_evaluates_to_quantity_with_folded_magnitude() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tattribute mass = 0[kg];\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::mass\"))) (value (kind quantity) (magnitude (value \
+                 (kind integer) (integer 0))) (unit \"kg\")))"
+            ),
+            "expected `attribute mass = 0[kg];` to fold its magnitude to Integer(0) while carrying \
+             the authored unit token as a riding-along string fact, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn constraint_comparison_of_property_against_quantity_literal_resolves_both_operands() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tattribute mass : ScalarValues::Integer;\n\
+             \tconstraint def C { mass > 0[kg] }\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind expressionOperand) (ordinal 0))\n      (authored-target \"mass\")\n      (outcome (status resolved) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::mass\")))))"
+            ),
+            "expected `mass` to resolve as an expressionOperand reference, got:\n{output}"
+        );
+        assert!(
+            !output.contains("unsupported_constraint_definition_member"),
+            "expected `mass > 0[kg]` to be a supported shape (quantity-literal leaf), got:\n{output}"
         );
     }
 

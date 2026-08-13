@@ -275,39 +275,15 @@ package CarWithShapeAndCSG {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 48 20) (end 48 28))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 49 11) (end 49 16))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 49 19) (end 49 27))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 50 11) (end 50 17))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 50 20) (end 50 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 54 42) (end 54 49))
       )
       (diagnostic
         (severity warning)
@@ -329,21 +305,9 @@ package CarWithShapeAndCSG {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 57 20) (end 57 27))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 58 11) (end 58 17))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 58 20) (end 58 28))
       )
       (diagnostic
         (severity warning)
@@ -386,12 +350,6 @@ package CarWithShapeAndCSG {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 68 40) (end 68 62))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 68 65) (end 68 72))
       )
       (diagnostic
         (severity warning)
@@ -702,8 +660,14 @@ package CarWithShapeAndCSG {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/car_with_shape_and_csg.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/car_with_shape_and_csg.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 55))) (unit "mm")))
+    (evaluated (declaration (node (document "memory://snapshot/car_with_shape_and_csg.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind quantity) (magnitude (value (kind integer) (integer 350))) (unit "mm")))
     (evaluated (declaration (node (document "memory://snapshot/car_with_shape_and_csg.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind unresolved-operand)))
     (evaluated (declaration (node (document "memory://snapshot/car_with_shape_and_csg.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/car_with_shape_and_csg.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 300))) (unit "mm")))
+    (evaluated (declaration (node (document "memory://snapshot/car_with_shape_and_csg.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind quantity) (magnitude (value (kind integer) (integer 190))) (unit "mm")))
+    (evaluated (declaration (node (document "memory://snapshot/car_with_shape_and_csg.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind quantity) (magnitude (value (kind integer) (integer 330))) (unit "mm")))
+    (evaluated (declaration (node (document "memory://snapshot/car_with_shape_and_csg.md") (qualified-name "CarWithShapeAndCSG::Engine::rearCylinderSpacing"))) (value (kind quantity) (magnitude (value (kind integer) (integer 90))) (unit "mm")))
   )
 )
 ~~~

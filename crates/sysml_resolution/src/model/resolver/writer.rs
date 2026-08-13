@@ -436,6 +436,11 @@ fn write_evaluated_value(value: &EvaluatedValue, output: &mut dyn fmt::Write) ->
         EvaluatedValue::String(value) => {
             write!(output, "(value (kind string) (value {value:?}))")
         }
+        EvaluatedValue::Quantity(magnitude, unit) => {
+            write!(output, "(value (kind quantity) (magnitude ")?;
+            write_evaluated_value(magnitude, output)?;
+            write!(output, ") (unit {unit:?}))")
+        }
         EvaluatedValue::NotEvaluated => write!(output, "(value (kind not-evaluated))"),
         EvaluatedValue::UnresolvedOperand => write!(output, "(value (kind unresolved-operand))"),
         EvaluatedValue::NonConstant => write!(output, "(value (kind non-constant))"),

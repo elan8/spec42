@@ -247,18 +247,6 @@ package '10c-Fuel Economy Analysis' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 20 29) (end 20 43))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 24 29) (end 24 43))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 35 27) (end 35 36))
@@ -640,6 +628,8 @@ package '10c-Fuel Economy Analysis' {
     (relationship (kind initialState) (source (node (document "memory://snapshot/10c_fuel_economy_analysis.md") (anonymous (kind initial-state) (ordinal 3))))) (target (node (document "memory://snapshot/10c_fuel_economy_analysis.md") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::vehicle1_c1::transmission::transmissionState::4thGear"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/10c_fuel_economy_analysis.md") (anonymous (kind initial-state) (ordinal 3))))) (kind initialState) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/10c_fuel_economy_analysis.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 25))) (unit "mi/gallon")))
+    (evaluated (declaration (node (document "memory://snapshot/10c_fuel_economy_analysis.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 30))) (unit "mi/gallon")))
     (evaluated (declaration (node (document "memory://snapshot/10c_fuel_economy_analysis.md") (qualified-name "10c-Fuel Economy Analysis::distancePerVolume"))) (value (kind unresolved-operand)))
   )
 )

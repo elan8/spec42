@@ -111,12 +111,6 @@ package 'Car Mass Rollup Example 1' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 26 29) (end 26 37))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 27 11) (end 27 17))
@@ -126,12 +120,6 @@ package 'Car Mass Rollup Example 1' {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 28 17) (end 28 27))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 28 30) (end 28 37))
       )
       (diagnostic
         (severity warning)
@@ -145,12 +133,6 @@ package 'Car Mass Rollup Example 1' {
         (source "semantic")
         (range (start 32 17) (end 32 27))
       )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 32 30) (end 32 36))
-      )
     )
   )
 )
@@ -158,7 +140,7 @@ package 'Car Mass Rollup Example 1' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:3ebeab52c916294675496b73622d822c0369f8b7a543c167da3cda0964f2b1f7") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:3ebeab52c916294675496b73622d822c0369f8b7a543c167da3cda0964f2b1f7") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/29_car_mass_rollup_example_1.md") (qualified-name "Car Mass Rollup Example 1"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/29_car_mass_rollup_example_1.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
@@ -249,6 +231,9 @@ package 'Car Mass Rollup Example 1' {
     (relationship (kind redefinition) (source (node (document "memory://snapshot/29_car_mass_rollup_example_1.md") (qualified-name "Car Mass Rollup Example 1::car::vin"))) (target (node (document "memory://snapshot/29_car_mass_rollup_example_1.md") (qualified-name "Car Mass Rollup Example 1::CarPart::serialNumber"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/29_car_mass_rollup_example_1.md") (qualified-name "Car Mass Rollup Example 1::car::vin"))) (kind redefinition) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/29_car_mass_rollup_example_1.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 1000))) (unit "kg")))
+    (evaluated (declaration (node (document "memory://snapshot/29_car_mass_rollup_example_1.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 100))) (unit "kg")))
+    (evaluated (declaration (node (document "memory://snapshot/29_car_mass_rollup_example_1.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 50))) (unit "kg")))
   )
 )
 ~~~

@@ -110,33 +110,15 @@ package ExternalShapeRefExample {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 25 16) (end 25 23))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 26 7) (end 26 12))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 26 15) (end 26 22))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 27 7) (end 27 13))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 27 16) (end 27 22))
       )
     )
   )
@@ -145,7 +127,7 @@ package ExternalShapeRefExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:b94e974af4b6326e15db5a4ea051a93c6015cbfcb56fe7b7aba8a2cd9a5706b6") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:b94e974af4b6326e15db5a4ea051a93c6015cbfcb56fe7b7aba8a2cd9a5706b6") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/external_shape_ref_example.md") (qualified-name "ExternalShapeRefExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/external_shape_ref_example.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::String") (import (shape membership) (recursive false)))))
@@ -203,6 +185,9 @@ package ExternalShapeRefExample {
   (relationships
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/external_shape_ref_example.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 140))) (unit "mm")))
+    (evaluated (declaration (node (document "memory://snapshot/external_shape_ref_example.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind quantity) (magnitude (value (kind integer) (integer 148))) (unit "mm")))
+    (evaluated (declaration (node (document "memory://snapshot/external_shape_ref_example.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind quantity) (magnitude (value (kind integer) (integer 90))) (unit "mm")))
   )
 )
 ~~~

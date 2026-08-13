@@ -182,12 +182,6 @@ package '9-Verification-simplified' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 43 18) (end 43 31))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 50 2) (end 75 3))
@@ -242,12 +236,6 @@ package '9-Verification-simplified' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 101 16) (end 101 29))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 106 23) (end 106 39))
@@ -264,12 +252,6 @@ package '9-Verification-simplified' {
         (source "semantic")
         (range (start 107 9) (end 107 13))
       )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 107 16) (end 107 29))
-      )
     )
   )
 )
@@ -277,7 +259,7 @@ package '9-Verification-simplified' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:a71b1b70856686bf9eb79aa546db832913d67e9f20d25a851fe09958c0d483c9") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:a71b1b70856686bf9eb79aa546db832913d67e9f20d25a851fe09958c0d483c9") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/9_verification_simplified.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "VerificationCases") (import (shape namespace) (recursive false)))))
@@ -413,6 +395,9 @@ package '9-Verification-simplified' {
     (relationship (kind typing) (source (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Usages::vehicleMassRequirement::vehicle"))) (target (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::Vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Usages::vehicleMassRequirement::vehicle"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/9_verification_simplified.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 2500))) (unit "SI::kg")))
+    (evaluated (declaration (node (document "memory://snapshot/9_verification_simplified.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 2500))) (unit "SI::kg")))
+    (evaluated (declaration (node (document "memory://snapshot/9_verification_simplified.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind quantity) (magnitude (value (kind integer) (integer 2500))) (unit "SI::kg")))
   )
 )
 ~~~

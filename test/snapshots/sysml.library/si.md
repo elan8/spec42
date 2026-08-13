@@ -5137,12 +5137,6 @@ standard library package SI {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 372 85) (end 372 95))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 373 51) (end 373 75))
@@ -7597,8 +7591,9 @@ standard library package SI {
     (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind string) (value "temperature in degree Celsius of pure water at freezing point")))
     (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind integer) (integer 0)))
     (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind string) (value "temperature in degree Celsius of pure water at the triple point")))
+    (evaluated (declaration (node (document "memory://snapshot/si.md") (qualified-name "SI::degree celsius (absolute temperature scale)::zeroDegreeCelsiusInKelvin"))) (value (kind quantity) (magnitude (value (kind real) (real 273.15))) (unit "K")))
     (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind quantity) (magnitude (value (kind real) (real 273.15))) (unit "K")))
     (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind unresolved-operand)))
     (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
     (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind unresolved-operand)))

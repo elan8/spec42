@@ -668,12 +668,6 @@ package EVSample {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 155 35) (end 155 43))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 163 33) (end 163 61))
@@ -704,24 +698,6 @@ package EVSample {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 170 30) (end 170 36))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 171 27) (end 171 38))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 173 37) (end 173 46))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 174 37) (end 174 65))
@@ -746,18 +722,6 @@ package EVSample {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 184 23) (end 184 30))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 185 23) (end 185 29))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 187 35) (end 187 63))
@@ -779,18 +743,6 @@ package EVSample {
         (code "unsupported_part_usage_member")
         (source "semantic")
         (range (start 194 8) (end 194 67))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 197 31) (end 197 46))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 198 31) (end 198 37))
       )
       (diagnostic
         (severity warning)
@@ -830,12 +782,6 @@ package EVSample {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 210 29) (end 210 36))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 211 17) (end 211 21))
@@ -848,21 +794,9 @@ package EVSample {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 212 25) (end 212 40))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 213 16) (end 213 22))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 213 25) (end 213 31))
       )
       (diagnostic
         (severity warning)
@@ -884,12 +818,6 @@ package EVSample {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 232 42) (end 232 49))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_analysis_case_definition_member")
         (source "semantic")
         (range (start 237 12) (end 237 76))
@@ -899,12 +827,6 @@ package EVSample {
         (code "unsupported_analysis_case_definition_member")
         (source "semantic")
         (range (start 248 12) (end 248 60))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 253 45) (end 253 55))
       )
       (diagnostic
         (severity warning)
@@ -932,12 +854,6 @@ package EVSample {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 265 29) (end 265 37))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 266 17) (end 266 21))
@@ -950,21 +866,9 @@ package EVSample {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 267 25) (end 267 40))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 268 16) (end 268 22))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 268 25) (end 268 31))
       )
       (diagnostic
         (severity warning)
@@ -986,12 +890,6 @@ package EVSample {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 287 42) (end 287 49))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_analysis_case_definition_member")
         (source "semantic")
         (range (start 292 12) (end 292 76))
@@ -1001,12 +899,6 @@ package EVSample {
         (code "unsupported_analysis_case_definition_member")
         (source "semantic")
         (range (start 303 12) (end 303 60))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 308 45) (end 308 55))
       )
       (diagnostic
         (severity warning)
@@ -1623,9 +1515,27 @@ package EVSample {
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/evsample.md") (qualified-name "EVSample::ampere hour"))) (value (kind unresolved-operand)))
     (evaluated (declaration (node (document "memory://snapshot/evsample.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind real) (real 0.8)))
+    (evaluated (declaration (node (document "memory://snapshot/evsample.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 140))) (unit "km/h")))
+    (evaluated (declaration (node (document "memory://snapshot/evsample.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 200))) (unit "km")))
     (evaluated (declaration (node (document "memory://snapshot/evsample.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind real) (real 0.9)))
+    (evaluated (declaration (node (document "memory://snapshot/evsample.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 130))) (unit "km/h")))
+    (evaluated (declaration (node (document "memory://snapshot/evsample.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 130))) (unit "km")))
+    (evaluated (declaration (node (document "memory://snapshot/evsample.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 1000))) (unit "kg")))
     (evaluated (declaration (node (document "memory://snapshot/evsample.md") (qualified-name "EVSample::vehicle::airFrictionCoefficient"))) (value (kind real) (real 0.2)))
+    (evaluated (declaration (node (document "memory://snapshot/evsample.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 300))) (unit "V")))
+    (evaluated (declaration (node (document "memory://snapshot/evsample.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind quantity) (magnitude (value (kind integer) (integer 50))) (unit "A⋅h")))
     (evaluated (declaration (node (document "memory://snapshot/evsample.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 0.8)))
+    (evaluated (declaration (node (document "memory://snapshot/evsample.md") (anonymous (kind attribute) (ordinal 3))))) (value (kind quantity) (magnitude (value (kind real) (real 1.8))) (unit "Ω")))
+    (evaluated (declaration (node (document "memory://snapshot/evsample.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 4))) (unit "Ω")))
+    (evaluated (declaration (node (document "memory://snapshot/evsample.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind quantity) (magnitude (value (kind real) (real 0.2))) (unit "H")))
+    (evaluated (declaration (node (document "memory://snapshot/evsample.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 300))) (unit "kg⋅m²")))
+    (evaluated (declaration (node (document "memory://snapshot/evsample.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind quantity) (magnitude (value (kind real) (real 0.7))) (unit "m")))
+    (evaluated (declaration (node (document "memory://snapshot/evsample.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 800))) (unit "kg")))
+    (evaluated (declaration (node (document "memory://snapshot/evsample.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 200))) (unit "kg⋅m²")))
+    (evaluated (declaration (node (document "memory://snapshot/evsample.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind quantity) (magnitude (value (kind real) (real 0.5))) (unit "m")))
+    (evaluated (declaration (node (document "memory://snapshot/evsample.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 1100))) (unit "kg")))
+    (evaluated (declaration (node (document "memory://snapshot/evsample.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 300))) (unit "kg⋅m²")))
+    (evaluated (declaration (node (document "memory://snapshot/evsample.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind quantity) (magnitude (value (kind real) (real 0.7))) (unit "m")))
   )
 )
 ~~~
