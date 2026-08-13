@@ -41,9 +41,9 @@ package ParameterTest {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_calc_definition_member")
+        (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 8 54) (end 8 86))
+        (range (start 8 64) (end 8 85))
       )
     )
   )
@@ -52,13 +52,14 @@ package ParameterTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:8e305049c91ab2ce85183f91e42ea59caff5c4bbbaa247997f62b8943c736fb6") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:8e305049c91ab2ce85183f91e42ea59caff5c4bbbaa247997f62b8943c736fb6") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::A"))) (kind attribute-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::A::x"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ScalarValues::String"))))
     (declaration (id (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::A::y"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "A"))))
     (declaration (id (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::F"))) (kind calc-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/parameter_test.md") (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ScalarValues::Integer"))))
     (declaration (id (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::F::p"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "A") (direction in))))
     (declaration (id (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::F::q"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ScalarValues::Integer") (direction in))))
     (declaration (id (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::a"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "A"))))
@@ -74,6 +75,9 @@ package ParameterTest {
     (reference (id (source (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::A::y"))) (kind featureTyping) (ordinal 0))
       (authored-target "A")
       (outcome (status resolved) (target (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::A")))))
+    (reference (id (source (node (document "memory://snapshot/parameter_test.md") (anonymous (kind parameter) (ordinal 0))))) (kind featureTyping) (ordinal 0))
+      (authored-target "ScalarValues::Integer")
+      (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::F::p"))) (kind featureTyping) (ordinal 0))
       (authored-target "A")
       (outcome (status resolved) (target (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::A")))))
@@ -103,6 +107,10 @@ package ParameterTest {
   (query (document "memory://snapshot/parameter_test.md") (range (start 3 16) (end 3 17)) (probe (position 3 16))
     (reference (id (source (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::A::y"))) (kind featureTyping) (ordinal 0) (authored-target "A")
       (outcome (status resolved) (target (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::A")))))
+  )
+  (query (document "memory://snapshot/parameter_test.md") (range (start 8 64) (end 8 85)) (probe (position 8 64))
+    (reference (id (source (node (document "memory://snapshot/parameter_test.md") (anonymous (kind parameter) (ordinal 0))))) (kind featureTyping) (ordinal 0) (authored-target "ScalarValues::Integer")
+      (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/parameter_test.md") (range (start 8 21) (end 8 22)) (probe (position 8 21))
     (reference (id (source (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::F::p"))) (kind featureTyping) (ordinal 0) (authored-target "A")

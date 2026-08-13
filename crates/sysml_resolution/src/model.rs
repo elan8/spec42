@@ -36,11 +36,12 @@ use sysml_v2_parser_next::{
         PortBodyElement, PortDef, PortDefBody, PortDefBodyElement, PortUsage as ParserPortUsage,
         QualifiedIdentification, QualifiedReferenceId, RenderingDef, RenderingDefBody,
         RenderingDefBodyElement, RequirementDef, RequirementDefBody, RequirementDefBodyElement,
-        RequirementUsage as ParserRequirementUsage, RootElement, Span, StateDef, StateDefBody,
-        StateDefBodyElement, StateUsage as ParserStateUsage, SubjectDecl, SubsettingKind,
-        SubsettingRelationship, ThenStmt, UseCaseDef, UseCaseDefBody, UseCaseDefBodyElement,
-        VerificationCaseDef, ViewBody, ViewBodyElement, ViewDef, ViewDefBody, ViewDefBodyElement,
-        ViewUsage as ParserViewUsage, ViewpointDef, Visibility as ParserVisibility,
+        RequirementUsage as ParserRequirementUsage, ReturnDecl, RootElement, Span, StateDef,
+        StateDefBody, StateDefBodyElement, StateUsage as ParserStateUsage, SubjectDecl,
+        SubsettingKind, SubsettingRelationship, ThenStmt, UseCaseDef, UseCaseDefBody,
+        UseCaseDefBodyElement, VerificationCaseDef, ViewBody, ViewBodyElement, ViewDef,
+        ViewDefBody, ViewDefBodyElement, ViewUsage as ParserViewUsage, ViewpointDef,
+        Visibility as ParserVisibility,
     },
     ParseError, ParsedDocument,
 };
@@ -2700,6 +2701,77 @@ impl SemanticModelBuilder {
                 span,
                 import: None,
             })?;
+        }
+        Ok(())
+    }
+
+    /// Lowers a calc-body `return` declaration (BNF `ReturnDecl`, e.g. `return : Type = a + b;`
+    /// or `return result : Type = a + b;`), reusing `lower_parameter_declaration`'s shape
+    /// (ownership, membership, a `FeatureTyping` reference to the declared type) since a return
+    /// declaration is itself a parameter-like feature -- SysML models a calc's `result` as an
+    /// implicit output parameter. `name` is empty for the common anonymous `return : Type = expr;`
+    /// form (validation `10c`/`10d`); `intern_declared_name` folds that to `None`, exactly like
+    /// `lower_subject_decl`'s bare `subject;` form. Unlike `InOutDecl::type_name`, `ReturnDecl::
+    /// type_name` is never optional (the grammar requires a type), so the `FeatureTyping`
+    /// reference is unconditional here.
+    ///
+    /// When a `= expr` value is present, its expression is classified/lowered through the exact
+    /// same `classify_calc_expression`/`lower_calc_expression` machinery slices 1-4 already built
+    /// for a bare `CalcDefBodyElement::Expression` body -- this is the "distinct ReturnDecl shape"
+    /// `bd50fccd` deferred: most real-corpus calc arithmetic (e.g. `return : Type = a + b * c;`)
+    /// lives here, not in a bare `Expression` body-element, and it is the exact same `Expression`
+    /// enum/`BinaryOp`/`FeatureRef` leaf shapes slices 1-4 already handle, so this is pure wiring
+    /// into the same pipeline -- no new evaluation logic.
+    ///
+    /// `is_redefine` (`return :>> name = expr;`) and `is_subsetting` (`return name :> Type = expr;`)
+    /// spelling variants are not modeled as distinct relationship kinds here (mirrors
+    /// `lower_parameter_declaration`'s own `InOutDecl::redefines`-shaped field being out of
+    /// scope); both spellings still get the same `FeatureTyping` reference and evaluation fact.
+    fn lower_return_decl(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<ReturnDecl>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declared_name(&node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::ParameterUsage,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span.clone(),
+        )?;
+        let type_name = node.value.type_name;
+        let span = self.documents[document.index()]
+            .parsed
+            .qualified_reference(type_name)
+            .ok_or(ConstructionError::InvalidParserReference)?
+            .metadata
+            .span
+            .clone();
+        self.push_reference(PendingReference {
+            source: declaration,
+            kind: ReferenceKind::FeatureTyping,
+            document,
+            local: type_name,
+            flags: RelationshipFlags::default(),
+            span,
+            import: None,
+        })?;
+        if let Some(expression) = &node.value.value {
+            self.push_evaluation_fact(declaration, classify_calc_expression(&expression.value));
+            self.lower_calc_expression(
+                document,
+                declaration,
+                UnsupportedFamily::CalcDefinitionMember,
+                expression,
+            )?;
         }
         Ok(())
     }
@@ -5457,13 +5529,16 @@ impl SemanticModelBuilder {
                             expression,
                         )?
                     }
-                    CalcDefBodyElement::ReturnDecl(_)
-                    | CalcDefBodyElement::MetadataAnnotation(_)
-                    | CalcDefBodyElement::Other(_) => self.push_unsupported(
-                        document,
-                        UnsupportedFamily::CalcDefinitionMember,
-                        element.span.clone(),
-                    ),
+                    CalcDefBodyElement::ReturnDecl(return_decl) => {
+                        self.lower_return_decl(document, Some(declaration), return_decl)?;
+                    }
+                    CalcDefBodyElement::MetadataAnnotation(_) | CalcDefBodyElement::Other(_) => {
+                        self.push_unsupported(
+                            document,
+                            UnsupportedFamily::CalcDefinitionMember,
+                            element.span.clone(),
+                        )
+                    }
                 }
             }
         }
@@ -7181,6 +7256,52 @@ mod tests {
             !output.contains("(evaluated (declaration"),
             "expected `(1 + 2) > 0` (arithmetic mixed with comparison) to publish no evaluation \
              fact, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn calc_anonymous_return_decl_arithmetic_evaluates_to_integer() {
+        // Slice 5: most real-corpus calc arithmetic lives inside a `return : Type = expr;`
+        // declaration, a distinct `CalcDefBodyElement::ReturnDecl` shape bd50fccd (slice 4)
+        // deferred. This wires the return declaration's own expression through the exact same
+        // classify_calc_expression/lower_calc_expression pipeline slices 1-4 already built.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tcalc def Calc { return : ScalarValues::Integer = 2 + 3; }\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (anonymous (kind parameter) (ordinal 0))))) (value (kind integer) (integer 5)))"
+            ),
+            "expected `return : Type = 2 + 3;` to fold to a published Integer(5) evaluation fact \
+             on the anonymous return declaration, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn calc_named_return_decl_lowers_declaration_and_evaluates_expression() {
+        // `return name : Type = expr;` form: the name lowers as an owned declaration
+        // (participating in the same lexical lookup as any other feature), AND the expression
+        // evaluates through the shared pipeline.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tcalc def Calc { return result : ScalarValues::Integer = 4 * 5; }\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::Calc::result\")"),
+            "expected the named return declaration `result` to lower as its own owned \
+             declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::Calc::result\"))) (value (kind integer) (integer 20)))"
+            ),
+            "expected `return result : Type = 4 * 5;` to fold to a published Integer(20) \
+             evaluation fact on the named return declaration, got:\n{output}"
         );
     }
 
