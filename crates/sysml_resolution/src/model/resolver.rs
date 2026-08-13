@@ -678,6 +678,18 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             (reference.kind() == ReferenceKind::FeatureTyping).then_some(index)
         })
         .collect();
+    // A metadata annotation's target (`@Safety{...}`'s `Safety`) must be a type -- specifically a
+    // metadata def -- exactly like `FeatureTyping`, so `MetadataAnnotation` joins the same
+    // `DeclarationDomain::Type`/ancestor-scoped lexical lookup as `typing_slots` below, kept as its
+    // own slot list (and its own `ReferenceKind`) purely so the annotation relationship stays
+    // distinct from ordinary typing/specialization in query output.
+    let metadata_annotation_slots: Vec<usize> = references
+        .iter()
+        .enumerate()
+        .filter_map(|(index, reference)| {
+            (reference.kind() == ReferenceKind::MetadataAnnotation).then_some(index)
+        })
+        .collect();
     // `Subsetting` (`:>`) and `Redefinition` (`:>>`) targets are always features, never types, so
     // they resolve against `DeclarationDomain::Any` -- like `AliasBinding`/`ConnectorEnd` -- rather
     // than joining the Subclassification/FeatureTyping `Type` domain pass. They do read the same
@@ -833,6 +845,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             .chain(&connector_end_slots)
             .chain(&succession_slots)
             .chain(&state_binding_slots)
+            .chain(&metadata_annotation_slots)
             .copied()
         {
             outcomes[index] = ResolutionStatus::NonConverged;
@@ -994,6 +1007,37 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         let inherited_names = build_inherited_name_index(&direct_names, &ancestor_closures)?;
 
         for index in typing_slots.iter().copied() {
+            work.downstream_evaluations = work
+                .downstream_evaluations
+                .checked_add(1)
+                .ok_or(ResolutionError::Capacity)?;
+            let reference = &references[index];
+            if owner_chain_is_cyclic(declarations, reference.source(), &cyclic_ancestry)? {
+                outcomes[index] = ResolutionStatus::NonConverged;
+                continue;
+            }
+            outcomes[index] = resolve_reference(
+                declarations,
+                paths,
+                reference,
+                DeclarationDomain::Type,
+                ResolutionIndexes {
+                    direct_names: &direct_names,
+                    exported_names: &exported_names,
+                    effective_imports: Some(&effective_imports),
+                    exported_imports: Some(&exported_imports),
+                    inherited_names: Some(&inherited_names),
+                },
+                ResolutionScratch {
+                    ambiguous_candidates: &mut ambiguous_candidates,
+                    candidates: &mut candidates,
+                    next_candidates: &mut next_candidates,
+                    work: &mut work,
+                },
+            )?;
+        }
+
+        for index in metadata_annotation_slots.iter().copied() {
             work.downstream_evaluations = work
                 .downstream_evaluations
                 .checked_add(1)
@@ -1582,7 +1626,8 @@ fn supported_import_domain(reference: &impl ResolutionReferenceFact) -> Option<D
         | ReferenceKind::TransitionSource
         | ReferenceKind::TransitionTarget
         | ReferenceKind::TransitionTrigger
-        | ReferenceKind::TransitionEffect => None,
+        | ReferenceKind::TransitionEffect
+        | ReferenceKind::MetadataAnnotation => None,
     }
 }
 
@@ -1751,7 +1796,8 @@ fn build_effective_import_indexes<R: ResolutionReferenceFact>(
             | ReferenceKind::TransitionSource
             | ReferenceKind::TransitionTarget
             | ReferenceKind::TransitionTrigger
-            | ReferenceKind::TransitionEffect => {}
+            | ReferenceKind::TransitionEffect
+            | ReferenceKind::MetadataAnnotation => {}
         }
     }
     Ok((
@@ -3564,6 +3610,80 @@ mod tests {
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
             Some(ResolutionStatus::Resolved(DeclarationId(1)))
+        );
+    }
+
+    /// Builds a `Demo { metadata def Safety; part seatBelt {@Safety;} }`-shaped fixture: the part
+    /// usage's `@Safety` metadata annotation exercises `ReferenceKind::MetadataAnnotation`'s
+    /// participation in the shared Subclassification/FeatureTyping lexical lookup fixed point
+    /// (`DeclarationDomain::Type`), sourced directly at the part usage's own declaration (not an
+    /// anonymous nested feature).
+    fn metadata_annotation_fixture(target_name: &str) -> ResolverFixture {
+        let mut symbols = SymbolTableBuilder::default();
+        let demo_name = symbols.intern("Demo").unwrap();
+        let safety_name = symbols.intern("Safety").unwrap();
+        let seat_belt_name = symbols.intern("seatBelt").unwrap();
+        let mut paths = SymbolPathArenaBuilder::default();
+        let target_symbol = symbols.intern(target_name).unwrap();
+        let target_path = paths.push(&[target_symbol], false).unwrap();
+
+        let demo = DeclarationId(0);
+        let seat_belt = DeclarationId(2);
+        let declarations = vec![
+            declaration(
+                DocumentId(0),
+                None,
+                Some(demo_name),
+                DeclarationKind::Package,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(demo),
+                Some(safety_name),
+                DeclarationKind::MetadataDefinition,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(demo),
+                Some(seat_belt_name),
+                DeclarationKind::PartUsage,
+            ),
+        ];
+        let memberships = memberships_for(&declarations, &[]);
+        let references = vec![TestReference {
+            source: seat_belt,
+            kind: ReferenceKind::MetadataAnnotation,
+            path: target_path,
+            flags: RelationshipFlags::default(),
+        }];
+        let _symbols = symbols.freeze();
+        ResolverFixture {
+            declarations: declarations.into_boxed_slice(),
+            memberships,
+            paths: paths.freeze(),
+            references: references.into_boxed_slice(),
+        }
+    }
+
+    #[test]
+    fn metadata_annotation_on_part_usage_resolves_to_metadata_def() {
+        let fixture = metadata_annotation_fixture("Safety");
+        let (_, _, resolution) = resolve_fixture(&fixture);
+        assert_eq!(resolution.solver_status, SolverStatus::Converged);
+        assert_eq!(
+            resolution.outcome(AuthoredReferenceId(0)),
+            Some(ResolutionStatus::Resolved(DeclarationId(1)))
+        );
+    }
+
+    #[test]
+    fn metadata_annotation_with_unresolvable_target_stays_unresolved() {
+        let fixture = metadata_annotation_fixture("NoSuchMetadata");
+        let (_, _, resolution) = resolve_fixture(&fixture);
+        assert_eq!(resolution.solver_status, SolverStatus::Converged);
+        assert_eq!(
+            resolution.outcome(AuthoredReferenceId(0)),
+            Some(ResolutionStatus::Unresolved)
         );
     }
 

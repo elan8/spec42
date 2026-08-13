@@ -77,9 +77,9 @@ package RequirementMetadataExample {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_requirement_definition_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 15 8) (end 25 9))
+        (range (start 15 9) (end 15 19))
       )
       (diagnostic
         (severity error)
@@ -124,7 +124,7 @@ package RequirementMetadataExample {
     (declaration (id (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goal"))) (kind metadata-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "SemanticMetadata"))))
     (declaration (id (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goal::baseType"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "baseType"))))
     (declaration (id (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goals"))) (kind requirement) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Goal"))))
-    (declaration (id (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::vehicleMassRequirement"))) (kind requirement) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::vehicleMassRequirement"))) (kind requirement) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (metadataAnnotation (reference "StatusInfo"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/requirement_metadata_example.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0))
@@ -148,6 +148,9 @@ package RequirementMetadataExample {
     (reference (id (source (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goals"))) (kind featureTyping) (ordinal 0))
       (authored-target "Goal")
       (outcome (status resolved) (target (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::Goal")))))
+    (reference (id (source (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::vehicleMassRequirement"))) (kind metadataAnnotation) (ordinal 0))
+      (authored-target "StatusInfo")
+      (outcome (status unresolved)))
   )
   (relationships
     (relationship (kind redefinition) (source (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goal::baseType"))) (target (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goal::baseType"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goal::baseType"))) (kind redefinition) (ordinal 0)))
@@ -187,6 +190,10 @@ package RequirementMetadataExample {
   (query (document "memory://snapshot/requirement_metadata_example.md") (range (start 7 21) (end 7 25)) (probe (position 7 21))
     (reference (id (source (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goals"))) (kind featureTyping) (ordinal 0) (authored-target "Goal")
       (outcome (status resolved) (target (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::Goal")))))
+  )
+  (query (document "memory://snapshot/requirement_metadata_example.md") (range (start 15 9) (end 15 19)) (probe (position 15 9))
+    (reference (id (source (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::vehicleMassRequirement"))) (kind metadataAnnotation) (ordinal 0) (authored-target "StatusInfo")
+      (outcome (status unresolved)))
   )
 )
 ~~~

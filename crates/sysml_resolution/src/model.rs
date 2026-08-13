@@ -28,20 +28,21 @@ use sysml_v2_parser_next::{
         FirstStmt, FlowDef, Import, ImportShape, InOut, InOutDecl, InterfaceDef, InterfaceDefBody,
         InterfaceDefBodyElement, InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement,
         ItemDef, ItemUsage as ParserItemUsage, LibraryPackage, Membership,
-        MembershipKind as ParserMembershipKind, MetadataDef, MetadataUsage as ParserMetadataUsage,
-        NamespaceDecl, Node, OccurrenceBodyElement, OccurrenceDef,
-        OccurrenceUsage as ParserOccurrenceUsage, OccurrenceUsageBody, Package, PackageBody,
-        PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement, PartUsage, PartUsageBody,
-        PartUsageBodyElement, Perform as ParserPerform, PerformBody, PerformBodyElement, PortBody,
-        PortBodyElement, PortDef, PortDefBody, PortDefBodyElement, PortUsage as ParserPortUsage,
-        QualifiedIdentification, QualifiedReferenceId, RenderingDef, RenderingDefBody,
-        RenderingDefBodyElement, RequirementDef, RequirementDefBody, RequirementDefBodyElement,
-        RequirementUsage as ParserRequirementUsage, ReturnDecl, RootElement, Span, StateDef,
-        StateDefBody, StateDefBodyElement, StateUsage as ParserStateUsage, SubjectDecl,
-        SubsettingKind, SubsettingRelationship, ThenStmt, Transition, TransitionAccept,
-        TransitionEffect, UseCaseDef, UseCaseDefBody, UseCaseDefBodyElement, VerificationCaseDef,
-        ViewBody, ViewBodyElement, ViewDef, ViewDefBody, ViewDefBodyElement,
-        ViewUsage as ParserViewUsage, ViewpointDef, Visibility as ParserVisibility,
+        MembershipKind as ParserMembershipKind, MetadataAnnotation, MetadataDef,
+        MetadataUsage as ParserMetadataUsage, NamespaceDecl, Node, OccurrenceBodyElement,
+        OccurrenceDef, OccurrenceUsage as ParserOccurrenceUsage, OccurrenceUsageBody, Package,
+        PackageBody, PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement, PartUsage,
+        PartUsageBody, PartUsageBodyElement, Perform as ParserPerform, PerformBody,
+        PerformBodyElement, PortBody, PortBodyElement, PortDef, PortDefBody, PortDefBodyElement,
+        PortUsage as ParserPortUsage, QualifiedIdentification, QualifiedReferenceId, RenderingDef,
+        RenderingDefBody, RenderingDefBodyElement, RequirementDef, RequirementDefBody,
+        RequirementDefBodyElement, RequirementUsage as ParserRequirementUsage, ReturnDecl,
+        RootElement, Span, StateDef, StateDefBody, StateDefBodyElement,
+        StateUsage as ParserStateUsage, SubjectDecl, SubsettingKind, SubsettingRelationship,
+        ThenStmt, Transition, TransitionAccept, TransitionEffect, UseCaseDef, UseCaseDefBody,
+        UseCaseDefBodyElement, VerificationCaseDef, ViewBody, ViewBodyElement, ViewDef,
+        ViewDefBody, ViewDefBodyElement, ViewUsage as ParserViewUsage, ViewpointDef,
+        Visibility as ParserVisibility,
     },
     ParseError, ParsedDocument,
 };
@@ -569,6 +570,24 @@ enum ReferenceKind {
     /// `TransitionSource` resolves `Transition.source`). The richer `Accept`/`Send`/`Assign`
     /// effect shapes are out of scope.
     TransitionEffect,
+    /// The authored target metadata definition of an `@Name{...}`/`@Name;` metadata annotation
+    /// (BNF MetadataUsage's `@`-prefixed body-element form, `ast::MetadataAnnotation`) applied to
+    /// the element that owns it (picks up the annotation-application slice explicitly deferred by
+    /// `1b93b225`, which lowered `metadata def`/`metadata` declarations but left `@Name{...}`
+    /// application unwired). Resolved through the same Subclassification/FeatureTyping
+    /// `DeclarationDomain::Type` lexical lookup fixed point as `FeatureTyping`/`Subclassification`
+    /// (a metadata annotation's target must be a type, specifically a metadata def, exactly like
+    /// `metadata m : Safety;`'s own `FeatureTyping`), but kept a distinct `ReferenceKind` so the
+    /// annotation relationship never collapses into ordinary typing/specialization in query
+    /// output. Sourced directly at the declaration `MetadataAnnotation` decorates (no anonymous
+    /// nested-declaration scope shift is needed -- unlike `Succession`/`Transition`, the
+    /// annotation is not itself a feature, just a fact about its owner). The `about` clause
+    /// (explicit annotation targets other than the owner) and the annotation body's nested
+    /// feature-value overrides (`isMandatory = true;`) are deliberately out of scope for this
+    /// slice: `about` needs its own multi-target fact shape, and the body's overrides need
+    /// value-assignment machinery this repository has not built yet (see `lower_attribute_body`
+    /// scope notes) -- only the annotation-target reference itself is resolved here.
+    MetadataAnnotation,
 }
 
 /// The computed or explicit outcome of evaluating one supported constraint/calc expression
@@ -1786,11 +1805,14 @@ impl SemanticModelBuilder {
                 UnsupportedFamily::PackageMember,
                 node.span.clone(),
             ),
-            PackageBodyElement::MetadataAnnotation(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::MetadataAnnotation(node) => match owner {
+                Some(owner) => self.lower_metadata_annotation(document, owner, node)?,
+                None => self.push_unsupported(
+                    document,
+                    UnsupportedFamily::PackageMember,
+                    node.span.clone(),
+                ),
+            },
             PackageBodyElement::PerformUsage(node) => self.push_unsupported(
                 document,
                 UnsupportedFamily::PackageMember,
@@ -2079,8 +2101,10 @@ impl SemanticModelBuilder {
                         self.lower_perform(document, Some(declaration), perform)?;
                     }
                     PartDefBodyElement::Doc(_) | PartDefBodyElement::Comment(_) => {}
+                    PartDefBodyElement::MetadataAnnotation(node) => {
+                        self.lower_metadata_annotation(document, declaration, node)?;
+                    }
                     PartDefBodyElement::Annotation(_)
-                    | PartDefBodyElement::MetadataAnnotation(_)
                     | PartDefBodyElement::MetadataKeywordUsage(_)
                     | PartDefBodyElement::Dependency(_)
                     | PartDefBodyElement::Other(_)
@@ -2256,6 +2280,9 @@ impl SemanticModelBuilder {
                         self.lower_perform(document, Some(declaration), perform)?;
                     }
                     PartUsageBodyElement::Doc(_) => {}
+                    PartUsageBodyElement::MetadataAnnotation(node) => {
+                        self.lower_metadata_annotation(document, declaration, node)?;
+                    }
                     PartUsageBodyElement::Annotation(_)
                     | PartUsageBodyElement::DefaultReferenceUsage(_)
                     | PartUsageBodyElement::Bind(_)
@@ -2265,7 +2292,6 @@ impl SemanticModelBuilder {
                     | PartUsageBodyElement::SuccessionUsage(_)
                     | PartUsageBodyElement::Allocate(_)
                     | PartUsageBodyElement::Satisfy(_)
-                    | PartUsageBodyElement::MetadataAnnotation(_)
                     | PartUsageBodyElement::MetadataKeywordUsage(_)
                     | PartUsageBodyElement::VariantUsage(_)
                     | PartUsageBodyElement::AssertConstraint(_)
@@ -3030,6 +3056,37 @@ impl SemanticModelBuilder {
         self.lower_attribute_body(document, declaration, &node.value.body)
     }
 
+    /// Lowers an `@Name{...}`/`@Name;` metadata annotation body element (`ast::MetadataAnnotation`,
+    /// see `ReferenceKind::MetadataAnnotation`), applied to `owner` -- the declaration that owns
+    /// the body the annotation appears in (a part usage, action def, state def, ...). Only the
+    /// annotation-target reference (`reference`, e.g. `Safety`) is resolved, sourced directly at
+    /// `owner`; `about_targets` and the nested `body` (feature-value overrides) are out of scope,
+    /// see the `ReferenceKind::MetadataAnnotation` doc comment.
+    fn lower_metadata_annotation(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        node: &Node<MetadataAnnotation>,
+    ) -> Result<(), ConstructionError> {
+        let span = self.documents[document.index()]
+            .parsed
+            .qualified_reference(node.value.reference)
+            .ok_or(ConstructionError::InvalidParserReference)?
+            .metadata
+            .span
+            .clone();
+        self.push_reference(PendingReference {
+            source: owner,
+            kind: ReferenceKind::MetadataAnnotation,
+            document,
+            local: node.value.reference,
+            flags: RelationshipFlags::default(),
+            span,
+            import: None,
+        })?;
+        Ok(())
+    }
+
     /// Lowers an `action def` (BNF ActionDefinition), mirroring `lower_part_def`: ownership,
     /// membership, an optional `:>` specialization relationship, and owned declarations.
     /// Behavioral/control-flow body elements (parameters, succession, decision/merge/fork/join,
@@ -3126,8 +3183,10 @@ impl SemanticModelBuilder {
                     self.lower_perform(document, Some(owner), perform)?;
                 }
                 ActionDefBodyElement::Doc(_) => {}
+                ActionDefBodyElement::MetadataAnnotation(node) => {
+                    self.lower_metadata_annotation(document, owner, node)?;
+                }
                 ActionDefBodyElement::Annotation(_)
-                | ActionDefBodyElement::MetadataAnnotation(_)
                 | ActionDefBodyElement::MetadataKeywordUsage(_)
                 | ActionDefBodyElement::TextualRep(_)
                 | ActionDefBodyElement::RefDecl(_)
@@ -3247,8 +3306,10 @@ impl SemanticModelBuilder {
                     self.lower_parameter_declaration(document, Some(owner), param)?;
                 }
                 ActionUsageBodyElement::Doc(_) => {}
+                ActionUsageBodyElement::MetadataAnnotation(node) => {
+                    self.lower_metadata_annotation(document, owner, node)?;
+                }
                 ActionUsageBodyElement::Annotation(_)
-                | ActionUsageBodyElement::MetadataAnnotation(_)
                 | ActionUsageBodyElement::MetadataKeywordUsage(_)
                 | ActionUsageBodyElement::TextualRep(_)
                 | ActionUsageBodyElement::RefDecl(_)
@@ -3550,8 +3611,10 @@ impl SemanticModelBuilder {
                 StateDefBodyElement::Transition(transition) => {
                     self.lower_transition(document, owner, transition)?;
                 }
+                StateDefBodyElement::MetadataAnnotation(node) => {
+                    self.lower_metadata_annotation(document, owner, node)?;
+                }
                 StateDefBodyElement::Annotation(_)
-                | StateDefBodyElement::MetadataAnnotation(_)
                 | StateDefBodyElement::MetadataKeywordUsage(_)
                 | StateDefBodyElement::Other(_)
                 | StateDefBodyElement::InOutDecl(_)
@@ -4096,9 +4159,11 @@ impl SemanticModelBuilder {
                     self.lower_constraint_usage(document, Some(owner), constraint)?;
                 }
                 RequirementDefBodyElement::Doc(_) => {}
+                RequirementDefBodyElement::MetadataAnnotation(node) => {
+                    self.lower_metadata_annotation(document, owner, node)?;
+                }
                 RequirementDefBodyElement::Other(_)
                 | RequirementDefBodyElement::Annotation(_)
-                | RequirementDefBodyElement::MetadataAnnotation(_)
                 | RequirementDefBodyElement::MetadataKeywordUsage(_)
                 | RequirementDefBodyElement::SubjectRef(_)
                 | RequirementDefBodyElement::RequirementActorDecl(_)
@@ -4606,9 +4671,11 @@ impl SemanticModelBuilder {
                     self.lower_subject_decl(document, Some(owner), subject)?;
                 }
                 UseCaseDefBodyElement::Doc(_) => {}
+                UseCaseDefBodyElement::MetadataAnnotation(node) => {
+                    self.lower_metadata_annotation(document, owner, node)?;
+                }
                 UseCaseDefBodyElement::Other(_)
                 | UseCaseDefBodyElement::Annotation(_)
-                | UseCaseDefBodyElement::MetadataAnnotation(_)
                 | UseCaseDefBodyElement::MetadataKeywordUsage(_)
                 | UseCaseDefBodyElement::SubjectRef(_)
                 | UseCaseDefBodyElement::ActorUsage(_)
@@ -5386,7 +5453,7 @@ impl SemanticModelBuilder {
     fn lower_view_def_body(
         &mut self,
         document: DocumentId,
-        _declaration: DeclarationId,
+        declaration: DeclarationId,
         body: &ViewDefBody,
     ) -> Result<(), ConstructionError> {
         if let ViewDefBody::Brace { elements } = body {
@@ -5396,8 +5463,10 @@ impl SemanticModelBuilder {
                         self.push_recovery(document, error.span.clone());
                     }
                     ViewDefBodyElement::Doc(_) => {}
-                    ViewDefBodyElement::MetadataAnnotation(_)
-                    | ViewDefBodyElement::Filter(_)
+                    ViewDefBodyElement::MetadataAnnotation(node) => {
+                        self.lower_metadata_annotation(document, declaration, node)?;
+                    }
+                    ViewDefBodyElement::Filter(_)
                     | ViewDefBodyElement::ViewRendering(_)
                     | ViewDefBodyElement::Other(_) => self.push_unsupported(
                         document,
@@ -5575,8 +5644,10 @@ impl SemanticModelBuilder {
                             expression,
                         )?
                     }
-                    ConstraintDefBodyElement::MetadataAnnotation(_)
-                    | ConstraintDefBodyElement::AttributeUsage(_)
+                    ConstraintDefBodyElement::MetadataAnnotation(node) => {
+                        self.lower_metadata_annotation(document, declaration, node)?;
+                    }
+                    ConstraintDefBodyElement::AttributeUsage(_)
                     | ConstraintDefBodyElement::Other(_) => self.push_unsupported(
                         document,
                         UnsupportedFamily::ConstraintDefinitionMember,
@@ -5729,13 +5800,14 @@ impl SemanticModelBuilder {
                     CalcDefBodyElement::ReturnDecl(return_decl) => {
                         self.lower_return_decl(document, Some(declaration), return_decl)?;
                     }
-                    CalcDefBodyElement::MetadataAnnotation(_) | CalcDefBodyElement::Other(_) => {
-                        self.push_unsupported(
-                            document,
-                            UnsupportedFamily::CalcDefinitionMember,
-                            element.span.clone(),
-                        )
+                    CalcDefBodyElement::MetadataAnnotation(node) => {
+                        self.lower_metadata_annotation(document, declaration, node)?;
                     }
+                    CalcDefBodyElement::Other(_) => self.push_unsupported(
+                        document,
+                        UnsupportedFamily::CalcDefinitionMember,
+                        element.span.clone(),
+                    ),
                 }
             }
         }
@@ -8638,6 +8710,41 @@ mod tests {
                 "(kind typing) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Holder::m\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
             ),
             "expected m's typing reference to Base to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn metadata_annotation_on_part_usage_resolves_the_annotation_reference() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tmetadata def Safety {\n\
+             \t\tattribute isMandatory : Boolean;\n\
+             \t}\n\
+             \tpart def Vehicle {\n\
+             \t\tpart seatBelt[2] {@Safety{isMandatory = true;}}\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind metadataAnnotation) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Vehicle::seatBelt\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Safety\")))"
+            ),
+            "expected seatBelt's @Safety metadata annotation reference to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn metadata_annotation_with_unresolvable_target_stays_unresolved() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpart def Vehicle {\n\
+             \t\tpart seatBelt[2] {@NoSuchMetadata;}\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(kind metadataAnnotation)") && output.contains("(status unresolved)"),
+            "expected seatBelt's @NoSuchMetadata metadata annotation reference to stay explicitly unresolved, got:\n{output}"
         );
     }
 

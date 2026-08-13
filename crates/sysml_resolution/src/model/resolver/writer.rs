@@ -874,6 +874,7 @@ fn reference_kind(kind: ReferenceKind) -> &'static str {
         ReferenceKind::TransitionTarget => "transitionTarget",
         ReferenceKind::TransitionTrigger => "transitionTrigger",
         ReferenceKind::TransitionEffect => "transitionEffect",
+        ReferenceKind::MetadataAnnotation => "metadataAnnotation",
     }
 }
 
@@ -898,6 +899,7 @@ fn relationship_kind(kind: ReferenceKind) -> Option<&'static str> {
         ReferenceKind::TransitionTarget => Some("transitionTarget"),
         ReferenceKind::TransitionTrigger => Some("transitionTrigger"),
         ReferenceKind::TransitionEffect => Some("transitionEffect"),
+        ReferenceKind::MetadataAnnotation => Some("metadataAnnotation"),
         ReferenceKind::NamespaceImport
         | ReferenceKind::MembershipImport
         | ReferenceKind::FilterImport => None,
