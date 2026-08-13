@@ -31,8 +31,8 @@ use sysml_v2_parser_next::{
         RequirementDef, RequirementDefBody, RequirementDefBodyElement,
         RequirementUsage as ParserRequirementUsage, RootElement, Span, StateDef, StateDefBody,
         StateDefBodyElement, StateUsage as ParserStateUsage, SubsettingKind,
-        SubsettingRelationship, UseCaseDefBody, UseCaseDefBodyElement,
-        Visibility as ParserVisibility,
+        SubsettingRelationship, UseCaseDefBody, UseCaseDefBodyElement, ViewDef, ViewDefBody,
+        ViewDefBodyElement, Visibility as ParserVisibility,
     },
     ParseError, ParsedDocument,
 };
@@ -196,6 +196,22 @@ enum DeclarationKind {
     /// specific semantics beyond declaration/typing/ends (flow/protocol constraints) are out of
     /// scope here.
     InterfaceDefinition,
+    /// `view def` (BNF ViewDefinition, Clause 8.2.2.26): a type whose owned members participate
+    /// in the same Subclassification/FeatureTyping `DeclarationDomain::Type` lexical/ancestor
+    /// fixed point as `OccurrenceDefinition`/`ConnectionDefinition`. Verified `ViewDef`'s
+    /// `specializes: Option<Node<TypingRelationship>>` field carries full parity with
+    /// `ConnectionDef`/`ActionDef`/`OccurrenceDef`. View-specific semantics -- `render`
+    /// (`ViewRenderingUsage`), viewpoint `satisfy` binding, and `expose`/`filter` view
+    /// composition -- are out of scope for this slice and fall through to
+    /// `UnsupportedFamily::ViewDefinitionMember`. `view` usage lowering
+    /// (`DeclarationKind::ViewUsage`) is deferred: `ast::ViewUsage` has no `subsets:
+    /// Option<Node<SubsettingRelationship>>` field at all (only `type_name`/`redefines`), unlike
+    /// the structurally analogous `OccurrenceUsage`/`StateUsage`/`PortUsage`, so a bare `view v
+    /// :> Base { ... }` subsetting clause parses successfully but is silently dropped before it
+    /// reaches the typed AST (see UPSTREAM_PARSER_GAPS.md #8; confirmed real usage in
+    /// `test/snapshots/sysml/validation/11b_safety_and_security_feature_views.md`'s
+    /// `view vehicleMandatorySafetyFeatureView :> vehicleSafetyFeatureView { ... }`).
+    ViewDefinition,
     Import,
     Alias,
 }
@@ -303,6 +319,10 @@ enum UnsupportedFamily {
     /// name so interface def diagnostics stay distinct from connection def ones at the same span
     /// shape.
     InterfaceDefinitionMember,
+    /// `view def` body members not modeled by this slice: `render` (`ViewRenderingUsage`),
+    /// `filter` (view composition), `expose`/`satisfy` are `view` usage-body-only constructs
+    /// (`ViewBodyElement`, not `ViewDefBodyElement`) and don't appear here at all.
+    ViewDefinitionMember,
     ParserUnsupported,
 }
 
@@ -839,11 +859,7 @@ impl SemanticModelBuilder {
                 UnsupportedFamily::PackageMember,
                 node.span.clone(),
             ),
-            PackageBodyElement::ViewDef(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::ViewDef(node) => self.lower_view_def(document, owner, node)?,
             PackageBodyElement::ViewpointDef(node) => self.push_unsupported(
                 document,
                 UnsupportedFamily::PackageMember,
@@ -1189,6 +1205,9 @@ impl SemanticModelBuilder {
                     PartDefBodyElement::InterfaceDef(interface_def) => {
                         self.lower_interface_def(document, Some(declaration), interface_def)?;
                     }
+                    PartDefBodyElement::ViewDef(view_def) => {
+                        self.lower_view_def(document, Some(declaration), view_def)?;
+                    }
                     PartDefBodyElement::Connection(connection_usage) => {
                         self.lower_connection_usage(document, Some(declaration), connection_usage)?;
                     }
@@ -1222,7 +1241,6 @@ impl SemanticModelBuilder {
                     | PartDefBodyElement::CalcDef(_)
                     | PartDefBodyElement::AllocationDef(_)
                     | PartDefBodyElement::AllocationUsage(_)
-                    | PartDefBodyElement::ViewDef(_)
                     | PartDefBodyElement::ViewUsage(_)
                     | PartDefBodyElement::ViewpointDef(_)
                     | PartDefBodyElement::ViewpointUsage(_)
@@ -2955,6 +2973,77 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
+    /// Lowers a `view def` (BNF ViewDefinition), mirroring `lower_interface_def`: ownership,
+    /// membership, an optional `:>` specialization relationship (participates in the shared
+    /// Subclassification/FeatureTyping `DeclarationDomain::Type` fixed point). View-specific
+    /// body members (`render`, `filter`) are out of scope -- see `DeclarationKind::ViewDefinition`'s
+    /// doc comment and UPSTREAM_PARSER_GAPS.md #8.
+    fn lower_view_def(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<ViewDef>,
+    ) -> Result<(), ConstructionError> {
+        let name = node
+            .value
+            .identification
+            .name
+            .as_deref()
+            .filter(|name| !name.is_empty())
+            .map(|name| self.intern_name(name))
+            .transpose()?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::ViewDefinition,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Owning,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::OwningMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(relationship) = &node.value.specializes {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        self.lower_view_def_body(document, declaration, &node.value.body)
+    }
+
+    /// Body walker for `view def` bodies (`ViewDefBody`/`ViewDefBodyElement`). `filter`/`render`
+    /// members are out of scope for this slice and fall through to
+    /// `unsupported_view_definition_member`.
+    fn lower_view_def_body(
+        &mut self,
+        document: DocumentId,
+        _declaration: DeclarationId,
+        body: &ViewDefBody,
+    ) -> Result<(), ConstructionError> {
+        if let ViewDefBody::Brace { elements } = body {
+            for element in elements {
+                match &element.value {
+                    ViewDefBodyElement::Error(error) => {
+                        self.push_recovery(document, error.span.clone());
+                    }
+                    ViewDefBodyElement::Doc(_) => {}
+                    ViewDefBodyElement::MetadataAnnotation(_)
+                    | ViewDefBodyElement::Filter(_)
+                    | ViewDefBodyElement::ViewRendering(_)
+                    | ViewDefBodyElement::Other(_) => self.push_unsupported(
+                        document,
+                        UnsupportedFamily::ViewDefinitionMember,
+                        element.span.clone(),
+                    ),
+                }
+            }
+        }
+        Ok(())
+    }
+
     /// Lowers an `occurrence def` (BNF OccurrenceDefinition), mirroring `lower_port_def`:
     /// ownership, membership, an optional `:>` specialization relationship, and owned
     /// attribute/item/part/nested-occurrence declarations. Occurrence-specific semantics
@@ -3987,6 +4076,53 @@ mod tests {
                 "(kind connectorEnd) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::I\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::d2\")))"
             ),
             "expected I's connector-end reference to d2 to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn view_def_lowers_to_a_declaration() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tview def V;\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::V\"))) (kind view-def)"),
+            "expected a view-def declaration, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn view_def_specializing_another_view_def_resolves_its_specialization_reference() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tview def Base;\n\
+             \tview def Derived :> Base;\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind specialization) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Derived\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
+            ),
+            "expected Derived's specialization of Base to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn view_usage_typed_by_a_view_def_resolves() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tview def V;\n\
+             \tview v : V;\n\
+             }\n",
+        );
+        assert!(
+            output.contains("unsupported_package_member") || output.contains("unsupported"),
+            "expected view usage to surface as an explicit unsupported diagnostic (usage lowering deferred per UPSTREAM_PARSER_GAPS.md #8), got:\n{output}"
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::V\"))) (kind view-def)"),
+            "expected view def V to still lower to a declaration, got:\n{output}"
         );
     }
 

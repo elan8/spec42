@@ -66,9 +66,15 @@ package 'Views Example' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_view_definition_member")
         (source "semantic")
-        (range (start 5 1) (end 8 2))
+        (range (start 6 2) (end 7 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_view_definition_member")
+        (source "semantic")
+        (range (start 7 2) (end 7 27))
       )
       (diagnostic
         (severity warning)
@@ -101,6 +107,7 @@ package 'Views Example' {
     (declaration (id (node (document "memory://snapshot/42_views_example.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Views") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/42_views_example.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Viewpoint Example") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/42_views_example.md") (anonymous (kind import) (ordinal 2))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Filtering Example-2") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::Part Structure View"))) (kind view-def) (membership (kind owning) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/42_views_example.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))

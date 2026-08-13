@@ -89,9 +89,21 @@ package ViewTest {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_view_definition_member")
         (source "semantic")
-        (range (start 26 1) (end 43 2))
+        (range (start 27 2) (end 31 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_view_definition_member")
+        (source "semantic")
+        (range (start 31 2) (end 31 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_view_definition_member")
+        (source "semantic")
+        (range (start 33 2) (end 43 1))
       )
     )
   )
@@ -107,6 +119,7 @@ package ViewTest {
     (declaration (id (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::P::p1"))) (kind part) (membership (kind feature) (visibility public)))
     (declaration (id (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::P::p2"))) (kind part) (membership (kind feature) (visibility private)))
     (declaration (id (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::S"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::V"))) (kind view-def) (membership (kind owning) (visibility default)))
   )
   (references
   )

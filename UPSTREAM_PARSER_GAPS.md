@@ -297,6 +297,51 @@ entry should carry enough detail to file/update an upstream issue against
   exists and would work once the parser stops rejecting the input). Not attempted here — out of
   scope for `sysml_resolution`/`sysml_query`/`spec42-snapshot` to work around.
 
+### 8. `ViewUsage` has no `subsets` field (unlike `OccurrenceUsage`/`StateUsage`/`PortUsage`)
+
+- **Symptom:** `view v :> baseView { ... }` (bare `:>` subsetting, no explicit `: Type`) parses
+  successfully (no `unsupported_grammar_form`, no parser-level error) but the subsetting
+  relationship is silently discarded before it ever reaches `sysml_resolution`.
+  `ast::view::ViewUsage` (crate `sysml-v2-parser`, `src/ast/view.rs`) has `name`, `type_name:
+  Option<QualifiedReferenceId>`, `redefines: Option<Node<SubsettingRelationship>>`,
+  `multiplicity`, `body`, and `membership` fields, but no `subsets: Option<Node<
+  SubsettingRelationship>>` field at all — unlike the structurally analogous
+  `OccurrenceUsage`/`StateUsage`/`PortUsage`, which all carry independent `subsets` and
+  `redefines` fields side by side. `parser::view::view_usage`
+  (`src/parser/view.rs::view_usage`) calls `parse_feature_usage_header` (which parses `:>`/`:>>`
+  clauses via `feature_usage_header` into a `UsageHeader` that *does* have a `subsets` field) and
+  only reads `header.type_reference`/`header.redefines` when constructing the `ViewUsage` node,
+  silently dropping `header.subsets`. This is a genuine typed-AST gap, not a grammar/tokenizing
+  gap: the parse succeeds and the information exists transiently inside the parser but never
+  reaches the AST. Note `ViewDef` (the `view def` form) is unaffected — it has a proper
+  `specializes: Option<Node<TypingRelationship>>` field with full parity to `ConnectionDef`/
+  `ActionDef`/`OccurrenceDef`.
+- **Representative input:** `test/snapshots/sysml/validation/11b_safety_and_security_feature_views.md`'s
+  `view vehicleMandatorySafetyFeatureView :> vehicleSafetyFeatureView { ... }` — real fixture
+  content, not just a latent/hypothetical case (confirmed via `grep` across `test/snapshots/` for
+  bare `:>` on a `view` usage; no other fixture uses this form, and no fixture uses `:>` at all on
+  a `view` usage other than this one).
+- **Impact:** blocks lowering `view` usage declaration facts (`DeclarationKind::ViewUsage`) with
+  full parity to the other `*Usage` kinds, since the in-scope requirement includes `:>`/`:>>`
+  specialization resolving through the existing ancestor-closure fixed point (same shape as
+  `occurrence`/`connection` usage, see commits `798d7287`/`d0675e2c`) and the typed AST currently
+  offers no field to lower the `:>` relationship from for `view` usage specifically (`type_name`/
+  `redefines`/`body`/`membership` are present and fine; only `subsets` is missing). `ViewDef`
+  itself (the `def` form) is not blocked by this gap, so this slice lands `view def` lowering only
+  (`DeclarationKind::ViewDefinition`, mirroring `InterfaceDefinition`'s def-only precedent, entry
+  #6) and defers `view` usage lowering until this is fixed upstream. View-specific semantics
+  (`render`, viewpoint `satisfy` binding, `expose`/`filter` composition) remain out of scope for
+  this slice regardless and continue to surface as explicit unsupported diagnostics
+  (`unsupported_view_definition_member` for `view def` body members not yet modeled).
+- **Status:** blocking (usage side only). Needs an upstream `sysml-v2-parser` change adding
+  `subsets: Option<Node<SubsettingRelationship>>` to `ast::view::ViewUsage` and wiring
+  `parser::view::view_usage` to populate it from the `UsageHeader` it already computes (mirroring
+  `OccurrenceUsage`/`StateUsage`/`PortUsage`). Not attempted here — out of scope for
+  `sysml_resolution`/`sysml_query`/`spec42-snapshot` to work around without either (a) re-parsing
+  the specialization clause independently (duplicating parser logic, fragile) or (b) shipping view
+  usage declarations with unconditionally-absent subsetting facts, silently under-reporting a
+  relationship real content (`11b-Safety and Security Feature Views.sysml`) depends on.
+
 ## Resolved / not blocked (kept for history)
 
 - Alias declarations (`alias X for Y;`) — investigated as a possible parser gap, but the typed

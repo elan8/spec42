@@ -29,12 +29,6 @@ package ViewCoverage {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 2 4) (end 2 30))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
         (range (start 3 4) (end 5 5))
       )
     )
@@ -47,6 +41,7 @@ package ViewCoverage {
   (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:eff25300bd9aa03e87a896691f7f3b6f12173de710746404dd04345caa4b6108") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/view_body_satisfy.md") (qualified-name "ViewCoverage"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/view_body_satisfy.md") (qualified-name "ViewCoverage::ArchitectureView"))) (kind view-def) (membership (kind owning) (visibility default)))
   )
   (references
   )

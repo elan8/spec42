@@ -221,6 +221,7 @@ fn unsupported_code(family: UnsupportedFamily) -> &'static str {
         UnsupportedFamily::StateDefinitionMember => "unsupported_state_definition_member",
         UnsupportedFamily::ConnectionDefinitionMember => "unsupported_connection_definition_member",
         UnsupportedFamily::InterfaceDefinitionMember => "unsupported_interface_definition_member",
+        UnsupportedFamily::ViewDefinitionMember => "unsupported_view_definition_member",
         UnsupportedFamily::OccurrenceDefinitionMember => "unsupported_occurrence_definition_member",
         UnsupportedFamily::AnalysisCaseDefinitionMember => {
             "unsupported_analysis_case_definition_member"
@@ -721,6 +722,7 @@ fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::OccurrenceDefinition => "occurrence-def",
         DeclarationKind::OccurrenceUsage => "occurrence",
         DeclarationKind::AnalysisCaseDefinition => "analysis-def",
+        DeclarationKind::ViewDefinition => "view-def",
     }
 }
 

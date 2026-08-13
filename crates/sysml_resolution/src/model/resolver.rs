@@ -1220,6 +1220,7 @@ impl DeclarationDomain {
                     | DeclarationKind::InterfaceDefinition
                     | DeclarationKind::OccurrenceDefinition
                     | DeclarationKind::AnalysisCaseDefinition
+                    | DeclarationKind::ViewDefinition
                     | DeclarationKind::Alias
             ),
         }
