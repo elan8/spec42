@@ -312,7 +312,13 @@ standard library package Items {
         (severity warning)
         (code "unsupported_constraint_definition_member")
         (source "semantic")
-        (range (start 70 4) (end 71 68))
+        (range (start 70 4) (end 70 71))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_constraint_definition_member")
+        (source "semantic")
+        (range (start 71 4) (end 71 68))
       )
       (diagnostic
         (severity warning)

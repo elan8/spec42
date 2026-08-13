@@ -125,9 +125,15 @@ standard library package RiskMetadata {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_constraint_definition_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 14 22) (end 14 49))
+        (range (start 14 22) (end 14 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 14 38) (end 14 42))
       )
     )
   )
@@ -136,12 +142,12 @@ standard library package RiskMetadata {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:b6d5cf50564dc6dfd53e46f70cf39f1ada998ec28e136b7a381b5c3fb1d97c8b") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b6d5cf50564dc6dfd53e46f70cf39f1ada998ec28e136b7a381b5c3fb1d97c8b") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/risk_metadata.md") (qualified-name "RiskMetadata"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/risk_metadata.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/risk_metadata.md") (qualified-name "RiskMetadata::Level"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Real"))))
-    (declaration (id (node (document "memory://snapshot/risk_metadata.md") (anonymous (kind constraint) (ordinal 0))))) (kind constraint) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/risk_metadata.md") (anonymous (kind constraint) (ordinal 0))))) (kind constraint) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "that")) (expressionOperand (reference "that"))))
     (declaration (id (node (document "memory://snapshot/risk_metadata.md") (qualified-name "RiskMetadata::LevelEnum"))) (kind enum-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Level"))))
     (declaration (id (node (document "memory://snapshot/risk_metadata.md") (qualified-name "RiskMetadata::LevelEnum::high"))) (kind enum-literal) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/risk_metadata.md") (qualified-name "RiskMetadata::LevelEnum::low"))) (kind enum-literal) (membership (kind feature) (visibility default)))
@@ -165,6 +171,12 @@ standard library package RiskMetadata {
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/risk_metadata.md") (qualified-name "RiskMetadata::Level"))) (kind specialization) (ordinal 0))
       (authored-target "Real")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/risk_metadata.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
+      (authored-target "that")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/risk_metadata.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 1))
+      (authored-target "that")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/risk_metadata.md") (qualified-name "RiskMetadata::LevelEnum"))) (kind specialization) (ordinal 0))
       (authored-target "Level")
@@ -202,6 +214,7 @@ standard library package RiskMetadata {
     (relationship (kind specialization) (source (node (document "memory://snapshot/risk_metadata.md") (qualified-name "RiskMetadata::RiskLevelEnum"))) (target (node (document "memory://snapshot/risk_metadata.md") (qualified-name "RiskMetadata::RiskLevel"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/risk_metadata.md") (qualified-name "RiskMetadata::RiskLevelEnum"))) (kind specialization) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/risk_metadata.md") (anonymous (kind constraint) (ordinal 0))))) (value (kind unresolved-operand)))
   )
 )
 ~~~
@@ -214,6 +227,14 @@ standard library package RiskMetadata {
   )
   (query (document "memory://snapshot/risk_metadata.md") (range (start 8 24) (end 8 28)) (probe (position 8 24))
     (reference (id (source (node (document "memory://snapshot/risk_metadata.md") (qualified-name "RiskMetadata::Level"))) (kind specialization) (ordinal 0) (authored-target "Real")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/risk_metadata.md") (range (start 14 22) (end 14 26)) (probe (position 14 22))
+    (reference (id (source (node (document "memory://snapshot/risk_metadata.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "that")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/risk_metadata.md") (range (start 14 38) (end 14 42)) (probe (position 14 38))
+    (reference (id (source (node (document "memory://snapshot/risk_metadata.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 1) (authored-target "that")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/risk_metadata.md") (range (start 17 23) (end 17 28)) (probe (position 17 23))

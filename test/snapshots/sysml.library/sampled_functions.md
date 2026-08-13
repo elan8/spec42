@@ -212,7 +212,13 @@ standard library package SampledFunctions {
         (severity warning)
         (code "unsupported_constraint_definition_member")
         (source "semantic")
-        (range (start 41 3) (end 42 104))
+        (range (start 41 3) (end 41 95))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_constraint_definition_member")
+        (source "semantic")
+        (range (start 42 12) (end 42 104))
       )
       (diagnostic
         (severity warning)

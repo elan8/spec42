@@ -970,11 +970,18 @@ enum EvalNode {
     /// left-to-right expression order.
     Operand(u32),
     Comparison(BinaryOperator, Box<EvalNode>, Box<EvalNode>),
-    /// Slice 4: an arithmetic `BinaryOp` (`Add`/`Sub`/`Mul`/`Div`/`Mod`) found in a calc-body
-    /// expression. Constraint bodies never build this variant -- `classify_constraint_node` has no
-    /// arithmetic arm, only `classify_calc_node` does -- keeping constraint evaluation strictly
-    /// comparison-only, unchanged from slices 1-3.
+    /// Slice 4 (`classify_calc_node`): an arithmetic `BinaryOp` (`Add`/`Sub`/`Mul`/`Div`/`Mod`)
+    /// found in a calc-body expression. Widened by the arithmetic/logical-combinator slice:
+    /// `classify_constraint_node` now also builds this variant for an arithmetic sub-expression
+    /// nested inside (or alongside) a comparison/logical combinator in a constraint body (e.g.
+    /// `chassisMass + engine.mass` as a comparison operand), so a constraint body's `EvalNode` tree
+    /// may now contain both `Comparison`/`Logical` and `Arithmetic` nodes, unlike slices 1-3.
     Arithmetic(BinaryOperator, Box<EvalNode>, Box<EvalNode>),
+    /// A logical `BinaryOp` (`and`/`or`, `is_logical_operator`) combining two constraint-body
+    /// sub-expressions, each of which folds to a `Boolean` (typically a `Comparison`). Only
+    /// `classify_constraint_node` builds this variant -- calc bodies stay comparison/logical-free,
+    /// unchanged. `xor`/`implies` are not represented (see `is_logical_operator`).
+    Logical(BinaryOperator, Box<EvalNode>, Box<EvalNode>),
     /// An `Expression::Invocation`/`Expression::Constructor` node (reference-resolution slice; see
     /// `ReferenceKind::InvocationCallee`). Carries each argument's own classified `EvalNode` purely
     /// so `ordinal` keeps advancing past every nested `Operand` leaf in exact lockstep with `lower_
@@ -1130,6 +1137,35 @@ fn fold_arithmetic(
     }
 }
 
+/// Folds an `and`/`or` combination of two already-folded operands, mirroring
+/// `fold_literal_comparison`'s priority order (`NonConverged` > `UnresolvedOperand` >
+/// `NonConstant` > a genuine value): only a `Boolean`/`Boolean` pairing produces a result;
+/// anything else (e.g. an `Integer` operand, which the grammar should never actually produce here
+/// since a logical combinator's operands are themselves boolean comparisons) is conservatively
+/// `NonConstant`, the same defensive fallback `fold_literal_comparison` uses for a mistyped
+/// pairing.
+fn fold_logical(op: BinaryOperator, left: EvaluatedValue, right: EvaluatedValue) -> EvaluatedValue {
+    match (left, right) {
+        (EvaluatedValue::NonConverged, _) | (_, EvaluatedValue::NonConverged) => {
+            EvaluatedValue::NonConverged
+        }
+        (EvaluatedValue::UnresolvedOperand, _) | (_, EvaluatedValue::UnresolvedOperand) => {
+            EvaluatedValue::UnresolvedOperand
+        }
+        (EvaluatedValue::NonConstant, _) | (_, EvaluatedValue::NonConstant) => {
+            EvaluatedValue::NonConstant
+        }
+        (EvaluatedValue::Boolean(left), EvaluatedValue::Boolean(right)) => {
+            EvaluatedValue::Boolean(match op {
+                BinaryOperator::And => left && right,
+                BinaryOperator::Or => left || right,
+                _ => return EvaluatedValue::NonConstant,
+            })
+        }
+        _ => EvaluatedValue::NonConstant,
+    }
+}
+
 fn literal_expression_value(node: &Expression) -> Option<EvaluatedValue> {
     match node {
         Expression::LiteralBoolean(value) => Some(EvaluatedValue::Boolean(*value)),
@@ -1158,6 +1194,24 @@ fn classify_constraint_node(node: &Expression, ordinal: &mut u32) -> Option<Eval
             let left = classify_constraint_node(&left.value, ordinal)?;
             let right = classify_constraint_node(&right.value, ordinal)?;
             Some(EvalNode::Comparison(
+                op.clone(),
+                Box::new(left),
+                Box::new(right),
+            ))
+        }
+        Expression::BinaryOp { op, left, right } if is_arithmetic_operator(op) => {
+            let left = classify_constraint_node(&left.value, ordinal)?;
+            let right = classify_constraint_node(&right.value, ordinal)?;
+            Some(EvalNode::Arithmetic(
+                op.clone(),
+                Box::new(left),
+                Box::new(right),
+            ))
+        }
+        Expression::BinaryOp { op, left, right } if is_logical_operator(op) => {
+            let left = classify_constraint_node(&left.value, ordinal)?;
+            let right = classify_constraint_node(&right.value, ordinal)?;
+            Some(EvalNode::Logical(
                 op.clone(),
                 Box::new(left),
                 Box::new(right),
@@ -1229,7 +1283,9 @@ fn eval_node_is_pure_literal(node: &EvalNode) -> bool {
     match node {
         EvalNode::Literal(_) => true,
         EvalNode::Operand(_) => false,
-        EvalNode::Comparison(_, left, right) | EvalNode::Arithmetic(_, left, right) => {
+        EvalNode::Comparison(_, left, right)
+        | EvalNode::Arithmetic(_, left, right)
+        | EvalNode::Logical(_, left, right) => {
             eval_node_is_pure_literal(left) && eval_node_is_pure_literal(right)
         }
         // Always `NonConstant` once folded (see `EvalNode::Invocation`'s doc comment), never a
@@ -1281,6 +1337,11 @@ fn fold_eval_node_pending(
             let left = fold_eval_node_pending(left, resolve_operand)?;
             let right = fold_eval_node_pending(right, resolve_operand)?;
             Some(fold_arithmetic(op.clone(), left, right))
+        }
+        EvalNode::Logical(op, left, right) => {
+            let left = fold_eval_node_pending(left, resolve_operand)?;
+            let right = fold_eval_node_pending(right, resolve_operand)?;
+            Some(fold_logical(op.clone(), left, right))
         }
         EvalNode::Invocation(_) => Some(EvaluatedValue::NonConstant),
     }
@@ -4753,22 +4814,27 @@ impl SemanticModelBuilder {
     }
 
     /// Lowers a `constraint def`/`constraint` usage body's boolean expression (slice 1 of the
-    /// constraint/calc expression fact family; see `ReferenceKind::ExpressionOperand`). Supports
-    /// only a narrow "boolean comparison" expression shape: a literal, a feature/feature-chain
-    /// reference (resolved as an `ExpressionOperand` reference sourced at `declaration`, exactly
-    /// like `lower_succession_end` resolves `Expression::FeatureRef` through the shared
-    /// `DeclarationDomain::Any` lexical lookup fixed point), a parenthesized wrapper (unwrapped
-    /// and recursed into), or a comparison `BinaryOp` (`Eq`/`Ne`/`Lt`/`Le`/`Gt`/`Ge` -- `StrictEq`/
-    /// `StrictNe` KerML identity comparisons are deliberately excluded from this narrow slice, left
-    /// unsupported like every other operator) whose operands are recursed into. Evaluation
-    /// (computing an actual truth value) is out of scope. Also supports `Expression::Invocation`/
-    /// `Expression::Constructor` (reference-resolution slice, see `ReferenceKind::
-    /// InvocationCallee`/`lower_invocation_callee`): the callee/type name resolves as an
-    /// `InvocationCallee` reference and each argument recurses back into this same function, but
-    /// the invocation is never evaluated (`EvalNode::Invocation` always folds to `NonConstant`).
-    /// Any other expression shape -- arithmetic ops, tuples, type-check/classification
-    /// expressions, unary ops, etc. -- falls through to the existing unsupported-member
-    /// diagnostic, unchanged from prior behavior.
+    /// constraint/calc expression fact family, widened by the arithmetic/logical-combinator slice
+    /// to accept nested arithmetic and `and`/`or` combinators; see `ReferenceKind::
+    /// ExpressionOperand`). Supports a literal, a feature/feature-chain reference (resolved as an
+    /// `ExpressionOperand` reference sourced at `declaration`, exactly like `lower_succession_end`
+    /// resolves `Expression::FeatureRef` through the shared `DeclarationDomain::Any` lexical lookup
+    /// fixed point), a parenthesized wrapper (unwrapped and recursed into), a comparison `BinaryOp`
+    /// (`Eq`/`Ne`/`Lt`/`Le`/`Gt`/`Ge` -- `StrictEq`/`StrictNe` KerML identity comparisons are
+    /// deliberately excluded, left unsupported like every other operator), an arithmetic `BinaryOp`
+    /// (`is_arithmetic_operator`, e.g. an operand like `chassisMass + engine.mass`), or a logical
+    /// `BinaryOp` (`is_logical_operator`, `and`/`or`, combining multiple comparisons, e.g. `... and
+    /// mass > 0[kg]`; `xor`/`implies` deliberately excluded) -- every one of these `BinaryOp` arms
+    /// simply recurses into both operands identically, since reference resolution does not care
+    /// which of the three operator families is used, only evaluation (`classify_constraint_node`)
+    /// distinguishes them by building a different `EvalNode` shape. Evaluation itself is otherwise
+    /// out of scope here. Also supports `Expression::Invocation`/`Expression::Constructor`
+    /// (reference-resolution slice, see `ReferenceKind::InvocationCallee`/
+    /// `lower_invocation_callee`): the callee/type name resolves as an `InvocationCallee` reference
+    /// and each argument recurses back into this same function, but the invocation is never
+    /// evaluated (`EvalNode::Invocation` always folds to `NonConstant`). Any other expression shape
+    /// -- tuples, type-check/classification expressions, unary ops, etc. -- falls through to the
+    /// existing unsupported-member diagnostic, unchanged from prior behavior.
     fn lower_constraint_expression(
         &mut self,
         document: DocumentId,
@@ -4815,7 +4881,11 @@ impl SemanticModelBuilder {
             Expression::Parenthesized(inner) => {
                 self.lower_constraint_expression(document, declaration, family, inner)
             }
-            Expression::BinaryOp { op, left, right } if is_comparison_operator(op) => {
+            Expression::BinaryOp { op, left, right }
+                if is_comparison_operator(op)
+                    || is_arithmetic_operator(op)
+                    || is_logical_operator(op) =>
+            {
                 self.lower_constraint_expression(document, declaration, family, left)?;
                 self.lower_constraint_expression(document, declaration, family, right)
             }
@@ -9790,19 +9860,134 @@ mod tests {
     }
 
     #[test]
-    fn constraint_arithmetic_mixed_with_comparison_stays_unsupported_not_a_panic() {
-        // Mixing arithmetic into a constraint's comparison shape (`(a + b) > c`) is deliberately
-        // out of scope: constraint bodies remain comparison-only (slice 1), and calc bodies never
-        // get comparison support, so this combination is never recognized by either lowering path.
+    fn constraint_arithmetic_mixed_with_comparison_folds_to_boolean() {
+        // Mixing arithmetic into a constraint's comparison shape (`(a + b) > c`) is now supported:
+        // `classify_constraint_node` recognizes an arithmetic `BinaryOp` operand nested inside a
+        // comparison, reusing the same `EvalNode::Arithmetic` slice-4 already built for calc bodies.
         let output = build_semantic_sexpr(
             "package Demo {\n\
              \tconstraint def C { (1 + 2) > 0 }\n\
              }\n",
         );
         assert!(
-            !output.contains("(evaluated (declaration"),
-            "expected `(1 + 2) > 0` (arithmetic mixed with comparison) to publish no evaluation \
-             fact, got:\n{output}"
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::C\"))) (value (kind boolean) (boolean true)))"
+            ),
+            "expected `(1 + 2) > 0` (arithmetic mixed with comparison) to fold to a published \
+             Boolean(true) evaluation fact, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn constraint_arithmetic_operand_resolves_all_leaf_references() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tattribute a : ScalarValues::Integer;\n\
+             \tattribute b : ScalarValues::Integer;\n\
+             \tattribute c : ScalarValues::Integer;\n\
+             \tconstraint def C { (a + b) < c }\n\
+             }\n",
+        );
+        for name in ["a", "b", "c"] {
+            assert!(
+                output.contains(&format!(
+                    "(authored-target \"{name}\")\n      (outcome (status resolved) (target \
+                     (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::{name}\")))))"
+                )),
+                "expected operand `{name}` in `(a + b) < c` to resolve to its sibling attribute \
+                 declaration, got:\n{output}"
+            );
+        }
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::C\"))) (value (kind non-constant)))"
+            ),
+            "expected `(a + b) < c` with no constant-valued operands to publish NonConstant \
+             rather than a fabricated boolean, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn constraint_arithmetic_operand_constant_propagates_to_boolean() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tattribute mass1 = 2;\n\
+             \tattribute mass2 = 3;\n\
+             \tattribute massLimit = 4;\n\
+             \tconstraint def C { (mass1 + mass2) > massLimit }\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::C\"))) (value (kind boolean) (boolean true)))"
+            ),
+            "expected `(mass1 + mass2) > massLimit` to constant-propagate through all three \
+             attribute defaults and fold to Boolean(true) (2 + 3 = 5 > 4), got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn constraint_logical_and_combines_two_comparisons_to_boolean() {
+        // `and`/`or` combining multiple comparisons in a general constraint body (not just a
+        // `filter <expr>;` condition, which already supported `and`/`or` for reference resolution
+        // per `25c8bf52`) is the same "widen the recursive classifier" pattern applied to
+        // evaluation: `EvalNode::Logical` folds two already-folded Boolean comparison operands.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tattribute mass1 = 2;\n\
+             \tattribute mass2 = 3;\n\
+             \tattribute massLimit = 10;\n\
+             \tattribute isActive = true;\n\
+             \tconstraint def C { (mass1 + mass2) < massLimit and isActive }\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::C\"))) (value (kind boolean) (boolean true)))"
+            ),
+            "expected `(mass1 + mass2) < massLimit and isActive` to fold to Boolean(true) \
+             (2 + 3 = 5 < 10, and isActive is true), got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn constraint_simple_comparison_only_regression_unaffected() {
+        // Regression guard: a plain comparison-only constraint body (slices 1-3, no arithmetic or
+        // logical widening involved) must fold exactly as before.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tconstraint def C { 1 < 2 }\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::C\"))) (value (kind boolean) (boolean true)))"
+            ),
+            "expected plain comparison-only `1 < 2` to still fold to Boolean(true), got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn calc_arithmetic_only_regression_unaffected() {
+        // Regression guard: calc-body arithmetic (slice 4) must stay comparison-free and fold
+        // exactly as before -- unaffected by the constraint-side widening.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tcalc def Calc { 2 + 3 }\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::Calc\"))) (value (kind integer) (integer 5)))"
+            ),
+            "expected plain arithmetic-only `2 + 3` calc body to still fold to Integer(5), \
+             got:\n{output}"
         );
     }
 
