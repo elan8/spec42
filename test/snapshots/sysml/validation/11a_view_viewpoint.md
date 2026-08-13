@@ -118,9 +118,9 @@ package '11a-View-Viewpoint' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_view_definition_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 46 3) (end 46 42))
+        (range (start 46 11) (end 46 41))
       )
       (diagnostic
         (severity warning)
@@ -166,7 +166,7 @@ package '11a-View-Viewpoint' {
     (declaration (id (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::ViewModel"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/11a_view_viewpoint.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Views") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::ViewModel::system breakdown"))) (kind concern) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::ViewModel::system structure generation"))) (kind view) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::ViewModel::system structure generation"))) (kind view) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (satisfyViewpoint (reference "system structure perspective"))))
     (declaration (id (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::ViewModel::systems engineer"))) (kind part) (membership (kind feature) (visibility default)))
   )
   (references
@@ -205,6 +205,9 @@ package '11a-View-Viewpoint' {
       (outcome (status resolved) (target (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::Wheel")))))
     (reference (id (source (node (document "memory://snapshot/11a_view_viewpoint.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
       (authored-target "Views")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::ViewModel::system structure generation"))) (kind satisfyViewpoint) (ordinal 0))
+      (authored-target "system structure perspective")
       (outcome (status unresolved)))
   )
   (relationships
@@ -269,6 +272,10 @@ package '11a-View-Viewpoint' {
   )
   (query (document "memory://snapshot/11a_view_viewpoint.md") (range (start 32 17) (end 32 25)) (probe (position 32 17))
     (reference (id (source (node (document "memory://snapshot/11a_view_viewpoint.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "Views")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/11a_view_viewpoint.md") (range (start 46 11) (end 46 41)) (probe (position 46 11))
+    (reference (id (source (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::ViewModel::system structure generation"))) (kind satisfyViewpoint) (ordinal 0) (authored-target "system structure perspective")
       (outcome (status unresolved)))
   )
 )

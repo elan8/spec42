@@ -829,6 +829,7 @@ fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::SubjectUsage => "subject",
         DeclarationKind::PerformActionUsage => "perform-action",
         DeclarationKind::Transition => "transition",
+        DeclarationKind::Satisfy => "satisfy",
     }
 }
 
@@ -876,6 +877,9 @@ fn reference_kind(kind: ReferenceKind) -> &'static str {
         ReferenceKind::TransitionEffect => "transitionEffect",
         ReferenceKind::MetadataAnnotation => "metadataAnnotation",
         ReferenceKind::FilterMetadataTest => "filterMetadataTest",
+        ReferenceKind::SatisfySource => "satisfySource",
+        ReferenceKind::SatisfyTarget => "satisfyTarget",
+        ReferenceKind::SatisfyViewpoint => "satisfyViewpoint",
     }
 }
 
@@ -902,6 +906,9 @@ fn relationship_kind(kind: ReferenceKind) -> Option<&'static str> {
         ReferenceKind::TransitionEffect => Some("transitionEffect"),
         ReferenceKind::MetadataAnnotation => Some("metadataAnnotation"),
         ReferenceKind::FilterMetadataTest => Some("filterMetadataTest"),
+        ReferenceKind::SatisfySource => Some("satisfySource"),
+        ReferenceKind::SatisfyTarget => Some("satisfyTarget"),
+        ReferenceKind::SatisfyViewpoint => Some("satisfyViewpoint"),
         ReferenceKind::NamespaceImport
         | ReferenceKind::MembershipImport
         | ReferenceKind::FilterImport => None,

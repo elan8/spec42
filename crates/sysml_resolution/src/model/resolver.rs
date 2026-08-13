@@ -689,13 +689,20 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     // than a separate one -- both resolve through the identical lexical lookup fixed point, kept
     // as a distinct `ReferenceKind` purely so filter and annotation relationships stay distinct in
     // query output.
+    // A view-body `satisfy <viewpoint>;` statement's viewpoint reference
+    // (`ReferenceKind::SatisfyViewpoint`) names a type -- specifically a viewpoint -- exactly like
+    // `MetadataAnnotation`, so it joins the same `DeclarationDomain::Type`/ancestor-scoped lexical
+    // lookup rather than a separate slot list, kept as a distinct `ReferenceKind` purely so it
+    // stays distinct from ordinary typing/annotation relationships in query output.
     let metadata_annotation_slots: Vec<usize> = references
         .iter()
         .enumerate()
         .filter_map(|(index, reference)| {
             matches!(
                 reference.kind(),
-                ReferenceKind::MetadataAnnotation | ReferenceKind::FilterMetadataTest
+                ReferenceKind::MetadataAnnotation
+                    | ReferenceKind::FilterMetadataTest
+                    | ReferenceKind::SatisfyViewpoint
             )
             .then_some(index)
         })
@@ -759,6 +766,10 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     // owned feature (not just a Type), exactly like `Succession`, so they resolve against
     // `DeclarationDomain::Any` alongside it rather than joining the Subclassification/FeatureTyping
     // `Type` domain passes; none of them read inherited scope either.
+    // A `satisfy <requirement> by <element>;` statement's source/target operands can each
+    // reference any owned feature (not just a Type), exactly like `Succession`/`TransitionSource`,
+    // so they join `state_binding_slots`'s `DeclarationDomain::Any` pass rather than the
+    // Subclassification/FeatureTyping `Type` domain passes.
     let state_binding_slots: Vec<usize> = references
         .iter()
         .enumerate()
@@ -774,6 +785,8 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     | ReferenceKind::TransitionTarget
                     | ReferenceKind::TransitionTrigger
                     | ReferenceKind::TransitionEffect
+                    | ReferenceKind::SatisfySource
+                    | ReferenceKind::SatisfyTarget
             )
             .then_some(index)
         })
@@ -1638,7 +1651,10 @@ fn supported_import_domain(reference: &impl ResolutionReferenceFact) -> Option<D
         | ReferenceKind::TransitionTrigger
         | ReferenceKind::TransitionEffect
         | ReferenceKind::MetadataAnnotation
-        | ReferenceKind::FilterMetadataTest => None,
+        | ReferenceKind::FilterMetadataTest
+        | ReferenceKind::SatisfySource
+        | ReferenceKind::SatisfyTarget
+        | ReferenceKind::SatisfyViewpoint => None,
     }
 }
 
@@ -1809,7 +1825,10 @@ fn build_effective_import_indexes<R: ResolutionReferenceFact>(
             | ReferenceKind::TransitionTrigger
             | ReferenceKind::TransitionEffect
             | ReferenceKind::MetadataAnnotation
-            | ReferenceKind::FilterMetadataTest => {}
+            | ReferenceKind::FilterMetadataTest
+            | ReferenceKind::SatisfySource
+            | ReferenceKind::SatisfyTarget
+            | ReferenceKind::SatisfyViewpoint => {}
         }
     }
     Ok((

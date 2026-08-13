@@ -37,7 +37,7 @@ use sysml_v2_parser_next::{
         PortUsage as ParserPortUsage, QualifiedIdentification, QualifiedReferenceId, RenderingDef,
         RenderingDefBody, RenderingDefBodyElement, RequirementDef, RequirementDefBody,
         RequirementDefBodyElement, RequirementUsage as ParserRequirementUsage, ReturnDecl,
-        RootElement, Span, StateDef, StateDefBody, StateDefBodyElement,
+        RootElement, Satisfy, SatisfyViewMember, Span, StateDef, StateDefBody, StateDefBodyElement,
         StateUsage as ParserStateUsage, SubjectDecl, SubsettingKind, SubsettingRelationship,
         ThenStmt, Transition, TransitionAccept, TransitionEffect, UseCaseDef, UseCaseDefBody,
         UseCaseDefBodyElement, VerificationCaseDef, ViewBody, ViewBodyElement, ViewDef,
@@ -460,6 +460,13 @@ enum DeclarationKind {
     /// deliberate scope boundary) and fall through to the existing
     /// `unsupported_state_definition_member` diagnostic.
     Transition,
+    /// An anonymous feature synthesized for a `satisfy <requirement> by <element>;` body element
+    /// (BNF `Satisfy`, its bare shorthand form) found in a package/part def/part usage/occurrence
+    /// body. Owned by the enclosing declaration, mirroring `Succession`/`Transition`'s
+    /// nested-declaration shape, so the `SatisfySource`/`SatisfyTarget` references it carries are
+    /// distinguishable per-statement (multiple `satisfy` statements can share one owner) even
+    /// though the statement introduces no name of its own.
+    Satisfy,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -601,6 +608,33 @@ enum ReferenceKind {
     /// filter statement's owner), mirroring `ExpressionOperand`'s "no anonymous nested-declaration
     /// scope shift" shape. See `lower_filter_expression`.
     FilterMetadataTest,
+    /// The authored `source` operand of a `satisfy <requirement> by <element>;` body element's
+    /// bare shorthand form (`Satisfy.source`, BNF `Satisfy` minus its optional
+    /// `InlineSatisfyRequirement` prefix), resolved through the same `DeclarationDomain::Any`
+    /// lexical lookup as `Succession`/`TransitionSource`: the satisfied requirement can be any
+    /// owned feature, not just a Type. Sourced at an anonymous `DeclarationKind::Satisfy` feature
+    /// owned by the enclosing package/part/occurrence declaration, mirroring `Transition`'s
+    /// nested-declaration shape. Only a simple/qualified name (`Expression::FeatureRef`) is
+    /// resolved; a dotted feature-chain (`Expression::MemberAccess`, e.g.
+    /// `satisfy r by vehicle.engine;`'s target) or any other expression shape is out of scope, as
+    /// is the fuller `satisfy requirement <name> : <Type> by <expr>;` form
+    /// (`Satisfy.inline_requirement`, which introduces a new anonymous requirement usage inline
+    /// rather than referencing an existing one) and the braced satisfy body's nested constraint
+    /// members (`Satisfy.body_elements`).
+    SatisfySource,
+    /// The authored `target` operand (the `by <element>` clause) of a `satisfy <requirement> by
+    /// <element>;` body element's bare shorthand form (`Satisfy.target`), same shape and scope as
+    /// `SatisfySource`.
+    SatisfyTarget,
+    /// The authored viewpoint reference of a view-body `satisfy <viewpoint>;` statement
+    /// (`SatisfyViewMember.viewpoint_ref`, BNF `ViewBodyElement::Satisfy`) -- a genuinely distinct
+    /// AST shape from `Satisfy`/`SatisfySource`/`SatisfyTarget`: a single `QualifiedReferenceId`
+    /// naming a viewpoint (not a requirement/satisfying-element pair), so it resolves through the
+    /// same Subclassification/FeatureTyping `DeclarationDomain::Type` lexical lookup fixed point
+    /// as `FeatureTyping` rather than `DeclarationDomain::Any`. Sourced directly at the enclosing
+    /// `view` usage declaration (no anonymous nested-declaration scope shift is needed, since the
+    /// viewpoint reference is not itself paired with a second operand the way `Satisfy` is).
+    SatisfyViewpoint,
 }
 
 /// The computed or explicit outcome of evaluating one supported constraint/calc expression
@@ -1662,11 +1696,16 @@ impl SemanticModelBuilder {
             PackageBodyElement::RequirementUsage(node) => {
                 self.lower_requirement_usage(document, owner, node)?
             }
-            PackageBodyElement::Satisfy(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::Satisfy(node) => match owner {
+                Some(owner) => {
+                    self.lower_satisfy(document, owner, UnsupportedFamily::PackageMember, node)?
+                }
+                None => self.push_unsupported(
+                    document,
+                    UnsupportedFamily::PackageMember,
+                    node.span.clone(),
+                ),
+            },
             PackageBodyElement::UseCaseDef(node) => {
                 self.lower_use_case_def(document, owner, node)?
             }
@@ -2130,6 +2169,14 @@ impl SemanticModelBuilder {
                     PartDefBodyElement::MetadataAnnotation(node) => {
                         self.lower_metadata_annotation(document, declaration, node)?;
                     }
+                    PartDefBodyElement::Satisfy(node) => {
+                        self.lower_satisfy(
+                            document,
+                            declaration,
+                            UnsupportedFamily::PartDefinitionMember,
+                            node,
+                        )?;
+                    }
                     PartDefBodyElement::Annotation(_)
                     | PartDefBodyElement::MetadataKeywordUsage(_)
                     | PartDefBodyElement::Dependency(_)
@@ -2141,7 +2188,6 @@ impl SemanticModelBuilder {
                     | PartDefBodyElement::Allocate(_)
                     | PartDefBodyElement::ExhibitState(_)
                     | PartDefBodyElement::AssertConstraint(_)
-                    | PartDefBodyElement::Satisfy(_)
                     | PartDefBodyElement::VariantUsage(_)
                     | PartDefBodyElement::AllocationUsage(_)
                     | PartDefBodyElement::ViewpointUsage(_)
@@ -2309,6 +2355,14 @@ impl SemanticModelBuilder {
                     PartUsageBodyElement::MetadataAnnotation(node) => {
                         self.lower_metadata_annotation(document, declaration, node)?;
                     }
+                    PartUsageBodyElement::Satisfy(node) => {
+                        self.lower_satisfy(
+                            document,
+                            declaration,
+                            UnsupportedFamily::PartUsageMember,
+                            node,
+                        )?;
+                    }
                     PartUsageBodyElement::Annotation(_)
                     | PartUsageBodyElement::DefaultReferenceUsage(_)
                     | PartUsageBodyElement::Bind(_)
@@ -2317,7 +2371,6 @@ impl SemanticModelBuilder {
                     | PartUsageBodyElement::FlowUsage(_)
                     | PartUsageBodyElement::SuccessionUsage(_)
                     | PartUsageBodyElement::Allocate(_)
-                    | PartUsageBodyElement::Satisfy(_)
                     | PartUsageBodyElement::MetadataKeywordUsage(_)
                     | PartUsageBodyElement::VariantUsage(_)
                     | PartUsageBodyElement::AssertConstraint(_)
@@ -4083,6 +4136,136 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
+    /// Lowers a `satisfy <requirement> by <element>;` body element (BNF `Satisfy`, `ast::
+    /// Satisfy`) found inside a package/part def/part usage/occurrence body, as an anonymous
+    /// `DeclarationKind::Satisfy` feature owned by the enclosing `owner` declaration, mirroring
+    /// `lower_transition`'s nested-declaration shape. Only the bare shorthand form (`satisfy
+    /// <ref> by <ref>;`, `Satisfy::inline_requirement == None`) is resolved: both `source` (the
+    /// satisfied requirement) and `target` (the `by` satisfying element) are lowered as authored
+    /// `SatisfySource`/`SatisfyTarget` references when they are a simple/qualified name
+    /// (`Expression::FeatureRef`), resolved through the same `DeclarationDomain::Any` lexical
+    /// lookup fixed point `Succession`/`TransitionSource` use. `is_negated` (`not satisfy ...`)
+    /// does not change how the references resolve, so it is not modeled as a fact here. Out of
+    /// scope, left as an explicit `family` unsupported diagnostic: the fuller `satisfy
+    /// requirement <name> : <Type> by <expr>;` form (`inline_requirement`, which defines a new
+    /// anonymous requirement usage inline rather than referencing an existing one -- a
+    /// meaningfully different construct, not merely an unresolved reference), a dotted
+    /// feature-chain operand (`Expression::MemberAccess`), any other expression shape, and the
+    /// braced satisfy body's nested constraint members (`body_elements`).
+    fn lower_satisfy(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        family: UnsupportedFamily,
+        node: &Node<Satisfy>,
+    ) -> Result<(), ConstructionError> {
+        if node.value.inline_requirement.is_some() {
+            self.push_unsupported(document, family, node.span.clone());
+            return Ok(());
+        }
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::Satisfy,
+            None,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span.clone(),
+        )?;
+        self.lower_satisfy_operand(
+            document,
+            declaration,
+            family,
+            ReferenceKind::SatisfySource,
+            &node.value.source,
+        )?;
+        self.lower_satisfy_operand(
+            document,
+            declaration,
+            family,
+            ReferenceKind::SatisfyTarget,
+            &node.value.target,
+        )?;
+        if let Some(elements) = &node.value.body_elements {
+            for element in elements {
+                self.push_unsupported(document, family, element.span.clone());
+            }
+        }
+        Ok(())
+    }
+
+    /// Lowers one `Satisfy` operand (`source`/`target`), mirroring `lower_transition_end`: its
+    /// path expression is a structured `Expression`, so a simple/qualified name
+    /// (`Expression::FeatureRef`) resolves as an authored reference of `kind` through the shared
+    /// `DeclarationDomain::Any` lexical lookup. Any other expression shape falls through to an
+    /// explicit `family` unsupported diagnostic.
+    fn lower_satisfy_operand(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        family: UnsupportedFamily,
+        kind: ReferenceKind,
+        node: &Node<Expression>,
+    ) -> Result<(), ConstructionError> {
+        match &node.value {
+            Expression::FeatureRef(target) => {
+                let span = self.documents[document.index()]
+                    .parsed
+                    .qualified_reference(*target)
+                    .ok_or(ConstructionError::InvalidParserReference)?
+                    .metadata
+                    .span
+                    .clone();
+                self.push_reference(PendingReference {
+                    source: owner,
+                    kind,
+                    document,
+                    local: *target,
+                    flags: RelationshipFlags::default(),
+                    span,
+                    import: None,
+                })?;
+            }
+            _ => self.push_unsupported(document, family, node.span.clone()),
+        }
+        Ok(())
+    }
+
+    /// Lowers a view-body `satisfy <viewpoint>;` statement (BNF `ViewBodyElement::Satisfy`,
+    /// `ast::SatisfyViewMember`) -- a genuinely distinct AST shape from `Satisfy` (see
+    /// `ReferenceKind::SatisfyViewpoint`'s doc comment): a single viewpoint reference, not a
+    /// requirement/satisfying-element pair. Sourced directly at the enclosing `view` usage
+    /// `declaration` (no anonymous nested-declaration scope shift, unlike `lower_satisfy`), since
+    /// there is no second operand to keep distinguishable per-statement.
+    fn lower_view_satisfy(
+        &mut self,
+        document: DocumentId,
+        declaration: DeclarationId,
+        node: &Node<SatisfyViewMember>,
+    ) -> Result<(), ConstructionError> {
+        let span = self.documents[document.index()]
+            .parsed
+            .qualified_reference(node.value.viewpoint_ref)
+            .ok_or(ConstructionError::InvalidParserReference)?
+            .metadata
+            .span
+            .clone();
+        self.push_reference(PendingReference {
+            source: declaration,
+            kind: ReferenceKind::SatisfyViewpoint,
+            document,
+            local: node.value.viewpoint_ref,
+            flags: RelationshipFlags::default(),
+            span,
+            import: None,
+        })?;
+        Ok(())
+    }
+
     /// Lowers a package/definition/usage-level `state` feature member (BNF StateUsage), e.g.
     /// `state s;` or `state s : SomeState;`, mirroring `lower_action_usage`. `StateUsage`'s
     /// typing is a structured `TypingRelationship` (like `ActionUsage.typing`), not a bare
@@ -5659,7 +5842,7 @@ impl SemanticModelBuilder {
     fn lower_view_usage_body(
         &mut self,
         document: DocumentId,
-        _declaration: DeclarationId,
+        declaration: DeclarationId,
         body: &ViewBody,
     ) -> Result<(), ConstructionError> {
         if let ViewBody::Brace { elements } = body {
@@ -5669,10 +5852,12 @@ impl SemanticModelBuilder {
                         self.push_recovery(document, error.span.clone());
                     }
                     ViewBodyElement::Doc(_) => {}
+                    ViewBodyElement::Satisfy(node) => {
+                        self.lower_view_satisfy(document, declaration, node)?;
+                    }
                     ViewBodyElement::Filter(_)
                     | ViewBodyElement::ViewRendering(_)
                     | ViewBodyElement::Expose(_)
-                    | ViewBodyElement::Satisfy(_)
                     | ViewBodyElement::Other(_) => self.push_unsupported(
                         document,
                         UnsupportedFamily::ViewDefinitionMember,
@@ -6171,12 +6356,19 @@ impl SemanticModelBuilder {
             OccurrenceBodyElement::StateUsage(state_usage) => {
                 self.lower_state_usage(document, Some(owner), state_usage)?;
             }
+            OccurrenceBodyElement::Satisfy(node) => {
+                self.lower_satisfy(
+                    document,
+                    owner,
+                    UnsupportedFamily::OccurrenceDefinitionMember,
+                    node,
+                )?;
+            }
             OccurrenceBodyElement::Annotation(_)
             | OccurrenceBodyElement::AssertConstraint(_)
             | OccurrenceBodyElement::Other(_)
             | OccurrenceBodyElement::FlowUsage(_)
             | OccurrenceBodyElement::SuccessionUsage(_)
-            | OccurrenceBodyElement::Satisfy(_)
             | OccurrenceBodyElement::Allocate(_) => self.push_unsupported(
                 document,
                 UnsupportedFamily::OccurrenceDefinitionMember,
@@ -9129,6 +9321,131 @@ mod tests {
             semantic.contains("(kind transitionSource)")
                 && semantic.contains("(kind transitionTarget)"),
             "expected transitionSource/transitionTarget relationship kinds, got:\n{semantic}"
+        );
+    }
+
+    #[test]
+    fn satisfy_inside_a_part_usage_resolves_source_and_target() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \trequirement def R;\n\
+             \tpart def P;\n\
+             \trequirement r : R;\n\
+             \tpart p : P {\n\
+             \t\tsatisfy r by p;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(kind satisfySource)") && output.contains("(kind satisfyTarget)"),
+            "expected satisfySource/satisfyTarget relationship kinds, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind satisfy) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::p::satisfy\""
+            ) || output.contains("(kind satisfy)"),
+            "expected an owned satisfy declaration, got:\n{output}"
+        );
+        assert!(
+            !output.contains("(status unresolved)"),
+            "expected both satisfy operands to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn satisfy_with_an_unresolvable_requirement_stays_explicitly_unresolved() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpart def P;\n\
+             \tpart p : P {\n\
+             \t\tsatisfy missingReq by p;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(kind satisfySource)")
+                && output.contains("(authored-target \"missingReq\")")
+                && output.contains("(status unresolved)"),
+            "expected the unresolvable satisfy source to stay explicitly unresolved (not \
+             fabricated), got:\n{output}"
+        );
+        assert!(
+            output.contains("(kind satisfyTarget)")
+                && output.contains("(authored-target \"p\")\n      (outcome (status resolved)"),
+            "expected the satisfy target to still resolve independently, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn satisfy_with_an_unresolvable_satisfying_element_stays_explicitly_unresolved() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \trequirement def R;\n\
+             \trequirement r : R;\n\
+             \tpart def P;\n\
+             \tpart p : P {\n\
+             \t\tsatisfy r by missingElement;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(kind satisfyTarget)")
+                && output.contains("(authored-target \"missingElement\")")
+                && output.contains("(status unresolved)"),
+            "expected the unresolvable satisfying element to stay explicitly unresolved (not \
+             fabricated), got:\n{output}"
+        );
+        assert!(
+            output.contains("(kind satisfySource)")
+                && output.contains("(authored-target \"r\")\n      (outcome (status resolved)"),
+            "expected the satisfy source to still resolve independently, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn view_body_satisfy_resolves_its_viewpoint_reference() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tviewpoint def V;\n\
+             \tview def VD;\n\
+             \tview v : VD {\n\
+             \t\tsatisfy V;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(kind satisfyViewpoint)"),
+            "expected a satisfyViewpoint relationship kind, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind satisfyViewpoint) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::v\""
+            ),
+            "expected the satisfyViewpoint reference to be sourced at the view declaration, \
+             got:\n{output}"
+        );
+        assert!(
+            !output.contains("(status unresolved)"),
+            "expected the viewpoint reference to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn view_body_satisfy_with_an_unresolvable_viewpoint_stays_explicitly_unresolved() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tview def VD;\n\
+             \tview v : VD {\n\
+             \t\tsatisfy MissingViewpoint;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(kind satisfyViewpoint)")
+                && output.contains("(authored-target \"MissingViewpoint\")")
+                && output.contains("(status unresolved)"),
+            "expected the unresolvable viewpoint reference to stay explicitly unresolved (not \
+             fabricated), got:\n{output}"
         );
     }
 
