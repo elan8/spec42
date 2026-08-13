@@ -1392,6 +1392,7 @@ impl DeclarationDomain {
                     | DeclarationKind::RenderingDefinition
                     | DeclarationKind::AllocationDefinition
                     | DeclarationKind::FlowDefinition
+                    | DeclarationKind::ConstraintDefinition
                     | DeclarationKind::Alias
             ),
         }

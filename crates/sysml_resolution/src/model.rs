@@ -19,11 +19,13 @@ use sysml_v2_parser_next::{
         AnalysisCaseUsage as ParserAnalysisCaseUsage, AttributeBody, AttributeBodyElement,
         AttributeDef, AttributeUsage, CaseDef, CaseUsage as ParserCaseUsage, ConnectStmt,
         ConnectionDef, ConnectionDefBody, ConnectionDefBodyElement, ConnectionEnd,
-        ConnectionUsageMember as ParserConnectionUsage, DefinitionBody, DefinitionBodyElement,
-        EndDecl, EndIdentity, EnumDef, EnumerationBody, EnumerationUsage as ParserEnumerationUsage,
-        Expression, FlowDef, Import, ImportShape, InterfaceDef, InterfaceDefBody,
-        InterfaceDefBodyElement, InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement,
-        ItemDef, ItemUsage as ParserItemUsage, LibraryPackage, Membership,
+        ConnectionUsageMember as ParserConnectionUsage, ConstraintDef, ConstraintDefBody,
+        ConstraintDefBodyElement, ConstraintUsage as ParserConstraintUsage, DefinitionBody,
+        DefinitionBodyElement, EndDecl, EndIdentity, EnumDef, EnumerationBody,
+        EnumerationUsage as ParserEnumerationUsage, Expression, FlowDef, Import, ImportShape,
+        InterfaceDef, InterfaceDefBody, InterfaceDefBodyElement,
+        InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement, ItemDef,
+        ItemUsage as ParserItemUsage, LibraryPackage, Membership,
         MembershipKind as ParserMembershipKind, MetadataDef, MetadataUsage as ParserMetadataUsage,
         NamespaceDecl, Node, OccurrenceBodyElement, OccurrenceDef,
         OccurrenceUsage as ParserOccurrenceUsage, OccurrenceUsageBody, Package, PackageBody,
@@ -323,6 +325,19 @@ enum DeclarationKind {
     /// Interface-specific semantics beyond declaration/typing/ends are out of scope, sharing
     /// `UnsupportedFamily::InterfaceDefinitionMember` with the `def` form's body walker.
     InterfaceUsage,
+    /// `constraint def` (BNF ConstraintDefinition): a type whose owned members participate in the
+    /// same Subclassification/FeatureTyping `DeclarationDomain::Type` fixed point as
+    /// `ViewDefinition`/`OccurrenceDefinition`. `ConstraintDef` has full field parity with
+    /// `ViewDef`/`ActionDef` (`specializes: Option<Node<TypingRelationship>>`). Constraint-body
+    /// expression semantics are out of scope and fall through to
+    /// `UnsupportedFamily::ConstraintDefinitionMember`.
+    ConstraintDefinition,
+    /// A package/definition/usage-level `constraint` feature member (BNF ConstraintUsage),
+    /// mirroring `lower_analysis_case_usage`: ownership, membership, a `:` typing target, and
+    /// `subsets`/`redefines` subsetting relationships. Resolved upstream in `0757de13`
+    /// (UPSTREAM_PARSER_GAPS.md #4): `ConstraintUsage` previously had no `subsets`/`redefines`
+    /// fields at all.
+    ConstraintUsage,
     Import,
     Alias,
 }
@@ -425,6 +440,10 @@ enum UnsupportedFamily {
     /// with `case`/`verification` case bodies in the typed AST, but this family name is scoped to
     /// `analysis def` specifically since `analysis` usage lowering is deferred.
     AnalysisCaseDefinitionMember,
+    /// `constraint def`/`constraint` usage body members not modeled by this slice (constraint
+    /// expression content, nested constraint members). Shared by both forms since
+    /// `ConstraintDefBody`/`ConstraintDefBodyElement` is the same typed AST shape for both.
+    ConstraintDefinitionMember,
     /// `interface def` body members not modeled by this slice; shares the same `end`/`connect`/
     /// attribute/item/port/flow member set as `ConnectionDefinitionMember`, kept as its own family
     /// name so interface def diagnostics stay distinct from connection def ones at the same span
@@ -973,16 +992,12 @@ impl SemanticModelBuilder {
                 UnsupportedFamily::PackageMember,
                 node.span.clone(),
             ),
-            PackageBodyElement::ConstraintDef(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
-            PackageBodyElement::ConstraintUsage(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::ConstraintDef(node) => {
+                self.lower_constraint_def(document, owner, node)?
+            }
+            PackageBodyElement::ConstraintUsage(node) => {
+                self.lower_constraint_usage(document, owner, node)?
+            }
             PackageBodyElement::CalcDef(node) => self.push_unsupported(
                 document,
                 UnsupportedFamily::PackageMember,
@@ -1404,6 +1419,12 @@ impl SemanticModelBuilder {
                     PartDefBodyElement::ViewUsage(view_usage) => {
                         self.lower_view_usage(document, Some(declaration), view_usage)?;
                     }
+                    PartDefBodyElement::ConstraintDef(constraint_def) => {
+                        self.lower_constraint_def(document, Some(declaration), constraint_def)?;
+                    }
+                    PartDefBodyElement::ConstraintUsage(constraint_usage) => {
+                        self.lower_constraint_usage(document, Some(declaration), constraint_usage)?;
+                    }
                     PartDefBodyElement::Doc(_) | PartDefBodyElement::Comment(_) => {}
                     PartDefBodyElement::Annotation(_)
                     | PartDefBodyElement::MetadataAnnotation(_)
@@ -1418,8 +1439,6 @@ impl SemanticModelBuilder {
                     | PartDefBodyElement::Allocate(_)
                     | PartDefBodyElement::ExhibitState(_)
                     | PartDefBodyElement::CalcUsage(_)
-                    | PartDefBodyElement::ConstraintDef(_)
-                    | PartDefBodyElement::ConstraintUsage(_)
                     | PartDefBodyElement::AssertConstraint(_)
                     | PartDefBodyElement::Satisfy(_)
                     | PartDefBodyElement::VariantUsage(_)
@@ -1569,6 +1588,12 @@ impl SemanticModelBuilder {
                     PartUsageBodyElement::InterfaceUsage(interface_usage) => {
                         self.lower_interface_usage(document, Some(declaration), interface_usage)?;
                     }
+                    PartUsageBodyElement::ConstraintDef(constraint_def) => {
+                        self.lower_constraint_def(document, Some(declaration), constraint_def)?;
+                    }
+                    PartUsageBodyElement::ConstraintUsage(constraint_usage) => {
+                        self.lower_constraint_usage(document, Some(declaration), constraint_usage)?;
+                    }
                     PartUsageBodyElement::Doc(_) => {}
                     PartUsageBodyElement::Annotation(_)
                     | PartUsageBodyElement::DefaultReferenceUsage(_)
@@ -1585,8 +1610,6 @@ impl SemanticModelBuilder {
                     | PartUsageBodyElement::VariantUsage(_)
                     | PartUsageBodyElement::CalcDef(_)
                     | PartUsageBodyElement::AssertConstraint(_)
-                    | PartUsageBodyElement::ConstraintDef(_)
-                    | PartUsageBodyElement::ConstraintUsage(_)
                     | PartUsageBodyElement::CalcUsage(_)
                     | PartUsageBodyElement::AliasDef(_)
                     | PartUsageBodyElement::IncludeUseCase(_)
@@ -3839,6 +3862,134 @@ impl SemanticModelBuilder {
     /// membership, an optional `:>` specialization relationship (participates in the shared
     /// `DeclarationDomain::Type` fixed point). Render-specific body members (`filter`/`render`)
     /// are out of scope -- see `DeclarationKind::RenderingDefinition`'s doc comment.
+    /// Lowers a `constraint def` (BNF ConstraintDefinition), mirroring `lower_view_def`:
+    /// ownership, membership, an optional `:>` specialization relationship participating in the
+    /// shared `DeclarationDomain::Type` fixed point. Constraint-body expression content is out of
+    /// scope for this slice and falls through to `UnsupportedFamily::ConstraintDefinitionMember`.
+    fn lower_constraint_def(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<ConstraintDef>,
+    ) -> Result<(), ConstructionError> {
+        let name = node
+            .value
+            .identification
+            .name
+            .as_deref()
+            .filter(|name| !name.is_empty())
+            .map(|name| self.intern_name(name))
+            .transpose()?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::ConstraintDefinition,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Owning,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::OwningMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(relationship) = &node.value.specializes {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        self.lower_constraint_def_body(document, declaration, &node.value.body)
+    }
+
+    /// Shared body walker for `constraint def`/`constraint` usage bodies (both use
+    /// `ConstraintDefBody`/`ConstraintDefBodyElement` in the typed AST -- there is no separate
+    /// `ConstraintUsageBody`), mirroring `lower_view_def_body`. Expression/nested-constraint
+    /// content falls through to `unsupported_constraint_definition_member`.
+    fn lower_constraint_def_body(
+        &mut self,
+        document: DocumentId,
+        _declaration: DeclarationId,
+        body: &ConstraintDefBody,
+    ) -> Result<(), ConstructionError> {
+        if let ConstraintDefBody::Brace { elements } = body {
+            for element in elements {
+                match &element.value {
+                    ConstraintDefBodyElement::Error(error) => {
+                        self.push_recovery(document, error.span.clone());
+                    }
+                    ConstraintDefBodyElement::Doc(_) => {}
+                    ConstraintDefBodyElement::InOutDecl(_)
+                    | ConstraintDefBodyElement::MetadataAnnotation(_)
+                    | ConstraintDefBodyElement::Expression(_)
+                    | ConstraintDefBodyElement::Constraint(_)
+                    | ConstraintDefBodyElement::AttributeUsage(_)
+                    | ConstraintDefBodyElement::Other(_) => self.push_unsupported(
+                        document,
+                        UnsupportedFamily::ConstraintDefinitionMember,
+                        element.span.clone(),
+                    ),
+                }
+            }
+        }
+        Ok(())
+    }
+
+    /// Lowers a package/definition/usage-level `constraint` feature member (BNF
+    /// ConstraintUsage), mirroring `lower_analysis_case_usage`: ownership, membership, a `:`
+    /// typing target, and `subsets`/`redefines` subsetting relationships. Resolved upstream in
+    /// `0757de13` (UPSTREAM_PARSER_GAPS.md #4): `ConstraintUsage` previously had no
+    /// `subsets`/`redefines` fields at all.
+    fn lower_constraint_usage(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<ParserConstraintUsage>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declared_name(&node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::ConstraintUsage,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::FeatureMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(type_name) = node.value.type_name {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(type_name)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span
+                .clone();
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::FeatureTyping,
+                document,
+                local: type_name,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
+        if let Some(relationship) = &node.value.subsets {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.redefines {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        self.lower_constraint_def_body(document, declaration, &node.value.body)
+    }
+
     fn lower_rendering_def(
         &mut self,
         document: DocumentId,
@@ -5086,6 +5237,79 @@ mod tests {
                 "(kind specialization) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Derived\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
             ),
             "expected Derived's specialization of Base to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn constraint_def_lowers_to_a_declaration() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tconstraint def C;\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::C\"))) (kind constraint-def)"),
+            "expected a constraint-def declaration, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn constraint_def_specializing_another_constraint_def_resolves_its_specialization_reference() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tconstraint def Base;\n\
+             \tconstraint def Derived :> Base;\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind specialization) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Derived\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
+            ),
+            "expected Derived's specialization of Base to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn constraint_usage_typed_by_a_constraint_def_resolves() {
+        // UPSTREAM_PARSER_GAPS.md #4 was resolved upstream in `0757de13`: `ConstraintUsage` now
+        // carries `subsets`/`redefines` fields.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tconstraint def C;\n\
+             \tconstraint c : C;\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::c\"))) (kind constraint)"),
+            "expected constraint c to lower to a declaration with kind constraint, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind typing) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::c\")))"
+            ) && output.contains(
+                "(target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::C\")))"
+            ),
+            "expected c's featureTyping of C to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn constraint_usage_subsetting_another_constraint_usage_resolves() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tconstraint baseConstraint;\n\
+             \tconstraint derivedConstraint :> baseConstraint;\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::derivedConstraint\"))) (kind constraint)"),
+            "expected a constraint usage declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind subsetting) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::derivedConstraint\")))"
+            ),
+            "expected derivedConstraint's subsetting of baseConstraint to resolve, got:\n{output}"
         );
     }
 

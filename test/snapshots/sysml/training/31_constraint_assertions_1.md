@@ -63,9 +63,21 @@ package 'Constraint Assertions-1' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_constraint_definition_member")
         (source "semantic")
-        (range (start 8 1) (end 13 2))
+        (range (start 9 2) (end 9 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_constraint_definition_member")
+        (source "semantic")
+        (range (start 10 2) (end 10 27))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_constraint_definition_member")
+        (source "semantic")
+        (range (start 12 2) (end 12 30))
       )
       (diagnostic
         (severity warning)
@@ -105,6 +117,7 @@ package 'Constraint Assertions-1' {
     (declaration (id (node (document "memory://snapshot/31_constraint_assertions_1.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "SI") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/31_constraint_assertions_1.md") (anonymous (kind import) (ordinal 2))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "NumericalFunctions") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/31_constraint_assertions_1.md") (qualified-name "Constraint Assertions-1::Engine"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/31_constraint_assertions_1.md") (qualified-name "Constraint Assertions-1::MassConstraint"))) (kind constraint-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/31_constraint_assertions_1.md") (qualified-name "Constraint Assertions-1::Transmission"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/31_constraint_assertions_1.md") (qualified-name "Constraint Assertions-1::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/31_constraint_assertions_1.md") (qualified-name "Constraint Assertions-1::Vehicle::chassisMass"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MassValue"))))

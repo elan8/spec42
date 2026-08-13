@@ -91,9 +91,9 @@ package '15_03-Value Expression' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_part_definition_member")
+        (code "unsupported_constraint_definition_member")
         (source "semantic")
-        (range (start 26 8) (end 26 66))
+        (range (start 26 41) (end 26 65))
       )
       (diagnostic
         (severity warning)
@@ -114,6 +114,7 @@ package '15_03-Value Expression' {
     (declaration (id (node (document "memory://snapshot/15_03_value_expression.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "SI") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/15_03_value_expression.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "USCustomaryUnits") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/15_03_value_expression.md") (qualified-name "15_03-Value Expression::Tire"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/15_03_value_expression.md") (qualified-name "15_03-Value Expression::Tire::hasLegalProfileDepth"))) (kind constraint) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/15_03_value_expression.md") (qualified-name "15_03-Value Expression::Tire::height"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "LengthValue"))))
     (declaration (id (node (document "memory://snapshot/15_03_value_expression.md") (qualified-name "15_03-Value Expression::Tire::profileDepth"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "LengthValue"))))
     (declaration (id (node (document "memory://snapshot/15_03_value_expression.md") (qualified-name "15_03-Value Expression::Vehicle_1"))) (kind part-def) (membership (kind owning) (visibility default)))

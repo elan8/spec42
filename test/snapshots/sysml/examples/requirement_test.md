@@ -42,18 +42,6 @@ package RequirementTest {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 1 1) (end 1 18))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 2 1) (end 2 18))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_filtered_import")
         (source "semantic")
         (range (start 3 16) (end 3 21))
@@ -123,8 +111,10 @@ package RequirementTest {
   (declarations
     (declaration (id (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/requirement_test.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "q") (import (shape membership) (recursive true)))))
+    (declaration (id (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::C"))) (kind constraint-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::R"))) (kind requirement-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::R1"))) (kind requirement-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::c"))) (kind constraint) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "C"))))
     (declaration (id (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::p"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::q"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::q::r"))) (kind requirement) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "R"))))
@@ -134,6 +124,9 @@ package RequirementTest {
     (reference (id (source (node (document "memory://snapshot/requirement_test.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
       (authored-target "q")
       (outcome (status unsupported)))
+    (reference (id (source (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::c"))) (kind featureTyping) (ordinal 0))
+      (authored-target "C")
+      (outcome (status resolved) (target (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::C")))))
     (reference (id (source (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::q::r"))) (kind featureTyping) (ordinal 0))
       (authored-target "R")
       (outcome (status resolved) (target (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::R")))))
@@ -142,6 +135,7 @@ package RequirementTest {
       (outcome (status resolved) (target (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::R1")))))
   )
   (relationships
+    (relationship (kind typing) (source (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::c"))) (target (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::C"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::c"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::q::r"))) (target (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::R"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::q::r"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::r1"))) (target (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::R1"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::r1"))) (kind featureTyping) (ordinal 0)))
   )
@@ -155,6 +149,10 @@ package RequirementTest {
   (query (document "memory://snapshot/requirement_test.md") (range (start 3 16) (end 3 21)) (probe (position 3 16))
     (reference (id (source (node (document "memory://snapshot/requirement_test.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "q")
       (outcome (status unsupported)))
+  )
+  (query (document "memory://snapshot/requirement_test.md") (range (start 2 16) (end 2 17)) (probe (position 2 16))
+    (reference (id (source (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::c"))) (kind featureTyping) (ordinal 0) (authored-target "C")
+      (outcome (status resolved) (target (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::C")))))
   )
   (query (document "memory://snapshot/requirement_test.md") (range (start 19 18) (end 19 19)) (probe (position 19 18))
     (reference (id (source (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::q::r"))) (kind featureTyping) (ordinal 0) (authored-target "R")

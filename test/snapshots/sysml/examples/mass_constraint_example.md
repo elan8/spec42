@@ -202,9 +202,21 @@ package MassConstraintExample {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_constraint_definition_member")
         (source "semantic")
-        (range (start 39 1) (end 44 2))
+        (range (start 40 2) (end 40 27))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_constraint_definition_member")
+        (source "semantic")
+        (range (start 41 2) (end 41 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_constraint_definition_member")
+        (source "semantic")
+        (range (start 43 2) (end 43 30))
       )
       (diagnostic
         (severity warning)
@@ -232,15 +244,33 @@ package MassConstraintExample {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_constraint_definition_member")
         (source "semantic")
-        (range (start 63 1) (end 66 2))
+        (range (start 64 2) (end 64 27))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_constraint_definition_member")
         (source "semantic")
-        (range (start 68 1) (end 73 2))
+        (range (start 65 2) (end 65 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_constraint_definition_member")
+        (source "semantic")
+        (range (start 69 2) (end 69 27))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_constraint_definition_member")
+        (source "semantic")
+        (range (start 70 2) (end 70 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_constraint_definition_member")
+        (source "semantic")
+        (range (start 72 2) (end 72 30))
       )
       (diagnostic
         (severity warning)
@@ -268,9 +298,21 @@ package MassConstraintExample {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_constraint_definition_member")
         (source "semantic")
-        (range (start 92 1) (end 97 2))
+        (range (start 93 2) (end 93 22))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_constraint_definition_member")
+        (source "semantic")
+        (range (start 94 2) (end 94 25))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_constraint_definition_member")
+        (source "semantic")
+        (range (start 96 2) (end 96 17))
       )
       (diagnostic
         (severity warning)
@@ -311,6 +353,9 @@ package MassConstraintExample {
     (declaration (id (node (document "memory://snapshot/mass_constraint_example.md") (anonymous (kind import) (ordinal 2))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "NumericalFunctions") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::Engine"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::Engine::m"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "mass"))))
+    (declaration (id (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::MassConstraint3"))) (kind constraint-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::MassConstraint4"))) (kind constraint-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::MassLimit"))) (kind constraint-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::Transmission"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::Transmission::m"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "mass"))))
     (declaration (id (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::Vehicle1"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -343,6 +388,7 @@ package MassConstraintExample {
     (declaration (id (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::Vehicle5::m"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MassValue"))))
     (declaration (id (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::Vehicle5::trans"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Transmission"))))
     (declaration (id (node (document "memory://snapshot/mass_constraint_example.md") (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MassValue")) (redefinition (reference "m"))))
+    (declaration (id (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::mc"))) (kind constraint) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MassConstraint4"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/mass_constraint_example.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
@@ -453,6 +499,9 @@ package MassConstraintExample {
     (reference (id (source (node (document "memory://snapshot/mass_constraint_example.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0))
       (authored-target "m")
       (outcome (status resolved) (target (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::Transmission::m")))))
+    (reference (id (source (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::mc"))) (kind featureTyping) (ordinal 0))
+      (authored-target "MassConstraint4")
+      (outcome (status resolved) (target (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::MassConstraint4")))))
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::Vehicle1::eng"))) (target (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::Engine"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::Vehicle1::eng"))) (kind featureTyping) (ordinal 0)))
@@ -471,6 +520,7 @@ package MassConstraintExample {
     (relationship (kind redefinition) (source (node (document "memory://snapshot/mass_constraint_example.md") (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::Engine::m"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/mass_constraint_example.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::Vehicle5::trans"))) (target (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::Transmission"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::Vehicle5::trans"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/mass_constraint_example.md") (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::Transmission::m"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/mass_constraint_example.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::mc"))) (target (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::MassConstraint4"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::mc"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )
@@ -622,6 +672,10 @@ package MassConstraintExample {
   (query (document "memory://snapshot/mass_constraint_example.md") (range (start 112 17) (end 112 18)) (probe (position 112 17))
     (reference (id (source (node (document "memory://snapshot/mass_constraint_example.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "m")
       (outcome (status resolved) (target (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::Transmission::m")))))
+  )
+  (query (document "memory://snapshot/mass_constraint_example.md") (range (start 68 17) (end 68 32)) (probe (position 68 17))
+    (reference (id (source (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::mc"))) (kind featureTyping) (ordinal 0) (authored-target "MassConstraint4")
+      (outcome (status resolved) (target (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::MassConstraint4")))))
   )
 )
 ~~~
