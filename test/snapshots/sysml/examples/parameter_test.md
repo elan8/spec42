@@ -45,18 +45,6 @@ package ParameterTest {
         (source "semantic")
         (range (start 8 64) (end 8 85))
       )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 13 28) (end 13 30))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 14 21) (end 14 28))
-      )
     )
   )
 )
@@ -64,7 +52,7 @@ package ParameterTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:8e305049c91ab2ce85183f91e42ea59caff5c4bbbaa247997f62b8943c736fb6") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:8e305049c91ab2ce85183f91e42ea59caff5c4bbbaa247997f62b8943c736fb6") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::A"))) (kind attribute-def) (membership (kind owning) (visibility default)))
@@ -134,6 +122,8 @@ package ParameterTest {
     (relationship (kind invocationCallee) (source (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::g"))) (target (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::F"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::g"))) (kind invocationCallee) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::b"))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::c"))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::f"))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::g"))) (value (kind non-constant)))
   )

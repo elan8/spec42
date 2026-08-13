@@ -547,12 +547,6 @@ package '14c-Language-Extensions' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 181 19) (end 181 25))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 186 2) (end 186 13))
@@ -992,6 +986,7 @@ package '14c-Language-Extensions' {
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/14c_language_extensions.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind real) (real 0.013)))
     (evaluated (declaration (node (document "memory://snapshot/14c_language_extensions.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind real) (real 0.005)))
+    (evaluated (declaration (node (document "memory://snapshot/14c_language_extensions.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind string) (value "High")))
     (evaluated (declaration (node (document "memory://snapshot/14c_language_extensions.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEAUserModel::req3::::status"))) (value (kind non-constant)))
   )

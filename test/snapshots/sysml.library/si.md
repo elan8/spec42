@@ -505,12 +505,6 @@ standard library package SI {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 28 29) (end 28 86))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 30 22) (end 30 48))
@@ -5077,12 +5071,6 @@ standard library package SI {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 359 42) (end 359 105))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 361 60) (end 361 85))
@@ -5098,12 +5086,6 @@ standard library package SI {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 362 33) (end 362 43))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 362 46) (end 362 111))
       )
       (diagnostic
         (severity warning)
@@ -7612,7 +7594,9 @@ standard library package SI {
     (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind string) (value "temperature in degree Celsius of pure water at freezing point")))
     (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind string) (value "temperature in degree Celsius of pure water at the triple point")))
     (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind unresolved-operand)))
     (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind unresolved-operand)))
@@ -7654,6 +7638,7 @@ standard library package SI {
     (evaluated (declaration (node (document "memory://snapshot/si.md") (qualified-name "SI::kelvin per watt"))) (value (kind unresolved-operand)))
     (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind integer) (integer 273)))
+    (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind string) (value "temperature in kelvin of pure water at the triple point")))
     (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind unresolved-operand)))
     (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind unresolved-operand)))
     (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind unresolved-operand)))

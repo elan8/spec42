@@ -418,13 +418,13 @@ fn write_evaluation(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) 
         write!(output, "    (evaluated (declaration ")?;
         write_node_identity(model, fact.declaration, output)?;
         write!(output, ") ")?;
-        write_evaluated_value(fact.outcome, output)?;
+        write_evaluated_value(&fact.outcome, output)?;
         writeln!(output, ")")?;
     }
     writeln!(output, "  )")
 }
 
-fn write_evaluated_value(value: EvaluatedValue, output: &mut dyn fmt::Write) -> fmt::Result {
+fn write_evaluated_value(value: &EvaluatedValue, output: &mut dyn fmt::Write) -> fmt::Result {
     match value {
         EvaluatedValue::Boolean(value) => {
             write!(output, "(value (kind boolean) (boolean {value}))")
@@ -433,6 +433,9 @@ fn write_evaluated_value(value: EvaluatedValue, output: &mut dyn fmt::Write) -> 
             write!(output, "(value (kind integer) (integer {value}))")
         }
         EvaluatedValue::Real(value) => write!(output, "(value (kind real) (real {value}))"),
+        EvaluatedValue::String(value) => {
+            write!(output, "(value (kind string) (value {value:?}))")
+        }
         EvaluatedValue::NotEvaluated => write!(output, "(value (kind not-evaluated))"),
         EvaluatedValue::UnresolvedOperand => write!(output, "(value (kind unresolved-operand))"),
         EvaluatedValue::NonConstant => write!(output, "(value (kind non-constant))"),

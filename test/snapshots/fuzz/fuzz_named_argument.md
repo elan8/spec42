@@ -40,12 +40,6 @@ package P {
         (source "semantic")
         (range (start 3 28) (end 3 29))
       )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 3 35) (end 3 37))
-      )
     )
   )
 )
@@ -53,7 +47,7 @@ package P {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:a30c87320530daeaa6ba1ba5a93f49193903c5d98385c4e7c0c8f5aa187a0a0d") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:a30c87320530daeaa6ba1ba5a93f49193903c5d98385c4e7c0c8f5aa187a0a0d") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/fuzz_named_argument.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/fuzz_named_argument.md") (qualified-name "P::F"))) (kind calc-def) (membership (kind owning) (visibility default)))
@@ -82,6 +76,7 @@ package P {
     (relationship (kind invocationCallee) (source (node (document "memory://snapshot/fuzz_named_argument.md") (qualified-name "P::f"))) (target (node (document "memory://snapshot/fuzz_named_argument.md") (qualified-name "P::F"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/fuzz_named_argument.md") (qualified-name "P::f"))) (kind invocationCallee) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/fuzz_named_argument.md") (qualified-name "P::b"))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/fuzz_named_argument.md") (qualified-name "P::f"))) (value (kind non-constant)))
   )
 )

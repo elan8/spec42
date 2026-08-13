@@ -521,12 +521,6 @@ standard library package Time {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 132 93) (end 132 150))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 136 6) (end 136 10))
@@ -1013,6 +1007,7 @@ standard library package Time {
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/time.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind unresolved-operand)))
     (evaluated (declaration (node (document "memory://snapshot/time.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/time.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind string) (value "UTC epoch at 1 January 1958 at 0 hour 0 minute 0 second")))
     (evaluated (declaration (node (document "memory://snapshot/time.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/time.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/time.md") (qualified-name "Time::TimeOf"))) (value (kind non-constant)))

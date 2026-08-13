@@ -120,12 +120,6 @@ package ActionTest {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_action_usage_member")
-        (source "semantic")
-        (range (start 18 43) (end 18 65))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 21 19) (end 21 22))

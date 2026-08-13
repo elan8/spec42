@@ -57,18 +57,6 @@ package AnalysisAnnotation {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 7 14) (end 7 27))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 8 9) (end 8 46))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 11 10) (end 11 19))
@@ -134,7 +122,7 @@ package AnalysisAnnotation {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:d513146cd2406cf6742e34a2c06203246666ab4ee709bc958e93018a372f46db") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d513146cd2406cf6742e34a2c06203246666ab4ee709bc958e93018a372f46db") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/analysis_annotation.md") (qualified-name "AnalysisAnnotation"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/analysis_annotation.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false)))))
@@ -199,6 +187,8 @@ package AnalysisAnnotation {
   (relationships
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/analysis_annotation.md") (qualified-name "AnalysisAnnotation::ComputeDynamics::ToolExecution::toolName"))) (value (kind string) (value "ModelCenter")))
+    (evaluated (declaration (node (document "memory://snapshot/analysis_annotation.md") (qualified-name "AnalysisAnnotation::ComputeDynamics::ToolExecution::uri"))) (value (kind string) (value "aserv://localhost/Vehicle/Equation1")))
   )
 )
 ~~~

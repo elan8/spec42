@@ -905,7 +905,7 @@ enum ReferenceKind {
 /// syntactic shapes (literal leaves, a comparison `BinaryOp` of two literals, `Parenthesized`
 /// wrapping a supported shape) reach this pass at all -- a shape slice 1 leaves unsupported
 /// publishes no evaluation fact, per `classify_constraint_expression`/`classify_calc_expression`.
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub(crate) enum EvaluatedValue {
     /// A genuinely computed constant `bool` result: a literal boolean leaf, or a comparison of
     /// two literal operands.
@@ -914,6 +914,10 @@ pub(crate) enum EvaluatedValue {
     Integer(i64),
     /// A genuinely computed constant real result: a literal real leaf.
     Real(f64),
+    /// A genuinely computed constant string result: a literal string leaf (`Expression::
+    /// LiteralString`). Only equality comparison (`==`/`!=`, see `fold_literal_comparison`) is
+    /// folded for strings; `Lt`/`Le`/`Gt`/`Ge` are out of scope (no lexicographic ordering).
+    String(String),
     /// Evaluation did not run for this expression. Reserved for a future evaluation-policy gate;
     /// the current pass attempts evaluation for every slice-1-supported expression whenever
     /// resolution itself converges (see `SemanticModelStorage::resolve`), so no fact currently
@@ -1036,6 +1040,11 @@ fn fold_literal_comparison(
     }
     let result = match (left, right) {
         (EvaluatedValue::Boolean(left), EvaluatedValue::Boolean(right)) => match op {
+            BinaryOperator::Eq => Some(left == right),
+            BinaryOperator::Ne => Some(left != right),
+            _ => None,
+        },
+        (EvaluatedValue::String(left), EvaluatedValue::String(right)) => match op {
             BinaryOperator::Eq => Some(left == right),
             BinaryOperator::Ne => Some(left != right),
             _ => None,
@@ -1215,6 +1224,7 @@ fn literal_expression_value(node: &Expression) -> Option<EvaluatedValue> {
         Expression::LiteralBoolean(value) => Some(EvaluatedValue::Boolean(*value)),
         Expression::LiteralInteger(value) => Some(EvaluatedValue::Integer(*value)),
         Expression::LiteralReal(text) => text.parse::<f64>().ok().map(EvaluatedValue::Real),
+        Expression::LiteralString(value) => Some(EvaluatedValue::String(value.clone())),
         _ => None,
     }
 }
@@ -1227,7 +1237,8 @@ fn classify_constraint_node(node: &Expression, ordinal: &mut u32) -> Option<Eval
     match node {
         Expression::LiteralInteger(_)
         | Expression::LiteralReal(_)
-        | Expression::LiteralBoolean(_) => literal_expression_value(node).map(EvalNode::Literal),
+        | Expression::LiteralBoolean(_)
+        | Expression::LiteralString(_) => literal_expression_value(node).map(EvalNode::Literal),
         Expression::FeatureRef(_) | Expression::FeatureChainRef(_) => {
             let leaf = EvalNode::Operand(*ordinal);
             *ordinal += 1;
@@ -1291,7 +1302,8 @@ fn classify_calc_node(node: &Expression, ordinal: &mut u32) -> Option<EvalNode> 
     match node {
         Expression::LiteralInteger(_)
         | Expression::LiteralReal(_)
-        | Expression::LiteralBoolean(_) => literal_expression_value(node).map(EvalNode::Literal),
+        | Expression::LiteralBoolean(_)
+        | Expression::LiteralString(_) => literal_expression_value(node).map(EvalNode::Literal),
         Expression::FeatureRef(_) | Expression::FeatureChainRef(_) => {
             let leaf = EvalNode::Operand(*ordinal);
             *ordinal += 1;
@@ -1368,7 +1380,7 @@ fn fold_eval_node_pending(
     resolve_operand: &mut impl FnMut(u32) -> Option<EvaluatedValue>,
 ) -> Option<EvaluatedValue> {
     match node {
-        EvalNode::Literal(value) => Some(*value),
+        EvalNode::Literal(value) => Some(value.clone()),
         EvalNode::Operand(ordinal) => resolve_operand(*ordinal),
         EvalNode::Comparison(op, left, right) => {
             let left = fold_eval_node_pending(left, resolve_operand)?;
@@ -4941,7 +4953,8 @@ impl SemanticModelBuilder {
         match &node.value {
             Expression::LiteralInteger(_)
             | Expression::LiteralReal(_)
-            | Expression::LiteralBoolean(_) => Ok(()),
+            | Expression::LiteralBoolean(_)
+            | Expression::LiteralString(_) => Ok(()),
             Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => {
                 let span = self.documents[document.index()]
                     .parsed
@@ -5035,7 +5048,8 @@ impl SemanticModelBuilder {
         match &node.value {
             Expression::LiteralInteger(_)
             | Expression::LiteralReal(_)
-            | Expression::LiteralBoolean(_) => Ok(()),
+            | Expression::LiteralBoolean(_)
+            | Expression::LiteralString(_) => Ok(()),
             Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => {
                 let span = self.documents[document.index()]
                     .parsed
@@ -5133,7 +5147,8 @@ impl SemanticModelBuilder {
         match &node.value {
             Expression::LiteralInteger(_)
             | Expression::LiteralReal(_)
-            | Expression::LiteralBoolean(_) => Ok(()),
+            | Expression::LiteralBoolean(_)
+            | Expression::LiteralString(_) => Ok(()),
             Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => {
                 let span = self.documents[document.index()]
                     .parsed
@@ -9758,6 +9773,57 @@ mod tests {
                  (qualified-name \"Demo::C\"))) (value (kind boolean) (boolean false)))"
             ),
             "expected `2 < 1` to fold to a published Boolean(false) evaluation fact, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn attribute_string_literal_default_value_evaluates_to_string() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tattribute value = \"approved\";\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::value\"))) (value (kind string) (value \"approved\")))"
+            ),
+            "expected `attribute value = \"approved\";` to fold to a published \
+             EvaluatedValue::String(\"approved\") evaluation fact, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn constraint_string_equality_comparison_evaluates_to_boolean_true() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tconstraint def C { \"a\" == \"a\" }\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::C\"))) (value (kind boolean) (boolean true)))"
+            ),
+            "expected `\"a\" == \"a\"` to fold to a published Boolean(true) evaluation fact, \
+             got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn constraint_string_equality_comparison_evaluates_to_boolean_false() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tconstraint def C { \"a\" == \"b\" }\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::C\"))) (value (kind boolean) (boolean false)))"
+            ),
+            "expected `\"a\" == \"b\"` to fold to a published Boolean(false) evaluation fact, \
+             got:\n{output}"
         );
     }
 

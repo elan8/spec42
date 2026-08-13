@@ -94,12 +94,6 @@ package '15_12-Compound Value Type' {
         (severity warning)
         (code "unsupported_attribute_member")
         (source "semantic")
-        (range (start 26 34) (end 26 44))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
         (range (start 27 33) (end 27 43))
       )
     )
@@ -182,6 +176,7 @@ package '15_12-Compound Value Type' {
     (relationship (kind redefinition) (source (node (document "memory://snapshot/15_12_compound_value_type.md") (anonymous (kind attribute) (ordinal 2))))) (target (node (document "memory://snapshot/15_12_compound_value_type.md") (qualified-name "15_12-Compound Value Type::TireInfo::width"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/15_12_compound_value_type.md") (anonymous (kind attribute) (ordinal 2))))) (kind redefinition) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/15_12_compound_value_type.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind string) (value "Michelin")))
     (evaluated (declaration (node (document "memory://snapshot/15_12_compound_value_type.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind integer) (integer 245)))
   )
 )

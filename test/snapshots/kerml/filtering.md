@@ -166,12 +166,6 @@ package Filtering {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 41 27) (end 41 35))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
         (range (start 41 39) (end 41 60))
       )
       (diagnostic

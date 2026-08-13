@@ -295,7 +295,7 @@ impl ResolutionResults {
 
 /// The published outcome of evaluating one `PendingEvaluationFact`: the declaration the supported
 /// constraint/calc expression belongs to, and its final `EvaluatedValue`. See `compute_evaluation`.
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 struct EvaluationFact {
     declaration: DeclarationId,
     outcome: EvaluatedValue,
@@ -369,7 +369,7 @@ fn compute_evaluation(
         Default::default();
     for pending in storage.evaluation_facts.iter() {
         if let ExpressionEvalShape::Literal(value) = &pending.shape {
-            outcomes.insert(pending.declaration, *value);
+            outcomes.insert(pending.declaration, value.clone());
         }
     }
 
@@ -388,7 +388,7 @@ fn compute_evaluation(
                 match targets.and_then(|targets| targets.get(ordinal as usize).copied().flatten()) {
                     None => Some(EvaluatedValue::UnresolvedOperand),
                     Some(target) => match outcomes.get(&target) {
-                        Some(value) => Some(*value),
+                        Some(value) => Some(value.clone()),
                         None if has_fact.contains(&target) => None,
                         None => Some(EvaluatedValue::NonConstant),
                     },
@@ -418,7 +418,7 @@ fn compute_evaluation(
         if matches!(pending.shape, ExpressionEvalShape::Unsupported) {
             continue;
         }
-        let Some(outcome) = outcomes.get(&pending.declaration).copied() else {
+        let Some(outcome) = outcomes.get(&pending.declaration).cloned() else {
             continue;
         };
         facts.push(EvaluationFact {

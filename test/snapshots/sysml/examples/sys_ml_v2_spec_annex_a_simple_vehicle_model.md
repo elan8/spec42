@@ -3017,18 +3017,6 @@ package SimpleVehicleModel{
         (severity warning)
         (code "unsupported_attribute_member")
         (source "semantic")
-        (range (start 893 45) (end 893 50))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 894 40) (end 894 46))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
         (range (start 903 57) (end 903 65))
       )
       (diagnostic
@@ -3432,12 +3420,6 @@ package SimpleVehicleModel{
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1120 13) (end 1120 22))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 1122 23) (end 1122 148))
       )
       (diagnostic
         (severity warning)
@@ -7046,6 +7028,7 @@ package SimpleVehicleModel{
     (evaluated (declaration (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::::explanation"))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::::scheduleRisk"))) (value (kind unresolved-operand)))
     (evaluated (declaration (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::::technicalRisk"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::::text"))) (value (kind string) (value "the engine4cyl was evaluated to have a higher objective function compared to the engine6cyl based on the trade-off analyiss")))
     (evaluated (declaration (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::::totalRisk"))) (value (kind unresolved-operand)))
     (evaluated (declaration (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (anonymous (kind calc) (ordinal 0))))) (value (kind unresolved-operand)))
     (evaluated (declaration (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (anonymous (kind calc) (ordinal 0))))) (value (kind unresolved-operand)))
@@ -7063,6 +7046,8 @@ package SimpleVehicleModel{
     (evaluated (declaration (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::driveTrainEfficiency"))) (value (kind real) (real 0.6)))
     (evaluated (declaration (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind integer) (integer 10)))
     (evaluated (declaration (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind real) (real 12.75)))
+    (evaluated (declaration (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicleFuelEconomyRequirements::highwayFuelEconomyRequirement::::originator"))) (value (kind string) (value "Bob")))
+    (evaluated (declaration (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicleFuelEconomyRequirements::highwayFuelEconomyRequirement::::owner"))) (value (kind string) (value "Mary")))
     (evaluated (declaration (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicleFuelEconomyRequirements::highwayFuelEconomyRequirement::::status"))) (value (kind unresolved-operand)))
     (evaluated (declaration (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind integer) (integer 0)))
     (evaluated (declaration (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind integer) (integer 0)))

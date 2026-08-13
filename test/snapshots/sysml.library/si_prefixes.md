@@ -79,21 +79,9 @@ standard library package SIPrefixes {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 13 46) (end 13 53))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 13 59) (end 13 65))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 13 68) (end 13 71))
       )
       (diagnostic
         (severity warning)
@@ -115,21 +103,9 @@ standard library package SIPrefixes {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 14 46) (end 14 53))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 14 59) (end 14 65))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 14 68) (end 14 71))
       )
       (diagnostic
         (severity warning)
@@ -151,21 +127,9 @@ standard library package SIPrefixes {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 15 45) (end 15 51))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 15 57) (end 15 63))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 15 66) (end 15 69))
       )
       (diagnostic
         (severity warning)
@@ -187,21 +151,9 @@ standard library package SIPrefixes {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 16 46) (end 16 53))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 16 59) (end 16 65))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 16 68) (end 16 71))
       )
       (diagnostic
         (severity warning)
@@ -223,21 +175,9 @@ standard library package SIPrefixes {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 17 45) (end 17 51))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 17 57) (end 17 63))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 17 66) (end 17 69))
       )
       (diagnostic
         (severity warning)
@@ -259,21 +199,9 @@ standard library package SIPrefixes {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 18 45) (end 18 51))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 18 57) (end 18 63))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 18 66) (end 18 69))
       )
       (diagnostic
         (severity warning)
@@ -295,21 +223,9 @@ standard library package SIPrefixes {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 19 46) (end 19 53))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 19 59) (end 19 65))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 19 68) (end 19 72))
       )
       (diagnostic
         (severity warning)
@@ -331,21 +247,9 @@ standard library package SIPrefixes {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 20 46) (end 20 53))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 20 59) (end 20 65))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 20 68) (end 20 71))
       )
       (diagnostic
         (severity warning)
@@ -367,21 +271,9 @@ standard library package SIPrefixes {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 21 46) (end 21 53))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 21 59) (end 21 65))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 21 68) (end 21 71))
       )
       (diagnostic
         (severity warning)
@@ -403,21 +295,9 @@ standard library package SIPrefixes {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 22 45) (end 22 51))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 22 57) (end 22 63))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 22 66) (end 22 69))
       )
       (diagnostic
         (severity warning)
@@ -439,21 +319,9 @@ standard library package SIPrefixes {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 23 45) (end 23 51))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 23 57) (end 23 63))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 23 66) (end 23 70))
       )
       (diagnostic
         (severity warning)
@@ -475,21 +343,9 @@ standard library package SIPrefixes {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 24 46) (end 24 53))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 24 59) (end 24 65))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 24 68) (end 24 71))
       )
       (diagnostic
         (severity warning)
@@ -511,21 +367,9 @@ standard library package SIPrefixes {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 25 45) (end 25 51))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 25 57) (end 25 63))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 25 66) (end 25 69))
       )
       (diagnostic
         (severity warning)
@@ -547,21 +391,9 @@ standard library package SIPrefixes {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 26 45) (end 26 51))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 26 57) (end 26 63))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 26 66) (end 26 69))
       )
       (diagnostic
         (severity warning)
@@ -583,21 +415,9 @@ standard library package SIPrefixes {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 27 45) (end 27 51))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 27 57) (end 27 63))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 27 66) (end 27 69))
       )
       (diagnostic
         (severity warning)
@@ -619,21 +439,9 @@ standard library package SIPrefixes {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 28 45) (end 28 51))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 28 57) (end 28 63))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 28 66) (end 28 69))
       )
       (diagnostic
         (severity warning)
@@ -655,21 +463,9 @@ standard library package SIPrefixes {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 29 45) (end 29 51))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 29 57) (end 29 63))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 29 66) (end 29 69))
       )
       (diagnostic
         (severity warning)
@@ -691,21 +487,9 @@ standard library package SIPrefixes {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 30 44) (end 30 49))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 30 55) (end 30 61))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 30 64) (end 30 67))
       )
       (diagnostic
         (severity warning)
@@ -727,21 +511,9 @@ standard library package SIPrefixes {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 31 46) (end 31 53))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 31 59) (end 31 65))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 31 68) (end 31 71))
       )
       (diagnostic
         (severity warning)
@@ -763,21 +535,9 @@ standard library package SIPrefixes {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 32 46) (end 32 53))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 32 59) (end 32 65))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 32 68) (end 32 71))
       )
       (diagnostic
         (severity warning)
@@ -799,21 +559,9 @@ standard library package SIPrefixes {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 39 45) (end 39 51))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 39 57) (end 39 63))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 39 66) (end 39 70))
       )
       (diagnostic
         (severity warning)
@@ -835,21 +583,9 @@ standard library package SIPrefixes {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 40 45) (end 40 51))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 40 57) (end 40 63))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 40 66) (end 40 70))
       )
       (diagnostic
         (severity warning)
@@ -877,21 +613,9 @@ standard library package SIPrefixes {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 41 45) (end 41 51))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 41 57) (end 41 63))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 41 66) (end 41 70))
       )
       (diagnostic
         (severity warning)
@@ -919,21 +643,9 @@ standard library package SIPrefixes {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 42 45) (end 42 51))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 42 57) (end 42 63))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 42 66) (end 42 70))
       )
       (diagnostic
         (severity warning)
@@ -961,21 +673,9 @@ standard library package SIPrefixes {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 43 45) (end 43 51))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 43 57) (end 43 63))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 43 66) (end 43 70))
       )
       (diagnostic
         (severity warning)
@@ -1003,21 +703,9 @@ standard library package SIPrefixes {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 44 45) (end 44 51))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 44 57) (end 44 63))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 44 66) (end 44 70))
       )
       (diagnostic
         (severity warning)
@@ -1045,21 +733,9 @@ standard library package SIPrefixes {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 45 45) (end 45 51))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 45 57) (end 45 63))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 45 66) (end 45 70))
       )
       (diagnostic
         (severity warning)
@@ -1087,21 +763,9 @@ standard library package SIPrefixes {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 46 45) (end 46 51))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 46 57) (end 46 63))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 46 66) (end 46 70))
       )
       (diagnostic
         (severity warning)
@@ -1583,26 +1247,82 @@ standard library package SIPrefixes {
   (relationships
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind string) (value "atto")))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind string) (value "a")))
     (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 0.000000000000000001)))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind string) (value "centi")))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind string) (value "c")))
     (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 0.01)))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind string) (value "deca")))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind string) (value "da")))
     (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 10)))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind string) (value "deci")))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind string) (value "d")))
     (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 0.1)))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind string) (value "exa")))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind string) (value "E")))
     (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 1000000000000000000)))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind string) (value "exbi")))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind string) (value "Ei")))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind string) (value "femto")))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind string) (value "f")))
     (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 0.000000000000001)))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind string) (value "gibi")))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind string) (value "Gi")))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind string) (value "giga")))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind string) (value "G")))
     (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 1000000000)))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind string) (value "hecto")))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind string) (value "h")))
     (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 100)))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind string) (value "kibi")))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind string) (value "Ki")))
     (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind integer) (integer 1024)))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind string) (value "kilo")))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind string) (value "k")))
     (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 1000)))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind string) (value "mebi")))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind string) (value "Mi")))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind string) (value "mega")))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind string) (value "M")))
     (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 1000000)))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind string) (value "micro")))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind string) (value "μ")))
     (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 0.000001)))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind string) (value "milli")))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind string) (value "m")))
     (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 0.001)))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind string) (value "nano")))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind string) (value "n")))
     (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 0.000000001)))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind string) (value "pebi")))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind string) (value "Pi")))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind string) (value "peta")))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind string) (value "P")))
     (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 1000000000000000)))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind string) (value "pico")))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind string) (value "p")))
     (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 0.000000000001)))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind string) (value "tebi")))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind string) (value "Ti")))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind string) (value "tera")))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind string) (value "T")))
     (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 1000000000000)))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind string) (value "yobi")))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind string) (value "Yi")))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind string) (value "yocto")))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind string) (value "y")))
     (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 0.000000000000000000000001)))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind string) (value "yotta")))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind string) (value "Y")))
     (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 1000000000000000000000000)))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind string) (value "zebi")))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind string) (value "Zi")))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind string) (value "zepto")))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind string) (value "z")))
     (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 0.000000000000000000001)))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind string) (value "zetta")))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind string) (value "Z")))
     (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 1000000000000000000000)))
   )
 )

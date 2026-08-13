@@ -65,12 +65,6 @@ package TextualRepresentationTest {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_constraint_definition_member")
-        (source "semantic")
-        (range (start 6 25) (end 6 30))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 13 12) (end 13 16))
@@ -126,9 +120,10 @@ package TextualRepresentationTest {
     (relationship (kind typing) (direction in) (source (node (document "memory://snapshot/textual_representation_test.md") (qualified-name "TextualRepresentationTest::setX::c"))) (target (node (document "memory://snapshot/textual_representation_test.md") (qualified-name "TextualRepresentationTest::C"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/textual_representation_test.md") (qualified-name "TextualRepresentationTest::setX::c"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/textual_representation_test.md") (qualified-name "TextualRepresentationTest::C::x_constraint"))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/textual_representation_test.md") (qualified-name "TextualRepresentationTest::C::x_constraint"))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/textual_representation_test.md") (qualified-name "TextualRepresentationTest::C::x_constraint"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/textual_representation_test.md") (qualified-name "TextualRepresentationTest::C::x_constraint"))) (value (kind string) (value "ocl")))
+    (evaluated (declaration (node (document "memory://snapshot/textual_representation_test.md") (qualified-name "TextualRepresentationTest::C::x_constraint"))) (value (kind string) (value "ocl")))
+    (evaluated (declaration (node (document "memory://snapshot/textual_representation_test.md") (qualified-name "TextualRepresentationTest::C::x_constraint"))) (value (kind string) (value "ocl")))
+    (evaluated (declaration (node (document "memory://snapshot/textual_representation_test.md") (qualified-name "TextualRepresentationTest::C::x_constraint"))) (value (kind string) (value "ocl")))
   )
 )
 ~~~

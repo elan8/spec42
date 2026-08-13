@@ -49,12 +49,6 @@ package RationaleMetadataExample {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 11 12) (end 11 95))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
         (range (start 15 19) (end 15 34))
@@ -127,6 +121,7 @@ package RationaleMetadataExample {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineSelectionRationale::explanation"))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineSelectionRationale::text"))) (value (kind string) (value "This rationale for selecting the engine4cyl refers to the engineTradeOffAnalysis.")))
   )
 )
 ~~~
