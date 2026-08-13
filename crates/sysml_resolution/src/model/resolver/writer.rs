@@ -432,6 +432,7 @@ fn write_evaluated_value(value: EvaluatedValue, output: &mut dyn fmt::Write) -> 
         EvaluatedValue::NotEvaluated => write!(output, "(value (kind not-evaluated))"),
         EvaluatedValue::UnresolvedOperand => write!(output, "(value (kind unresolved-operand))"),
         EvaluatedValue::NonConstant => write!(output, "(value (kind non-constant))"),
+        EvaluatedValue::NonConverged => write!(output, "(value (kind non-converged))"),
     }
 }
 

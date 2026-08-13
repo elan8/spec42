@@ -340,7 +340,7 @@ package '15_13-Discretely Sampled Function Value' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d0cb767973e27388c841c64a287a71344826bd748ecfaaface55a5c4bdd85775") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d0cb767973e27388c841c64a287a71344826bd748ecfaaface55a5c4bdd85775") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (qualified-name "15_13-Discretely Sampled Function Value"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "SampledFunctions::SampledFunction") (import (shape membership) (recursive false)))))
@@ -585,6 +585,7 @@ package '15_13-Discretely Sampled Function Value' {
     (relationship (kind redefinition) (source (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale::definitionalEpochInUTC"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind integer) (integer 0)))
   )
 )
 ~~~

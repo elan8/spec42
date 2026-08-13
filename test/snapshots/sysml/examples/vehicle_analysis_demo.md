@@ -1377,6 +1377,7 @@ package 'Vehicle Analysis Demo' {
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/vehicle_analysis_demo.md") (qualified-name "Vehicle Analysis Demo::DynamicsModel::StraightLineDynamicsEquations"))) (value (kind unresolved-operand)))
     (evaluated (declaration (node (document "memory://snapshot/vehicle_analysis_demo.md") (qualified-name "Vehicle Analysis Demo::DynamicsModel::StraightLineDynamicsEquations"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/vehicle_analysis_demo.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
   )
 )
 ~~~

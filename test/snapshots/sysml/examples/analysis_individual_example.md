@@ -305,7 +305,7 @@ package AnalysisIndividualExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:39d02d58702ecb2aabcc9d8ad7806a3989bd5bce273d9fd40dddab6b49bceb94") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:39d02d58702ecb2aabcc9d8ad7806a3989bd5bce273d9fd40dddab6b49bceb94") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/analysis_individual_example.md") (qualified-name "AnalysisIndividualExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/analysis_individual_example.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
@@ -519,6 +519,7 @@ package AnalysisIndividualExample {
     (relationship (kind typing) (source (node (document "memory://snapshot/analysis_individual_example.md") (qualified-name "AnalysisIndividualExample::VehicleQuantities::mpg"))) (target (node (document "memory://snapshot/analysis_individual_example.md") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/analysis_individual_example.md") (qualified-name "AnalysisIndividualExample::VehicleQuantities::mpg"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/analysis_individual_example.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
   )
 )
 ~~~

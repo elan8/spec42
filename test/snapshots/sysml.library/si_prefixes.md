@@ -744,7 +744,7 @@ standard library package SIPrefixes {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:9877692e70a8eaff7fe196d7ad6511395193d95cf24aa28abc8502e4ed150df0") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:9877692e70a8eaff7fe196d7ad6511395193d95cf24aa28abc8502e4ed150df0") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/si_prefixes.md") (qualified-name "SIPrefixes"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "MeasurementReferences") (import (shape namespace) (recursive false)))))
@@ -1205,6 +1205,27 @@ standard library package SIPrefixes {
   (relationships
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 0.000000000000000001)))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 0.01)))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 10)))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 0.1)))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 1000000000000000000)))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 0.000000000000001)))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 1000000000)))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 100)))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind integer) (integer 1024)))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 1000)))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 1000000)))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 0.000001)))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 0.001)))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 0.000000001)))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 1000000000000000)))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 0.000000000001)))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 1000000000000)))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 0.000000000000000000000001)))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 1000000000000000000000000)))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 0.000000000000000000001)))
+    (evaluated (declaration (node (document "memory://snapshot/si_prefixes.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 1000000000000000000000)))
   )
 )
 ~~~

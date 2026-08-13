@@ -1261,7 +1261,7 @@ standard library package ISQAcoustics {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:5f9973660df4abce2416fa65cd9bb620d81764cbf79b7019f0df075e9d13d3c4") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:5f9973660df4abce2416fa65cd9bb620d81764cbf79b7019f0df075e9d13d3c4") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/isq_acoustics.md") (qualified-name "ISQAcoustics"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/isq_acoustics.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false)))))
@@ -1908,6 +1908,17 @@ standard library package ISQAcoustics {
     (relationship (kind aliasBinding) (source (node (document "memory://snapshot/isq_acoustics.md") (qualified-name "ISQAcoustics::volumeFlowRate"))) (target (node (document "memory://snapshot/isq_acoustics.md") (qualified-name "ISQAcoustics::volumeVelocity"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/isq_acoustics.md") (qualified-name "ISQAcoustics::volumeFlowRate"))) (kind aliasBinding) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/isq_acoustics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_acoustics.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind boolean) (boolean false)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_acoustics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind boolean) (boolean true)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_acoustics.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind boolean) (boolean false)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_acoustics.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind boolean) (boolean false)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_acoustics.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind boolean) (boolean false)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_acoustics.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind boolean) (boolean false)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_acoustics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_acoustics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_acoustics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_acoustics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
   )
 )
 ~~~

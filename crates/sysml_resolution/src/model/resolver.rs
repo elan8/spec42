@@ -312,6 +312,19 @@ struct EvaluationFact {
 /// operand's own resolution outcome is not settled cannot be conservatively classified as
 /// resolved/unresolved, so evaluation stays vacuous for that publication (an empty `evaluation`
 /// section, `has-evaluation` false) rather than guessing.
+///
+/// Slice 3 (constant propagation, see `EvalNode`/`fold_eval_node_pending`): a `HasOperand` fact's
+/// tree is folded against a declaration -> constant-value map that is itself the result of a
+/// bounded fixed point over every pending evaluation fact (`Literal` facts -- including slice 3's
+/// literal-only attribute default values, see `lower_attribute_default_value` -- seed the map with
+/// no dependency; each `HasOperand` fact settles once every operand it needs is itself settled,
+/// either to a concrete constant, to `NonConstant`/`UnresolvedOperand`, or because its resolved
+/// target has no evaluation fact at all). A dependency chain through resolved operand references
+/// can be at most one hop longer per pass, so the fixed point is bounded by
+/// `evaluation_facts.len() + 1` passes (mirrors `build_ancestor_closures`'s bound); any fact still
+/// unsettled after the bound is exhausted is a genuine cross-declaration dependency cycle and
+/// publishes the explicit `EvaluatedValue::NonConverged` outcome, never a fabricated value, an
+/// infinite loop, or a panic.
 fn compute_evaluation(
     storage: &SemanticModelStorage,
     resolution: &ResolutionResults,
@@ -319,40 +332,94 @@ fn compute_evaluation(
     if resolution.solver_status != SolverStatus::Converged {
         return Box::new([]);
     }
+
+    // operand_targets[declaration][ordinal] = the ExpressionOperand reference's resolved target,
+    // or None when that reference did not resolve to exactly one declaration.
+    let mut operand_targets: std::collections::BTreeMap<DeclarationId, Vec<Option<DeclarationId>>> =
+        Default::default();
+    for (index, reference) in storage.references.iter().enumerate() {
+        if reference.kind != ReferenceKind::ExpressionOperand {
+            continue;
+        }
+        let Ok(id) = AuthoredReferenceId::from_index(index) else {
+            continue;
+        };
+        let target = match resolution.outcome(id) {
+            Some(ResolutionStatus::Resolved(target)) => Some(target),
+            _ => None,
+        };
+        let ordinal = reference.ordinal as usize;
+        let slot = operand_targets.entry(reference.source).or_default();
+        if slot.len() <= ordinal {
+            slot.resize(ordinal + 1, None);
+        }
+        slot[ordinal] = target;
+    }
+
+    // Every declaration that published an evaluation candidate at all -- the only declarations
+    // constant propagation can ever look up a value for. A resolved operand reference whose
+    // target is *not* in this set has no known constant, settling immediately as `NonConstant`.
+    let has_fact: std::collections::BTreeSet<DeclarationId> = storage
+        .evaluation_facts
+        .iter()
+        .map(|pending| pending.declaration)
+        .collect();
+
+    let mut outcomes: std::collections::BTreeMap<DeclarationId, EvaluatedValue> =
+        Default::default();
+    for pending in storage.evaluation_facts.iter() {
+        if let ExpressionEvalShape::Literal(value) = &pending.shape {
+            outcomes.insert(pending.declaration, *value);
+        }
+    }
+
+    let pass_limit = storage.evaluation_facts.len().saturating_add(1);
+    for _ in 0..pass_limit {
+        let mut changed = false;
+        for pending in storage.evaluation_facts.iter() {
+            let ExpressionEvalShape::HasOperand(tree) = &pending.shape else {
+                continue;
+            };
+            if outcomes.contains_key(&pending.declaration) {
+                continue;
+            }
+            let targets = operand_targets.get(&pending.declaration);
+            let mut resolve_operand = |ordinal: u32| -> Option<EvaluatedValue> {
+                match targets.and_then(|targets| targets.get(ordinal as usize).copied().flatten()) {
+                    None => Some(EvaluatedValue::UnresolvedOperand),
+                    Some(target) => match outcomes.get(&target) {
+                        Some(value) => Some(*value),
+                        None if has_fact.contains(&target) => None,
+                        None => Some(EvaluatedValue::NonConstant),
+                    },
+                }
+            };
+            if let Some(value) = fold_eval_node_pending(tree, &mut resolve_operand) {
+                outcomes.insert(pending.declaration, value);
+                changed = true;
+            }
+        }
+        if !changed {
+            break;
+        }
+    }
+
+    // Anything still unsettled after the bound is a genuine cross-declaration dependency cycle
+    // (directly or transitively self-referential), not a longer-than-expected acyclic chain --
+    // the bound already covers every acyclic chain up to the total fact count.
+    for pending in storage.evaluation_facts.iter() {
+        outcomes
+            .entry(pending.declaration)
+            .or_insert(EvaluatedValue::NonConverged);
+    }
+
     let mut facts = Vec::with_capacity(storage.evaluation_facts.len());
     for pending in storage.evaluation_facts.iter() {
-        let outcome = match pending.shape {
-            ExpressionEvalShape::Literal(value) => value,
-            ExpressionEvalShape::HasOperand => {
-                let mut has_operand_reference = false;
-                let mut all_resolved = true;
-                for (index, reference) in storage.references.iter().enumerate() {
-                    if reference.source != pending.declaration
-                        || reference.kind != ReferenceKind::ExpressionOperand
-                    {
-                        continue;
-                    }
-                    has_operand_reference = true;
-                    let Ok(id) = AuthoredReferenceId::from_index(index) else {
-                        all_resolved = false;
-                        continue;
-                    };
-                    if !matches!(resolution.outcome(id), Some(ResolutionStatus::Resolved(_))) {
-                        all_resolved = false;
-                    }
-                }
-                if !has_operand_reference {
-                    // Should not happen: `HasOperand` is only classified when the same walk that
-                    // pushes an `ExpressionOperand` reference found a feature-reference leaf.
-                    // Conservative fallback rather than a panic on a storage inconsistency.
-                    EvaluatedValue::UnresolvedOperand
-                } else if all_resolved {
-                    EvaluatedValue::NonConstant
-                } else {
-                    EvaluatedValue::UnresolvedOperand
-                }
-            }
-            ExpressionEvalShape::Unsupported => continue,
+        if matches!(pending.shape, ExpressionEvalShape::Unsupported) {
+            continue;
+        }
+        let Some(outcome) = outcomes.get(&pending.declaration).copied() else {
+            continue;
         };
         facts.push(EvaluationFact {
             declaration: pending.declaration,

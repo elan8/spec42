@@ -2868,7 +2868,7 @@ standard library package SI {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:ead02a29d08ecaded202fcd1dd6873c2507c8117550b852e46bfc57d53a386fd") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:ead02a29d08ecaded202fcd1dd6873c2507c8117550b852e46bfc57d53a386fd") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/si.md") (qualified-name "SI"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/si.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "MeasurementReferences") (import (shape namespace) (recursive false)))))
@@ -4484,6 +4484,29 @@ standard library package SI {
     (relationship (kind aliasBinding) (source (node (document "memory://snapshot/si.md") (qualified-name "SI::metric ton"))) (target (node (document "memory://snapshot/si.md") (qualified-name "SI::tonne"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/si.md") (qualified-name "SI::metric ton"))) (kind aliasBinding) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind real) (real 14959787069100000000000)))
+    (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind boolean) (boolean false)))
+    (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind real) (real 1)))
+    (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind real) (real 0.0000000000000000000000000001)))
+    (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind real) (real 0.0000000000000000000000000016605390666)))
+    (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind boolean) (boolean false)))
+    (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 24)))
+    (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind real) (real 0.01745329)))
+    (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind boolean) (boolean false)))
+    (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind real) (real 0.0000000000000000001602176487)))
+    (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind boolean) (boolean false)))
+    (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 60)))
+    (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind real) (real 0.001)))
+    (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind real) (real 0.0002908882)))
+    (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind boolean) (boolean false)))
+    (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 60)))
+    (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind real) (real 0.000004848137)))
+    (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind boolean) (boolean false)))
+    (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind real) (real 0.001)))
+    (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind real) (real 1)))
+    (evaluated (declaration (node (document "memory://snapshot/si.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind real) (real 0.0000000001)))
   )
 )
 ~~~

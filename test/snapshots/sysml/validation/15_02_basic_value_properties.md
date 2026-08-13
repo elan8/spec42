@@ -67,7 +67,7 @@ package '15_02-Basic Value Properties' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:b41c0af10bccf301a48e6fa47472e6e3fa145471ce51d7e885f5bee961735f2a") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b41c0af10bccf301a48e6fa47472e6e3fa145471ce51d7e885f5bee961735f2a") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/15_02_basic_value_properties.md") (qualified-name "15_02-Basic Value Properties"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/15_02_basic_value_properties.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
@@ -118,6 +118,8 @@ package '15_02-Basic Value Properties' {
     (relationship (kind redefinition) (source (node (document "memory://snapshot/15_02_basic_value_properties.md") (anonymous (kind attribute) (ordinal 2))))) (target (node (document "memory://snapshot/15_02_basic_value_properties.md") (qualified-name "15_02-Basic Value Properties::Tire::width"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/15_02_basic_value_properties.md") (anonymous (kind attribute) (ordinal 2))))) (kind redefinition) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/15_02_basic_value_properties.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind real) (real 18)))
+    (evaluated (declaration (node (document "memory://snapshot/15_02_basic_value_properties.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind integer) (integer 245)))
   )
 )
 ~~~

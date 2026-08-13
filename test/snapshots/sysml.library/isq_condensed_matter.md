@@ -2963,7 +2963,7 @@ standard library package ISQCondensedMatter {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:1c048bd52ff5fdf9968a38fdcf1ccfffb935eaa6f2741a168cf84af3e1a66cae") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:1c048bd52ff5fdf9968a38fdcf1ccfffb935eaa6f2741a168cf84af3e1a66cae") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/isq_condensed_matter.md") (qualified-name "ISQCondensedMatter"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false)))))
@@ -4337,6 +4337,28 @@ standard library package ISQCondensedMatter {
     (relationship (kind typing) (source (node (document "memory://snapshot/isq_condensed_matter.md") (qualified-name "ISQCondensedMatter::thomsonCoefficient"))) (target (node (document "memory://snapshot/isq_condensed_matter.md") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/isq_condensed_matter.md") (qualified-name "ISQCondensedMatter::thomsonCoefficient"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind boolean) (boolean false)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind boolean) (boolean true)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind boolean) (boolean false)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind boolean) (boolean false)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind boolean) (boolean false)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind boolean) (boolean true)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind boolean) (boolean false)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind boolean) (boolean false)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind boolean) (boolean true)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind boolean) (boolean false)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind boolean) (boolean false)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind boolean) (boolean true)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 3)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 4)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
   )
 )
 ~~~

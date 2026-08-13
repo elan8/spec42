@@ -215,7 +215,7 @@ standard library package CauseAndEffect {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:6671ee8053b74a25e04f4200e134f345a28e70bc3ca74b1e8ffb8caa560bf035") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:6671ee8053b74a25e04f4200e134f345a28e70bc3ca74b1e8ffb8caa560bf035") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/cause_and_effect.md") (qualified-name "CauseAndEffect"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/cause_and_effect.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "CausationConnections") (import (shape namespace) (recursive false)))))
@@ -323,6 +323,8 @@ standard library package CauseAndEffect {
     (relationship (kind redefinition) (source (node (document "memory://snapshot/cause_and_effect.md") (qualified-name "CauseAndEffect::MulticausationSemanticMetadata::baseType"))) (target (node (document "memory://snapshot/cause_and_effect.md") (qualified-name "CauseAndEffect::MulticausationSemanticMetadata::baseType"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/cause_and_effect.md") (qualified-name "CauseAndEffect::MulticausationSemanticMetadata::baseType"))) (kind redefinition) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/cause_and_effect.md") (qualified-name "CauseAndEffect::CausationMetadata::isNecessary"))) (value (kind boolean) (boolean false)))
+    (evaluated (declaration (node (document "memory://snapshot/cause_and_effect.md") (qualified-name "CauseAndEffect::CausationMetadata::isSufficient"))) (value (kind boolean) (boolean false)))
   )
 )
 ~~~

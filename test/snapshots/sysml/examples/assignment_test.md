@@ -225,6 +225,7 @@ package AssignmentTest {
     (relationship (kind typing) (source (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::a::counting"))) (target (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::Counting"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::a::counting"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::Counter::count"))) (value (kind integer) (integer 0)))
     (evaluated (declaration (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::Increment"))) (value (kind unresolved-operand)))
     (evaluated (declaration (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::Increment"))) (value (kind unresolved-operand)))
   )

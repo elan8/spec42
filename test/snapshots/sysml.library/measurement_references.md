@@ -988,7 +988,7 @@ standard library package MeasurementReferences {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:fd07608c0b2dfc845a311b1c8f5f9f3ce023cba4971fd3cd830a24354253714a") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:fd07608c0b2dfc845a311b1c8f5f9f3ce023cba4971fd3cd830a24354253714a") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/measurement_references.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Collections::Array") (import (shape membership) (recursive false)))))
@@ -1542,6 +1542,15 @@ standard library package MeasurementReferences {
     (relationship (kind typing) (source (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::one"))) (target (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::DimensionOneUnit"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::one"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/measurement_references.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind integer) (integer 3)))
+    (evaluated (declaration (node (document "memory://snapshot/measurement_references.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind boolean) (boolean true)))
+    (evaluated (declaration (node (document "memory://snapshot/measurement_references.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind boolean) (boolean false)))
+    (evaluated (declaration (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::Rotation::isIntrinsic"))) (value (kind boolean) (boolean true)))
+    (evaluated (declaration (node (document "memory://snapshot/measurement_references.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind boolean) (boolean true)))
+    (evaluated (declaration (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::SimpleUnit::::exponent"))) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::TensorMeasurementReference::isBound"))) (value (kind boolean) (boolean false)))
+    (evaluated (declaration (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::UnitConversion::isExact"))) (value (kind boolean) (boolean true)))
+    (evaluated (declaration (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences::VectorMeasurementReference::isOrthogonal"))) (value (kind boolean) (boolean true)))
   )
 )
 ~~~

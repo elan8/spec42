@@ -105,7 +105,7 @@ part def Vehicle {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:b68cc5a4af517e91ba754c3a7f6da52bf395f73b90d104d39b2ff390db98f263") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:b68cc5a4af517e91ba754c3a7f6da52bf395f73b90d104d39b2ff390db98f263") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Color"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "DataPort"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -163,6 +163,7 @@ part def Vehicle {
     (relationship (kind typing) (source (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle::refPart"))) (target (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Engine"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle::refPart"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle::mass"))) (value (kind integer) (integer 100)))
   )
 )
 ~~~

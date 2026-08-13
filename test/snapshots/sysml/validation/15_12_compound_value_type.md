@@ -97,7 +97,7 @@ package '15_12-Compound Value Type' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:767f47c2c6e2ae319e0161421c9a488e978c3d9927883dea7367747fe290e617") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:767f47c2c6e2ae319e0161421c9a488e978c3d9927883dea7367747fe290e617") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/15_12_compound_value_type.md") (qualified-name "15_12-Compound Value Type"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/15_12_compound_value_type.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
@@ -170,6 +170,7 @@ package '15_12-Compound Value Type' {
     (relationship (kind redefinition) (source (node (document "memory://snapshot/15_12_compound_value_type.md") (anonymous (kind attribute) (ordinal 2))))) (target (node (document "memory://snapshot/15_12_compound_value_type.md") (qualified-name "15_12-Compound Value Type::TireInfo::width"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/15_12_compound_value_type.md") (anonymous (kind attribute) (ordinal 2))))) (kind redefinition) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/15_12_compound_value_type.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind integer) (integer 245)))
   )
 )
 ~~~

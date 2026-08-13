@@ -913,7 +913,7 @@ package EVSample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:421fcb90e6f0bfc15eca186560c63a0142814f1aee97d175a438f45c6371efe6") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:421fcb90e6f0bfc15eca186560c63a0142814f1aee97d175a438f45c6371efe6") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/evsample.md") (qualified-name "EVSample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/evsample.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "SI") (import (shape namespace) (recursive false)))))
@@ -1495,6 +1495,10 @@ package EVSample {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/evsample.md") (qualified-name "EVSample::vehicle_large"))) (target (node (document "memory://snapshot/evsample.md") (qualified-name "EVSample::vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/evsample.md") (qualified-name "EVSample::vehicle_large"))) (kind subsetting) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/evsample.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind real) (real 0.8)))
+    (evaluated (declaration (node (document "memory://snapshot/evsample.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind real) (real 0.9)))
+    (evaluated (declaration (node (document "memory://snapshot/evsample.md") (qualified-name "EVSample::vehicle::airFrictionCoefficient"))) (value (kind real) (real 0.2)))
+    (evaluated (declaration (node (document "memory://snapshot/evsample.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind real) (real 0.8)))
   )
 )
 ~~~

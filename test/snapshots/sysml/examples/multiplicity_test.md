@@ -49,7 +49,7 @@ package MultiplicityTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:deba5cfab2f49ffa063a5603afc4584eb30210640721e7a314122342e88550a4") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:deba5cfab2f49ffa063a5603afc4584eb30210640721e7a314122342e88550a4") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::A"))) (kind attribute-def) (membership (kind owning) (visibility default)))
@@ -88,6 +88,7 @@ package MultiplicityTest {
     (relationship (kind typing) (source (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::c"))) (target (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::P"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::c"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::n"))) (value (kind integer) (integer 5)))
   )
 )
 ~~~

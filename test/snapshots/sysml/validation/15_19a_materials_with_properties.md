@@ -219,7 +219,7 @@ package '15_19a-Materials with Properties' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:b7e62dc0664af6a55443940e56388e72ecaea375fef0ebb18232a8b4807a3b25") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b7e62dc0664af6a55443940e56388e72ecaea375fef0ebb18232a8b4807a3b25") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/15_19a_materials_with_properties.md") (qualified-name "15_19a-Materials with Properties"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/15_19a_materials_with_properties.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
@@ -451,6 +451,7 @@ package '15_19a-Materials with Properties' {
     (relationship (kind typing) (source (node (document "memory://snapshot/15_19a_materials_with_properties.md") (qualified-name "15_19a-Materials with Properties::newton per square millimetre"))) (target (node (document "memory://snapshot/15_19a_materials_with_properties.md") (qualified-name "15_19a-Materials with Properties::TensileStrengthUnit"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/15_19a_materials_with_properties.md") (qualified-name "15_19a-Materials with Properties::newton per square millimetre"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/15_19a_materials_with_properties.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
   )
 )
 ~~~

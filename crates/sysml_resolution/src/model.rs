@@ -24,8 +24,8 @@ use sysml_v2_parser_next::{
         ConstraintDef, ConstraintDefBody, ConstraintDefBodyElement,
         ConstraintUsage as ParserConstraintUsage, DefinitionBody, DefinitionBodyElement, DoAction,
         EndDecl, EndIdentity, EntryAction, EnumDef, EnumerationBody,
-        EnumerationUsage as ParserEnumerationUsage, ExitAction, Expression, FirstStmt, FlowDef,
-        Import, ImportShape, InOut, InOutDecl, InterfaceDef, InterfaceDefBody,
+        EnumerationUsage as ParserEnumerationUsage, ExitAction, Expression, FeatureValue,
+        FirstStmt, FlowDef, Import, ImportShape, InOut, InOutDecl, InterfaceDef, InterfaceDefBody,
         InterfaceDefBodyElement, InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement,
         ItemDef, ItemUsage as ParserItemUsage, LibraryPackage, Membership,
         MembershipKind as ParserMembershipKind, MetadataDef, MetadataUsage as ParserMetadataUsage,
@@ -556,23 +556,51 @@ pub(crate) enum EvaluatedValue {
     /// expression cannot be folded.
     UnresolvedOperand,
     /// The expression is a slice-1-supported syntactic shape, but at least one leaf is a
-    /// *resolved* feature reference rather than a literal. This slice does not look up what a
-    /// resolved feature reference itself evaluates to (constant propagation through resolved
-    /// operand references is deferred to a future slice), so the expression is conservatively
-    /// not a constant.
+    /// *resolved* feature reference to a declaration with no known constant value of its own
+    /// (no evaluation fact at all, e.g. `attribute x : ScalarValues::Integer;` with no default
+    /// value). Constant propagation (slice 3, `see EvalNode`) looks up whether a resolved operand
+    /// reference's target itself published a concrete constant; when it did not, the expression
+    /// is conservatively not a constant.
     NonConstant,
+    /// Constant propagation (slice 3 of the constraint/calc expression fact family) detected a
+    /// genuine cross-declaration dependency cycle while resolving what a resolved operand
+    /// reference's target evaluates to (declaration A's value depends on B's, which depends on
+    /// A's, directly or transitively). Mirrors the house convention for cycle-safe fixed-point
+    /// iteration established for specialization-ancestor cycles (`69a897b9`) and alias-binding
+    /// cycles (`422e2216`): an explicit typed non-converged outcome, never a fabricated value, an
+    /// infinite loop, or a panic.
+    NonConverged,
+}
+
+/// A construction-time-classified mirror of a supported constraint/calc expression tree, built by
+/// `classify_constraint_expression`/`classify_calc_expression` in lockstep with
+/// `lower_constraint_expression`/`lower_calc_expression`'s own left-to-right traversal: each
+/// `Operand` leaf's ordinal exactly matches the `ordinal` `push_reference` assigns the
+/// `ReferenceKind::ExpressionOperand` reference pushed for the same leaf (both walk literal /
+/// feature-ref / parenthesized / comparison shapes identically), so `compute_evaluation` (slice 3)
+/// can re-walk this tree at resolution time and pair each `Operand(n)` with the n-th
+/// `ExpressionOperand` reference sourced at the same declaration.
+#[derive(Debug, Clone, PartialEq)]
+enum EvalNode {
+    Literal(EvaluatedValue),
+    /// The n-th (0-based) `ExpressionOperand` reference sourced at the owning declaration, in
+    /// left-to-right expression order.
+    Operand(u32),
+    Comparison(BinaryOperator, Box<EvalNode>, Box<EvalNode>),
 }
 
 /// The classification `classify_constraint_expression`/`classify_calc_expression` assign to one
 /// expression node before resolution's fixed point runs. `Literal` expressions need no resolved
-/// state at all (their value is already known); `HasOperand` expressions need the resolved
-/// outcome of their `ExpressionOperand` reference(s) to settle to `UnresolvedOperand` or
-/// `NonConstant`; `Unsupported` expressions (any shape `lower_constraint_expression`/
-/// `lower_calc_expression` does not recognize) publish no evaluation fact at all.
-#[derive(Debug, Clone, Copy, PartialEq)]
+/// state at all (their value is already known); `HasOperand` expressions carry an `EvalNode` tree
+/// that `compute_evaluation` re-folds once operand references are resolved (and, per slice 3,
+/// once each operand's own target declaration's constant value -- if any -- is known); the tree
+/// settles to `UnresolvedOperand`/`NonConstant`/`NonConverged` or a genuine folded constant.
+/// `Unsupported` expressions (any shape `lower_constraint_expression`/`lower_calc_expression` does
+/// not recognize) publish no evaluation fact at all.
+#[derive(Debug, Clone, PartialEq)]
 enum ExpressionEvalShape {
     Literal(EvaluatedValue),
-    HasOperand,
+    HasOperand(EvalNode),
     Unsupported,
 }
 
@@ -625,38 +653,119 @@ fn literal_expression_value(node: &Expression) -> Option<EvaluatedValue> {
     }
 }
 
+/// Recursively builds the `EvalNode` mirror for a constraint-body expression, threading an
+/// operand-ordinal counter that increments exactly where `lower_constraint_expression` would push
+/// an `ExpressionOperand` reference, so the two traversals stay index-aligned. Returns `None` for
+/// any shape `lower_constraint_expression` does not recognize (`Unsupported`).
+fn classify_constraint_node(node: &Expression, ordinal: &mut u32) -> Option<EvalNode> {
+    match node {
+        Expression::LiteralInteger(_)
+        | Expression::LiteralReal(_)
+        | Expression::LiteralBoolean(_) => literal_expression_value(node).map(EvalNode::Literal),
+        Expression::FeatureRef(_) | Expression::FeatureChainRef(_) => {
+            let leaf = EvalNode::Operand(*ordinal);
+            *ordinal += 1;
+            Some(leaf)
+        }
+        Expression::Parenthesized(inner) => classify_constraint_node(&inner.value, ordinal),
+        Expression::BinaryOp { op, left, right } if is_comparison_operator(op) => {
+            let left = classify_constraint_node(&left.value, ordinal)?;
+            let right = classify_constraint_node(&right.value, ordinal)?;
+            Some(EvalNode::Comparison(
+                op.clone(),
+                Box::new(left),
+                Box::new(right),
+            ))
+        }
+        _ => None,
+    }
+}
+
+/// Recursively builds the `EvalNode` mirror for a calc-body expression, mirroring
+/// `lower_calc_expression`'s supported shapes (no comparison-operator support).
+fn classify_calc_node(node: &Expression, ordinal: &mut u32) -> Option<EvalNode> {
+    match node {
+        Expression::LiteralInteger(_)
+        | Expression::LiteralReal(_)
+        | Expression::LiteralBoolean(_) => literal_expression_value(node).map(EvalNode::Literal),
+        Expression::FeatureRef(_) | Expression::FeatureChainRef(_) => {
+            let leaf = EvalNode::Operand(*ordinal);
+            *ordinal += 1;
+            Some(leaf)
+        }
+        Expression::Parenthesized(inner) => classify_calc_node(&inner.value, ordinal),
+        _ => None,
+    }
+}
+
+/// Whether an `EvalNode` tree contains no `Operand` leaf at all (i.e. is a pure literal, needing
+/// no resolved state whatsoever to fold).
+fn eval_node_is_pure_literal(node: &EvalNode) -> bool {
+    match node {
+        EvalNode::Literal(_) => true,
+        EvalNode::Operand(_) => false,
+        EvalNode::Comparison(_, left, right) => {
+            eval_node_is_pure_literal(left) && eval_node_is_pure_literal(right)
+        }
+    }
+}
+
+/// Folds an `EvalNode` tree to a concrete `EvaluatedValue`, resolving each `Operand(n)` leaf via
+/// `resolve_operand`. Used both for construction-time pure-literal folding (an empty/unreachable
+/// resolver) and for `compute_evaluation`'s resolution-time constant-propagation fold (slice 3).
+fn fold_eval_node(
+    node: &EvalNode,
+    resolve_operand: &mut impl FnMut(u32) -> EvaluatedValue,
+) -> EvaluatedValue {
+    fold_eval_node_pending(node, &mut |ordinal| Some(resolve_operand(ordinal)))
+        .expect("resolve_operand never returns None")
+}
+
+/// Same fold as `fold_eval_node`, but `resolve_operand` may report an operand as not-yet-settled
+/// (`None`) -- used by `compute_evaluation`'s bounded constant-propagation fixed point (slice 3):
+/// a `None` anywhere in the tree means the whole expression cannot be folded *this pass*, without
+/// asserting anything about its eventual outcome (unlike a settled `EvaluatedValue`, which is
+/// final once produced).
+fn fold_eval_node_pending(
+    node: &EvalNode,
+    resolve_operand: &mut impl FnMut(u32) -> Option<EvaluatedValue>,
+) -> Option<EvaluatedValue> {
+    match node {
+        EvalNode::Literal(value) => Some(*value),
+        EvalNode::Operand(ordinal) => resolve_operand(*ordinal),
+        EvalNode::Comparison(op, left, right) => {
+            let left = fold_eval_node_pending(left, resolve_operand)?;
+            let right = fold_eval_node_pending(right, resolve_operand)?;
+            Some(match (left, right) {
+                (EvaluatedValue::NonConverged, _) | (_, EvaluatedValue::NonConverged) => {
+                    EvaluatedValue::NonConverged
+                }
+                (EvaluatedValue::UnresolvedOperand, _) | (_, EvaluatedValue::UnresolvedOperand) => {
+                    EvaluatedValue::UnresolvedOperand
+                }
+                (EvaluatedValue::NonConstant, _) | (_, EvaluatedValue::NonConstant) => {
+                    EvaluatedValue::NonConstant
+                }
+                (left, right) => fold_literal_comparison(op.clone(), left, right),
+            })
+        }
+    }
+}
+
 /// Classifies a constraint-body expression exactly along `lower_constraint_expression`'s
 /// supported-shape boundary, without pushing any reference or diagnostic (a pure, side-effect-free
 /// mirror used only to decide whether/how to publish an evaluation fact). See `EvaluatedValue`.
 fn classify_constraint_expression(node: &Expression) -> ExpressionEvalShape {
-    match node {
-        Expression::LiteralInteger(_)
-        | Expression::LiteralReal(_)
-        | Expression::LiteralBoolean(_) => literal_expression_value(node)
-            .map_or(ExpressionEvalShape::Unsupported, |value| {
-                ExpressionEvalShape::Literal(value)
-            }),
-        Expression::FeatureRef(_) | Expression::FeatureChainRef(_) => {
-            ExpressionEvalShape::HasOperand
+    let mut ordinal = 0u32;
+    match classify_constraint_node(node, &mut ordinal) {
+        None => ExpressionEvalShape::Unsupported,
+        Some(tree) if eval_node_is_pure_literal(&tree) => {
+            let value = fold_eval_node(&tree, &mut |_| {
+                unreachable!("eval_node_is_pure_literal guarantees no Operand leaf is folded")
+            });
+            ExpressionEvalShape::Literal(value)
         }
-        Expression::Parenthesized(inner) => classify_constraint_expression(&inner.value),
-        Expression::BinaryOp { op, left, right } if is_comparison_operator(op) => {
-            match (
-                classify_constraint_expression(&left.value),
-                classify_constraint_expression(&right.value),
-            ) {
-                (ExpressionEvalShape::Unsupported, _) | (_, ExpressionEvalShape::Unsupported) => {
-                    ExpressionEvalShape::Unsupported
-                }
-                (ExpressionEvalShape::HasOperand, _) | (_, ExpressionEvalShape::HasOperand) => {
-                    ExpressionEvalShape::HasOperand
-                }
-                (ExpressionEvalShape::Literal(left), ExpressionEvalShape::Literal(right)) => {
-                    ExpressionEvalShape::Literal(fold_literal_comparison(op.clone(), left, right))
-                }
-            }
-        }
-        _ => ExpressionEvalShape::Unsupported,
+        Some(tree) => ExpressionEvalShape::HasOperand(tree),
     }
 }
 
@@ -665,18 +774,16 @@ fn classify_constraint_expression(node: &Expression) -> ExpressionEvalShape {
 /// minus comparison-operator support, since calc bodies are typically arithmetic formulas and
 /// arithmetic `BinaryOp`s are not part of slice 1's supported scope).
 fn classify_calc_expression(node: &Expression) -> ExpressionEvalShape {
-    match node {
-        Expression::LiteralInteger(_)
-        | Expression::LiteralReal(_)
-        | Expression::LiteralBoolean(_) => literal_expression_value(node)
-            .map_or(ExpressionEvalShape::Unsupported, |value| {
-                ExpressionEvalShape::Literal(value)
-            }),
-        Expression::FeatureRef(_) | Expression::FeatureChainRef(_) => {
-            ExpressionEvalShape::HasOperand
+    let mut ordinal = 0u32;
+    match classify_calc_node(node, &mut ordinal) {
+        None => ExpressionEvalShape::Unsupported,
+        Some(tree) if eval_node_is_pure_literal(&tree) => {
+            let value = fold_eval_node(&tree, &mut |_| {
+                unreachable!("eval_node_is_pure_literal guarantees no Operand leaf is folded")
+            });
+            ExpressionEvalShape::Literal(value)
         }
-        Expression::Parenthesized(inner) => classify_calc_expression(&inner.value),
-        _ => ExpressionEvalShape::Unsupported,
+        Some(tree) => ExpressionEvalShape::HasOperand(tree),
     }
 }
 
@@ -867,7 +974,7 @@ struct PendingReference {
 /// calc expression belongs to, plus its `ExpressionEvalShape`. Only `Literal`/`HasOperand` shapes
 /// are ever stored (see `SemanticModelBuilder::push_evaluation_fact`); `Unsupported` publishes no
 /// fact, keeping the evaluation pass strictly within slice 1's supported syntactic scope.
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone)]
 struct PendingEvaluationFact {
     declaration: DeclarationId,
     shape: ExpressionEvalShape,
@@ -2026,8 +2133,41 @@ impl SemanticModelBuilder {
         if let Some(relationship) = &node.value.intersects {
             self.lower_subsetting_relationship(document, declaration, relationship)?;
         }
+        self.lower_attribute_default_value(declaration, node.value.value.as_ref());
         self.lower_attribute_body(document, declaration, &node.value.body)?;
         Ok(())
+    }
+
+    /// Slice 3 of the constraint/calc expression fact family (prerequisite step, see
+    /// `RESOLUTION_LAYER_DESIGN.md`): a minimal, literal-only mirror of slice 2's
+    /// `classify_constraint_expression`/`classify_calc_expression` literal folding, scoped to a
+    /// `FeatureValue`'s expression on an attribute def/usage's own `=`/`:=`/`default` clause
+    /// (`attribute mass = 5;`). Publishes a `Literal` evaluation fact sourced directly at the
+    /// attribute's own declaration -- exactly the shape constant propagation
+    /// (`compute_evaluation` in resolver.rs) looks up when a constraint/calc expression's operand
+    /// reference resolves to this declaration. Deliberately narrow: only a bare
+    /// `LiteralInteger`/`LiteralReal`/`LiteralBoolean` expression (optionally parenthesized)
+    /// publishes a fact; any other default-value expression shape (arithmetic, another feature
+    /// reference, an invocation, etc.) is left entirely untouched -- no fact, no reference, no
+    /// diagnostic -- since general default-value expression lowering (arithmetic, feature-ref
+    /// operands with their own resolution) is out of scope here and deferred to a future slice
+    /// (see `REMAINING_WORK_TO_PORT.md`'s "default value expressions on attributes/parameters").
+    fn lower_attribute_default_value(
+        &mut self,
+        declaration: DeclarationId,
+        value: Option<&Node<FeatureValue>>,
+    ) {
+        fn unwrap_literal(node: &Expression) -> Option<EvaluatedValue> {
+            match node {
+                Expression::Parenthesized(inner) => unwrap_literal(&inner.value),
+                other => literal_expression_value(other),
+            }
+        }
+        if let Some(feature_value) = value {
+            if let Some(literal) = unwrap_literal(&feature_value.value.expression.value) {
+                self.push_evaluation_fact(declaration, ExpressionEvalShape::Literal(literal));
+            }
+        }
     }
 
     fn lower_attribute_def(
@@ -2056,6 +2196,7 @@ impl SemanticModelBuilder {
         if let Some(relationship) = &node.value.typing {
             self.lower_typing_relationship(document, declaration, relationship)?;
         }
+        self.lower_attribute_default_value(declaration, node.value.value.as_ref());
         self.lower_attribute_body(document, declaration, &node.value.body)
     }
 
@@ -6766,6 +6907,110 @@ mod tests {
         assert!(
             output.contains("(has-evaluation false)"),
             "expected has-evaluation to stay false when nothing evaluates, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn attribute_literal_default_value_publishes_its_own_evaluation_fact() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tattribute mass = 5;\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::mass\"))) (value (kind integer) (integer 5)))"
+            ),
+            "expected a literal attribute default value to publish its own Integer(5) evaluation \
+             fact, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn constraint_propagates_a_referenced_attributes_literal_default_value() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tattribute mass = 5;\n\
+             \tconstraint def C { mass > 3 }\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::C\"))) (value (kind boolean) (boolean true)))"
+            ),
+            "expected `mass > 3` to propagate through `attribute mass = 5;`'s own evaluated \
+             constant and fold to Boolean(true), got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn constraint_propagates_transitively_through_another_constraints_evaluated_value() {
+        // Two-hop propagation through a non-attribute declaration: `B` folds to a literal
+        // comparison, and `A` references `B` as a feature operand, so `A` should propagate `B`'s
+        // own evaluated Boolean(true) rather than staying NonConstant.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tconstraint def B { 1 < 2 }\n\
+             \tconstraint def A { B == true }\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::A\"))) (value (kind boolean) (boolean true)))"
+            ),
+            "expected `A` to propagate `B`'s evaluated Boolean(true) and fold to Boolean(true), \
+             got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn constraints_referencing_each_others_evaluated_value_publish_non_converged() {
+        // A genuine cross-declaration dependency cycle: `A`'s expression operand references `B`,
+        // and `B`'s expression operand references `A`. Neither can ever settle to a concrete
+        // constant; both must publish the explicit `NonConverged` outcome rather than hang,
+        // panic, or fabricate a value.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tconstraint def A { B == true }\n\
+             \tconstraint def B { A == true }\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::A\"))) (value (kind non-converged)))"
+            ),
+            "expected cyclic constraint A to publish NonConverged, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::B\"))) (value (kind non-converged)))"
+            ),
+            "expected cyclic constraint B to publish NonConverged, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn constraint_operand_with_no_evaluated_value_at_all_still_stays_non_constant() {
+        // `x` has no default value at all (no evaluation fact of its own), so `C` cannot
+        // propagate any constant through it and must stay `NonConstant`, not fabricate a value.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tattribute x : ScalarValues::Integer;\n\
+             \tconstraint def C { x > 3 }\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::C\"))) (value (kind non-constant)))"
+            ),
+            "expected an operand with no evaluated value at all to keep the expression \
+             NonConstant, got:\n{output}"
         );
     }
 

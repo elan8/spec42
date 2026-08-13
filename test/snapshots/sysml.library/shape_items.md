@@ -2849,7 +2849,7 @@ standard library package ShapeItems {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:c61a35071bf088fb2aa947f398cf3dff11c93566a3dce6b885ca75bb30ac1f3a") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:c61a35071bf088fb2aa947f398cf3dff11c93566a3dce6b885ca75bb30ac1f3a") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/shape_items.md") (qualified-name "ShapeItems"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/shape_items.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Boolean") (import (shape membership) (recursive false)))))
@@ -4436,6 +4436,19 @@ standard library package ShapeItems {
     (relationship (kind aliasBinding) (source (node (document "memory://snapshot/shape_items.md") (qualified-name "ShapeItems::Wedge"))) (target (node (document "memory://snapshot/shape_items.md") (qualified-name "ShapeItems::RightTriangularPrism"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/shape_items.md") (qualified-name "ShapeItems::Wedge"))) (kind aliasBinding) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/shape_items.md") (anonymous (kind attribute) (ordinal 5))))) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/shape_items.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/shape_items.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/shape_items.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
+    (evaluated (declaration (node (document "memory://snapshot/shape_items.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind boolean) (boolean true)))
+    (evaluated (declaration (node (document "memory://snapshot/shape_items.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind boolean) (boolean true)))
+    (evaluated (declaration (node (document "memory://snapshot/shape_items.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/shape_items.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/shape_items.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/shape_items.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/shape_items.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/shape_items.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/shape_items.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind boolean) (boolean true)))
   )
 )
 ~~~

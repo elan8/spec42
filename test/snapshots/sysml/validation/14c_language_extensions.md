@@ -528,7 +528,7 @@ package '14c-Language-Extensions' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:b0759110fe146d5efefa3813972385bcd8e21a27f3c67a8e6ca91985d3343d80") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:b0759110fe146d5efefa3813972385bcd8e21a27f3c67a8e6ca91985d3343d80") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/14c_language_extensions.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
@@ -916,6 +916,8 @@ package '14c-Language-Extensions' {
     (relationship (kind redefinition) (source (node (document "memory://snapshot/14c_language_extensions.md") (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEALibrary::RequirementWithSIL::sil"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/14c_language_extensions.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/14c_language_extensions.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind real) (real 0.013)))
+    (evaluated (declaration (node (document "memory://snapshot/14c_language_extensions.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind real) (real 0.005)))
   )
 )
 ~~~

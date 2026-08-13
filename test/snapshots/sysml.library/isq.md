@@ -210,7 +210,7 @@ standard library package ISQ {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:773775525706e5a8b39f78861a99ccd5fc68a43d180039bf978bed815f005aa1") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:773775525706e5a8b39f78861a99ccd5fc68a43d180039bf978bed815f005aa1") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/isq.md") (qualified-name "ISQ"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/isq.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false)))))
@@ -327,6 +327,7 @@ standard library package ISQ {
     (relationship (kind typing) (source (node (document "memory://snapshot/isq.md") (qualified-name "ISQ::temperatureDifference"))) (target (node (document "memory://snapshot/isq.md") (qualified-name "ISQ::TemperatureDifferenceValue"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/isq.md") (qualified-name "ISQ::temperatureDifference"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/isq.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
   )
 )
 ~~~

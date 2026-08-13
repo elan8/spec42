@@ -923,6 +923,7 @@ standard library package Time {
     (relationship (kind typing) (source (node (document "memory://snapshot/time.md") (qualified-name "Time::utcTimeInstant"))) (target (node (document "memory://snapshot/time.md") (qualified-name "Time::UtcTimeInstantValue"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/time.md") (qualified-name "Time::utcTimeInstant"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/time.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind integer) (integer 0)))
     (evaluated (declaration (node (document "memory://snapshot/time.md") (qualified-name "Time::TimeOf"))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/time.md") (qualified-name "Time::convertIso8601StructureToDateTime"))) (value (kind unresolved-operand)))
     (evaluated (declaration (node (document "memory://snapshot/time.md") (qualified-name "Time::convertIso8601StructureToDateTime"))) (value (kind unresolved-operand)))
