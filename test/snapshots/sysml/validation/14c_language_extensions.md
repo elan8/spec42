@@ -403,12 +403,6 @@ package '14c-Language-Extensions' {
       )
       (diagnostic
         (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 157 7) (end 157 10))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 160 2) (end 160 8))
@@ -855,7 +849,7 @@ package '14c-Language-Extensions' {
       (outcome (status resolved) (target (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEALibrary::RequirementWithSIL")))))
     (reference (id (source (node (document "memory://snapshot/14c_language_extensions.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0))
       (authored-target "sil")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEALibrary::RequirementWithSIL::sil")))))
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEALibrary::Causation::cause"))) (target (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEALibrary::Situation"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEALibrary::Causation::cause"))) (kind featureTyping) (ordinal 0)))
@@ -905,6 +899,7 @@ package '14c-Language-Extensions' {
     (relationship (kind redefinition) (source (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEAMetadata::ViolationMetadata::baseType"))) (target (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEAMetadata::ViolationMetadata::baseType"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEAMetadata::ViolationMetadata::baseType"))) (kind redefinition) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEAUserModel::Glucose Meter in Use"))) (target (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEAUserModel::Glucose FMEA Item"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEAUserModel::Glucose Meter in Use"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEAUserModel::req3"))) (target (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEALibrary::RequirementWithSIL"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEAUserModel::req3"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/14c_language_extensions.md") (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEALibrary::RequirementWithSIL::sil"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/14c_language_extensions.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0)))
   )
   (evaluation
   )
@@ -1195,7 +1190,7 @@ package '14c-Language-Extensions' {
   )
   (query (document "memory://snapshot/14c_language_extensions.md") (range (start 157 7) (end 157 10)) (probe (position 157 7))
     (reference (id (source (node (document "memory://snapshot/14c_language_extensions.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "sil")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEALibrary::RequirementWithSIL::sil")))))
   )
 )
 ~~~

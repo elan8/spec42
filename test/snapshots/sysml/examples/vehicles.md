@@ -82,12 +82,6 @@ package VehicleMasses {
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
-        (range (start 9 26) (end 9 38))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
         (range (start 11 38) (end 11 51))
       )
       (diagnostic
@@ -225,7 +219,7 @@ package VehicleMasses {
       (outcome (status resolved) (target (node (document "memory://snapshot/vehicles.md") (qualified-name "VehicleMasses::car::carParts")))))
     (reference (id (source (node (document "memory://snapshot/vehicles.md") (qualified-name "VehicleMasses::car::vin"))) (kind redefinition) (ordinal 0))
       (authored-target "serialNumber")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicles.md") (qualified-name "VehicleMasses::CarPart::serialNumber")))))
   )
   (relationships
     (relationship (kind subsetting) (source (node (document "memory://snapshot/vehicles.md") (qualified-name "VehicleMasses::c"))) (target (node (document "memory://snapshot/vehicles.md") (qualified-name "VehicleMasses::car"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicles.md") (qualified-name "VehicleMasses::c"))) (kind subsetting) (ordinal 0)))
@@ -233,6 +227,7 @@ package VehicleMasses {
     (relationship (kind typing) (source (node (document "memory://snapshot/vehicles.md") (qualified-name "VehicleMasses::car::carParts"))) (target (node (document "memory://snapshot/vehicles.md") (qualified-name "VehicleMasses::CarPart"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicles.md") (qualified-name "VehicleMasses::car::carParts"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/vehicles.md") (qualified-name "VehicleMasses::car::engine"))) (target (node (document "memory://snapshot/vehicles.md") (qualified-name "VehicleMasses::car::carParts"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicles.md") (qualified-name "VehicleMasses::car::engine"))) (kind subsetting) (ordinal 1)))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/vehicles.md") (qualified-name "VehicleMasses::car::transmission"))) (target (node (document "memory://snapshot/vehicles.md") (qualified-name "VehicleMasses::car::carParts"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicles.md") (qualified-name "VehicleMasses::car::transmission"))) (kind subsetting) (ordinal 1)))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/vehicles.md") (qualified-name "VehicleMasses::car::vin"))) (target (node (document "memory://snapshot/vehicles.md") (qualified-name "VehicleMasses::CarPart::serialNumber"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicles.md") (qualified-name "VehicleMasses::car::vin"))) (kind redefinition) (ordinal 0)))
   )
   (evaluation
   )
@@ -319,7 +314,7 @@ package VehicleMasses {
   )
   (query (document "memory://snapshot/vehicles.md") (range (start 9 26) (end 9 38)) (probe (position 9 26))
     (reference (id (source (node (document "memory://snapshot/vehicles.md") (qualified-name "VehicleMasses::car::vin"))) (kind redefinition) (ordinal 0) (authored-target "serialNumber")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicles.md") (qualified-name "VehicleMasses::CarPart::serialNumber")))))
   )
 )
 ~~~

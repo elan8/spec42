@@ -795,6 +795,24 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             )?;
         }
 
+        // A redefinition/subsetting reference owned by a *usage* (not a def/type) cannot reach its
+        // target through the usage's own ancestor closure -- a plain usage has no Subclassification
+        // ancestors of its own. Instead, per RESOLUTION_LAYER_DESIGN.md, the target must be reached
+        // by first following the usage's own settled `FeatureTyping` reference to its type, then
+        // searching that type's directly-owned members and its already-computed ancestor closure
+        // (built above from Subclassification, independently of this step). This is why it runs
+        // only now, after `typing_slots` has converged -- unlike the Subclassification-based
+        // `inherited_names` above, which does not depend on FeatureTyping at all. Example: `need :
+        // Need { attribute :>> status = ...; }` where `status` is owned by `ManagedRequirement`,
+        // reached only via `Need -> UserRequirement -> ManagedRequirement`.
+        let inherited_names = extend_inherited_names_with_usage_typing(
+            &direct_names,
+            inherited_names,
+            references,
+            &outcomes,
+            &typing_slots,
+        )?;
+
         for index in subsetting_slots.iter().copied() {
             work.downstream_evaluations = work
                 .downstream_evaluations
@@ -1210,6 +1228,67 @@ fn build_inherited_name_index(
                     ));
                 }
             }
+        }
+    }
+    NameIndex::build(entries)
+}
+
+/// Extends the Subclassification-derived `inherited_names` index (`build_inherited_name_index`)
+/// with entries reachable only by first following a usage's own settled `FeatureTyping` reference
+/// to its type: for every declaration `usage` whose `FeatureTyping` reference resolved to `target`,
+/// every name directly owned by `target` and every name already reachable in `target`'s own
+/// ancestor-scoped `inherited_names` entry becomes a candidate for `(usage, name)` here too. This
+/// lets an explicit `:>>`/`:>` reference owned by a plain usage (which has no Subclassification
+/// ancestors of its own) reach a member owned by an ancestor of the usage's *type* -- for example
+/// `need : Need { attribute :>> status = ...; }` reaching `ManagedRequirement::status` through
+/// `Need`'s own ancestor closure. Must run after `typing_slots` has resolved, since it reads their
+/// settled outcomes; the original entries are preserved unchanged, so plain type-owned
+/// Subclassification lookups (Subsetting/Redefinition owned directly by a def) are unaffected.
+fn extend_inherited_names_with_usage_typing<R: ResolutionReferenceFact>(
+    direct_names: &NameIndex,
+    inherited_names: NameIndex,
+    references: &[R],
+    outcomes: &[ResolutionStatus],
+    typing_slots: &[usize],
+) -> Result<NameIndex, ResolutionError> {
+    let mut entries: Vec<(NameKey, DeclarationId)> = Vec::new();
+    for &index in typing_slots {
+        let ResolutionStatus::Resolved(target) = outcomes[index] else {
+            continue;
+        };
+        let usage = references[index].source();
+        for (name, candidates) in direct_names.entries_for_owner(Some(target)) {
+            for &candidate in candidates {
+                entries.push((
+                    NameKey {
+                        owner: Some(usage),
+                        name,
+                    },
+                    candidate,
+                ));
+            }
+        }
+        for (name, candidates) in inherited_names.entries_for_owner(Some(target)) {
+            for &candidate in candidates {
+                entries.push((
+                    NameKey {
+                        owner: Some(usage),
+                        name,
+                    },
+                    candidate,
+                ));
+            }
+        }
+    }
+    if entries.is_empty() {
+        return Ok(inherited_names);
+    }
+    for (index, keys) in inherited_names.keys.iter().enumerate() {
+        for &candidate in inherited_names.ranges[index]
+            .slice(&inherited_names.candidates)
+            .unwrap_or_default()
+        {
+            entries.push((*keys, candidate));
         }
     }
     NameIndex::build(entries)
@@ -2408,6 +2487,145 @@ mod tests {
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(subsetting_index)),
             Some(ResolutionStatus::Resolved(DeclarationId(2)))
+        );
+    }
+
+    #[test]
+    fn redefinition_inside_a_usage_body_resolves_through_the_usages_feature_typing_target() {
+        // `need : Need { attribute :>> status = ...; }` -- the redefining attribute is owned by a
+        // *usage* (`need`), not a def/type, so it has no Subclassification ancestors of its own.
+        // `status` is only reachable by first following `need`'s own `FeatureTyping` reference to
+        // `Need`, then walking `Need`'s ancestor closure (`Need -> UserRequirement ->
+        // ManagedRequirement`) to find `ManagedRequirement::status`. Mirrors
+        // test/snapshots/resolution/enum_status_redefinition.md.
+        let mut symbols = SymbolTableBuilder::default();
+        let demo_name = symbols.intern("Demo").unwrap();
+        let managed_requirement_name = symbols.intern("ManagedRequirement").unwrap();
+        let status_name = symbols.intern("status").unwrap();
+        let user_requirement_name = symbols.intern("UserRequirement").unwrap();
+        let need_def_name = symbols.intern("Need").unwrap();
+        let need_usage_name = symbols.intern("need").unwrap();
+
+        let mut paths = SymbolPathArenaBuilder::default();
+        let managed_requirement_path = paths.push(&[managed_requirement_name], false).unwrap();
+        let user_requirement_path = paths.push(&[user_requirement_name], false).unwrap();
+        let need_def_path = paths.push(&[need_def_name], false).unwrap();
+        let status_path = paths.push(&[status_name], false).unwrap();
+
+        let demo = DeclarationId(0);
+        let managed_requirement = DeclarationId(1);
+        let status = DeclarationId(2);
+        let user_requirement = DeclarationId(3);
+        let need_def = DeclarationId(4);
+        let need_usage = DeclarationId(5);
+        let declarations = vec![
+            declaration(
+                DocumentId(0),
+                None,
+                Some(demo_name),
+                DeclarationKind::Package,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(demo),
+                Some(managed_requirement_name),
+                DeclarationKind::RequirementDefinition,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(managed_requirement),
+                Some(status_name),
+                DeclarationKind::AttributeUsage,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(demo),
+                Some(user_requirement_name),
+                DeclarationKind::RequirementDefinition,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(demo),
+                Some(need_def_name),
+                DeclarationKind::RequirementDefinition,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(demo),
+                Some(need_usage_name),
+                DeclarationKind::RequirementUsage,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(need_usage),
+                None,
+                DeclarationKind::AttributeUsage,
+            ),
+        ];
+        let memberships = declarations
+            .iter()
+            .enumerate()
+            .map(|(index, declaration)| {
+                let member = DeclarationId::from_index(index).unwrap();
+                let kind = if matches!(
+                    declaration.kind,
+                    DeclarationKind::AttributeUsage | DeclarationKind::RequirementUsage
+                ) {
+                    MembershipKind::Feature
+                } else {
+                    MembershipKind::Owning
+                };
+                MembershipRecord {
+                    member,
+                    kind,
+                    visibility: Visibility::Default,
+                    span: Span::dummy(),
+                }
+            })
+            .collect::<Vec<_>>()
+            .into_boxed_slice();
+
+        let references = vec![
+            reference(
+                user_requirement,
+                ReferenceKind::Subclassification,
+                managed_requirement_path,
+                false,
+            ),
+            reference(
+                need_def,
+                ReferenceKind::Subclassification,
+                user_requirement_path,
+                false,
+            ),
+            reference(
+                need_usage,
+                ReferenceKind::FeatureTyping,
+                need_def_path,
+                false,
+            ),
+            reference(
+                DeclarationId(6),
+                ReferenceKind::Redefinition,
+                status_path,
+                false,
+            ),
+        ];
+        let redefinition_index = u32::try_from(references.len() - 1).unwrap();
+
+        let _symbols = symbols.freeze();
+        let fixture = ResolverFixture {
+            declarations: declarations.into_boxed_slice(),
+            memberships,
+            paths: paths.freeze(),
+            references: references.into_boxed_slice(),
+        };
+
+        let (_, _, resolution) = resolve_fixture(&fixture);
+        assert_eq!(resolution.solver_status, SolverStatus::Converged);
+        assert_eq!(
+            resolution.outcome(AuthoredReferenceId(redefinition_index)),
+            Some(ResolutionStatus::Resolved(status))
         );
     }
 

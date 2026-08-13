@@ -54,12 +54,6 @@ package MassRollup2 {
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
-        (range (start 10 16) (end 10 25))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
         (range (start 15 23) (end 15 32))
       )
       (diagnostic
@@ -103,7 +97,7 @@ package MassRollup2 {
       (outcome (status resolved) (target (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::MassedThing")))))
     (reference (id (source (node (document "memory://snapshot/29_mass_rollup2.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0))
       (authored-target "totalMass")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::MassedThing::totalMass")))))
     (reference (id (source (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::compositeThing::subcomponents"))) (kind featureTyping) (ordinal 0))
       (authored-target "MassedThing")
       (outcome (status resolved) (target (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::MassedThing")))))
@@ -116,6 +110,7 @@ package MassRollup2 {
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::compositeThing"))) (target (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::MassedThing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::compositeThing"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/29_mass_rollup2.md") (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::MassedThing::totalMass"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/29_mass_rollup2.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::compositeThing::subcomponents"))) (target (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::MassedThing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::compositeThing::subcomponents"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::filteredMassThing"))) (target (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::compositeThing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::filteredMassThing"))) (kind subsetting) (ordinal 0)))
   )
@@ -144,7 +139,7 @@ package MassRollup2 {
   )
   (query (document "memory://snapshot/29_mass_rollup2.md") (range (start 10 16) (end 10 25)) (probe (position 10 16))
     (reference (id (source (node (document "memory://snapshot/29_mass_rollup2.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "totalMass")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::MassedThing::totalMass")))))
   )
   (query (document "memory://snapshot/29_mass_rollup2.md") (range (start 9 22) (end 9 33)) (probe (position 9 22))
     (reference (id (source (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::compositeThing::subcomponents"))) (kind featureTyping) (ordinal 0) (authored-target "MassedThing")

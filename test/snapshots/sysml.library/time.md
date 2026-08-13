@@ -473,12 +473,6 @@ standard library package Time {
       )
       (diagnostic
         (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 132 16) (end 132 33))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 132 35) (end 132 60))
@@ -722,7 +716,7 @@ standard library package Time {
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/time.md") (anonymous (kind attribute) (ordinal 1))))) (kind redefinition) (ordinal 0))
       (authored-target "definitionalEpoch")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/time.md") (qualified-name "Time::TimeScale::definitionalEpoch")))))
     (reference (id (source (node (document "memory://snapshot/time.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0))
       (authored-target "num")
       (outcome (status unresolved)))
@@ -835,6 +829,7 @@ standard library package Time {
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/time.md") (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/time.md") (qualified-name "Time::TimeInstantValue"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/time.md") (anonymous (kind attribute) (ordinal 0))))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/time.md") (qualified-name "Time::Coordinated Universal Time"))) (target (node (document "memory://snapshot/time.md") (qualified-name "Time::TimeScale"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/time.md") (qualified-name "Time::Coordinated Universal Time"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/time.md") (anonymous (kind attribute) (ordinal 1))))) (target (node (document "memory://snapshot/time.md") (qualified-name "Time::TimeScale::definitionalEpoch"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/time.md") (anonymous (kind attribute) (ordinal 1))))) (kind redefinition) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/time.md") (qualified-name "Time::Date"))) (target (node (document "memory://snapshot/time.md") (qualified-name "Time::TimeInstantValue"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/time.md") (qualified-name "Time::Date"))) (kind specialization) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/time.md") (qualified-name "Time::DateTime"))) (target (node (document "memory://snapshot/time.md") (qualified-name "Time::TimeInstantValue"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/time.md") (qualified-name "Time::DateTime"))) (kind specialization) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/time.md") (qualified-name "Time::Iso8601DateTime"))) (target (node (document "memory://snapshot/time.md") (qualified-name "Time::UtcTimeInstantValue"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/time.md") (qualified-name "Time::Iso8601DateTime"))) (kind specialization) (ordinal 0)))
@@ -936,7 +931,7 @@ standard library package Time {
   )
   (query (document "memory://snapshot/time.md") (range (start 132 16) (end 132 33)) (probe (position 132 16))
     (reference (id (source (node (document "memory://snapshot/time.md") (anonymous (kind attribute) (ordinal 1))))) (kind redefinition) (ordinal 0) (authored-target "definitionalEpoch")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/time.md") (qualified-name "Time::TimeScale::definitionalEpoch")))))
   )
   (query (document "memory://snapshot/time.md") (range (start 132 67) (end 132 70)) (probe (position 132 67))
     (reference (id (source (node (document "memory://snapshot/time.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "num")

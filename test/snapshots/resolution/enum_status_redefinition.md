@@ -24,12 +24,6 @@ package Demo {
 (fixture-diagnostics
   (document "memory://snapshot/enum_status_redefinition.md"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 10 22) (end 10 28))
-      )
     )
   )
 )
@@ -64,13 +58,14 @@ package Demo {
       (outcome (status resolved) (target (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::Need")))))
     (reference (id (source (node (document "memory://snapshot/enum_status_redefinition.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0))
       (authored-target "status")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::ManagedRequirement::status")))))
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::ManagedRequirement::status"))) (target (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::RequirementStatusKind"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::ManagedRequirement::status"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::Need"))) (target (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::UserRequirement"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::Need"))) (kind specialization) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::UserRequirement"))) (target (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::ManagedRequirement"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::UserRequirement"))) (kind specialization) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::need"))) (target (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::Need"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::need"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/enum_status_redefinition.md") (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::ManagedRequirement::status"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/enum_status_redefinition.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0)))
   )
   (evaluation
   )
@@ -97,7 +92,7 @@ package Demo {
   )
   (query (document "memory://snapshot/enum_status_redefinition.md") (range (start 10 22) (end 10 28)) (probe (position 10 22))
     (reference (id (source (node (document "memory://snapshot/enum_status_redefinition.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "status")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::ManagedRequirement::status")))))
   )
 )
 ~~~

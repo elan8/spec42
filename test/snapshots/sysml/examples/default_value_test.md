@@ -29,12 +29,6 @@ package DefaultValueTest {
 (fixture-diagnostics
   (document "memory://snapshot/default_value_test.md"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 8 16) (end 8 17))
-      )
     )
   )
 )
@@ -66,12 +60,13 @@ package DefaultValueTest {
       (outcome (status resolved) (target (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V")))))
     (reference (id (source (node (document "memory://snapshot/default_value_test.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0))
       (authored-target "m")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V::m")))))
   )
   (relationships
     (relationship (kind specialization) (source (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::W"))) (target (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::W"))) (kind specialization) (ordinal 0)))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/default_value_test.md") (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V::m"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/default_value_test.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::v1"))) (target (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::v1"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/default_value_test.md") (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V::m"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/default_value_test.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0)))
   )
   (evaluation
   )
@@ -94,7 +89,7 @@ package DefaultValueTest {
   )
   (query (document "memory://snapshot/default_value_test.md") (range (start 8 16) (end 8 17)) (probe (position 8 16))
     (reference (id (source (node (document "memory://snapshot/default_value_test.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "m")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V::m")))))
   )
 )
 ~~~

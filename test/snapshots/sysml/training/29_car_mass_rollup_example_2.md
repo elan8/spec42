@@ -83,12 +83,6 @@ package 'Car Mass Rollup 1' {
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
-        (range (start 9 20) (end 9 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
         (range (start 11 32) (end 11 45))
       )
       (diagnostic
@@ -208,7 +202,7 @@ package 'Car Mass Rollup 1' {
       (outcome (status resolved) (target (node (document "memory://snapshot/29_car_mass_rollup_example_2.md") (qualified-name "Car Mass Rollup 1::car::carParts")))))
     (reference (id (source (node (document "memory://snapshot/29_car_mass_rollup_example_2.md") (qualified-name "Car Mass Rollup 1::car::vin"))) (kind redefinition) (ordinal 0))
       (authored-target "serialNumber")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/29_car_mass_rollup_example_2.md") (qualified-name "Car Mass Rollup 1::CarPart::serialNumber")))))
   )
   (relationships
     (relationship (kind subsetting) (source (node (document "memory://snapshot/29_car_mass_rollup_example_2.md") (qualified-name "Car Mass Rollup 1::c"))) (target (node (document "memory://snapshot/29_car_mass_rollup_example_2.md") (qualified-name "Car Mass Rollup 1::car"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/29_car_mass_rollup_example_2.md") (qualified-name "Car Mass Rollup 1::c"))) (kind subsetting) (ordinal 0)))
@@ -216,6 +210,7 @@ package 'Car Mass Rollup 1' {
     (relationship (kind typing) (source (node (document "memory://snapshot/29_car_mass_rollup_example_2.md") (qualified-name "Car Mass Rollup 1::car::carParts"))) (target (node (document "memory://snapshot/29_car_mass_rollup_example_2.md") (qualified-name "Car Mass Rollup 1::CarPart"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/29_car_mass_rollup_example_2.md") (qualified-name "Car Mass Rollup 1::car::carParts"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/29_car_mass_rollup_example_2.md") (qualified-name "Car Mass Rollup 1::car::engine"))) (target (node (document "memory://snapshot/29_car_mass_rollup_example_2.md") (qualified-name "Car Mass Rollup 1::car::carParts"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/29_car_mass_rollup_example_2.md") (qualified-name "Car Mass Rollup 1::car::engine"))) (kind subsetting) (ordinal 0)))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/29_car_mass_rollup_example_2.md") (qualified-name "Car Mass Rollup 1::car::transmission"))) (target (node (document "memory://snapshot/29_car_mass_rollup_example_2.md") (qualified-name "Car Mass Rollup 1::car::carParts"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/29_car_mass_rollup_example_2.md") (qualified-name "Car Mass Rollup 1::car::transmission"))) (kind subsetting) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/29_car_mass_rollup_example_2.md") (qualified-name "Car Mass Rollup 1::car::vin"))) (target (node (document "memory://snapshot/29_car_mass_rollup_example_2.md") (qualified-name "Car Mass Rollup 1::CarPart::serialNumber"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/29_car_mass_rollup_example_2.md") (qualified-name "Car Mass Rollup 1::car::vin"))) (kind redefinition) (ordinal 0)))
   )
   (evaluation
   )
@@ -294,7 +289,7 @@ package 'Car Mass Rollup 1' {
   )
   (query (document "memory://snapshot/29_car_mass_rollup_example_2.md") (range (start 9 20) (end 9 32)) (probe (position 9 20))
     (reference (id (source (node (document "memory://snapshot/29_car_mass_rollup_example_2.md") (qualified-name "Car Mass Rollup 1::car::vin"))) (kind redefinition) (ordinal 0) (authored-target "serialNumber")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/29_car_mass_rollup_example_2.md") (qualified-name "Car Mass Rollup 1::CarPart::serialNumber")))))
   )
 )
 ~~~
