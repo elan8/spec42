@@ -219,6 +219,7 @@ fn unsupported_code(family: UnsupportedFamily) -> &'static str {
         UnsupportedFamily::ActionDefinitionMember => "unsupported_action_definition_member",
         UnsupportedFamily::ActionUsageMember => "unsupported_action_usage_member",
         UnsupportedFamily::StateDefinitionMember => "unsupported_state_definition_member",
+        UnsupportedFamily::ConnectionDefinitionMember => "unsupported_connection_definition_member",
         UnsupportedFamily::ParserUnsupported => "unsupported_parser_construct",
     }
 }
@@ -709,6 +710,8 @@ fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::StateUsage => "state",
         DeclarationKind::MetadataDefinition => "metadata-def",
         DeclarationKind::MetadataUsage => "metadata",
+        DeclarationKind::ConnectionDefinition => "connection-def",
+        DeclarationKind::ConnectionUsage => "connection",
     }
 }
 
@@ -743,6 +746,7 @@ fn reference_kind(kind: ReferenceKind) -> &'static str {
         ReferenceKind::Crosses => "crossSubsetting",
         ReferenceKind::Intersects => "intersects",
         ReferenceKind::AliasBinding => "aliasBinding",
+        ReferenceKind::ConnectorEnd => "connectorEnd",
     }
 }
 
@@ -756,6 +760,7 @@ fn relationship_kind(kind: ReferenceKind) -> Option<&'static str> {
         ReferenceKind::Crosses => Some("crossSubsetting"),
         ReferenceKind::Intersects => Some("intersects"),
         ReferenceKind::AliasBinding => Some("aliasBinding"),
+        ReferenceKind::ConnectorEnd => Some("connectorEnd"),
         ReferenceKind::NamespaceImport
         | ReferenceKind::MembershipImport
         | ReferenceKind::FilterImport => None,

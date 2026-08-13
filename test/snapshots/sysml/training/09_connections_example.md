@@ -54,12 +54,6 @@ package 'Connections Example' {
   (document "memory://snapshot/09_connections_example.md"
     (diagnostics
       (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 13 1) (end 16 2))
-      )
-      (diagnostic
         (severity error)
         (code "missing_semicolon")
         (source "parser")
@@ -97,6 +91,9 @@ package 'Connections Example' {
     (declaration (id (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::LugBoltJoint"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::LugBoltMountingHole"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::LugBoltThreadableHole"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::PressureSeat"))) (kind connection-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::PressureSeat::bead"))) (kind connection) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "TireBead"))))
+    (declaration (id (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::PressureSeat::mountingRim"))) (kind connection) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "TireMountingRim"))))
     (declaration (id (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::Tire"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::TireBead"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::TireMountingRim"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -115,6 +112,12 @@ package 'Connections Example' {
     (declaration (id (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::wheelHubAssembly::wheel::w::rim"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "TireMountingRim"))))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::PressureSeat::bead"))) (kind featureTyping) (ordinal 0))
+      (authored-target "TireBead")
+      (outcome (status resolved) (target (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::TireBead")))))
+    (reference (id (source (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::PressureSeat::mountingRim"))) (kind featureTyping) (ordinal 0))
+      (authored-target "TireMountingRim")
+      (outcome (status resolved) (target (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::TireMountingRim")))))
     (reference (id (source (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::wheelHubAssembly"))) (kind featureTyping) (ordinal 0))
       (authored-target "WheelHubAssembly")
       (outcome (status resolved) (target (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::WheelHubAssembly")))))
@@ -147,6 +150,8 @@ package 'Connections Example' {
       (outcome (status resolved) (target (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::TireMountingRim")))))
   )
   (relationships
+    (relationship (kind typing) (source (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::PressureSeat::bead"))) (target (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::TireBead"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::PressureSeat::bead"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::PressureSeat::mountingRim"))) (target (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::TireMountingRim"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::PressureSeat::mountingRim"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::wheelHubAssembly"))) (target (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::WheelHubAssembly"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::wheelHubAssembly"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::wheelHubAssembly::hub"))) (target (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::Hub"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::wheelHubAssembly::hub"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::wheelHubAssembly::hub::h"))) (target (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::LugBoltThreadableHole"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::wheelHubAssembly::hub::h"))) (kind featureTyping) (ordinal 0)))
@@ -165,6 +170,14 @@ package 'Connections Example' {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/09_connections_example.md") (range (start 14 22) (end 14 30)) (probe (position 14 22))
+    (reference (id (source (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::PressureSeat::bead"))) (kind featureTyping) (ordinal 0) (authored-target "TireBead")
+      (outcome (status resolved) (target (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::TireBead")))))
+  )
+  (query (document "memory://snapshot/09_connections_example.md") (range (start 15 29) (end 15 44)) (probe (position 15 29))
+    (reference (id (source (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::PressureSeat::mountingRim"))) (kind featureTyping) (ordinal 0) (authored-target "TireMountingRim")
+      (outcome (status resolved) (target (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::TireMountingRim")))))
+  )
   (query (document "memory://snapshot/09_connections_example.md") (range (start 18 25) (end 18 41)) (probe (position 18 25))
     (reference (id (source (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::wheelHubAssembly"))) (kind featureTyping) (ordinal 0) (authored-target "WheelHubAssembly")
       (outcome (status resolved) (target (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::WheelHubAssembly")))))

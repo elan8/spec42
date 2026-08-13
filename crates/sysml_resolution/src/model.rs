@@ -16,17 +16,19 @@ use sysml_v2_parser_next::{
     ast::{
         ActionDef, ActionDefBody, ActionDefBodyElement, ActionUsage as ParserActionUsage,
         ActionUsageBody, ActionUsageBodyElement, AliasDef, AttributeBody, AttributeBodyElement,
-        AttributeDef, AttributeUsage, EnumDef, EnumerationBody,
-        EnumerationUsage as ParserEnumerationUsage, Import, ImportShape, ItemDef,
-        ItemUsage as ParserItemUsage, LibraryPackage, Membership,
-        MembershipKind as ParserMembershipKind, MetadataDef, MetadataUsage as ParserMetadataUsage,
-        NamespaceDecl, Node, Package, PackageBody, PackageBodyElement, PartDef, PartDefBody,
-        PartDefBodyElement, PartUsage, PartUsageBody, PartUsageBodyElement, PortBody,
-        PortBodyElement, PortDef, PortDefBody, PortDefBodyElement, PortUsage as ParserPortUsage,
-        QualifiedIdentification, QualifiedReferenceId, RequirementDef, RequirementDefBody,
-        RequirementDefBodyElement, RequirementUsage as ParserRequirementUsage, RootElement, Span,
-        StateDef, StateDefBody, StateDefBodyElement, StateUsage as ParserStateUsage,
-        SubsettingKind, SubsettingRelationship, Visibility as ParserVisibility,
+        AttributeDef, AttributeUsage, ConnectStmt, ConnectionDef, ConnectionDefBody,
+        ConnectionDefBodyElement, ConnectionEnd, ConnectionUsageMember as ParserConnectionUsage,
+        EndDecl, EndIdentity, EnumDef, EnumerationBody, EnumerationUsage as ParserEnumerationUsage,
+        Expression, Import, ImportShape, ItemDef, ItemUsage as ParserItemUsage, LibraryPackage,
+        Membership, MembershipKind as ParserMembershipKind, MetadataDef,
+        MetadataUsage as ParserMetadataUsage, NamespaceDecl, Node, Package, PackageBody,
+        PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement, PartUsage, PartUsageBody,
+        PartUsageBodyElement, PortBody, PortBodyElement, PortDef, PortDefBody, PortDefBodyElement,
+        PortUsage as ParserPortUsage, QualifiedIdentification, QualifiedReferenceId,
+        RequirementDef, RequirementDefBody, RequirementDefBodyElement,
+        RequirementUsage as ParserRequirementUsage, RootElement, Span, StateDef, StateDefBody,
+        StateDefBodyElement, StateUsage as ParserStateUsage, SubsettingKind,
+        SubsettingRelationship, Visibility as ParserVisibility,
     },
     ParseError, ParsedDocument,
 };
@@ -143,6 +145,17 @@ enum DeclarationKind {
     /// here -- a distinct annotation-application fact family, not the declaration/typing shape
     /// covered by this slice.
     MetadataUsage,
+    /// `connection def` (BNF ConnectionDefinition): a type whose owned members are attribute/
+    /// item/port usages, nested `end`/`connect` connector structure, mirroring PortDefinition
+    /// lowering. Connector-end referential/multiplicity validation is out of scope here; only
+    /// ownership, specialization, owned-member structure, and connector-end reference facts are
+    /// lowered.
+    ConnectionDefinition,
+    /// A package/definition/usage-level `connection` feature member (BNF ConnectionUsage), e.g.
+    /// `connection : ConnDef connect a::portA to b::portB;`. Mirrors PortUsage lowering; its `:`
+    /// typing target is a bare `QualifiedReferenceId` (like MetadataUsage), not a structured
+    /// `TypingRelationship`.
+    ConnectionUsage,
     Import,
     Alias,
 }
@@ -180,6 +193,13 @@ enum ReferenceKind {
     /// `AliasBinding` to match RESOLUTION_LAYER_DESIGN.md's "alias binding" vocabulary (section
     /// 10.1) rather than inventing new terminology.
     AliasBinding,
+    /// The authored target of a connector end (`ConnectStmt`'s `from`/`to`/extra ends, or a bare
+    /// `EndDecl`'s `::>`/`references` target), resolved through the same lexical lookup fixed
+    /// point as `AliasBinding`: a connector end can reference any feature (not just a Type), so
+    /// it is not restricted to the Subclassification/FeatureTyping `Type` domain. Connector-end
+    /// referential/multiplicity constraints (matching end types/multiplicities) are explicitly
+    /// out of scope; this only resolves the authored reference itself.
+    ConnectorEnd,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -223,6 +243,9 @@ enum UnsupportedFamily {
     /// Shared by `state def` and `state` usage bodies (both use `StateDefBody`/
     /// `StateDefBodyElement` in the typed AST -- there is no separate `StateUsageBody`).
     StateDefinitionMember,
+    /// Shared by `connection def` and `connection` usage bodies (both use `ConnectionDefBody`/
+    /// `ConnectionDefBodyElement` in the typed AST -- there is no separate `ConnectionUsageBody`).
+    ConnectionDefinitionMember,
     ParserUnsupported,
 }
 
@@ -791,11 +814,9 @@ impl SemanticModelBuilder {
                 UnsupportedFamily::PackageMember,
                 node.span.clone(),
             ),
-            PackageBodyElement::ConnectionDef(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::ConnectionDef(node) => {
+                self.lower_connection_def(document, owner, node)?
+            }
             PackageBodyElement::OccurrenceDef(node) => self.push_unsupported(
                 document,
                 UnsupportedFamily::PackageMember,
@@ -901,11 +922,9 @@ impl SemanticModelBuilder {
                 self.lower_metadata_usage(document, owner, node)?
             }
             PackageBodyElement::PortUsage(node) => self.lower_port_usage(document, owner, node)?,
-            PackageBodyElement::ConnectionUsage(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::ConnectionUsage(node) => {
+                self.lower_connection_usage(document, owner, node)?
+            }
             PackageBodyElement::InterfaceUsage(node) => self.push_unsupported(
                 document,
                 UnsupportedFamily::PackageMember,
@@ -1108,6 +1127,12 @@ impl SemanticModelBuilder {
                     PartDefBodyElement::StateUsage(state_usage) => {
                         self.lower_state_usage(document, Some(declaration), state_usage)?;
                     }
+                    PartDefBodyElement::ConnectionDef(connection_def) => {
+                        self.lower_connection_def(document, Some(declaration), connection_def)?;
+                    }
+                    PartDefBodyElement::Connection(connection_usage) => {
+                        self.lower_connection_usage(document, Some(declaration), connection_usage)?;
+                    }
                     PartDefBodyElement::Doc(_) | PartDefBodyElement::Comment(_) => {}
                     PartDefBodyElement::Annotation(_)
                     | PartDefBodyElement::MetadataAnnotation(_)
@@ -1121,7 +1146,6 @@ impl SemanticModelBuilder {
                     | PartDefBodyElement::InterfaceUsage(_)
                     | PartDefBodyElement::Connect(_)
                     | PartDefBodyElement::FlowUsage(_)
-                    | PartDefBodyElement::Connection(_)
                     | PartDefBodyElement::Perform(_)
                     | PartDefBodyElement::Allocate(_)
                     | PartDefBodyElement::ExhibitState(_)
@@ -1133,7 +1157,6 @@ impl SemanticModelBuilder {
                     | PartDefBodyElement::VariantUsage(_)
                     | PartDefBodyElement::FlowDef(_)
                     | PartDefBodyElement::OccurrenceDef(_)
-                    | PartDefBodyElement::ConnectionDef(_)
                     | PartDefBodyElement::CalcDef(_)
                     | PartDefBodyElement::AllocationDef(_)
                     | PartDefBodyElement::AllocationUsage(_)
@@ -1259,6 +1282,12 @@ impl SemanticModelBuilder {
                     PartUsageBodyElement::StateUsage(state_usage) => {
                         self.lower_state_usage(document, Some(declaration), state_usage)?;
                     }
+                    PartUsageBodyElement::ConnectionDef(connection_def) => {
+                        self.lower_connection_def(document, Some(declaration), connection_def)?;
+                    }
+                    PartUsageBodyElement::Connection(connection_usage) => {
+                        self.lower_connection_usage(document, Some(declaration), connection_usage)?;
+                    }
                     PartUsageBodyElement::Doc(_) => {}
                     PartUsageBodyElement::Annotation(_)
                     | PartUsageBodyElement::DefaultReferenceUsage(_)
@@ -1278,8 +1307,6 @@ impl SemanticModelBuilder {
                     | PartUsageBodyElement::FlowDef(_)
                     | PartUsageBodyElement::OccurrenceDef(_)
                     | PartUsageBodyElement::CalcDef(_)
-                    | PartUsageBodyElement::ConnectionDef(_)
-                    | PartUsageBodyElement::Connection(_)
                     | PartUsageBodyElement::AssertConstraint(_)
                     | PartUsageBodyElement::ConstraintDef(_)
                     | PartUsageBodyElement::ConstraintUsage(_)
@@ -2360,6 +2387,298 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
+    /// Lowers a `connection def` (BNF ConnectionDefinition), mirroring `lower_port_def`:
+    /// ownership, membership, an optional `:>` specialization relationship (participates in the
+    /// shared Subclassification/FeatureTyping lexical lookup fixed point, see
+    /// `DeclarationDomain::Type` in resolver.rs), and owned attribute/item/port/nested-connection
+    /// members plus connector-end structure via `lower_connection_body`. Connector-end
+    /// referential/multiplicity validation is explicitly out of scope; unrecognized body elements
+    /// fall through to `unsupported_connection_definition_member`.
+    fn lower_connection_def(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<ConnectionDef>,
+    ) -> Result<(), ConstructionError> {
+        let name = node
+            .value
+            .identification
+            .name
+            .as_deref()
+            .filter(|name| !name.is_empty())
+            .map(|name| self.intern_name(name))
+            .transpose()?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::ConnectionDefinition,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Owning,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::OwningMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(relationship) = &node.value.specializes {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        self.lower_connection_body(document, declaration, &node.value.body)
+    }
+
+    /// Lowers a package/definition/usage-level `connection` feature member (BNF ConnectionUsage),
+    /// mirroring `lower_metadata_usage`: ownership, membership, an optional `:` typing reference
+    /// (a bare `QualifiedReferenceId`, not a structured `TypingRelationship`),
+    /// `subsets`/`redefines` subsetting relationships, an optional inline `connect from to to`
+    /// clause (connector-end references), and owned attribute/item/port/nested-connection
+    /// members via the same shared `lower_connection_body` as `connection def`.
+    fn lower_connection_usage(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<ParserConnectionUsage>,
+    ) -> Result<(), ConstructionError> {
+        let name = node
+            .value
+            .name
+            .as_deref()
+            .filter(|name| !name.is_empty())
+            .map(|name| self.intern_name(name))
+            .transpose()?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::ConnectionUsage,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::FeatureMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(type_reference) = node.value.type_reference {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(type_reference)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span
+                .clone();
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::FeatureTyping,
+                document,
+                local: type_reference,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
+        if let Some(relationship) = &node.value.subsets {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.redefines {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(end) = &node.value.connect_from {
+            self.lower_connector_end(document, declaration, end)?;
+        }
+        if let Some(end) = &node.value.connect_to {
+            self.lower_connector_end(document, declaration, end)?;
+        }
+        for end in &node.value.connect_extra_ends {
+            self.lower_connector_end(document, declaration, end)?;
+        }
+        self.lower_connection_body(document, declaration, &node.value.body)
+    }
+
+    /// Shared body walker for `connection def`/`connection` usage bodies (both use
+    /// `ConnectionDefBody`/`ConnectionDefBodyElement` -- there is no separate
+    /// `ConnectionUsageBody`), mirroring `lower_state_def_body`'s single-walker pattern. `end`
+    /// declarations and `connect` statements carry the connector-end structure; everything else
+    /// beyond attribute/item/port/nested-part-usage members falls through to
+    /// `unsupported_connection_definition_member`.
+    fn lower_connection_body(
+        &mut self,
+        document: DocumentId,
+        declaration: DeclarationId,
+        body: &ConnectionDefBody,
+    ) -> Result<(), ConstructionError> {
+        if let ConnectionDefBody::Brace { elements } = body {
+            for element in elements {
+                match &element.value {
+                    ConnectionDefBodyElement::Error(error) => {
+                        self.push_recovery(document, error.span.clone());
+                    }
+                    ConnectionDefBodyElement::Doc(_) => {}
+                    ConnectionDefBodyElement::EndDecl(end_decl) => {
+                        self.lower_end_decl(document, declaration, end_decl)?;
+                    }
+                    ConnectionDefBodyElement::ConnectStmt(connect_stmt) => {
+                        self.lower_connect_stmt(document, declaration, connect_stmt)?;
+                    }
+                    ConnectionDefBodyElement::AttributeDef(attribute) => {
+                        self.lower_attribute_def(document, Some(declaration), attribute)?;
+                    }
+                    ConnectionDefBodyElement::AttributeUsage(attribute) => {
+                        self.lower_attribute_usage(document, Some(declaration), attribute)?;
+                    }
+                    ConnectionDefBodyElement::ItemDef(item_def) => {
+                        self.lower_item_def(document, Some(declaration), item_def)?;
+                    }
+                    ConnectionDefBodyElement::ItemUsage(item_usage) => {
+                        self.lower_item_usage(document, Some(declaration), item_usage)?;
+                    }
+                    ConnectionDefBodyElement::PortDef(port_def) => {
+                        self.lower_port_def(document, Some(declaration), port_def)?;
+                    }
+                    ConnectionDefBodyElement::PortUsage(port_usage) => {
+                        self.lower_port_usage(document, Some(declaration), port_usage)?;
+                    }
+                    ConnectionDefBodyElement::PartUsage(part_usage) => {
+                        self.lower_part_usage(document, Some(declaration), part_usage)?;
+                    }
+                    ConnectionDefBodyElement::RefDecl(_)
+                    | ConnectionDefBodyElement::AssertConstraint(_)
+                    | ConnectionDefBodyElement::OccurrenceUsage(_)
+                    | ConnectionDefBodyElement::SuccessionUsage(_) => self.push_unsupported(
+                        document,
+                        UnsupportedFamily::ConnectionDefinitionMember,
+                        element.span.clone(),
+                    ),
+                }
+            }
+        }
+        Ok(())
+    }
+
+    /// Lowers an `end` declaration inside a connection/interface def body (BNF `EndDecl`) as its
+    /// own nested declaration: a normal declared label (or an anonymous `#original`/`#derive`
+    /// derivation role), an optional `:` typing relationship, and an optional `::>`/`references`
+    /// reference-subsetting relationship as an authored `ConnectorEnd` reference (resolved
+    /// through the same shared lexical lookup as `AliasBinding`, see `DeclarationDomain::Any` in
+    /// resolver.rs). `redefines`/`crosses`/`nested_usage` -- connector-end referential
+    /// constraints, not the plain reference shape this slice covers -- are explicitly out of
+    /// scope and left unlowered.
+    fn lower_end_decl(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        node: &Node<EndDecl>,
+    ) -> Result<(), ConstructionError> {
+        let name = match &node.value.identity {
+            EndIdentity::Declaration(label) => self.intern_declared_name(&label.value)?,
+            EndIdentity::Derivation(_) => None,
+        };
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::ConnectionUsage,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span.clone(),
+        )?;
+        if let Some(relationship) = &node.value.typing {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.references {
+            for target in relationship.value.target.iter().copied() {
+                let span = self.documents[document.index()]
+                    .parsed
+                    .qualified_reference(target)
+                    .ok_or(ConstructionError::InvalidParserReference)?
+                    .metadata
+                    .span
+                    .clone();
+                self.push_reference(PendingReference {
+                    source: declaration,
+                    kind: ReferenceKind::ConnectorEnd,
+                    document,
+                    local: target,
+                    flags: RelationshipFlags::default(),
+                    span,
+                    import: None,
+                })?;
+            }
+        }
+        Ok(())
+    }
+
+    /// Lowers an inline `connect from to to (, extra)*` statement (BNF `ConnectStmt`) as
+    /// `ConnectorEnd` references from the owning connection def/usage declaration to each end's
+    /// target. Real annotation content in a braced body (`ConnectBody::Brace`) is out of scope --
+    /// only the endpoint references themselves are lowered.
+    fn lower_connect_stmt(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        node: &Node<ConnectStmt>,
+    ) -> Result<(), ConstructionError> {
+        self.lower_connector_end(document, owner, &node.value.from)?;
+        self.lower_connector_end(document, owner, &node.value.to)?;
+        for end in &node.value.extra_ends {
+            self.lower_connector_end(document, owner, end)?;
+        }
+        Ok(())
+    }
+
+    /// Lowers one connector end (`ConnectionEnd`, used by both `ConnectStmt` and
+    /// `ConnectionUsageMember`'s inline `connect` clause): its path expression is a structured
+    /// `Expression` (not a flattened string), so a simple/qualified name (`Expression::FeatureRef`)
+    /// resolves as an authored `ConnectorEnd` reference through the same shared lexical lookup as
+    /// `AliasBinding`. A dotted feature-chain path (`Expression::MemberAccess`, e.g. `a.portA`) or
+    /// any other expression shape has no chained-feature-access resolution anywhere in this
+    /// pipeline yet (a materially larger resolution problem than a single-segment reference), so
+    /// it is left as an explicit `unsupported_connection_definition_member` diagnostic here rather
+    /// than a fabricated or partial resolution.
+    fn lower_connector_end(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        node: &Node<ConnectionEnd>,
+    ) -> Result<(), ConstructionError> {
+        match &node.value.expression.value {
+            Expression::FeatureRef(target) => {
+                let span = self.documents[document.index()]
+                    .parsed
+                    .qualified_reference(*target)
+                    .ok_or(ConstructionError::InvalidParserReference)?
+                    .metadata
+                    .span
+                    .clone();
+                self.push_reference(PendingReference {
+                    source: owner,
+                    kind: ReferenceKind::ConnectorEnd,
+                    document,
+                    local: *target,
+                    flags: RelationshipFlags::default(),
+                    span,
+                    import: None,
+                })?;
+            }
+            _ => self.push_unsupported(
+                document,
+                UnsupportedFamily::ConnectionDefinitionMember,
+                node.span.clone(),
+            ),
+        }
+        Ok(())
+    }
+
     fn lower_subsetting_relationship(
         &mut self,
         document: DocumentId,
@@ -3072,6 +3391,74 @@ mod tests {
                 "(kind specialization) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Derived\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
             ),
             "expected Derived's specialization of Base to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn connection_def_lowers_to_a_declaration() {
+        // Bare `end name;` (no `:` type, `::>`/`references` target, or nested occurrence/item
+        // usage) is not valid `EndDecl` grammar at all -- confirmed against the upstream parser's
+        // `end_decl` (`src/parser/connector.rs`), which requires one of those three forms after
+        // the name -- so a real end declaration must carry an explicit type here.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tport def P;\n\
+             \tconnection def C {\n\
+             \t\tend end1 : P;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::C\"))) (kind connection-def)"),
+            "expected a connection-def declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::C::end1\"))) (kind connection)"),
+            "expected an owned end declaration under the connection def, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn connection_def_specializing_another_connection_def_resolves_its_specialization_reference() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tconnection def Base;\n\
+             \tconnection def Derived :> Base;\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind specialization) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Derived\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
+            ),
+            "expected Derived's specialization of Base to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn connection_usage_connector_end_references_resolve_to_their_targets() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tconnection def C;\n\
+             \tpart d1;\n\
+             \tpart d2;\n\
+             \tconnection bus : C connect d1 to d2;\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::bus\"))) (kind connection)"),
+            "expected a connection usage declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind connectorEnd) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::bus\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::d1\")))"
+            ),
+            "expected bus's connector-end reference to d1 to resolve, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind connectorEnd) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::bus\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::d2\")))"
+            ),
+            "expected bus's connector-end reference to d2 to resolve, got:\n{output}"
         );
     }
 

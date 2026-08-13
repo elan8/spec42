@@ -549,6 +549,17 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             (reference.kind() == ReferenceKind::AliasBinding).then_some(index)
         })
         .collect();
+    // A connector end can reference any feature (not just a Type), exactly like an alias target,
+    // so `ConnectorEnd` resolves against `DeclarationDomain::Any` alongside `AliasBinding` rather
+    // than joining the Subclassification/FeatureTyping `Type` domain passes; it does not read
+    // inherited scope either.
+    let connector_end_slots: Vec<usize> = references
+        .iter()
+        .enumerate()
+        .filter_map(|(index, reference)| {
+            (reference.kind() == ReferenceKind::ConnectorEnd).then_some(index)
+        })
+        .collect();
     let mut work = ResolutionWork {
         direct_index_entries: u64::try_from(direct_names.candidates.len())
             .map_err(|_| ResolutionError::Capacity)?,
@@ -621,6 +632,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             .chain(&subclass_slots)
             .chain(&typing_slots)
             .chain(&alias_slots)
+            .chain(&connector_end_slots)
             .copied()
         {
             outcomes[index] = ResolutionStatus::NonConverged;
@@ -657,6 +669,32 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         }
 
         for index in alias_slots.iter().copied() {
+            work.downstream_evaluations = work
+                .downstream_evaluations
+                .checked_add(1)
+                .ok_or(ResolutionError::Capacity)?;
+            outcomes[index] = resolve_reference(
+                declarations,
+                paths,
+                &references[index],
+                DeclarationDomain::Any,
+                ResolutionIndexes {
+                    direct_names: &direct_names,
+                    exported_names: &exported_names,
+                    effective_imports: Some(&effective_imports),
+                    exported_imports: Some(&exported_imports),
+                    inherited_names: None,
+                },
+                ResolutionScratch {
+                    ambiguous_candidates: &mut ambiguous_candidates,
+                    candidates: &mut candidates,
+                    next_candidates: &mut next_candidates,
+                    work: &mut work,
+                },
+            )?;
+        }
+
+        for index in connector_end_slots.iter().copied() {
             work.downstream_evaluations = work
                 .downstream_evaluations
                 .checked_add(1)
@@ -1140,7 +1178,8 @@ fn supported_import_domain(reference: &impl ResolutionReferenceFact) -> Option<D
         | ReferenceKind::References
         | ReferenceKind::Crosses
         | ReferenceKind::Intersects
-        | ReferenceKind::AliasBinding => None,
+        | ReferenceKind::AliasBinding
+        | ReferenceKind::ConnectorEnd => None,
     }
 }
 
@@ -1177,6 +1216,7 @@ impl DeclarationDomain {
                     | DeclarationKind::ActionDefinition
                     | DeclarationKind::StateDefinition
                     | DeclarationKind::MetadataDefinition
+                    | DeclarationKind::ConnectionDefinition
                     | DeclarationKind::Alias
             ),
         }
@@ -1282,7 +1322,8 @@ fn build_effective_import_indexes<R: ResolutionReferenceFact>(
             | ReferenceKind::References
             | ReferenceKind::Crosses
             | ReferenceKind::Intersects
-            | ReferenceKind::AliasBinding => {}
+            | ReferenceKind::AliasBinding
+            | ReferenceKind::ConnectorEnd => {}
         }
     }
     Ok((
@@ -2559,6 +2600,129 @@ mod tests {
     #[test]
     fn metadata_def_specialization_resolves_through_the_ancestor_fixed_point() {
         let fixture = metadata_def_specialization_fixture();
+        let (_, _, resolution) = resolve_fixture(&fixture);
+        assert_eq!(resolution.solver_status, SolverStatus::Converged);
+        assert_eq!(
+            resolution.outcome(AuthoredReferenceId(0)),
+            Some(ResolutionStatus::Resolved(DeclarationId(1)))
+        );
+    }
+
+    /// Builds a `Demo { connection def Base; connection def Derived :> Base; }`-shaped fixture:
+    /// `Derived`'s `:>` specialization reference exercises `connection def`'s participation in the
+    /// shared Subclassification/FeatureTyping lexical lookup fixed point
+    /// (`DeclarationDomain::Type`) exactly like `item def`/`action def`/`part def`/`port def`.
+    fn connection_def_specialization_fixture() -> ResolverFixture {
+        let mut symbols = SymbolTableBuilder::default();
+        let demo_name = symbols.intern("Demo").unwrap();
+        let base_name = symbols.intern("Base").unwrap();
+        let derived_name = symbols.intern("Derived").unwrap();
+        let mut paths = SymbolPathArenaBuilder::default();
+        let base_path = paths.push(&[base_name], false).unwrap();
+
+        let demo = DeclarationId(0);
+        let derived = DeclarationId(2);
+        let declarations = vec![
+            declaration(
+                DocumentId(0),
+                None,
+                Some(demo_name),
+                DeclarationKind::Package,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(demo),
+                Some(base_name),
+                DeclarationKind::ConnectionDefinition,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(demo),
+                Some(derived_name),
+                DeclarationKind::ConnectionDefinition,
+            ),
+        ];
+        let memberships = memberships_for(&declarations, &[]);
+        let references = vec![TestReference {
+            source: derived,
+            kind: ReferenceKind::Subclassification,
+            path: base_path,
+            flags: RelationshipFlags::default(),
+        }];
+        let _symbols = symbols.freeze();
+        ResolverFixture {
+            declarations: declarations.into_boxed_slice(),
+            memberships,
+            paths: paths.freeze(),
+            references: references.into_boxed_slice(),
+        }
+    }
+
+    #[test]
+    fn connection_def_specialization_resolves_through_the_ancestor_fixed_point() {
+        let fixture = connection_def_specialization_fixture();
+        let (_, _, resolution) = resolve_fixture(&fixture);
+        assert_eq!(resolution.solver_status, SolverStatus::Converged);
+        assert_eq!(
+            resolution.outcome(AuthoredReferenceId(0)),
+            Some(ResolutionStatus::Resolved(DeclarationId(1)))
+        );
+    }
+
+    /// Builds a `Demo { part d1; connection bus connect d1 to d1; }`-shaped fixture: `bus`'s
+    /// `ConnectorEnd` reference exercises the `DeclarationDomain::Any` resolution slot
+    /// (`connector_end_slots`) exactly like `AliasBinding` -- a connector end can reference any
+    /// feature, not just a Type, so it must not join the Subclassification/FeatureTyping `Type`
+    /// domain passes.
+    fn connector_end_reference_fixture() -> ResolverFixture {
+        let mut symbols = SymbolTableBuilder::default();
+        let demo_name = symbols.intern("Demo").unwrap();
+        let d1_name = symbols.intern("d1").unwrap();
+        let bus_name = symbols.intern("bus").unwrap();
+        let mut paths = SymbolPathArenaBuilder::default();
+        let d1_path = paths.push(&[d1_name], false).unwrap();
+
+        let demo = DeclarationId(0);
+        let bus = DeclarationId(2);
+        let declarations = vec![
+            declaration(
+                DocumentId(0),
+                None,
+                Some(demo_name),
+                DeclarationKind::Package,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(demo),
+                Some(d1_name),
+                DeclarationKind::PartUsage,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(demo),
+                Some(bus_name),
+                DeclarationKind::ConnectionUsage,
+            ),
+        ];
+        let memberships = memberships_for(&declarations, &[]);
+        let references = vec![TestReference {
+            source: bus,
+            kind: ReferenceKind::ConnectorEnd,
+            path: d1_path,
+            flags: RelationshipFlags::default(),
+        }];
+        let _symbols = symbols.freeze();
+        ResolverFixture {
+            declarations: declarations.into_boxed_slice(),
+            memberships,
+            paths: paths.freeze(),
+            references: references.into_boxed_slice(),
+        }
+    }
+
+    #[test]
+    fn connector_end_reference_resolves_to_its_target() {
+        let fixture = connector_end_reference_fixture();
         let (_, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
