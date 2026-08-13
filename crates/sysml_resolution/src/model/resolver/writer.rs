@@ -211,6 +211,9 @@ fn unsupported_code(family: UnsupportedFamily) -> &'static str {
         UnsupportedFamily::PartDefinitionMember => "unsupported_part_definition_member",
         UnsupportedFamily::PartUsageMember => "unsupported_part_usage_member",
         UnsupportedFamily::AttributeMember => "unsupported_attribute_member",
+        UnsupportedFamily::RequirementDefinitionMember => {
+            "unsupported_requirement_definition_member"
+        }
         UnsupportedFamily::ParserUnsupported => "unsupported_parser_construct",
     }
 }
@@ -682,6 +685,8 @@ fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::EnumerationDefinition => "enum-def",
         DeclarationKind::EnumerationUsage => "enum",
         DeclarationKind::EnumerationLiteral => "enum-literal",
+        DeclarationKind::RequirementDefinition => "requirement-def",
+        DeclarationKind::RequirementUsage => "requirement",
     }
 }
 

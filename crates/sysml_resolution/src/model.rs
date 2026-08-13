@@ -19,8 +19,9 @@ use sysml_v2_parser_next::{
         LibraryPackage, Membership, MembershipKind as ParserMembershipKind, NamespaceDecl, Node,
         Package, PackageBody, PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement,
         PartUsage, PartUsageBody, PartUsageBodyElement, QualifiedIdentification,
-        QualifiedReferenceId, RootElement, Span, SubsettingKind, SubsettingRelationship,
-        Visibility as ParserVisibility,
+        QualifiedReferenceId, RequirementDef, RequirementDefBody, RequirementDefBodyElement,
+        RequirementUsage as ParserRequirementUsage, RootElement, Span, SubsettingKind,
+        SubsettingRelationship, Visibility as ParserVisibility,
     },
     ParseError, ParsedDocument,
 };
@@ -80,6 +81,14 @@ enum DeclarationKind {
     /// EnumeratedValue). Each literal gets its own declaration/qualified name, analogous to how
     /// attribute/part usages become owned members.
     EnumerationLiteral,
+    /// `requirement def` (BNF RequirementDefinition): a type whose owned members are
+    /// attribute/requirement usages, mirroring PartDefinition lowering. Requirement-specific
+    /// semantics (subject binding, assumption/constraint facts) are out of scope here; only
+    /// ownership, specialization, and owned-member structure are lowered.
+    RequirementDefinition,
+    /// A package/definition/usage-level `requirement` feature member (BNF RequirementUsage), e.g.
+    /// `requirement r : SomeReq;`. Mirrors PartUsage lowering.
+    RequirementUsage,
     Import,
     Alias,
 }
@@ -152,6 +161,7 @@ enum UnsupportedFamily {
     PartDefinitionMember,
     PartUsageMember,
     AttributeMember,
+    RequirementDefinitionMember,
     ParserUnsupported,
 }
 
@@ -651,16 +661,12 @@ impl SemanticModelBuilder {
                 UnsupportedFamily::PackageMember,
                 node.span.clone(),
             ),
-            PackageBodyElement::RequirementDef(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
-            PackageBodyElement::RequirementUsage(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::RequirementDef(node) => {
+                self.lower_requirement_def(document, owner, node)?
+            }
+            PackageBodyElement::RequirementUsage(node) => {
+                self.lower_requirement_usage(document, owner, node)?
+            }
             PackageBodyElement::Satisfy(node) => self.push_unsupported(
                 document,
                 UnsupportedFamily::PackageMember,
@@ -1033,6 +1039,16 @@ impl SemanticModelBuilder {
                     PartDefBodyElement::EnumerationUsage(enum_usage) => {
                         self.lower_enum_usage(document, Some(declaration), enum_usage)?;
                     }
+                    PartDefBodyElement::RequirementDef(requirement_def) => {
+                        self.lower_requirement_def(document, Some(declaration), requirement_def)?;
+                    }
+                    PartDefBodyElement::RequirementUsage(requirement_usage) => {
+                        self.lower_requirement_usage(
+                            document,
+                            Some(declaration),
+                            requirement_usage,
+                        )?;
+                    }
                     PartDefBodyElement::Doc(_) | PartDefBodyElement::Comment(_) => {}
                     PartDefBodyElement::Annotation(_)
                     | PartDefBodyElement::MetadataAnnotation(_)
@@ -1040,7 +1056,6 @@ impl SemanticModelBuilder {
                     | PartDefBodyElement::Dependency(_)
                     | PartDefBodyElement::Other(_)
                     | PartDefBodyElement::DefaultReferenceUsage(_)
-                    | PartDefBodyElement::RequirementUsage(_)
                     | PartDefBodyElement::ItemDef(_)
                     | PartDefBodyElement::ItemUsage(_)
                     | PartDefBodyElement::Ref(_)
@@ -1067,7 +1082,6 @@ impl SemanticModelBuilder {
                     | PartDefBodyElement::MetadataDef(_)
                     | PartDefBodyElement::MetadataUsage(_)
                     | PartDefBodyElement::FlowDef(_)
-                    | PartDefBodyElement::RequirementDef(_)
                     | PartDefBodyElement::OccurrenceDef(_)
                     | PartDefBodyElement::ConnectionDef(_)
                     | PartDefBodyElement::PortDef(_)
@@ -1159,6 +1173,16 @@ impl SemanticModelBuilder {
                     PartUsageBodyElement::EnumerationUsage(enum_usage) => {
                         self.lower_enum_usage(document, Some(declaration), enum_usage)?;
                     }
+                    PartUsageBodyElement::RequirementDef(requirement_def) => {
+                        self.lower_requirement_def(document, Some(declaration), requirement_def)?;
+                    }
+                    PartUsageBodyElement::RequirementUsage(requirement_usage) => {
+                        self.lower_requirement_usage(
+                            document,
+                            Some(declaration),
+                            requirement_usage,
+                        )?;
+                    }
                     PartUsageBodyElement::Doc(_) => {}
                     PartUsageBodyElement::Annotation(_)
                     | PartUsageBodyElement::DefaultReferenceUsage(_)
@@ -1181,7 +1205,6 @@ impl SemanticModelBuilder {
                     | PartUsageBodyElement::StateDef(_)
                     | PartUsageBodyElement::MetadataDef(_)
                     | PartUsageBodyElement::FlowDef(_)
-                    | PartUsageBodyElement::RequirementDef(_)
                     | PartUsageBodyElement::OccurrenceDef(_)
                     | PartUsageBodyElement::PortDef(_)
                     | PartUsageBodyElement::CalcDef(_)
@@ -1191,7 +1214,6 @@ impl SemanticModelBuilder {
                     | PartUsageBodyElement::ConstraintDef(_)
                     | PartUsageBodyElement::ConstraintUsage(_)
                     | PartUsageBodyElement::CalcUsage(_)
-                    | PartUsageBodyElement::RequirementUsage(_)
                     | PartUsageBodyElement::ItemDef(_)
                     | PartUsageBodyElement::ItemUsage(_)
                     | PartUsageBodyElement::MetadataUsage(_)
@@ -1438,6 +1460,156 @@ impl SemanticModelBuilder {
                 span,
                 import: None,
             })?;
+        }
+        Ok(())
+    }
+
+    /// Lowers a `requirement def` (BNF RequirementDefinition), mirroring `lower_part_def`:
+    /// ownership, membership, an optional `:>` specialization relationship, and owned
+    /// attribute/requirement members. Requirement-specific semantics (subject binding,
+    /// assumption/constraint facts) are explicitly out of scope; unrecognized body elements fall
+    /// through to `unsupported_requirement_definition_member`.
+    fn lower_requirement_def(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<RequirementDef>,
+    ) -> Result<(), ConstructionError> {
+        let name = node
+            .value
+            .identification
+            .name
+            .as_deref()
+            .filter(|name| !name.is_empty())
+            .map(|name| self.intern_name(name))
+            .transpose()?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::RequirementDefinition,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Owning,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::OwningMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(relationship) = &node.value.specializes {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        self.lower_requirement_def_body(document, declaration, &node.value.body)
+    }
+
+    /// Lowers a package/definition/usage-level `requirement` feature member (BNF
+    /// RequirementUsage), mirroring `lower_part_usage`: ownership, membership, an optional
+    /// `:`/`:>` typing reference, `subsets`/`references` subsetting relationships, and owned
+    /// attribute/requirement members.
+    fn lower_requirement_usage(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<ParserRequirementUsage>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declared_name(&node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::RequirementUsage,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::FeatureMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(type_name) = node.value.type_name {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(type_name)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span
+                .clone();
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::FeatureTyping,
+                document,
+                local: type_name,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
+        if let Some(relationship) = &node.value.subsets {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.references {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        self.lower_requirement_def_body(document, declaration, &node.value.body)
+    }
+
+    /// Lowers the shared `RequirementDefBody` used by both `requirement def` and `requirement`
+    /// usage bodies: recognized owned members are attribute def/usage and nested requirement
+    /// usages; everything else falls through to `unsupported_requirement_definition_member` via
+    /// the single `RequirementDefinitionMember` family (both def and usage bodies share the same
+    /// grammar production, `RequirementBody`, so there is no def/usage-specific distinction to
+    /// make here).
+    fn lower_requirement_def_body(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        body: &RequirementDefBody,
+    ) -> Result<(), ConstructionError> {
+        let RequirementDefBody::Brace { elements } = body else {
+            return Ok(());
+        };
+        for element in elements {
+            match &element.value {
+                RequirementDefBodyElement::Error(error) => {
+                    self.push_recovery(document, error.span.clone());
+                }
+                RequirementDefBodyElement::AttributeDef(attribute) => {
+                    self.lower_attribute_def(document, Some(owner), attribute)?;
+                }
+                RequirementDefBodyElement::AttributeUsage(attribute) => {
+                    self.lower_attribute_usage(document, Some(owner), attribute)?;
+                }
+                RequirementDefBodyElement::RequirementUsage(requirement) => {
+                    self.lower_requirement_usage(document, Some(owner), requirement)?;
+                }
+                RequirementDefBodyElement::Doc(_) => {}
+                RequirementDefBodyElement::Other(_)
+                | RequirementDefBodyElement::Annotation(_)
+                | RequirementDefBodyElement::MetadataAnnotation(_)
+                | RequirementDefBodyElement::MetadataKeywordUsage(_)
+                | RequirementDefBodyElement::Import(_)
+                | RequirementDefBodyElement::SubjectDecl(_)
+                | RequirementDefBodyElement::SubjectRef(_)
+                | RequirementDefBodyElement::RequirementActorDecl(_)
+                | RequirementDefBodyElement::Stakeholder(_)
+                | RequirementDefBodyElement::Purpose(_)
+                | RequirementDefBodyElement::VariantUsage(_)
+                | RequirementDefBodyElement::VerifyRequirement(_)
+                | RequirementDefBodyElement::RequireConstraint(_)
+                | RequirementDefBodyElement::Constraint(_)
+                | RequirementDefBodyElement::Frame(_)
+                | RequirementDefBodyElement::TextualRep(_) => self.push_unsupported(
+                    document,
+                    UnsupportedFamily::RequirementDefinitionMember,
+                    element.span.clone(),
+                ),
+            }
         }
         Ok(())
     }
@@ -2065,6 +2237,60 @@ mod tests {
                 "(kind specialization) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Derived\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
             ),
             "expected Derived's specialization of Base to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn requirement_def_lowers_to_a_declaration() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \trequirement def MassRequirement {\n\
+             \t\tattribute mass : Real;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::MassRequirement\"))) (kind requirement-def)"),
+            "expected a requirement-def declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::MassRequirement::mass\"))) (kind attribute)"),
+            "expected an owned attribute declaration under the requirement def, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn requirement_def_specializing_another_requirement_def_resolves_its_subclassification_reference(
+    ) {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \trequirement def Base;\n\
+             \trequirement def Derived :> Base;\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind specialization) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Derived\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
+            ),
+            "expected Derived's specialization of Base to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn requirement_usage_typed_by_a_requirement_def_resolves_its_feature_typing_reference() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \trequirement def MassRequirement;\n\
+             \tpart def Vehicle {\n\
+             \t\trequirement massReq : MassRequirement;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind featureTyping) (ordinal 0))\n      (authored-target \"MassRequirement\")\n      (outcome (status resolved) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::MassRequirement\"))))"
+            ),
+            "expected the requirement usage's featureTyping reference to MassRequirement to resolve, got:\n{output}"
         );
     }
 

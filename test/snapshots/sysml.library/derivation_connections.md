@@ -90,18 +90,6 @@ standard library package DerivationConnections {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 9 1) (end 11 2))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 12 1) (end 14 2))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
         (range (start 16 1) (end 57 2))
       )
       (diagnostic
@@ -122,6 +110,8 @@ standard library package DerivationConnections {
     (declaration (id (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/derivation_connections.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "SequenceFunctions::excludes") (import (shape membership) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/derivation_connections.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ControlFunctions::allTrue") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::derivedRequirements"))) (kind requirement) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::originalRequirements"))) (kind requirement) (membership (kind feature) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/derivation_connections.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))

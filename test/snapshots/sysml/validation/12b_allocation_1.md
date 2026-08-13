@@ -75,9 +75,15 @@ package '12b-Allocation-1' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_requirement_definition_member")
         (source "semantic")
-        (range (start 7 2) (end 12 3))
+        (range (start 8 3) (end 8 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_requirement_definition_member")
+        (source "semantic")
+        (range (start 9 3) (end 11 4))
       )
       (diagnostic
         (severity warning)
@@ -151,6 +157,7 @@ package '12b-Allocation-1' {
     (declaration (id (node (document "memory://snapshot/12b_allocation_1.md") (qualified-name "12b-Allocation-1::PhysicalModel::powerTrain"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "PowerTrain"))))
     (declaration (id (node (document "memory://snapshot/12b_allocation_1.md") (qualified-name "12b-Allocation-1::PhysicalModel::powerTrain::engine"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/12b_allocation_1.md") (qualified-name "12b-Allocation-1::RequirementModel"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/12b_allocation_1.md") (qualified-name "12b-Allocation-1::RequirementModel::torqueGeneration"))) (kind requirement) (membership (kind feature) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/12b_allocation_1.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))

@@ -18,9 +18,9 @@ package P {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_requirement_definition_member")
         (source "semantic")
-        (range (start 1 4) (end 3 5))
+        (range (start 2 8) (end 2 25))
       )
     )
   )
@@ -32,6 +32,7 @@ package P {
   (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:4cb1bf2c90b90c0cdfb98dd998af4a3a254588ad0cc116cd756da00f2be81ed7") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/fuzz_member_var.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/fuzz_member_var.md") (qualified-name "P::r"))) (kind requirement) (membership (kind feature) (visibility default)))
   )
   (references
   )

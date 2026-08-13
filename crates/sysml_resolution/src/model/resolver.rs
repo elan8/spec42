@@ -1171,6 +1171,7 @@ impl DeclarationDomain {
                 DeclarationKind::PartDefinition
                     | DeclarationKind::AttributeDefinition
                     | DeclarationKind::EnumerationDefinition
+                    | DeclarationKind::RequirementDefinition
                     | DeclarationKind::Alias
             ),
         }
