@@ -69,12 +69,6 @@ package TextualRepresentationTest {
         (source "semantic")
         (range (start 13 12) (end 13 16))
       )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_action_definition_member")
-        (source "semantic")
-        (range (start 15 5) (end 18 12))
-      )
     )
   )
 )
@@ -82,7 +76,7 @@ package TextualRepresentationTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:9878b50105e80aa203bd56e16e9462ea885ff7764f47f23e5e1f5f51de0394e6") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:9878b50105e80aa203bd56e16e9462ea885ff7764f47f23e5e1f5f51de0394e6") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/textual_representation_test.md") (qualified-name "TextualRepresentationTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/textual_representation_test.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false)))))

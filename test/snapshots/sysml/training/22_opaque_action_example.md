@@ -36,12 +36,6 @@ package 'Opaque Action Example' {
         (source "semantic")
         (range (start 3 20) (end 3 41))
       )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_action_definition_member")
-        (source "semantic")
-        (range (start 8 2) (end 15 6))
-      )
     )
   )
 )
@@ -49,7 +43,7 @@ package 'Opaque Action Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:e3f38762e7581315421a7680d5f802703299316857c394fe2bd0254010906ab4") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:e3f38762e7581315421a7680d5f802703299316857c394fe2bd0254010906ab4") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/22_opaque_action_example.md") (qualified-name "Opaque Action Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/22_opaque_action_example.md") (qualified-name "Opaque Action Example::Sensor"))) (kind part-def) (membership (kind owning) (visibility default)))

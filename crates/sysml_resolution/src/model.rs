@@ -4275,7 +4275,7 @@ impl SemanticModelBuilder {
                 ActionDefBodyElement::Perform(perform) => {
                     self.lower_perform(document, Some(owner), perform)?;
                 }
-                ActionDefBodyElement::Doc(_) => {}
+                ActionDefBodyElement::Doc(_) | ActionDefBodyElement::TextualRep(_) => {}
                 ActionDefBodyElement::MetadataAnnotation(node) => {
                     self.lower_metadata_annotation(document, owner, node)?;
                 }
@@ -4359,7 +4359,6 @@ impl SemanticModelBuilder {
                 )?,
                 ActionDefBodyElement::Annotation(_)
                 | ActionDefBodyElement::MetadataKeywordUsage(_)
-                | ActionDefBodyElement::TextualRep(_)
                 | ActionDefBodyElement::WhileStmt(_)
                 | ActionDefBodyElement::LoopStmt(_)
                 | ActionDefBodyElement::IfStmt(_)
@@ -4557,7 +4556,7 @@ impl SemanticModelBuilder {
                         param,
                     )?;
                 }
-                ActionUsageBodyElement::Doc(_) => {}
+                ActionUsageBodyElement::Doc(_) | ActionUsageBodyElement::TextualRep(_) => {}
                 ActionUsageBodyElement::MetadataAnnotation(node) => {
                     self.lower_metadata_annotation(document, owner, node)?;
                 }
@@ -4636,7 +4635,6 @@ impl SemanticModelBuilder {
                 )?,
                 ActionUsageBodyElement::Annotation(_)
                 | ActionUsageBodyElement::MetadataKeywordUsage(_)
-                | ActionUsageBodyElement::TextualRep(_)
                 | ActionUsageBodyElement::WhileStmt(_)
                 | ActionUsageBodyElement::LoopStmt(_)
                 | ActionUsageBodyElement::IfStmt(_)
@@ -4816,7 +4814,7 @@ impl SemanticModelBuilder {
                     ActionDefBodyElement::ThenAction(then_action) => {
                         self.lower_then_action(document, owner, family, then_action)?;
                     }
-                    ActionDefBodyElement::Doc(_) => {}
+                    ActionDefBodyElement::Doc(_) | ActionDefBodyElement::TextualRep(_) => {}
                     ActionDefBodyElement::MergeStmt(node) => self.lower_first_merge_stmt(
                         document,
                         owner,
@@ -6446,7 +6444,7 @@ impl SemanticModelBuilder {
                 RequirementDefBodyElement::Constraint(constraint) => {
                     self.lower_constraint_usage(document, Some(owner), constraint)?;
                 }
-                RequirementDefBodyElement::Doc(_) => {}
+                RequirementDefBodyElement::Doc(_) | RequirementDefBodyElement::TextualRep(_) => {}
                 RequirementDefBodyElement::MetadataAnnotation(node) => {
                     self.lower_metadata_annotation(document, owner, node)?;
                 }
@@ -6460,8 +6458,7 @@ impl SemanticModelBuilder {
                 | RequirementDefBodyElement::VariantUsage(_)
                 | RequirementDefBodyElement::VerifyRequirement(_)
                 | RequirementDefBodyElement::RequireConstraint(_)
-                | RequirementDefBodyElement::Frame(_)
-                | RequirementDefBodyElement::TextualRep(_) => {
+                | RequirementDefBodyElement::Frame(_) => {
                     self.push_unsupported(document, unsupported, element.span.clone())
                 }
             }

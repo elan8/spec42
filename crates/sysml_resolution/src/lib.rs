@@ -771,6 +771,59 @@ mod tests {
         );
     }
 
+    /// A `TextualRepresentation` (`language "..." /* ... */`) nested inside an `action def`, an
+    /// `action` usage, or a `requirement def` body is inert documentation content with no
+    /// resolvable semantic fact, mirroring the existing package-body and `ref` usage-body
+    /// treatment (`PackageBodyElement::TextualRep`/`RefBodyElement::TextualRep`, both silently
+    /// ignored alongside `Doc`). It must not be reported as an unsupported member.
+    #[test]
+    fn textual_representation_inside_action_def_body_is_ignored() {
+        let sexpr = semantic_sexpr_for(
+            r#"package P { action def A { language "alf" /* c.x = newX; */ } }"#,
+        );
+        assert!(
+            !sexpr.contains("unsupported_action_definition_member"),
+            "did not expect unsupported_action_definition_member for a TextualRep member, got: {sexpr}"
+        );
+        assert!(
+            sexpr.contains("(completeness complete)"),
+            "expected TextualRep to be fully ignored (no parse-recovery/unsupported-syntax fallout), got: {sexpr}"
+        );
+    }
+
+    /// Same as `textual_representation_inside_action_def_body_is_ignored`, but nested inside an
+    /// `action` usage body rather than an `action def` body.
+    #[test]
+    fn textual_representation_inside_action_usage_body_is_ignored() {
+        let sexpr =
+            semantic_sexpr_for(r#"package P { action a { language "alf" /* c.x = newX; */ } }"#);
+        assert!(
+            !sexpr.contains("unsupported_action_usage_member"),
+            "did not expect unsupported_action_usage_member for a TextualRep member, got: {sexpr}"
+        );
+        assert!(
+            sexpr.contains("(completeness complete)"),
+            "expected TextualRep to be fully ignored (no parse-recovery/unsupported-syntax fallout), got: {sexpr}"
+        );
+    }
+
+    /// Same as `textual_representation_inside_action_def_body_is_ignored`, but nested inside a
+    /// `requirement def` body.
+    #[test]
+    fn textual_representation_inside_requirement_def_body_is_ignored() {
+        let sexpr = semantic_sexpr_for(
+            r#"package P { requirement def R { language "alf" /* c.x = newX; */ } }"#,
+        );
+        assert!(
+            !sexpr.contains("unsupported_requirement_definition_member"),
+            "did not expect unsupported_requirement_definition_member for a TextualRep member, got: {sexpr}"
+        );
+        assert!(
+            sexpr.contains("(completeness complete)"),
+            "expected TextualRep to be fully ignored (no parse-recovery/unsupported-syntax fallout), got: {sexpr}"
+        );
+    }
+
     /// `terminate <name>;` nested inside a `then action <name> { ... }` self-named action usage
     /// (the representative fixture shape, e.g. `then action c1 { terminate c1; }`) must resolve
     /// its target through the shared `DeclarationDomain::Any` lexical lookup, sourced directly at
