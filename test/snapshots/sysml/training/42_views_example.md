@@ -78,9 +78,15 @@ package 'Views Example' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_view_definition_member")
         (source "semantic")
-        (range (start 10 1) (end 13 2))
+        (range (start 11 2) (end 11 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_view_definition_member")
+        (source "semantic")
+        (range (start 12 2) (end 12 23))
       )
       (diagnostic
         (severity warning)
@@ -90,9 +96,9 @@ package 'Views Example' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_view_definition_member")
         (source "semantic")
-        (range (start 21 1) (end 32 2))
+        (range (start 23 2) (end 32 1))
       )
     )
   )
@@ -108,6 +114,8 @@ package 'Views Example' {
     (declaration (id (node (document "memory://snapshot/42_views_example.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Viewpoint Example") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/42_views_example.md") (anonymous (kind import) (ordinal 2))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Filtering Example-2") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::Part Structure View"))) (kind view-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::vehicle structure view"))) (kind view) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Part Structure View"))))
+    (declaration (id (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::vehicle tabular views"))) (kind view) (membership (kind feature) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/42_views_example.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
@@ -119,8 +127,12 @@ package 'Views Example' {
     (reference (id (source (node (document "memory://snapshot/42_views_example.md") (anonymous (kind import) (ordinal 2))))) (kind namespaceImport) (ordinal 0))
       (authored-target "Filtering Example-2")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::vehicle structure view"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Part Structure View")
+      (outcome (status resolved) (target (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::Part Structure View")))))
   )
   (relationships
+    (relationship (kind typing) (source (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::vehicle structure view"))) (target (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::Part Structure View"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::vehicle structure view"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )
@@ -140,6 +152,10 @@ package 'Views Example' {
   (query (document "memory://snapshot/42_views_example.md") (range (start 3 16) (end 3 40)) (probe (position 3 16))
     (reference (id (source (node (document "memory://snapshot/42_views_example.md") (anonymous (kind import) (ordinal 2))))) (kind namespaceImport) (ordinal 0) (authored-target "Filtering Example-2")
       (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/42_views_example.md") (range (start 10 33) (end 10 54)) (probe (position 10 33))
+    (reference (id (source (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::vehicle structure view"))) (kind featureTyping) (ordinal 0) (authored-target "Part Structure View")
+      (outcome (status resolved) (target (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::Part Structure View")))))
   )
 )
 ~~~

@@ -140,9 +140,15 @@ package ServerSequenceOutsideRealization_2 {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_interface_definition_member")
         (source "semantic")
-        (range (start 26 2) (end 26 67))
+        (range (start 26 12) (end 26 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_interface_definition_member")
+        (source "semantic")
+        (range (start 26 42) (end 26 66))
       )
       (diagnostic
         (severity warning)
@@ -176,9 +182,15 @@ package ServerSequenceOutsideRealization_2 {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_interface_definition_member")
         (source "semantic")
-        (range (start 52 2) (end 52 69))
+        (range (start 52 12) (end 52 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_interface_definition_member")
+        (source "semantic")
+        (range (start 52 43) (end 52 68))
       )
       (diagnostic
         (severity warning)
@@ -260,6 +272,8 @@ package ServerSequenceOutsideRealization_2 {
     (declaration (id (node (document "memory://snapshot/server_sequence_outside_realization_2.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ServerSequenceModelOutside") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/server_sequence_outside_realization_2.md") (anonymous (kind import) (ordinal 2))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Configuration") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/server_sequence_outside_realization_2.md") (qualified-name "ServerSequenceOutsideRealization_2::Configuration"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/server_sequence_outside_realization_2.md") (anonymous (kind interface) (ordinal 0))))) (kind interface) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/server_sequence_outside_realization_2.md") (anonymous (kind interface) (ordinal 1))))) (kind interface) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/server_sequence_outside_realization_2.md") (qualified-name "ServerSequenceOutsideRealization_2::Configuration::PublicationPort"))) (kind port-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/server_sequence_outside_realization_2.md") (qualified-name "ServerSequenceOutsideRealization_2::Configuration::SubscriptionPort"))) (kind port-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/server_sequence_outside_realization_2.md") (qualified-name "ServerSequenceOutsideRealization_2::Configuration::consumer_2"))) (kind part) (membership (kind feature) (visibility default)))

@@ -22,7 +22,8 @@ use sysml_v2_parser_next::{
         ConnectionUsageMember as ParserConnectionUsage, DefinitionBody, DefinitionBodyElement,
         EndDecl, EndIdentity, EnumDef, EnumerationBody, EnumerationUsage as ParserEnumerationUsage,
         Expression, FlowDef, Import, ImportShape, InterfaceDef, InterfaceDefBody,
-        InterfaceDefBodyElement, ItemDef, ItemUsage as ParserItemUsage, LibraryPackage, Membership,
+        InterfaceDefBodyElement, InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement,
+        ItemDef, ItemUsage as ParserItemUsage, LibraryPackage, Membership,
         MembershipKind as ParserMembershipKind, MetadataDef, MetadataUsage as ParserMetadataUsage,
         NamespaceDecl, Node, OccurrenceBodyElement, OccurrenceDef,
         OccurrenceUsage as ParserOccurrenceUsage, OccurrenceUsageBody, Package, PackageBody,
@@ -33,8 +34,8 @@ use sysml_v2_parser_next::{
         RequirementDefBodyElement, RequirementUsage as ParserRequirementUsage, RootElement, Span,
         StateDef, StateDefBody, StateDefBodyElement, StateUsage as ParserStateUsage,
         SubsettingKind, SubsettingRelationship, UseCaseDef, UseCaseDefBody, UseCaseDefBodyElement,
-        VerificationCaseDef, ViewDef, ViewDefBody, ViewDefBodyElement, ViewpointDef,
-        Visibility as ParserVisibility,
+        VerificationCaseDef, ViewBody, ViewBodyElement, ViewDef, ViewDefBody, ViewDefBodyElement,
+        ViewUsage as ParserViewUsage, ViewpointDef, Visibility as ParserVisibility,
     },
     ParseError, ParsedDocument,
 };
@@ -306,6 +307,22 @@ enum DeclarationKind {
     /// deferred entirely: `FlowUsage` was not verified for field parity and is not attempted
     /// here.
     FlowDefinition,
+    /// A package/definition/usage-level `view` feature member (BNF ViewUsage), mirroring
+    /// `lower_analysis_case_usage`: ownership, membership, a `:` typing target, and
+    /// `subsets`/`redefines` subsetting relationships. Resolved upstream in `0757de13`
+    /// (UPSTREAM_PARSER_GAPS.md #8): `ViewUsage` previously had no `subsets` field to lower this
+    /// relationship from. View-specific body members remain out of scope, sharing
+    /// `UnsupportedFamily::ViewDefinitionMember` with the `def` form's body walker.
+    ViewUsage,
+    /// A package/definition/usage-level `interface` feature member (BNF InterfaceUsage),
+    /// mirroring `lower_interface_def`: ownership, membership, an optional `:` typing target,
+    /// `subsets`/`redefines` subsetting relationships, and connector-end structure (`connect`/
+    /// `end`) via the same `ReferenceKind::ConnectorEnd` machinery `interface def` uses. Resolved
+    /// upstream in `0757de13` (UPSTREAM_PARSER_GAPS.md #6): all three `InterfaceUsage` variants
+    /// now carry `subsets`/`redefines` fields with full parity to `ConnectionUsageMember`.
+    /// Interface-specific semantics beyond declaration/typing/ends are out of scope, sharing
+    /// `UnsupportedFamily::InterfaceDefinitionMember` with the `def` form's body walker.
+    InterfaceUsage,
     Import,
     Alias,
 }
@@ -978,11 +995,7 @@ impl SemanticModelBuilder {
             PackageBodyElement::RenderingDef(node) => {
                 self.lower_rendering_def(document, owner, node)?
             }
-            PackageBodyElement::ViewUsage(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::ViewUsage(node) => self.lower_view_usage(document, owner, node)?,
             PackageBodyElement::ViewpointUsage(node) => self.push_unsupported(
                 document,
                 UnsupportedFamily::PackageMember,
@@ -1080,11 +1093,9 @@ impl SemanticModelBuilder {
             PackageBodyElement::ConnectionUsage(node) => {
                 self.lower_connection_usage(document, owner, node)?
             }
-            PackageBodyElement::InterfaceUsage(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::InterfaceUsage(node) => {
+                self.lower_interface_usage(document, owner, node)?
+            }
             PackageBodyElement::Ref(node) => self.push_unsupported(
                 document,
                 UnsupportedFamily::PackageMember,
@@ -1387,6 +1398,12 @@ impl SemanticModelBuilder {
                     PartDefBodyElement::OccurrenceUsage(occurrence_usage) => {
                         self.lower_occurrence_usage(document, Some(declaration), occurrence_usage)?;
                     }
+                    PartDefBodyElement::InterfaceUsage(interface_usage) => {
+                        self.lower_interface_usage(document, Some(declaration), interface_usage)?;
+                    }
+                    PartDefBodyElement::ViewUsage(view_usage) => {
+                        self.lower_view_usage(document, Some(declaration), view_usage)?;
+                    }
                     PartDefBodyElement::Doc(_) | PartDefBodyElement::Comment(_) => {}
                     PartDefBodyElement::Annotation(_)
                     | PartDefBodyElement::MetadataAnnotation(_)
@@ -1395,7 +1412,6 @@ impl SemanticModelBuilder {
                     | PartDefBodyElement::Other(_)
                     | PartDefBodyElement::DefaultReferenceUsage(_)
                     | PartDefBodyElement::Ref(_)
-                    | PartDefBodyElement::InterfaceUsage(_)
                     | PartDefBodyElement::Connect(_)
                     | PartDefBodyElement::FlowUsage(_)
                     | PartDefBodyElement::Perform(_)
@@ -1409,7 +1425,6 @@ impl SemanticModelBuilder {
                     | PartDefBodyElement::VariantUsage(_)
                     | PartDefBodyElement::CalcDef(_)
                     | PartDefBodyElement::AllocationUsage(_)
-                    | PartDefBodyElement::ViewUsage(_)
                     | PartDefBodyElement::ViewpointUsage(_)
                     | PartDefBodyElement::RenderingUsage(_)
                     | PartDefBodyElement::UseCaseUsage(_)
@@ -1551,12 +1566,14 @@ impl SemanticModelBuilder {
                     PartUsageBodyElement::FlowDef(flow_def) => {
                         self.lower_flow_def(document, Some(declaration), flow_def)?;
                     }
+                    PartUsageBodyElement::InterfaceUsage(interface_usage) => {
+                        self.lower_interface_usage(document, Some(declaration), interface_usage)?;
+                    }
                     PartUsageBodyElement::Doc(_) => {}
                     PartUsageBodyElement::Annotation(_)
                     | PartUsageBodyElement::DefaultReferenceUsage(_)
                     | PartUsageBodyElement::Bind(_)
                     | PartUsageBodyElement::Ref(_)
-                    | PartUsageBodyElement::InterfaceUsage(_)
                     | PartUsageBodyElement::Connect(_)
                     | PartUsageBodyElement::FlowUsage(_)
                     | PartUsageBodyElement::Perform(_)
@@ -3502,6 +3519,165 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
+    /// Lowers a package/definition/usage-level `interface` feature member (BNF InterfaceUsage),
+    /// mirroring `lower_connection_usage`: ownership, membership, an optional `:` typing target,
+    /// `subsets`/`redefines` subsetting relationships, and connector-end structure (`connect`
+    /// endpoints via `lower_interface_connector_expression`, reusing the same
+    /// `ReferenceKind::ConnectorEnd` machinery `interface def`/`connection` usage use). Resolved
+    /// upstream in `0757de13` (UPSTREAM_PARSER_GAPS.md #6).
+    fn lower_interface_usage(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<ParserInterfaceUsage>,
+    ) -> Result<(), ConstructionError> {
+        let (name, interface_type, subsets, redefines, ends, body_elements) = match &node.value {
+            ParserInterfaceUsage::TypedConnect {
+                name,
+                interface_type,
+                subsets,
+                redefines,
+                from,
+                to,
+                body_elements,
+                ..
+            } => (
+                name.as_deref(),
+                interface_type.as_ref(),
+                subsets.as_ref(),
+                redefines.as_ref(),
+                vec![from, to],
+                body_elements,
+            ),
+            ParserInterfaceUsage::Connection {
+                subsets,
+                redefines,
+                from,
+                to,
+                body_elements,
+                ..
+            } => (
+                None,
+                None,
+                subsets.as_ref(),
+                redefines.as_ref(),
+                vec![from, to],
+                body_elements,
+            ),
+            ParserInterfaceUsage::Declaration {
+                name,
+                interface_type,
+                subsets,
+                redefines,
+                body_elements,
+                ..
+            } => (
+                name.as_deref(),
+                interface_type.as_ref(),
+                subsets.as_ref(),
+                redefines.as_ref(),
+                Vec::new(),
+                body_elements,
+            ),
+        };
+        let name = name
+            .filter(|name| !name.is_empty())
+            .map(|name| self.intern_name(name))
+            .transpose()?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::InterfaceUsage,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span.clone(),
+        )?;
+        if let Some(type_reference) = interface_type {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(*type_reference)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span
+                .clone();
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::FeatureTyping,
+                document,
+                local: *type_reference,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
+        if let Some(relationship) = subsets {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = redefines {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        for end in ends {
+            self.lower_interface_connector_expression(document, declaration, end)?;
+        }
+        for element in body_elements {
+            match &element.value {
+                InterfaceUsageBodyElement::Doc(_) => {}
+                InterfaceUsageBodyElement::EndDecl(end_decl) => {
+                    self.lower_end_decl(document, declaration, end_decl)?;
+                }
+                InterfaceUsageBodyElement::RefRedef { .. } => self.push_unsupported(
+                    document,
+                    UnsupportedFamily::InterfaceDefinitionMember,
+                    element.span.clone(),
+                ),
+            }
+        }
+        Ok(())
+    }
+
+    /// Lowers one `from`/`to` interface-connect endpoint expression as a `ConnectorEnd`
+    /// reference, mirroring `lower_connector_end` but operating directly on the bare
+    /// `Node<Expression>` `InterfaceUsage::TypedConnect`/`Connection` carry (rather than the
+    /// `Node<ConnectionEnd>` wrapper `connection` usage's `connect_from`/`connect_to` use).
+    fn lower_interface_connector_expression(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        node: &Node<Expression>,
+    ) -> Result<(), ConstructionError> {
+        match &node.value {
+            Expression::FeatureRef(target) => {
+                let span = self.documents[document.index()]
+                    .parsed
+                    .qualified_reference(*target)
+                    .ok_or(ConstructionError::InvalidParserReference)?
+                    .metadata
+                    .span
+                    .clone();
+                self.push_reference(PendingReference {
+                    source: owner,
+                    kind: ReferenceKind::ConnectorEnd,
+                    document,
+                    local: *target,
+                    flags: RelationshipFlags::default(),
+                    span,
+                    import: None,
+                })?;
+            }
+            _ => self.push_unsupported(
+                document,
+                UnsupportedFamily::InterfaceDefinitionMember,
+                node.span.clone(),
+            ),
+        }
+        Ok(())
+    }
+
     /// Lowers a `view def` (BNF ViewDefinition), mirroring `lower_interface_def`: ownership,
     /// membership, an optional `:>` specialization relationship (participates in the shared
     /// Subclassification/FeatureTyping `DeclarationDomain::Type` fixed point). View-specific
@@ -3563,6 +3739,92 @@ impl SemanticModelBuilder {
                     | ViewDefBodyElement::Filter(_)
                     | ViewDefBodyElement::ViewRendering(_)
                     | ViewDefBodyElement::Other(_) => self.push_unsupported(
+                        document,
+                        UnsupportedFamily::ViewDefinitionMember,
+                        element.span.clone(),
+                    ),
+                }
+            }
+        }
+        Ok(())
+    }
+
+    /// Lowers a package/definition/usage-level `view` feature member (BNF ViewUsage), mirroring
+    /// `lower_analysis_case_usage`: ownership, membership, a `:` typing target, and
+    /// `subsets`/`redefines` subsetting relationships. Resolved upstream in `0757de13`
+    /// (UPSTREAM_PARSER_GAPS.md #8): `ViewUsage` previously had no `subsets` field. Multiplicity
+    /// and view-specific body members (`render`/`filter`) are out of scope for this slice.
+    fn lower_view_usage(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<ParserViewUsage>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declared_name(&node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::ViewUsage,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::FeatureMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(type_name) = node.value.type_name {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(type_name)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span
+                .clone();
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::FeatureTyping,
+                document,
+                local: type_name,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
+        if let Some(relationship) = &node.value.subsets {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.redefines {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        self.lower_view_usage_body(document, declaration, &node.value.body)
+    }
+
+    /// Body walker for `view` usage bodies (`ViewBody`/`ViewBodyElement`), mirroring
+    /// `lower_view_def_body`. `filter`/`render` members are out of scope for this slice and fall
+    /// through to `unsupported_view_definition_member`.
+    fn lower_view_usage_body(
+        &mut self,
+        document: DocumentId,
+        _declaration: DeclarationId,
+        body: &ViewBody,
+    ) -> Result<(), ConstructionError> {
+        if let ViewBody::Brace { elements } = body {
+            for element in elements {
+                match &element.value {
+                    ViewBodyElement::Error(error) => {
+                        self.push_recovery(document, error.span.clone());
+                    }
+                    ViewBodyElement::Doc(_) => {}
+                    ViewBodyElement::Filter(_)
+                    | ViewBodyElement::ViewRendering(_)
+                    | ViewBodyElement::Expose(_)
+                    | ViewBodyElement::Satisfy(_)
+                    | ViewBodyElement::Other(_) => self.push_unsupported(
                         document,
                         UnsupportedFamily::ViewDefinitionMember,
                         element.span.clone(),
@@ -4829,6 +5091,8 @@ mod tests {
 
     #[test]
     fn view_usage_typed_by_a_view_def_resolves() {
+        // UPSTREAM_PARSER_GAPS.md #8 was resolved upstream in `0757de13`: `ViewUsage` now carries
+        // a `subsets` field, so `view` usage lowering is no longer deferred.
         let output = build_semantic_sexpr(
             "package Demo {\n\
              \tview def V;\n\
@@ -4836,12 +5100,100 @@ mod tests {
              }\n",
         );
         assert!(
-            output.contains("unsupported_package_member") || output.contains("unsupported"),
-            "expected view usage to surface as an explicit unsupported diagnostic (usage lowering deferred per UPSTREAM_PARSER_GAPS.md #8), got:\n{output}"
-        );
-        assert!(
             output.contains("(qualified-name \"Demo::V\"))) (kind view-def)"),
             "expected view def V to still lower to a declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::v\"))) (kind view)"),
+            "expected view v to lower to a declaration with kind view, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind typing) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::v\")))"
+            ) && output.contains(
+                "(target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::V\")))"
+            ),
+            "expected v's featureTyping of V to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn view_usage_subsetting_another_view_usage_resolves() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tview baseView;\n\
+             \tview derivedView :> baseView;\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::derivedView\"))) (kind view)"),
+            "expected a view usage declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind subsetting) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::derivedView\")))"
+            ),
+            "expected derivedView's subsetting of baseView to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn interface_usage_declaration_typed_by_an_interface_def_resolves() {
+        // UPSTREAM_PARSER_GAPS.md #6 was resolved upstream in `0757de13`: all three
+        // `InterfaceUsage` variants now carry `subsets`/`redefines` fields. Nested in a `part def`
+        // body: `part/body.rs` tries `interface_usage` before `interface_def_required`, so a bare
+        // `interface i : I;` (no `connect`) unambiguously parses as `InterfaceUsage::Declaration`
+        // there, unlike at package level where `interface_def` (optional `def`) is tried first.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tinterface def I;\n\
+             \tpart def P {\n\
+             \t\tinterface i : I;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::I\"))) (kind interface-def)"),
+            "expected interface def I to lower to a declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::P::i\"))) (kind interface)"),
+            "expected interface i to lower to a declaration with kind interface, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind typing) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::P::i\")))"
+            ) && output.contains(
+                "(target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::I\")))"
+            ),
+            "expected i's featureTyping of I to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn interface_usage_subsetting_another_interface_usage_resolves() {
+        // `interface_usage`'s `named_interface` capture requires a `:` typed form to consume the
+        // name at all (a bare `name :> target` with no `: Type` never captures `name` -- see
+        // `part::usage::interface_usage`'s doc comments), so both usages carry an explicit `: I`
+        // typing target alongside the `:>` subsetting clause.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tinterface def I;\n\
+             \tpart def P {\n\
+             \t\tinterface baseInterface : I;\n\
+             \t\tinterface derivedInterface : I :> baseInterface;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::P::derivedInterface\"))) (kind interface)"),
+            "expected an interface usage declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind subsetting) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::P::derivedInterface\")))"
+            ),
+            "expected derivedInterface's subsetting of baseInterface to resolve, got:\n{output}"
         );
     }
 

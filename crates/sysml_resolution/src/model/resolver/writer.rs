@@ -738,6 +738,8 @@ fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::RenderingDefinition => "rendering-def",
         DeclarationKind::AllocationDefinition => "allocation-def",
         DeclarationKind::FlowDefinition => "flow-def",
+        DeclarationKind::ViewUsage => "view",
+        DeclarationKind::InterfaceUsage => "interface",
     }
 }
 

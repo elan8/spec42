@@ -52,9 +52,9 @@ package Demo {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_view_definition_member")
         (source "semantic")
-        (range (start 17 4) (end 19 5))
+        (range (start 18 8) (end 18 38))
       )
     )
   )
@@ -72,12 +72,16 @@ package Demo {
     (declaration (id (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::Process"))) (kind action-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::Requirement"))) (kind requirement-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::Sensor"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::architecture"))) (kind view) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ArchitectureView"))))
     (declaration (id (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::controller"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Controller"))))
     (declaration (id (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::process"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Process"))))
     (declaration (id (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::sensor"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Sensor"))))
     (declaration (id (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::system"))) (kind part) (membership (kind feature) (visibility default)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::architecture"))) (kind featureTyping) (ordinal 0))
+      (authored-target "ArchitectureView")
+      (outcome (status resolved) (target (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::ArchitectureView")))))
     (reference (id (source (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::controller"))) (kind featureTyping) (ordinal 0))
       (authored-target "Controller")
       (outcome (status resolved) (target (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::Controller")))))
@@ -89,6 +93,7 @@ package Demo {
       (outcome (status resolved) (target (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::Sensor")))))
   )
   (relationships
+    (relationship (kind typing) (source (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::architecture"))) (target (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::ArchitectureView"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::architecture"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::controller"))) (target (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::Controller"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::controller"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::process"))) (target (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::Process"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::process"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::sensor"))) (target (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::Sensor"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::sensor"))) (kind featureTyping) (ordinal 0)))
@@ -100,6 +105,10 @@ package Demo {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/model_diagnostic_categories.md") (range (start 17 24) (end 17 40)) (probe (position 17 24))
+    (reference (id (source (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::architecture"))) (kind featureTyping) (ordinal 0) (authored-target "ArchitectureView")
+      (outcome (status resolved) (target (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::ArchitectureView")))))
+  )
   (query (document "memory://snapshot/model_diagnostic_categories.md") (range (start 3 22) (end 3 32)) (probe (position 3 22))
     (reference (id (source (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::controller"))) (kind featureTyping) (ordinal 0) (authored-target "Controller")
       (outcome (status resolved) (target (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::Controller")))))
