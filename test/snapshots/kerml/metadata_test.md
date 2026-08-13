@@ -182,12 +182,6 @@ package MetadataTest {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 40 4) (end 40 13))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_grammar_form")
         (source "parser")
         (range (start 41 4) (end 43 5))
@@ -239,6 +233,7 @@ package MetadataTest {
   (declarations
     (declaration (id (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/metadata_test.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "User Defined Extensions") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::CC"))) (kind class-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions"))) (kind library-package) (membership (kind owning) (visibility default)))
   )
   (references

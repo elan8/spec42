@@ -46,12 +46,6 @@ package Associations {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 2 4) (end 2 12))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_grammar_form")
         (source "parser")
         (range (start 4 1) (end 7 2))
@@ -114,6 +108,7 @@ package Associations {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:9c1cfd6ca73422e202a633654de22826f37b6d9381a913651af6e4a2d2704f0a") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/associations.md") (qualified-name "Associations"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/associations.md") (qualified-name "Associations::Y"))) (kind class-def) (membership (kind owning) (visibility default)))
   )
   (references
   )

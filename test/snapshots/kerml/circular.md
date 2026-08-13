@@ -27,12 +27,6 @@ package Circular {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 1 1) (end 1 12))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
         (range (start 2 1) (end 2 14))
       )
       (diagnostic
@@ -63,6 +57,7 @@ package Circular {
   (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:33b40769c2b01f3ecc9bf9406b603b8c7dd94965ced45e5f4123464ed99ca427") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/circular.md") (qualified-name "Circular"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/circular.md") (qualified-name "Circular::A"))) (kind class-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/circular.md") (qualified-name "Circular::Circ"))) (kind alias) (membership (kind alias) (visibility default)) (authored (membership (kind alias) (visibility default)) (relationships (aliasBinding (reference "Circular"))))
     (declaration (id (node (document "memory://snapshot/circular.md") (qualified-name "Circular::P"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/circular.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "Circular") (import (shape namespace) (recursive false)))))

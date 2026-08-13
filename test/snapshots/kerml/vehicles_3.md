@@ -72,9 +72,9 @@ package Vehicles_3 {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unresolved_specializes_reference")
         (source "semantic")
-        (range (start 4 1) (end 9 2))
+        (range (start 4 27) (end 4 38))
       )
       (diagnostic
         (severity error)
@@ -173,6 +173,7 @@ package Vehicles_3 {
     (declaration (id (node (document "memory://snapshot/vehicles_3.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/vehicles_3.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "MassRollup_2") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/vehicles_3.md") (anonymous (kind import) (ordinal 2))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "SI") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/vehicles_3.md") (qualified-name "Vehicles_3::CarPart"))) (kind class-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "MassedThing"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/vehicles_3.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
@@ -183,6 +184,9 @@ package Vehicles_3 {
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/vehicles_3.md") (anonymous (kind import) (ordinal 2))))) (kind namespaceImport) (ordinal 0))
       (authored-target "SI")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/vehicles_3.md") (qualified-name "Vehicles_3::CarPart"))) (kind specialization) (ordinal 0))
+      (authored-target "MassedThing")
       (outcome (status unresolved)))
   )
   (relationships
@@ -204,6 +208,10 @@ package Vehicles_3 {
   )
   (query (document "memory://snapshot/vehicles_3.md") (range (start 30 16) (end 30 21)) (probe (position 30 16))
     (reference (id (source (node (document "memory://snapshot/vehicles_3.md") (anonymous (kind import) (ordinal 2))))) (kind namespaceImport) (ordinal 0) (authored-target "SI")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/vehicles_3.md") (range (start 4 27) (end 4 38)) (probe (position 4 27))
+    (reference (id (source (node (document "memory://snapshot/vehicles_3.md") (qualified-name "Vehicles_3::CarPart"))) (kind specialization) (ordinal 0) (authored-target "MassedThing")
       (outcome (status unresolved)))
   )
 )

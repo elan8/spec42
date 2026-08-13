@@ -123,12 +123,6 @@ package Expressions {
         (range (start 55 1) (end 57 1))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 57 1) (end 59 2))
-      )
-      (diagnostic
         (severity error)
         (code "unrecognized_declaration_in_scope")
         (source "parser")
@@ -157,12 +151,6 @@ package Expressions {
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 65 1) (end 65 20))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 67 1) (end 70 2))
       )
       (diagnostic
         (severity error)
@@ -201,6 +189,8 @@ package Expressions {
     (declaration (id (node (document "memory://snapshot/expressions.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarFunctions") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/expressions.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "BaseFunctions::ToString") (import (shape membership) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/expressions.md") (anonymous (kind import) (ordinal 2))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ControlFunctions") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/expressions.md") (qualified-name "Expressions::C"))) (kind class-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/expressions.md") (qualified-name "Expressions::L"))) (kind class-def) (membership (kind owning) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/expressions.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))

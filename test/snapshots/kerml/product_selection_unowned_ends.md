@@ -59,28 +59,10 @@ package ProductSelection_UnownedEnds {
   (document "memory://snapshot/product_selection_unowned_ends.md"
     (diagnostics
       (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 2 1) (end 2 21))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 3 1) (end 5 2))
-      )
-      (diagnostic
         (severity error)
         (code "unrecognized_declaration_in_scope")
         (source "parser")
         (range (start 4 2) (end 5 1))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 6 1) (end 8 2))
       )
       (diagnostic
         (severity error)
@@ -125,12 +107,6 @@ package ProductSelection_UnownedEnds {
         (range (start 23 1) (end 30 2))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 32 1) (end 44 2))
-      )
-      (diagnostic
         (severity error)
         (code "unrecognized_declaration_in_scope")
         (source "parser")
@@ -170,6 +146,10 @@ package ProductSelection_UnownedEnds {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:88c3612c9711c48da83f3ee410c82a7a35f2cad03b830bb9bd4eaa4ecb57ab0e") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::OnlineCustomer"))) (kind class-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::Product"))) (kind class-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::SelectionInfo"))) (kind class-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::ShoppingCart"))) (kind class-def) (membership (kind owning) (visibility default)))
   )
   (references
   )

@@ -140,24 +140,6 @@ package ProductSelection_N_ary {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 2 1) (end 2 20))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 3 1) (end 3 15))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 4 1) (end 4 15))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_grammar_form")
         (source "parser")
         (range (start 7 1) (end 11 2))
@@ -251,12 +233,6 @@ package ProductSelection_N_ary {
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 89 1) (end 114 2))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 116 1) (end 124 2))
       )
       (diagnostic
         (severity error)
@@ -298,6 +274,10 @@ package ProductSelection_N_ary {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:13d76f0df00af0ed1c3c3edd4982752d35cd22830e948f987403688f3e3bbb67") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/product_selection_n_ary.md") (qualified-name "ProductSelection_N_ary"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/product_selection_n_ary.md") (qualified-name "ProductSelection_N_ary::Account"))) (kind class-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/product_selection_n_ary.md") (qualified-name "ProductSelection_N_ary::OnlineCustomer"))) (kind class-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/product_selection_n_ary.md") (qualified-name "ProductSelection_N_ary::Product"))) (kind class-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/product_selection_n_ary.md") (qualified-name "ProductSelection_N_ary::ShoppingCart"))) (kind class-def) (membership (kind owning) (visibility default)))
   )
   (references
   )

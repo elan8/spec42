@@ -155,12 +155,6 @@ package BehaviorCoverage {
         (range (start 22 4) (end 25 5))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 27 4) (end 33 5))
-      )
-      (diagnostic
         (severity error)
         (code "unrecognized_declaration_in_scope")
         (source "parser")
@@ -200,6 +194,7 @@ package BehaviorCoverage {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:39d8e81bc31ba9b62faf2db6d4162e3cba6dead832061af4f8253b4e9d9d0b69") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::Container"))) (kind class-def) (membership (kind owning) (visibility default)))
   )
   (references
   )

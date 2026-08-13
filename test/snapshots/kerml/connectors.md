@@ -45,12 +45,6 @@ package Connectors {
   (document "memory://snapshot/connectors.md"
     (diagnostics
       (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 2 1) (end 26 2))
-      )
-      (diagnostic
         (severity error)
         (code "unrecognized_declaration_in_scope")
         (source "parser")
@@ -69,6 +63,12 @@ package Connectors {
         (range (start 6 2) (end 7 2))
       )
       (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 7 2) (end 7 29))
+      )
+      (diagnostic
         (severity error)
         (code "unexpected_keyword_in_scope")
         (source "parser")
@@ -79,6 +79,18 @@ package Connectors {
         (code "unexpected_keyword_in_scope")
         (source "parser")
         (range (start 10 3) (end 11 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 13 2) (end 13 16))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 14 2) (end 14 22))
       )
       (diagnostic
         (severity error)
@@ -117,12 +129,6 @@ package Connectors {
         (range (start 24 3) (end 25 2))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 28 1) (end 31 2))
-      )
-      (diagnostic
         (severity error)
         (code "unrecognized_declaration_in_scope")
         (source "parser")
@@ -144,6 +150,11 @@ package Connectors {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:3158d76107a71413e335a2356ac61791c4750462b6335681a61637e4b2b8bc5b") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A"))) (kind class-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A::binding"))) (kind attribute) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A::connector"))) (kind attribute) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A::succession"))) (kind attribute) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::B"))) (kind class-def) (membership (kind owning) (visibility default)))
   )
   (references
   )

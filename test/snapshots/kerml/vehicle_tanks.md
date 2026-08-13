@@ -57,28 +57,10 @@ package VehicleTanks {
         (range (start 2 16) (end 2 32))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 4 1) (end 4 16))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 6 1) (end 8 2))
-      )
-      (diagnostic
         (severity error)
         (code "unrecognized_declaration_in_scope")
         (source "parser")
         (range (start 7 2) (end 8 1))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 10 1) (end 14 2))
       )
       (diagnostic
         (severity error)
@@ -91,12 +73,6 @@ package VehicleTanks {
         (code "unrecognized_declaration_in_scope")
         (source "parser")
         (range (start 13 2) (end 14 1))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 16 1) (end 31 2))
       )
       (diagnostic
         (severity error)
@@ -146,6 +122,10 @@ package VehicleTanks {
     (declaration (id (node (document "memory://snapshot/vehicle_tanks.md") (qualified-name "VehicleTanks"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/vehicle_tanks.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/vehicle_tanks.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "RealFunctions") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/vehicle_tanks.md") (qualified-name "VehicleTanks::Tank"))) (kind class-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/vehicle_tanks.md") (qualified-name "VehicleTanks::V6Engine"))) (kind class-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/vehicle_tanks.md") (qualified-name "VehicleTanks::Vehicle"))) (kind class-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/vehicle_tanks.md") (qualified-name "VehicleTanks::Vehicle1"))) (kind class-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Vehicle"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/vehicle_tanks.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
@@ -154,8 +134,12 @@ package VehicleTanks {
     (reference (id (source (node (document "memory://snapshot/vehicle_tanks.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0))
       (authored-target "RealFunctions")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/vehicle_tanks.md") (qualified-name "VehicleTanks::Vehicle1"))) (kind specialization) (ordinal 0))
+      (authored-target "Vehicle")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_tanks.md") (qualified-name "VehicleTanks::Vehicle")))))
   )
   (relationships
+    (relationship (kind specialization) (source (node (document "memory://snapshot/vehicle_tanks.md") (qualified-name "VehicleTanks::Vehicle1"))) (target (node (document "memory://snapshot/vehicle_tanks.md") (qualified-name "VehicleTanks::Vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_tanks.md") (qualified-name "VehicleTanks::Vehicle1"))) (kind specialization) (ordinal 0)))
   )
   (evaluation
   )
@@ -171,6 +155,10 @@ package VehicleTanks {
   (query (document "memory://snapshot/vehicle_tanks.md") (range (start 2 16) (end 2 32)) (probe (position 2 16))
     (reference (id (source (node (document "memory://snapshot/vehicle_tanks.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0) (authored-target "RealFunctions")
       (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/vehicle_tanks.md") (range (start 16 28) (end 16 35)) (probe (position 16 28))
+    (reference (id (source (node (document "memory://snapshot/vehicle_tanks.md") (qualified-name "VehicleTanks::Vehicle1"))) (kind specialization) (ordinal 0) (authored-target "Vehicle")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_tanks.md") (qualified-name "VehicleTanks::Vehicle")))))
   )
 )
 ~~~

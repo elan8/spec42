@@ -38,12 +38,6 @@ package ClassifierCoverage {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 2 4) (end 2 17))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_grammar_form")
         (source "parser")
         (range (start 3 4) (end 3 18))
@@ -89,12 +83,6 @@ package ClassifierCoverage {
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 8 4) (end 8 34))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 9 4) (end 9 22))
       )
       (diagnostic
         (severity warning)
@@ -190,10 +178,16 @@ package ClassifierCoverage {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:a409938f8c5980767aa1917a6332c2122d4da7f70e11e69d18fdb0a20f2c3502") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/coverage_classifiers.md") (qualified-name "ClassifierCoverage"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_classifiers.md") (qualified-name "ClassifierCoverage::C"))) (kind class-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Entity"))))
+    (declaration (id (node (document "memory://snapshot/coverage_classifiers.md") (qualified-name "ClassifierCoverage::Entity"))) (kind class-def) (membership (kind owning) (visibility default)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/coverage_classifiers.md") (qualified-name "ClassifierCoverage::C"))) (kind specialization) (ordinal 0))
+      (authored-target "Entity")
+      (outcome (status resolved) (target (node (document "memory://snapshot/coverage_classifiers.md") (qualified-name "ClassifierCoverage::Entity")))))
   )
   (relationships
+    (relationship (kind specialization) (source (node (document "memory://snapshot/coverage_classifiers.md") (qualified-name "ClassifierCoverage::C"))) (target (node (document "memory://snapshot/coverage_classifiers.md") (qualified-name "ClassifierCoverage::Entity"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/coverage_classifiers.md") (qualified-name "ClassifierCoverage::C"))) (kind specialization) (ordinal 0)))
   )
   (evaluation
   )
@@ -202,5 +196,9 @@ package ClassifierCoverage {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/coverage_classifiers.md") (range (start 9 15) (end 9 21)) (probe (position 9 15))
+    (reference (id (source (node (document "memory://snapshot/coverage_classifiers.md") (qualified-name "ClassifierCoverage::C"))) (kind specialization) (ordinal 0) (authored-target "Entity")
+      (outcome (status resolved) (target (node (document "memory://snapshot/coverage_classifiers.md") (qualified-name "ClassifierCoverage::Entity")))))
+  )
 )
 ~~~

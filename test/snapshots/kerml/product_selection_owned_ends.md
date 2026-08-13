@@ -107,24 +107,6 @@ package ProductSelection_OwnedEnds {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 2 1) (end 2 21))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 3 1) (end 3 20))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 4 1) (end 4 15))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_grammar_form")
         (source "parser")
         (range (start 7 1) (end 12 2))
@@ -218,12 +200,6 @@ package ProductSelection_OwnedEnds {
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 68 1) (end 77 2))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 79 1) (end 91 2))
       )
       (diagnostic
         (severity error)
@@ -265,6 +241,10 @@ package ProductSelection_OwnedEnds {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:bcd09e48bb97b38fe98180c554d872e02a22679552e066dd58a131ab917240a5") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/product_selection_owned_ends.md") (qualified-name "ProductSelection_OwnedEnds"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/product_selection_owned_ends.md") (qualified-name "ProductSelection_OwnedEnds::OnlineCustomer"))) (kind class-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/product_selection_owned_ends.md") (qualified-name "ProductSelection_OwnedEnds::Product"))) (kind class-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/product_selection_owned_ends.md") (qualified-name "ProductSelection_OwnedEnds::SelectionInfo"))) (kind class-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/product_selection_owned_ends.md") (qualified-name "ProductSelection_OwnedEnds::ShoppingCart"))) (kind class-def) (membership (kind owning) (visibility default)))
   )
   (references
   )

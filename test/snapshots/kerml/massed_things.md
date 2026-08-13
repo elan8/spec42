@@ -31,12 +31,6 @@ package MassedThings {
         (range (start 0 15) (end 0 30))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 3 1) (end 6 2))
-      )
-      (diagnostic
         (severity error)
         (code "unexpected_keyword_in_scope")
         (source "parser")
@@ -71,6 +65,7 @@ package MassedThings {
   (declarations
     (declaration (id (node (document "memory://snapshot/massed_things.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/massed_things.md") (qualified-name "MassedThings"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/massed_things.md") (qualified-name "MassedThings::MassedThing"))) (kind class-def) (membership (kind owning) (visibility public)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/massed_things.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))

@@ -37,12 +37,6 @@ package TextualRepresentation {
         (range (start 1 16) (end 1 34))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 3 1) (end 9 2))
-      )
-      (diagnostic
         (severity error)
         (code "unrecognized_declaration_in_scope")
         (source "parser")
@@ -77,6 +71,7 @@ package TextualRepresentation {
   (declarations
     (declaration (id (node (document "memory://snapshot/textual_representation.md") (qualified-name "TextualRepresentation"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/textual_representation.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/textual_representation.md") (qualified-name "TextualRepresentation::C"))) (kind class-def) (membership (kind owning) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/textual_representation.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))

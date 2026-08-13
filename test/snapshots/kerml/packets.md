@@ -77,12 +77,6 @@ package Packets {
         (range (start 6 1) (end 9 2))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 11 1) (end 18 2))
-      )
-      (diagnostic
         (severity error)
         (code "unrecognized_declaration_in_scope")
         (source "parser")
@@ -93,12 +87,6 @@ package Packets {
         (code "unrecognized_declaration_in_scope")
         (source "parser")
         (range (start 17 2) (end 18 1))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 20 1) (end 32 2))
       )
       (diagnostic
         (severity error)
@@ -118,6 +106,8 @@ package Packets {
     (declaration (id (node (document "memory://snapshot/packets.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/packets.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Time::DateTime") (import (shape membership) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/packets.md") (qualified-name "Packets"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Data Packet"))) (kind class-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Thermal Data Packet"))) (kind class-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Data Packet"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/packets.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
@@ -126,8 +116,12 @@ package Packets {
     (reference (id (source (node (document "memory://snapshot/packets.md") (anonymous (kind import) (ordinal 1))))) (kind membershipImport) (ordinal 0))
       (authored-target "Time::DateTime")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Thermal Data Packet"))) (kind specialization) (ordinal 0))
+      (authored-target "Data Packet")
+      (outcome (status resolved) (target (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Data Packet")))))
   )
   (relationships
+    (relationship (kind specialization) (source (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Thermal Data Packet"))) (target (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Data Packet"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Thermal Data Packet"))) (kind specialization) (ordinal 0)))
   )
   (evaluation
   )
@@ -143,6 +137,10 @@ package Packets {
   (query (document "memory://snapshot/packets.md") (range (start 1 15) (end 1 29)) (probe (position 1 15))
     (reference (id (source (node (document "memory://snapshot/packets.md") (anonymous (kind import) (ordinal 1))))) (kind membershipImport) (ordinal 0) (authored-target "Time::DateTime")
       (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/packets.md") (range (start 20 41) (end 20 54)) (probe (position 20 41))
+    (reference (id (source (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Thermal Data Packet"))) (kind specialization) (ordinal 0) (authored-target "Data Packet")
+      (outcome (status resolved) (target (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Data Packet")))))
   )
 )
 ~~~

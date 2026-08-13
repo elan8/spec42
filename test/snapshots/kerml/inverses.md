@@ -27,12 +27,6 @@ package Inverses {
   (document "memory://snapshot/inverses.md"
     (diagnostics
       (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 1 1) (end 4 2))
-      )
-      (diagnostic
         (severity error)
         (code "unrecognized_declaration_in_scope")
         (source "parser")
@@ -43,12 +37,6 @@ package Inverses {
         (code "unrecognized_declaration_in_scope")
         (source "parser")
         (range (start 3 2) (end 4 1))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 6 1) (end 8 2))
       )
       (diagnostic
         (severity error)
@@ -84,6 +72,8 @@ package Inverses {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:9b8082649edd57d5c889bad34e80d0ba66845a57081bcb129570c18006dcadd4") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::A"))) (kind class-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::B"))) (kind class-def) (membership (kind owning) (visibility default)))
   )
   (references
   )

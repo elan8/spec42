@@ -24,12 +24,6 @@ package P {
   (document "memory://snapshot/binding_connector_bind_kw.md"
     (diagnostics
       (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 1 4) (end 10 5))
-      )
-      (diagnostic
         (severity error)
         (code "unrecognized_declaration_in_scope")
         (source "parser")
@@ -59,6 +53,18 @@ package P {
         (source "parser")
         (range (start 6 8) (end 8 8))
       )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 8 8) (end 8 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 9 8) (end 9 33))
+      )
     )
   )
 )
@@ -69,6 +75,7 @@ package P {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:934a6cefbf30848d75428ac15e460810e90dd4066ce9e38abcbdd0d519da4e8d") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/binding_connector_bind_kw.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/binding_connector_bind_kw.md") (qualified-name "P::C"))) (kind class-def) (membership (kind owning) (visibility default)))
   )
   (references
   )

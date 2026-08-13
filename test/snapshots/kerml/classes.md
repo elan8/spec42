@@ -51,12 +51,6 @@ package Classes {
         (range (start 2 1) (end 2 14))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 4 1) (end 8 2))
-      )
-      (diagnostic
         (severity error)
         (code "unrecognized_declaration_in_scope")
         (source "parser")
@@ -108,6 +102,7 @@ package Classes {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:4c91479d93359c3d2f3ae0a07da52df75ff5acf6a2a9e45359b56454ef729b47") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/classes.md") (qualified-name "Classes"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/classes.md") (qualified-name "Classes::A"))) (kind class-def) (membership (kind owning) (visibility public)))
   )
   (references
   )

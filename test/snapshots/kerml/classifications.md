@@ -20,12 +20,6 @@ package Classifications {
   (document "memory://snapshot/classifications.md"
     (diagnostics
       (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 1 1) (end 1 9))
-      )
-      (diagnostic
         (severity error)
         (code "unrecognized_declaration_in_scope")
         (source "parser")
@@ -41,6 +35,7 @@ package Classifications {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:b88eb90c747239082c87965329d78a58daa1aebb3dd67cdf0685b28cb239e910") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/classifications.md") (qualified-name "Classifications"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/classifications.md") (qualified-name "Classifications::T"))) (kind class-def) (membership (kind owning) (visibility default)))
   )
   (references
   )

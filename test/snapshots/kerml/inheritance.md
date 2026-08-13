@@ -34,22 +34,10 @@ package Inheritance {
   (document "memory://snapshot/inheritance.md"
     (diagnostics
       (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 1 1) (end 3 2))
-      )
-      (diagnostic
         (severity error)
         (code "unrecognized_declaration_in_scope")
         (source "parser")
         (range (start 2 2) (end 3 1))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 5 1) (end 7 2))
       )
       (diagnostic
         (severity warning)
@@ -97,10 +85,15 @@ package Inheritance {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:bcf46385f7f1e9a2b8e6d606e86f99b9d21f2aa81f60309b3bfba5794642d5e0") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::A"))) (kind class-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::B"))) (kind class-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "A"))))
     (declaration (id (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::us"))) (kind alias) (membership (kind alias) (visibility default)) (authored (membership (kind alias) (visibility default)) (relationships (aliasBinding (reference "w::g"))))
     (declaration (id (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::z"))) (kind alias) (membership (kind alias) (visibility default)) (authored (membership (kind alias) (visibility default)) (relationships (aliasBinding (reference "y::g"))))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::B"))) (kind specialization) (ordinal 0))
+      (authored-target "A")
+      (outcome (status resolved) (target (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::A")))))
     (reference (id (source (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::us"))) (kind aliasBinding) (ordinal 0))
       (authored-target "w::g")
       (outcome (status unresolved)))
@@ -109,6 +102,7 @@ package Inheritance {
       (outcome (status unresolved)))
   )
   (relationships
+    (relationship (kind specialization) (source (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::B"))) (target (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::A"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::B"))) (kind specialization) (ordinal 0)))
   )
   (evaluation
   )
@@ -117,6 +111,10 @@ package Inheritance {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/inheritance.md") (range (start 5 21) (end 5 22)) (probe (position 5 21))
+    (reference (id (source (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::B"))) (kind specialization) (ordinal 0) (authored-target "A")
+      (outcome (status resolved) (target (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::A")))))
+  )
   (query (document "memory://snapshot/inheritance.md") (range (start 18 14) (end 18 18)) (probe (position 18 14))
     (reference (id (source (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::us"))) (kind aliasBinding) (ordinal 0) (authored-target "w::g")
       (outcome (status unresolved)))

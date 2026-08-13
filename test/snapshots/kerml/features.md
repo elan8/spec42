@@ -264,12 +264,6 @@ package Features {
         (range (start 41 1) (end 51 4))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 51 4) (end 53 5))
-      )
-      (diagnostic
         (severity error)
         (code "unrecognized_declaration_in_scope")
         (source "parser")
@@ -309,6 +303,7 @@ package Features {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:00b61c0e836d1cea4e3d75c9e05025a79f812727ef20f86d6a231fe523e3fdcd") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/features.md") (qualified-name "Features"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/features.md") (qualified-name "Features::RegisteredAsset"))) (kind class-def) (membership (kind owning) (visibility default)))
   )
   (references
   )

@@ -39,12 +39,6 @@ package MassRollup_2 {
         (range (start 2 16) (end 2 22))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 4 1) (end 10 2))
-      )
-      (diagnostic
         (severity error)
         (code "unrecognized_declaration_in_scope")
         (source "parser")
@@ -86,6 +80,7 @@ package MassRollup_2 {
     (declaration (id (node (document "memory://snapshot/mass_rollup_2.md") (qualified-name "MassRollup_2"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/mass_rollup_2.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "NumericalFunctions") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/mass_rollup_2.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ISQ") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/mass_rollup_2.md") (qualified-name "MassRollup_2::MassedThing"))) (kind class-def) (membership (kind owning) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/mass_rollup_2.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))

@@ -748,6 +748,7 @@ fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::ConcernUsage => "concern",
         DeclarationKind::CalcDefinition => "calc-def",
         DeclarationKind::CalcUsage => "calc",
+        DeclarationKind::ClassDefinition => "class-def",
     }
 }
 

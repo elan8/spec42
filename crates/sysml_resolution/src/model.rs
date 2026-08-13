@@ -18,7 +18,7 @@ use sysml_v2_parser_next::{
         ActionUsageBody, ActionUsageBodyElement, AliasDef, AllocationDef, AnalysisCaseDef,
         AnalysisCaseUsage as ParserAnalysisCaseUsage, AttributeBody, AttributeBodyElement,
         AttributeDef, AttributeUsage, CalcDef, CalcDefBody, CalcDefBodyElement,
-        CalcUsage as ParserCalcUsage, CaseDef, CaseUsage as ParserCaseUsage,
+        CalcUsage as ParserCalcUsage, CaseDef, CaseUsage as ParserCaseUsage, ClassDef,
         ConcernUsage as ParserConcernUsage, ConnectStmt, ConnectionDef, ConnectionDefBody,
         ConnectionDefBodyElement, ConnectionEnd, ConnectionUsageMember as ParserConnectionUsage,
         ConstraintDef, ConstraintDefBody, ConstraintDefBodyElement,
@@ -370,6 +370,15 @@ enum DeclarationKind {
     /// Direction (`in`/`out`/`inout`)/value-binding/body content are out of scope, sharing
     /// `UnsupportedFamily::CalcDefinitionMember` with the `def` form.
     CalcUsage,
+    /// KerML `class def` (BNF ClassDefinition): a type whose owned members participate in the
+    /// shared Subclassification/FeatureTyping `DeclarationDomain::Type` fixed point, mirroring
+    /// `lower_item_def`. Resolved upstream in `0757de13` (UPSTREAM_PARSER_GAPS.md #2): `ClassDef`
+    /// previously had unparsed `:>` specialization inside the body; it now carries a typed
+    /// `specializes: Option<Node<TypingRelationship>>` plus a plain `AttributeBody`, exactly the
+    /// same shape `ItemDef` has. There is no separate KerML "class usage" form in the grammar --
+    /// only the def-level construct is lowered here. Class-specific semantics beyond ownership,
+    /// specialization, and owned-member structure are out of scope.
+    ClassDefinition,
     Import,
     Alias,
 }
@@ -1186,11 +1195,7 @@ impl SemanticModelBuilder {
                 UnsupportedFamily::PackageMember,
                 node.span.clone(),
             ),
-            PackageBodyElement::ClassDef(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::ClassDef(node) => self.lower_class_def(document, owner, node)?,
             PackageBodyElement::Succession(node) => self.push_unsupported(
                 document,
                 UnsupportedFamily::PackageMember,
@@ -1922,6 +1927,47 @@ impl SemanticModelBuilder {
             document,
             owner,
             DeclarationKind::ItemDefinition,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Owning,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::OwningMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(relationship) = &node.value.specializes {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        self.lower_attribute_body(document, declaration, &node.value.body)
+    }
+
+    /// Lowers a KerML `class def` (BNF ClassDefinition), mirroring `lower_item_def`: ownership,
+    /// membership, and an optional `:>` specialization relationship. `ClassDef`'s body is a plain
+    /// `AttributeBody`, exactly the same shape `ItemDef` has, so owned members are lowered through
+    /// the existing `lower_attribute_body`. There is no separate KerML "class usage" form in the
+    /// grammar -- only this def-level construct exists.
+    fn lower_class_def(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<ClassDef>,
+    ) -> Result<(), ConstructionError> {
+        let name = node
+            .value
+            .identification
+            .name
+            .as_deref()
+            .filter(|name| !name.is_empty())
+            .map(|name| self.intern_name(name))
+            .transpose()?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::ClassDefinition,
             name,
             node.span.clone(),
         )?;
@@ -6315,6 +6361,41 @@ mod tests {
                 "(kind typing) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Holder::w\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
             ),
             "expected w's typing reference to Base to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn class_def_lowers_to_a_declaration() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tclass Widget {\n\
+             \t\tattribute mass : Real;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::Widget\"))) (kind class-def)"),
+            "expected a class-def declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::Widget::mass\"))) (kind attribute)"),
+            "expected an owned attribute declaration under the class def, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn class_def_specializing_another_class_def_resolves_its_specialization_reference() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tclass Base;\n\
+             \tclass Derived :> Base;\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind specialization) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Derived\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
+            ),
+            "expected Derived's specialization of Base to resolve, got:\n{output}"
         );
     }
 

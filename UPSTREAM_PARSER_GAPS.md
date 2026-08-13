@@ -8,8 +8,23 @@ entry should carry enough detail to file/update an upstream issue against
 
 ## Open
 
-All 12 gaps previously tracked here were confirmed resolved upstream in `0757de13` (see
-`## Resolved / not blocked` below for the per-gap notes). Nothing is currently open.
+- Gap 13. Bare forward-declared `classifier X;` (and `classifier X specializes Y;`, `classifier X
+  [1] specializes Y disjoint from Z;`, etc.) still collapses to the raw-text fallback node
+  `ClassifierDecl { keyword: String, text: String }` in the pinned `0757de13` checkout (see
+  `src/ast/kerml_fallback.rs`). Re-verified directly against the checkout while implementing
+  KerML `class def` lowering: unlike the sibling `ClassDef` (full-body `class` with `{ }`, gap #2,
+  now resolved with typed `identification`/`specializes`/`body`/`membership` fields), this
+  no-body/semicolon-terminated `classifier` form has no typed name, membership, or specialization
+  fields at all -- only the raw keyword and the full source text of the declaration. There is no
+  way to lower this to a named declaration with resolvable specialization without re-parsing the
+  captured `text`, which spec42 deliberately avoids (parser-owned resolution boundary). Currently
+  routed through the generic `unsupported_package_member` fallback in
+  `crates/sysml_resolution/src/model.rs` (`PackageBodyElement::ClassifierDecl` arm). Blocks
+  `test/snapshots/kerml/a_2_atoms.md`, `a_2_modeling_instances.md`, and other fixtures using bare
+  `classifier` declarations from resolving name/specialization facts for those declarations.
+  Needs a typed `ClassifierDecl` shape (e.g. `identification`/`specializes`/`membership` fields
+  mirroring `ClassDef` minus the body) filed upstream against
+  `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
 
 ## Resolved / not blocked (kept for history)
 - Gap 1. Top-level `feature` declarations were unparsed grammar. Resolved upstream in 0757de13 -- confirmed via direct AST/parser inspection of the pinned checkout (typed fields/nodes/dispatch now present); wired into `sysml_resolution` lowering where applicable (see commits on `closing-the-gap`).
@@ -21,7 +36,7 @@ All 12 gaps previously tracked here were confirmed resolved upstream in `0757de1
 - Gap 7. `individual <kind> <name>;` short usage forms were misparsed/unparseable for `item`/`occurrence`/`port`. Resolved upstream in 0757de13 -- confirmed via direct AST/parser inspection of the pinned checkout (typed fields/nodes/dispatch now present); wired into `sysml_resolution` lowering where applicable (see commits on `closing-the-gap`).
 - Gap 8. `ViewUsage` had no `subsets` field. Resolved upstream in 0757de13 -- confirmed via direct AST/parser inspection of the pinned checkout (typed fields/nodes/dispatch now present); wired into `sysml_resolution` lowering where applicable (see commits on `closing-the-gap`).
 - Gap 9. `ConcernUsage` had no `specializes`/`subsets`/`redefines` field. Resolved upstream in 0757de13 -- confirmed via direct AST/parser inspection of the pinned checkout (typed fields/nodes/dispatch now present); wired into `sysml_resolution` lowering where applicable (see commits on `closing-the-gap`).
-- Gap 10. Bare forward-declared `classifier X;` collapsed to a raw-text fallback node. Resolved upstream in 0757de13 -- confirmed via direct AST/parser inspection of the pinned checkout (typed fields/nodes/dispatch now present); wired into `sysml_resolution` lowering where applicable (see commits on `closing-the-gap`).
+- Gap 10. Bare forward-declared `classifier X;` collapsed to a raw-text fallback node. **Correction (re-verified while implementing `class def` lowering):** this specific struct (`ClassifierDecl`) is still a raw/opaque fallback (`{ keyword: String, text: String }`, no name/membership/specialization fields) in `0757de13` -- the earlier "resolved" note conflated it with the separate, now-genuinely-resolved `ClassDef` (gap #2). Re-opened and re-tracked as Gap 13 above.
 - Gap 11. `item <name> : <Type>;` nested in an attribute body was captured opaquely. Resolved upstream in 0757de13 -- confirmed via direct AST/parser inspection of the pinned checkout (typed fields/nodes/dispatch now present); wired into `sysml_resolution` lowering where applicable (see commits on `closing-the-gap`).
 - Gap 12. `#<keyword> def <Name> ...` ExtendedDefinition short form had no grammar production. Resolved upstream in 0757de13 -- confirmed via direct AST/parser inspection of the pinned checkout (typed fields/nodes/dispatch now present); wired into `sysml_resolution` lowering where applicable (see commits on `closing-the-gap`).
 

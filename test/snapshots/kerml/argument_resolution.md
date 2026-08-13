@@ -29,12 +29,6 @@ package ArgumentResolutionBug {
   (document "memory://snapshot/argument_resolution.md"
     (diagnostics
       (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 1 1) (end 3 2))
-      )
-      (diagnostic
         (severity error)
         (code "unrecognized_declaration_in_scope")
         (source "parser")
@@ -51,12 +45,6 @@ package ArgumentResolutionBug {
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 5 1) (end 8 2))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 10 1) (end 15 2))
       )
       (diagnostic
         (severity error)
@@ -86,6 +74,8 @@ package ArgumentResolutionBug {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:b753ec2a1688d588b7fc25704884c3a36dbeb6ed77aafa28f53b6a331363e5bc") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/argument_resolution.md") (qualified-name "ArgumentResolutionBug"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/argument_resolution.md") (qualified-name "ArgumentResolutionBug::A"))) (kind class-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/argument_resolution.md") (qualified-name "ArgumentResolutionBug::C"))) (kind class-def) (membership (kind owning) (visibility default)))
   )
   (references
   )
