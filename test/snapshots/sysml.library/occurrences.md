@@ -1409,12 +1409,6 @@ standard library package Occurrences {
         (severity warning)
         (code "unsupported_calc_definition_member")
         (source "semantic")
-        (range (start 205 13) (end 205 37))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_calc_definition_member")
-        (source "semantic")
         (range (start 206 3) (end 206 39))
       )
       (diagnostic
@@ -2444,6 +2438,7 @@ standard library package Occurrences {
     (declaration (id (node (document "memory://snapshot/occurrences.md") (anonymous (kind kerml-feature) (ordinal 1))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "smallerSpace")) (redefinition (reference "thisOccurrence"))))
     (declaration (id (node (document "memory://snapshot/occurrences.md") (qualified-name "Occurrences::Occurrence::spaceTimeEnclosedOccurrences"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Occurrence")) (subsetting (reference "timeEnclosedOccurrences")) (subsetting (reference "spaceEnclosedOccurrences")) (expressionOperand (reference "subset")) (expressionOperand (reference "subsets")) (memberAccessOperand (reference "largerSpace::spaceTimeEnclosedOccurrences")) (memberAccessOperand (reference "smallerSpace::spaceTimeEnclosedOccurrences"))))
     (declaration (id (node (document "memory://snapshot/occurrences.md") (qualified-name "Occurrences::Occurrence::spaceTimeEnclosedPoints"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Occurrence")) (subsetting (reference "spaceTimeEnclosedOccurrences")) (expressionOperand (reference "redefines"))))
+    (declaration (id (node (document "memory://snapshot/occurrences.md") (qualified-name "Occurrences::Occurrence::spaceTimeEnclosedPoints::innerSpaceDimension"))) (kind default-reference) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/occurrences.md") (qualified-name "Occurrences::Occurrence::startShot"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Occurrence")) (subsetting (reference "snapshots"))))
     (declaration (id (node (document "memory://snapshot/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Occurrence")) (subsetting (reference "occurrences"))))
     (declaration (id (node (document "memory://snapshot/occurrences.md") (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "localClock"))))
@@ -3995,6 +3990,7 @@ standard library package Occurrences {
     (evaluated (declaration (node (document "memory://snapshot/occurrences.md") (qualified-name "Occurrences::Occurrence::spaceTimeEnclosedOccurrences"))) (value (kind unresolved-operand)))
     (evaluated (declaration (node (document "memory://snapshot/occurrences.md") (qualified-name "Occurrences::Occurrence::spaceTimeEnclosedOccurrences"))) (value (kind unresolved-operand)))
     (evaluated (declaration (node (document "memory://snapshot/occurrences.md") (qualified-name "Occurrences::Occurrence::spaceTimeEnclosedPoints"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/occurrences.md") (qualified-name "Occurrences::Occurrence::spaceTimeEnclosedPoints::innerSpaceDimension"))) (value (kind integer) (integer 0)))
     (evaluated (declaration (node (document "memory://snapshot/occurrences.md") (qualified-name "Occurrences::Occurrence::successors"))) (value (kind unresolved-operand)))
     (evaluated (declaration (node (document "memory://snapshot/occurrences.md") (qualified-name "Occurrences::Occurrence::successors"))) (value (kind unresolved-operand)))
     (evaluated (declaration (node (document "memory://snapshot/occurrences.md") (qualified-name "Occurrences::Occurrence::this"))) (value (kind non-constant)))

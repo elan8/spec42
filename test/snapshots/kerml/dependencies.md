@@ -49,24 +49,6 @@ package Dependencies {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 13 1) (end 13 11))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 14 1) (end 14 11))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 15 1) (end 15 11))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
         (range (start 17 1) (end 19 2))
       )
       (diagnostic
@@ -90,6 +72,9 @@ package Dependencies {
     (declaration (id (node (document "memory://snapshot/dependencies.md") (qualified-name "Dependencies::System::Application Layer"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/dependencies.md") (qualified-name "Dependencies::System::Data Layer"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/dependencies.md") (qualified-name "Dependencies::System::Service Layer"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/dependencies.md") (qualified-name "Dependencies::x"))) (kind default-reference) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/dependencies.md") (qualified-name "Dependencies::y"))) (kind default-reference) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/dependencies.md") (qualified-name "Dependencies::z"))) (kind default-reference) (membership (kind feature) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/dependencies.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))

@@ -52,9 +52,9 @@ package VerificationTest {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_part_definition_member")
+        (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 3 2) (end 3 28))
+        (range (start 3 6) (end 3 27))
       )
       (diagnostic
         (severity warning)
@@ -110,6 +110,7 @@ package VerificationTest {
     (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::R"))) (kind requirement-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::V"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::V::m"))) (kind default-reference) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ScalarValues::Integer"))))
     (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase"))) (kind verification-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase::v"))) (kind subject) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "V"))))
     (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationPlan"))) (kind verification-def) (membership (kind owning) (visibility default)))
@@ -119,6 +120,9 @@ package VerificationTest {
     (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::vv"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "V"))))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::V::m"))) (kind featureTyping) (ordinal 0))
+      (authored-target "ScalarValues::Integer")
+      (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase::v"))) (kind featureTyping) (ordinal 0))
       (authored-target "V")
       (outcome (status resolved) (target (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::V")))))
@@ -145,6 +149,10 @@ package VerificationTest {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/verification_test.md") (range (start 3 6) (end 3 27)) (probe (position 3 6))
+    (reference (id (source (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::V::m"))) (kind featureTyping) (ordinal 0) (authored-target "ScalarValues::Integer")
+      (outcome (status unresolved)))
+  )
   (query (document "memory://snapshot/verification_test.md") (range (start 15 14) (end 15 15)) (probe (position 15 14))
     (reference (id (source (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase::v"))) (kind featureTyping) (ordinal 0) (authored-target "V")
       (outcome (status resolved) (target (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::V")))))

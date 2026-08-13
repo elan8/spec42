@@ -22,15 +22,21 @@ feature f2 subsets do, step;
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 1 0) (end 1 26))
+        (range (start 1 21) (end 1 25))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 2 0) (end 2 28))
+        (range (start 2 19) (end 2 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 2 23) (end 2 27))
       )
     )
   )
@@ -39,11 +45,22 @@ feature f2 subsets do, step;
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:870cf7bf1d066adc36b27b6839d7bcafa39bd146446f9bf73557b640a5c403bc") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:870cf7bf1d066adc36b27b6839d7bcafa39bd146446f9bf73557b640a5c403bc") (contract-version "parser-owned-resolution-v1"))
   (declarations
+    (declaration (id (node (document "memory://snapshot/subsets_keyword_names.md") (qualified-name "f1"))) (kind default-reference) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "step"))))
+    (declaration (id (node (document "memory://snapshot/subsets_keyword_names.md") (qualified-name "f2"))) (kind default-reference) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "do")) (subsetting (reference "step"))))
     (declaration (id (node (document "memory://snapshot/subsets_keyword_names.md") (qualified-name "s1"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "step"))))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/subsets_keyword_names.md") (qualified-name "f1"))) (kind redefinition) (ordinal 0))
+      (authored-target "step")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/subsets_keyword_names.md") (qualified-name "f2"))) (kind subsetting) (ordinal 0))
+      (authored-target "do")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/subsets_keyword_names.md") (qualified-name "f2"))) (kind subsetting) (ordinal 1))
+      (authored-target "step")
+      (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/subsets_keyword_names.md") (qualified-name "s1"))) (kind subsetting) (ordinal 0))
       (authored-target "step")
       (outcome (status unresolved)))
@@ -57,6 +74,18 @@ feature f2 subsets do, step;
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/subsets_keyword_names.md") (range (start 1 21) (end 1 25)) (probe (position 1 21))
+    (reference (id (source (node (document "memory://snapshot/subsets_keyword_names.md") (qualified-name "f1"))) (kind redefinition) (ordinal 0) (authored-target "step")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/subsets_keyword_names.md") (range (start 2 19) (end 2 21)) (probe (position 2 19))
+    (reference (id (source (node (document "memory://snapshot/subsets_keyword_names.md") (qualified-name "f2"))) (kind subsetting) (ordinal 0) (authored-target "do")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/subsets_keyword_names.md") (range (start 2 23) (end 2 27)) (probe (position 2 23))
+    (reference (id (source (node (document "memory://snapshot/subsets_keyword_names.md") (qualified-name "f2"))) (kind subsetting) (ordinal 1) (authored-target "step")
+      (outcome (status unresolved)))
+  )
   (query (document "memory://snapshot/subsets_keyword_names.md") (range (start 0 16) (end 0 20)) (probe (position 0 16))
     (reference (id (source (node (document "memory://snapshot/subsets_keyword_names.md") (qualified-name "s1"))) (kind subsetting) (ordinal 0) (authored-target "step")
       (outcome (status unresolved)))

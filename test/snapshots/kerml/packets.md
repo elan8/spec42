@@ -59,18 +59,6 @@ package Packets {
         (range (start 1 15) (end 1 29))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 4 1) (end 4 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 7 46) (end 7 61))
-      )
-      (diagnostic
         (severity error)
         (code "unrecognized_declaration_in_scope")
         (source "parser")
@@ -105,6 +93,7 @@ package Packets {
     (declaration (id (node (document "memory://snapshot/packets.md") (qualified-name "Packets::packet data field"))) (kind kerml-feature) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/packets.md") (qualified-name "Packets::packet data field::packet secondary header"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "packet header"))))
     (declaration (id (node (document "memory://snapshot/packets.md") (qualified-name "Packets::packet data field::user data field"))) (kind kerml-feature) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/packets.md") (qualified-name "Packets::packet header"))) (kind default-reference) (membership (kind feature) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/packets.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
@@ -118,10 +107,11 @@ package Packets {
       (outcome (status resolved) (target (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Data Packet")))))
     (reference (id (source (node (document "memory://snapshot/packets.md") (qualified-name "Packets::packet data field::packet secondary header"))) (kind redefinition) (ordinal 0))
       (authored-target "packet header")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/packets.md") (qualified-name "Packets::packet header")))))
   )
   (relationships
     (relationship (kind specialization) (source (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Thermal Data Packet"))) (target (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Data Packet"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Thermal Data Packet"))) (kind specialization) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/packets.md") (qualified-name "Packets::packet data field::packet secondary header"))) (target (node (document "memory://snapshot/packets.md") (qualified-name "Packets::packet header"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/packets.md") (qualified-name "Packets::packet data field::packet secondary header"))) (kind redefinition) (ordinal 0)))
   )
   (evaluation
   )
@@ -144,7 +134,7 @@ package Packets {
   )
   (query (document "memory://snapshot/packets.md") (range (start 7 46) (end 7 61)) (probe (position 7 46))
     (reference (id (source (node (document "memory://snapshot/packets.md") (qualified-name "Packets::packet data field::packet secondary header"))) (kind redefinition) (ordinal 0) (authored-target "packet header")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/packets.md") (qualified-name "Packets::packet header")))))
   )
 )
 ~~~

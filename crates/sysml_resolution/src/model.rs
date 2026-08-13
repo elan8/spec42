@@ -23,28 +23,28 @@ use sysml_v2_parser_next::{
         ConcernUsage as ParserConcernUsage, ConnectStmt, ConnectionDef, ConnectionDefBody,
         ConnectionDefBodyElement, ConnectionEnd, ConnectionUsageMember as ParserConnectionUsage,
         ConstraintDef, ConstraintDefBody, ConstraintDefBodyElement,
-        ConstraintUsage as ParserConstraintUsage, DefinitionBody, DefinitionBodyElement,
-        DefinitionPrefix, DoAction, EndDecl, EndIdentity, EntryAction, EnumDef, EnumerationBody,
-        EnumerationUsage as ParserEnumerationUsage, ExitAction, Expression, FeatureValue,
-        FirstMergeBody, FirstMergeBodyElement, FirstStmt, FlowDef, FlowUsage, FrameMember, Import,
-        ImportShape, InOut, InOutDecl, IncludeUseCase, InterfaceDef, InterfaceDefBody,
-        InterfaceDefBodyElement, InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement,
-        ItemDef, ItemUsage as ParserItemUsage, KermlClassifierDecl, KermlFeatureMember,
-        LibraryPackage, Membership, MembershipKind as ParserMembershipKind, MetadataAnnotation,
-        MetadataDef, MetadataUsage as ParserMetadataUsage, NamespaceDecl, Node,
-        OccurrenceBodyElement, OccurrenceDef, OccurrenceUsage as ParserOccurrenceUsage,
-        OccurrenceUsageBody, Package, PackageBody, PackageBodyElement, PartDef, PartDefBody,
-        PartDefBodyElement, PartUsage, PartUsageBody, PartUsageBodyElement,
-        Perform as ParserPerform, PerformBody, PerformBodyElement, PortBody, PortBodyElement,
-        PortDef, PortDefBody, PortDefBodyElement, PortUsage as ParserPortUsage, PurposeMember,
-        QualifiedIdentification, QualifiedReferenceId, RefBody, RefBodyElement, RefDecl,
-        RelationshipBodyElement, RenderingDef, RenderingDefBody, RenderingDefBodyElement,
-        RequirementActorDecl, RequirementDef, RequirementDefBody, RequirementDefBodyElement,
-        RequirementUsage as ParserRequirementUsage, ReturnDecl, RootElement, Satisfy,
-        SatisfyViewMember, SendPayload, Span, StakeholderMember, StateDef, StateDefBody,
-        StateDefBodyElement, StateUsage as ParserStateUsage, SubjectDecl, SubsettingKind,
-        SubsettingRelationship, TerminateStmt, ThenAction, ThenStmt, ThenTarget, Transition,
-        TransitionAccept, TransitionEffect, UnaryOperator, UseCaseDef, UseCaseDefBody,
+        ConstraintUsage as ParserConstraintUsage, DefaultReferenceUsage, DefinitionBody,
+        DefinitionBodyElement, DefinitionPrefix, DoAction, EndDecl, EndIdentity, EntryAction,
+        EnumDef, EnumerationBody, EnumerationUsage as ParserEnumerationUsage, ExitAction,
+        Expression, FeatureValue, FirstMergeBody, FirstMergeBodyElement, FirstStmt, FlowDef,
+        FlowUsage, FrameMember, Import, ImportShape, InOut, InOutDecl, IncludeUseCase,
+        InterfaceDef, InterfaceDefBody, InterfaceDefBodyElement,
+        InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement, ItemDef,
+        ItemUsage as ParserItemUsage, KermlClassifierDecl, KermlFeatureMember, LibraryPackage,
+        Membership, MembershipKind as ParserMembershipKind, MetadataAnnotation, MetadataDef,
+        MetadataUsage as ParserMetadataUsage, NamespaceDecl, Node, OccurrenceBodyElement,
+        OccurrenceDef, OccurrenceUsage as ParserOccurrenceUsage, OccurrenceUsageBody, Package,
+        PackageBody, PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement, PartUsage,
+        PartUsageBody, PartUsageBodyElement, Perform as ParserPerform, PerformBody,
+        PerformBodyElement, PortBody, PortBodyElement, PortDef, PortDefBody, PortDefBodyElement,
+        PortUsage as ParserPortUsage, PurposeMember, QualifiedIdentification, QualifiedReferenceId,
+        RefBody, RefBodyElement, RefDecl, RelationshipBodyElement, RenderingDef, RenderingDefBody,
+        RenderingDefBodyElement, RequirementActorDecl, RequirementDef, RequirementDefBody,
+        RequirementDefBodyElement, RequirementUsage as ParserRequirementUsage, ReturnDecl,
+        RootElement, Satisfy, SatisfyViewMember, SendPayload, Span, StakeholderMember, StateDef,
+        StateDefBody, StateDefBodyElement, StateUsage as ParserStateUsage, SubjectDecl,
+        SubsettingKind, SubsettingRelationship, TerminateStmt, ThenAction, ThenStmt, ThenTarget,
+        Transition, TransitionAccept, TransitionEffect, UnaryOperator, UseCaseDef, UseCaseDefBody,
         UseCaseDefBodyElement, VariantUsage, VerificationCaseDef, VerifyRequirementMember,
         ViewBody, ViewBodyElement, ViewDef, ViewDefBody, ViewDefBodyElement,
         ViewUsage as ParserViewUsage, ViewpointDef, Visibility as ParserVisibility,
@@ -622,6 +622,16 @@ enum DeclarationKind {
     /// `is_end`/`is_all`/the specific `KermlFeatureKind` spelling/`references`/`chains`/
     /// `inverse_of`/`type_relationships` are not modeled as distinct facts here.
     KermlFeature,
+    /// A keyword-less `<name> = <expr>;` / `<name> : <Type>;` binding (`DefaultReferenceUsage`,
+    /// BNF §8.2.2.6 / Spec §7.6.4), e.g. `baseType = Atom meta KerML::Classifier;` (KerML
+    /// `metaclass` body) or the anonymous leading-redefinition form `:>> dimension =
+    /// size(components);`. Mirrors `ReferenceUsage`/`KermlFeature` lowering: ownership,
+    /// membership, an optional `:` typing target (`FeatureTyping`), `subsets`/`redefines`
+    /// relationships, and an optional `=` value expression resolved through the shared
+    /// `classify_calc_expression`/`lower_calc_expression` pipeline. Multiplicity and the
+    /// `has_feature_keyword`/`body` shapes are not modeled as distinct facts here (multiplicity
+    /// is unmodeled elsewhere in this codebase too, see `ParameterUsage`).
+    DefaultReferenceUsage,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -2785,11 +2795,12 @@ impl SemanticModelBuilder {
                 UnsupportedFamily::PackageMember,
                 node.span.clone(),
             ),
-            PackageBodyElement::DefaultReferenceUsage(node) => self.push_unsupported(
+            PackageBodyElement::DefaultReferenceUsage(node) => self.lower_default_reference_usage(
                 document,
+                owner,
                 UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+                node,
+            )?,
             PackageBodyElement::AssertConstraint(node) => match owner {
                 Some(declaration) => self.lower_assert_constraint_member(
                     document,
@@ -3164,11 +3175,18 @@ impl SemanticModelBuilder {
                     PartDefBodyElement::Ref(node) => {
                         self.lower_ref_decl(document, Some(declaration), node)?;
                     }
+                    PartDefBodyElement::DefaultReferenceUsage(node) => {
+                        self.lower_default_reference_usage(
+                            document,
+                            Some(declaration),
+                            UnsupportedFamily::PartDefinitionMember,
+                            node,
+                        )?;
+                    }
                     PartDefBodyElement::Annotation(_)
                     | PartDefBodyElement::MetadataKeywordUsage(_)
                     | PartDefBodyElement::Dependency(_)
                     | PartDefBodyElement::Other(_)
-                    | PartDefBodyElement::DefaultReferenceUsage(_)
                     | PartDefBodyElement::Connect(_)
                     | PartDefBodyElement::FlowUsage(_)
                     | PartDefBodyElement::ExhibitState(_)
@@ -3383,8 +3401,15 @@ impl SemanticModelBuilder {
                     PartUsageBodyElement::Ref(node) => {
                         self.lower_ref_decl(document, Some(declaration), node)?;
                     }
+                    PartUsageBodyElement::DefaultReferenceUsage(node) => {
+                        self.lower_default_reference_usage(
+                            document,
+                            Some(declaration),
+                            UnsupportedFamily::PartUsageMember,
+                            node,
+                        )?;
+                    }
                     PartUsageBodyElement::Annotation(_)
-                    | PartUsageBodyElement::DefaultReferenceUsage(_)
                     | PartUsageBodyElement::Connect(_)
                     | PartUsageBodyElement::FlowUsage(_)
                     | PartUsageBodyElement::SuccessionUsage(_)
@@ -3959,6 +3984,58 @@ impl SemanticModelBuilder {
             self.lower_calc_expression(document, declaration, family, &expression)?;
         }
         self.lower_calc_def_body(document, declaration, &node.value.body)
+    }
+
+    /// Lowers a keyword-less `<name> = <expr>;` / `<name> : <Type>;` binding
+    /// (`ast::structure::DefaultReferenceUsage`, BNF §8.2.2.6 / Spec §7.6.4), e.g. `baseType =
+    /// Atom meta KerML::Classifier;` (KerML `metaclass` body member), mirroring
+    /// `lower_kerml_feature_member`/`lower_ref_decl`: ownership, membership, an optional `:`
+    /// typing target, `subsets`/`redefines` relationships, and an optional `=` value expression
+    /// resolved through the shared `classify_calc_expression`/`lower_calc_expression` pipeline
+    /// (the same machinery `lower_kerml_feature_member`'s `value` clause uses, which already
+    /// covers the `MetaCast` reflective-operator shape from `ea6eb632`). `family` selects which
+    /// diagnostic an unsupported value-expression shape falls through to; multiplicity and the
+    /// `has_feature_keyword`/`body` fields are intentionally left unmodeled (see
+    /// `DeclarationKind::DefaultReferenceUsage`).
+    fn lower_default_reference_usage(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        family: UnsupportedFamily,
+        node: &Node<DefaultReferenceUsage>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declared_name(&node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::DefaultReferenceUsage,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::FeatureMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(relationship) = &node.value.typing {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.subsets {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.redefines {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(feature_value) = &node.value.value {
+            let expression = feature_value.value.expression.clone();
+            self.push_evaluation_fact(declaration, classify_calc_expression(&expression.value));
+            self.lower_calc_expression(document, declaration, family, &expression)?;
+        }
+        Ok(())
     }
 
     /// Lowers a package/definition/usage-level `item` feature member (BNF ItemUsage), e.g.
@@ -4868,6 +4945,14 @@ impl SemanticModelBuilder {
                     UnsupportedFamily::ActionDefinitionMember,
                     node,
                 )?,
+                ActionDefBodyElement::DefaultReferenceUsage(node) => {
+                    self.lower_default_reference_usage(
+                        document,
+                        Some(owner),
+                        UnsupportedFamily::ActionDefinitionMember,
+                        node,
+                    )?;
+                }
                 ActionDefBodyElement::Annotation(_)
                 | ActionDefBodyElement::MetadataKeywordUsage(_)
                 | ActionDefBodyElement::WhileStmt(_)
@@ -4875,8 +4960,7 @@ impl SemanticModelBuilder {
                 | ActionDefBodyElement::IfStmt(_)
                 | ActionDefBodyElement::Assign(_)
                 | ActionDefBodyElement::ForLoop(_)
-                | ActionDefBodyElement::Decl(_)
-                | ActionDefBodyElement::DefaultReferenceUsage(_) => self.push_unsupported(
+                | ActionDefBodyElement::Decl(_) => self.push_unsupported(
                     document,
                     UnsupportedFamily::ActionDefinitionMember,
                     element.span.clone(),
@@ -5144,6 +5228,14 @@ impl SemanticModelBuilder {
                     UnsupportedFamily::ActionUsageMember,
                     node,
                 )?,
+                ActionUsageBodyElement::DefaultReferenceUsage(node) => {
+                    self.lower_default_reference_usage(
+                        document,
+                        Some(owner),
+                        UnsupportedFamily::ActionUsageMember,
+                        node,
+                    )?;
+                }
                 ActionUsageBodyElement::Annotation(_)
                 | ActionUsageBodyElement::MetadataKeywordUsage(_)
                 | ActionUsageBodyElement::WhileStmt(_)
@@ -5152,7 +5244,6 @@ impl SemanticModelBuilder {
                 | ActionUsageBodyElement::Assign(_)
                 | ActionUsageBodyElement::ForLoop(_)
                 | ActionUsageBodyElement::Decl(_)
-                | ActionUsageBodyElement::DefaultReferenceUsage(_)
                 | ActionUsageBodyElement::VariantUsage(_) => self.push_unsupported(
                     document,
                     UnsupportedFamily::ActionUsageMember,
@@ -8795,6 +8886,14 @@ impl SemanticModelBuilder {
                             nested,
                         )?;
                     }
+                    CalcDefBodyElement::DefaultReferenceUsage(node) => {
+                        self.lower_default_reference_usage(
+                            document,
+                            Some(declaration),
+                            UnsupportedFamily::CalcDefinitionMember,
+                            node,
+                        )?;
+                    }
                     CalcDefBodyElement::TypedParameter(_)
                     | CalcDefBodyElement::Invariant(_)
                     | CalcDefBodyElement::Connector(_)
@@ -8803,8 +8902,7 @@ impl SemanticModelBuilder {
                     | CalcDefBodyElement::EndMember(_)
                     | CalcDefBodyElement::Import(_)
                     | CalcDefBodyElement::Comment(_)
-                    | CalcDefBodyElement::AssertConstraint(_)
-                    | CalcDefBodyElement::DefaultReferenceUsage(_) => self.push_unsupported(
+                    | CalcDefBodyElement::AssertConstraint(_) => self.push_unsupported(
                         document,
                         UnsupportedFamily::CalcDefinitionMember,
                         element.span.clone(),
@@ -13904,6 +14002,75 @@ mod tests {
             ),
             "expected `a meta Meta::Classifier` to publish NonConstant (denotes a metaclass \
              relationship, not a computable scalar value), got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn default_reference_usage_meta_cast_value_lowers_and_resolves() {
+        // Keyword-less `<name> = <expr>;` binding (`ast::structure::DefaultReferenceUsage`),
+        // e.g. `baseType = Atom meta KerML::Classifier;` inside a KerML `metaclass` body
+        // (`test/snapshots/kerml/a_2_atoms.md`). The declaration itself, and its `=` value's
+        // `MetaCast` base/metaclass references, should both resolve, mirroring
+        // `value_assignment_meta_cast_resolves_base_and_metaclass_target`.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpackage KerML {\n\
+             \t\tclass Classifier;\n\
+             \t}\n\
+             \tclass Atom;\n\
+             \tmetaclass AtomMetadata {\n\
+             \t\tbaseType = Atom meta KerML::Classifier;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(kind default-reference)")
+                && output.contains("(qualified-name \"Demo::AtomMetadata::baseType\")"),
+            "expected a DefaultReferenceUsage declaration for baseType, got:\n{output}"
+        );
+        assert!(
+            output.contains("(kind expressionOperand) (ordinal 0))")
+                && output.contains(
+                    "(outcome (status resolved) (target (node (document \
+                     \"memory://test/enum.sysml\") (qualified-name \"Demo::Atom\")))))"
+                ),
+            "expected `Atom` to resolve as the meta cast's base operand, got:\n{output}"
+        );
+        assert!(
+            output.contains("(kind metaCastTarget)")
+                && output.contains(
+                    "(outcome (status resolved) (target (node (document \
+                     \"memory://test/enum.sysml\") (qualified-name \"Demo::KerML::Classifier\")))))"
+                ),
+            "expected `KerML::Classifier` to resolve as the meta cast's metaclass target, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn default_reference_usage_typed_binding_resolves_its_typing() {
+        // A typed keyword-less binding, `<name> : <Type> = <expr>;`, still routes through
+        // `DefaultReferenceUsage` (no leading keyword) and should resolve its `FeatureTyping`
+        // reference in addition to the declaration and value.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tattribute def MassValue;\n\
+             \tpart def Vehicle {\n\
+             \t\tmass : MassValue = 10;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(kind default-reference)")
+                && output.contains("(qualified-name \"Demo::Vehicle::mass\")"),
+            "expected a DefaultReferenceUsage declaration for mass, got:\n{output}"
+        );
+        assert!(
+            output.contains("(kind featureTyping)")
+                && output.contains(
+                    "(outcome (status resolved) (target (node (document \
+                     \"memory://test/enum.sysml\") (qualified-name \"Demo::MassValue\")))))"
+                ),
+            "expected `mass`'s typing to resolve to Demo::MassValue, got:\n{output}"
         );
     }
 

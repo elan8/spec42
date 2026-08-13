@@ -25,7 +25,7 @@ package Expansion {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 2 1) (end 2 47))
+        (range (start 2 13) (end 2 46))
       )
     )
   )
@@ -38,6 +38,7 @@ package Expansion {
   (declarations
     (declaration (id (node (document "memory://snapshot/expansion.md") (qualified-name "Expansion"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/expansion.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ControlFunctions::select") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/expansion.md") (qualified-name "Expansion::x"))) (kind default-reference) (membership (kind feature) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/expansion.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))

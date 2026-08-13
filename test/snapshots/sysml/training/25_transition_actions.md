@@ -57,9 +57,9 @@ package 'Transition Actions' {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_part_definition_member")
+        (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 9 2) (end 9 46))
+        (range (start 9 24) (end 9 45))
       )
       (diagnostic
         (severity warning)
@@ -72,12 +72,6 @@ package 'Transition Actions' {
         (code "unsupported_state_definition_member")
         (source "semantic")
         (range (start 28 2) (end 31 11))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 29 6) (end 29 42))
       )
       (diagnostic
         (severity warning)
@@ -103,6 +97,7 @@ package 'Transition Actions' {
     (declaration (id (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::ControllerStartSignal"))) (kind attribute-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::Vehicle::brakePedalDepressed"))) (kind default-reference) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ScalarValues::Boolean"))))
     (declaration (id (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::VehicleController"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::VehicleOffSignal"))) (kind attribute-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::VehicleOnSignal"))) (kind attribute-def) (membership (kind owning) (visibility default)))
@@ -125,6 +120,9 @@ package 'Transition Actions' {
     (declaration (id (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::vehicleStates::starting"))) (kind state) (membership (kind feature) (visibility default)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::Vehicle::brakePedalDepressed"))) (kind featureTyping) (ordinal 0))
+      (authored-target "ScalarValues::Boolean")
+      (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::performSelfTest::vehicle"))) (kind featureTyping) (ordinal 0))
       (authored-target "Vehicle")
       (outcome (status resolved) (target (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::Vehicle")))))
@@ -154,7 +152,7 @@ package 'Transition Actions' {
       (outcome (status resolved) (target (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::VehicleOffSignal")))))
     (reference (id (source (node (document "memory://snapshot/25_transition_actions.md") (anonymous (kind transition) (ordinal 1))))) (kind memberAccessOperand) (ordinal 0))
       (authored-target "operatingVehicle::brakePedalDepressed")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::Vehicle::brakePedalDepressed")))))
     (reference (id (source (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::vehicleStates::controller"))) (kind featureTyping) (ordinal 0))
       (authored-target "VehicleController")
       (outcome (status resolved) (target (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::VehicleController")))))
@@ -181,6 +179,7 @@ package 'Transition Actions' {
     (relationship (kind transitionTrigger) (source (node (document "memory://snapshot/25_transition_actions.md") (anonymous (kind transition) (ordinal 0))))) (target (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::VehicleStartSignal"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/25_transition_actions.md") (anonymous (kind transition) (ordinal 0))))) (kind transitionTrigger) (ordinal 0)))
     (relationship (kind transitionTrigger) (source (node (document "memory://snapshot/25_transition_actions.md") (anonymous (kind transition) (ordinal 1))))) (target (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::VehicleOnSignal"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/25_transition_actions.md") (anonymous (kind transition) (ordinal 1))))) (kind transitionTrigger) (ordinal 0)))
     (relationship (kind transitionTrigger) (source (node (document "memory://snapshot/25_transition_actions.md") (anonymous (kind transition) (ordinal 2))))) (target (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::VehicleOffSignal"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/25_transition_actions.md") (anonymous (kind transition) (ordinal 2))))) (kind transitionTrigger) (ordinal 0)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/25_transition_actions.md") (anonymous (kind transition) (ordinal 1))))) (target (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::Vehicle::brakePedalDepressed"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/25_transition_actions.md") (anonymous (kind transition) (ordinal 1))))) (kind memberAccessOperand) (ordinal 0)))
     (relationship (kind typing) (direction in) (source (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::vehicleStates::controller"))) (target (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::VehicleController"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::vehicleStates::controller"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind entryActionBinding) (source (node (document "memory://snapshot/25_transition_actions.md") (anonymous (kind entry-action-binding) (ordinal 0))))) (target (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::performSelfTest"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/25_transition_actions.md") (anonymous (kind entry-action-binding) (ordinal 0))))) (kind entryActionBinding) (ordinal 0)))
     (relationship (kind typing) (direction in) (source (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::vehicleStates::operatingVehicle"))) (target (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::Vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::vehicleStates::operatingVehicle"))) (kind featureTyping) (ordinal 0)))
@@ -192,6 +191,10 @@ package 'Transition Actions' {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/25_transition_actions.md") (range (start 9 24) (end 9 45)) (probe (position 9 24))
+    (reference (id (source (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::Vehicle::brakePedalDepressed"))) (kind featureTyping) (ordinal 0) (authored-target "ScalarValues::Boolean")
+      (outcome (status unresolved)))
+  )
   (query (document "memory://snapshot/25_transition_actions.md") (range (start 13 39) (end 13 46)) (probe (position 13 39))
     (reference (id (source (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::performSelfTest::vehicle"))) (kind featureTyping) (ordinal 0) (authored-target "Vehicle")
       (outcome (status resolved) (target (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::Vehicle")))))
@@ -230,7 +233,7 @@ package 'Transition Actions' {
   )
   (query (document "memory://snapshot/25_transition_actions.md") (range (start 29 6) (end 29 42)) (probe (position 29 6))
     (reference (id (source (node (document "memory://snapshot/25_transition_actions.md") (anonymous (kind transition) (ordinal 1))))) (kind memberAccessOperand) (ordinal 0) (authored-target "operatingVehicle::brakePedalDepressed")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::Vehicle::brakePedalDepressed")))))
   )
   (query (document "memory://snapshot/25_transition_actions.md") (range (start 19 18) (end 19 35)) (probe (position 19 18))
     (reference (id (source (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::vehicleStates::controller"))) (kind featureTyping) (ordinal 0) (authored-target "VehicleController")

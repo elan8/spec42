@@ -45,9 +45,15 @@ package Atoms {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_calc_definition_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 11 2) (end 11 41))
+        (range (start 11 13) (end 11 17))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 11 23) (end 11 40))
       )
     )
   )
@@ -56,11 +62,12 @@ package Atoms {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:ce6425b889fc153c98df08a93122a3aedca50b5c85670b6ddf82ad7ecd939f6c") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:ce6425b889fc153c98df08a93122a3aedca50b5c85670b6ddf82ad7ecd939f6c") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/a_2_atoms.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Metaobjects::Metaobject") (import (shape membership) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms::AtomMetadata"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Metaobject"))))
+    (declaration (id (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms::AtomMetadata::baseType"))) (kind default-reference) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "Atom")) (metaCastTarget (reference "KerML::Classifier"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/a_2_atoms.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
@@ -69,10 +76,17 @@ package Atoms {
     (reference (id (source (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms::AtomMetadata"))) (kind specialization) (ordinal 0))
       (authored-target "Metaobject")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms::AtomMetadata::baseType"))) (kind expressionOperand) (ordinal 0))
+      (authored-target "Atom")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms::AtomMetadata::baseType"))) (kind metaCastTarget) (ordinal 0))
+      (authored-target "KerML::Classifier")
+      (outcome (status unresolved)))
   )
   (relationships
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms::AtomMetadata::baseType"))) (value (kind non-constant)))
   )
 )
 ~~~
@@ -85,6 +99,14 @@ package Atoms {
   )
   (query (document "memory://snapshot/a_2_atoms.md") (range (start 10 43) (end 10 53)) (probe (position 10 43))
     (reference (id (source (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms::AtomMetadata"))) (kind specialization) (ordinal 0) (authored-target "Metaobject")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/a_2_atoms.md") (range (start 11 13) (end 11 17)) (probe (position 11 13))
+    (reference (id (source (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms::AtomMetadata::baseType"))) (kind expressionOperand) (ordinal 0) (authored-target "Atom")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/a_2_atoms.md") (range (start 11 23) (end 11 40)) (probe (position 11 23))
+    (reference (id (source (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms::AtomMetadata::baseType"))) (kind metaCastTarget) (ordinal 0) (authored-target "KerML::Classifier")
       (outcome (status unresolved)))
   )
 )

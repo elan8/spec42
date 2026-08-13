@@ -51,12 +51,6 @@ package AnalysisTest {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_part_definition_member")
-        (source "semantic")
-        (range (start 3 2) (end 3 4))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_analysis_case_definition_member")
         (source "semantic")
         (range (start 15 2) (end 17 3))
@@ -96,6 +90,7 @@ package AnalysisTest {
     (declaration (id (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::AnalysisPlan::analysisCase"))) (kind analysis) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "AnalysisCase"))))
     (declaration (id (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::AnalysisPlan::v"))) (kind subject) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "V"))))
     (declaration (id (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::V"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::V::m"))) (kind default-reference) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::analysisContext"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::analysisContext::analysisPlan"))) (kind analysis) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "AnalysisPlan"))))
     (declaration (id (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::analysisContext::analysisPlan::v"))) (kind subject) (membership (kind feature) (visibility default)))
