@@ -33,27 +33,21 @@ package 'Terminate Actions Example-2' {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_action_usage_member")
         (source "semantic")
-        (range (start 1 1) (end 1 28))
+        (range (start 12 2) (end 12 27))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_part_definition_member")
+        (code "unsupported_action_usage_member")
         (source "semantic")
-        (range (start 4 2) (end 4 47))
+        (range (start 14 2) (end 14 38))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_part_definition_member")
+        (code "unsupported_action_usage_member")
         (source "semantic")
-        (range (start 6 2) (end 8 3))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 11 1) (end 17 2))
+        (range (start 16 2) (end 16 22))
       )
     )
   )
@@ -66,10 +60,18 @@ package 'Terminate Actions Example-2' {
   (declarations
     (declaration (id (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::Processor"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::Processor::internalProcess"))) (kind action) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::Processor::workflowProcess"))) (kind action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "WorkflowProcess"))))
+    (declaration (id (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::WorkflowProcess"))) (kind action-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::terminateProcessing"))) (kind action) (membership (kind feature) (visibility default)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::Processor::workflowProcess"))) (kind featureTyping) (ordinal 0))
+      (authored-target "WorkflowProcess")
+      (outcome (status resolved) (target (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::WorkflowProcess")))))
   )
   (relationships
+    (relationship (kind typing) (source (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::Processor::workflowProcess"))) (target (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::WorkflowProcess"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::Processor::workflowProcess"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )
@@ -78,5 +80,9 @@ package 'Terminate Actions Example-2' {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/19_terminate_actions_example_2.md") (range (start 4 31) (end 4 46)) (probe (position 4 31))
+    (reference (id (source (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::Processor::workflowProcess"))) (kind featureTyping) (ordinal 0) (authored-target "WorkflowProcess")
+      (outcome (status resolved) (target (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::WorkflowProcess")))))
+  )
 )
 ~~~

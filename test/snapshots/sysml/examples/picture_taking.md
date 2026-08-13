@@ -25,21 +25,21 @@ package PictureTaking {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_action_definition_member")
         (source "semantic")
-        (range (start 3 1) (end 3 41))
+        (range (start 3 20) (end 3 39))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_action_definition_member")
         (source "semantic")
-        (range (start 4 1) (end 4 39))
+        (range (start 4 20) (end 4 37))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_action_usage_member")
         (source "semantic")
-        (range (start 6 1) (end 10 2))
+        (range (start 8 2) (end 8 48))
       )
     )
   )
@@ -52,10 +52,23 @@ package PictureTaking {
   (declarations
     (declaration (id (node (document "memory://snapshot/picture_taking.md") (qualified-name "PictureTaking"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/picture_taking.md") (qualified-name "PictureTaking::Exposure"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/picture_taking.md") (qualified-name "PictureTaking::Focus"))) (kind action-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/picture_taking.md") (qualified-name "PictureTaking::Shoot"))) (kind action-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/picture_taking.md") (qualified-name "PictureTaking::takePicture"))) (kind action) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/picture_taking.md") (qualified-name "PictureTaking::takePicture::focus"))) (kind action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Focus"))))
+    (declaration (id (node (document "memory://snapshot/picture_taking.md") (qualified-name "PictureTaking::takePicture::shoot"))) (kind action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Shoot"))))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/picture_taking.md") (qualified-name "PictureTaking::takePicture::focus"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Focus")
+      (outcome (status resolved) (target (node (document "memory://snapshot/picture_taking.md") (qualified-name "PictureTaking::Focus")))))
+    (reference (id (source (node (document "memory://snapshot/picture_taking.md") (qualified-name "PictureTaking::takePicture::shoot"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Shoot")
+      (outcome (status resolved) (target (node (document "memory://snapshot/picture_taking.md") (qualified-name "PictureTaking::Shoot")))))
   )
   (relationships
+    (relationship (kind typing) (source (node (document "memory://snapshot/picture_taking.md") (qualified-name "PictureTaking::takePicture::focus"))) (target (node (document "memory://snapshot/picture_taking.md") (qualified-name "PictureTaking::Focus"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/picture_taking.md") (qualified-name "PictureTaking::takePicture::focus"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/picture_taking.md") (qualified-name "PictureTaking::takePicture::shoot"))) (target (node (document "memory://snapshot/picture_taking.md") (qualified-name "PictureTaking::Shoot"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/picture_taking.md") (qualified-name "PictureTaking::takePicture::shoot"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )
@@ -64,5 +77,13 @@ package PictureTaking {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/picture_taking.md") (range (start 7 16) (end 7 21)) (probe (position 7 16))
+    (reference (id (source (node (document "memory://snapshot/picture_taking.md") (qualified-name "PictureTaking::takePicture::focus"))) (kind featureTyping) (ordinal 0) (authored-target "Focus")
+      (outcome (status resolved) (target (node (document "memory://snapshot/picture_taking.md") (qualified-name "PictureTaking::Focus")))))
+  )
+  (query (document "memory://snapshot/picture_taking.md") (range (start 9 16) (end 9 21)) (probe (position 9 16))
+    (reference (id (source (node (document "memory://snapshot/picture_taking.md") (qualified-name "PictureTaking::takePicture::shoot"))) (kind featureTyping) (ordinal 0) (authored-target "Shoot")
+      (outcome (status resolved) (target (node (document "memory://snapshot/picture_taking.md") (qualified-name "PictureTaking::Shoot")))))
+  )
 )
 ~~~

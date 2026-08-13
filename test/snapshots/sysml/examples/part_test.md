@@ -109,12 +109,6 @@ package PartTest {
         (range (start 24 2) (end 24 40))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_part_definition_member")
-        (source "semantic")
-        (range (start 26 2) (end 29 3))
-      )
-      (diagnostic
         (severity error)
         (code "recovered_action_body_element")
         (source "parser")
@@ -209,6 +203,8 @@ package PartTest {
     (declaration (id (node (document "memory://snapshot/part_test.md") (qualified-name "PartTest::A::y"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "x"))))
     (declaration (id (node (document "memory://snapshot/part_test.md") (qualified-name "PartTest::B"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/part_test.md") (qualified-name "PartTest::B::a"))) (kind part) (membership (kind feature) (visibility public)) (authored (membership (kind feature) (visibility public)) (relationships (featureTyping (reference "A"))))
+    (declaration (id (node (document "memory://snapshot/part_test.md") (qualified-name "PartTest::B::a1"))) (kind action) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/part_test.md") (qualified-name "PartTest::B::a1::aa"))) (kind action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/part_test.md") (qualified-name "PartTest::B::b"))) (kind part) (membership (kind feature) (visibility public)) (authored (membership (kind feature) (visibility public)) (relationships (subsetting (reference "a"))))
     (declaration (id (node (document "memory://snapshot/part_test.md") (qualified-name "PartTest::B::c"))) (kind part) (membership (kind feature) (visibility public)) (authored (membership (kind feature) (visibility public)) (relationships (subsetting (reference "a"))))
     (declaration (id (node (document "memory://snapshot/part_test.md") (qualified-name "PartTest::B::x"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "C") (conjugated true))))

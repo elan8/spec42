@@ -98,9 +98,9 @@ package 'Change and Time Triggers' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_action_usage_member")
         (source "semantic")
-        (range (start 16 1) (end 16 57))
+        (range (start 16 27) (end 16 55))
       )
       (diagnostic
         (severity warning)
@@ -128,6 +128,7 @@ package 'Change and Time Triggers' {
     (declaration (id (node (document "memory://snapshot/25_change_and_time_triggers.md") (qualified-name "Change and Time Triggers::Vehicle::maintenanceTime"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "TimeInstantValue"))))
     (declaration (id (node (document "memory://snapshot/25_change_and_time_triggers.md") (qualified-name "Change and Time Triggers::Vehicle::maxTemperature"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "TemperatureValue"))))
     (declaration (id (node (document "memory://snapshot/25_change_and_time_triggers.md") (qualified-name "Change and Time Triggers::VehicleController"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/25_change_and_time_triggers.md") (qualified-name "Change and Time Triggers::senseTemperature"))) (kind action) (membership (kind feature) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/25_change_and_time_triggers.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))

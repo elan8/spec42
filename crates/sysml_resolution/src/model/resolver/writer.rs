@@ -216,6 +216,8 @@ fn unsupported_code(family: UnsupportedFamily) -> &'static str {
         }
         UnsupportedFamily::PortDefinitionMember => "unsupported_port_definition_member",
         UnsupportedFamily::PortUsageMember => "unsupported_port_usage_member",
+        UnsupportedFamily::ActionDefinitionMember => "unsupported_action_definition_member",
+        UnsupportedFamily::ActionUsageMember => "unsupported_action_usage_member",
         UnsupportedFamily::ParserUnsupported => "unsupported_parser_construct",
     }
 }
@@ -700,6 +702,8 @@ fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::PortUsage => "port",
         DeclarationKind::ItemDefinition => "item-def",
         DeclarationKind::ItemUsage => "item",
+        DeclarationKind::ActionDefinition => "action-def",
+        DeclarationKind::ActionUsage => "action",
     }
 }
 

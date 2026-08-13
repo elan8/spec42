@@ -35,15 +35,63 @@ action def DecisionTest {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_action_definition_member")
         (source "semantic")
-        (range (start 0 0) (end 21 1))
+        (range (start 1 1) (end 1 17))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_action_definition_member")
+        (source "semantic")
+        (range (start 3 1) (end 3 17))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_action_definition_member")
+        (source "semantic")
+        (range (start 4 1) (end 4 19))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_action_definition_member")
+        (source "semantic")
+        (range (start 5 1) (end 6 9))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_action_definition_member")
+        (source "semantic")
+        (range (start 8 1) (end 8 15))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_action_definition_member")
+        (source "semantic")
+        (range (start 9 1) (end 9 17))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_action_definition_member")
+        (source "semantic")
+        (range (start 10 1) (end 10 18))
       )
       (diagnostic
         (severity error)
         (code "missing_semicolon")
         (source "parser")
         (range (start 16 1) (end 19 1))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_action_definition_member")
+        (source "semantic")
+        (range (start 19 1) (end 19 10))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_action_definition_member")
+        (source "semantic")
+        (range (start 20 2) (end 20 25))
       )
     )
   )
@@ -54,6 +102,10 @@ action def DecisionTest {
 (semantic-model
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:040cf77bfeccd08e8998112b0cb9f03441d2a7e57bec5bd99dd79ad132370220") (contract-version "parser-owned-resolution-v1"))
   (declarations
+    (declaration (id (node (document "memory://snapshot/decision_test.md") (qualified-name "DecisionTest"))) (kind action-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/decision_test.md") (qualified-name "DecisionTest::A1"))) (kind action) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/decision_test.md") (qualified-name "DecisionTest::A2"))) (kind action) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/decision_test.md") (qualified-name "DecisionTest::A3"))) (kind action) (membership (kind feature) (visibility default)))
   )
   (references
   )

@@ -196,12 +196,6 @@ library package AHFProfileMetadata{
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_part_definition_member")
-        (source "semantic")
-        (range (start 64 2) (end 64 29))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
         (range (start 69 16) (end 69 45))
@@ -284,6 +278,7 @@ library package AHFProfileMetadata{
     (declaration (id (node (document "memory://snapshot/ahfprofile_lib.md") (qualified-name "AHFProfileLib::SysD::systemname"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "String"))))
     (declaration (id (node (document "memory://snapshot/ahfprofile_lib.md") (qualified-name "AHFProfileLib::SysDD"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "SysD"))))
     (declaration (id (node (document "memory://snapshot/ahfprofile_lib.md") (anonymous (kind port) (ordinal 0))))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "SDDD")) (redefinition (reference "services"))))
+    (declaration (id (node (document "memory://snapshot/ahfprofile_lib.md") (qualified-name "AHFProfileLib::SysDD::ServiceMethod"))) (kind action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/ahfprofile_lib.md") (qualified-name "AHFProfileLib::SysLocalCloudsDD"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "SysLocalCloudsDesign"))))
     (declaration (id (node (document "memory://snapshot/ahfprofile_lib.md") (anonymous (kind part) (ordinal 0))))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "LocalCloudDD")) (redefinition (reference "locclouds"))))
     (declaration (id (node (document "memory://snapshot/ahfprofile_lib.md") (qualified-name "AHFProfileLib::SysLocalCloudsDesign"))) (kind part-def) (membership (kind owning) (visibility default)))

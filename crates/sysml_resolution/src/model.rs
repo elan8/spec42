@@ -14,8 +14,10 @@ use std::{
 use hashbrown::HashTable;
 use sysml_v2_parser_next::{
     ast::{
-        AliasDef, AttributeBody, AttributeBodyElement, AttributeDef, AttributeUsage, EnumDef,
-        EnumerationBody, EnumerationUsage as ParserEnumerationUsage, Import, ImportShape, ItemDef,
+        ActionDef, ActionDefBody, ActionDefBodyElement, ActionUsage as ParserActionUsage,
+        ActionUsageBody, ActionUsageBodyElement, AliasDef, AttributeBody, AttributeBodyElement,
+        AttributeDef, AttributeUsage, EnumDef, EnumerationBody,
+        EnumerationUsage as ParserEnumerationUsage, Import, ImportShape, ItemDef,
         ItemUsage as ParserItemUsage, LibraryPackage, Membership,
         MembershipKind as ParserMembershipKind, NamespaceDecl, Node, Package, PackageBody,
         PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement, PartUsage, PartUsageBody,
@@ -109,6 +111,16 @@ enum DeclarationKind {
     /// A package/definition/usage-level `item` feature member (BNF ItemUsage), e.g.
     /// `item i : SomeItem;`. Mirrors PartUsage lowering.
     ItemUsage,
+    /// `action def` (BNF ActionDefinition): a type whose owned members are attribute/item/nested
+    /// action usages, mirroring PartDefinition lowering. Behavioral/control-flow semantics
+    /// (parameters, succession, decision/merge/fork/join, accept/send, perform) are out of scope
+    /// here; only ownership, specialization, and owned-declaration structure are lowered.
+    ActionDefinition,
+    /// A package/definition/usage-level `action` feature member (BNF ActionUsage), e.g.
+    /// `action validateRoute;` or `action a : SomeAction;`. Mirrors PartUsage lowering. Like
+    /// `PartUsage`, `ActionUsage`'s typing is a structured `TypingRelationship` (not a bare
+    /// `QualifiedReferenceId`).
+    ActionUsage,
     Import,
     Alias,
 }
@@ -184,6 +196,8 @@ enum UnsupportedFamily {
     RequirementDefinitionMember,
     PortDefinitionMember,
     PortUsageMember,
+    ActionDefinitionMember,
+    ActionUsageMember,
     ParserUnsupported,
 }
 
@@ -669,16 +683,10 @@ impl SemanticModelBuilder {
             PackageBodyElement::EnumerationUsage(node) => {
                 self.lower_enum_usage(document, owner, node)?
             }
-            PackageBodyElement::ActionDef(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
-            PackageBodyElement::ActionUsage(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::ActionDef(node) => self.lower_action_def(document, owner, node)?,
+            PackageBodyElement::ActionUsage(node) => {
+                self.lower_action_usage(document, owner, node)?
+            }
             PackageBodyElement::RequirementDef(node) => {
                 self.lower_requirement_def(document, owner, node)?
             }
@@ -1067,6 +1075,12 @@ impl SemanticModelBuilder {
                     PartDefBodyElement::ItemUsage(item_usage) => {
                         self.lower_item_usage(document, Some(declaration), item_usage)?;
                     }
+                    PartDefBodyElement::ActionDef(action_def) => {
+                        self.lower_action_def(document, Some(declaration), action_def)?;
+                    }
+                    PartDefBodyElement::ActionUsage(action_usage) => {
+                        self.lower_action_usage(document, Some(declaration), action_usage)?;
+                    }
                     PartDefBodyElement::Doc(_) | PartDefBodyElement::Comment(_) => {}
                     PartDefBodyElement::Annotation(_)
                     | PartDefBodyElement::MetadataAnnotation(_)
@@ -1087,8 +1101,6 @@ impl SemanticModelBuilder {
                     | PartDefBodyElement::CalcUsage(_)
                     | PartDefBodyElement::ConstraintDef(_)
                     | PartDefBodyElement::ConstraintUsage(_)
-                    | PartDefBodyElement::ActionUsage(_)
-                    | PartDefBodyElement::ActionDef(_)
                     | PartDefBodyElement::StateUsage(_)
                     | PartDefBodyElement::AssertConstraint(_)
                     | PartDefBodyElement::Satisfy(_)
@@ -1209,6 +1221,9 @@ impl SemanticModelBuilder {
                     PartUsageBodyElement::ItemUsage(item_usage) => {
                         self.lower_item_usage(document, Some(declaration), item_usage)?;
                     }
+                    PartUsageBodyElement::ActionUsage(action_usage) => {
+                        self.lower_action_usage(document, Some(declaration), action_usage)?;
+                    }
                     PartUsageBodyElement::Doc(_) => {}
                     PartUsageBodyElement::Annotation(_)
                     | PartUsageBodyElement::DefaultReferenceUsage(_)
@@ -1223,7 +1238,6 @@ impl SemanticModelBuilder {
                     | PartUsageBodyElement::Allocate(_)
                     | PartUsageBodyElement::Satisfy(_)
                     | PartUsageBodyElement::StateUsage(_)
-                    | PartUsageBodyElement::ActionUsage(_)
                     | PartUsageBodyElement::MetadataAnnotation(_)
                     | PartUsageBodyElement::MetadataKeywordUsage(_)
                     | PartUsageBodyElement::VariantUsage(_)
@@ -1578,6 +1592,218 @@ impl SemanticModelBuilder {
             self.lower_subsetting_relationship(document, declaration, relationship)?;
         }
         self.lower_attribute_body(document, declaration, &node.value.body)
+    }
+
+    /// Lowers an `action def` (BNF ActionDefinition), mirroring `lower_part_def`: ownership,
+    /// membership, an optional `:>` specialization relationship, and owned declarations.
+    /// Behavioral/control-flow body elements (parameters, succession, decision/merge/fork/join,
+    /// accept/send, perform, assign, loops) are explicitly out of scope; unrecognized body
+    /// elements fall through to `unsupported_action_definition_member` via
+    /// `lower_action_def_body`.
+    fn lower_action_def(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<ActionDef>,
+    ) -> Result<(), ConstructionError> {
+        let name = node
+            .value
+            .identification
+            .name
+            .as_deref()
+            .filter(|name| !name.is_empty())
+            .map(|name| self.intern_name(name))
+            .transpose()?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::ActionDefinition,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Owning,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::OwningMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(relationship) = &node.value.specializes {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        self.lower_action_def_body(document, declaration, &node.value.body)
+    }
+
+    /// Lowers the `ActionDefBody` shared by `action def` and by an `action` usage's own owned
+    /// members (BNF `ActionDefBodyElement`): recognized owned members are nested action usages
+    /// and `item` usages (BNF `StructureUsageMember` shape, see `crate::ast::ItemUsage`);
+    /// everything else -- in/out parameters, `first`/`then` succession, decision/merge/fork/join,
+    /// accept/send, perform, assign, loops -- falls through to
+    /// `unsupported_action_definition_member`. This is the genuinely out-of-scope
+    /// behavioral/control-flow surface for this slice.
+    fn lower_action_def_body(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        body: &ActionDefBody,
+    ) -> Result<(), ConstructionError> {
+        let ActionDefBody::Brace { elements } = body else {
+            return Ok(());
+        };
+        for element in elements {
+            match &element.value {
+                ActionDefBodyElement::Error(error) => {
+                    self.push_recovery(document, error.span.clone());
+                }
+                ActionDefBodyElement::ActionUsage(action_usage) => {
+                    self.lower_action_usage(document, Some(owner), action_usage)?;
+                }
+                ActionDefBodyElement::ItemUsage(item_usage) => {
+                    self.lower_item_usage(document, Some(owner), item_usage)?;
+                }
+                ActionDefBodyElement::Doc(_) => {}
+                ActionDefBodyElement::InOutDecl(_)
+                | ActionDefBodyElement::Annotation(_)
+                | ActionDefBodyElement::MetadataAnnotation(_)
+                | ActionDefBodyElement::MetadataKeywordUsage(_)
+                | ActionDefBodyElement::MetadataUsage(_)
+                | ActionDefBodyElement::TextualRep(_)
+                | ActionDefBodyElement::RefDecl(_)
+                | ActionDefBodyElement::Perform(_)
+                | ActionDefBodyElement::Bind(_)
+                | ActionDefBodyElement::FlowUsage(_)
+                | ActionDefBodyElement::FirstStmt(_)
+                | ActionDefBodyElement::MergeStmt(_)
+                | ActionDefBodyElement::DecisionStmt(_)
+                | ActionDefBodyElement::JoinStmt(_)
+                | ActionDefBodyElement::ForkStmt(_)
+                | ActionDefBodyElement::TerminateStmt(_)
+                | ActionDefBodyElement::WhileStmt(_)
+                | ActionDefBodyElement::LoopStmt(_)
+                | ActionDefBodyElement::IfStmt(_)
+                | ActionDefBodyElement::StateUsage(_)
+                | ActionDefBodyElement::PartUsage(_)
+                | ActionDefBodyElement::AssertConstraint(_)
+                | ActionDefBodyElement::OccurrenceUsage(_)
+                | ActionDefBodyElement::Assign(_)
+                | ActionDefBodyElement::ForLoop(_)
+                | ActionDefBodyElement::ThenAction(_)
+                | ActionDefBodyElement::Decl(_)
+                | ActionDefBodyElement::DefaultReferenceUsage(_) => self.push_unsupported(
+                    document,
+                    UnsupportedFamily::ActionDefinitionMember,
+                    element.span.clone(),
+                ),
+            }
+        }
+        Ok(())
+    }
+
+    /// Lowers a package/definition/usage-level `action` feature member (BNF ActionUsage), e.g.
+    /// `action validateRoute;` or `action a : SomeAction;`, mirroring `lower_part_usage`.
+    /// `ActionUsage`'s typing is a structured `TypingRelationship` (like `PartUsage.typing`), not
+    /// a bare `QualifiedReferenceId`. Behavioral clauses (`accept`/`send`/`via`/`to`, parameters,
+    /// abstract/variation/individual prefixes) are explicitly out of scope; owned members lower
+    /// through the same `lower_action_def_body` as an `action def`'s body (BNF `ActionUsageBody`
+    /// is a structurally near-identical production, differing only in the extra `VariantUsage`
+    /// alternative, which is itself out of scope and so folds into the same unsupported family).
+    fn lower_action_usage(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<ParserActionUsage>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declared_name(&node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::ActionUsage,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::FeatureMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(relationship) = &node.value.typing {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.subsets {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.redefines {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        self.lower_action_usage_body(document, declaration, &node.value.body)
+    }
+
+    /// Lowers the `ActionUsageBody` owned by an `action` usage (BNF `ActionUsageBodyElement`):
+    /// see `lower_action_def_body` for the shared recognized/unsupported shape. The one
+    /// additional alternative here, `VariantUsage`, is out of scope and falls through to the same
+    /// `unsupported_action_usage_member` family.
+    fn lower_action_usage_body(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        body: &ActionUsageBody,
+    ) -> Result<(), ConstructionError> {
+        let ActionUsageBody::Brace { elements } = body else {
+            return Ok(());
+        };
+        for element in elements {
+            match &element.value {
+                ActionUsageBodyElement::Error(error) => {
+                    self.push_recovery(document, error.span.clone());
+                }
+                ActionUsageBodyElement::ActionUsage(action_usage) => {
+                    self.lower_action_usage(document, Some(owner), action_usage)?;
+                }
+                ActionUsageBodyElement::ItemUsage(item_usage) => {
+                    self.lower_item_usage(document, Some(owner), item_usage)?;
+                }
+                ActionUsageBodyElement::Doc(_) => {}
+                ActionUsageBodyElement::Annotation(_)
+                | ActionUsageBodyElement::MetadataAnnotation(_)
+                | ActionUsageBodyElement::MetadataKeywordUsage(_)
+                | ActionUsageBodyElement::MetadataUsage(_)
+                | ActionUsageBodyElement::TextualRep(_)
+                | ActionUsageBodyElement::InOutDecl(_)
+                | ActionUsageBodyElement::RefDecl(_)
+                | ActionUsageBodyElement::Bind(_)
+                | ActionUsageBodyElement::FlowUsage(_)
+                | ActionUsageBodyElement::FirstStmt(_)
+                | ActionUsageBodyElement::MergeStmt(_)
+                | ActionUsageBodyElement::DecisionStmt(_)
+                | ActionUsageBodyElement::JoinStmt(_)
+                | ActionUsageBodyElement::ForkStmt(_)
+                | ActionUsageBodyElement::TerminateStmt(_)
+                | ActionUsageBodyElement::WhileStmt(_)
+                | ActionUsageBodyElement::LoopStmt(_)
+                | ActionUsageBodyElement::IfStmt(_)
+                | ActionUsageBodyElement::StateUsage(_)
+                | ActionUsageBodyElement::PartUsage(_)
+                | ActionUsageBodyElement::AssertConstraint(_)
+                | ActionUsageBodyElement::OccurrenceUsage(_)
+                | ActionUsageBodyElement::Assign(_)
+                | ActionUsageBodyElement::ForLoop(_)
+                | ActionUsageBodyElement::ThenAction(_)
+                | ActionUsageBodyElement::Decl(_)
+                | ActionUsageBodyElement::DefaultReferenceUsage(_)
+                | ActionUsageBodyElement::VariantUsage(_) => self.push_unsupported(
+                    document,
+                    UnsupportedFamily::ActionUsageMember,
+                    element.span.clone(),
+                ),
+            }
+        }
+        Ok(())
     }
 
     /// Lowers a `requirement def` (BNF RequirementDefinition), mirroring `lower_part_def`:
@@ -2692,6 +2918,95 @@ mod tests {
                 "(kind typing) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Holder::w\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
             ),
             "expected w's typing reference to Base to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn action_def_lowers_to_a_declaration() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \taction def ExecuteMission {\n\
+             \t\taction validateRoute;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::ExecuteMission\"))) (kind action-def)"),
+            "expected an action-def declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(qualified-name \"Demo::ExecuteMission::validateRoute\"))) (kind action)"
+            ),
+            "expected an owned nested action usage declaration under the action def, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn action_def_specializing_another_action_def_resolves_its_specialization_reference() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \taction def Base;\n\
+             \taction def Derived :> Base;\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind specialization) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Derived\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
+            ),
+            "expected Derived's specialization of Base to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn action_usage_typed_by_an_action_def_resolves() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \taction def Base;\n\
+             \taction a : Base;\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::a\"))) (kind action)"),
+            "expected an action usage declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind typing) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::a\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
+            ),
+            "expected a's typing reference to Base to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn first_then_succession_inside_an_action_def_still_surfaces_as_unsupported() {
+        let request = crate::BuildRequest::new(
+            vec![crate::SourceInput::new(
+                "memory://test/enum.sysml",
+                "package Demo {\n\
+                 \taction def ExecuteMission {\n\
+                 \t\taction validateRoute;\n\
+                 \t\taction startMission;\n\
+                 \t\tfirst validateRoute then startMission;\n\
+                 \t}\n\
+                 }\n"
+                .to_string(),
+                crate::SourceKind::Workspace,
+            )],
+            crate::ConstructionSchedule::Sequential,
+            "test-contract-v1",
+        )
+        .unwrap();
+        let published = crate::build(request).unwrap();
+        let mut output = String::new();
+        published
+            .debug()
+            .write_diagnostics_sexpr(&mut output)
+            .unwrap();
+        assert!(
+            output.contains("unsupported_action_definition_member"),
+            "expected the first/then succession statement to surface as an explicit unsupported \
+             action-definition-member diagnostic, got:\n{output}"
         );
     }
 

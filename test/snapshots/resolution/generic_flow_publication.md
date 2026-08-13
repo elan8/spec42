@@ -14,9 +14,9 @@ package P { action def ExecuteMission { action validateRoute; action startMissio
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_action_definition_member")
         (source "semantic")
-        (range (start 0 12) (end 0 123))
+        (range (start 0 83) (end 0 121))
       )
     )
   )
@@ -28,6 +28,9 @@ package P { action def ExecuteMission { action validateRoute; action startMissio
   (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:32b487b10690d370ed6ee068eba8bec0452680e6072ad314b3187c85ca1644b1") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/generic_flow_publication.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/generic_flow_publication.md") (qualified-name "P::ExecuteMission"))) (kind action-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/generic_flow_publication.md") (qualified-name "P::ExecuteMission::startMission"))) (kind action) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/generic_flow_publication.md") (qualified-name "P::ExecuteMission::validateRoute"))) (kind action) (membership (kind feature) (visibility default)))
   )
   (references
   )

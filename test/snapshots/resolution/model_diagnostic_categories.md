@@ -45,18 +45,6 @@ package Demo {
         (range (start 5 4) (end 5 33))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 7 4) (end 7 23))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 8 19) (end 8 26))
-      )
-      (diagnostic
         (severity error)
         (code "unsupported_grammar_form")
         (source "parser")
@@ -97,6 +85,7 @@ package Demo {
   (declarations
     (declaration (id (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::Controller"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::Process"))) (kind action-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::Requirement"))) (kind requirement-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::Sensor"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::controller"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Controller"))))
@@ -110,13 +99,14 @@ package Demo {
       (outcome (status resolved) (target (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::Controller")))))
     (reference (id (source (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::process"))) (kind featureTyping) (ordinal 0))
       (authored-target "Process")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::Process")))))
     (reference (id (source (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::sensor"))) (kind featureTyping) (ordinal 0))
       (authored-target "Sensor")
       (outcome (status resolved) (target (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::Sensor")))))
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::controller"))) (target (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::Controller"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::controller"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::process"))) (target (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::Process"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::process"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::sensor"))) (target (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::Sensor"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::sensor"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
@@ -132,7 +122,7 @@ package Demo {
   )
   (query (document "memory://snapshot/model_diagnostic_categories.md") (range (start 8 19) (end 8 26)) (probe (position 8 19))
     (reference (id (source (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::process"))) (kind featureTyping) (ordinal 0) (authored-target "Process")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::Process")))))
   )
   (query (document "memory://snapshot/model_diagnostic_categories.md") (range (start 4 18) (end 4 24)) (probe (position 4 18))
     (reference (id (source (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::sensor"))) (kind featureTyping) (ordinal 0) (authored-target "Sensor")

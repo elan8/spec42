@@ -39,12 +39,6 @@ package '12b-Allocation' {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 5 2) (end 7 3))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_part_usage_member")
         (source "semantic")
         (range (start 10 3) (end 10 39))
@@ -74,6 +68,8 @@ package '12b-Allocation' {
     (declaration (id (node (document "memory://snapshot/12b_allocation.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "LogicalModel") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/12b_allocation.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "PhysicalModel") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/12b_allocation.md") (qualified-name "12b-Allocation::LogicalModel"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/12b_allocation.md") (qualified-name "12b-Allocation::LogicalModel::providePower"))) (kind action) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/12b_allocation.md") (qualified-name "12b-Allocation::LogicalModel::providePower::generateTorque"))) (kind action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/12b_allocation.md") (qualified-name "12b-Allocation::LogicalModel::torqueGenerator"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/12b_allocation.md") (qualified-name "12b-Allocation::PhysicalModel"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/12b_allocation.md") (qualified-name "12b-Allocation::PhysicalModel::powerTrain"))) (kind part) (membership (kind feature) (visibility default)))

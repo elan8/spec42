@@ -34,21 +34,81 @@ package 'Action Definition Example' {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_action_definition_member")
         (source "semantic")
-        (range (start 5 1) (end 5 58))
+        (range (start 5 20) (end 5 37))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_action_definition_member")
         (source "semantic")
-        (range (start 6 1) (end 6 61))
+        (range (start 5 38) (end 5 56))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_action_definition_member")
         (source "semantic")
-        (range (start 8 1) (end 18 2))
+        (range (start 6 20) (end 6 36))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_action_definition_member")
+        (source "semantic")
+        (range (start 6 37) (end 6 59))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_action_definition_member")
+        (source "semantic")
+        (range (start 8 26) (end 8 43))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_action_definition_member")
+        (source "semantic")
+        (range (start 8 44) (end 8 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_action_definition_member")
+        (source "semantic")
+        (range (start 9 2) (end 9 27))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_action_usage_member")
+        (source "semantic")
+        (range (start 11 24) (end 11 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_action_usage_member")
+        (source "semantic")
+        (range (start 11 34) (end 11 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_action_definition_member")
+        (source "semantic")
+        (range (start 13 2) (end 13 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_action_usage_member")
+        (source "semantic")
+        (range (start 15 24) (end 15 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_action_usage_member")
+        (source "semantic")
+        (range (start 15 34) (end 15 46))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_action_definition_member")
+        (source "semantic")
+        (range (start 17 2) (end 17 31))
       )
     )
   )
@@ -60,13 +120,26 @@ package 'Action Definition Example' {
   (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:09ac2c25b2ccabae242821ffc66b9fef46f1dcfe1c7e2b0ff4222b33e9f10336") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/14_action_definition_example.md") (qualified-name "Action Definition Example"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/14_action_definition_example.md") (qualified-name "Action Definition Example::Focus"))) (kind action-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/14_action_definition_example.md") (qualified-name "Action Definition Example::Image"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/14_action_definition_example.md") (qualified-name "Action Definition Example::Picture"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/14_action_definition_example.md") (qualified-name "Action Definition Example::Scene"))) (kind item-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/14_action_definition_example.md") (qualified-name "Action Definition Example::Shoot"))) (kind action-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/14_action_definition_example.md") (qualified-name "Action Definition Example::TakePicture"))) (kind action-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/14_action_definition_example.md") (qualified-name "Action Definition Example::TakePicture::focus"))) (kind action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Focus"))))
+    (declaration (id (node (document "memory://snapshot/14_action_definition_example.md") (qualified-name "Action Definition Example::TakePicture::shoot"))) (kind action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Shoot"))))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/14_action_definition_example.md") (qualified-name "Action Definition Example::TakePicture::focus"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Focus")
+      (outcome (status resolved) (target (node (document "memory://snapshot/14_action_definition_example.md") (qualified-name "Action Definition Example::Focus")))))
+    (reference (id (source (node (document "memory://snapshot/14_action_definition_example.md") (qualified-name "Action Definition Example::TakePicture::shoot"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Shoot")
+      (outcome (status resolved) (target (node (document "memory://snapshot/14_action_definition_example.md") (qualified-name "Action Definition Example::Shoot")))))
   )
   (relationships
+    (relationship (kind typing) (source (node (document "memory://snapshot/14_action_definition_example.md") (qualified-name "Action Definition Example::TakePicture::focus"))) (target (node (document "memory://snapshot/14_action_definition_example.md") (qualified-name "Action Definition Example::Focus"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/14_action_definition_example.md") (qualified-name "Action Definition Example::TakePicture::focus"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/14_action_definition_example.md") (qualified-name "Action Definition Example::TakePicture::shoot"))) (target (node (document "memory://snapshot/14_action_definition_example.md") (qualified-name "Action Definition Example::Shoot"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/14_action_definition_example.md") (qualified-name "Action Definition Example::TakePicture::shoot"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )
@@ -75,5 +148,13 @@ package 'Action Definition Example' {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/14_action_definition_example.md") (range (start 11 16) (end 11 21)) (probe (position 11 16))
+    (reference (id (source (node (document "memory://snapshot/14_action_definition_example.md") (qualified-name "Action Definition Example::TakePicture::focus"))) (kind featureTyping) (ordinal 0) (authored-target "Focus")
+      (outcome (status resolved) (target (node (document "memory://snapshot/14_action_definition_example.md") (qualified-name "Action Definition Example::Focus")))))
+  )
+  (query (document "memory://snapshot/14_action_definition_example.md") (range (start 15 16) (end 15 21)) (probe (position 15 16))
+    (reference (id (source (node (document "memory://snapshot/14_action_definition_example.md") (qualified-name "Action Definition Example::TakePicture::shoot"))) (kind featureTyping) (ordinal 0) (authored-target "Shoot")
+      (outcome (status resolved) (target (node (document "memory://snapshot/14_action_definition_example.md") (qualified-name "Action Definition Example::Shoot")))))
+  )
 )
 ~~~

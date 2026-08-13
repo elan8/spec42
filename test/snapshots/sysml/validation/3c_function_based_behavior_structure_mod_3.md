@@ -46,9 +46,21 @@ package '3c-Function-based Behavior-structure mod-3' {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_action_usage_member")
         (source "semantic")
-        (range (start 23 1) (end 31 2))
+        (range (start 26 3) (end 26 75))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_action_usage_member")
+        (source "semantic")
+        (range (start 29 2) (end 30 3))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_action_usage_member")
+        (source "semantic")
+        (range (start 30 3) (end 30 53))
       )
     )
   )
@@ -60,6 +72,8 @@ package '3c-Function-based Behavior-structure mod-3' {
   (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:e958c68bea277b1072c1920f063675af4022199d095ded8c6c43c6c9c6760a44") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_3.md") (qualified-name "3c-Function-based Behavior-structure mod-3"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_3.md") (anonymous (kind action) (ordinal 0))))) (kind action) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_3.md") (qualified-name "3c-Function-based Behavior-structure mod-3::::connect trailer to vehicle"))) (kind action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_3.md") (qualified-name "3c-Function-based Behavior-structure mod-3::HitchBall"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_3.md") (qualified-name "3c-Function-based Behavior-structure mod-3::Trailer"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_3.md") (qualified-name "3c-Function-based Behavior-structure mod-3::TrailerCoupler"))) (kind part-def) (membership (kind owning) (visibility default)))

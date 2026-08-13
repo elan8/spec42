@@ -161,12 +161,6 @@ package 'Wheel Package' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_part_definition_member")
-        (source "semantic")
-        (range (start 37 2) (end 37 19))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 42 1) (end 45 2))
@@ -188,12 +182,6 @@ package 'Wheel Package' {
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 57 1) (end 60 2))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_part_definition_member")
-        (source "semantic")
-        (range (start 63 2) (end 63 26))
       )
       (diagnostic
         (severity warning)
@@ -245,6 +233,7 @@ package 'Wheel Package' {
     (declaration (id (node (document "memory://snapshot/wheel_package.md") (qualified-name "Wheel Package::LugBoltThreadableHole"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/wheel_package.md") (qualified-name "Wheel Package::Tire"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/wheel_package.md") (qualified-name "Wheel Package::Tire::bead"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "TireBead"))))
+    (declaration (id (node (document "memory://snapshot/wheel_package.md") (qualified-name "Wheel Package::Tire::mountTire"))) (kind action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/wheel_package.md") (qualified-name "Wheel Package::TireBead"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/wheel_package.md") (qualified-name "Wheel Package::TireMountingRim"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/wheel_package.md") (qualified-name "Wheel Package::Wheel"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -262,6 +251,7 @@ package 'Wheel Package' {
     (declaration (id (node (document "memory://snapshot/wheel_package.md") (qualified-name "Wheel Package::WheelHubAssembly::lugBoltJoints"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "LugBoltJoint"))))
     (declaration (id (node (document "memory://snapshot/wheel_package.md") (qualified-name "Wheel Package::WheelHubAssembly::wheel"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "WheelAssembly"))))
     (declaration (id (node (document "memory://snapshot/wheel_package.md") (qualified-name "Wheel Package::WirelessTirePressureMonitor"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/wheel_package.md") (qualified-name "Wheel Package::WirelessTirePressureMonitor::transmitPressure"))) (kind action) (membership (kind feature) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/wheel_package.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
