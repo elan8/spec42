@@ -77,15 +77,39 @@ package RequirementMetadataExample {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 9 20) (end 9 54))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 15 9) (end 15 19))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 16 21) (end 16 36))
       )
       (diagnostic
         (severity error)
         (code "unrecognized_declaration_in_scope")
         (source "parser")
         (range (start 17 12) (end 23 6))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 23 19) (end 23 24))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 24 20) (end 24 26))
       )
       (diagnostic
         (severity warning)
@@ -112,7 +136,7 @@ package RequirementMetadataExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:b6f622d8bfe7d6ca17ad7c0fcbada53cfb5f6878bbb5c11a1f2ef2283d47380b") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:b6f622d8bfe7d6ca17ad7c0fcbada53cfb5f6878bbb5c11a1f2ef2283d47380b") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/requirement_metadata_example.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Metaobjects::SemanticMetadata") (import (shape membership) (recursive false)))))
@@ -125,6 +149,10 @@ package RequirementMetadataExample {
     (declaration (id (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goal::baseType"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "baseType"))))
     (declaration (id (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goals"))) (kind requirement) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Goal"))))
     (declaration (id (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::vehicleMassRequirement"))) (kind requirement) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (metadataAnnotation (reference "StatusInfo"))))
+    (declaration (id (node (document "memory://snapshot/requirement_metadata_example.md") (anonymous (kind metadata) (ordinal 0))))) (kind metadata) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::vehicleMassRequirement::::originator"))) (kind attribute) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::vehicleMassRequirement::::owner"))) (kind attribute) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::vehicleMassRequirement::::status"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "StatusKind::tbd"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/requirement_metadata_example.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0))
@@ -151,12 +179,16 @@ package RequirementMetadataExample {
     (reference (id (source (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::vehicleMassRequirement"))) (kind metadataAnnotation) (ordinal 0))
       (authored-target "StatusInfo")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::vehicleMassRequirement::::status"))) (kind expressionOperand) (ordinal 0))
+      (authored-target "StatusKind::tbd")
+      (outcome (status unresolved)))
   )
   (relationships
     (relationship (kind redefinition) (source (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goal::baseType"))) (target (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goal::baseType"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goal::baseType"))) (kind redefinition) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goals"))) (target (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::Goal"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goals"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::vehicleMassRequirement::::status"))) (value (kind unresolved-operand)))
   )
 )
 ~~~
@@ -193,6 +225,10 @@ package RequirementMetadataExample {
   )
   (query (document "memory://snapshot/requirement_metadata_example.md") (range (start 15 9) (end 15 19)) (probe (position 15 9))
     (reference (id (source (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::vehicleMassRequirement"))) (kind metadataAnnotation) (ordinal 0) (authored-target "StatusInfo")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/requirement_metadata_example.md") (range (start 16 21) (end 16 36)) (probe (position 16 21))
+    (reference (id (source (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::vehicleMassRequirement::::status"))) (kind expressionOperand) (ordinal 0) (authored-target "StatusKind::tbd")
       (outcome (status unresolved)))
   )
 )

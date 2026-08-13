@@ -168,9 +168,21 @@ package '1a-Parts Tree' {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 38 44) (end 38 53))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 81 28) (end 81 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 81 44) (end 81 53))
       )
     )
   )
@@ -179,7 +191,7 @@ package '1a-Parts Tree' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:1d065cf8f178a7b346286e07981ccda27e7bc28a0a8c39dbb86d123417ba9106") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:1d065cf8f178a7b346286e07981ccda27e7bc28a0a8c39dbb86d123417ba9106") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/1a_parts_tree.md") (qualified-name "1a-Parts Tree"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/1a_parts_tree.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "SI::kg") (import (shape membership) (recursive false)))))

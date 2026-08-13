@@ -167,6 +167,12 @@ package '15_13-Discretely Sampled Function Value' {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 13 20) (end 13 49))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 15 37) (end 15 52))
@@ -209,9 +215,21 @@ package '15_13-Discretely Sampled Function Value' {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 22 25) (end 22 32))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 31 35) (end 31 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 31 41) (end 31 70))
       )
       (diagnostic
         (severity warning)
@@ -239,9 +257,21 @@ package '15_13-Discretely Sampled Function Value' {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 48 16) (end 48 25))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 50 23) (end 50 57))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 50 73) (end 50 74))
       )
       (diagnostic
         (severity warning)
@@ -299,9 +329,27 @@ package '15_13-Discretely Sampled Function Value' {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 67 54) (end 67 64))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 67 70) (end 67 80))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 68 54) (end 68 63))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 68 92) (end 68 101))
       )
       (diagnostic
         (severity warning)
@@ -317,9 +365,27 @@ package '15_13-Discretely Sampled Function Value' {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 69 54) (end 69 64))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 69 70) (end 69 80))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 70 54) (end 70 71))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 70 100) (end 70 111))
       )
       (diagnostic
         (severity warning)
@@ -335,15 +401,39 @@ package '15_13-Discretely Sampled Function Value' {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 71 54) (end 71 64))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 71 70) (end 71 80))
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 72 54) (end 72 72))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 72 101) (end 72 119))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 73 16) (end 73 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 73 26) (end 73 53))
       )
     )
   )
@@ -352,7 +442,7 @@ package '15_13-Discretely Sampled Function Value' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d0cb767973e27388c841c64a287a71344826bd748ecfaaface55a5c4bdd85775") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:d0cb767973e27388c841c64a287a71344826bd748ecfaaface55a5c4bdd85775") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (qualified-name "15_13-Discretely Sampled Function Value"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "SampledFunctions::SampledFunction") (import (shape membership) (recursive false)))))
@@ -407,7 +497,7 @@ package '15_13-Discretely Sampled Function Value' {
     (declaration (id (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "val"))))
     (declaration (id (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (qualified-name "15_13-Discretely Sampled Function Value::spatialCF"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "CartesianSpatial3dCoordinateFrame"))))
     (declaration (id (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "mRefs"))))
-    (declaration (id (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (qualified-name "15_13-Discretely Sampled Function Value::velocityCF"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "CartesianVelocity3dCoordinateFrame"))))
+    (declaration (id (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (qualified-name "15_13-Discretely Sampled Function Value::velocityCF"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "CartesianVelocity3dCoordinateFrame")) (expressionOperand (reference "spatialCF")) (expressionOperand (reference "s"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (anonymous (kind import) (ordinal 3))))) (kind namespaceImport) (ordinal 0))
@@ -599,6 +689,12 @@ package '15_13-Discretely Sampled Function Value' {
     (reference (id (source (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (qualified-name "15_13-Discretely Sampled Function Value::velocityCF"))) (kind featureTyping) (ordinal 0))
       (authored-target "CartesianVelocity3dCoordinateFrame")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (qualified-name "15_13-Discretely Sampled Function Value::velocityCF"))) (kind expressionOperand) (ordinal 0))
+      (authored-target "spatialCF")
+      (outcome (status resolved) (target (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (qualified-name "15_13-Discretely Sampled Function Value::spatialCF")))))
+    (reference (id (source (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (qualified-name "15_13-Discretely Sampled Function Value::velocityCF"))) (kind expressionOperand) (ordinal 1))
+      (authored-target "s")
+      (outcome (status unresolved)))
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (qualified-name "15_13-Discretely Sampled Function Value::AscentProfile::AscentSample"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (anonymous (kind attribute) (ordinal 0))))) (kind featureTyping) (ordinal 0)))
@@ -621,9 +717,18 @@ package '15_13-Discretely Sampled Function Value' {
     (relationship (kind redefinition) (source (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (anonymous (kind attribute) (ordinal 1))))) (target (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (qualified-name "15_13-Discretely Sampled Function Value::PositionAndVelocity::velocity"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (anonymous (kind attribute) (ordinal 1))))) (kind redefinition) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (qualified-name "15_13-Discretely Sampled Function Value::mets"))) (target (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (qualified-name "15_13-Discretely Sampled Function Value::mets"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (qualified-name "15_13-Discretely Sampled Function Value::MissionElapsedTimeScale::definitionalEpochInUTC"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (qualified-name "15_13-Discretely Sampled Function Value::velocityCF"))) (target (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (qualified-name "15_13-Discretely Sampled Function Value::spatialCF"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (qualified-name "15_13-Discretely Sampled Function Value::velocityCF"))) (kind expressionOperand) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind unresolved-operand)))
     (evaluated (declaration (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (qualified-name "15_13-Discretely Sampled Function Value::velocityCF"))) (value (kind unresolved-operand)))
   )
 )
 ~~~
@@ -880,6 +985,14 @@ package '15_13-Discretely Sampled Function Value' {
   )
   (query (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (range (start 50 23) (end 50 57)) (probe (position 50 23))
     (reference (id (source (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (qualified-name "15_13-Discretely Sampled Function Value::velocityCF"))) (kind featureTyping) (ordinal 0) (authored-target "CartesianVelocity3dCoordinateFrame")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (range (start 50 63) (end 50 72)) (probe (position 50 63))
+    (reference (id (source (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (qualified-name "15_13-Discretely Sampled Function Value::velocityCF"))) (kind expressionOperand) (ordinal 0) (authored-target "spatialCF")
+      (outcome (status resolved) (target (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (qualified-name "15_13-Discretely Sampled Function Value::spatialCF")))))
+  )
+  (query (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (range (start 50 73) (end 50 74)) (probe (position 50 73))
+    (reference (id (source (node (document "memory://snapshot/15_13_discretely_sampled_function_value.md") (qualified-name "15_13-Discretely Sampled Function Value::velocityCF"))) (kind expressionOperand) (ordinal 1) (authored-target "s")
       (outcome (status unresolved)))
   )
 )

@@ -110,6 +110,12 @@ package VehicleMasses {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 25 19) (end 25 28))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 26 17) (end 26 23))
@@ -119,6 +125,12 @@ package VehicleMasses {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 27 13) (end 27 17))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 27 20) (end 27 28))
       )
       (diagnostic
         (severity warning)
@@ -132,6 +144,12 @@ package VehicleMasses {
         (source "semantic")
         (range (start 31 13) (end 31 17))
       )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 31 20) (end 31 27))
+      )
     )
   )
 )
@@ -139,7 +157,7 @@ package VehicleMasses {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:646944c143f5e6564093651f47ba3ef3da45addc59d556f7e601081c71594bf9") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:646944c143f5e6564093651f47ba3ef3da45addc59d556f7e601081c71594bf9") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/vehicles.md") (qualified-name "VehicleMasses"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/vehicles.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))

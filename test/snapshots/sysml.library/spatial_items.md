@@ -361,6 +361,12 @@ standard library package SpatialItems {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 79 32) (end 79 80))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 80 18) (end 80 32))
@@ -379,9 +385,21 @@ standard library package SpatialItems {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 81 34) (end 81 81))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 86 31) (end 86 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 86 45) (end 86 82))
       )
       (diagnostic
         (severity warning)
@@ -773,6 +791,8 @@ standard library package SpatialItems {
     (evaluated (declaration (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::CurrentPositionOf"))) (value (kind unresolved-operand)))
     (evaluated (declaration (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::DisplacementOf"))) (value (kind unresolved-operand)))
     (evaluated (declaration (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::PositionOf"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/spatial_items.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem::coordinateFrame"))) (value (kind unresolved-operand)))
     (evaluated (declaration (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem::originPointConstraint"))) (value (kind non-constant)))
   )
 )

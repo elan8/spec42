@@ -76,6 +76,12 @@ standard library package RequirementDerivation {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 14 17) (end 14 55))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")
         (range (start 17 53) (end 17 69))
@@ -85,6 +91,12 @@ standard library package RequirementDerivation {
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 24 24) (end 24 36))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 25 17) (end 25 54))
       )
       (diagnostic
         (severity warning)
@@ -136,6 +148,12 @@ standard library package RequirementDerivation {
         (source "semantic")
         (range (start 35 24) (end 35 46))
       )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 36 17) (end 36 46))
+      )
     )
   )
 )
@@ -143,7 +161,7 @@ standard library package RequirementDerivation {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:b7f51bd4b732338a6319aef4cd5597637c1e1318d6af91bdafb7289b71c16091") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:b7f51bd4b732338a6319aef4cd5597637c1e1318d6af91bdafb7289b71c16091") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/requirement_derivation.md") (qualified-name "RequirementDerivation"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/requirement_derivation.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "DerivationConnections") (import (shape namespace) (recursive false)))))

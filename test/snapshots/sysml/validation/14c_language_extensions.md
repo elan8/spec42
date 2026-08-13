@@ -280,6 +280,30 @@ package '14c-Language-Extensions' {
         (range (start 89 48) (end 89 64))
       )
       (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 90 24) (end 90 52))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 94 18) (end 94 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 98 18) (end 98 48))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 102 18) (end 102 43))
+      )
+      (diagnostic
         (severity error)
         (code "ambiguous_reference")
         (source "semantic")
@@ -325,6 +349,12 @@ package '14c-Language-Extensions' {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 108 18) (end 108 45))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")
         (range (start 111 48) (end 111 64))
@@ -334,6 +364,12 @@ package '14c-Language-Extensions' {
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 112 26) (end 112 48))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 113 18) (end 113 46))
       )
       (diagnostic
         (severity warning)
@@ -349,6 +385,12 @@ package '14c-Language-Extensions' {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 118 18) (end 118 52))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")
         (range (start 121 48) (end 121 64))
@@ -361,6 +403,12 @@ package '14c-Language-Extensions' {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 123 18) (end 123 46))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")
         (range (start 126 54) (end 126 70))
@@ -370,6 +418,18 @@ package '14c-Language-Extensions' {
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 127 26) (end 127 48))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 131 18) (end 131 47))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 135 18) (end 135 47))
       )
       (diagnostic
         (severity warning)
@@ -388,6 +448,12 @@ package '14c-Language-Extensions' {
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 152 2) (end 152 12))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 153 28) (end 153 44))
       )
       (diagnostic
         (severity warning)
@@ -490,6 +556,12 @@ package '14c-Language-Extensions' {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 181 8) (end 181 16))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 181 19) (end 181 25))
       )
       (diagnostic
         (severity warning)
@@ -631,7 +703,9 @@ package '14c-Language-Extensions' {
     (declaration (id (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEAUserModel::req1"))) (kind requirement) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEAUserModel::req2"))) (kind requirement) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEAUserModel::req3"))) (kind requirement) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "RequirementWithSIL")) (metadataAnnotation (reference "StatusHolder"))))
+    (declaration (id (node (document "memory://snapshot/14c_language_extensions.md") (anonymous (kind metadata) (ordinal 0))))) (kind metadata) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/14c_language_extensions.md") (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "sil")) (expressionOperand (reference "SIL::A"))))
+    (declaration (id (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEAUserModel::req3::::status"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "Status::Approved"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/14c_language_extensions.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
@@ -868,6 +942,9 @@ package '14c-Language-Extensions' {
     (reference (id (source (node (document "memory://snapshot/14c_language_extensions.md") (anonymous (kind attribute) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
       (authored-target "SIL::A")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEAUserModel::req3::::status"))) (kind expressionOperand) (ordinal 0))
+      (authored-target "Status::Approved")
+      (outcome (status unresolved)))
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEALibrary::Causation::cause"))) (target (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEALibrary::Situation"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEALibrary::Causation::cause"))) (kind featureTyping) (ordinal 0)))
@@ -925,6 +1002,8 @@ package '14c-Language-Extensions' {
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/14c_language_extensions.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind real) (real 0.013)))
     (evaluated (declaration (node (document "memory://snapshot/14c_language_extensions.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind real) (real 0.005)))
+    (evaluated (declaration (node (document "memory://snapshot/14c_language_extensions.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEAUserModel::req3::::status"))) (value (kind unresolved-operand)))
   )
 )
 ~~~
@@ -1241,6 +1320,10 @@ package '14c-Language-Extensions' {
   )
   (query (document "memory://snapshot/14c_language_extensions.md") (range (start 157 13) (end 157 19)) (probe (position 157 13))
     (reference (id (source (node (document "memory://snapshot/14c_language_extensions.md") (anonymous (kind attribute) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "SIL::A")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/14c_language_extensions.md") (range (start 153 28) (end 153 44)) (probe (position 153 28))
+    (reference (id (source (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEAUserModel::req3::::status"))) (kind expressionOperand) (ordinal 0) (authored-target "Status::Approved")
       (outcome (status unresolved)))
   )
 )

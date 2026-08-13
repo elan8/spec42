@@ -68,6 +68,12 @@ package 'Requirement Usages' {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 6 27) (end 6 35))
+      )
+      (diagnostic
+        (severity warning)
         (code "unsupported_requirement_definition_member")
         (source "semantic")
         (range (start 8 2) (end 11 3))
@@ -89,6 +95,12 @@ package 'Requirement Usages' {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 16 16) (end 16 24))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 16 27) (end 16 35))
       )
       (diagnostic
         (severity warning)

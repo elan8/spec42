@@ -37,7 +37,7 @@ package Demo {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:fd7fe7b1e7f45b7fe7d690ba43ef5a1b5ad324737d823591f04faac4852cb030") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:fd7fe7b1e7f45b7fe7d690ba43ef5a1b5ad324737d823591f04faac4852cb030") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::ManagedRequirement"))) (kind requirement-def) (membership (kind owning) (visibility default)))
@@ -77,6 +77,7 @@ package Demo {
     (relationship (kind redefinition) (source (node (document "memory://snapshot/enum_status_redefinition.md") (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::ManagedRequirement::status"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/enum_status_redefinition.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/enum_status_redefinition.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind unresolved-operand)))
   )
 )
 ~~~

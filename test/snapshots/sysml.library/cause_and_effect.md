@@ -124,6 +124,12 @@ standard library package CauseAndEffect {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 15 21) (end 15 43))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")
         (range (start 18 41) (end 18 57))
@@ -133,6 +139,12 @@ standard library package CauseAndEffect {
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 25 29) (end 25 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 26 21) (end 26 44))
       )
       (diagnostic
         (severity error)
@@ -204,9 +216,21 @@ standard library package CauseAndEffect {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 69 21) (end 69 54))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")
         (range (start 72 76) (end 72 92))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 78 21) (end 78 49))
       )
     )
   )
@@ -215,7 +239,7 @@ standard library package CauseAndEffect {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:6671ee8053b74a25e04f4200e134f345a28e70bc3ca74b1e8ffb8caa560bf035") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:6671ee8053b74a25e04f4200e134f345a28e70bc3ca74b1e8ffb8caa560bf035") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/cause_and_effect.md") (qualified-name "CauseAndEffect"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/cause_and_effect.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "CausationConnections") (import (shape namespace) (recursive false)))))

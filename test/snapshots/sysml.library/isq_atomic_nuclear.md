@@ -2925,6 +2925,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 234 98) (end 234 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 235 22) (end 235 39))
@@ -3039,6 +3045,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 261 100) (end 261 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 262 22) (end 262 39))
@@ -3048,6 +3060,12 @@ standard library package ISQAtomicNuclear {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 262 46) (end 262 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 262 69) (end 262 99))
       )
       (diagnostic
         (severity warning)
@@ -3138,6 +3156,12 @@ standard library package ISQAtomicNuclear {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 288 46) (end 288 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 288 69) (end 288 98))
       )
       (diagnostic
         (severity warning)
@@ -3285,6 +3309,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 371 100) (end 371 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 372 22) (end 372 39))
@@ -3294,6 +3324,12 @@ standard library package ISQAtomicNuclear {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 372 46) (end 372 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 372 69) (end 372 99))
       )
       (diagnostic
         (severity warning)
@@ -3441,6 +3477,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 423 100) (end 423 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 424 22) (end 424 39))
@@ -3450,6 +3492,12 @@ standard library package ISQAtomicNuclear {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 424 46) (end 424 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 424 69) (end 424 99))
       )
       (diagnostic
         (severity warning)
@@ -3549,6 +3597,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 473 96) (end 473 98))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 474 38) (end 474 57))
@@ -3609,6 +3663,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 476 69) (end 476 108))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")
         (range (start 488 57) (end 488 76))
@@ -3660,6 +3720,12 @@ standard library package ISQAtomicNuclear {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 508 85) (end 508 93))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 508 96) (end 508 98))
       )
       (diagnostic
         (severity warning)
@@ -3720,6 +3786,12 @@ standard library package ISQAtomicNuclear {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 511 46) (end 511 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 511 69) (end 511 108))
       )
       (diagnostic
         (severity warning)
@@ -3840,6 +3912,12 @@ standard library package ISQAtomicNuclear {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 724 89) (end 724 97))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 724 100) (end 724 102))
       )
       (diagnostic
         (severity warning)
@@ -4047,6 +4125,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 972 100) (end 972 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 973 22) (end 973 39))
@@ -4125,6 +4209,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1035 100) (end 1035 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1036 22) (end 1036 39))
@@ -4191,6 +4281,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1060 96) (end 1060 98))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 1061 38) (end 1061 57))
@@ -4215,6 +4311,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1061 100) (end 1061 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1062 22) (end 1062 39))
@@ -4224,6 +4326,12 @@ standard library package ISQAtomicNuclear {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1062 46) (end 1062 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1062 69) (end 1062 89))
       )
       (diagnostic
         (severity warning)
@@ -4281,6 +4389,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1090 98) (end 1090 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 1091 38) (end 1091 57))
@@ -4305,6 +4419,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1091 100) (end 1091 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1092 22) (end 1092 39))
@@ -4314,6 +4434,12 @@ standard library package ISQAtomicNuclear {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1092 46) (end 1092 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1092 69) (end 1092 91))
       )
       (diagnostic
         (severity warning)
@@ -4371,6 +4497,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1124 98) (end 1124 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 1125 38) (end 1125 57))
@@ -4395,6 +4527,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1125 100) (end 1125 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1126 22) (end 1126 39))
@@ -4404,6 +4542,12 @@ standard library package ISQAtomicNuclear {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1126 46) (end 1126 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1126 69) (end 1126 91))
       )
       (diagnostic
         (severity warning)
@@ -4488,6 +4632,12 @@ standard library package ISQAtomicNuclear {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1231 89) (end 1231 97))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1231 100) (end 1231 102))
       )
       (diagnostic
         (severity warning)
@@ -4647,6 +4797,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1345 96) (end 1345 98))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 1346 38) (end 1346 57))
@@ -4680,6 +4836,12 @@ standard library package ISQAtomicNuclear {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1347 46) (end 1347 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1347 69) (end 1347 89))
       )
       (diagnostic
         (severity warning)
@@ -4737,6 +4899,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1371 96) (end 1371 98))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 1372 38) (end 1372 57))
@@ -4770,6 +4938,12 @@ standard library package ISQAtomicNuclear {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1373 46) (end 1373 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1373 69) (end 1373 89))
       )
       (diagnostic
         (severity warning)
@@ -4824,6 +4998,12 @@ standard library package ISQAtomicNuclear {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1397 87) (end 1397 95))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1397 98) (end 1397 100))
       )
       (diagnostic
         (severity warning)
@@ -4893,6 +5073,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1426 98) (end 1426 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1427 22) (end 1427 39))
@@ -4956,6 +5142,12 @@ standard library package ISQAtomicNuclear {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1455 87) (end 1455 95))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1455 98) (end 1455 100))
       )
       (diagnostic
         (severity warning)
@@ -5025,6 +5217,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1480 98) (end 1480 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 1481 38) (end 1481 57))
@@ -5049,6 +5247,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1481 100) (end 1481 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1482 22) (end 1482 39))
@@ -5058,6 +5262,12 @@ standard library package ISQAtomicNuclear {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1482 46) (end 1482 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1482 69) (end 1482 91))
       )
       (diagnostic
         (severity warning)
@@ -5145,6 +5355,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1523 100) (end 1523 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1524 22) (end 1524 39))
@@ -5154,6 +5370,12 @@ standard library package ISQAtomicNuclear {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1524 46) (end 1524 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1524 69) (end 1524 89))
       )
       (diagnostic
         (severity warning)
@@ -5235,6 +5457,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1549 100) (end 1549 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1550 22) (end 1550 39))
@@ -5244,6 +5472,12 @@ standard library package ISQAtomicNuclear {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1550 46) (end 1550 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1550 69) (end 1550 89))
       )
       (diagnostic
         (severity warning)
@@ -5301,6 +5535,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1574 98) (end 1574 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 1575 38) (end 1575 57))
@@ -5325,6 +5565,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1575 100) (end 1575 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1576 22) (end 1576 39))
@@ -5334,6 +5580,12 @@ standard library package ISQAtomicNuclear {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1576 46) (end 1576 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1576 69) (end 1576 91))
       )
       (diagnostic
         (severity warning)
@@ -5433,6 +5685,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1625 98) (end 1625 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1626 22) (end 1626 39))
@@ -5523,6 +5781,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1651 96) (end 1651 98))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1652 22) (end 1652 39))
@@ -5532,6 +5796,12 @@ standard library package ISQAtomicNuclear {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1652 46) (end 1652 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1652 69) (end 1652 87))
       )
       (diagnostic
         (severity warning)
@@ -5613,6 +5883,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1677 109) (end 1677 111))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1678 22) (end 1678 39))
@@ -5622,6 +5898,12 @@ standard library package ISQAtomicNuclear {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1678 46) (end 1678 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1678 69) (end 1678 100))
       )
       (diagnostic
         (severity warning)
@@ -5799,6 +6081,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1745 100) (end 1745 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1746 22) (end 1746 39))
@@ -5808,6 +6096,12 @@ standard library package ISQAtomicNuclear {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1746 46) (end 1746 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1746 69) (end 1746 99))
       )
       (diagnostic
         (severity warning)
@@ -5889,6 +6183,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1775 100) (end 1775 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1776 22) (end 1776 39))
@@ -5898,6 +6198,12 @@ standard library package ISQAtomicNuclear {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1776 46) (end 1776 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1776 69) (end 1776 91))
       )
       (diagnostic
         (severity warning)
@@ -5961,6 +6267,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1820 98) (end 1820 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 1821 34) (end 1821 53))
@@ -5994,6 +6306,12 @@ standard library package ISQAtomicNuclear {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1822 46) (end 1822 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1822 69) (end 1822 87))
       )
       (diagnostic
         (severity warning)
@@ -6048,6 +6366,12 @@ standard library package ISQAtomicNuclear {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1846 87) (end 1846 95))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1846 98) (end 1846 100))
       )
       (diagnostic
         (severity warning)
@@ -6171,6 +6495,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1890 100) (end 1890 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1891 22) (end 1891 39))
@@ -6180,6 +6510,12 @@ standard library package ISQAtomicNuclear {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1891 46) (end 1891 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1891 69) (end 1891 99))
       )
       (diagnostic
         (severity warning)
@@ -6234,6 +6570,12 @@ standard library package ISQAtomicNuclear {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1915 85) (end 1915 93))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1915 96) (end 1915 98))
       )
       (diagnostic
         (severity warning)
@@ -6297,6 +6639,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1918 69) (end 1918 108))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")
         (range (start 1922 48) (end 1922 67))
@@ -6348,6 +6696,12 @@ standard library package ISQAtomicNuclear {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1942 87) (end 1942 95))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1942 98) (end 1942 100))
       )
       (diagnostic
         (severity warning)
@@ -6414,6 +6768,12 @@ standard library package ISQAtomicNuclear {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1967 87) (end 1967 95))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1967 98) (end 1967 100))
       )
       (diagnostic
         (severity warning)
@@ -6507,6 +6867,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1997 100) (end 1997 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1998 22) (end 1998 39))
@@ -6516,6 +6882,12 @@ standard library package ISQAtomicNuclear {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1998 46) (end 1998 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1998 69) (end 1998 91))
       )
       (diagnostic
         (severity warning)
@@ -6597,6 +6969,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2045 98) (end 2045 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 2046 38) (end 2046 57))
@@ -6621,6 +6999,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2046 100) (end 2046 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 2047 22) (end 2047 39))
@@ -6630,6 +7014,12 @@ standard library package ISQAtomicNuclear {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 2047 46) (end 2047 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2047 69) (end 2047 91))
       )
       (diagnostic
         (severity warning)
@@ -6687,6 +7077,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2071 98) (end 2071 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 2072 38) (end 2072 57))
@@ -6711,6 +7107,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2072 100) (end 2072 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 2073 22) (end 2073 39))
@@ -6720,6 +7122,12 @@ standard library package ISQAtomicNuclear {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 2073 46) (end 2073 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2073 69) (end 2073 91))
       )
       (diagnostic
         (severity warning)
@@ -7041,6 +7449,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2456 100) (end 2456 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 2457 22) (end 2457 39))
@@ -7050,6 +7464,12 @@ standard library package ISQAtomicNuclear {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 2457 46) (end 2457 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2457 69) (end 2457 91))
       )
       (diagnostic
         (severity warning)
@@ -7161,6 +7581,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2521 100) (end 2521 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 2522 22) (end 2522 39))
@@ -7170,6 +7596,12 @@ standard library package ISQAtomicNuclear {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 2522 46) (end 2522 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2522 69) (end 2522 91))
       )
       (diagnostic
         (severity warning)
@@ -7251,6 +7683,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2563 100) (end 2563 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 2564 22) (end 2564 39))
@@ -7260,6 +7698,12 @@ standard library package ISQAtomicNuclear {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 2564 46) (end 2564 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2564 69) (end 2564 91))
       )
       (diagnostic
         (severity warning)
@@ -7365,6 +7809,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2590 100) (end 2590 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 2591 22) (end 2591 39))
@@ -7374,6 +7824,12 @@ standard library package ISQAtomicNuclear {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 2591 46) (end 2591 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2591 69) (end 2591 99))
       )
       (diagnostic
         (severity warning)
@@ -7455,6 +7911,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2616 100) (end 2616 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 2617 22) (end 2617 39))
@@ -7464,6 +7926,12 @@ standard library package ISQAtomicNuclear {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 2617 46) (end 2617 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2617 69) (end 2617 91))
       )
       (diagnostic
         (severity warning)
@@ -7545,6 +8013,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2642 100) (end 2642 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 2643 22) (end 2643 39))
@@ -7554,6 +8028,12 @@ standard library package ISQAtomicNuclear {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 2643 46) (end 2643 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2643 69) (end 2643 91))
       )
       (diagnostic
         (severity warning)
@@ -7635,6 +8115,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2668 96) (end 2668 98))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 2669 22) (end 2669 39))
@@ -7644,6 +8130,12 @@ standard library package ISQAtomicNuclear {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 2669 46) (end 2669 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2669 69) (end 2669 87))
       )
       (diagnostic
         (severity warning)
@@ -7698,6 +8190,12 @@ standard library package ISQAtomicNuclear {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 2693 85) (end 2693 93))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2693 96) (end 2693 98))
       )
       (diagnostic
         (severity warning)
@@ -7761,6 +8259,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2696 69) (end 2696 108))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")
         (range (start 2700 39) (end 2700 58))
@@ -7815,6 +8319,12 @@ standard library package ISQAtomicNuclear {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2720 96) (end 2720 98))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 2721 45) (end 2721 64))
@@ -7849,6 +8359,12 @@ standard library package ISQAtomicNuclear {
         (source "semantic")
         (range (start 2722 46) (end 2722 66))
       )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2722 69) (end 2722 96))
+      )
     )
   )
 )
@@ -7856,7 +8372,7 @@ standard library package ISQAtomicNuclear {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:3ba2e277c2a0d99374a140c21cb21ad0dfd44172b826bc942cc62f790efa6e6d") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:3ba2e277c2a0d99374a140c21cb21ad0dfd44172b826bc942cc62f790efa6e6d") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/isq_atomic_nuclear.md") (qualified-name "ISQAtomicNuclear"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false)))))
@@ -12049,6 +12565,7 @@ standard library package ISQAtomicNuclear {
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
     (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
     (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
     (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
@@ -12064,7 +12581,9 @@ standard library package ISQAtomicNuclear {
     (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind boolean) (boolean false)))
     (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind boolean) (boolean true)))
     (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind boolean) (boolean false)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
     (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
     (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
@@ -12079,20 +12598,30 @@ standard library package ISQAtomicNuclear {
     (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
     (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 6)))
     (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 3)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
     (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
     (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
-    (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
-    (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
-    (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
-    (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
-    (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
-    (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
     (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
     (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 3)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
     (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
     (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
@@ -12100,6 +12629,8 @@ standard library package ISQAtomicNuclear {
     (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
     (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
     (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 4)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_atomic_nuclear.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
   )
 )
 ~~~

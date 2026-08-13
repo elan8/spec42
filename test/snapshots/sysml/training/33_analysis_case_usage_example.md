@@ -64,9 +64,21 @@ package 'Analysis Case Usage Example' {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 9 41) (end 9 55))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 10 30) (end 10 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 10 44) (end 10 58))
       )
       (diagnostic
         (severity warning)

@@ -56,9 +56,21 @@ library package 'Semantic Metadata Example' {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 5 17) (end 5 45))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")
         (range (start 8 23) (end 8 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 9 17) (end 9 41))
       )
       (diagnostic
         (severity warning)
@@ -68,15 +80,33 @@ library package 'Semantic Metadata Example' {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 13 17) (end 13 43))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")
         (range (start 16 27) (end 16 43))
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 17 17) (end 17 45))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")
         (range (start 20 26) (end 20 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 21 17) (end 21 44))
       )
     )
   )
@@ -85,7 +115,7 @@ library package 'Semantic Metadata Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:e0c1c0b68b24381a5f8a1279613b84349cc4db692849a7f5d1baeaafc15fc4c1") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:e0c1c0b68b24381a5f8a1279613b84349cc4db692849a7f5d1baeaafc15fc4c1") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/41_semantic_metadata_example.md") (qualified-name "Semantic Metadata Example"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/41_semantic_metadata_example.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Model Library Example") (import (shape namespace) (recursive false)))))

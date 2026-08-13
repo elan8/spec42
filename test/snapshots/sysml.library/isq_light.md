@@ -1658,6 +1658,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 44 100) (end 44 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 45 22) (end 45 39))
@@ -1667,6 +1673,12 @@ standard library package ISQLight {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 45 46) (end 45 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 45 69) (end 45 91))
       )
       (diagnostic
         (severity warning)
@@ -1784,6 +1796,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 104 100) (end 104 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 105 22) (end 105 39))
@@ -1793,6 +1811,12 @@ standard library package ISQLight {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 105 46) (end 105 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 105 69) (end 105 99))
       )
       (diagnostic
         (severity warning)
@@ -1850,6 +1874,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 129 98) (end 129 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 130 34) (end 130 53))
@@ -1898,6 +1928,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 131 100) (end 131 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 132 22) (end 132 39))
@@ -1907,6 +1943,12 @@ standard library package ISQLight {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 132 46) (end 132 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 132 69) (end 132 99))
       )
       (diagnostic
         (severity warning)
@@ -1964,6 +2006,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 156 98) (end 156 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 157 34) (end 157 53))
@@ -2012,6 +2060,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 158 100) (end 158 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 159 22) (end 159 39))
@@ -2021,6 +2075,12 @@ standard library package ISQLight {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 159 46) (end 159 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 159 69) (end 159 99))
       )
       (diagnostic
         (severity warning)
@@ -2102,6 +2162,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 184 100) (end 184 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 185 22) (end 185 39))
@@ -2111,6 +2177,12 @@ standard library package ISQLight {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 185 46) (end 185 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 185 69) (end 185 89))
       )
       (diagnostic
         (severity warning)
@@ -2216,6 +2288,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 211 100) (end 211 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 212 22) (end 212 39))
@@ -2225,6 +2303,12 @@ standard library package ISQLight {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 212 46) (end 212 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 212 69) (end 212 99))
       )
       (diagnostic
         (severity warning)
@@ -2330,6 +2414,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 242 100) (end 242 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 243 22) (end 243 39))
@@ -2339,6 +2429,12 @@ standard library package ISQLight {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 243 46) (end 243 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 243 69) (end 243 99))
       )
       (diagnostic
         (severity warning)
@@ -2444,6 +2540,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 273 100) (end 273 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 274 22) (end 274 39))
@@ -2453,6 +2555,12 @@ standard library package ISQLight {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 274 46) (end 274 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 274 69) (end 274 99))
       )
       (diagnostic
         (severity warning)
@@ -2558,6 +2666,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 300 100) (end 300 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 301 22) (end 301 39))
@@ -2567,6 +2681,12 @@ standard library package ISQLight {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 301 46) (end 301 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 301 69) (end 301 99))
       )
       (diagnostic
         (severity warning)
@@ -2648,6 +2768,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 326 100) (end 326 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 327 22) (end 327 39))
@@ -2657,6 +2783,12 @@ standard library package ISQLight {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 327 46) (end 327 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 327 69) (end 327 89))
       )
       (diagnostic
         (severity warning)
@@ -2714,6 +2846,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 351 98) (end 351 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 352 34) (end 352 53))
@@ -2762,6 +2900,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 353 100) (end 353 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 354 22) (end 354 39))
@@ -2771,6 +2915,12 @@ standard library package ISQLight {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 354 46) (end 354 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 354 69) (end 354 99))
       )
       (diagnostic
         (severity warning)
@@ -2852,6 +3002,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 379 100) (end 379 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 380 22) (end 380 39))
@@ -2861,6 +3017,12 @@ standard library package ISQLight {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 380 46) (end 380 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 380 69) (end 380 89))
       )
       (diagnostic
         (severity warning)
@@ -2918,6 +3080,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 404 98) (end 404 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 405 34) (end 405 53))
@@ -2966,6 +3134,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 406 100) (end 406 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 407 22) (end 407 39))
@@ -2975,6 +3149,12 @@ standard library package ISQLight {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 407 46) (end 407 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 407 69) (end 407 99))
       )
       (diagnostic
         (severity warning)
@@ -3056,6 +3236,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 432 100) (end 432 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 433 22) (end 433 39))
@@ -3065,6 +3251,12 @@ standard library package ISQLight {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 433 46) (end 433 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 433 69) (end 433 89))
       )
       (diagnostic
         (severity warning)
@@ -3122,6 +3314,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 461 98) (end 461 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 462 34) (end 462 53))
@@ -3170,6 +3368,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 463 100) (end 463 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 464 22) (end 464 39))
@@ -3179,6 +3383,12 @@ standard library package ISQLight {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 464 46) (end 464 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 464 69) (end 464 99))
       )
       (diagnostic
         (severity warning)
@@ -3260,6 +3470,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 489 100) (end 489 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 490 22) (end 490 39))
@@ -3269,6 +3485,12 @@ standard library package ISQLight {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 490 46) (end 490 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 490 69) (end 490 89))
       )
       (diagnostic
         (severity warning)
@@ -3326,6 +3548,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 514 98) (end 514 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 515 34) (end 515 53))
@@ -3374,6 +3602,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 516 100) (end 516 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 517 22) (end 517 39))
@@ -3383,6 +3617,12 @@ standard library package ISQLight {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 517 46) (end 517 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 517 69) (end 517 99))
       )
       (diagnostic
         (severity warning)
@@ -3452,6 +3692,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 575 98) (end 575 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 576 34) (end 576 53))
@@ -3473,6 +3719,12 @@ standard library package ISQLight {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 576 85) (end 576 93))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 576 96) (end 576 98))
       )
       (diagnostic
         (severity warning)
@@ -3536,6 +3788,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 579 69) (end 579 120))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")
         (range (start 583 51) (end 583 70))
@@ -3590,6 +3848,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 603 98) (end 603 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 604 34) (end 604 53))
@@ -3611,6 +3875,12 @@ standard library package ISQLight {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 604 85) (end 604 93))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 604 96) (end 604 98))
       )
       (diagnostic
         (severity warning)
@@ -3674,6 +3944,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 607 69) (end 607 120))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")
         (range (start 611 50) (end 611 69))
@@ -3728,6 +4004,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 631 98) (end 631 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 632 34) (end 632 53))
@@ -3749,6 +4031,12 @@ standard library package ISQLight {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 632 85) (end 632 93))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 632 96) (end 632 98))
       )
       (diagnostic
         (severity warning)
@@ -3812,6 +4100,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 635 69) (end 635 120))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")
         (range (start 639 52) (end 639 71))
@@ -3866,6 +4160,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 659 98) (end 659 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 660 34) (end 660 53))
@@ -3887,6 +4187,12 @@ standard library package ISQLight {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 660 85) (end 660 93))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 660 96) (end 660 98))
       )
       (diagnostic
         (severity warning)
@@ -3947,6 +4253,12 @@ standard library package ISQLight {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 663 46) (end 663 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 663 69) (end 663 120))
       )
       (diagnostic
         (severity warning)
@@ -4037,6 +4349,12 @@ standard library package ISQLight {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 689 46) (end 689 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 689 69) (end 689 102))
       )
       (diagnostic
         (severity warning)
@@ -4160,6 +4478,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 745 98) (end 745 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 746 47) (end 746 66))
@@ -4193,6 +4517,12 @@ standard library package ISQLight {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 747 46) (end 747 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 747 69) (end 747 100))
       )
       (diagnostic
         (severity warning)
@@ -4250,6 +4580,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 771 98) (end 771 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 772 47) (end 772 66))
@@ -4283,6 +4619,12 @@ standard library package ISQLight {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 773 46) (end 773 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 773 69) (end 773 100))
       )
       (diagnostic
         (severity warning)
@@ -4340,6 +4682,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 797 98) (end 797 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 798 47) (end 798 66))
@@ -4373,6 +4721,12 @@ standard library package ISQLight {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 799 46) (end 799 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 799 69) (end 799 100))
       )
       (diagnostic
         (severity warning)
@@ -4427,6 +4781,12 @@ standard library package ISQLight {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 823 87) (end 823 95))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 823 98) (end 823 100))
       )
       (diagnostic
         (severity warning)
@@ -4487,6 +4847,12 @@ standard library package ISQLight {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 826 46) (end 826 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 826 69) (end 826 112))
       )
       (diagnostic
         (severity warning)
@@ -4556,6 +4922,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 893 100) (end 893 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 894 22) (end 894 39))
@@ -4619,6 +4991,12 @@ standard library package ISQLight {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 918 89) (end 918 97))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 918 100) (end 918 102))
       )
       (diagnostic
         (severity warning)
@@ -4688,6 +5066,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 943 98) (end 943 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 944 38) (end 944 57))
@@ -4712,6 +5096,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 944 100) (end 944 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 945 22) (end 945 39))
@@ -4721,6 +5111,12 @@ standard library package ISQLight {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 945 46) (end 945 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 945 69) (end 945 91))
       )
       (diagnostic
         (severity warning)
@@ -4778,6 +5174,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 969 98) (end 969 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 970 38) (end 970 57))
@@ -4802,6 +5204,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 970 100) (end 970 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 971 22) (end 971 39))
@@ -4811,6 +5219,12 @@ standard library package ISQLight {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 971 46) (end 971 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 971 69) (end 971 91))
       )
       (diagnostic
         (severity warning)
@@ -4868,6 +5282,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 995 98) (end 995 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 996 38) (end 996 57))
@@ -4892,6 +5312,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 996 100) (end 996 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 997 22) (end 997 39))
@@ -4901,6 +5327,12 @@ standard library package ISQLight {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 997 46) (end 997 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 997 69) (end 997 91))
       )
       (diagnostic
         (severity warning)
@@ -4955,6 +5387,12 @@ standard library package ISQLight {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1021 87) (end 1021 95))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1021 98) (end 1021 100))
       )
       (diagnostic
         (severity warning)
@@ -5024,6 +5462,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1046 98) (end 1046 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 1047 47) (end 1047 66))
@@ -5057,6 +5501,12 @@ standard library package ISQLight {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1048 46) (end 1048 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1048 69) (end 1048 100))
       )
       (diagnostic
         (severity warning)
@@ -5114,6 +5564,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1072 98) (end 1072 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 1073 47) (end 1073 66))
@@ -5147,6 +5603,12 @@ standard library package ISQLight {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1074 46) (end 1074 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1074 69) (end 1074 100))
       )
       (diagnostic
         (severity warning)
@@ -5318,6 +5780,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1425 98) (end 1425 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1426 22) (end 1426 39))
@@ -5381,6 +5849,12 @@ standard library package ISQLight {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1454 87) (end 1454 95))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1454 98) (end 1454 100))
       )
       (diagnostic
         (severity warning)
@@ -5474,6 +5948,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1480 96) (end 1480 98))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1481 22) (end 1481 39))
@@ -5483,6 +5963,12 @@ standard library package ISQLight {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1481 46) (end 1481 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1481 69) (end 1481 87))
       )
       (diagnostic
         (severity warning)
@@ -5564,6 +6050,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1506 96) (end 1506 98))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1507 22) (end 1507 39))
@@ -5573,6 +6065,12 @@ standard library package ISQLight {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1507 46) (end 1507 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1507 69) (end 1507 87))
       )
       (diagnostic
         (severity warning)
@@ -5654,6 +6152,12 @@ standard library package ISQLight {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1532 109) (end 1532 111))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1533 22) (end 1533 39))
@@ -5664,6 +6168,12 @@ standard library package ISQLight {
         (source "semantic")
         (range (start 1533 46) (end 1533 66))
       )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1533 69) (end 1533 100))
+      )
     )
   )
 )
@@ -5671,7 +6181,7 @@ standard library package ISQLight {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:6967e1cdf78569c46e076d0dcff2c673fa60395b99a98db5029f42ce98ed22e5") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:6967e1cdf78569c46e076d0dcff2c673fa60395b99a98db5029f42ce98ed22e5") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/isq_light.md") (qualified-name "ISQLight"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/isq_light.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false)))))
@@ -8906,6 +9416,8 @@ standard library package ISQLight {
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/isq_light.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
     (evaluated (declaration (node (document "memory://snapshot/isq_light.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_light.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_light.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/isq_light.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
     (evaluated (declaration (node (document "memory://snapshot/isq_light.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 3)))
     (evaluated (declaration (node (document "memory://snapshot/isq_light.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
@@ -8916,12 +9428,16 @@ standard library package ISQLight {
     (evaluated (declaration (node (document "memory://snapshot/isq_light.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
     (evaluated (declaration (node (document "memory://snapshot/isq_light.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
     (evaluated (declaration (node (document "memory://snapshot/isq_light.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_light.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/isq_light.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
     (evaluated (declaration (node (document "memory://snapshot/isq_light.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
     (evaluated (declaration (node (document "memory://snapshot/isq_light.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
     (evaluated (declaration (node (document "memory://snapshot/isq_light.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 3)))
     (evaluated (declaration (node (document "memory://snapshot/isq_light.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
     (evaluated (declaration (node (document "memory://snapshot/isq_light.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_light.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_light.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_light.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/isq_light.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
     (evaluated (declaration (node (document "memory://snapshot/isq_light.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
     (evaluated (declaration (node (document "memory://snapshot/isq_light.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))

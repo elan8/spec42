@@ -581,7 +581,7 @@ package '6-Individual and Snapshots' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:f3174415ccfdde60cac679c6e67ecca8db7b54dd7ff5ec73e615a60e8b413eaa") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:f3174415ccfdde60cac679c6e67ecca8db7b54dd7ff5ec73e615a60e8b413eaa") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/6_individual_and_snapshots.md") (qualified-name "6-Individual and Snapshots"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/6_individual_and_snapshots.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false)))))
@@ -942,6 +942,27 @@ package '6-Individual and Snapshots' {
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/6_individual_and_snapshots.md") (anonymous (kind attribute) (ordinal 3))))) (target (node (document "memory://snapshot/6_individual_and_snapshots.md") (qualified-name "6-Individual and Snapshots::Values::an"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/6_individual_and_snapshots.md") (anonymous (kind attribute) (ordinal 3))))) (kind expressionOperand) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/6_individual_and_snapshots.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/6_individual_and_snapshots.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/6_individual_and_snapshots.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/6_individual_and_snapshots.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/6_individual_and_snapshots.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/6_individual_and_snapshots.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/6_individual_and_snapshots.md") (anonymous (kind attribute) (ordinal 3))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/6_individual_and_snapshots.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/6_individual_and_snapshots.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/6_individual_and_snapshots.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/6_individual_and_snapshots.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/6_individual_and_snapshots.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/6_individual_and_snapshots.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/6_individual_and_snapshots.md") (anonymous (kind attribute) (ordinal 3))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/6_individual_and_snapshots.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/6_individual_and_snapshots.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/6_individual_and_snapshots.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/6_individual_and_snapshots.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/6_individual_and_snapshots.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/6_individual_and_snapshots.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/6_individual_and_snapshots.md") (anonymous (kind attribute) (ordinal 3))))) (value (kind non-constant)))
   )
 )
 ~~~

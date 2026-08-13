@@ -1410,6 +1410,12 @@ standard library package ISQCondensedMatter {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 90 98) (end 90 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 91 22) (end 91 39))
@@ -1515,6 +1521,12 @@ standard library package ISQCondensedMatter {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 140 87) (end 140 95))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 140 98) (end 140 100))
       )
       (diagnostic
         (severity warning)
@@ -1794,6 +1806,12 @@ standard library package ISQCondensedMatter {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 473 98) (end 473 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 474 38) (end 474 57))
@@ -1827,6 +1845,12 @@ standard library package ISQCondensedMatter {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 475 46) (end 475 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 475 69) (end 475 91))
       )
       (diagnostic
         (severity warning)
@@ -1908,6 +1932,12 @@ standard library package ISQCondensedMatter {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 565 98) (end 565 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 566 34) (end 566 53))
@@ -1929,6 +1959,12 @@ standard library package ISQCondensedMatter {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 566 85) (end 566 93))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 566 96) (end 566 98))
       )
       (diagnostic
         (severity warning)
@@ -1965,6 +2001,12 @@ standard library package ISQCondensedMatter {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 568 46) (end 568 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 568 69) (end 568 99))
       )
       (diagnostic
         (severity warning)
@@ -2076,6 +2118,12 @@ standard library package ISQCondensedMatter {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 610 100) (end 610 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 611 45) (end 611 64))
@@ -2097,6 +2145,12 @@ standard library package ISQCondensedMatter {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 611 96) (end 611 104))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 611 107) (end 611 109))
       )
       (diagnostic
         (severity warning)
@@ -2124,6 +2178,12 @@ standard library package ISQCondensedMatter {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 612 119) (end 612 121))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 613 22) (end 613 39))
@@ -2133,6 +2193,12 @@ standard library package ISQCondensedMatter {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 613 46) (end 613 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 613 69) (end 613 146))
       )
       (diagnostic
         (severity warning)
@@ -2214,6 +2280,12 @@ standard library package ISQCondensedMatter {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 638 100) (end 638 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 639 45) (end 639 64))
@@ -2238,6 +2310,12 @@ standard library package ISQCondensedMatter {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 639 107) (end 639 109))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 640 22) (end 640 39))
@@ -2247,6 +2325,12 @@ standard library package ISQCondensedMatter {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 640 46) (end 640 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 640 69) (end 640 110))
       )
       (diagnostic
         (severity warning)
@@ -2358,6 +2442,12 @@ standard library package ISQCondensedMatter {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 682 100) (end 682 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 683 45) (end 683 64))
@@ -2379,6 +2469,12 @@ standard library package ISQCondensedMatter {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 683 96) (end 683 104))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 683 107) (end 683 109))
       )
       (diagnostic
         (severity warning)
@@ -2406,6 +2502,12 @@ standard library package ISQCondensedMatter {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 684 119) (end 684 121))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 685 22) (end 685 39))
@@ -2415,6 +2517,12 @@ standard library package ISQCondensedMatter {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 685 46) (end 685 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 685 69) (end 685 146))
       )
       (diagnostic
         (severity warning)
@@ -2526,6 +2634,12 @@ standard library package ISQCondensedMatter {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 727 100) (end 727 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 728 45) (end 728 64))
@@ -2547,6 +2661,12 @@ standard library package ISQCondensedMatter {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 728 96) (end 728 104))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 728 107) (end 728 109))
       )
       (diagnostic
         (severity warning)
@@ -2574,6 +2694,12 @@ standard library package ISQCondensedMatter {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 729 119) (end 729 121))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 730 22) (end 730 39))
@@ -2583,6 +2709,12 @@ standard library package ISQCondensedMatter {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 730 46) (end 730 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 730 69) (end 730 146))
       )
       (diagnostic
         (severity warning)
@@ -2658,6 +2790,12 @@ standard library package ISQCondensedMatter {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 802 98) (end 802 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 803 45) (end 803 64))
@@ -2706,6 +2844,12 @@ standard library package ISQCondensedMatter {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 804 119) (end 804 121))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 805 22) (end 805 39))
@@ -2715,6 +2859,12 @@ standard library package ISQCondensedMatter {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 805 46) (end 805 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 805 69) (end 805 126))
       )
       (diagnostic
         (severity warning)
@@ -2790,6 +2940,12 @@ standard library package ISQCondensedMatter {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 877 98) (end 877 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 878 22) (end 878 39))
@@ -2853,6 +3009,12 @@ standard library package ISQCondensedMatter {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 902 87) (end 902 95))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 902 98) (end 902 100))
       )
       (diagnostic
         (severity warning)
@@ -2922,6 +3084,12 @@ standard library package ISQCondensedMatter {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 927 98) (end 927 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 928 22) (end 928 39))
@@ -2988,6 +3156,12 @@ standard library package ISQCondensedMatter {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 952 98) (end 952 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 953 22) (end 953 39))
@@ -3051,6 +3225,12 @@ standard library package ISQCondensedMatter {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 977 87) (end 977 95))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 977 98) (end 977 100))
       )
       (diagnostic
         (severity warning)
@@ -3161,7 +3341,7 @@ standard library package ISQCondensedMatter {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:1c048bd52ff5fdf9968a38fdcf1ccfffb935eaa6f2741a168cf84af3e1a66cae") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:1c048bd52ff5fdf9968a38fdcf1ccfffb935eaa6f2741a168cf84af3e1a66cae") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/isq_condensed_matter.md") (qualified-name "ISQCondensedMatter"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false)))))
@@ -4662,6 +4842,8 @@ standard library package ISQCondensedMatter {
     (relationship (kind typing) (source (node (document "memory://snapshot/isq_condensed_matter.md") (qualified-name "ISQCondensedMatter::thomsonCoefficient"))) (target (node (document "memory://snapshot/isq_condensed_matter.md") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/isq_condensed_matter.md") (qualified-name "ISQCondensedMatter::thomsonCoefficient"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind boolean) (boolean false)))
     (evaluated (declaration (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind boolean) (boolean true)))
     (evaluated (declaration (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind boolean) (boolean false)))
@@ -4675,8 +4857,13 @@ standard library package ISQCondensedMatter {
     (evaluated (declaration (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind boolean) (boolean false)))
     (evaluated (declaration (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind boolean) (boolean true)))
     (evaluated (declaration (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 3)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 4)))
     (evaluated (declaration (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
     (evaluated (declaration (node (document "memory://snapshot/isq_condensed_matter.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))

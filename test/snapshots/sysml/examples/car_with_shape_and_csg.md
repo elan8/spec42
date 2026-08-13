@@ -179,6 +179,12 @@ package CarWithShapeAndCSG {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 20 24) (end 20 36))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 23 35) (end 23 49))
@@ -269,15 +275,39 @@ package CarWithShapeAndCSG {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 48 20) (end 48 28))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 49 11) (end 49 16))
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 49 19) (end 49 27))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 50 11) (end 50 17))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 50 20) (end 50 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 54 42) (end 54 49))
       )
       (diagnostic
         (severity warning)
@@ -299,9 +329,21 @@ package CarWithShapeAndCSG {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 57 20) (end 57 27))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 58 11) (end 58 17))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 58 20) (end 58 28))
       )
       (diagnostic
         (severity warning)
@@ -338,6 +380,18 @@ package CarWithShapeAndCSG {
         (code "unsupported_attribute_member")
         (source "semantic")
         (range (start 63 5) (end 63 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 68 40) (end 68 62))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 68 65) (end 68 72))
       )
       (diagnostic
         (severity warning)
@@ -430,7 +484,7 @@ package CarWithShapeAndCSG {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:0f2e470afa5f75ac99872a78f0b662841fb97bd610aff77b8325a31e67dc8369") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:0f2e470afa5f75ac99872a78f0b662841fb97bd610aff77b8325a31e67dc8369") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/car_with_shape_and_csg.md") (qualified-name "CarWithShapeAndCSG"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/car_with_shape_and_csg.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "SpatialItems") (import (shape namespace) (recursive false)))))
@@ -469,7 +523,7 @@ package CarWithShapeAndCSG {
     (declaration (id (node (document "memory://snapshot/car_with_shape_and_csg.md") (anonymous (kind attribute) (ordinal 1))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "height")) (memberAccessOperand (reference "cylinder1::shape::height"))))
     (declaration (id (node (document "memory://snapshot/car_with_shape_and_csg.md") (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "TranslationRotationSequence")) (redefinition (reference "transformation"))))
     (declaration (id (node (document "memory://snapshot/car_with_shape_and_csg.md") (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "source")) (expressionOperand (reference "ecf"))))
-    (declaration (id (node (document "memory://snapshot/car_with_shape_and_csg.md") (qualified-name "CarWithShapeAndCSG::Engine::cylinderSpacing"))) (kind attribute) (membership (kind feature) (visibility private)))
+    (declaration (id (node (document "memory://snapshot/car_with_shape_and_csg.md") (qualified-name "CarWithShapeAndCSG::Engine::cylinderSpacing"))) (kind attribute) (membership (kind feature) (visibility private)) (authored (membership (kind feature) (visibility private)) (relationships (memberAccessOperand (reference "cylinder1::shape::radius"))))
     (declaration (id (node (document "memory://snapshot/car_with_shape_and_csg.md") (qualified-name "CarWithShapeAndCSG::Engine::engineCoordinateFrame"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "coordinateFrame"))))
     (declaration (id (node (document "memory://snapshot/car_with_shape_and_csg.md") (qualified-name "CarWithShapeAndCSG::Engine::rawEngineBlock"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "subSpatialParts"))))
     (declaration (id (node (document "memory://snapshot/car_with_shape_and_csg.md") (anonymous (kind item) (ordinal 0))))) (kind item) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Box")) (redefinition (reference "shape"))))
@@ -617,6 +671,9 @@ package CarWithShapeAndCSG {
     (reference (id (source (node (document "memory://snapshot/car_with_shape_and_csg.md") (anonymous (kind attribute) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
       (authored-target "ecf")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/car_with_shape_and_csg.md") (qualified-name "CarWithShapeAndCSG::Engine::cylinderSpacing"))) (kind memberAccessOperand) (ordinal 0))
+      (authored-target "cylinder1::shape::radius")
+      (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/car_with_shape_and_csg.md") (qualified-name "CarWithShapeAndCSG::Engine::engineCoordinateFrame"))) (kind redefinition) (ordinal 0))
       (authored-target "coordinateFrame")
       (outcome (status unresolved)))
@@ -644,6 +701,9 @@ package CarWithShapeAndCSG {
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/car_with_shape_and_csg.md") (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/car_with_shape_and_csg.md") (qualified-name "CarWithShapeAndCSG::Car::datum"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/car_with_shape_and_csg.md") (anonymous (kind attribute) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/car_with_shape_and_csg.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/car_with_shape_and_csg.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/car_with_shape_and_csg.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind unresolved-operand)))
   )
 )
 ~~~
@@ -832,6 +892,10 @@ package CarWithShapeAndCSG {
   )
   (query (document "memory://snapshot/car_with_shape_and_csg.md") (range (start 76 18) (end 76 21)) (probe (position 76 18))
     (reference (id (source (node (document "memory://snapshot/car_with_shape_and_csg.md") (anonymous (kind attribute) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "ecf")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/car_with_shape_and_csg.md") (range (start 68 40) (end 68 62)) (probe (position 68 40))
+    (reference (id (source (node (document "memory://snapshot/car_with_shape_and_csg.md") (qualified-name "CarWithShapeAndCSG::Engine::cylinderSpacing"))) (kind memberAccessOperand) (ordinal 0) (authored-target "cylinder1::shape::radius")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/car_with_shape_and_csg.md") (range (start 44 44) (end 44 59)) (probe (position 44 44))

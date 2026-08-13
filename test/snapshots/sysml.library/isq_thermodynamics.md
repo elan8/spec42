@@ -1431,6 +1431,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 75 119) (end 75 121))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 76 22) (end 76 39))
@@ -1494,6 +1500,12 @@ standard library package ISQThermodynamics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 100 108) (end 100 116))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 100 119) (end 100 121))
       )
       (diagnostic
         (severity warning)
@@ -1563,6 +1575,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 125 119) (end 125 121))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 126 22) (end 126 39))
@@ -1629,6 +1647,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 150 98) (end 150 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 151 34) (end 151 53))
@@ -1677,6 +1701,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 152 100) (end 152 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 153 54) (end 153 73))
@@ -1701,6 +1731,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 153 119) (end 153 121))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 154 22) (end 154 39))
@@ -1710,6 +1746,12 @@ standard library package ISQThermodynamics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 154 46) (end 154 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 154 69) (end 154 127))
       )
       (diagnostic
         (severity warning)
@@ -1791,6 +1833,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 179 96) (end 179 98))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 180 38) (end 180 57))
@@ -1824,6 +1872,12 @@ standard library package ISQThermodynamics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 181 46) (end 181 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 181 69) (end 181 99))
       )
       (diagnostic
         (severity warning)
@@ -1905,6 +1959,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 206 96) (end 206 98))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 207 38) (end 207 57))
@@ -1938,6 +1998,12 @@ standard library package ISQThermodynamics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 208 46) (end 208 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 208 69) (end 208 99))
       )
       (diagnostic
         (severity warning)
@@ -2043,6 +2109,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 268 100) (end 268 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 269 22) (end 269 39))
@@ -2052,6 +2124,12 @@ standard library package ISQThermodynamics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 269 46) (end 269 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 269 69) (end 269 99))
       )
       (diagnostic
         (severity warning)
@@ -2133,6 +2211,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 294 100) (end 294 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 295 22) (end 295 39))
@@ -2142,6 +2226,12 @@ standard library package ISQThermodynamics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 295 46) (end 295 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 295 69) (end 295 89))
       )
       (diagnostic
         (severity warning)
@@ -2247,6 +2337,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 321 100) (end 321 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 322 54) (end 322 73))
@@ -2271,6 +2367,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 322 119) (end 322 121))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 323 22) (end 323 39))
@@ -2280,6 +2382,12 @@ standard library package ISQThermodynamics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 323 46) (end 323 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 323 69) (end 323 127))
       )
       (diagnostic
         (severity warning)
@@ -2361,6 +2469,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 348 100) (end 348 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 349 54) (end 349 73))
@@ -2385,6 +2499,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 349 119) (end 349 121))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 350 22) (end 350 39))
@@ -2394,6 +2514,12 @@ standard library package ISQThermodynamics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 350 46) (end 350 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 350 69) (end 350 117))
       )
       (diagnostic
         (severity warning)
@@ -2475,6 +2601,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 375 100) (end 375 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 376 54) (end 376 73))
@@ -2499,6 +2631,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 376 119) (end 376 121))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 377 22) (end 377 39))
@@ -2508,6 +2646,12 @@ standard library package ISQThermodynamics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 377 46) (end 377 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 377 69) (end 377 117))
       )
       (diagnostic
         (severity warning)
@@ -2562,6 +2706,12 @@ standard library package ISQThermodynamics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 401 85) (end 401 93))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 401 96) (end 401 98))
       )
       (diagnostic
         (severity warning)
@@ -2625,6 +2775,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 404 69) (end 404 117))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")
         (range (start 412 44) (end 412 63))
@@ -2679,6 +2835,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 432 98) (end 432 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 433 34) (end 433 53))
@@ -2700,6 +2862,12 @@ standard library package ISQThermodynamics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 433 85) (end 433 93))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 433 96) (end 433 98))
       )
       (diagnostic
         (severity warning)
@@ -2760,6 +2928,12 @@ standard library package ISQThermodynamics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 436 46) (end 436 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 436 69) (end 436 127))
       )
       (diagnostic
         (severity warning)
@@ -2865,6 +3039,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 462 100) (end 462 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 463 54) (end 463 73))
@@ -2889,6 +3069,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 463 119) (end 463 121))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 464 22) (end 464 39))
@@ -2898,6 +3084,12 @@ standard library package ISQThermodynamics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 464 46) (end 464 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 464 69) (end 464 127))
       )
       (diagnostic
         (severity warning)
@@ -2979,6 +3171,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 489 100) (end 489 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 490 22) (end 490 39))
@@ -2988,6 +3186,12 @@ standard library package ISQThermodynamics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 490 46) (end 490 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 490 69) (end 490 91))
       )
       (diagnostic
         (severity warning)
@@ -3093,6 +3297,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 516 100) (end 516 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 517 54) (end 517 73))
@@ -3117,6 +3327,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 517 119) (end 517 121))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 518 22) (end 518 39))
@@ -3126,6 +3342,12 @@ standard library package ISQThermodynamics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 518 46) (end 518 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 518 69) (end 518 127))
       )
       (diagnostic
         (severity warning)
@@ -3207,6 +3429,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 543 100) (end 543 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 544 54) (end 544 73))
@@ -3231,6 +3459,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 544 119) (end 544 121))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 545 22) (end 545 39))
@@ -3240,6 +3474,12 @@ standard library package ISQThermodynamics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 545 46) (end 545 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 545 69) (end 545 119))
       )
       (diagnostic
         (severity warning)
@@ -3321,6 +3561,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 570 100) (end 570 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 571 54) (end 571 73))
@@ -3345,6 +3591,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 571 119) (end 571 121))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 572 22) (end 572 39))
@@ -3354,6 +3606,12 @@ standard library package ISQThermodynamics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 572 46) (end 572 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 572 69) (end 572 119))
       )
       (diagnostic
         (severity warning)
@@ -3435,6 +3693,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 597 100) (end 597 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 598 54) (end 598 73))
@@ -3459,6 +3723,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 598 119) (end 598 121))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 599 22) (end 599 39))
@@ -3468,6 +3738,12 @@ standard library package ISQThermodynamics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 599 46) (end 599 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 599 69) (end 599 119))
       )
       (diagnostic
         (severity warning)
@@ -3549,6 +3825,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 624 100) (end 624 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 625 54) (end 625 73))
@@ -3573,6 +3855,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 625 119) (end 625 121))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 626 22) (end 626 39))
@@ -3582,6 +3870,12 @@ standard library package ISQThermodynamics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 626 46) (end 626 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 626 69) (end 626 119))
       )
       (diagnostic
         (severity warning)
@@ -3699,6 +3993,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 688 100) (end 688 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 689 54) (end 689 73))
@@ -3723,6 +4023,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 689 119) (end 689 121))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 690 22) (end 690 39))
@@ -3732,6 +4038,12 @@ standard library package ISQThermodynamics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 690 46) (end 690 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 690 69) (end 690 127))
       )
       (diagnostic
         (severity warning)
@@ -3813,6 +4125,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 715 100) (end 715 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 716 54) (end 716 73))
@@ -3837,6 +4155,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 716 119) (end 716 121))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 717 22) (end 717 39))
@@ -3846,6 +4170,12 @@ standard library package ISQThermodynamics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 717 46) (end 717 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 717 69) (end 717 119))
       )
       (diagnostic
         (severity warning)
@@ -3951,6 +4281,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 743 100) (end 743 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 744 22) (end 744 39))
@@ -3960,6 +4296,12 @@ standard library package ISQThermodynamics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 744 46) (end 744 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 744 69) (end 744 99))
       )
       (diagnostic
         (severity warning)
@@ -4041,6 +4383,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 839 100) (end 839 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 840 22) (end 840 39))
@@ -4050,6 +4398,12 @@ standard library package ISQThermodynamics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 840 46) (end 840 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 840 69) (end 840 91))
       )
       (diagnostic
         (severity warning)
@@ -4131,6 +4485,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 883 100) (end 883 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 884 22) (end 884 39))
@@ -4140,6 +4500,12 @@ standard library package ISQThermodynamics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 884 46) (end 884 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 884 69) (end 884 91))
       )
       (diagnostic
         (severity warning)
@@ -4245,6 +4611,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 946 100) (end 946 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 947 54) (end 947 73))
@@ -4269,6 +4641,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 947 119) (end 947 121))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 948 22) (end 948 39))
@@ -4278,6 +4656,12 @@ standard library package ISQThermodynamics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 948 46) (end 948 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 948 69) (end 948 127))
       )
       (diagnostic
         (severity warning)
@@ -4383,6 +4767,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 974 100) (end 974 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 975 54) (end 975 73))
@@ -4407,6 +4797,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 975 119) (end 975 121))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 976 22) (end 976 39))
@@ -4416,6 +4812,12 @@ standard library package ISQThermodynamics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 976 46) (end 976 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 976 69) (end 976 127))
       )
       (diagnostic
         (severity warning)
@@ -4497,6 +4899,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1001 96) (end 1001 98))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 1002 38) (end 1002 57))
@@ -4554,6 +4962,12 @@ standard library package ISQThermodynamics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1004 46) (end 1004 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1004 69) (end 1004 127))
       )
       (diagnostic
         (severity warning)
@@ -4647,6 +5061,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1063 100) (end 1063 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 1064 54) (end 1064 73))
@@ -4671,6 +5091,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1064 119) (end 1064 121))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1065 22) (end 1065 39))
@@ -4680,6 +5106,12 @@ standard library package ISQThermodynamics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1065 46) (end 1065 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1065 69) (end 1065 119))
       )
       (diagnostic
         (severity warning)
@@ -4737,6 +5169,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1089 98) (end 1089 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 1090 34) (end 1090 53))
@@ -4770,6 +5208,12 @@ standard library package ISQThermodynamics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1091 46) (end 1091 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1091 69) (end 1091 87))
       )
       (diagnostic
         (severity warning)
@@ -4827,6 +5271,12 @@ standard library package ISQThermodynamics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1115 98) (end 1115 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 1116 34) (end 1116 53))
@@ -4860,6 +5310,12 @@ standard library package ISQThermodynamics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1117 46) (end 1117 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1117 69) (end 1117 87))
       )
       (diagnostic
         (severity warning)
@@ -4916,7 +5372,7 @@ standard library package ISQThermodynamics {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:52f5689837942c851eaa478824673e6ec87d23decea3632a563b0bc6b53b95bf") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:52f5689837942c851eaa478824673e6ec87d23decea3632a563b0bc6b53b95bf") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/isq_thermodynamics.md") (qualified-name "ISQThermodynamics"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/isq_thermodynamics.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false)))))
@@ -7689,12 +8145,10 @@ standard library package ISQThermodynamics {
     (relationship (kind aliasBinding) (source (node (document "memory://snapshot/isq_thermodynamics.md") (qualified-name "ISQThermodynamics::thermodynamicEnergy"))) (target (node (document "memory://snapshot/isq_thermodynamics.md") (qualified-name "ISQThermodynamics::internalEnergy"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/isq_thermodynamics.md") (qualified-name "ISQThermodynamics::thermodynamicEnergy"))) (kind aliasBinding) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/isq_thermodynamics.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/isq_thermodynamics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
     (evaluated (declaration (node (document "memory://snapshot/isq_thermodynamics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
-    (evaluated (declaration (node (document "memory://snapshot/isq_thermodynamics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
-    (evaluated (declaration (node (document "memory://snapshot/isq_thermodynamics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
-    (evaluated (declaration (node (document "memory://snapshot/isq_thermodynamics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
-    (evaluated (declaration (node (document "memory://snapshot/isq_thermodynamics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_thermodynamics.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/isq_thermodynamics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
     (evaluated (declaration (node (document "memory://snapshot/isq_thermodynamics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
     (evaluated (declaration (node (document "memory://snapshot/isq_thermodynamics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
@@ -7706,7 +8160,12 @@ standard library package ISQThermodynamics {
     (evaluated (declaration (node (document "memory://snapshot/isq_thermodynamics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
     (evaluated (declaration (node (document "memory://snapshot/isq_thermodynamics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
     (evaluated (declaration (node (document "memory://snapshot/isq_thermodynamics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_thermodynamics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
     (evaluated (declaration (node (document "memory://snapshot/isq_thermodynamics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_thermodynamics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_thermodynamics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_thermodynamics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_thermodynamics.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/isq_thermodynamics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
     (evaluated (declaration (node (document "memory://snapshot/isq_thermodynamics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
     (evaluated (declaration (node (document "memory://snapshot/isq_thermodynamics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
@@ -7714,6 +8173,7 @@ standard library package ISQThermodynamics {
     (evaluated (declaration (node (document "memory://snapshot/isq_thermodynamics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
     (evaluated (declaration (node (document "memory://snapshot/isq_thermodynamics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
     (evaluated (declaration (node (document "memory://snapshot/isq_thermodynamics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_thermodynamics.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/isq_thermodynamics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
     (evaluated (declaration (node (document "memory://snapshot/isq_thermodynamics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
     (evaluated (declaration (node (document "memory://snapshot/isq_thermodynamics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))

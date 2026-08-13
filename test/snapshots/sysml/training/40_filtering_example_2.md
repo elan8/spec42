@@ -77,7 +77,7 @@ package 'Filtering Example-2' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:e2485b3b6d7685cbf36b282a86887d4a0025e9b653842294a9833444082d1ede") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:e2485b3b6d7685cbf36b282a86887d4a0025e9b653842294a9833444082d1ede") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/40_filtering_example_2.md") (qualified-name "Filtering Example-2"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/40_filtering_example_2.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Boolean") (import (shape membership) (recursive false)))))
@@ -91,14 +91,22 @@ package 'Filtering Example-2' {
     (declaration (id (node (document "memory://snapshot/40_filtering_example_2.md") (qualified-name "Filtering Example-2::vehicle::bodyAssy"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/40_filtering_example_2.md") (qualified-name "Filtering Example-2::vehicle::bodyAssy::body"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/40_filtering_example_2.md") (qualified-name "Filtering Example-2::vehicle::bodyAssy::bumper"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (metadataAnnotation (reference "Safety"))))
+    (declaration (id (node (document "memory://snapshot/40_filtering_example_2.md") (anonymous (kind metadata) (ordinal 0))))) (kind metadata) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/40_filtering_example_2.md") (qualified-name "Filtering Example-2::vehicle::bodyAssy::bumper::::isMandatory"))) (kind attribute) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/40_filtering_example_2.md") (qualified-name "Filtering Example-2::vehicle::bodyAssy::keylessEntry"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/40_filtering_example_2.md") (qualified-name "Filtering Example-2::vehicle::interior"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/40_filtering_example_2.md") (qualified-name "Filtering Example-2::vehicle::interior::alarm"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/40_filtering_example_2.md") (qualified-name "Filtering Example-2::vehicle::interior::driverAirBag"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (metadataAnnotation (reference "Safety"))))
+    (declaration (id (node (document "memory://snapshot/40_filtering_example_2.md") (anonymous (kind metadata) (ordinal 0))))) (kind metadata) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/40_filtering_example_2.md") (qualified-name "Filtering Example-2::vehicle::interior::driverAirBag::::isMandatory"))) (kind attribute) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/40_filtering_example_2.md") (qualified-name "Filtering Example-2::vehicle::interior::frontSeat"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/40_filtering_example_2.md") (qualified-name "Filtering Example-2::vehicle::interior::seatBelt"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (metadataAnnotation (reference "Safety"))))
+    (declaration (id (node (document "memory://snapshot/40_filtering_example_2.md") (anonymous (kind metadata) (ordinal 0))))) (kind metadata) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/40_filtering_example_2.md") (qualified-name "Filtering Example-2::vehicle::interior::seatBelt::::isMandatory"))) (kind attribute) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/40_filtering_example_2.md") (qualified-name "Filtering Example-2::vehicle::wheelAssy"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/40_filtering_example_2.md") (qualified-name "Filtering Example-2::vehicle::wheelAssy::antilockBrakes"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (metadataAnnotation (reference "Safety"))))
+    (declaration (id (node (document "memory://snapshot/40_filtering_example_2.md") (anonymous (kind metadata) (ordinal 0))))) (kind metadata) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/40_filtering_example_2.md") (qualified-name "Filtering Example-2::vehicle::wheelAssy::antilockBrakes::::isMandatory"))) (kind attribute) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/40_filtering_example_2.md") (qualified-name "Filtering Example-2::vehicle::wheelAssy::wheel"))) (kind part) (membership (kind feature) (visibility default)))
   )
   (references
@@ -134,6 +142,10 @@ package 'Filtering Example-2' {
     (relationship (kind metadataAnnotation) (source (node (document "memory://snapshot/40_filtering_example_2.md") (qualified-name "Filtering Example-2::vehicle::wheelAssy::antilockBrakes"))) (target (node (document "memory://snapshot/40_filtering_example_2.md") (qualified-name "Filtering Example-2::Safety"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/40_filtering_example_2.md") (qualified-name "Filtering Example-2::vehicle::wheelAssy::antilockBrakes"))) (kind metadataAnnotation) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/40_filtering_example_2.md") (qualified-name "Filtering Example-2::vehicle::bodyAssy::bumper::::isMandatory"))) (value (kind boolean) (boolean true)))
+    (evaluated (declaration (node (document "memory://snapshot/40_filtering_example_2.md") (qualified-name "Filtering Example-2::vehicle::interior::driverAirBag::::isMandatory"))) (value (kind boolean) (boolean false)))
+    (evaluated (declaration (node (document "memory://snapshot/40_filtering_example_2.md") (qualified-name "Filtering Example-2::vehicle::interior::seatBelt::::isMandatory"))) (value (kind boolean) (boolean true)))
+    (evaluated (declaration (node (document "memory://snapshot/40_filtering_example_2.md") (qualified-name "Filtering Example-2::vehicle::wheelAssy::antilockBrakes::::isMandatory"))) (value (kind boolean) (boolean false)))
   )
 )
 ~~~

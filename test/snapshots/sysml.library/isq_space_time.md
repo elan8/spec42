@@ -1272,15 +1272,33 @@ standard library package ISQSpaceTime {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 180 39) (end 180 48))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 181 26) (end 181 36))
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 181 39) (end 181 48))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 182 26) (end 182 36))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 182 39) (end 182 48))
       )
       (diagnostic
         (severity warning)
@@ -1308,6 +1326,12 @@ standard library package ISQSpaceTime {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 193 36) (end 193 57))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 199 22) (end 199 36))
@@ -1332,6 +1356,12 @@ standard library package ISQSpaceTime {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 231 30) (end 231 70))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 232 22) (end 232 34))
@@ -1350,6 +1380,12 @@ standard library package ISQSpaceTime {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 259 30) (end 259 80))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 260 22) (end 260 34))
@@ -1365,6 +1401,12 @@ standard library package ISQSpaceTime {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 298 22) (end 298 27))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 298 30) (end 298 73))
       )
       (diagnostic
         (severity warning)
@@ -1398,15 +1440,33 @@ standard library package ISQSpaceTime {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 323 36) (end 323 43))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 324 22) (end 324 33))
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 324 36) (end 324 43))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 325 22) (end 325 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 325 36) (end 325 43))
       )
       (diagnostic
         (severity warning)
@@ -1422,9 +1482,27 @@ standard library package ISQSpaceTime {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 331 56) (end 331 63))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 332 56) (end 332 63))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 333 31) (end 333 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 333 45) (end 333 52))
       )
       (diagnostic
         (severity warning)
@@ -1440,15 +1518,51 @@ standard library package ISQSpaceTime {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 339 53) (end 339 60))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 340 60) (end 340 67))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 341 56) (end 341 63))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 342 22) (end 342 26))
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 347 56) (end 347 63))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 348 58) (end 348 65))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 349 33) (end 349 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 349 47) (end 349 54))
       )
       (diagnostic
         (severity warning)
@@ -1482,15 +1596,33 @@ standard library package ISQSpaceTime {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 375 36) (end 375 43))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 376 22) (end 376 33))
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 376 36) (end 376 43))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 377 22) (end 377 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 377 36) (end 377 43))
       )
       (diagnostic
         (severity warning)
@@ -1506,9 +1638,27 @@ standard library package ISQSpaceTime {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 383 56) (end 383 63))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 384 56) (end 384 63))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 385 31) (end 385 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 385 45) (end 385 52))
       )
       (diagnostic
         (severity warning)
@@ -1521,6 +1671,24 @@ standard library package ISQSpaceTime {
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 391 39) (end 391 50))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 391 53) (end 391 60))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 392 60) (end 392 67))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 393 56) (end 393 63))
       )
       (diagnostic
         (severity warning)
@@ -1587,6 +1755,12 @@ standard library package ISQSpaceTime {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 435 87) (end 435 95))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 435 98) (end 435 100))
       )
       (diagnostic
         (severity warning)
@@ -1932,6 +2106,12 @@ standard library package ISQSpaceTime {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 628 100) (end 628 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 629 22) (end 629 39))
@@ -1941,6 +2121,12 @@ standard library package ISQSpaceTime {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 629 46) (end 629 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 629 69) (end 629 91))
       )
       (diagnostic
         (severity warning)
@@ -2022,6 +2208,12 @@ standard library package ISQSpaceTime {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 654 100) (end 654 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 655 22) (end 655 39))
@@ -2031,6 +2223,12 @@ standard library package ISQSpaceTime {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 655 46) (end 655 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 655 69) (end 655 91))
       )
       (diagnostic
         (severity warning)
@@ -2127,6 +2325,12 @@ standard library package ISQSpaceTime {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 704 89) (end 704 97))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 704 100) (end 704 102))
       )
       (diagnostic
         (severity warning)
@@ -2235,6 +2439,12 @@ standard library package ISQSpaceTime {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 754 89) (end 754 97))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 754 100) (end 754 102))
       )
       (diagnostic
         (severity warning)
@@ -2364,6 +2574,12 @@ standard library package ISQSpaceTime {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 854 100) (end 854 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 855 22) (end 855 39))
@@ -2427,6 +2643,12 @@ standard library package ISQSpaceTime {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 895 89) (end 895 97))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 895 100) (end 895 102))
       )
       (diagnostic
         (severity warning)
@@ -2499,6 +2721,12 @@ standard library package ISQSpaceTime {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 936 87) (end 936 95))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 936 98) (end 936 100))
       )
       (diagnostic
         (severity warning)
@@ -2610,6 +2838,12 @@ standard library package ISQSpaceTime {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 991 98) (end 991 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 992 22) (end 992 39))
@@ -2700,6 +2934,12 @@ standard library package ISQSpaceTime {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1021 100) (end 1021 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1022 22) (end 1022 39))
@@ -2709,6 +2949,12 @@ standard library package ISQSpaceTime {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1022 46) (end 1022 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1022 69) (end 1022 91))
       )
       (diagnostic
         (severity warning)
@@ -2763,6 +3009,12 @@ standard library package ISQSpaceTime {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1068 89) (end 1068 97))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1068 100) (end 1068 102))
       )
       (diagnostic
         (severity warning)
@@ -2838,6 +3090,12 @@ standard library package ISQSpaceTime {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1110 98) (end 1110 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1111 22) (end 1111 39))
@@ -2901,6 +3159,12 @@ standard library package ISQSpaceTime {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1139 87) (end 1139 95))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1139 98) (end 1139 100))
       )
       (diagnostic
         (severity warning)
@@ -2970,6 +3234,12 @@ standard library package ISQSpaceTime {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1164 98) (end 1164 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1165 22) (end 1165 39))
@@ -2987,7 +3257,7 @@ standard library package ISQSpaceTime {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:c613a304cb07f76ae183fe3a7d3ce0a5aba82d9eb606a81a9ca4d89cab8b262e") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:c613a304cb07f76ae183fe3a7d3ce0a5aba82d9eb606a81a9ca4d89cab8b262e") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/isq_space_time.md") (qualified-name "ISQSpaceTime"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/isq_space_time.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false)))))
@@ -4779,7 +5049,13 @@ standard library package ISQSpaceTime {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/isq_space_time.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_space_time.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_space_time.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_space_time.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_space_time.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_space_time.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/isq_space_time.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_space_time.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/isq_space_time.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind boolean) (boolean false)))
     (evaluated (declaration (node (document "memory://snapshot/isq_space_time.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind boolean) (boolean true)))
     (evaluated (declaration (node (document "memory://snapshot/isq_space_time.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind boolean) (boolean false)))
@@ -4796,14 +5072,21 @@ standard library package ISQSpaceTime {
     (evaluated (declaration (node (document "memory://snapshot/isq_space_time.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind boolean) (boolean false)))
     (evaluated (declaration (node (document "memory://snapshot/isq_space_time.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind boolean) (boolean false)))
     (evaluated (declaration (node (document "memory://snapshot/isq_space_time.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind boolean) (boolean true)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_space_time.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/isq_space_time.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind boolean) (boolean true)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_space_time.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/isq_space_time.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind boolean) (boolean false)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_space_time.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_space_time.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/isq_space_time.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
     (evaluated (declaration (node (document "memory://snapshot/isq_space_time.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind boolean) (boolean true)))
     (evaluated (declaration (node (document "memory://snapshot/isq_space_time.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind boolean) (boolean true)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_space_time.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_space_time.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/isq_space_time.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind boolean) (boolean true)))
     (evaluated (declaration (node (document "memory://snapshot/isq_space_time.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
     (evaluated (declaration (node (document "memory://snapshot/isq_space_time.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind boolean) (boolean true)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_space_time.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/isq_space_time.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 3)))
   )
 )

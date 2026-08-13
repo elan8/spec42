@@ -182,6 +182,12 @@ package '9-Verification-simplified' {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 43 18) (end 43 31))
+      )
+      (diagnostic
+        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 50 2) (end 75 3))
@@ -236,6 +242,12 @@ package '9-Verification-simplified' {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 101 16) (end 101 29))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 106 23) (end 106 39))
@@ -251,6 +263,12 @@ package '9-Verification-simplified' {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 107 9) (end 107 13))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 107 16) (end 107 29))
       )
     )
   )

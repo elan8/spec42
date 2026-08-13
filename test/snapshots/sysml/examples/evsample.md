@@ -352,6 +352,18 @@ package EVSample {
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
+        (range (start 5 62) (end 5 63))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 5 64) (end 5 65))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
         (range (start 8 26) (end 8 35))
       )
       (diagnostic
@@ -656,6 +668,12 @@ package EVSample {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 155 35) (end 155 43))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 163 33) (end 163 61))
@@ -686,6 +704,24 @@ package EVSample {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 170 30) (end 170 36))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 171 27) (end 171 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 173 37) (end 173 46))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 174 37) (end 174 65))
@@ -710,6 +746,18 @@ package EVSample {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 184 23) (end 184 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 185 23) (end 185 29))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 187 35) (end 187 63))
@@ -731,6 +779,18 @@ package EVSample {
         (code "unsupported_part_usage_member")
         (source "semantic")
         (range (start 194 8) (end 194 67))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 197 31) (end 197 46))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 198 31) (end 198 37))
       )
       (diagnostic
         (severity warning)
@@ -770,6 +830,12 @@ package EVSample {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 210 29) (end 210 36))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 211 17) (end 211 21))
@@ -782,9 +848,21 @@ package EVSample {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 212 25) (end 212 40))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 213 16) (end 213 22))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 213 25) (end 213 31))
       )
       (diagnostic
         (severity warning)
@@ -806,6 +884,12 @@ package EVSample {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 232 42) (end 232 49))
+      )
+      (diagnostic
+        (severity warning)
         (code "unsupported_analysis_case_definition_member")
         (source "semantic")
         (range (start 237 12) (end 237 76))
@@ -815,6 +899,12 @@ package EVSample {
         (code "unsupported_analysis_case_definition_member")
         (source "semantic")
         (range (start 248 12) (end 248 60))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 253 45) (end 253 55))
       )
       (diagnostic
         (severity warning)
@@ -842,6 +932,12 @@ package EVSample {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 265 29) (end 265 37))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 266 17) (end 266 21))
@@ -854,9 +950,21 @@ package EVSample {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 267 25) (end 267 40))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 268 16) (end 268 22))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 268 25) (end 268 31))
       )
       (diagnostic
         (severity warning)
@@ -878,6 +986,12 @@ package EVSample {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 287 42) (end 287 49))
+      )
+      (diagnostic
+        (severity warning)
         (code "unsupported_analysis_case_definition_member")
         (source "semantic")
         (range (start 292 12) (end 292 76))
@@ -887,6 +1001,12 @@ package EVSample {
         (code "unsupported_analysis_case_definition_member")
         (source "semantic")
         (range (start 303 12) (end 303 60))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 308 45) (end 308 55))
       )
       (diagnostic
         (severity warning)
@@ -980,7 +1100,7 @@ package EVSample {
     (declaration (id (node (document "memory://snapshot/evsample.md") (qualified-name "EVSample::VehicleAnalysis::vehicleRequirement"))) (kind requirement) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "VehicleRequirement"))))
     (declaration (id (node (document "memory://snapshot/evsample.md") (qualified-name "EVSample::VehicleRequirement"))) (kind requirement-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/evsample.md") (qualified-name "EVSample::VehicleRequirement::vehicle"))) (kind subject) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Vehicle"))))
-    (declaration (id (node (document "memory://snapshot/evsample.md") (qualified-name "EVSample::ampere hour"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "ElectricChargeUnit"))))
+    (declaration (id (node (document "memory://snapshot/evsample.md") (qualified-name "EVSample::ampere hour"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "ElectricChargeUnit")) (expressionOperand (reference "A")) (expressionOperand (reference "h"))))
     (declaration (id (node (document "memory://snapshot/evsample.md") (qualified-name "EVSample::largeEVRangeContext"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/evsample.md") (qualified-name "EVSample::largeEVRangeContext::efficiencyAnalysisLarge"))) (kind analysis) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "EfficiencyAnalysis")) (subsetting (reference "largeEVAnalysis"))))
     (declaration (id (node (document "memory://snapshot/evsample.md") (anonymous (kind requirement) (ordinal 0))))) (kind requirement) (membership (kind feature) (visibility default)))
@@ -1222,6 +1342,12 @@ package EVSample {
       (outcome (status resolved) (target (node (document "memory://snapshot/evsample.md") (qualified-name "EVSample::Vehicle")))))
     (reference (id (source (node (document "memory://snapshot/evsample.md") (qualified-name "EVSample::ampere hour"))) (kind featureTyping) (ordinal 0))
       (authored-target "ElectricChargeUnit")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/evsample.md") (qualified-name "EVSample::ampere hour"))) (kind expressionOperand) (ordinal 0))
+      (authored-target "A")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/evsample.md") (qualified-name "EVSample::ampere hour"))) (kind expressionOperand) (ordinal 1))
+      (authored-target "h")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/evsample.md") (qualified-name "EVSample::largeEVRangeContext::efficiencyAnalysisLarge"))) (kind featureTyping) (ordinal 0))
       (authored-target "EfficiencyAnalysis")
@@ -1495,6 +1621,7 @@ package EVSample {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/evsample.md") (qualified-name "EVSample::vehicle_large"))) (target (node (document "memory://snapshot/evsample.md") (qualified-name "EVSample::vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/evsample.md") (qualified-name "EVSample::vehicle_large"))) (kind subsetting) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/evsample.md") (qualified-name "EVSample::ampere hour"))) (value (kind unresolved-operand)))
     (evaluated (declaration (node (document "memory://snapshot/evsample.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind real) (real 0.8)))
     (evaluated (declaration (node (document "memory://snapshot/evsample.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind real) (real 0.9)))
     (evaluated (declaration (node (document "memory://snapshot/evsample.md") (qualified-name "EVSample::vehicle::airFrictionCoefficient"))) (value (kind real) (real 0.2)))
@@ -1731,6 +1858,14 @@ package EVSample {
   )
   (query (document "memory://snapshot/evsample.md") (range (start 5 41) (end 5 59)) (probe (position 5 41))
     (reference (id (source (node (document "memory://snapshot/evsample.md") (qualified-name "EVSample::ampere hour"))) (kind featureTyping) (ordinal 0) (authored-target "ElectricChargeUnit")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/evsample.md") (range (start 5 62) (end 5 63)) (probe (position 5 62))
+    (reference (id (source (node (document "memory://snapshot/evsample.md") (qualified-name "EVSample::ampere hour"))) (kind expressionOperand) (ordinal 0) (authored-target "A")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/evsample.md") (range (start 5 64) (end 5 65)) (probe (position 5 64))
+    (reference (id (source (node (document "memory://snapshot/evsample.md") (qualified-name "EVSample::ampere hour"))) (kind expressionOperand) (ordinal 1) (authored-target "h")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/evsample.md") (range (start 300 62) (end 300 80)) (probe (position 300 62))

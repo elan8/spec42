@@ -350,9 +350,21 @@ package SimpleQuadcopter {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 15 25) (end 15 32))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 16 16) (end 16 22))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 16 25) (end 16 32))
       )
       (diagnostic
         (severity warning)
@@ -386,15 +398,33 @@ package SimpleQuadcopter {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 27 29) (end 27 37))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 28 20) (end 28 25))
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 28 28) (end 28 35))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 29 20) (end 29 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 29 29) (end 29 35))
       )
       (diagnostic
         (severity warning)
@@ -500,9 +530,21 @@ package SimpleQuadcopter {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 61 29) (end 61 36))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 62 20) (end 62 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 62 29) (end 62 35))
       )
       (diagnostic
         (severity warning)
@@ -596,9 +638,21 @@ package SimpleQuadcopter {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 89 29) (end 89 36))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 90 20) (end 90 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 90 29) (end 90 36))
       )
       (diagnostic
         (severity warning)
@@ -622,7 +676,31 @@ package SimpleQuadcopter {
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
+        (range (start 100 29) (end 100 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 100 38) (end 100 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 100 47) (end 100 49))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
         (range (start 101 20) (end 101 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 101 29) (end 101 37))
       )
       (diagnostic
         (severity warning)
@@ -668,6 +746,12 @@ package SimpleQuadcopter {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 120 24) (end 120 36))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 123 25) (end 123 40))
@@ -698,15 +782,33 @@ package SimpleQuadcopter {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 128 33) (end 128 41))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 129 24) (end 129 29))
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 129 32) (end 129 39))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 130 24) (end 130 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 130 33) (end 130 39))
       )
       (diagnostic
         (severity warning)
@@ -758,15 +860,33 @@ package SimpleQuadcopter {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 142 33) (end 142 41))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 143 24) (end 143 29))
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 143 32) (end 143 40))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 144 24) (end 144 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 144 33) (end 144 40))
       )
       (diagnostic
         (severity warning)
@@ -812,9 +932,21 @@ package SimpleQuadcopter {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 164 49) (end 164 58))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 165 35) (end 165 46))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 165 49) (end 165 58))
       )
       (diagnostic
         (severity warning)
@@ -824,9 +956,21 @@ package SimpleQuadcopter {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 166 49) (end 166 55))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 167 36) (end 167 47))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 167 50) (end 167 56))
       )
       (diagnostic
         (severity warning)
@@ -1105,7 +1249,7 @@ package SimpleQuadcopter {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:231871a63367f5192ae003c6f53679660d22e659fd2653ab7daf5ba47af7cae8") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:231871a63367f5192ae003c6f53679660d22e659fd2653ab7daf5ba47af7cae8") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/simple_quadcopter.md") (qualified-name "SimpleQuadcopter"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/simple_quadcopter.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ISQ") (import (shape namespace) (recursive false)))))
@@ -1127,7 +1271,7 @@ package SimpleQuadcopter {
     (declaration (id (node (document "memory://snapshot/simple_quadcopter.md") (qualified-name "SimpleQuadcopter::Camera::fieldOfView"))) (kind item) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/simple_quadcopter.md") (anonymous (kind item) (ordinal 0))))) (kind item) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Cone")) (redefinition (reference "shape"))))
     (declaration (id (node (document "memory://snapshot/simple_quadcopter.md") (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "coordinateFrame"))))
-    (declaration (id (node (document "memory://snapshot/simple_quadcopter.md") (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "radius"))))
+    (declaration (id (node (document "memory://snapshot/simple_quadcopter.md") (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "radius")) (expressionOperand (reference "height")) (expressionOperand (reference "pi")) (invocationCallee (reference "tan"))))
     (declaration (id (node (document "memory://snapshot/simple_quadcopter.md") (anonymous (kind attribute) (ordinal 1))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "height"))))
     (declaration (id (node (document "memory://snapshot/simple_quadcopter.md") (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "TranslationRotationSequence")) (redefinition (reference "transformation"))))
     (declaration (id (node (document "memory://snapshot/simple_quadcopter.md") (qualified-name "SimpleQuadcopter::PropellerMotorAssy"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "SpatialItem"))))
@@ -1283,6 +1427,15 @@ package SimpleQuadcopter {
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/simple_quadcopter.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0))
       (authored-target "transformation")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/simple_quadcopter.md") (anonymous (kind attribute) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
+      (authored-target "height")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/simple_quadcopter.md") (anonymous (kind attribute) (ordinal 0))))) (kind expressionOperand) (ordinal 1))
+      (authored-target "pi")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/simple_quadcopter.md") (anonymous (kind attribute) (ordinal 0))))) (kind invocationCallee) (ordinal 0))
+      (authored-target "tan")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/simple_quadcopter.md") (qualified-name "SimpleQuadcopter::PropellerMotorAssy"))) (kind specialization) (ordinal 0))
       (authored-target "SpatialItem")
@@ -1624,6 +1777,7 @@ package SimpleQuadcopter {
     (relationship (kind typing) (source (node (document "memory://snapshot/simple_quadcopter.md") (qualified-name "SimpleQuadcopter::quadCopter::strut4"))) (target (node (document "memory://snapshot/simple_quadcopter.md") (qualified-name "SimpleQuadcopter::Strut"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/simple_quadcopter.md") (qualified-name "SimpleQuadcopter::quadCopter::strut4"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/simple_quadcopter.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind unresolved-operand)))
   )
 )
 ~~~
@@ -1724,6 +1878,18 @@ package SimpleQuadcopter {
   )
   (query (document "memory://snapshot/simple_quadcopter.md") (range (start 104 20) (end 104 34)) (probe (position 104 20))
     (reference (id (source (node (document "memory://snapshot/simple_quadcopter.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "transformation")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/simple_quadcopter.md") (range (start 100 29) (end 100 35)) (probe (position 100 29))
+    (reference (id (source (node (document "memory://snapshot/simple_quadcopter.md") (anonymous (kind attribute) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "height")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/simple_quadcopter.md") (range (start 100 47) (end 100 49)) (probe (position 100 47))
+    (reference (id (source (node (document "memory://snapshot/simple_quadcopter.md") (anonymous (kind attribute) (ordinal 0))))) (kind expressionOperand) (ordinal 1) (authored-target "pi")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/simple_quadcopter.md") (range (start 100 38) (end 100 41)) (probe (position 100 38))
+    (reference (id (source (node (document "memory://snapshot/simple_quadcopter.md") (anonymous (kind attribute) (ordinal 0))))) (kind invocationCallee) (ordinal 0) (authored-target "tan")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/simple_quadcopter.md") (range (start 54 35) (end 54 46)) (probe (position 54 35))

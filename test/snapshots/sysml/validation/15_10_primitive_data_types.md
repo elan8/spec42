@@ -271,6 +271,7 @@ package '15.10-Primitive Data Types' {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/15_10_primitive_data_types.md") (anonymous (kind constraint) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::aperatureDiameter"))) (value (kind unresolved-operand)))
   )
 )
 ~~~

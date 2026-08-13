@@ -340,6 +340,7 @@ standard library package ISQ {
     (relationship (kind typing) (source (node (document "memory://snapshot/isq.md") (qualified-name "ISQ::temperatureDifference"))) (target (node (document "memory://snapshot/isq.md") (qualified-name "ISQ::TemperatureDifferenceValue"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/isq.md") (qualified-name "ISQ::temperatureDifference"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/isq.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/isq.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
   )
 )

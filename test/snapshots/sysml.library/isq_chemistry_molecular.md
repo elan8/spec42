@@ -1510,6 +1510,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 85 109) (end 85 111))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 86 22) (end 86 39))
@@ -1519,6 +1525,12 @@ standard library package ISQChemistryMolecular {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 86 46) (end 86 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 86 69) (end 86 98))
       )
       (diagnostic
         (severity warning)
@@ -1600,6 +1612,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 111 109) (end 111 111))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 112 22) (end 112 39))
@@ -1609,6 +1627,12 @@ standard library package ISQChemistryMolecular {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 112 46) (end 112 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 112 69) (end 112 100))
       )
       (diagnostic
         (severity warning)
@@ -1714,6 +1738,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 138 100) (end 138 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 139 47) (end 139 66))
@@ -1738,6 +1768,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 139 109) (end 139 111))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 140 22) (end 140 39))
@@ -1747,6 +1783,12 @@ standard library package ISQChemistryMolecular {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 140 46) (end 140 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 140 69) (end 140 120))
       )
       (diagnostic
         (severity warning)
@@ -1852,6 +1894,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 166 100) (end 166 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 167 47) (end 167 66))
@@ -1876,6 +1924,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 167 109) (end 167 111))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 168 22) (end 168 39))
@@ -1885,6 +1939,12 @@ standard library package ISQChemistryMolecular {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 168 46) (end 168 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 168 69) (end 168 120))
       )
       (diagnostic
         (severity warning)
@@ -1990,6 +2050,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 194 100) (end 194 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 195 47) (end 195 66))
@@ -2014,6 +2080,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 195 109) (end 195 111))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 196 22) (end 196 39))
@@ -2023,6 +2095,12 @@ standard library package ISQChemistryMolecular {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 196 46) (end 196 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 196 69) (end 196 120))
       )
       (diagnostic
         (severity warning)
@@ -2128,6 +2206,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 222 100) (end 222 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 223 47) (end 223 66))
@@ -2152,6 +2236,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 223 109) (end 223 111))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 224 22) (end 224 39))
@@ -2161,6 +2251,12 @@ standard library package ISQChemistryMolecular {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 224 46) (end 224 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 224 69) (end 224 120))
       )
       (diagnostic
         (severity warning)
@@ -2266,6 +2362,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 250 100) (end 250 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 251 54) (end 251 73))
@@ -2287,6 +2389,12 @@ standard library package ISQChemistryMolecular {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 251 108) (end 251 116))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 251 119) (end 251 121))
       )
       (diagnostic
         (severity warning)
@@ -2314,6 +2422,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 252 109) (end 252 111))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 253 22) (end 253 39))
@@ -2323,6 +2437,12 @@ standard library package ISQChemistryMolecular {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 253 46) (end 253 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 253 69) (end 253 148))
       )
       (diagnostic
         (severity warning)
@@ -2428,6 +2548,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 279 100) (end 279 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 280 54) (end 280 73))
@@ -2449,6 +2575,12 @@ standard library package ISQChemistryMolecular {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 280 108) (end 280 116))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 280 119) (end 280 121))
       )
       (diagnostic
         (severity warning)
@@ -2476,6 +2608,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 281 109) (end 281 111))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 282 22) (end 282 39))
@@ -2485,6 +2623,12 @@ standard library package ISQChemistryMolecular {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 282 46) (end 282 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 282 69) (end 282 148))
       )
       (diagnostic
         (severity warning)
@@ -2539,6 +2683,12 @@ standard library package ISQChemistryMolecular {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 306 87) (end 306 95))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 306 98) (end 306 100))
       )
       (diagnostic
         (severity warning)
@@ -2608,6 +2758,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 347 98) (end 347 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 348 34) (end 348 53))
@@ -2641,6 +2797,12 @@ standard library package ISQChemistryMolecular {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 349 46) (end 349 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 349 69) (end 349 87))
       )
       (diagnostic
         (severity warning)
@@ -2704,6 +2866,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 390 98) (end 390 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 391 47) (end 391 66))
@@ -2737,6 +2905,12 @@ standard library package ISQChemistryMolecular {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 392 46) (end 392 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 392 69) (end 392 100))
       )
       (diagnostic
         (severity warning)
@@ -2830,6 +3004,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 472 96) (end 472 98))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 473 47) (end 473 66))
@@ -2863,6 +3043,12 @@ standard library package ISQChemistryMolecular {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 474 46) (end 474 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 474 69) (end 474 98))
       )
       (diagnostic
         (severity warning)
@@ -2974,6 +3160,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 518 100) (end 518 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 519 47) (end 519 66))
@@ -2998,6 +3190,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 519 109) (end 519 111))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 520 22) (end 520 39))
@@ -3007,6 +3205,12 @@ standard library package ISQChemistryMolecular {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 520 46) (end 520 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 520 69) (end 520 120))
       )
       (diagnostic
         (severity warning)
@@ -3070,6 +3274,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 561 98) (end 561 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 562 34) (end 562 53))
@@ -3118,6 +3328,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 563 100) (end 563 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 564 22) (end 564 39))
@@ -3127,6 +3343,12 @@ standard library package ISQChemistryMolecular {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 564 46) (end 564 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 564 69) (end 564 99))
       )
       (diagnostic
         (severity warning)
@@ -3184,6 +3406,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 588 98) (end 588 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 589 34) (end 589 53))
@@ -3232,6 +3460,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 590 100) (end 590 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 591 22) (end 591 39))
@@ -3241,6 +3475,12 @@ standard library package ISQChemistryMolecular {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 591 46) (end 591 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 591 69) (end 591 99))
       )
       (diagnostic
         (severity warning)
@@ -3346,6 +3586,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 617 100) (end 617 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 618 47) (end 618 66))
@@ -3370,6 +3616,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 618 109) (end 618 111))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 619 22) (end 619 39))
@@ -3379,6 +3631,12 @@ standard library package ISQChemistryMolecular {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 619 46) (end 619 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 619 69) (end 619 120))
       )
       (diagnostic
         (severity warning)
@@ -3484,6 +3742,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 785 98) (end 785 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 786 34) (end 786 53))
@@ -3532,6 +3796,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 787 100) (end 787 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 788 22) (end 788 39))
@@ -3541,6 +3811,12 @@ standard library package ISQChemistryMolecular {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 788 46) (end 788 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 788 69) (end 788 99))
       )
       (diagnostic
         (severity warning)
@@ -3652,6 +3928,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 831 100) (end 831 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 832 47) (end 832 66))
@@ -3676,6 +3958,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 832 109) (end 832 111))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 833 22) (end 833 39))
@@ -3685,6 +3973,12 @@ standard library package ISQChemistryMolecular {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 833 46) (end 833 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 833 69) (end 833 120))
       )
       (diagnostic
         (severity warning)
@@ -3754,6 +4048,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 892 98) (end 892 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 893 34) (end 893 53))
@@ -3802,6 +4102,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 894 100) (end 894 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 895 22) (end 895 39))
@@ -3811,6 +4117,12 @@ standard library package ISQChemistryMolecular {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 895 46) (end 895 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 895 69) (end 895 99))
       )
       (diagnostic
         (severity warning)
@@ -3868,6 +4180,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 919 98) (end 919 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 920 47) (end 920 66))
@@ -3901,6 +4219,12 @@ standard library package ISQChemistryMolecular {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 921 46) (end 921 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 921 69) (end 921 100))
       )
       (diagnostic
         (severity warning)
@@ -4042,6 +4366,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1053 100) (end 1053 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 1054 54) (end 1054 73))
@@ -4063,6 +4393,12 @@ standard library package ISQChemistryMolecular {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1054 108) (end 1054 116))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1054 119) (end 1054 121))
       )
       (diagnostic
         (severity warning)
@@ -4090,6 +4426,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1055 109) (end 1055 111))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1056 22) (end 1056 39))
@@ -4099,6 +4441,12 @@ standard library package ISQChemistryMolecular {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1056 46) (end 1056 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1056 69) (end 1056 148))
       )
       (diagnostic
         (severity warning)
@@ -4186,6 +4534,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1100 100) (end 1100 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1101 22) (end 1101 39))
@@ -4195,6 +4549,12 @@ standard library package ISQChemistryMolecular {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1101 46) (end 1101 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1101 69) (end 1101 91))
       )
       (diagnostic
         (severity warning)
@@ -4288,6 +4648,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1160 100) (end 1160 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1161 22) (end 1161 39))
@@ -4297,6 +4663,12 @@ standard library package ISQChemistryMolecular {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1161 46) (end 1161 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1161 69) (end 1161 91))
       )
       (diagnostic
         (severity warning)
@@ -4354,6 +4726,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1185 96) (end 1185 98))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 1186 47) (end 1186 66))
@@ -4387,6 +4765,12 @@ standard library package ISQChemistryMolecular {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1187 46) (end 1187 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1187 69) (end 1187 98))
       )
       (diagnostic
         (severity warning)
@@ -4450,6 +4834,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1230 98) (end 1230 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 1231 34) (end 1231 53))
@@ -4471,6 +4861,12 @@ standard library package ISQChemistryMolecular {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1231 85) (end 1231 93))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1231 96) (end 1231 98))
       )
       (diagnostic
         (severity warning)
@@ -4534,6 +4930,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1234 69) (end 1234 118))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")
         (range (start 1238 44) (end 1238 63))
@@ -4585,6 +4987,12 @@ standard library package ISQChemistryMolecular {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1258 85) (end 1258 93))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1258 96) (end 1258 98))
       )
       (diagnostic
         (severity warning)
@@ -4660,6 +5068,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1261 109) (end 1261 111))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1262 22) (end 1262 39))
@@ -4669,6 +5083,12 @@ standard library package ISQChemistryMolecular {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1262 46) (end 1262 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1262 69) (end 1262 129))
       )
       (diagnostic
         (severity warning)
@@ -4762,6 +5182,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1322 109) (end 1322 111))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1323 22) (end 1323 39))
@@ -4771,6 +5197,12 @@ standard library package ISQChemistryMolecular {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1323 46) (end 1323 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1323 69) (end 1323 100))
       )
       (diagnostic
         (severity warning)
@@ -4852,6 +5284,12 @@ standard library package ISQChemistryMolecular {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1348 96) (end 1348 98))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1349 22) (end 1349 39))
@@ -4862,6 +5300,12 @@ standard library package ISQChemistryMolecular {
         (source "semantic")
         (range (start 1349 46) (end 1349 66))
       )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1349 69) (end 1349 87))
+      )
     )
   )
 )
@@ -4869,7 +5313,7 @@ standard library package ISQChemistryMolecular {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:1b76a845b58c298bff89a5b6d72efefad50ebee987087f13acb3359c94d98132") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:1b76a845b58c298bff89a5b6d72efefad50ebee987087f13acb3359c94d98132") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/isq_chemistry_molecular.md") (qualified-name "ISQChemistryMolecular"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/isq_chemistry_molecular.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false)))))
@@ -7565,6 +8009,7 @@ standard library package ISQChemistryMolecular {
     (evaluated (declaration (node (document "memory://snapshot/isq_chemistry_molecular.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 3)))
     (evaluated (declaration (node (document "memory://snapshot/isq_chemistry_molecular.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
     (evaluated (declaration (node (document "memory://snapshot/isq_chemistry_molecular.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_chemistry_molecular.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/isq_chemistry_molecular.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
     (evaluated (declaration (node (document "memory://snapshot/isq_chemistry_molecular.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
     (evaluated (declaration (node (document "memory://snapshot/isq_chemistry_molecular.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))

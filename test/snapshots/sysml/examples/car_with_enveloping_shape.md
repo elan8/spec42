@@ -54,15 +54,33 @@ package CarWithEnvelopingShape {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 11 16) (end 11 25))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 12 7) (end 12 12))
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 12 16) (end 12 25))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 13 7) (end 13 13))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 13 16) (end 13 25))
       )
     )
   )
@@ -71,7 +89,7 @@ package CarWithEnvelopingShape {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:67f7c47c3bf4f8cd6cba39ecfaf2a4930cbd5c427ebc17de07ad223eba41c0f6") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:67f7c47c3bf4f8cd6cba39ecfaf2a4930cbd5c427ebc17de07ad223eba41c0f6") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/car_with_enveloping_shape.md") (qualified-name "CarWithEnvelopingShape"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/car_with_enveloping_shape.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ShapeItems::Box") (import (shape membership) (recursive false)))))

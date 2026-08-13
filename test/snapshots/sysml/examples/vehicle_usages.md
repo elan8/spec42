@@ -378,7 +378,7 @@ package VehicleUsages {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:264f69ead1d941fa32a0c5a242586c68803c9cff5e2c15381ad7f95a8f8c8aa8") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:264f69ead1d941fa32a0c5a242586c68803c9cff5e2c15381ad7f95a8f8c8aa8") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/vehicle_usages.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "SI::N") (import (shape membership) (recursive false)))))
@@ -565,6 +565,8 @@ package VehicleUsages {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C3"))) (target (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C2"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C3"))) (kind subsetting) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/vehicle_usages.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/vehicle_usages.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind unresolved-operand)))
   )
 )
 ~~~

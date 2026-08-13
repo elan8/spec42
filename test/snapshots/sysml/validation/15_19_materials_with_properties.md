@@ -155,6 +155,12 @@ package '15_19-Materials with Properties' {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 9 98) (end 9 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 10 34) (end 10 53))
@@ -203,6 +209,12 @@ package '15_19-Materials with Properties' {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 11 100) (end 11 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 12 22) (end 12 39))
@@ -212,6 +224,12 @@ package '15_19-Materials with Properties' {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 12 46) (end 12 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 12 69) (end 12 99))
       )
       (diagnostic
         (severity warning)
@@ -236,6 +254,12 @@ package '15_19-Materials with Properties' {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 17 19) (end 17 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 20 80) (end 20 88))
       )
       (diagnostic
         (severity warning)

@@ -49,6 +49,12 @@ package RationaleMetadataExample {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 11 12) (end 11 95))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
         (range (start 15 19) (end 15 34))
@@ -78,7 +84,7 @@ package RationaleMetadataExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:d01bfaf810b2a5c38ae883317559c9d569344f0bc03a62597b15ca3236333e55") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:d01bfaf810b2a5c38ae883317559c9d569344f0bc03a62597b15ca3236333e55") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ModelingMetadata::Rationale") (import (shape membership) (recursive false)))))
@@ -120,6 +126,7 @@ package RationaleMetadataExample {
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineSelectionRationale::explanation"))) (target (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineTradeOffAnalysis"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineSelectionRationale::explanation"))) (kind expressionOperand) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineSelectionRationale::explanation"))) (value (kind non-constant)))
   )
 )
 ~~~

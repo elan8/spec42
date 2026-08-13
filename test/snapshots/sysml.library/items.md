@@ -370,6 +370,12 @@ standard library package Items {
       )
       (diagnostic
         (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 104 22) (end 104 29))
+      )
+      (diagnostic
+        (severity warning)
         (code "unsupported_attribute_member")
         (source "semantic")
         (range (start 111 2) (end 118 3))
@@ -429,7 +435,7 @@ standard library package Items {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:daa13b93f12aed86a5f80d15202cdbac7a5a02465d59c2d47eb22cd2e236a815") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:daa13b93f12aed86a5f80d15202cdbac7a5a02465d59c2d47eb22cd2e236a815") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/items.md") (qualified-name "Items"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/items.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Objects::Object") (import (shape membership) (recursive false)))))
@@ -465,7 +471,7 @@ standard library package Items {
     (declaration (id (node (document "memory://snapshot/items.md") (anonymous (kind constraint) (ordinal 2))))) (kind constraint) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::envelopingShapes::envelopedItem"))) (kind ref) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "that"))))
     (declaration (id (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::envelopingShapes::envelopingItem"))) (kind item) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::isSolid"))) (kind attribute) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::isSolid"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "voids")) (invocationCallee (reference "isEmpty"))))
     (declaration (id (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::self"))) (kind ref) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Item")) (redefinition (reference "Object::self"))))
     (declaration (id (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::shape"))) (kind item) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Item")) (redefinition (reference "spaceBoundary"))))
     (declaration (id (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::start"))) (kind item) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Item")) (redefinition (reference "startShot"))))
@@ -575,6 +581,12 @@ standard library package Items {
     (reference (id (source (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::envelopingShapes::envelopedItem"))) (kind redefinition) (ordinal 0))
       (authored-target "that")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::isSolid"))) (kind expressionOperand) (ordinal 0))
+      (authored-target "voids")
+      (outcome (status resolved) (target (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::voids")))))
+    (reference (id (source (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::isSolid"))) (kind invocationCallee) (ordinal 0))
+      (authored-target "isEmpty")
+      (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::self"))) (kind featureTyping) (ordinal 0))
       (authored-target "Item")
       (outcome (status resolved) (target (node (document "memory://snapshot/items.md") (qualified-name "Items::Item")))))
@@ -621,11 +633,13 @@ standard library package Items {
     (relationship (kind redefinition) (source (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::boundingShapes::boundingShape"))) (target (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::self"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::boundingShapes::boundingShape"))) (kind redefinition) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::done"))) (target (node (document "memory://snapshot/items.md") (qualified-name "Items::Item"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::done"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::envelopingShapes"))) (target (node (document "memory://snapshot/items.md") (qualified-name "Items::Item"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::envelopingShapes"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::isSolid"))) (target (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::voids"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::isSolid"))) (kind expressionOperand) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::self"))) (target (node (document "memory://snapshot/items.md") (qualified-name "Items::Item"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::self"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::shape"))) (target (node (document "memory://snapshot/items.md") (qualified-name "Items::Item"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::shape"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::start"))) (target (node (document "memory://snapshot/items.md") (qualified-name "Items::Item"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::start"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::isSolid"))) (value (kind non-constant)))
   )
 )
 ~~~
@@ -762,6 +776,14 @@ standard library package Items {
   )
   (query (document "memory://snapshot/items.md") (range (start 49 30) (end 49 34)) (probe (position 49 30))
     (reference (id (source (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::envelopingShapes::envelopedItem"))) (kind redefinition) (ordinal 0) (authored-target "that")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/items.md") (range (start 104 30) (end 104 35)) (probe (position 104 30))
+    (reference (id (source (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::isSolid"))) (kind expressionOperand) (ordinal 0) (authored-target "voids")
+      (outcome (status resolved) (target (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::voids")))))
+  )
+  (query (document "memory://snapshot/items.md") (range (start 104 22) (end 104 29)) (probe (position 104 22))
+    (reference (id (source (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::isSolid"))) (kind invocationCallee) (ordinal 0) (authored-target "isEmpty")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/items.md") (range (start 30 12) (end 30 16)) (probe (position 30 12))

@@ -3138,76 +3138,53 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
-    /// Slice 3 of the constraint/calc expression fact family (prerequisite step, see
-    /// `RESOLUTION_LAYER_DESIGN.md`): a minimal, literal-only mirror of slice 2's
-    /// `classify_constraint_expression`/`classify_calc_expression` literal folding, scoped to a
-    /// `FeatureValue`'s expression on an attribute def/usage's own `=`/`:=`/`default` clause
-    /// (`attribute mass = 5;`). Publishes a `Literal` evaluation fact sourced directly at the
-    /// attribute's own declaration -- exactly the shape constant propagation
-    /// (`compute_evaluation` in resolver.rs) looks up when a constraint/calc expression's operand
-    /// reference resolves to this declaration. Deliberately narrow: only a bare
-    /// `LiteralInteger`/`LiteralReal`/`LiteralBoolean` expression (optionally parenthesized)
-    /// publishes a fact. A plain/qualified feature reference (`part g = f;`) or a dotted
-    /// feature-chain (`part g = f.a;`) is *resolved* (as `ExpressionOperand`/
-    /// `MemberAccessOperand` respectively, through the same shared lookup every other operand
-    /// kind uses) but not evaluated -- no evaluation fact, consistent with how a constraint/calc
-    /// expression's own `FeatureRef` operands are resolved-but-may-stay-non-constant. Any other
-    /// default-value expression shape (arithmetic, an invocation, etc.) is left entirely
-    /// untouched -- no fact, no reference, no diagnostic -- since general default-value
-    /// expression lowering is out of scope here and deferred to a future slice (see
-    /// `REMAINING_WORK_TO_PORT.md`'s "default value expressions on attributes/parameters").
+    /// Value-assignment lowering for a `name = <Expression>;` shape, shared by every context that
+    /// carries one: an attribute def/usage default value AND explicit redefinition value
+    /// (`attribute mass = 5;` / `attribute :>> status = RequirementStatusKind::approved;`, both
+    /// typed as `FeatureValue` -- the parser does not distinguish "default" from "redefinition
+    /// value" syntactically, both are just an attribute's own optional `=` clause), a metadata
+    /// annotation body override (`@Safety{isMandatory = true;}`, also `FeatureValue` on a nested
+    /// `AttributeUsage`), and a parameter default value (`out v_out : SpeedValue = vel.v;`, also
+    /// `FeatureValue`). All four contexts share the exact same typed-AST shape (a name, an `=`,
+    /// and an `Expression`), so this one helper handles all of them: reuses the full
+    /// `classify_constraint_expression`/`lower_constraint_expression` machinery (literal,
+    /// feature-ref, member-access, arithmetic/comparison/logical `BinaryOp`, invocation) rather
+    /// than a bespoke literal-only walk, so `attribute mass = length * width;`, `attribute :>>
+    /// status = RequirementStatusKind::approved;`, and `attribute f = other.value;` all resolve
+    /// their operands and, where possible, evaluate to a genuine constant via `compute_evaluation`
+    /// -- a value that is resolved but not itself constant publishes `NonConstant`, never a
+    /// fabricated value (see `EvaluatedValue`). `family` selects which diagnostic an unsupported
+    /// expression shape falls through to.
+    fn lower_value_assignment(
+        &mut self,
+        document: DocumentId,
+        declaration: DeclarationId,
+        family: UnsupportedFamily,
+        value: Option<&Node<FeatureValue>>,
+    ) -> Result<(), ConstructionError> {
+        let Some(feature_value) = value else {
+            return Ok(());
+        };
+        let expression = &feature_value.value.expression;
+        self.push_evaluation_fact(
+            declaration,
+            classify_constraint_expression(&expression.value),
+        );
+        self.lower_constraint_expression(document, declaration, family, expression)
+    }
+
     fn lower_attribute_default_value(
         &mut self,
         document: DocumentId,
         declaration: DeclarationId,
         value: Option<&Node<FeatureValue>>,
     ) -> Result<(), ConstructionError> {
-        fn unwrap_literal(node: &Expression) -> Option<EvaluatedValue> {
-            match node {
-                Expression::Parenthesized(inner) => unwrap_literal(&inner.value),
-                other => literal_expression_value(other),
-            }
-        }
-        let Some(feature_value) = value else {
-            return Ok(());
-        };
-        let expression = &feature_value.value.expression;
-        if let Some(literal) = unwrap_literal(&expression.value) {
-            self.push_evaluation_fact(declaration, ExpressionEvalShape::Literal(literal));
-            return Ok(());
-        }
-        match &expression.value {
-            Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => {
-                let span = self.documents[document.index()]
-                    .parsed
-                    .qualified_reference(*target)
-                    .ok_or(ConstructionError::InvalidParserReference)?
-                    .metadata
-                    .span
-                    .clone();
-                self.push_reference(PendingReference {
-                    source: declaration,
-                    kind: ReferenceKind::ExpressionOperand,
-                    document,
-                    local: *target,
-                    flags: RelationshipFlags::default(),
-                    span,
-                    import: None,
-                })?;
-            }
-            Expression::MemberAccess { .. } => {
-                if let Some(chain) = flatten_member_access_chain(expression) {
-                    self.push_member_access_reference(
-                        declaration,
-                        document,
-                        &chain,
-                        expression.span.clone(),
-                    )?;
-                }
-            }
-            _ => {}
-        }
-        Ok(())
+        self.lower_value_assignment(
+            document,
+            declaration,
+            UnsupportedFamily::AttributeMember,
+            value,
+        )
     }
 
     fn lower_attribute_def(
@@ -3560,6 +3537,7 @@ impl SemanticModelBuilder {
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
+        family: UnsupportedFamily,
         node: &Node<InOutDecl>,
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declared_name(&node.value.name)?;
@@ -3601,6 +3579,17 @@ impl SemanticModelBuilder {
                 span,
                 import: None,
             })?;
+        }
+        // Widened value-assignment handling (see `lower_value_assignment`/`lower_return_decl`'s
+        // own `= expr` handling, which this mirrors exactly): a parameter default value
+        // (`out v_out : SpeedValue = vel.v;`) is a bare `Node<Expression>` on `InOutDecl::value`
+        // -- the same shape `ReturnDecl::value` already has classify_calc_expression/
+        // lower_calc_expression wiring for, so this reuses that identical pipeline rather than
+        // introducing new logic. Previously deferred (`494b0ba6`) pending value-assignment
+        // machinery existing at all.
+        if let Some(expression) = &node.value.value {
+            self.push_evaluation_fact(declaration, classify_calc_expression(&expression.value));
+            self.lower_calc_expression(document, declaration, family, expression)?;
         }
         Ok(())
     }
@@ -3916,6 +3905,32 @@ impl SemanticModelBuilder {
             span,
             import: None,
         })?;
+        // Widened value-assignment handling (see `lower_value_assignment`): the annotation body's
+        // nested feature-value overrides (`@Safety{isMandatory = true;}`'s `isMandatory = true;`)
+        // were deliberately deferred by the annotation-application slice pending exactly this
+        // machinery (see the `ReferenceKind::MetadataAnnotation` doc comment). Each override is
+        // typed as an ordinary `AttributeUsage` (BNF-shared `AttributeBody`, exactly like `metadata
+        // m : Safety { isMandatory = true; }`'s own body), but the `@Safety{...}` annotation form
+        // has no named declaration of its own to own them (unlike a named `metadata m : Safety`
+        // usage) -- an anonymous `MetadataUsage`-kind declaration nested under `owner` gives the
+        // overrides a real owning scope without disturbing `owner`'s own member set or the
+        // `MetadataAnnotation` reference above (still sourced directly at `owner`, unchanged).
+        if matches!(&node.value.body, AttributeBody::Brace { elements } if !elements.is_empty()) {
+            let annotation_scope = self.push_typed_declaration(
+                document,
+                Some(owner),
+                DeclarationKind::MetadataUsage,
+                None,
+                node.span.clone(),
+            )?;
+            self.push_membership(
+                annotation_scope,
+                MembershipKind::Feature,
+                Visibility::Default,
+                node.span.clone(),
+            )?;
+            self.lower_attribute_body(document, annotation_scope, &node.value.body)?;
+        }
         Ok(())
     }
 
@@ -4009,7 +4024,12 @@ impl SemanticModelBuilder {
                     )?;
                 }
                 ActionDefBodyElement::InOutDecl(param) => {
-                    self.lower_parameter_declaration(document, Some(owner), param)?;
+                    self.lower_parameter_declaration(
+                        document,
+                        Some(owner),
+                        UnsupportedFamily::ActionDefinitionMember,
+                        param,
+                    )?;
                 }
                 ActionDefBodyElement::Perform(perform) => {
                     self.lower_perform(document, Some(owner), perform)?;
@@ -4289,7 +4309,12 @@ impl SemanticModelBuilder {
                     )?;
                 }
                 ActionUsageBodyElement::InOutDecl(param) => {
-                    self.lower_parameter_declaration(document, Some(owner), param)?;
+                    self.lower_parameter_declaration(
+                        document,
+                        Some(owner),
+                        UnsupportedFamily::ActionUsageMember,
+                        param,
+                    )?;
                 }
                 ActionUsageBodyElement::Doc(_) => {}
                 ActionUsageBodyElement::MetadataAnnotation(node) => {
@@ -4545,7 +4570,7 @@ impl SemanticModelBuilder {
                         self.lower_action_usage(document, Some(owner), action_usage)?;
                     }
                     ActionDefBodyElement::InOutDecl(param) => {
-                        self.lower_parameter_declaration(document, Some(owner), param)?;
+                        self.lower_parameter_declaration(document, Some(owner), family, param)?;
                     }
                     ActionDefBodyElement::ThenAction(then_action) => {
                         self.lower_then_action(document, owner, family, then_action)?;
@@ -5206,7 +5231,12 @@ impl SemanticModelBuilder {
                     self.lower_metadata_annotation(document, owner, node)?;
                 }
                 StateDefBodyElement::InOutDecl(param) => {
-                    self.lower_parameter_declaration(document, Some(owner), param)?;
+                    self.lower_parameter_declaration(
+                        document,
+                        Some(owner),
+                        UnsupportedFamily::StateDefinitionMember,
+                        param,
+                    )?;
                 }
                 StateDefBodyElement::Ref(node) => {
                     self.lower_ref_decl(document, Some(owner), node)?;
@@ -6735,7 +6765,12 @@ impl SemanticModelBuilder {
                     }
                     PortDefBodyElement::Doc(_) => {}
                     PortDefBodyElement::InOutDecl(param) => {
-                        self.lower_parameter_declaration(document, Some(declaration), param)?;
+                        self.lower_parameter_declaration(
+                            document,
+                            Some(declaration),
+                            UnsupportedFamily::PortDefinitionMember,
+                            param,
+                        )?;
                     }
                     PortDefBodyElement::MetadataKeywordUsage(_) | PortDefBodyElement::Other(_) => {
                         self.push_unsupported(
@@ -6815,7 +6850,12 @@ impl SemanticModelBuilder {
                     }
                     PortBodyElement::Doc(_) => {}
                     PortBodyElement::InOutDecl(param) => {
-                        self.lower_parameter_declaration(document, Some(declaration), param)?;
+                        self.lower_parameter_declaration(
+                            document,
+                            Some(declaration),
+                            UnsupportedFamily::PortDefinitionMember,
+                            param,
+                        )?;
                     }
                 }
             }
@@ -7649,7 +7689,12 @@ impl SemanticModelBuilder {
                         self.lower_constraint_usage(document, Some(declaration), constraint)?;
                     }
                     ConstraintDefBodyElement::InOutDecl(param) => {
-                        self.lower_parameter_declaration(document, Some(declaration), param)?;
+                        self.lower_parameter_declaration(
+                            document,
+                            Some(declaration),
+                            UnsupportedFamily::ConstraintDefinitionMember,
+                            param,
+                        )?;
                     }
                     ConstraintDefBodyElement::Doc(_) => {}
                     ConstraintDefBodyElement::Expression(expression) => {
@@ -7876,7 +7921,12 @@ impl SemanticModelBuilder {
                         self.lower_part_usage(document, Some(declaration), part_usage)?;
                     }
                     CalcDefBodyElement::InOutDecl(param) => {
-                        self.lower_parameter_declaration(document, Some(declaration), param)?;
+                        self.lower_parameter_declaration(
+                            document,
+                            Some(declaration),
+                            UnsupportedFamily::CalcDefinitionMember,
+                            param,
+                        )?;
                     }
                     CalcDefBodyElement::Doc(_) => {}
                     CalcDefBodyElement::Expression(expression) => {
@@ -10051,6 +10101,151 @@ mod tests {
             ),
             "expected a literal attribute default value to publish its own Integer(5) evaluation \
              fact, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn attribute_arithmetic_default_value_resolves_operands_and_evaluates() {
+        // Widened value-assignment handling: `length * width` (arithmetic, not a bare literal)
+        // now resolves both operand references and, since both are themselves constant-valued,
+        // evaluates via the same classify_constraint_expression/EvalNode::Arithmetic machinery
+        // slice 4/6ce84b06 built for constraint/calc bodies.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tattribute length = 4;\n\
+             \tattribute width = 5;\n\
+             \tattribute area = length * width;\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::area\"))) (value (kind integer) (integer 20)))"
+            ),
+            "expected `attribute area = length * width;` to resolve both operands and fold to \
+             Integer(20), got:\n{output}"
+        );
+        for name in ["length", "width"] {
+            assert!(
+                output.contains(&format!(
+                    "(authored-target \"{name}\")\n      (outcome (status resolved) (target \
+                     (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::{name}\")))))"
+                )),
+                "expected `area`'s arithmetic default value operand `{name}` to resolve to its \
+                 sibling attribute declaration, got:\n{output}"
+            );
+        }
+    }
+
+    #[test]
+    fn redefinition_value_with_a_qualified_reference_is_pushed_and_classified() {
+        // The exact `enum_status_redefinition.md` shape (`attribute :>> status =
+        // RequirementStatusKind::approved;`): before this widening, the `=
+        // RequirementStatusKind::approved` value portion was never lowered at all -- no
+        // reference, no evaluation fact. Now it publishes an `ExpressionOperand` reference (the
+        // shared lookup every constraint/calc operand reference already uses) sourced at the
+        // redefining attribute's own anonymous declaration. The reference itself stays
+        // `unresolved`: a multi-segment (`::`-qualified) `ExpressionOperand` target is a
+        // pre-existing, separate lexical-lookup limitation (every such reference in the real
+        // corpus -- e.g. `kerml/filtering.md`'s `Element::name`, `Annotations::
+        // ApprovalAnnotation::approved` -- stays unresolved too), orthogonal to value-assignment
+        // evaluation and unaffected by this widening either way -- this is not a regression, and
+        // fixing the underlying qualified-path lookup is out of scope here.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tenum def RequirementStatusKind {\n\
+             \t\tenum approved;\n\
+             \t}\n\
+             \trequirement def Base {\n\
+             \t\tattribute status : RequirementStatusKind;\n\
+             \t}\n\
+             \trequirement def Derived :> Base {\n\
+             \t\tattribute :>> status = RequirementStatusKind::approved;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(authored-target \"RequirementStatusKind::approved\")\n      (outcome (status \
+                 unresolved)))"
+            ),
+            "expected the redefinition value `RequirementStatusKind::approved` to publish an \
+             ExpressionOperand reference (even though it stays unresolved, a pre-existing \
+             qualified-path lookup limitation), got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (anonymous (kind attribute) (ordinal 0))))) (value (kind unresolved-operand)))"
+            ),
+            "expected the redefinition value to publish an UnresolvedOperand evaluation fact \
+             (never a fabricated value) since its sole operand reference did not resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn metadata_annotation_body_override_value_resolves() {
+        // The metadata annotation body override deferred by `2680ca20` pending exactly this
+        // value-assignment machinery: `isMandatory = true;` inside `@Safety{...}` now lowers
+        // through the same shared pipeline as an attribute default value.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tmetadata def Safety {\n\
+             \t\tattribute isMandatory : Boolean;\n\
+             \t}\n\
+             \tpart def Vehicle {\n\
+             \t\tpart seatBelt[2] {@Safety{isMandatory = true;}}\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::Vehicle::seatBelt::::isMandatory\"))) (value (kind \
+                 boolean) (boolean true)))"
+            ),
+            "expected `isMandatory = true;` inside `@Safety{{...}}` to publish its own \
+             Boolean(true) evaluation fact, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn parameter_default_value_with_member_access_resolves() {
+        // The `out v_out : SpeedValue = vel.v;` shape deferred by `494b0ba6`: the parameter
+        // default value now resolves its `vel.v` member-access operand through the exact same
+        // pipeline `ReturnDecl::value` already used (bd50fccd precedent).
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \taction def Calc {\n\
+             \t\tattribute vel;\n\
+             \t\tout v_out = vel.v;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(memberAccessOperand (reference \"vel::v\"))"),
+            "expected `out v_out = vel.v;`'s parameter default value to resolve `vel.v` as a \
+             memberAccessOperand reference, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn non_constant_value_assignment_stays_non_constant_not_fabricated() {
+        // A resolved-but-non-constant value assignment (`other`'s own default value is not
+        // itself a known constant) must stay explicitly NonConstant, never fabricate a value.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tattribute other : ScalarValues::Integer;\n\
+             \tattribute mass = other;\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::mass\"))) (value (kind non-constant)))"
+            ),
+            "expected `attribute mass = other;` (operand with no evaluation fact of its own) to \
+             stay explicitly NonConstant, got:\n{output}"
         );
     }
 

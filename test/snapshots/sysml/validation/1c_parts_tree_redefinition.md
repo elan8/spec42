@@ -129,9 +129,21 @@ package '1c-Parts Tree Redefinition' {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 21 52) (end 21 61))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 45 28) (end 45 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 45 45) (end 45 54))
       )
       (diagnostic
         (severity warning)
@@ -188,7 +200,7 @@ package '1c-Parts Tree Redefinition' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:11973dec81e9056ba9f34ecf61a7b72f25f4c8d866d054e6af20910a1ca20dc3") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:11973dec81e9056ba9f34ecf61a7b72f25f4c8d866d054e6af20910a1ca20dc3") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (qualified-name "1c-Parts Tree Redefinition"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "SI::kg") (import (shape membership) (recursive false)))))

@@ -2478,6 +2478,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 50 69) (end 50 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")
         (range (start 54 48) (end 54 67))
@@ -2529,6 +2535,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 74 87) (end 74 95))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 74 98) (end 74 100))
       )
       (diagnostic
         (severity warning)
@@ -2592,6 +2604,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 77 69) (end 77 110))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")
         (range (start 85 57) (end 85 76))
@@ -2643,6 +2661,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 105 87) (end 105 95))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 105 98) (end 105 100))
       )
       (diagnostic
         (severity warning)
@@ -2706,6 +2730,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 108 69) (end 108 110))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")
         (range (start 116 56) (end 116 75))
@@ -2757,6 +2787,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 136 87) (end 136 95))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 136 98) (end 136 100))
       )
       (diagnostic
         (severity warning)
@@ -2817,6 +2853,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 139 46) (end 139 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 139 69) (end 139 110))
       )
       (diagnostic
         (severity warning)
@@ -2934,6 +2976,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 170 69) (end 170 110))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")
         (range (start 173 59) (end 173 82))
@@ -3030,6 +3078,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 219 98) (end 219 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 220 38) (end 220 57))
@@ -3087,6 +3141,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 222 46) (end 222 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 222 69) (end 222 110))
       )
       (diagnostic
         (severity warning)
@@ -3186,6 +3246,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 271 98) (end 271 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 272 45) (end 272 64))
@@ -3219,6 +3285,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 273 46) (end 273 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 273 69) (end 273 98))
       )
       (diagnostic
         (severity warning)
@@ -3318,6 +3390,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 325 98) (end 325 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 326 45) (end 326 64))
@@ -3351,6 +3429,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 327 46) (end 327 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 327 69) (end 327 98))
       )
       (diagnostic
         (severity warning)
@@ -3498,6 +3582,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 381 100) (end 381 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 382 45) (end 382 64))
@@ -3522,6 +3612,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 382 107) (end 382 109))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 383 22) (end 383 39))
@@ -3531,6 +3627,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 383 46) (end 383 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 383 69) (end 383 118))
       )
       (diagnostic
         (severity warning)
@@ -3678,6 +3780,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 434 100) (end 434 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 435 45) (end 435 64))
@@ -3702,6 +3810,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 435 107) (end 435 109))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 436 22) (end 436 39))
@@ -3711,6 +3825,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 436 46) (end 436 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 436 69) (end 436 118))
       )
       (diagnostic
         (severity warning)
@@ -3816,6 +3936,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 462 100) (end 462 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 463 45) (end 463 64))
@@ -3840,6 +3966,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 463 107) (end 463 109))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 464 22) (end 464 39))
@@ -3849,6 +3981,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 464 46) (end 464 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 464 69) (end 464 118))
       )
       (diagnostic
         (severity warning)
@@ -3903,6 +4041,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 506 87) (end 506 95))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 506 98) (end 506 100))
       )
       (diagnostic
         (severity warning)
@@ -3963,6 +4107,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 509 46) (end 509 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 509 69) (end 509 110))
       )
       (diagnostic
         (severity warning)
@@ -4062,6 +4212,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 561 98) (end 561 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 562 34) (end 562 53))
@@ -4083,6 +4239,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 562 85) (end 562 93))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 562 96) (end 562 98))
       )
       (diagnostic
         (severity warning)
@@ -4146,6 +4308,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 565 69) (end 565 118))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")
         (range (start 569 43) (end 569 62))
@@ -4200,6 +4368,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 589 98) (end 589 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 590 34) (end 590 53))
@@ -4221,6 +4395,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 590 85) (end 590 93))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 590 96) (end 590 98))
       )
       (diagnostic
         (severity warning)
@@ -4284,6 +4464,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 593 69) (end 593 118))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")
         (range (start 601 39) (end 601 58))
@@ -4338,6 +4524,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 621 98) (end 621 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 622 34) (end 622 53))
@@ -4359,6 +4551,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 622 85) (end 622 93))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 622 96) (end 622 98))
       )
       (diagnostic
         (severity warning)
@@ -4419,6 +4617,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 625 46) (end 625 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 625 69) (end 625 118))
       )
       (diagnostic
         (severity warning)
@@ -4524,6 +4728,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 685 69) (end 685 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")
         (range (start 689 53) (end 689 72))
@@ -4578,6 +4788,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 709 98) (end 709 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 710 45) (end 710 64))
@@ -4611,6 +4827,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 711 46) (end 711 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 711 69) (end 711 98))
       )
       (diagnostic
         (severity warning)
@@ -4722,6 +4944,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 792 98) (end 792 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 793 45) (end 793 64))
@@ -4755,6 +4983,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 794 46) (end 794 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 794 69) (end 794 98))
       )
       (diagnostic
         (severity warning)
@@ -4878,6 +5112,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 844 100) (end 844 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 845 45) (end 845 64))
@@ -4902,6 +5142,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 845 107) (end 845 109))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 846 22) (end 846 39))
@@ -4911,6 +5157,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 846 46) (end 846 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 846 69) (end 846 108))
       )
       (diagnostic
         (severity warning)
@@ -5058,6 +5310,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 897 100) (end 897 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 898 45) (end 898 64))
@@ -5082,6 +5340,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 898 107) (end 898 109))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 899 22) (end 899 39))
@@ -5091,6 +5355,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 899 46) (end 899 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 899 69) (end 899 118))
       )
       (diagnostic
         (severity warning)
@@ -5196,6 +5466,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 925 100) (end 925 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 926 45) (end 926 64))
@@ -5220,6 +5496,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 926 107) (end 926 109))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 927 22) (end 927 39))
@@ -5229,6 +5511,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 927 46) (end 927 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 927 69) (end 927 118))
       )
       (diagnostic
         (severity warning)
@@ -5319,6 +5607,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 953 46) (end 953 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 953 69) (end 953 98))
       )
       (diagnostic
         (severity warning)
@@ -5418,6 +5712,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1005 98) (end 1005 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 1006 45) (end 1006 64))
@@ -5451,6 +5751,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1007 46) (end 1007 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1007 69) (end 1007 98))
       )
       (diagnostic
         (severity warning)
@@ -5550,6 +5856,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1056 98) (end 1056 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 1057 45) (end 1057 64))
@@ -5583,6 +5895,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1058 46) (end 1058 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1058 69) (end 1058 98))
       )
       (diagnostic
         (severity warning)
@@ -5730,6 +6048,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1112 100) (end 1112 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 1113 45) (end 1113 64))
@@ -5754,6 +6078,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1113 107) (end 1113 109))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1114 22) (end 1114 39))
@@ -5763,6 +6093,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1114 46) (end 1114 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1114 69) (end 1114 118))
       )
       (diagnostic
         (severity warning)
@@ -5868,6 +6204,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1144 100) (end 1144 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 1145 45) (end 1145 64))
@@ -5892,6 +6234,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1145 107) (end 1145 109))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1146 22) (end 1146 39))
@@ -5901,6 +6249,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1146 46) (end 1146 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1146 69) (end 1146 118))
       )
       (diagnostic
         (severity warning)
@@ -5994,6 +6348,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1205 100) (end 1205 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 1206 45) (end 1206 64))
@@ -6018,6 +6378,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1206 107) (end 1206 109))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1207 22) (end 1207 39))
@@ -6027,6 +6393,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1207 46) (end 1207 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1207 69) (end 1207 108))
       )
       (diagnostic
         (severity warning)
@@ -6174,6 +6546,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1258 100) (end 1258 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 1259 45) (end 1259 64))
@@ -6198,6 +6576,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1259 107) (end 1259 109))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1260 22) (end 1260 39))
@@ -6207,6 +6591,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1260 46) (end 1260 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1260 69) (end 1260 118))
       )
       (diagnostic
         (severity warning)
@@ -6306,6 +6696,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1309 98) (end 1309 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 1310 45) (end 1310 64))
@@ -6339,6 +6735,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1311 46) (end 1311 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1311 69) (end 1311 98))
       )
       (diagnostic
         (severity warning)
@@ -6444,6 +6846,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1337 100) (end 1337 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 1338 45) (end 1338 64))
@@ -6468,6 +6876,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1338 107) (end 1338 109))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1339 22) (end 1339 39))
@@ -6477,6 +6891,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1339 46) (end 1339 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1339 69) (end 1339 118))
       )
       (diagnostic
         (severity warning)
@@ -6576,6 +6996,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1388 98) (end 1388 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 1389 34) (end 1389 53))
@@ -6624,6 +7050,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1390 100) (end 1390 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1391 22) (end 1391 39))
@@ -6633,6 +7065,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1391 46) (end 1391 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1391 69) (end 1391 99))
       )
       (diagnostic
         (severity warning)
@@ -6714,6 +7152,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1420 100) (end 1420 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1421 22) (end 1421 39))
@@ -6723,6 +7167,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1421 46) (end 1421 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1421 69) (end 1421 89))
       )
       (diagnostic
         (severity warning)
@@ -6846,6 +7296,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1471 100) (end 1471 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1472 22) (end 1472 39))
@@ -6855,6 +7311,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1472 46) (end 1472 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1472 69) (end 1472 91))
       )
       (diagnostic
         (severity warning)
@@ -6936,6 +7398,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1497 100) (end 1497 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1498 22) (end 1498 39))
@@ -6945,6 +7413,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1498 46) (end 1498 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1498 69) (end 1498 91))
       )
       (diagnostic
         (severity warning)
@@ -7050,6 +7524,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1528 100) (end 1528 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 1529 45) (end 1529 64))
@@ -7074,6 +7554,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1529 107) (end 1529 109))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1530 22) (end 1530 39))
@@ -7083,6 +7569,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1530 46) (end 1530 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1530 69) (end 1530 118))
       )
       (diagnostic
         (severity warning)
@@ -7230,6 +7722,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1647 98) (end 1647 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 1648 34) (end 1648 53))
@@ -7251,6 +7749,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1648 85) (end 1648 93))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1648 96) (end 1648 98))
       )
       (diagnostic
         (severity warning)
@@ -7311,6 +7815,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1651 46) (end 1651 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1651 69) (end 1651 118))
       )
       (diagnostic
         (severity warning)
@@ -7416,6 +7926,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1677 100) (end 1677 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 1678 45) (end 1678 64))
@@ -7440,6 +7956,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1678 107) (end 1678 109))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1679 22) (end 1679 39))
@@ -7449,6 +7971,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1679 46) (end 1679 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1679 69) (end 1679 118))
       )
       (diagnostic
         (severity warning)
@@ -7554,6 +8082,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1705 100) (end 1705 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 1706 45) (end 1706 64))
@@ -7578,6 +8112,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1706 107) (end 1706 109))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1707 22) (end 1707 39))
@@ -7587,6 +8127,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1707 46) (end 1707 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1707 69) (end 1707 118))
       )
       (diagnostic
         (severity warning)
@@ -7656,6 +8202,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1785 98) (end 1785 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 1786 34) (end 1786 53))
@@ -7677,6 +8229,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1786 85) (end 1786 93))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1786 96) (end 1786 98))
       )
       (diagnostic
         (severity warning)
@@ -7737,6 +8295,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1789 46) (end 1789 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1789 69) (end 1789 118))
       )
       (diagnostic
         (severity warning)
@@ -7842,6 +8406,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1815 100) (end 1815 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 1816 45) (end 1816 64))
@@ -7866,6 +8436,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1816 107) (end 1816 109))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1817 22) (end 1817 39))
@@ -7875,6 +8451,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1817 46) (end 1817 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1817 69) (end 1817 118))
       )
       (diagnostic
         (severity warning)
@@ -7986,6 +8568,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1861 100) (end 1861 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 1862 45) (end 1862 64))
@@ -8010,6 +8598,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1862 107) (end 1862 109))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1863 22) (end 1863 39))
@@ -8019,6 +8613,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1863 46) (end 1863 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1863 69) (end 1863 118))
       )
       (diagnostic
         (severity warning)
@@ -8076,6 +8676,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1887 98) (end 1887 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 1888 34) (end 1888 53))
@@ -8097,6 +8703,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1888 85) (end 1888 93))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1888 96) (end 1888 98))
       )
       (diagnostic
         (severity warning)
@@ -8157,6 +8769,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1891 46) (end 1891 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1891 69) (end 1891 118))
       )
       (diagnostic
         (severity warning)
@@ -8298,6 +8916,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1972 100) (end 1972 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 1973 45) (end 1973 64))
@@ -8322,6 +8946,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1973 107) (end 1973 109))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1974 22) (end 1974 39))
@@ -8331,6 +8961,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1974 46) (end 1974 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1974 69) (end 1974 118))
       )
       (diagnostic
         (severity warning)
@@ -8436,6 +9072,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2004 100) (end 2004 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 2005 45) (end 2005 64))
@@ -8460,6 +9102,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2005 107) (end 2005 109))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 2006 22) (end 2006 39))
@@ -8469,6 +9117,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 2006 46) (end 2006 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2006 69) (end 2006 118))
       )
       (diagnostic
         (severity warning)
@@ -8574,6 +9228,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2032 100) (end 2032 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 2033 45) (end 2033 64))
@@ -8598,6 +9258,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2033 107) (end 2033 109))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 2034 22) (end 2034 39))
@@ -8607,6 +9273,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 2034 46) (end 2034 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2034 69) (end 2034 118))
       )
       (diagnostic
         (severity warning)
@@ -8712,6 +9384,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2060 100) (end 2060 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 2061 45) (end 2061 64))
@@ -8736,6 +9414,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2061 107) (end 2061 109))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 2062 22) (end 2062 39))
@@ -8745,6 +9429,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 2062 46) (end 2062 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2062 69) (end 2062 118))
       )
       (diagnostic
         (severity warning)
@@ -8802,6 +9492,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2086 98) (end 2086 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 2087 34) (end 2087 53))
@@ -8823,6 +9519,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 2087 85) (end 2087 93))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2087 96) (end 2087 98))
       )
       (diagnostic
         (severity warning)
@@ -8886,6 +9588,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2090 69) (end 2090 118))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")
         (range (start 2114 38) (end 2114 57))
@@ -8940,6 +9648,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2134 98) (end 2134 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 2135 34) (end 2135 53))
@@ -8961,6 +9675,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 2135 85) (end 2135 93))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2135 96) (end 2135 98))
       )
       (diagnostic
         (severity warning)
@@ -9024,6 +9744,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2138 69) (end 2138 118))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")
         (range (start 2142 46) (end 2142 65))
@@ -9078,6 +9804,12 @@ standard library package ISQElectromagnetism {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2162 98) (end 2162 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 2163 34) (end 2163 53))
@@ -9099,6 +9831,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 2163 85) (end 2163 93))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2163 96) (end 2163 98))
       )
       (diagnostic
         (severity warning)
@@ -9159,6 +9897,12 @@ standard library package ISQElectromagnetism {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 2166 46) (end 2166 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 2166 69) (end 2166 118))
       )
       (diagnostic
         (severity warning)
@@ -9227,7 +9971,7 @@ standard library package ISQElectromagnetism {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:cddce1f05b20fd7a0fe3016bf8cf7beaffe87c51788ea3c66fb7bfe7a5eb08cd") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:cddce1f05b20fd7a0fe3016bf8cf7beaffe87c51788ea3c66fb7bfe7a5eb08cd") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/isq_electromagnetism.md") (qualified-name "ISQElectromagnetism"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/isq_electromagnetism.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false)))))
@@ -14672,6 +15416,7 @@ standard library package ISQElectromagnetism {
     (evaluated (declaration (node (document "memory://snapshot/isq_electromagnetism.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
     (evaluated (declaration (node (document "memory://snapshot/isq_electromagnetism.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
     (evaluated (declaration (node (document "memory://snapshot/isq_electromagnetism.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_electromagnetism.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/isq_electromagnetism.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
     (evaluated (declaration (node (document "memory://snapshot/isq_electromagnetism.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 3)))
     (evaluated (declaration (node (document "memory://snapshot/isq_electromagnetism.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))

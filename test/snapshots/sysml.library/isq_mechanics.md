@@ -1661,6 +1661,12 @@ standard library package ISQMechanics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 46 98) (end 46 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 47 34) (end 47 53))
@@ -1694,6 +1700,12 @@ standard library package ISQMechanics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 48 46) (end 48 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 48 69) (end 48 87))
       )
       (diagnostic
         (severity warning)
@@ -1775,6 +1787,12 @@ standard library package ISQMechanics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 77 96) (end 77 98))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 78 22) (end 78 39))
@@ -1784,6 +1802,12 @@ standard library package ISQMechanics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 78 46) (end 78 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 78 69) (end 78 87))
       )
       (diagnostic
         (severity warning)
@@ -1847,6 +1871,12 @@ standard library package ISQMechanics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 121 98) (end 121 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 122 34) (end 122 53))
@@ -1880,6 +1910,12 @@ standard library package ISQMechanics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 123 46) (end 123 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 123 69) (end 123 87))
       )
       (diagnostic
         (severity warning)
@@ -1937,6 +1973,12 @@ standard library package ISQMechanics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 151 98) (end 151 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 152 34) (end 152 53))
@@ -1970,6 +2012,12 @@ standard library package ISQMechanics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 153 46) (end 153 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 153 69) (end 153 87))
       )
       (diagnostic
         (severity warning)
@@ -2063,6 +2111,12 @@ standard library package ISQMechanics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 183 69) (end 183 87))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")
         (range (start 186 54) (end 186 73))
@@ -2102,6 +2156,12 @@ standard library package ISQMechanics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 207 22) (end 207 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 207 35) (end 207 41))
       )
       (diagnostic
         (severity warning)
@@ -2219,6 +2279,12 @@ standard library package ISQMechanics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 235 100) (end 235 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 236 22) (end 236 39))
@@ -2228,6 +2294,12 @@ standard library package ISQMechanics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 236 46) (end 236 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 236 69) (end 236 99))
       )
       (diagnostic
         (severity warning)
@@ -2375,6 +2447,12 @@ standard library package ISQMechanics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 287 100) (end 287 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 288 22) (end 288 39))
@@ -2384,6 +2462,12 @@ standard library package ISQMechanics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 288 46) (end 288 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 288 69) (end 288 99))
       )
       (diagnostic
         (severity warning)
@@ -2621,6 +2705,12 @@ standard library package ISQMechanics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 447 100) (end 447 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 448 22) (end 448 39))
@@ -2630,6 +2720,12 @@ standard library package ISQMechanics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 448 46) (end 448 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 448 69) (end 448 99))
       )
       (diagnostic
         (severity warning)
@@ -2777,6 +2873,12 @@ standard library package ISQMechanics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 499 100) (end 499 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 500 22) (end 500 39))
@@ -2786,6 +2888,12 @@ standard library package ISQMechanics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 500 46) (end 500 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 500 69) (end 500 99))
       )
       (diagnostic
         (severity warning)
@@ -2933,6 +3041,12 @@ standard library package ISQMechanics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 551 100) (end 551 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 552 22) (end 552 39))
@@ -2942,6 +3056,12 @@ standard library package ISQMechanics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 552 46) (end 552 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 552 69) (end 552 99))
       )
       (diagnostic
         (severity warning)
@@ -3089,6 +3209,12 @@ standard library package ISQMechanics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 603 100) (end 603 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 604 22) (end 604 39))
@@ -3098,6 +3224,12 @@ standard library package ISQMechanics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 604 46) (end 604 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 604 69) (end 604 99))
       )
       (diagnostic
         (severity warning)
@@ -3203,6 +3335,12 @@ standard library package ISQMechanics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 630 100) (end 630 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 631 22) (end 631 39))
@@ -3212,6 +3350,12 @@ standard library package ISQMechanics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 631 46) (end 631 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 631 69) (end 631 99))
       )
       (diagnostic
         (severity warning)
@@ -3311,6 +3455,12 @@ standard library package ISQMechanics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 680 98) (end 680 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 681 34) (end 681 53))
@@ -3359,6 +3509,12 @@ standard library package ISQMechanics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 682 100) (end 682 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 683 22) (end 683 39))
@@ -3368,6 +3524,12 @@ standard library package ISQMechanics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 683 46) (end 683 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 683 69) (end 683 99))
       )
       (diagnostic
         (severity warning)
@@ -3425,6 +3587,12 @@ standard library package ISQMechanics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 723 98) (end 723 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 724 34) (end 724 53))
@@ -3473,6 +3641,12 @@ standard library package ISQMechanics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 725 100) (end 725 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 726 22) (end 726 39))
@@ -3482,6 +3656,12 @@ standard library package ISQMechanics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 726 46) (end 726 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 726 69) (end 726 99))
       )
       (diagnostic
         (severity warning)
@@ -3524,6 +3704,12 @@ standard library package ISQMechanics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 750 22) (end 750 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 750 35) (end 750 41))
       )
       (diagnostic
         (severity warning)
@@ -3593,6 +3779,12 @@ standard library package ISQMechanics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 776 98) (end 776 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 777 34) (end 777 53))
@@ -3641,6 +3833,12 @@ standard library package ISQMechanics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 778 100) (end 778 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 779 22) (end 779 39))
@@ -3650,6 +3848,12 @@ standard library package ISQMechanics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 779 46) (end 779 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 779 69) (end 779 99))
       )
       (diagnostic
         (severity warning)
@@ -3707,6 +3911,12 @@ standard library package ISQMechanics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 803 98) (end 803 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 804 34) (end 804 53))
@@ -3755,6 +3965,12 @@ standard library package ISQMechanics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 805 100) (end 805 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 806 22) (end 806 39))
@@ -3764,6 +3980,12 @@ standard library package ISQMechanics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 806 46) (end 806 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 806 69) (end 806 99))
       )
       (diagnostic
         (severity warning)
@@ -3836,6 +4058,12 @@ standard library package ISQMechanics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 853 22) (end 853 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 853 35) (end 853 41))
       )
       (diagnostic
         (severity warning)
@@ -3929,6 +4157,12 @@ standard library package ISQMechanics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 947 98) (end 947 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 948 34) (end 948 53))
@@ -3977,6 +4211,12 @@ standard library package ISQMechanics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 949 100) (end 949 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 950 22) (end 950 39))
@@ -3986,6 +4226,12 @@ standard library package ISQMechanics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 950 46) (end 950 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 950 69) (end 950 99))
       )
       (diagnostic
         (severity warning)
@@ -4043,6 +4289,12 @@ standard library package ISQMechanics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 978 98) (end 978 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 979 34) (end 979 53))
@@ -4091,6 +4343,12 @@ standard library package ISQMechanics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 980 100) (end 980 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 981 22) (end 981 39))
@@ -4100,6 +4358,12 @@ standard library package ISQMechanics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 981 46) (end 981 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 981 69) (end 981 99))
       )
       (diagnostic
         (severity warning)
@@ -4157,6 +4421,12 @@ standard library package ISQMechanics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1009 98) (end 1009 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 1010 34) (end 1010 53))
@@ -4205,6 +4475,12 @@ standard library package ISQMechanics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1011 100) (end 1011 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1012 22) (end 1012 39))
@@ -4214,6 +4490,12 @@ standard library package ISQMechanics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1012 46) (end 1012 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1012 69) (end 1012 99))
       )
       (diagnostic
         (severity warning)
@@ -4295,6 +4577,12 @@ standard library package ISQMechanics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1041 96) (end 1041 98))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 1042 38) (end 1042 57))
@@ -4328,6 +4616,12 @@ standard library package ISQMechanics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1043 46) (end 1043 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1043 69) (end 1043 99))
       )
       (diagnostic
         (severity warning)
@@ -4607,6 +4901,12 @@ standard library package ISQMechanics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1218 98) (end 1218 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 1219 34) (end 1219 53))
@@ -4655,6 +4955,12 @@ standard library package ISQMechanics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1220 100) (end 1220 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1221 22) (end 1221 39))
@@ -4664,6 +4970,12 @@ standard library package ISQMechanics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1221 46) (end 1221 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1221 69) (end 1221 99))
       )
       (diagnostic
         (severity warning)
@@ -4745,6 +5057,12 @@ standard library package ISQMechanics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1250 100) (end 1250 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1251 22) (end 1251 39))
@@ -4754,6 +5072,12 @@ standard library package ISQMechanics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1251 46) (end 1251 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1251 69) (end 1251 91))
       )
       (diagnostic
         (severity warning)
@@ -4835,6 +5159,12 @@ standard library package ISQMechanics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1276 100) (end 1276 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1277 22) (end 1277 39))
@@ -4844,6 +5174,12 @@ standard library package ISQMechanics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1277 46) (end 1277 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1277 69) (end 1277 89))
       )
       (diagnostic
         (severity warning)
@@ -4949,6 +5285,12 @@ standard library package ISQMechanics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1303 100) (end 1303 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1304 22) (end 1304 39))
@@ -4958,6 +5300,12 @@ standard library package ISQMechanics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1304 46) (end 1304 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1304 69) (end 1304 99))
       )
       (diagnostic
         (severity warning)
@@ -5045,6 +5393,12 @@ standard library package ISQMechanics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1427 98) (end 1427 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 1428 34) (end 1428 53))
@@ -5093,6 +5447,12 @@ standard library package ISQMechanics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1429 100) (end 1429 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1430 22) (end 1430 39))
@@ -5102,6 +5462,12 @@ standard library package ISQMechanics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1430 46) (end 1430 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1430 69) (end 1430 99))
       )
       (diagnostic
         (severity warning)
@@ -5225,6 +5591,12 @@ standard library package ISQMechanics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1480 100) (end 1480 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1481 22) (end 1481 39))
@@ -5234,6 +5606,12 @@ standard library package ISQMechanics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1481 46) (end 1481 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1481 69) (end 1481 89))
       )
       (diagnostic
         (severity warning)
@@ -5315,6 +5693,12 @@ standard library package ISQMechanics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1506 100) (end 1506 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1507 22) (end 1507 39))
@@ -5324,6 +5708,12 @@ standard library package ISQMechanics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1507 46) (end 1507 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1507 69) (end 1507 89))
       )
       (diagnostic
         (severity warning)
@@ -5405,6 +5795,12 @@ standard library package ISQMechanics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1532 100) (end 1532 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1533 22) (end 1533 39))
@@ -5414,6 +5810,12 @@ standard library package ISQMechanics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1533 46) (end 1533 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1533 69) (end 1533 91))
       )
       (diagnostic
         (severity warning)
@@ -5519,6 +5921,12 @@ standard library package ISQMechanics {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1559 100) (end 1559 102))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1560 22) (end 1560 39))
@@ -5529,6 +5937,12 @@ standard library package ISQMechanics {
         (source "semantic")
         (range (start 1560 46) (end 1560 66))
       )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1560 69) (end 1560 99))
+      )
     )
   )
 )
@@ -5536,7 +5950,7 @@ standard library package ISQMechanics {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:fe560369ee3a593a554fd579ed4cda032411b1357e08e158490a1be386cddafa") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:fe560369ee3a593a554fd579ed4cda032411b1357e08e158490a1be386cddafa") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/isq_mechanics.md") (qualified-name "ISQMechanics"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/isq_mechanics.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false)))))
@@ -8828,8 +9242,11 @@ standard library package ISQMechanics {
     (evaluated (declaration (node (document "memory://snapshot/isq_mechanics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
     (evaluated (declaration (node (document "memory://snapshot/isq_mechanics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
     (evaluated (declaration (node (document "memory://snapshot/isq_mechanics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_mechanics.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/isq_mechanics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 4)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_mechanics.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/isq_mechanics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 4)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_mechanics.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/isq_mechanics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 3)))
     (evaluated (declaration (node (document "memory://snapshot/isq_mechanics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
     (evaluated (declaration (node (document "memory://snapshot/isq_mechanics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 3)))

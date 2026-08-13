@@ -70,6 +70,12 @@ standard library package ParametersOfInterestMetadata {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 25 18) (end 25 59))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")
         (range (start 28 45) (end 28 61))
@@ -80,6 +86,12 @@ standard library package ParametersOfInterestMetadata {
         (source "semantic")
         (range (start 35 26) (end 35 38))
       )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 36 18) (end 36 57))
+      )
     )
   )
 )
@@ -87,7 +99,7 @@ standard library package ParametersOfInterestMetadata {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:9787f65a0bc35b112f6a4ec8bf67450b966abb3973717527b90a926fc3114536") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:9787f65a0bc35b112f6a4ec8bf67450b966abb3973717527b90a926fc3114536") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/parameters_of_interest_metadata.md") (qualified-name "ParametersOfInterestMetadata"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/parameters_of_interest_metadata.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Metaobjects::SemanticMetadata") (import (shape membership) (recursive false)))))

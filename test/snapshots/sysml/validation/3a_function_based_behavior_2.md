@@ -106,6 +106,12 @@ package '3a-Function-based Behavior-2' {
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
+        (range (start 38 17) (end 38 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
         (range (start 64 9) (end 64 14))
       )
       (diagnostic
@@ -127,7 +133,7 @@ package '3a-Function-based Behavior-2' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:789b5126e10a26a79b27a711efd51c754c2cc6f8119fdfae0d346afa0964cc51") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:789b5126e10a26a79b27a711efd51c754c2cc6f8119fdfae0d346afa0964cc51") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/3a_function_based_behavior_2.md") (qualified-name "3a-Function-based Behavior-2"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/3a_function_based_behavior_2.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "Definitions") (import (shape namespace) (recursive false)))))
@@ -176,7 +182,7 @@ package '3a-Function-based Behavior-2' {
     (declaration (id (node (document "memory://snapshot/3a_function_based_behavior_2.md") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::engineStopped"))) (kind action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (acceptPayloadType (reference "EngineOff"))))
     (declaration (id (node (document "memory://snapshot/3a_function_based_behavior_2.md") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::fuelCmd"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "FuelCmd") (direction in))))
     (declaration (id (node (document "memory://snapshot/3a_function_based_behavior_2.md") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::generate torque"))) (kind action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Generate Torque"))))
-    (declaration (id (node (document "memory://snapshot/3a_function_based_behavior_2.md") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::generate torque::fuelCmd"))) (kind parameter) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/3a_function_based_behavior_2.md") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::generate torque::fuelCmd"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "provide power::fuelCmd"))))
     (declaration (id (node (document "memory://snapshot/3a_function_based_behavior_2.md") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::transfer torque"))) (kind action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Transfer Torque"))))
     (declaration (id (node (document "memory://snapshot/3a_function_based_behavior_2.md") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::wheelTorque1"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Torque") (direction out))))
     (declaration (id (node (document "memory://snapshot/3a_function_based_behavior_2.md") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::wheelTorque2"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Torque") (direction out))))
@@ -323,6 +329,9 @@ package '3a-Function-based Behavior-2' {
     (reference (id (source (node (document "memory://snapshot/3a_function_based_behavior_2.md") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::generate torque"))) (kind featureTyping) (ordinal 0))
       (authored-target "Generate Torque")
       (outcome (status resolved) (target (node (document "memory://snapshot/3a_function_based_behavior_2.md") (qualified-name "3a-Function-based Behavior-2::Definitions::Generate Torque")))))
+    (reference (id (source (node (document "memory://snapshot/3a_function_based_behavior_2.md") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::generate torque::fuelCmd"))) (kind expressionOperand) (ordinal 0))
+      (authored-target "provide power::fuelCmd")
+      (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/3a_function_based_behavior_2.md") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::transfer torque"))) (kind featureTyping) (ordinal 0))
       (authored-target "Transfer Torque")
       (outcome (status resolved) (target (node (document "memory://snapshot/3a_function_based_behavior_2.md") (qualified-name "3a-Function-based Behavior-2::Definitions::Transfer Torque")))))
@@ -380,6 +389,7 @@ package '3a-Function-based Behavior-2' {
     (relationship (kind typing) (direction out) (source (node (document "memory://snapshot/3a_function_based_behavior_2.md") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::wheelTorque2"))) (target (node (document "memory://snapshot/3a_function_based_behavior_2.md") (qualified-name "3a-Function-based Behavior-2::Definitions::Torque"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/3a_function_based_behavior_2.md") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::wheelTorque2"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/3a_function_based_behavior_2.md") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::generate torque::fuelCmd"))) (value (kind unresolved-operand)))
   )
 )
 ~~~
@@ -573,6 +583,10 @@ package '3a-Function-based Behavior-2' {
   (query (document "memory://snapshot/3a_function_based_behavior_2.md") (range (start 34 29) (end 34 46)) (probe (position 34 29))
     (reference (id (source (node (document "memory://snapshot/3a_function_based_behavior_2.md") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::generate torque"))) (kind featureTyping) (ordinal 0) (authored-target "Generate Torque")
       (outcome (status resolved) (target (node (document "memory://snapshot/3a_function_based_behavior_2.md") (qualified-name "3a-Function-based Behavior-2::Definitions::Generate Torque")))))
+  )
+  (query (document "memory://snapshot/3a_function_based_behavior_2.md") (range (start 38 17) (end 38 41)) (probe (position 38 17))
+    (reference (id (source (node (document "memory://snapshot/3a_function_based_behavior_2.md") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::generate torque::fuelCmd"))) (kind expressionOperand) (ordinal 0) (authored-target "provide power::fuelCmd")
+      (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/3a_function_based_behavior_2.md") (range (start 49 29) (end 49 46)) (probe (position 49 29))
     (reference (id (source (node (document "memory://snapshot/3a_function_based_behavior_2.md") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::transfer torque"))) (kind featureTyping) (ordinal 0) (authored-target "Transfer Torque")

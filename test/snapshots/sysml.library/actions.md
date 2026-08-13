@@ -879,6 +879,12 @@ standard library package Actions {
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
+        (range (start 255 12) (end 255 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
         (range (start 280 7) (end 280 12))
       )
       (diagnostic
@@ -1044,7 +1050,7 @@ standard library package Actions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:0683383b61e47daf5fc3d06f372c78670abac17c7ed407cc15dcc1a8429a1ac8") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:0683383b61e47daf5fc3d06f372c78670abac17c7ed407cc15dcc1a8429a1ac8") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/actions.md") (qualified-name "Actions"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/actions.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Base::Anything") (import (shape membership) (recursive false)))))
@@ -1134,7 +1140,7 @@ standard library package Actions {
     (declaration (id (node (document "memory://snapshot/actions.md") (qualified-name "Actions::SendAction::sentMessage"))) (kind ref) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MessageTransfer")) (featureTyping (reference "MessageAction")) (redefinition (reference "sentTransfer"))))
     (declaration (id (node (document "memory://snapshot/actions.md") (qualified-name "Actions::TerminateAction"))) (kind action-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Action"))))
     (declaration (id (node (document "memory://snapshot/actions.md") (qualified-name "Actions::TerminateAction::terminateOccurrence"))) (kind action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "destroy"))))
-    (declaration (id (node (document "memory://snapshot/actions.md") (qualified-name "Actions::TerminateAction::terminateOccurrence::occ"))) (kind parameter) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/actions.md") (qualified-name "Actions::TerminateAction::terminateOccurrence::occ"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "terminatedOccurrence"))))
     (declaration (id (node (document "memory://snapshot/actions.md") (qualified-name "Actions::TransitionAction"))) (kind action-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Action")) (specialization (reference "TransitionPerformance"))))
     (declaration (id (node (document "memory://snapshot/actions.md") (anonymous (kind bind) (ordinal 0))))) (kind bind) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (bindSource (reference "receiver"))))
     (declaration (id (node (document "memory://snapshot/actions.md") (anonymous (kind bind) (ordinal 1))))) (kind bind) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (bindSource (reference "acceptedMessage"))))
@@ -1501,6 +1507,9 @@ standard library package Actions {
     (reference (id (source (node (document "memory://snapshot/actions.md") (qualified-name "Actions::TerminateAction::terminateOccurrence"))) (kind featureTyping) (ordinal 0))
       (authored-target "destroy")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/actions.md") (qualified-name "Actions::TerminateAction::terminateOccurrence::occ"))) (kind expressionOperand) (ordinal 0))
+      (authored-target "terminatedOccurrence")
+      (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/actions.md") (qualified-name "Actions::TransitionAction"))) (kind specialization) (ordinal 0))
       (authored-target "Action")
       (outcome (status resolved) (target (node (document "memory://snapshot/actions.md") (qualified-name "Actions::Action")))))
@@ -1710,6 +1719,7 @@ standard library package Actions {
     (relationship (kind redefinition) (source (node (document "memory://snapshot/actions.md") (qualified-name "Actions::WhileLoopAction::body"))) (target (node (document "memory://snapshot/actions.md") (qualified-name "Actions::LoopAction::body"))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/actions.md") (qualified-name "Actions::TerminateAction::terminateOccurrence::occ"))) (value (kind unresolved-operand)))
   )
 )
 ~~~
@@ -2170,6 +2180,10 @@ standard library package Actions {
   )
   (query (document "memory://snapshot/actions.md") (range (start 254 31) (end 254 38)) (probe (position 254 31))
     (reference (id (source (node (document "memory://snapshot/actions.md") (qualified-name "Actions::TerminateAction::terminateOccurrence"))) (kind featureTyping) (ordinal 0) (authored-target "destroy")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/actions.md") (range (start 255 12) (end 255 32)) (probe (position 255 12))
+    (reference (id (source (node (document "memory://snapshot/actions.md") (qualified-name "Actions::TerminateAction::terminateOccurrence::occ"))) (kind expressionOperand) (ordinal 0) (authored-target "terminatedOccurrence")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/actions.md") (range (start 330 41) (end 330 47)) (probe (position 330 41))

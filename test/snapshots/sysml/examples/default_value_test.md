@@ -80,6 +80,7 @@ package DefaultValueTest {
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V::m"))) (value (kind integer) (integer 10)))
     (evaluated (declaration (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V::n"))) (value (kind integer) (integer 20)))
+    (evaluated (declaration (node (document "memory://snapshot/default_value_test.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind unresolved-operand)))
     (evaluated (declaration (node (document "memory://snapshot/default_value_test.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind integer) (integer 20)))
   )
 )

@@ -85,9 +85,27 @@ package CalculationExample {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_calc_definition_member")
+        (source "semantic")
+        (range (start 22 18) (end 22 50))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 23 9) (end 23 18))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 27 24) (end 27 51))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 28 24) (end 28 47))
       )
     )
   )
@@ -96,7 +114,7 @@ package CalculationExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d0c80a0d91a8d81aff9f9961a53c439c40dff92c1b18f08d25eab88a25bd083f") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:d0c80a0d91a8d81aff9f9961a53c439c40dff92c1b18f08d25eab88a25bd083f") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/calculation_test.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ISQ") (import (shape namespace) (recursive false)))))

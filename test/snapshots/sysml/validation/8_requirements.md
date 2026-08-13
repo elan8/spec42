@@ -254,6 +254,18 @@ package '8-Requirements' {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 43 24) (end 43 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 60 24) (end 60 33))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 76 25) (end 76 34))
@@ -278,6 +290,12 @@ package '8-Requirements' {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 104 28) (end 104 37))
+      )
+      (diagnostic
+        (severity warning)
         (code "unsupported_requirement_definition_member")
         (source "semantic")
         (range (start 110 3) (end 117 4))
@@ -287,6 +305,12 @@ package '8-Requirements' {
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 125 29) (end 125 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 126 28) (end 126 37))
       )
       (diagnostic
         (severity warning)

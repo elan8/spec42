@@ -84,7 +84,7 @@ package MassRollup2 {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:d01b79e670c8f3d078b774f56d534315ffd26e912cbd2c14601ae5e673801b1c") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:d01b79e670c8f3d078b774f56d534315ffd26e912cbd2c14601ae5e673801b1c") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "NumericalFunctions") (import (shape namespace) (recursive false)))))
@@ -114,6 +114,7 @@ package MassRollup2 {
     (relationship (kind typing) (source (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::composicomackagteThing"))) (target (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::MassedThing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::composicomackagteThing"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::MassedThing::totalMass"))) (value (kind unresolved-operand)))
   )
 )
 ~~~

@@ -158,6 +158,12 @@ package VehicleIndividuals {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 13 30) (end 13 39))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")
         (range (start 16 34) (end 16 41))
@@ -167,6 +173,12 @@ package VehicleIndividuals {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 22 23) (end 22 27))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 22 30) (end 22 39))
       )
       (diagnostic
         (severity warning)
@@ -277,7 +289,7 @@ package VehicleIndividuals {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:5ebd1bfdcf66e6d42fb3be35cd2157e4d253d627734000a925e36c30f97e69a6") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:5ebd1bfdcf66e6d42fb3be35cd2157e4d253d627734000a925e36c30f97e69a6") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/vehicle_individuals.md") (qualified-name "VehicleIndividuals"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/vehicle_individuals.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "VehicleUsages") (import (shape namespace) (recursive false)))))
@@ -428,6 +440,8 @@ package VehicleIndividuals {
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/vehicle_individuals.md") (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/vehicle_individuals.md") (qualified-name "VehicleIndividuals::IndividualSnapshots::t1"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_individuals.md") (anonymous (kind attribute) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/vehicle_individuals.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/vehicle_individuals.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
   )
 )
 ~~~
