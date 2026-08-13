@@ -359,6 +359,89 @@ mod tests {
         );
     }
 
+    /// A `state def` body's `entry action X;` / `do action Y;` / `exit action Z;` bindings (BNF
+    /// `EntryAction`/`DoAction`/`ExitAction.action_reference`) must each resolve to the enclosing
+    /// package's action declarations (there is no `StateDefBodyElement::ActionUsage` shape --
+    /// bound actions are ordinarily declared alongside the state def, not nested inside it,
+    /// mirroring the real corpus fixture `24_state_actions.md`), not fall through to
+    /// `unsupported_state_definition_member`.
+    #[test]
+    fn entry_do_exit_action_bindings_inside_state_def_body_resolve() {
+        let sexpr = semantic_sexpr_for(
+            "package P { action enter1; action running1; action leave1; state def S { entry action enter1; do action running1; exit action leave1; } }",
+        );
+        assert!(
+            sexpr.contains("(kind entryActionBinding)"),
+            "expected an entryActionBinding relationship kind, got: {sexpr}"
+        );
+        assert!(
+            sexpr.contains("(kind doActionBinding)"),
+            "expected a doActionBinding relationship kind, got: {sexpr}"
+        );
+        assert!(
+            sexpr.contains("(kind exitActionBinding)"),
+            "expected an exitActionBinding relationship kind, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("unsupported_state_definition_member"),
+            "did not expect unsupported_state_definition_member, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("(status unresolved)"),
+            "expected all three action bindings to resolve to their sibling declarations, got: {sexpr}"
+        );
+    }
+
+    /// An `entry action X;` binding whose target is not declared anywhere in the model must stay
+    /// an explicit unresolved reference fact, not a fabricated or guessed target.
+    #[test]
+    fn entry_action_binding_unresolvable_target_stays_unresolved() {
+        let sexpr = semantic_sexpr_for("package P { state def S { entry action missingAction; } }");
+        assert!(
+            sexpr.contains("(kind entryActionBinding)"),
+            "expected an entryActionBinding reference to be authored, got: {sexpr}"
+        );
+        assert!(
+            sexpr.contains("(status unresolved)"),
+            "expected the unresolvable entry action target to remain explicitly unresolved, got: {sexpr}"
+        );
+    }
+
+    /// A `state def` body's `then <target>;` initial-state marker (BNF `ThenStmt.state_reference`)
+    /// must resolve to the sibling owned state declaration, not fall through to
+    /// `unsupported_state_definition_member`.
+    #[test]
+    fn then_initial_state_inside_state_def_body_resolves() {
+        let sexpr = semantic_sexpr_for("package P { state def S { state off; then off; } }");
+        assert!(
+            sexpr.contains("(kind initialState)"),
+            "expected an initialState relationship kind, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("unsupported_state_definition_member"),
+            "did not expect unsupported_state_definition_member, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("(status unresolved)"),
+            "expected the `then` target to resolve to its sibling state declaration, got: {sexpr}"
+        );
+    }
+
+    /// A `then <target>;` initial-state marker whose target is not declared anywhere in the model
+    /// must stay an explicit unresolved reference fact, not a fabricated or guessed target.
+    #[test]
+    fn then_initial_state_unresolvable_target_stays_unresolved() {
+        let sexpr = semantic_sexpr_for("package P { state def S { then missingState; } }");
+        assert!(
+            sexpr.contains("(kind initialState)"),
+            "expected an initialState reference to be authored, got: {sexpr}"
+        );
+        assert!(
+            sexpr.contains("(status unresolved)"),
+            "expected the unresolvable `then` target to remain explicitly unresolved, got: {sexpr}"
+        );
+    }
+
     /// A nested `exhibit` state usage inside an `occurrence def`/usage body (BNF
     /// `OccurrenceBodyElement::StateUsage`, e.g. `exhibit vehicleStates.on;` from the OMG spec
     /// Annex's individuals/snapshots examples) must lower as its own `state` declaration via the

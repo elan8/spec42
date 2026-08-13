@@ -750,6 +750,10 @@ fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::CalcDefinition => "calc-def",
         DeclarationKind::CalcUsage => "calc",
         DeclarationKind::ClassDefinition => "class-def",
+        DeclarationKind::EntryActionBinding => "entry-action-binding",
+        DeclarationKind::DoActionBinding => "do-action-binding",
+        DeclarationKind::ExitActionBinding => "exit-action-binding",
+        DeclarationKind::InitialState => "initial-state",
     }
 }
 
@@ -786,6 +790,10 @@ fn reference_kind(kind: ReferenceKind) -> &'static str {
         ReferenceKind::AliasBinding => "aliasBinding",
         ReferenceKind::ConnectorEnd => "connectorEnd",
         ReferenceKind::Succession => "succession",
+        ReferenceKind::EntryActionBinding => "entryActionBinding",
+        ReferenceKind::DoActionBinding => "doActionBinding",
+        ReferenceKind::ExitActionBinding => "exitActionBinding",
+        ReferenceKind::InitialState => "initialState",
     }
 }
 
@@ -801,6 +809,10 @@ fn relationship_kind(kind: ReferenceKind) -> Option<&'static str> {
         ReferenceKind::AliasBinding => Some("aliasBinding"),
         ReferenceKind::ConnectorEnd => Some("connectorEnd"),
         ReferenceKind::Succession => Some("succession"),
+        ReferenceKind::EntryActionBinding => Some("entryActionBinding"),
+        ReferenceKind::DoActionBinding => Some("doActionBinding"),
+        ReferenceKind::ExitActionBinding => Some("exitActionBinding"),
+        ReferenceKind::InitialState => Some("initialState"),
         ReferenceKind::NamespaceImport
         | ReferenceKind::MembershipImport
         | ReferenceKind::FilterImport => None,

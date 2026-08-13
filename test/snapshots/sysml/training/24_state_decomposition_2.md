@@ -47,13 +47,7 @@ package 'State Decomposition-1' {
         (severity warning)
         (code "unsupported_state_definition_member")
         (source "semantic")
-        (range (start 11 3) (end 11 3))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_state_definition_member")
-        (source "semantic")
-        (range (start 11 10) (end 11 10))
+        (range (start 11 3) (end 11 9))
       )
       (diagnostic
         (severity warning)
@@ -90,6 +84,7 @@ package 'State Decomposition-1' {
     (declaration (id (node (document "memory://snapshot/24_state_decomposition_2.md") (qualified-name "State Decomposition-1::vehicleStates"))) (kind state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "VehicleStates"))))
     (declaration (id (node (document "memory://snapshot/24_state_decomposition_2.md") (qualified-name "State Decomposition-1::vehicleStates::healthStates"))) (kind state) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/24_state_decomposition_2.md") (qualified-name "State Decomposition-1::vehicleStates::operationalStates"))) (kind state) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/24_state_decomposition_2.md") (anonymous (kind initial-state) (ordinal 0))))) (kind initial-state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (initialState (reference "off"))))
     (declaration (id (node (document "memory://snapshot/24_state_decomposition_2.md") (qualified-name "State Decomposition-1::vehicleStates::operationalStates::off"))) (kind state) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/24_state_decomposition_2.md") (qualified-name "State Decomposition-1::vehicleStates::operationalStates::on"))) (kind state) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/24_state_decomposition_2.md") (qualified-name "State Decomposition-1::vehicleStates::operationalStates::starting"))) (kind state) (membership (kind feature) (visibility default)))
@@ -98,9 +93,13 @@ package 'State Decomposition-1' {
     (reference (id (source (node (document "memory://snapshot/24_state_decomposition_2.md") (qualified-name "State Decomposition-1::vehicleStates"))) (kind featureTyping) (ordinal 0))
       (authored-target "VehicleStates")
       (outcome (status resolved) (target (node (document "memory://snapshot/24_state_decomposition_2.md") (qualified-name "State Decomposition-1::VehicleStates")))))
+    (reference (id (source (node (document "memory://snapshot/24_state_decomposition_2.md") (anonymous (kind initial-state) (ordinal 0))))) (kind initialState) (ordinal 0))
+      (authored-target "off")
+      (outcome (status resolved) (target (node (document "memory://snapshot/24_state_decomposition_2.md") (qualified-name "State Decomposition-1::vehicleStates::operationalStates::off")))))
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/24_state_decomposition_2.md") (qualified-name "State Decomposition-1::vehicleStates"))) (target (node (document "memory://snapshot/24_state_decomposition_2.md") (qualified-name "State Decomposition-1::VehicleStates"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/24_state_decomposition_2.md") (qualified-name "State Decomposition-1::vehicleStates"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind initialState) (source (node (document "memory://snapshot/24_state_decomposition_2.md") (anonymous (kind initial-state) (ordinal 0))))) (target (node (document "memory://snapshot/24_state_decomposition_2.md") (qualified-name "State Decomposition-1::vehicleStates::operationalStates::off"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/24_state_decomposition_2.md") (anonymous (kind initial-state) (ordinal 0))))) (kind initialState) (ordinal 0)))
   )
   (evaluation
   )
@@ -112,6 +111,10 @@ package 'State Decomposition-1' {
   (query (document "memory://snapshot/24_state_decomposition_2.md") (range (start 8 23) (end 8 36)) (probe (position 8 23))
     (reference (id (source (node (document "memory://snapshot/24_state_decomposition_2.md") (qualified-name "State Decomposition-1::vehicleStates"))) (kind featureTyping) (ordinal 0) (authored-target "VehicleStates")
       (outcome (status resolved) (target (node (document "memory://snapshot/24_state_decomposition_2.md") (qualified-name "State Decomposition-1::VehicleStates")))))
+  )
+  (query (document "memory://snapshot/24_state_decomposition_2.md") (range (start 11 15) (end 11 18)) (probe (position 11 15))
+    (reference (id (source (node (document "memory://snapshot/24_state_decomposition_2.md") (anonymous (kind initial-state) (ordinal 0))))) (kind initialState) (ordinal 0) (authored-target "off")
+      (outcome (status resolved) (target (node (document "memory://snapshot/24_state_decomposition_2.md") (qualified-name "State Decomposition-1::vehicleStates::operationalStates::off")))))
   )
 )
 ~~~

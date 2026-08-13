@@ -118,13 +118,7 @@ package 'Time Constraints' {
         (severity warning)
         (code "unsupported_state_definition_member")
         (source "semantic")
-        (range (start 20 2) (end 20 2))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_state_definition_member")
-        (source "semantic")
-        (range (start 20 9) (end 20 9))
+        (range (start 20 2) (end 20 8))
       )
       (diagnostic
         (severity warning)
@@ -185,6 +179,7 @@ package 'Time Constraints' {
     (declaration (id (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::Vehicle::maintenanceTime"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "TimeInstantValue"))))
     (declaration (id (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::Vehicle::maxTemperature"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "TemperatureValue"))))
     (declaration (id (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::healthStates"))) (kind state) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/31_time_constraints.md") (anonymous (kind initial-state) (ordinal 0))))) (kind initial-state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (initialState (reference "normal"))))
     (declaration (id (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::healthStates::maintenance"))) (kind state) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::healthStates::normal"))) (kind state) (membership (kind feature) (visibility default)))
   )
@@ -219,8 +214,12 @@ package 'Time Constraints' {
     (reference (id (source (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::Vehicle::maxTemperature"))) (kind featureTyping) (ordinal 0))
       (authored-target "TemperatureValue")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/31_time_constraints.md") (anonymous (kind initial-state) (ordinal 0))))) (kind initialState) (ordinal 0))
+      (authored-target "normal")
+      (outcome (status resolved) (target (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::healthStates::normal")))))
   )
   (relationships
+    (relationship (kind initialState) (source (node (document "memory://snapshot/31_time_constraints.md") (anonymous (kind initial-state) (ordinal 0))))) (target (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::healthStates::normal"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/31_time_constraints.md") (anonymous (kind initial-state) (ordinal 0))))) (kind initialState) (ordinal 0)))
   )
   (evaluation
   )
@@ -268,6 +267,10 @@ package 'Time Constraints' {
   (query (document "memory://snapshot/31_time_constraints.md") (range (start 14 29) (end 14 45)) (probe (position 14 29))
     (reference (id (source (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::Vehicle::maxTemperature"))) (kind featureTyping) (ordinal 0) (authored-target "TemperatureValue")
       (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/31_time_constraints.md") (range (start 20 14) (end 20 20)) (probe (position 20 14))
+    (reference (id (source (node (document "memory://snapshot/31_time_constraints.md") (anonymous (kind initial-state) (ordinal 0))))) (kind initialState) (ordinal 0) (authored-target "normal")
+      (outcome (status resolved) (target (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::healthStates::normal")))))
   )
 )
 ~~~

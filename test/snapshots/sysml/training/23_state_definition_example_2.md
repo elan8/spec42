@@ -38,13 +38,7 @@ package 'State Definition Example-2' {
         (severity warning)
         (code "unsupported_state_definition_member")
         (source "semantic")
-        (range (start 7 2) (end 7 2))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_state_definition_member")
-        (source "semantic")
-        (range (start 7 9) (end 7 9))
+        (range (start 7 2) (end 7 8))
       )
       (diagnostic
         (severity warning)
@@ -78,13 +72,18 @@ package 'State Definition Example-2' {
     (declaration (id (node (document "memory://snapshot/23_state_definition_example_2.md") (qualified-name "State Definition Example-2::VehicleOnSignal"))) (kind attribute-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/23_state_definition_example_2.md") (qualified-name "State Definition Example-2::VehicleStartSignal"))) (kind attribute-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/23_state_definition_example_2.md") (qualified-name "State Definition Example-2::VehicleStates"))) (kind state-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/23_state_definition_example_2.md") (anonymous (kind initial-state) (ordinal 0))))) (kind initial-state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (initialState (reference "off"))))
     (declaration (id (node (document "memory://snapshot/23_state_definition_example_2.md") (qualified-name "State Definition Example-2::VehicleStates::off"))) (kind state) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/23_state_definition_example_2.md") (qualified-name "State Definition Example-2::VehicleStates::on"))) (kind state) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/23_state_definition_example_2.md") (qualified-name "State Definition Example-2::VehicleStates::starting"))) (kind state) (membership (kind feature) (visibility default)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/23_state_definition_example_2.md") (anonymous (kind initial-state) (ordinal 0))))) (kind initialState) (ordinal 0))
+      (authored-target "off")
+      (outcome (status resolved) (target (node (document "memory://snapshot/23_state_definition_example_2.md") (qualified-name "State Definition Example-2::VehicleStates::off")))))
   )
   (relationships
+    (relationship (kind initialState) (source (node (document "memory://snapshot/23_state_definition_example_2.md") (anonymous (kind initial-state) (ordinal 0))))) (target (node (document "memory://snapshot/23_state_definition_example_2.md") (qualified-name "State Definition Example-2::VehicleStates::off"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/23_state_definition_example_2.md") (anonymous (kind initial-state) (ordinal 0))))) (kind initialState) (ordinal 0)))
   )
   (evaluation
   )
@@ -93,5 +92,9 @@ package 'State Definition Example-2' {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/23_state_definition_example_2.md") (range (start 7 14) (end 7 17)) (probe (position 7 14))
+    (reference (id (source (node (document "memory://snapshot/23_state_definition_example_2.md") (anonymous (kind initial-state) (ordinal 0))))) (kind initialState) (ordinal 0) (authored-target "off")
+      (outcome (status resolved) (target (node (document "memory://snapshot/23_state_definition_example_2.md") (qualified-name "State Definition Example-2::VehicleStates::off")))))
+  )
 )
 ~~~

@@ -22,11 +22,12 @@ use sysml_v2_parser_next::{
         ConcernUsage as ParserConcernUsage, ConnectStmt, ConnectionDef, ConnectionDefBody,
         ConnectionDefBodyElement, ConnectionEnd, ConnectionUsageMember as ParserConnectionUsage,
         ConstraintDef, ConstraintDefBody, ConstraintDefBodyElement,
-        ConstraintUsage as ParserConstraintUsage, DefinitionBody, DefinitionBodyElement, EndDecl,
-        EndIdentity, EnumDef, EnumerationBody, EnumerationUsage as ParserEnumerationUsage,
-        Expression, FirstStmt, FlowDef, Import, ImportShape, InterfaceDef, InterfaceDefBody,
-        InterfaceDefBodyElement, InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement,
-        ItemDef, ItemUsage as ParserItemUsage, LibraryPackage, Membership,
+        ConstraintUsage as ParserConstraintUsage, DefinitionBody, DefinitionBodyElement, DoAction,
+        EndDecl, EndIdentity, EntryAction, EnumDef, EnumerationBody,
+        EnumerationUsage as ParserEnumerationUsage, ExitAction, Expression, FirstStmt, FlowDef,
+        Import, ImportShape, InterfaceDef, InterfaceDefBody, InterfaceDefBodyElement,
+        InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement, ItemDef,
+        ItemUsage as ParserItemUsage, LibraryPackage, Membership,
         MembershipKind as ParserMembershipKind, MetadataDef, MetadataUsage as ParserMetadataUsage,
         NamespaceDecl, Node, OccurrenceBodyElement, OccurrenceDef,
         OccurrenceUsage as ParserOccurrenceUsage, OccurrenceUsageBody, Package, PackageBody,
@@ -36,9 +37,10 @@ use sysml_v2_parser_next::{
         RenderingDefBody, RenderingDefBodyElement, RequirementDef, RequirementDefBody,
         RequirementDefBodyElement, RequirementUsage as ParserRequirementUsage, RootElement, Span,
         StateDef, StateDefBody, StateDefBodyElement, StateUsage as ParserStateUsage,
-        SubsettingKind, SubsettingRelationship, UseCaseDef, UseCaseDefBody, UseCaseDefBodyElement,
-        VerificationCaseDef, ViewBody, ViewBodyElement, ViewDef, ViewDefBody, ViewDefBodyElement,
-        ViewUsage as ParserViewUsage, ViewpointDef, Visibility as ParserVisibility,
+        SubsettingKind, SubsettingRelationship, ThenStmt, UseCaseDef, UseCaseDefBody,
+        UseCaseDefBodyElement, VerificationCaseDef, ViewBody, ViewBodyElement, ViewDef,
+        ViewDefBody, ViewDefBodyElement, ViewUsage as ParserViewUsage, ViewpointDef,
+        Visibility as ParserVisibility,
     },
     ParseError, ParsedDocument,
 };
@@ -390,6 +392,22 @@ enum DeclarationKind {
     ClassDefinition,
     Import,
     Alias,
+    /// An anonymous entry-action-binding feature synthesized for a state def/usage's `entry
+    /// action <path> ...;` body element (BNF `EntryAction.action_reference`), owned by the
+    /// enclosing state declaration, mirroring `Succession`'s nested-declaration shape so the
+    /// bound action reference resolves against the state's own scope (where sibling actions are
+    /// declared), not the state's enclosing scope.
+    EntryActionBinding,
+    /// Same as `EntryActionBinding`, for a `do action <path> ...;` body element
+    /// (`DoAction.action_reference`).
+    DoActionBinding,
+    /// Same as `EntryActionBinding`, for an `exit action <path> ...;` body element
+    /// (`ExitAction.action_reference`).
+    ExitActionBinding,
+    /// An anonymous initial-state-binding feature synthesized for a state def/usage's `then
+    /// <target>;` body element (BNF `ThenStmt.state_reference`), owned by the enclosing state
+    /// declaration, mirroring `EntryActionBinding`'s nested-declaration shape.
+    InitialState,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -445,6 +463,25 @@ enum ReferenceKind {
     /// `then` and a bare `then Y;` continuation statement (BNF `ThenAction`, a distinct AST
     /// shape referencing an implicit predecessor) are likewise out of scope for this slice.
     Succession,
+    /// The authored target of a state def/usage's `entry action <path> ...;` body element
+    /// (`EntryAction.action_reference`), resolved through the same `DeclarationDomain::Any`
+    /// lexical lookup as `Succession`: the bound action can be any owned action feature, not
+    /// just a Type. Sourced at an anonymous `DeclarationKind::EntryActionBinding` feature owned
+    /// by the enclosing state declaration, mirroring `Succession`'s nested-declaration shape.
+    EntryActionBinding,
+    /// Same as `EntryActionBinding`, for a `do action <path> ...;` body element
+    /// (`DoAction.action_reference`), sourced at an anonymous `DeclarationKind::DoActionBinding`.
+    DoActionBinding,
+    /// Same as `EntryActionBinding`, for an `exit action <path> ...;` body element
+    /// (`ExitAction.action_reference`), sourced at an anonymous
+    /// `DeclarationKind::ExitActionBinding`.
+    ExitActionBinding,
+    /// The authored target of a state def/usage's `then <target>;` initial-state body element
+    /// (`ThenStmt.state_reference`, BNF's bare initial-state marker, distinct from a full
+    /// `transition ... then ...;` construct), resolved through the same `DeclarationDomain::Any`
+    /// lexical lookup as `Succession`. Sourced at an anonymous `DeclarationKind::InitialState`
+    /// feature owned by the enclosing state declaration.
+    InitialState,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -2543,15 +2580,23 @@ impl SemanticModelBuilder {
                     self.lower_requirement_usage(document, Some(owner), requirement_usage)?;
                 }
                 StateDefBodyElement::Doc(_) => {}
+                StateDefBodyElement::Entry(entry) => {
+                    self.lower_state_entry_action(document, owner, entry)?;
+                }
+                StateDefBodyElement::Do(action) => {
+                    self.lower_state_do_action(document, owner, action)?;
+                }
+                StateDefBodyElement::Exit(exit) => {
+                    self.lower_state_exit_action(document, owner, exit)?;
+                }
+                StateDefBodyElement::Then(then) => {
+                    self.lower_state_then_stmt(document, owner, then)?;
+                }
                 StateDefBodyElement::Annotation(_)
                 | StateDefBodyElement::MetadataAnnotation(_)
                 | StateDefBodyElement::MetadataKeywordUsage(_)
                 | StateDefBodyElement::Other(_)
                 | StateDefBodyElement::InOutDecl(_)
-                | StateDefBodyElement::Entry(_)
-                | StateDefBodyElement::Do(_)
-                | StateDefBodyElement::Exit(_)
-                | StateDefBodyElement::Then(_)
                 | StateDefBodyElement::FinalState(_)
                 | StateDefBodyElement::Ref(_)
                 | StateDefBodyElement::Transition(_) => self.push_unsupported(
@@ -2561,6 +2606,188 @@ impl SemanticModelBuilder {
                 ),
             }
         }
+        Ok(())
+    }
+
+    /// Lowers a state def/usage's `entry action <path> ...;` body element (BNF `EntryAction`) as
+    /// an anonymous `DeclarationKind::EntryActionBinding` feature owned by the enclosing state
+    /// `owner` declaration, mirroring `lower_first_stmt`'s nested-declaration shape so the bound
+    /// action reference resolves against the state's own scope (where sibling actions are
+    /// declared), not the state's enclosing scope. `EntryAction.action_reference` is already a
+    /// structured `QualifiedReferenceId` (not a flattened string), so it resolves through the
+    /// same shared lexical lookup as `AliasBinding`/`Succession`. A plain `entry` with no bound
+    /// action (`action_reference: None`, e.g. a bare `entry;` or an inline `entry { ... }` body)
+    /// has no reference to lower and falls through to the existing unsupported diagnostic; its
+    /// own body content stays out of scope either way.
+    fn lower_state_entry_action(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        node: &Node<EntryAction>,
+    ) -> Result<(), ConstructionError> {
+        let Some(target) = node.value.action_reference else {
+            self.push_unsupported(
+                document,
+                UnsupportedFamily::StateDefinitionMember,
+                node.span.clone(),
+            );
+            return Ok(());
+        };
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::EntryActionBinding,
+            None,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span.clone(),
+        )?;
+        self.push_action_binding_reference(
+            document,
+            declaration,
+            ReferenceKind::EntryActionBinding,
+            target,
+        )
+    }
+
+    /// Same as `lower_state_entry_action`, for a `do action <path> ...;` body element
+    /// (`DoAction.action_reference`).
+    fn lower_state_do_action(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        node: &Node<DoAction>,
+    ) -> Result<(), ConstructionError> {
+        let Some(target) = node.value.action_reference else {
+            self.push_unsupported(
+                document,
+                UnsupportedFamily::StateDefinitionMember,
+                node.span.clone(),
+            );
+            return Ok(());
+        };
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::DoActionBinding,
+            None,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span.clone(),
+        )?;
+        self.push_action_binding_reference(
+            document,
+            declaration,
+            ReferenceKind::DoActionBinding,
+            target,
+        )
+    }
+
+    /// Same as `lower_state_entry_action`, for an `exit action <path> ...;` body element
+    /// (`ExitAction.action_reference`).
+    fn lower_state_exit_action(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        node: &Node<ExitAction>,
+    ) -> Result<(), ConstructionError> {
+        let Some(target) = node.value.action_reference else {
+            self.push_unsupported(
+                document,
+                UnsupportedFamily::StateDefinitionMember,
+                node.span.clone(),
+            );
+            return Ok(());
+        };
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::ExitActionBinding,
+            None,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span.clone(),
+        )?;
+        self.push_action_binding_reference(
+            document,
+            declaration,
+            ReferenceKind::ExitActionBinding,
+            target,
+        )
+    }
+
+    /// Lowers a state def/usage's `then <target>;` initial-state body element (BNF `ThenStmt`,
+    /// the bare initial-state marker -- distinct from a full `transition ... then ...;`
+    /// construct, which stays out of scope) as an anonymous `DeclarationKind::InitialState`
+    /// feature owned by the enclosing state `owner` declaration, mirroring
+    /// `lower_state_entry_action`. `ThenStmt.state_reference` is already a structured
+    /// `QualifiedReferenceId`, so it always resolves through the same shared lexical lookup.
+    fn lower_state_then_stmt(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        node: &Node<ThenStmt>,
+    ) -> Result<(), ConstructionError> {
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::InitialState,
+            None,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span.clone(),
+        )?;
+        self.push_action_binding_reference(
+            document,
+            declaration,
+            ReferenceKind::InitialState,
+            node.value.state_reference,
+        )
+    }
+
+    /// Shared helper for `lower_state_entry_action`/`lower_state_do_action`/
+    /// `lower_state_exit_action`/`lower_state_then_stmt`: pushes an authored reference of `kind`
+    /// sourced at `declaration` for an already-structured `QualifiedReferenceId` target, mirroring
+    /// `lower_alias_def`'s reference-push shape.
+    fn push_action_binding_reference(
+        &mut self,
+        document: DocumentId,
+        declaration: DeclarationId,
+        kind: ReferenceKind,
+        target: QualifiedReferenceId,
+    ) -> Result<(), ConstructionError> {
+        let span = self.documents[document.index()]
+            .parsed
+            .qualified_reference(target)
+            .ok_or(ConstructionError::InvalidParserReference)?
+            .metadata
+            .span
+            .clone();
+        self.push_reference(PendingReference {
+            source: declaration,
+            kind,
+            document,
+            local: target,
+            flags: RelationshipFlags::default(),
+            span,
+            import: None,
+        })?;
         Ok(())
     }
 

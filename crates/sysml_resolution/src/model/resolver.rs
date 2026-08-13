@@ -592,6 +592,24 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             (reference.kind() == ReferenceKind::Succession).then_some(index)
         })
         .collect();
+    // Entry/do/exit action bindings and a state's initial-state (`then`) target can each
+    // reference any owned feature (not just a Type), exactly like `Succession`, so they resolve
+    // against `DeclarationDomain::Any` alongside it rather than joining the Subclassification/
+    // FeatureTyping `Type` domain passes; none of them read inherited scope either.
+    let state_binding_slots: Vec<usize> = references
+        .iter()
+        .enumerate()
+        .filter_map(|(index, reference)| {
+            matches!(
+                reference.kind(),
+                ReferenceKind::EntryActionBinding
+                    | ReferenceKind::DoActionBinding
+                    | ReferenceKind::ExitActionBinding
+                    | ReferenceKind::InitialState
+            )
+            .then_some(index)
+        })
+        .collect();
     let mut work = ResolutionWork {
         direct_index_entries: u64::try_from(direct_names.candidates.len())
             .map_err(|_| ResolutionError::Capacity)?,
@@ -668,6 +686,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             .chain(&alias_slots)
             .chain(&connector_end_slots)
             .chain(&succession_slots)
+            .chain(&state_binding_slots)
             .copied()
         {
             outcomes[index] = ResolutionStatus::NonConverged;
@@ -756,6 +775,32 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         }
 
         for index in succession_slots.iter().copied() {
+            work.downstream_evaluations = work
+                .downstream_evaluations
+                .checked_add(1)
+                .ok_or(ResolutionError::Capacity)?;
+            outcomes[index] = resolve_reference(
+                declarations,
+                paths,
+                &references[index],
+                DeclarationDomain::Any,
+                ResolutionIndexes {
+                    direct_names: &direct_names,
+                    exported_names: &exported_names,
+                    effective_imports: Some(&effective_imports),
+                    exported_imports: Some(&exported_imports),
+                    inherited_names: None,
+                },
+                ResolutionScratch {
+                    ambiguous_candidates: &mut ambiguous_candidates,
+                    candidates: &mut candidates,
+                    next_candidates: &mut next_candidates,
+                    work: &mut work,
+                },
+            )?;
+        }
+
+        for index in state_binding_slots.iter().copied() {
             work.downstream_evaluations = work
                 .downstream_evaluations
                 .checked_add(1)
@@ -1382,7 +1427,11 @@ fn supported_import_domain(reference: &impl ResolutionReferenceFact) -> Option<D
         | ReferenceKind::Intersects
         | ReferenceKind::AliasBinding
         | ReferenceKind::ConnectorEnd
-        | ReferenceKind::Succession => None,
+        | ReferenceKind::Succession
+        | ReferenceKind::EntryActionBinding
+        | ReferenceKind::DoActionBinding
+        | ReferenceKind::ExitActionBinding
+        | ReferenceKind::InitialState => None,
     }
 }
 
@@ -1542,7 +1591,11 @@ fn build_effective_import_indexes<R: ResolutionReferenceFact>(
             | ReferenceKind::Intersects
             | ReferenceKind::AliasBinding
             | ReferenceKind::ConnectorEnd
-            | ReferenceKind::Succession => {}
+            | ReferenceKind::Succession
+            | ReferenceKind::EntryActionBinding
+            | ReferenceKind::DoActionBinding
+            | ReferenceKind::ExitActionBinding
+            | ReferenceKind::InitialState => {}
         }
     }
     Ok((

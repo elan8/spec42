@@ -21,13 +21,7 @@ state def S {
         (severity warning)
         (code "unsupported_state_definition_member")
         (source "semantic")
-        (range (start 2 4) (end 2 4))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_state_definition_member")
-        (source "semantic")
-        (range (start 2 11) (end 2 11))
+        (range (start 2 4) (end 2 10))
       )
       (diagnostic
         (severity error)
@@ -46,11 +40,16 @@ state def S {
   (declarations
     (declaration (id (node (document "memory://snapshot/fuzz_transition_first_closecurly.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/fuzz_transition_first_closecurly.md") (qualified-name "P::S"))) (kind state-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/fuzz_transition_first_closecurly.md") (anonymous (kind initial-state) (ordinal 0))))) (kind initial-state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (initialState (reference "off"))))
     (declaration (id (node (document "memory://snapshot/fuzz_transition_first_closecurly.md") (qualified-name "P::S::off"))) (kind state) (membership (kind feature) (visibility default)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/fuzz_transition_first_closecurly.md") (anonymous (kind initial-state) (ordinal 0))))) (kind initialState) (ordinal 0))
+      (authored-target "off")
+      (outcome (status resolved) (target (node (document "memory://snapshot/fuzz_transition_first_closecurly.md") (qualified-name "P::S::off")))))
   )
   (relationships
+    (relationship (kind initialState) (source (node (document "memory://snapshot/fuzz_transition_first_closecurly.md") (anonymous (kind initial-state) (ordinal 0))))) (target (node (document "memory://snapshot/fuzz_transition_first_closecurly.md") (qualified-name "P::S::off"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/fuzz_transition_first_closecurly.md") (anonymous (kind initial-state) (ordinal 0))))) (kind initialState) (ordinal 0)))
   )
   (evaluation
   )
@@ -59,5 +58,9 @@ state def S {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/fuzz_transition_first_closecurly.md") (range (start 2 16) (end 2 19)) (probe (position 2 16))
+    (reference (id (source (node (document "memory://snapshot/fuzz_transition_first_closecurly.md") (anonymous (kind initial-state) (ordinal 0))))) (kind initialState) (ordinal 0) (authored-target "off")
+      (outcome (status resolved) (target (node (document "memory://snapshot/fuzz_transition_first_closecurly.md") (qualified-name "P::S::off")))))
+  )
 )
 ~~~
