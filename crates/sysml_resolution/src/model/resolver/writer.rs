@@ -836,6 +836,7 @@ fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::PerformActionUsage => "perform-action",
         DeclarationKind::Transition => "transition",
         DeclarationKind::Satisfy => "satisfy",
+        DeclarationKind::Allocate => "allocate",
     }
 }
 
@@ -885,6 +886,8 @@ fn reference_kind(kind: ReferenceKind) -> &'static str {
         ReferenceKind::FilterMetadataTest => "filterMetadataTest",
         ReferenceKind::SatisfySource => "satisfySource",
         ReferenceKind::SatisfyTarget => "satisfyTarget",
+        ReferenceKind::AllocateSource => "allocateSource",
+        ReferenceKind::AllocateTarget => "allocateTarget",
         ReferenceKind::SatisfyViewpoint => "satisfyViewpoint",
         ReferenceKind::Variant => "variant",
     }
@@ -915,6 +918,8 @@ fn relationship_kind(kind: ReferenceKind) -> Option<&'static str> {
         ReferenceKind::FilterMetadataTest => Some("filterMetadataTest"),
         ReferenceKind::SatisfySource => Some("satisfySource"),
         ReferenceKind::SatisfyTarget => Some("satisfyTarget"),
+        ReferenceKind::AllocateSource => Some("allocateSource"),
+        ReferenceKind::AllocateTarget => Some("allocateTarget"),
         ReferenceKind::SatisfyViewpoint => Some("satisfyViewpoint"),
         ReferenceKind::Variant => Some("variant"),
         ReferenceKind::NamespaceImport

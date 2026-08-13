@@ -15,19 +15,20 @@ use hashbrown::HashTable;
 use sysml_v2_parser_next::{
     ast::{
         ActionDef, ActionDefBody, ActionDefBodyElement, ActionUsage as ParserActionUsage,
-        ActionUsageBody, ActionUsageBodyElement, AliasDef, AllocationDef, AnalysisCaseDef,
-        AnalysisCaseUsage as ParserAnalysisCaseUsage, AttributeBody, AttributeBodyElement,
-        AttributeDef, AttributeUsage, BinaryOperator, CalcDef, CalcDefBody, CalcDefBodyElement,
-        CalcUsage as ParserCalcUsage, CaseDef, CaseUsage as ParserCaseUsage, ClassDef,
-        ConcernUsage as ParserConcernUsage, ConnectStmt, ConnectionDef, ConnectionDefBody,
-        ConnectionDefBodyElement, ConnectionEnd, ConnectionUsageMember as ParserConnectionUsage,
-        ConstraintDef, ConstraintDefBody, ConstraintDefBodyElement,
-        ConstraintUsage as ParserConstraintUsage, DefinitionBody, DefinitionBodyElement,
-        DefinitionPrefix, DoAction, EndDecl, EndIdentity, EntryAction, EnumDef, EnumerationBody,
-        EnumerationUsage as ParserEnumerationUsage, ExitAction, Expression, FeatureValue,
-        FirstStmt, FlowDef, Import, ImportShape, InOut, InOutDecl, InterfaceDef, InterfaceDefBody,
-        InterfaceDefBodyElement, InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement,
-        ItemDef, ItemUsage as ParserItemUsage, LibraryPackage, Membership,
+        ActionUsageBody, ActionUsageBodyElement, AliasDef, Allocate, AllocationDef,
+        AnalysisCaseDef, AnalysisCaseUsage as ParserAnalysisCaseUsage, AttributeBody,
+        AttributeBodyElement, AttributeDef, AttributeUsage, BinaryOperator, CalcDef, CalcDefBody,
+        CalcDefBodyElement, CalcUsage as ParserCalcUsage, CaseDef, CaseUsage as ParserCaseUsage,
+        ClassDef, ConcernUsage as ParserConcernUsage, ConnectStmt, ConnectionDef,
+        ConnectionDefBody, ConnectionDefBodyElement, ConnectionEnd,
+        ConnectionUsageMember as ParserConnectionUsage, ConstraintDef, ConstraintDefBody,
+        ConstraintDefBodyElement, ConstraintUsage as ParserConstraintUsage, DefinitionBody,
+        DefinitionBodyElement, DefinitionPrefix, DoAction, EndDecl, EndIdentity, EntryAction,
+        EnumDef, EnumerationBody, EnumerationUsage as ParserEnumerationUsage, ExitAction,
+        Expression, FeatureValue, FirstStmt, FlowDef, Import, ImportShape, InOut, InOutDecl,
+        InterfaceDef, InterfaceDefBody, InterfaceDefBodyElement,
+        InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement, ItemDef,
+        ItemUsage as ParserItemUsage, LibraryPackage, Membership,
         MembershipKind as ParserMembershipKind, MetadataAnnotation, MetadataDef,
         MetadataUsage as ParserMetadataUsage, NamespaceDecl, Node, OccurrenceBodyElement,
         OccurrenceDef, OccurrenceUsage as ParserOccurrenceUsage, OccurrenceUsageBody, Package,
@@ -467,6 +468,15 @@ enum DeclarationKind {
     /// distinguishable per-statement (multiple `satisfy` statements can share one owner) even
     /// though the statement introduces no name of its own.
     Satisfy,
+    /// An anonymous feature synthesized for an `allocate <source> to <target>;` body element
+    /// (BNF `Allocate`, `ast::Allocate`) found in a part def/part usage/occurrence body -- the
+    /// shorthand allocation *statement* form (asserting an allocation relationship between two
+    /// existing declarations), genuinely distinct from `AllocationDefinition`/`AllocationUsage`
+    /// (the declaration forms lowered in `04274711`). Owned by the enclosing declaration,
+    /// mirroring `Satisfy`'s nested-declaration shape, so the `AllocateSource`/`AllocateTarget`
+    /// references it carries are distinguishable per-statement (multiple `allocate` statements
+    /// can share one owner) even though the statement introduces no name of its own.
+    Allocate,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -635,6 +645,21 @@ enum ReferenceKind {
     /// `view` usage declaration (no anonymous nested-declaration scope shift is needed, since the
     /// viewpoint reference is not itself paired with a second operand the way `Satisfy` is).
     SatisfyViewpoint,
+    /// The authored `source` operand of an `allocate <source> to <target>;` body element (BNF
+    /// `Allocate`, `ast::Allocate.source`) -- the shorthand allocation *statement* form, distinct
+    /// from `AllocationDefinition`/`AllocationUsage`'s declaration-side `ConnectorEnd` machinery
+    /// (an `allocate` statement asserts a relationship between two already-declared elements,
+    /// it does not introduce ends of a new allocation usage). Resolved through the same
+    /// `DeclarationDomain::Any` lexical lookup as `SatisfySource`: the allocated source can be
+    /// any owned feature, not just a Type. Sourced at an anonymous `DeclarationKind::Allocate`
+    /// feature owned by the enclosing part def/part usage/occurrence declaration, mirroring
+    /// `Satisfy`'s nested-declaration shape. Only a simple/qualified name
+    /// (`Expression::FeatureRef`) is resolved; a dotted feature-chain
+    /// (`Expression::MemberAccess`) or any other expression shape is out of scope.
+    AllocateSource,
+    /// The authored `target` operand (the `to <target>` clause) of an `allocate <source> to
+    /// <target>;` body element (`Allocate.target`), same shape and scope as `AllocateSource`.
+    AllocateTarget,
     /// The authored target of a `variant <name>;` member (`VariantUsage.reference`, BNF
     /// `VariantUsageElement`'s untyped reference form) inside a `variation part`/`variation part
     /// def` body, resolved through the same `DeclarationDomain::Any` lexical lookup as
@@ -2208,6 +2233,14 @@ impl SemanticModelBuilder {
                             node,
                         )?;
                     }
+                    PartDefBodyElement::Allocate(node) => {
+                        self.lower_allocate(
+                            document,
+                            declaration,
+                            UnsupportedFamily::PartDefinitionMember,
+                            node,
+                        )?;
+                    }
                     PartDefBodyElement::FirstStmt(first_stmt) => {
                         self.lower_first_stmt(
                             document,
@@ -2232,7 +2265,6 @@ impl SemanticModelBuilder {
                     | PartDefBodyElement::Ref(_)
                     | PartDefBodyElement::Connect(_)
                     | PartDefBodyElement::FlowUsage(_)
-                    | PartDefBodyElement::Allocate(_)
                     | PartDefBodyElement::ExhibitState(_)
                     | PartDefBodyElement::AssertConstraint(_)
                     | PartDefBodyElement::AllocationUsage(_)
@@ -2421,6 +2453,14 @@ impl SemanticModelBuilder {
                             node,
                         )?;
                     }
+                    PartUsageBodyElement::Allocate(node) => {
+                        self.lower_allocate(
+                            document,
+                            declaration,
+                            UnsupportedFamily::PartUsageMember,
+                            node,
+                        )?;
+                    }
                     PartUsageBodyElement::Annotation(_)
                     | PartUsageBodyElement::DefaultReferenceUsage(_)
                     | PartUsageBodyElement::Bind(_)
@@ -2428,7 +2468,6 @@ impl SemanticModelBuilder {
                     | PartUsageBodyElement::Connect(_)
                     | PartUsageBodyElement::FlowUsage(_)
                     | PartUsageBodyElement::SuccessionUsage(_)
-                    | PartUsageBodyElement::Allocate(_)
                     | PartUsageBodyElement::MetadataKeywordUsage(_)
                     | PartUsageBodyElement::AssertConstraint(_)
                     | PartUsageBodyElement::IncludeUseCase(_)
@@ -4291,6 +4330,55 @@ impl SemanticModelBuilder {
             }
             _ => self.push_unsupported(document, family, node.span.clone()),
         }
+        Ok(())
+    }
+
+    /// Lowers an `allocate <source> to <target>;` body element (BNF `Allocate`, `ast::Allocate`)
+    /// found inside a part def/part usage/occurrence body -- the shorthand allocation
+    /// *statement* form, which asserts an allocation relationship between two already-declared
+    /// elements without introducing a new named allocation usage (genuinely distinct from
+    /// `AllocationDefinition`/`AllocationUsage`, the declaration forms lowered in `04274711`).
+    /// Mirrors `lower_satisfy`: an anonymous `DeclarationKind::Allocate` feature owned by `owner`,
+    /// with `source`/`target` lowered as authored `AllocateSource`/`AllocateTarget` references
+    /// when they are a simple/qualified name (`Expression::FeatureRef`), resolved through the
+    /// same `DeclarationDomain::Any` lexical lookup fixed point `Satisfy`/`Succession` use. Unlike
+    /// `Satisfy`, `Allocate` has no `inline_requirement`/`body_elements` to gate on: its `body` is
+    /// a bare `ConnectBody` (`;` or `{}`) with no structured content, so there is nothing further
+    /// to lower or flag as unsupported.
+    fn lower_allocate(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        family: UnsupportedFamily,
+        node: &Node<Allocate>,
+    ) -> Result<(), ConstructionError> {
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::Allocate,
+            None,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span.clone(),
+        )?;
+        self.lower_satisfy_operand(
+            document,
+            declaration,
+            family,
+            ReferenceKind::AllocateSource,
+            &node.value.source,
+        )?;
+        self.lower_satisfy_operand(
+            document,
+            declaration,
+            family,
+            ReferenceKind::AllocateTarget,
+            &node.value.target,
+        )?;
         Ok(())
     }
 
@@ -6441,12 +6529,19 @@ impl SemanticModelBuilder {
                     node,
                 )?;
             }
+            OccurrenceBodyElement::Allocate(node) => {
+                self.lower_allocate(
+                    document,
+                    owner,
+                    UnsupportedFamily::OccurrenceDefinitionMember,
+                    node,
+                )?;
+            }
             OccurrenceBodyElement::Annotation(_)
             | OccurrenceBodyElement::AssertConstraint(_)
             | OccurrenceBodyElement::Other(_)
             | OccurrenceBodyElement::FlowUsage(_)
-            | OccurrenceBodyElement::SuccessionUsage(_)
-            | OccurrenceBodyElement::Allocate(_) => self.push_unsupported(
+            | OccurrenceBodyElement::SuccessionUsage(_) => self.push_unsupported(
                 document,
                 UnsupportedFamily::OccurrenceDefinitionMember,
                 element.span.clone(),
@@ -9537,6 +9632,57 @@ mod tests {
             output.contains("(kind satisfySource)")
                 && output.contains("(authored-target \"r\")\n      (outcome (status resolved)"),
             "expected the satisfy source to still resolve independently, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn allocate_statement_inside_a_part_usage_resolves_source_and_target() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpart def A;\n\
+             \tpart def B;\n\
+             \tpart a : A;\n\
+             \tpart b : B {\n\
+             \t\tallocate a to b;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(kind allocateSource)") && output.contains("(kind allocateTarget)"),
+            "expected allocateSource/allocateTarget relationship kinds, got:\n{output}"
+        );
+        assert!(
+            output.contains("(kind allocate)"),
+            "expected an owned allocate declaration, got:\n{output}"
+        );
+        assert!(
+            !output.contains("(status unresolved)"),
+            "expected both allocate operands to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn allocate_statement_with_an_unresolvable_target_stays_explicitly_unresolved() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpart def A;\n\
+             \tpart a : A;\n\
+             \tpart b : A {\n\
+             \t\tallocate a to missingTarget;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(kind allocateTarget)")
+                && output.contains("(authored-target \"missingTarget\")")
+                && output.contains("(status unresolved)"),
+            "expected the unresolvable allocate target to stay explicitly unresolved (not \
+             fabricated), got:\n{output}"
+        );
+        assert!(
+            output.contains("(kind allocateSource)")
+                && output.contains("(authored-target \"a\")\n      (outcome (status resolved)"),
+            "expected the allocate source to still resolve independently, got:\n{output}"
         );
     }
 

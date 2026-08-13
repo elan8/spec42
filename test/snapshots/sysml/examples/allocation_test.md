@@ -57,7 +57,13 @@ package AllocationTest {
         (severity warning)
         (code "unsupported_part_usage_member")
         (source "semantic")
-        (range (start 18 8) (end 18 49))
+        (range (start 18 17) (end 18 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_usage_member")
+        (source "semantic")
+        (range (start 18 32) (end 18 48))
       )
       (diagnostic
         (severity warning)
@@ -106,6 +112,7 @@ package AllocationTest {
     (declaration (id (node (document "memory://snapshot/allocation_test.md") (anonymous (kind part) (ordinal 0))))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "component"))))
     (declaration (id (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest::p"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Physical"))))
     (declaration (id (node (document "memory://snapshot/allocation_test.md") (anonymous (kind part) (ordinal 0))))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "assembly"))))
+    (declaration (id (node (document "memory://snapshot/allocation_test.md") (anonymous (kind allocate) (ordinal 0))))) (kind allocate) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/allocation_test.md") (anonymous (kind part) (ordinal 0))))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "element"))))
   )
   (references
