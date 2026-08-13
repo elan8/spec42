@@ -26,10 +26,10 @@ use sysml_v2_parser_next::{
         ConstraintUsage as ParserConstraintUsage, DefinitionBody, DefinitionBodyElement,
         DefinitionPrefix, DoAction, EndDecl, EndIdentity, EntryAction, EnumDef, EnumerationBody,
         EnumerationUsage as ParserEnumerationUsage, ExitAction, Expression, FeatureValue,
-        FirstStmt, FlowDef, Import, ImportShape, InOut, InOutDecl, InterfaceDef, InterfaceDefBody,
-        InterfaceDefBodyElement, InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement,
-        ItemDef, ItemUsage as ParserItemUsage, LibraryPackage, Membership,
-        MembershipKind as ParserMembershipKind, MetadataAnnotation, MetadataDef,
+        FirstStmt, FlowDef, Import, ImportShape, InOut, InOutDecl, IncludeUseCase, InterfaceDef,
+        InterfaceDefBody, InterfaceDefBodyElement, InterfaceUsage as ParserInterfaceUsage,
+        InterfaceUsageBodyElement, ItemDef, ItemUsage as ParserItemUsage, LibraryPackage,
+        Membership, MembershipKind as ParserMembershipKind, MetadataAnnotation, MetadataDef,
         MetadataUsage as ParserMetadataUsage, NamespaceDecl, Node, OccurrenceBodyElement,
         OccurrenceDef, OccurrenceUsage as ParserOccurrenceUsage, OccurrenceUsageBody, Package,
         PackageBody, PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement, PartUsage,
@@ -690,6 +690,18 @@ enum ReferenceKind {
     /// `inline_requirement` form -- and left as an explicit unsupported-member diagnostic; so is
     /// any optional nested body on the untyped reference form (`VariantUsage.body`).
     Variant,
+    /// The authored `target` of an `include <includedUseCase>;` body element inside a `use case
+    /// def`/`use case` usage body (BNF `UseCaseDefBodyElement::IncludeUseCase`/
+    /// `ThenIncludeUseCase`, `ast::IncludeUseCase.target`) -- the referenced use case is an
+    /// ordinary owned feature (a use case usage), not necessarily a type, so it resolves through
+    /// the same `DeclarationDomain::Any` lexical lookup fixed point as `Succession`/
+    /// `SatisfySource` rather than the Subclassification/FeatureTyping `Type` domain. Sourced
+    /// directly at the enclosing use case declaration (no anonymous nested-declaration scope
+    /// shift), mirroring `SatisfyViewpoint`/`Variant`'s single-operand shape rather than
+    /// `Succession`'s paired-ends shape, since `include` carries only one target reference.
+    /// Optional multiplicity (`IncludeUseCase.multiplicity`) and a nested body
+    /// (`IncludeUseCase.body`, always `Semicolon` in practice) are out of scope for this slice.
+    IncludeUseCase,
     /// The authored `source` operand (`left`) of a `bind <source> = <target>;` body element (BNF
     /// `Bind`, `ast::Bind.left`) or a package-level `binding` statement (BNF
     /// `BindingConnectorUsage`, `ast::BindingConnectorUsage.left`) -- both the shorthand
@@ -4633,6 +4645,36 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
+    /// Lowers an `include <includedUseCase>;` body element inside a `use case def`/`use case`
+    /// usage body (BNF `UseCaseDefBodyElement::IncludeUseCase`, `ast::IncludeUseCase`) -- see
+    /// `ReferenceKind::IncludeUseCase`'s doc comment: a single-operand reference to an existing
+    /// use case, sourced directly at the enclosing use case declaration (no anonymous
+    /// nested-declaration scope shift), mirroring `lower_view_satisfy`'s shape.
+    fn lower_include_use_case(
+        &mut self,
+        document: DocumentId,
+        declaration: DeclarationId,
+        node: &Node<IncludeUseCase>,
+    ) -> Result<(), ConstructionError> {
+        let span = self.documents[document.index()]
+            .parsed
+            .qualified_reference(node.value.target)
+            .ok_or(ConstructionError::InvalidParserReference)?
+            .metadata
+            .span
+            .clone();
+        self.push_reference(PendingReference {
+            source: declaration,
+            kind: ReferenceKind::IncludeUseCase,
+            document,
+            local: node.value.target,
+            flags: RelationshipFlags::default(),
+            span,
+            import: None,
+        })?;
+        Ok(())
+    }
+
     /// Lowers a package/definition/usage-level `state` feature member (BNF StateUsage), e.g.
     /// `state s;` or `state s : SomeState;`, mirroring `lower_action_usage`. `StateUsage`'s
     /// typing is a structured `TypingRelationship` (like `ActionUsage.typing`), not a bare
@@ -5346,6 +5388,12 @@ impl SemanticModelBuilder {
                 UseCaseDefBodyElement::AssertConstraint(node) => {
                     self.lower_assert_constraint_member(document, owner, unsupported, node)?
                 }
+                UseCaseDefBodyElement::IncludeUseCase(node) => {
+                    self.lower_include_use_case(document, owner, node)?;
+                }
+                UseCaseDefBodyElement::ThenIncludeUseCase(node) => {
+                    self.lower_include_use_case(document, owner, &node.value.include)?;
+                }
                 UseCaseDefBodyElement::Other(_)
                 | UseCaseDefBodyElement::Annotation(_)
                 | UseCaseDefBodyElement::MetadataKeywordUsage(_)
@@ -5354,10 +5402,8 @@ impl SemanticModelBuilder {
                 | UseCaseDefBodyElement::ActorRedefinitionAssignment(_)
                 | UseCaseDefBodyElement::Objective(_)
                 | UseCaseDefBodyElement::FirstSuccession(_)
-                | UseCaseDefBodyElement::ThenIncludeUseCase(_)
                 | UseCaseDefBodyElement::ThenUseCaseUsage(_)
                 | UseCaseDefBodyElement::ThenDone(_)
-                | UseCaseDefBodyElement::IncludeUseCase(_)
                 | UseCaseDefBodyElement::RefRedefinition(_)
                 | UseCaseDefBodyElement::ReturnRef(_)
                 | UseCaseDefBodyElement::CaseReturnDecl(_)
@@ -10178,6 +10224,55 @@ mod tests {
                 "(authored-target \"manualTransmission\")\n      (outcome (status resolved)"
             ),
             "expected the resolvable variant to still resolve independently, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn use_case_include_resolves_its_target_reference() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tuse case def UsedUseCase;\n\
+             \tuse case def MainUseCase {\n\
+             \t\tinclude UsedUseCase;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(kind includeUseCase)"),
+            "expected an includeUseCase relationship kind, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind includeUseCase) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::MainUseCase\""
+            ),
+            "expected the includeUseCase reference to be sourced at the enclosing use case \
+             declaration (no anonymous nested-declaration scope shift), got:\n{output}"
+        );
+        assert!(
+            output.contains("(authored-target \"UsedUseCase\")"),
+            "expected the include target to be authored, got:\n{output}"
+        );
+        assert!(
+            !output.contains("(status unresolved)"),
+            "expected the include target to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn use_case_include_with_an_unresolvable_target_stays_explicitly_unresolved() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tuse case def MainUseCase {\n\
+             \t\tinclude missingUseCase;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(kind includeUseCase)")
+                && output.contains("(authored-target \"missingUseCase\")")
+                && output.contains("(status unresolved)"),
+            "expected the unresolvable include target to stay explicitly unresolved (not \
+             fabricated), got:\n{output}"
         );
     }
 

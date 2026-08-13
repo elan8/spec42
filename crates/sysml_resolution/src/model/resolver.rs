@@ -792,6 +792,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     | ReferenceKind::BindSource
                     | ReferenceKind::BindTarget
                     | ReferenceKind::Variant
+                    | ReferenceKind::IncludeUseCase
             )
             .then_some(index)
         })
@@ -1664,7 +1665,8 @@ fn supported_import_domain(reference: &impl ResolutionReferenceFact) -> Option<D
         | ReferenceKind::AllocateTarget
         | ReferenceKind::BindSource
         | ReferenceKind::BindTarget
-        | ReferenceKind::Variant => None,
+        | ReferenceKind::Variant
+        | ReferenceKind::IncludeUseCase => None,
     }
 }
 
@@ -1843,7 +1845,8 @@ fn build_effective_import_indexes<R: ResolutionReferenceFact>(
             | ReferenceKind::AllocateTarget
             | ReferenceKind::BindSource
             | ReferenceKind::BindTarget
-            | ReferenceKind::Variant => {}
+            | ReferenceKind::Variant
+            | ReferenceKind::IncludeUseCase => {}
         }
     }
     Ok((

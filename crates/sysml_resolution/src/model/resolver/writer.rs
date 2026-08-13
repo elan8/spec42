@@ -893,6 +893,7 @@ fn reference_kind(kind: ReferenceKind) -> &'static str {
         ReferenceKind::BindTarget => "bindTarget",
         ReferenceKind::SatisfyViewpoint => "satisfyViewpoint",
         ReferenceKind::Variant => "variant",
+        ReferenceKind::IncludeUseCase => "includeUseCase",
     }
 }
 
@@ -927,6 +928,7 @@ fn relationship_kind(kind: ReferenceKind) -> Option<&'static str> {
         ReferenceKind::BindTarget => Some("bindTarget"),
         ReferenceKind::SatisfyViewpoint => Some("satisfyViewpoint"),
         ReferenceKind::Variant => Some("variant"),
+        ReferenceKind::IncludeUseCase => Some("includeUseCase"),
         ReferenceKind::NamespaceImport
         | ReferenceKind::MembershipImport
         | ReferenceKind::FilterImport => None,
