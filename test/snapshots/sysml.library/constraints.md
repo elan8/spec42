@@ -87,7 +87,7 @@ standard library package Constraints {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_constraint_definition_member")
+        (code "unresolved_reference")
         (source "semantic")
         (range (start 19 2) (end 19 5))
       )
@@ -122,14 +122,14 @@ standard library package Constraints {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:a2662fc9318e275b4298e4f830ae8f2f2576fca8b2566b7bb92fca80941a2e57") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:a2662fc9318e275b4298e4f830ae8f2f2576fca8b2566b7bb92fca80941a2e57") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/constraints.md") (qualified-name "Constraints"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/constraints.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Performances::BooleanEvaluation") (import (shape membership) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/constraints.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Performances::booleanEvaluations") (import (shape membership) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/constraints.md") (anonymous (kind import) (ordinal 2))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Performances::trueEvaluations") (import (shape membership) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/constraints.md") (anonymous (kind import) (ordinal 3))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Performances::falseEvaluations") (import (shape membership) (recursive false)))))
-    (declaration (id (node (document "memory://snapshot/constraints.md") (qualified-name "Constraints::ConstraintCheck"))) (kind constraint-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "BooleanEvaluation"))))
+    (declaration (id (node (document "memory://snapshot/constraints.md") (qualified-name "Constraints::ConstraintCheck"))) (kind constraint-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "BooleanEvaluation")) (expressionOperand (reference "ref"))))
     (declaration (id (node (document "memory://snapshot/constraints.md") (qualified-name "Constraints::ConstraintCheck::self"))) (kind constraint) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ConstraintCheck")) (redefinition (reference "BooleanEvaluation::self"))))
     (declaration (id (node (document "memory://snapshot/constraints.md") (qualified-name "Constraints::assertedConstraintChecks"))) (kind constraint) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "constraintChecks")) (subsetting (reference "trueEvaluations"))))
     (declaration (id (node (document "memory://snapshot/constraints.md") (qualified-name "Constraints::constraintChecks"))) (kind constraint) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ConstraintCheck")) (subsetting (reference "booleanEvaluations"))))
@@ -150,6 +150,9 @@ standard library package Constraints {
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/constraints.md") (qualified-name "Constraints::ConstraintCheck"))) (kind specialization) (ordinal 0))
       (authored-target "BooleanEvaluation")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/constraints.md") (qualified-name "Constraints::ConstraintCheck"))) (kind expressionOperand) (ordinal 0))
+      (authored-target "ref")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/constraints.md") (qualified-name "Constraints::ConstraintCheck::self"))) (kind featureTyping) (ordinal 0))
       (authored-target "ConstraintCheck")
@@ -207,6 +210,10 @@ standard library package Constraints {
   )
   (query (document "memory://snapshot/constraints.md") (range (start 12 44) (end 12 61)) (probe (position 12 44))
     (reference (id (source (node (document "memory://snapshot/constraints.md") (qualified-name "Constraints::ConstraintCheck"))) (kind specialization) (ordinal 0) (authored-target "BooleanEvaluation")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/constraints.md") (range (start 19 2) (end 19 5)) (probe (position 19 2))
+    (reference (id (source (node (document "memory://snapshot/constraints.md") (qualified-name "Constraints::ConstraintCheck"))) (kind expressionOperand) (ordinal 0) (authored-target "ref")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/constraints.md") (range (start 19 23) (end 19 38)) (probe (position 19 23))

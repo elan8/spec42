@@ -17,7 +17,7 @@ use sysml_v2_parser_next::{
         ActionDef, ActionDefBody, ActionDefBodyElement, ActionUsage as ParserActionUsage,
         ActionUsageBody, ActionUsageBodyElement, AliasDef, AllocationDef, AnalysisCaseDef,
         AnalysisCaseUsage as ParserAnalysisCaseUsage, AttributeBody, AttributeBodyElement,
-        AttributeDef, AttributeUsage, CalcDef, CalcDefBody, CalcDefBodyElement,
+        AttributeDef, AttributeUsage, BinaryOperator, CalcDef, CalcDefBody, CalcDefBodyElement,
         CalcUsage as ParserCalcUsage, CaseDef, CaseUsage as ParserCaseUsage, ClassDef,
         ConcernUsage as ParserConcernUsage, ConnectStmt, ConnectionDef, ConnectionDefBody,
         ConnectionDefBodyElement, ConnectionEnd, ConnectionUsageMember as ParserConnectionUsage,
@@ -514,6 +514,34 @@ enum ReferenceKind {
     /// lexical lookup as `Succession`. Sourced at an anonymous `DeclarationKind::InitialState`
     /// feature owned by the enclosing state declaration.
     InitialState,
+    /// A feature-reference leaf (`Expression::FeatureRef`/`Expression::FeatureChainRef`) found
+    /// while walking a supported constraint/calc boolean-comparison expression tree (slice 1 of
+    /// the constraint/calc expression fact family; see `lower_constraint_expression_operand`),
+    /// resolved through the same `DeclarationDomain::Any` lexical lookup fixed point as
+    /// `ConnectorEnd`/`Succession`: an expression operand can reference any owned feature, not
+    /// just a Type. Sourced directly at the enclosing `constraint`/`calc` declaration (unlike
+    /// `Succession`, no anonymous nested-declaration scope shift is needed here, since a
+    /// constraint/calc's expression operands are looked up in the constraint/calc's own
+    /// enclosing scope, not in a nested sibling scope). Evaluation of the expression (computing
+    /// an actual truth value) is explicitly out of scope for this slice; only the operand
+    /// references themselves are resolved.
+    ExpressionOperand,
+}
+
+/// Whether a `BinaryOperator` is one of the six boolean comparison operators
+/// (`lower_constraint_expression`'s supported `BinaryOp` shape): `==`, `!=`, `<`, `<=`, `>`, `>=`.
+/// KerML's strict-identity `===`/`!==` (`StrictEq`/`StrictNe`) are deliberately excluded from this
+/// narrow slice.
+fn is_comparison_operator(op: &BinaryOperator) -> bool {
+    matches!(
+        op,
+        BinaryOperator::Eq
+            | BinaryOperator::Ne
+            | BinaryOperator::Lt
+            | BinaryOperator::Le
+            | BinaryOperator::Gt
+            | BinaryOperator::Ge
+    )
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -2746,6 +2774,113 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
+    /// Lowers a `constraint def`/`constraint` usage body's boolean expression (slice 1 of the
+    /// constraint/calc expression fact family; see `ReferenceKind::ExpressionOperand`). Supports
+    /// only a narrow "boolean comparison" expression shape: a literal, a feature/feature-chain
+    /// reference (resolved as an `ExpressionOperand` reference sourced at `declaration`, exactly
+    /// like `lower_succession_end` resolves `Expression::FeatureRef` through the shared
+    /// `DeclarationDomain::Any` lexical lookup fixed point), a parenthesized wrapper (unwrapped
+    /// and recursed into), or a comparison `BinaryOp` (`Eq`/`Ne`/`Lt`/`Le`/`Gt`/`Ge` -- `StrictEq`/
+    /// `StrictNe` KerML identity comparisons are deliberately excluded from this narrow slice, left
+    /// unsupported like every other operator) whose operands are recursed into. Evaluation
+    /// (computing an actual truth value) is out of scope. Any other expression shape -- arithmetic
+    /// ops, invocations, tuples, type-check/classification expressions, unary ops, a dotted
+    /// `MemberAccess` chain, etc. -- falls through to the existing unsupported-member diagnostic,
+    /// unchanged from prior behavior.
+    fn lower_constraint_expression(
+        &mut self,
+        document: DocumentId,
+        declaration: DeclarationId,
+        family: UnsupportedFamily,
+        node: &Node<Expression>,
+    ) -> Result<(), ConstructionError> {
+        match &node.value {
+            Expression::LiteralInteger(_)
+            | Expression::LiteralReal(_)
+            | Expression::LiteralBoolean(_) => Ok(()),
+            Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => {
+                let span = self.documents[document.index()]
+                    .parsed
+                    .qualified_reference(*target)
+                    .ok_or(ConstructionError::InvalidParserReference)?
+                    .metadata
+                    .span
+                    .clone();
+                self.push_reference(PendingReference {
+                    source: declaration,
+                    kind: ReferenceKind::ExpressionOperand,
+                    document,
+                    local: *target,
+                    flags: RelationshipFlags::default(),
+                    span,
+                    import: None,
+                })?;
+                Ok(())
+            }
+            Expression::Parenthesized(inner) => {
+                self.lower_constraint_expression(document, declaration, family, inner)
+            }
+            Expression::BinaryOp { op, left, right } if is_comparison_operator(op) => {
+                self.lower_constraint_expression(document, declaration, family, left)?;
+                self.lower_constraint_expression(document, declaration, family, right)
+            }
+            _ => {
+                self.push_unsupported(document, family, node.span.clone());
+                Ok(())
+            }
+        }
+    }
+
+    /// Lowers a `calc def`/`calc` usage body's formula expression (slice 1 of the constraint/calc
+    /// expression fact family). Calc bodies are typically arithmetic-result formulas rather than
+    /// boolean comparisons, so comparison-operator support (`lower_constraint_expression`'s
+    /// `BinaryOp` arm) deliberately does not apply here; this slice supports only the same minimal
+    /// leaf shapes -- a literal, a feature/feature-chain reference (resolved as an
+    /// `ExpressionOperand` reference exactly like `lower_constraint_expression`), and a
+    /// parenthesized wrapper -- as a low-risk extension of the same scope. Arithmetic `BinaryOp`s
+    /// (`Add`/`Sub`/`Mul`/`Div`/etc.), invocations, and every other expression shape stay
+    /// unsupported, falling through to the existing `unsupported_calc_definition_member`
+    /// diagnostic, unchanged from prior behavior.
+    fn lower_calc_expression(
+        &mut self,
+        document: DocumentId,
+        declaration: DeclarationId,
+        family: UnsupportedFamily,
+        node: &Node<Expression>,
+    ) -> Result<(), ConstructionError> {
+        match &node.value {
+            Expression::LiteralInteger(_)
+            | Expression::LiteralReal(_)
+            | Expression::LiteralBoolean(_) => Ok(()),
+            Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => {
+                let span = self.documents[document.index()]
+                    .parsed
+                    .qualified_reference(*target)
+                    .ok_or(ConstructionError::InvalidParserReference)?
+                    .metadata
+                    .span
+                    .clone();
+                self.push_reference(PendingReference {
+                    source: declaration,
+                    kind: ReferenceKind::ExpressionOperand,
+                    document,
+                    local: *target,
+                    flags: RelationshipFlags::default(),
+                    span,
+                    import: None,
+                })?;
+                Ok(())
+            }
+            Expression::Parenthesized(inner) => {
+                self.lower_calc_expression(document, declaration, family, inner)
+            }
+            _ => {
+                self.push_unsupported(document, family, node.span.clone());
+                Ok(())
+            }
+        }
+    }
+
     /// Lowers a `state def` (BNF StateDefinition), mirroring `lower_action_def`: ownership,
     /// membership, an optional `:>` specialization relationship, and owned declarations.
     /// State-machine-specific semantics (entry/do/exit action bindings, transitions, exclusive/
@@ -4686,8 +4821,14 @@ impl SemanticModelBuilder {
                         self.lower_parameter_declaration(document, Some(declaration), param)?;
                     }
                     ConstraintDefBodyElement::Doc(_) => {}
+                    ConstraintDefBodyElement::Expression(expression) => self
+                        .lower_constraint_expression(
+                            document,
+                            declaration,
+                            UnsupportedFamily::ConstraintDefinitionMember,
+                            expression,
+                        )?,
                     ConstraintDefBodyElement::MetadataAnnotation(_)
-                    | ConstraintDefBodyElement::Expression(_)
                     | ConstraintDefBodyElement::AttributeUsage(_)
                     | ConstraintDefBodyElement::Other(_) => self.push_unsupported(
                         document,
@@ -4826,9 +4967,14 @@ impl SemanticModelBuilder {
                         self.lower_parameter_declaration(document, Some(declaration), param)?;
                     }
                     CalcDefBodyElement::Doc(_) => {}
+                    CalcDefBodyElement::Expression(expression) => self.lower_calc_expression(
+                        document,
+                        declaration,
+                        UnsupportedFamily::CalcDefinitionMember,
+                        expression,
+                    )?,
                     CalcDefBodyElement::ReturnDecl(_)
                     | CalcDefBodyElement::MetadataAnnotation(_)
-                    | CalcDefBodyElement::Expression(_)
                     | CalcDefBodyElement::Other(_) => self.push_unsupported(
                         document,
                         UnsupportedFamily::CalcDefinitionMember,
@@ -6240,6 +6386,107 @@ mod tests {
                 "(kind subsetting) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::derivedConstraint\")))"
             ),
             "expected derivedConstraint's subsetting of baseConstraint to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn constraint_comparison_expression_resolves_both_operands() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tattribute x : ScalarValues::Integer;\n\
+             \tattribute y : ScalarValues::Integer;\n\
+             \tconstraint def C { x > y }\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind expressionOperand) (ordinal 0))\n      (authored-target \"x\")\n      (outcome (status resolved) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::x\")))))"
+            ),
+            "expected x to resolve as an expressionOperand reference, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind expressionOperand) (ordinal 1))\n      (authored-target \"y\")\n      (outcome (status resolved) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::y\")))))"
+            ),
+            "expected y to resolve as an expressionOperand reference, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn constraint_comparison_expression_leaves_undeclared_operand_unresolved() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tattribute x : ScalarValues::Integer;\n\
+             \tconstraint def C { x > y }\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind expressionOperand) (ordinal 0))\n      (authored-target \"x\")\n      (outcome (status resolved) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::x\")))))"
+            ),
+            "expected x to resolve, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind expressionOperand) (ordinal 1))\n      (authored-target \"y\")\n      (outcome (status unresolved))"
+            ),
+            "expected undeclared y to stay unresolved (not fabricated), got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn constraint_literal_only_comparison_is_supported_with_no_operand_references() {
+        let request = crate::BuildRequest::new(
+            vec![crate::SourceInput::new(
+                "memory://test/enum.sysml",
+                "package Demo {\n\
+                 \tconstraint def C { 1 < 2 }\n\
+                 }\n"
+                .to_string(),
+                crate::SourceKind::Workspace,
+            )],
+            crate::ConstructionSchedule::Sequential,
+            "test-contract-v1",
+        )
+        .unwrap();
+        let published = crate::build(request).unwrap();
+        let mut output = String::new();
+        published
+            .debug()
+            .write_diagnostics_sexpr(&mut output)
+            .unwrap();
+        assert!(
+            !output.contains("unsupported_constraint_definition_member"),
+            "did not expect an unsupported constraint-definition-member diagnostic for a \
+             literal-only comparison, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn constraint_unsupported_expression_shape_still_falls_through_to_diagnostic() {
+        let request = crate::BuildRequest::new(
+            vec![crate::SourceInput::new(
+                "memory://test/enum.sysml",
+                "package Demo {\n\
+                 \tconstraint def C { compute(x, y) }\n\
+                 }\n"
+                .to_string(),
+                crate::SourceKind::Workspace,
+            )],
+            crate::ConstructionSchedule::Sequential,
+            "test-contract-v1",
+        )
+        .unwrap();
+        let published = crate::build(request).unwrap();
+        let mut output = String::new();
+        published
+            .debug()
+            .write_diagnostics_sexpr(&mut output)
+            .unwrap();
+        assert!(
+            output.contains("unsupported_constraint_definition_member"),
+            "expected a function-call expression to still surface as an unsupported \
+             constraint-definition-member diagnostic, got:\n{output}"
         );
     }
 

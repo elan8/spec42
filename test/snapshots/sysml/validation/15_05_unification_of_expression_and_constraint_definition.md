@@ -101,7 +101,13 @@ package '15_05-Unification of Expression and Constraint Definition' {
         (severity warning)
         (code "unsupported_constraint_definition_member")
         (source "semantic")
-        (range (start 17 2) (end 17 48))
+        (range (start 17 2) (end 17 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_constraint_definition_member")
+        (source "semantic")
+        (range (start 17 29) (end 17 48))
       )
       (diagnostic
         (severity warning)

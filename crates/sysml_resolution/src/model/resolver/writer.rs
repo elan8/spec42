@@ -811,6 +811,7 @@ fn reference_kind(kind: ReferenceKind) -> &'static str {
         ReferenceKind::DoActionBinding => "doActionBinding",
         ReferenceKind::ExitActionBinding => "exitActionBinding",
         ReferenceKind::InitialState => "initialState",
+        ReferenceKind::ExpressionOperand => "expressionOperand",
     }
 }
 
@@ -830,6 +831,7 @@ fn relationship_kind(kind: ReferenceKind) -> Option<&'static str> {
         ReferenceKind::DoActionBinding => Some("doActionBinding"),
         ReferenceKind::ExitActionBinding => Some("exitActionBinding"),
         ReferenceKind::InitialState => Some("initialState"),
+        ReferenceKind::ExpressionOperand => Some("expressionOperand"),
         ReferenceKind::NamespaceImport
         | ReferenceKind::MembershipImport
         | ReferenceKind::FilterImport => None,

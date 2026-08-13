@@ -592,10 +592,11 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             (reference.kind() == ReferenceKind::Succession).then_some(index)
         })
         .collect();
-    // Entry/do/exit action bindings and a state's initial-state (`then`) target can each
-    // reference any owned feature (not just a Type), exactly like `Succession`, so they resolve
-    // against `DeclarationDomain::Any` alongside it rather than joining the Subclassification/
-    // FeatureTyping `Type` domain passes; none of them read inherited scope either.
+    // Entry/do/exit action bindings, a state's initial-state (`then`) target, and a constraint/
+    // calc expression's feature-reference operands (`ExpressionOperand`) can each reference any
+    // owned feature (not just a Type), exactly like `Succession`, so they resolve against
+    // `DeclarationDomain::Any` alongside it rather than joining the Subclassification/FeatureTyping
+    // `Type` domain passes; none of them read inherited scope either.
     let state_binding_slots: Vec<usize> = references
         .iter()
         .enumerate()
@@ -606,6 +607,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     | ReferenceKind::DoActionBinding
                     | ReferenceKind::ExitActionBinding
                     | ReferenceKind::InitialState
+                    | ReferenceKind::ExpressionOperand
             )
             .then_some(index)
         })
@@ -1431,7 +1433,8 @@ fn supported_import_domain(reference: &impl ResolutionReferenceFact) -> Option<D
         | ReferenceKind::EntryActionBinding
         | ReferenceKind::DoActionBinding
         | ReferenceKind::ExitActionBinding
-        | ReferenceKind::InitialState => None,
+        | ReferenceKind::InitialState
+        | ReferenceKind::ExpressionOperand => None,
     }
 }
 
@@ -1595,7 +1598,8 @@ fn build_effective_import_indexes<R: ResolutionReferenceFact>(
             | ReferenceKind::EntryActionBinding
             | ReferenceKind::DoActionBinding
             | ReferenceKind::ExitActionBinding
-            | ReferenceKind::InitialState => {}
+            | ReferenceKind::InitialState
+            | ReferenceKind::ExpressionOperand => {}
         }
     }
     Ok((
