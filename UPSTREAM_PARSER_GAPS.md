@@ -209,6 +209,70 @@ entry should carry enough detail to file/update an upstream issue against
   way as Gaps 15/18/20, filed upstream against `feat/gh-119-arena-backed-references`
   (elan8/sysml-v2-parser#121).
 
+- Gap 25. `ViewpointUsage` (`src/ast/view.rs`) has no `subsets`/`redefines` fields at all --
+  `struct ViewpointUsage { name, type_name, body: RequirementDefBody, membership }` -- unlike its
+  sibling `ViewUsage`, which was fixed for this exact gap class (Gap 8, resolved upstream in
+  `0757de13`: `ViewUsage` now carries `subsets`/`redefines`/`multiplicity`). Verified directly
+  against the pinned `0757de13` checkout while attempting `viewpoint` usage-side lowering
+  (following `04274711`'s def-side `viewpoint def` work as the template). Without a
+  `SubsettingRelationship` field there is no way to lower a `viewpoint` usage member to a
+  declaration with resolvable specialization facts consistent with every sibling usage kind
+  (`ViewUsage`, `RequirementUsage`, etc.), so it is left routed through the existing
+  `unsupported_*_member` fallback wherever `PackageBodyElement::ViewpointUsage` etc. appear.
+  Needs `subsets`/`redefines` fields added to `ViewpointUsage` mirroring `ViewUsage`, filed
+  upstream against `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+
+- Gap 26. `RenderingUsage` (`src/ast/view.rs`) has no `subsets`/`redefines` fields at all --
+  `struct RenderingUsage { name, type_name, body: RenderingUsageBody, membership }` -- same gap
+  class as Gap 25/Gap 8. Verified directly against the pinned `0757de13` checkout while
+  attempting `rendering` usage-side lowering (following `04274711`'s def-side `rendering def`
+  work, which mirrors `lower_view_def`, as the template). Without a `SubsettingRelationship`
+  field there is no way to lower a `rendering` usage member with resolvable specialization facts
+  consistent with `ViewUsage`. Left routed through the existing `unsupported_*_member` fallback.
+  Needs `subsets`/`redefines` fields added to `RenderingUsage` mirroring `ViewUsage`, filed
+  upstream against `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+
+- Gap 27. `AllocationUsage` (`src/ast/behavior.rs`) has no `subsets`/`redefines` fields, and its
+  `allocate ... to ...` ends are captured as raw `Option<Node<Expression>>` (`source`/`target`),
+  not as typed `end` declarations the way `AllocationDef`'s body uses
+  `ReferenceKind::ConnectorEnd`-shaped `end` members. `struct AllocationUsage { name, type_name,
+  type_is_conjugated, source: Option<Node<Expression>>, target: Option<Node<Expression>>, body:
+  DefinitionBody, membership }`. Verified directly against the pinned `0757de13` checkout while
+  attempting `allocation` usage-side lowering (following `04274711`'s def-side `allocation def`
+  work as the template, which reused `ReferenceKind::ConnectorEnd` via the shared
+  `lower_occurrence_body_element` walker for `end` declarations in `AllocationDef`'s body).
+  Two independent problems block a faithful usage-side lowering: (1) no
+  `SubsettingRelationship` fields to resolve specialization/redefinition facts, matching Gap
+  8/25/26's class; (2) `source`/`target` are opaque `Expression` nodes rather than structured
+  connector-end references, so even ignoring (1) there is no typed AST shape to route through the
+  existing `ReferenceKind::ConnectorEnd` machinery without re-parsing/interpreting the
+  `Expression` tree, which spec42 deliberately avoids. Left routed through the existing
+  `unsupported_*_member` fallback wherever `PackageBodyElement::AllocationUsage` etc. appear.
+  Needs `subsets`/`redefines` fields (mirroring `ViewUsage`/`ConnectionUsage`) and a typed
+  source/target end shape (mirroring `AllocationDef`'s `end` declarations or `ConnectionUsage`'s
+  connector ends) added to `AllocationUsage`, filed upstream against
+  `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+
+- Gap 28. `FlowUsage` (`src/ast/behavior.rs`) has no `subsets`/`redefines` fields, and its `from
+  ... to ...` ends are captured as raw `Option<Node<Expression>>` (`from`/`to`), not as typed
+  `end` declarations the way `FlowDef`'s body uses `ReferenceKind::ConnectorEnd`-shaped `end`
+  members -- the standalone `flow ... from ... to ...;` usage form is genuinely a different AST
+  shape from the definition-side body, not merely a usage/def pairing with identical fields.
+  `struct FlowUsage { kind: FlowUsageKind, name: Option<String>, type_name, type_is_conjugated,
+  payload: Option<Node<PayloadFeature>>, from: Option<Node<Expression>>, to:
+  Option<Node<Expression>>, body: DefinitionBody, membership }`. Verified directly against the
+  pinned `0757de13` checkout while attempting `flow` usage-side lowering (following `04274711`'s
+  def-side `flow def` work as the template, which reused `ReferenceKind::ConnectorEnd` via the
+  shared `lower_occurrence_body_element` walker for `end` declarations in `FlowDef`'s body). Same
+  two-part gap as Gap 27 (`AllocationUsage`): (1) no `SubsettingRelationship` fields at all; (2)
+  `from`/`to` are opaque `Expression` nodes, not structured connector-end references, so there is
+  no typed shape to route through the existing `ReferenceKind::ConnectorEnd` machinery without
+  re-parsing/interpreting the `Expression` tree. Left routed through the existing
+  `unsupported_*_member` fallback wherever `PackageBodyElement::FlowUsage` etc. appear. Needs
+  `subsets`/`redefines` fields and a typed from/to end shape (mirroring `FlowDef`'s `end`
+  declarations or `ConnectionUsage`'s connector ends) added to `FlowUsage`, filed upstream
+  against `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+
 ## False-positive check (spec42-side surfacing bug?)
 Traced end-to-end for a diverse sample (Gap 15's `feature` case, Gap 17's `portion` case, Gap 22's
 `type`/`subset` case, and Gap 23's bare-identifier case) plus a repo-wide search:
