@@ -226,6 +226,11 @@ fn unsupported_code(family: UnsupportedFamily) -> &'static str {
         UnsupportedFamily::AnalysisCaseDefinitionMember => {
             "unsupported_analysis_case_definition_member"
         }
+        UnsupportedFamily::CaseDefinitionMember => "unsupported_case_definition_member",
+        UnsupportedFamily::VerificationCaseDefinitionMember => {
+            "unsupported_verification_case_definition_member"
+        }
+        UnsupportedFamily::UseCaseDefinitionMember => "unsupported_use_case_definition_member",
         UnsupportedFamily::ParserUnsupported => "unsupported_parser_construct",
     }
 }
@@ -723,6 +728,9 @@ fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::OccurrenceUsage => "occurrence",
         DeclarationKind::AnalysisCaseDefinition => "analysis-def",
         DeclarationKind::ViewDefinition => "view-def",
+        DeclarationKind::CaseDefinition => "case-def",
+        DeclarationKind::VerificationCaseDefinition => "verification-def",
+        DeclarationKind::UseCaseDefinition => "use-case-def",
     }
 }
 

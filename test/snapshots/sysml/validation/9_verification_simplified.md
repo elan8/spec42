@@ -176,9 +176,9 @@ package '9-Verification-simplified' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_verification_case_definition_member")
         (source "semantic")
-        (range (start 28 2) (end 32 3))
+        (range (start 29 3) (end 31 4))
       )
       (diagnostic
         (severity warning)
@@ -292,6 +292,7 @@ package '9-Verification-simplified' {
     (declaration (id (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassRequirement"))) (kind requirement-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassRequirement::massActual"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "ISQ::mass"))))
     (declaration (id (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassRequirement::massReqd"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "ISQ::mass"))))
+    (declaration (id (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassTest"))) (kind verification-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassVerificationSystem"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::Scale"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::TestOperator"))) (kind part-def) (membership (kind owning) (visibility default)))

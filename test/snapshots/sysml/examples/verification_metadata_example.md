@@ -42,12 +42,6 @@ package VerificationMetadataExample {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 4 4) (end 4 30))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
         (range (start 5 4) (end 12 5))
       )
     )
@@ -62,6 +56,7 @@ package VerificationMetadataExample {
     (declaration (id (node (document "memory://snapshot/verification_metadata_example.md") (qualified-name "VerificationMetadataExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/verification_metadata_example.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "VerificationCases") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/verification_metadata_example.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "VerificationMethodKind") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/verification_metadata_example.md") (qualified-name "VerificationMetadataExample::MassTest"))) (kind verification-def) (membership (kind owning) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/verification_metadata_example.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))

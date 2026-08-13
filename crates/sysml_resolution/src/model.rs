@@ -16,7 +16,7 @@ use sysml_v2_parser_next::{
     ast::{
         ActionDef, ActionDefBody, ActionDefBodyElement, ActionUsage as ParserActionUsage,
         ActionUsageBody, ActionUsageBodyElement, AliasDef, AnalysisCaseDef, AttributeBody,
-        AttributeBodyElement, AttributeDef, AttributeUsage, ConnectStmt, ConnectionDef,
+        AttributeBodyElement, AttributeDef, AttributeUsage, CaseDef, ConnectStmt, ConnectionDef,
         ConnectionDefBody, ConnectionDefBodyElement, ConnectionEnd,
         ConnectionUsageMember as ParserConnectionUsage, DefinitionBody, DefinitionBodyElement,
         EndDecl, EndIdentity, EnumDef, EnumerationBody, EnumerationUsage as ParserEnumerationUsage,
@@ -31,8 +31,9 @@ use sysml_v2_parser_next::{
         RequirementDef, RequirementDefBody, RequirementDefBodyElement,
         RequirementUsage as ParserRequirementUsage, RootElement, Span, StateDef, StateDefBody,
         StateDefBodyElement, StateUsage as ParserStateUsage, SubsettingKind,
-        SubsettingRelationship, UseCaseDefBody, UseCaseDefBodyElement, ViewDef, ViewDefBody,
-        ViewDefBodyElement, Visibility as ParserVisibility,
+        SubsettingRelationship, UseCaseDef, UseCaseDefBody, UseCaseDefBodyElement,
+        VerificationCaseDef, ViewDef, ViewDefBody, ViewDefBodyElement,
+        Visibility as ParserVisibility,
     },
     ParseError, ParsedDocument,
 };
@@ -212,6 +213,29 @@ enum DeclarationKind {
     /// `test/snapshots/sysml/validation/11b_safety_and_security_feature_views.md`'s
     /// `view vehicleMandatorySafetyFeatureView :> vehicleSafetyFeatureView { ... }`).
     ViewDefinition,
+    /// `case def` (BNF CaseDefinition): a type whose owned members are attribute usages and
+    /// nested case structure, mirroring `AnalysisCaseDefinition` lowering (shares the same
+    /// `UseCaseDefBody`/`UseCaseDefBodyElement` shape). Case-specific semantics (subject binding,
+    /// objective, first-succession/return structure) are out of scope here; only ownership,
+    /// specialization, and owned-member structure are lowered. `case` usage lowering is deferred
+    /// (see UPSTREAM_PARSER_GAPS.md #5: `CaseUsage` silently drops parsed `:>`/`:>>` clauses,
+    /// unlike `CaseDef`, which has full field parity).
+    CaseDefinition,
+    /// `verification def` (BNF VerificationCaseDefinition): a type whose owned members are
+    /// attribute usages and nested case structure, mirroring `CaseDefinition`/
+    /// `AnalysisCaseDefinition` lowering. Verification-specific semantics are out of scope here;
+    /// only ownership, specialization, and owned-member structure are lowered. `verification`
+    /// usage lowering is deferred (see UPSTREAM_PARSER_GAPS.md #5: `VerificationCaseUsage`
+    /// silently drops parsed `:>`/`:>>` clauses, unlike `VerificationCaseDef`, which has full
+    /// field parity).
+    VerificationCaseDefinition,
+    /// `use case def` (BNF UseCaseDefinition): a type whose owned members are attribute usages
+    /// and nested case structure, mirroring `CaseDefinition`/`AnalysisCaseDefinition` lowering.
+    /// Use-case-specific semantics (actor/include structure) are out of scope here; only
+    /// ownership, specialization, and owned-member structure are lowered. `use case` usage
+    /// lowering is deferred (see UPSTREAM_PARSER_GAPS.md #5: `UseCaseUsage` silently drops parsed
+    /// `:>`/`:>>` clauses, unlike `UseCaseDef`, which has full field parity).
+    UseCaseDefinition,
     Import,
     Alias,
 }
@@ -323,6 +347,21 @@ enum UnsupportedFamily {
     /// `filter` (view composition), `expose`/`satisfy` are `view` usage-body-only constructs
     /// (`ViewBodyElement`, not `ViewDefBodyElement`) and don't appear here at all.
     ViewDefinitionMember,
+    /// `case def` body members not modeled by this slice (subject/actor/objective/first-
+    /// succession/return/nested case structure); shares `UseCaseDefBody`/`UseCaseDefBodyElement`
+    /// with `analysis`/`verification`/`use case` case bodies in the typed AST, but this family
+    /// name is scoped to `case def` specifically since `case` usage lowering is deferred.
+    CaseDefinitionMember,
+    /// `verification def` body members not modeled by this slice; shares the same
+    /// `UseCaseDefBody`/`UseCaseDefBodyElement` shape as `CaseDefinitionMember`, kept as its own
+    /// family name so verification def diagnostics stay distinct from case/analysis/use-case def
+    /// ones at the same span shape.
+    VerificationCaseDefinitionMember,
+    /// `use case def` body members not modeled by this slice; shares the same `UseCaseDefBody`/
+    /// `UseCaseDefBodyElement` shape as `CaseDefinitionMember`, kept as its own family name so use
+    /// case def diagnostics stay distinct from case/analysis/verification def ones at the same
+    /// span shape.
+    UseCaseDefinitionMember,
     ParserUnsupported,
 }
 
@@ -821,11 +860,9 @@ impl SemanticModelBuilder {
                 UnsupportedFamily::PackageMember,
                 node.span.clone(),
             ),
-            PackageBodyElement::UseCaseDef(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::UseCaseDef(node) => {
+                self.lower_use_case_def(document, owner, node)?
+            }
             PackageBodyElement::Actor(node) => self.push_unsupported(
                 document,
                 UnsupportedFamily::PackageMember,
@@ -924,11 +961,7 @@ impl SemanticModelBuilder {
                 UnsupportedFamily::PackageMember,
                 node.span.clone(),
             ),
-            PackageBodyElement::CaseDef(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::CaseDef(node) => self.lower_case_def(document, owner, node)?,
             PackageBodyElement::CaseUsage(node) => self.push_unsupported(
                 document,
                 UnsupportedFamily::PackageMember,
@@ -942,11 +975,9 @@ impl SemanticModelBuilder {
                 UnsupportedFamily::PackageMember,
                 node.span.clone(),
             ),
-            PackageBodyElement::VerificationCaseDef(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::VerificationCaseDef(node) => {
+                self.lower_verification_case_def(document, owner, node)?
+            }
             PackageBodyElement::VerificationCaseUsage(node) => self.push_unsupported(
                 document,
                 UnsupportedFamily::PackageMember,
@@ -1162,6 +1193,19 @@ impl SemanticModelBuilder {
                             analysis_case_def,
                         )?;
                     }
+                    PartDefBodyElement::CaseDef(case_def) => {
+                        self.lower_case_def(document, Some(declaration), case_def)?;
+                    }
+                    PartDefBodyElement::VerificationCaseDef(verification_case_def) => {
+                        self.lower_verification_case_def(
+                            document,
+                            Some(declaration),
+                            verification_case_def,
+                        )?;
+                    }
+                    PartDefBodyElement::UseCaseDef(use_case_def) => {
+                        self.lower_use_case_def(document, Some(declaration), use_case_def)?;
+                    }
                     PartDefBodyElement::RequirementUsage(requirement_usage) => {
                         self.lower_requirement_usage(
                             document,
@@ -1246,12 +1290,9 @@ impl SemanticModelBuilder {
                     | PartDefBodyElement::ViewpointUsage(_)
                     | PartDefBodyElement::RenderingDef(_)
                     | PartDefBodyElement::RenderingUsage(_)
-                    | PartDefBodyElement::CaseDef(_)
                     | PartDefBodyElement::CaseUsage(_)
-                    | PartDefBodyElement::UseCaseDef(_)
                     | PartDefBodyElement::UseCaseUsage(_)
                     | PartDefBodyElement::AnalysisCaseUsage(_)
-                    | PartDefBodyElement::VerificationCaseDef(_)
                     | PartDefBodyElement::VerificationCaseUsage(_)
                     | PartDefBodyElement::FirstStmt(_)
                     | PartDefBodyElement::Bind(_)
@@ -2385,6 +2426,167 @@ impl SemanticModelBuilder {
         owner: DeclarationId,
         body: &UseCaseDefBody,
     ) -> Result<(), ConstructionError> {
+        self.lower_case_family_def_body(
+            document,
+            owner,
+            body,
+            UnsupportedFamily::AnalysisCaseDefinitionMember,
+        )
+    }
+
+    /// Lowers a `case def` (BNF CaseDefinition), mirroring `lower_analysis_case_def`: ownership,
+    /// membership, an optional `:>` specialization relationship, and owned attribute/nested
+    /// members via the shared `UseCaseDefBody`. Case-specific semantics (subject binding,
+    /// objective, first-succession/return structure) are explicitly out of scope; unrecognized
+    /// body elements fall through to `unsupported_case_definition_member`. `case` usage lowering
+    /// is deferred entirely (UPSTREAM_PARSER_GAPS.md #5): `CaseUsage` silently drops parsed
+    /// `:>`/`:>>` clauses, unlike `CaseDef`.
+    fn lower_case_def(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<CaseDef>,
+    ) -> Result<(), ConstructionError> {
+        let name = node
+            .value
+            .identification
+            .name
+            .as_deref()
+            .filter(|name| !name.is_empty())
+            .map(|name| self.intern_name(name))
+            .transpose()?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::CaseDefinition,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Owning,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::OwningMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(relationship) = &node.value.specializes {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        self.lower_case_family_def_body(
+            document,
+            declaration,
+            &node.value.body,
+            UnsupportedFamily::CaseDefinitionMember,
+        )
+    }
+
+    /// Lowers a `verification def` (BNF VerificationCaseDefinition), mirroring `lower_case_def`.
+    /// Verification-specific semantics are explicitly out of scope; unrecognized body elements
+    /// fall through to `unsupported_verification_case_definition_member`. `verification` usage
+    /// lowering is deferred entirely (UPSTREAM_PARSER_GAPS.md #5): `VerificationCaseUsage`
+    /// silently drops parsed `:>`/`:>>` clauses, unlike `VerificationCaseDef`.
+    fn lower_verification_case_def(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<VerificationCaseDef>,
+    ) -> Result<(), ConstructionError> {
+        let name = node
+            .value
+            .identification
+            .name
+            .as_deref()
+            .filter(|name| !name.is_empty())
+            .map(|name| self.intern_name(name))
+            .transpose()?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::VerificationCaseDefinition,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Owning,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::OwningMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(relationship) = &node.value.specializes {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        self.lower_case_family_def_body(
+            document,
+            declaration,
+            &node.value.body,
+            UnsupportedFamily::VerificationCaseDefinitionMember,
+        )
+    }
+
+    /// Lowers a `use case def` (BNF UseCaseDefinition), mirroring `lower_case_def`. Use-case-
+    /// specific semantics (actor/include structure) are explicitly out of scope; unrecognized
+    /// body elements fall through to `unsupported_use_case_definition_member`. `use case` usage
+    /// lowering is deferred entirely (UPSTREAM_PARSER_GAPS.md #5): `UseCaseUsage` silently drops
+    /// parsed `:>`/`:>>` clauses, unlike `UseCaseDef`.
+    fn lower_use_case_def(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<UseCaseDef>,
+    ) -> Result<(), ConstructionError> {
+        let name = node
+            .value
+            .identification
+            .name
+            .as_deref()
+            .filter(|name| !name.is_empty())
+            .map(|name| self.intern_name(name))
+            .transpose()?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::UseCaseDefinition,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Owning,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::OwningMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(relationship) = &node.value.specializes {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        self.lower_case_family_def_body(
+            document,
+            declaration,
+            &node.value.body,
+            UnsupportedFamily::UseCaseDefinitionMember,
+        )
+    }
+
+    /// Shared body walker for the case-family def kinds (`analysis def`/`case def`/
+    /// `verification def`/`use case def`), all of which share the same `UseCaseDefBody`/
+    /// `UseCaseDefBodyElement` shape in the typed AST. Recognized owned members are attribute
+    /// def/usage; everything else (subject/actor/objective/succession/nested
+    /// action/analysis/calc/requirement/part usages, etc.) falls through to the caller-supplied
+    /// `unsupported` family so each def kind's diagnostics stay distinct.
+    fn lower_case_family_def_body(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        body: &UseCaseDefBody,
+        unsupported: UnsupportedFamily,
+    ) -> Result<(), ConstructionError> {
         let UseCaseDefBody::Brace { elements } = body else {
             return Ok(());
         };
@@ -2427,11 +2629,9 @@ impl SemanticModelBuilder {
                 | UseCaseDefBodyElement::RequirementUsage(_)
                 | UseCaseDefBodyElement::PartUsage(_)
                 | UseCaseDefBodyElement::Expression(_)
-                | UseCaseDefBodyElement::FlowUsage(_) => self.push_unsupported(
-                    document,
-                    UnsupportedFamily::AnalysisCaseDefinitionMember,
-                    element.span.clone(),
-                ),
+                | UseCaseDefBodyElement::FlowUsage(_) => {
+                    self.push_unsupported(document, unsupported, element.span.clone())
+                }
             }
         }
         Ok(())
@@ -4278,6 +4478,212 @@ mod tests {
         assert!(
             output.contains("unsupported_analysis_case_definition_member"),
             "expected the nested analysis usage to surface as an explicit unsupported diagnostic, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn case_def_lowers_to_a_declaration() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tcase def Investigation {\n\
+             \t\tattribute mass : Real;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::Investigation\"))) (kind case-def)"),
+            "expected a case-def declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::Investigation::mass\"))) (kind attribute)"),
+            "expected an owned attribute declaration under the case def, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn case_def_specializing_another_case_def_resolves_its_specialization_reference() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tcase def Base;\n\
+             \tcase def Derived :> Base;\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind specialization) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Derived\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
+            ),
+            "expected Derived's specialization of Base to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn case_definition_member_nested_action_usage_stays_explicitly_unsupported() {
+        // `case` usage lowering is deferred (UPSTREAM_PARSER_GAPS.md #5: `CaseUsage` silently
+        // drops parsed `:>`/`:>>` clauses, unlike `CaseDef`), so a nested body construct out of
+        // scope for this slice must surface as an explicit unsupported diagnostic.
+        let request = crate::BuildRequest::new(
+            vec![crate::SourceInput::new(
+                "memory://test/enum.sysml",
+                "package Demo {\n\
+                 \tcase def Outer {\n\
+                 \t\taction inner;\n\
+                 \t}\n\
+                 }\n"
+                .to_string(),
+                crate::SourceKind::Workspace,
+            )],
+            crate::ConstructionSchedule::Sequential,
+            "test-contract-v1",
+        )
+        .unwrap();
+        let published = crate::build(request).unwrap();
+        let mut output = String::new();
+        published
+            .debug()
+            .write_diagnostics_sexpr(&mut output)
+            .unwrap();
+        assert!(
+            output.contains("unsupported_case_definition_member"),
+            "expected the nested action usage to surface as an explicit unsupported diagnostic, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn verification_case_def_lowers_to_a_declaration() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tverification def RangeVerification {\n\
+             \t\tattribute mass : Real;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output
+                .contains("(qualified-name \"Demo::RangeVerification\"))) (kind verification-def)"),
+            "expected a verification-def declaration, got:\n{output}"
+        );
+        assert!(
+            output
+                .contains("(qualified-name \"Demo::RangeVerification::mass\"))) (kind attribute)"),
+            "expected an owned attribute declaration under the verification def, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn verification_case_def_specializing_another_verification_case_def_resolves_its_specialization_reference(
+    ) {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tverification def Base;\n\
+             \tverification def Derived :> Base;\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind specialization) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Derived\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
+            ),
+            "expected Derived's specialization of Base to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn verification_case_definition_member_nested_action_usage_stays_explicitly_unsupported() {
+        // `verification` usage lowering is deferred (UPSTREAM_PARSER_GAPS.md #5:
+        // `VerificationCaseUsage` silently drops parsed `:>`/`:>>` clauses, unlike
+        // `VerificationCaseDef`), so a nested body construct out of scope for this slice must
+        // surface as an explicit unsupported diagnostic.
+        let request = crate::BuildRequest::new(
+            vec![crate::SourceInput::new(
+                "memory://test/enum.sysml",
+                "package Demo {\n\
+                 \tverification def Outer {\n\
+                 \t\taction inner;\n\
+                 \t}\n\
+                 }\n"
+                .to_string(),
+                crate::SourceKind::Workspace,
+            )],
+            crate::ConstructionSchedule::Sequential,
+            "test-contract-v1",
+        )
+        .unwrap();
+        let published = crate::build(request).unwrap();
+        let mut output = String::new();
+        published
+            .debug()
+            .write_diagnostics_sexpr(&mut output)
+            .unwrap();
+        assert!(
+            output.contains("unsupported_verification_case_definition_member"),
+            "expected the nested action usage to surface as an explicit unsupported diagnostic, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn use_case_def_lowers_to_a_declaration() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tuse case def PurchaseTicket {\n\
+             \t\tattribute mass : Real;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::PurchaseTicket\"))) (kind use-case-def)"),
+            "expected a use-case-def declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::PurchaseTicket::mass\"))) (kind attribute)"),
+            "expected an owned attribute declaration under the use case def, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn use_case_def_specializing_another_use_case_def_resolves_its_specialization_reference() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tuse case def Base;\n\
+             \tuse case def Derived :> Base;\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind specialization) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Derived\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
+            ),
+            "expected Derived's specialization of Base to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn use_case_definition_member_nested_action_usage_stays_explicitly_unsupported() {
+        // `use case` usage lowering is deferred (UPSTREAM_PARSER_GAPS.md #5: `UseCaseUsage`
+        // silently drops parsed `:>`/`:>>` clauses, unlike `UseCaseDef`), so a nested body
+        // construct out of scope for this slice must surface as an explicit unsupported
+        // diagnostic.
+        let request = crate::BuildRequest::new(
+            vec![crate::SourceInput::new(
+                "memory://test/enum.sysml",
+                "package Demo {\n\
+                 \tuse case def Outer {\n\
+                 \t\taction inner;\n\
+                 \t}\n\
+                 }\n"
+                .to_string(),
+                crate::SourceKind::Workspace,
+            )],
+            crate::ConstructionSchedule::Sequential,
+            "test-contract-v1",
+        )
+        .unwrap();
+        let published = crate::build(request).unwrap();
+        let mut output = String::new();
+        published
+            .debug()
+            .write_diagnostics_sexpr(&mut output)
+            .unwrap();
+        assert!(
+            output.contains("unsupported_use_case_definition_member"),
+            "expected the nested action usage to surface as an explicit unsupported diagnostic, got:\n{output}"
         );
     }
 

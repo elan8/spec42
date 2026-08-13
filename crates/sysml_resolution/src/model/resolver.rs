@@ -1221,6 +1221,9 @@ impl DeclarationDomain {
                     | DeclarationKind::OccurrenceDefinition
                     | DeclarationKind::AnalysisCaseDefinition
                     | DeclarationKind::ViewDefinition
+                    | DeclarationKind::CaseDefinition
+                    | DeclarationKind::VerificationCaseDefinition
+                    | DeclarationKind::UseCaseDefinition
                     | DeclarationKind::Alias
             ),
         }
@@ -2457,6 +2460,80 @@ mod tests {
     #[test]
     fn analysis_case_def_specialization_resolves_through_the_ancestor_fixed_point() {
         let fixture = analysis_case_def_specialization_fixture();
+        let (_, _, resolution) = resolve_fixture(&fixture);
+        assert_eq!(resolution.solver_status, SolverStatus::Converged);
+        assert_eq!(
+            resolution.outcome(AuthoredReferenceId(0)),
+            Some(ResolutionStatus::Resolved(DeclarationId(1)))
+        );
+    }
+
+    /// Builds a `Demo { Base; Derived :> Base; }`-shaped fixture for the given case-family
+    /// `DeclarationKind` (`CaseDefinition`/`VerificationCaseDefinition`/`UseCaseDefinition`),
+    /// exercising its participation in the shared Subclassification/FeatureTyping lexical lookup
+    /// fixed point (`DeclarationDomain::Type`) exactly like `analysis def`/`occurrence def`.
+    fn case_family_def_specialization_fixture(kind: DeclarationKind) -> ResolverFixture {
+        let mut symbols = SymbolTableBuilder::default();
+        let demo_name = symbols.intern("Demo").unwrap();
+        let base_name = symbols.intern("Base").unwrap();
+        let derived_name = symbols.intern("Derived").unwrap();
+        let mut paths = SymbolPathArenaBuilder::default();
+        let base_path = paths.push(&[base_name], false).unwrap();
+
+        let demo = DeclarationId(0);
+        let derived = DeclarationId(2);
+        let declarations = vec![
+            declaration(
+                DocumentId(0),
+                None,
+                Some(demo_name),
+                DeclarationKind::Package,
+            ),
+            declaration(DocumentId(0), Some(demo), Some(base_name), kind),
+            declaration(DocumentId(0), Some(demo), Some(derived_name), kind),
+        ];
+        let memberships = memberships_for(&declarations, &[]);
+        let references = vec![TestReference {
+            source: derived,
+            kind: ReferenceKind::Subclassification,
+            path: base_path,
+            flags: RelationshipFlags::default(),
+        }];
+        let _symbols = symbols.freeze();
+        ResolverFixture {
+            declarations: declarations.into_boxed_slice(),
+            memberships,
+            paths: paths.freeze(),
+            references: references.into_boxed_slice(),
+        }
+    }
+
+    #[test]
+    fn case_def_specialization_resolves_through_the_ancestor_fixed_point() {
+        let fixture = case_family_def_specialization_fixture(DeclarationKind::CaseDefinition);
+        let (_, _, resolution) = resolve_fixture(&fixture);
+        assert_eq!(resolution.solver_status, SolverStatus::Converged);
+        assert_eq!(
+            resolution.outcome(AuthoredReferenceId(0)),
+            Some(ResolutionStatus::Resolved(DeclarationId(1)))
+        );
+    }
+
+    #[test]
+    fn verification_case_def_specialization_resolves_through_the_ancestor_fixed_point() {
+        let fixture =
+            case_family_def_specialization_fixture(DeclarationKind::VerificationCaseDefinition);
+        let (_, _, resolution) = resolve_fixture(&fixture);
+        assert_eq!(resolution.solver_status, SolverStatus::Converged);
+        assert_eq!(
+            resolution.outcome(AuthoredReferenceId(0)),
+            Some(ResolutionStatus::Resolved(DeclarationId(1)))
+        );
+    }
+
+    #[test]
+    fn use_case_def_specialization_resolves_through_the_ancestor_fixed_point() {
+        let fixture = case_family_def_specialization_fixture(DeclarationKind::UseCaseDefinition);
         let (_, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
