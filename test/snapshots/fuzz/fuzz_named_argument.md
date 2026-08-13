@@ -14,37 +14,32 @@ package P {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "fuzz_named_argument.md"
+  (document "memory://snapshot/fuzz_named_argument.md"
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unresolved_type_reference")
+        (code "unsupported_package_member")
         (source "semantic")
-        (range (start 1 17) (end 1 26))
+        (range (start 1 4) (end 1 28))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "65c4980a5d3ea68d799182f9d32ee290054819c9ab98219064dd33f0f321b555") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "P"))) (kind "package") (name "P") (declared-name "P"))
-    (element (id (node (document "d0") (qualified-name "P::F"))) (kind "calc def") (name "F") (declared-name "F") (parent (node (document "d0") (qualified-name "P"))))
-    (element (id (node (document "d0") (qualified-name "P::F::p"))) (kind "in out parameter") (name "p") (declared-name "p") (parent (node (document "d0") (qualified-name "P::F"))) (authored (relationships (typing (reference "A")))))
-    (element (id (node (document "d0") (qualified-name "P::b"))) (kind "attribute def") (name "b") (declared-name "b") (parent (node (document "d0") (qualified-name "P"))))
-    (element (id (node (document "d0") (qualified-name "P::f"))) (kind "attribute def") (name "f") (declared-name "f") (parent (node (document "d0") (qualified-name "P"))))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:a30c87320530daeaa6ba1ba5a93f49193903c5d98385c4e7c0c8f5aa187a0a0d") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/fuzz_named_argument.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/fuzz_named_argument.md") (qualified-name "P::b"))) (kind attribute-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/fuzz_named_argument.md") (qualified-name "P::f"))) (kind attribute-def) (membership (kind owning) (visibility default)))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "P::F::p"))) (kind featureTyping) (ordinal 0)) (authored-target "A") (outcome (status unresolved)))
   )
   (relationships
   )
   (evaluation
-    (node (node (document "d0") (qualified-name "P::b")) (expression (status "unsupported") (error "declared expression form is not supported")))
-    (node (node (document "d0") (qualified-name "P::f")) (expression (status "unresolved") (error "expression has an unresolved reference")))
   )
 )
 ~~~

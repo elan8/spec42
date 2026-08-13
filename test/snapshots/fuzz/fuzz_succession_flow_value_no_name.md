@@ -17,19 +17,30 @@ package P {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "fuzz_succession_flow_value_no_name.md"
+  (document "memory://snapshot/fuzz_succession_flow_value_no_name.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 1 4) (end 6 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 1 4) (end 6 5))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "190f7b74ea7ac5c773537c396caac9a9a1021b367962da31ddda19feb4ed861b") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "P"))) (kind "package") (name "P") (declared-name "P"))
-    (element (id (node (document "d0") (qualified-name "P::Container"))) (kind "classifier decl") (name "Container") (declared-name "Container") (parent (node (document "d0") (qualified-name "P"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:d48ca10a6f48f735e0a0bb7d958924cd9a3d725bd7fff02b464f78b88fd73630") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

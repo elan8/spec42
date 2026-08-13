@@ -2,8 +2,6 @@
 ~~~ini
 description=Bare redefines/subsets as shorthand features in KerML bodies
 type=kerml
-semantic_graph=skip
-semantic_graph_skip_reason=KerML class bodies with shorthand redefinitions are opaque parser fallback nodes; feature values and redefinition targets are unavailable as structured semantic inputs
 ~~~
 # SOURCE
 ~~~kerml
@@ -20,17 +18,29 @@ class A {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "bare_redefines_feature.md"
+  (document "memory://snapshot/bare_redefines_feature.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 0 0) (end 8 1))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 0 0) (end 8 1))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "5fc75c6e494594bffba82d0b608821738dac66299024c9a6b5f508f283244c50") (contract-version "canonical-resolution-v1"))
-  (structure
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:bf8a3f17c1c71a61dbf0120f7205c5c1540c834b5e62fe275a3f2ad5e2d3ff1d") (contract-version "parser-owned-resolution-v1"))
+  (declarations
   )
   (references
   )

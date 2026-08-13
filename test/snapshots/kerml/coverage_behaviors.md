@@ -44,28 +44,138 @@ package BehaviorCoverage {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "coverage_behaviors.md"
+  (document "memory://snapshot/coverage_behaviors.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 1 4) (end 4 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 1 4) (end 4 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 6 4) (end 6 22))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 6 4) (end 6 22))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 8 4) (end 11 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 8 4) (end 11 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 13 4) (end 13 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 13 4) (end 13 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 15 4) (end 15 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 15 4) (end 15 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 17 4) (end 17 19))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 17 4) (end 17 19))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 19 4) (end 19 18))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 19 4) (end 19 18))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 20 4) (end 20 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 20 4) (end 20 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 22 4) (end 25 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 22 4) (end 25 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 27 4) (end 33 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 27 4) (end 33 5))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "0800067208f80370ef39de1ddbd4172ef8136a533e5661a771216e306654888c") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "BehaviorCoverage"))) (kind "package") (name "BehaviorCoverage") (declared-name "BehaviorCoverage"))
-    (element (id (node (document "d0") (qualified-name "BehaviorCoverage::Action1"))) (kind "kermlDecl") (name "Action1") (declared-name "Action1") (parent (node (document "d0") (qualified-name "BehaviorCoverage"))))
-    (element (id (node (document "d0") (qualified-name "BehaviorCoverage::Container"))) (kind "classifier decl") (name "Container") (declared-name "Container") (parent (node (document "d0") (qualified-name "BehaviorCoverage"))))
-    (element (id (node (document "d0") (qualified-name "BehaviorCoverage::E"))) (kind "kermlDecl") (name "E") (declared-name "E") (parent (node (document "d0") (qualified-name "BehaviorCoverage"))))
-    (element (id (node (document "d0") (qualified-name "BehaviorCoverage::F"))) (kind "kermlDecl") (name "F") (declared-name "F") (parent (node (document "d0") (qualified-name "BehaviorCoverage"))))
-    (element (id (node (document "d0") (qualified-name "BehaviorCoverage::I"))) (kind "kermlDecl") (name "I") (declared-name "I") (parent (node (document "d0") (qualified-name "BehaviorCoverage"))))
-    (element (id (node (document "d0") (qualified-name "BehaviorCoverage::Inter"))) (kind "kermlDecl") (name "Inter") (declared-name "Inter") (parent (node (document "d0") (qualified-name "BehaviorCoverage"))))
-    (element (id (node (document "d0") (qualified-name "BehaviorCoverage::P"))) (kind "kermlDecl") (name "P") (declared-name "P") (parent (node (document "d0") (qualified-name "BehaviorCoverage"))))
-    (element (id (node (document "d0") (qualified-name "BehaviorCoverage::b"))) (kind "kermlDecl") (name "b") (declared-name "b") (parent (node (document "d0") (qualified-name "BehaviorCoverage"))))
-    (element (id (node (document "d0") (qualified-name "BehaviorCoverage::false"))) (kind "kermlDecl") (name "false") (declared-name "false") (parent (node (document "d0") (qualified-name "BehaviorCoverage"))))
-    (element (id (node (document "d0") (qualified-name "BehaviorCoverage::s1"))) (kind "kermlDecl") (name "s1") (declared-name "s1") (parent (node (document "d0") (qualified-name "BehaviorCoverage"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:39d8e81bc31ba9b62faf2db6d4162e3cba6dead832061af4f8253b4e9d9d0b69") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

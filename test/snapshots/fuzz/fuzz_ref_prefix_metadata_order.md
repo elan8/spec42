@@ -14,19 +14,30 @@ package P {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "fuzz_ref_prefix_metadata_order.md"
+  (document "memory://snapshot/fuzz_ref_prefix_metadata_order.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 1 4) (end 3 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 1 4) (end 3 5))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "3c898d8ff48d8ca6c208930576407b9a960e4869bd1e1bebe5aedb98194082b8") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "P"))) (kind "package") (name "P") (declared-name "P"))
-    (element (id (node (document "d0") (qualified-name "P::C"))) (kind "classifier decl") (name "C") (declared-name "C") (parent (node (document "d0") (qualified-name "P"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:d85418246b5dca4cbe258c358576c276e2d695ae806ba31c21f0675fc38f8e95") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/fuzz_ref_prefix_metadata_order.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

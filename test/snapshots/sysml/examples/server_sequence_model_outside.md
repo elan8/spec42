@@ -29,13 +29,13 @@ package ServerSequenceModelOutside {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "server_sequence_model_outside.md"
+  (document "memory://snapshot/server_sequence_model_outside.md"
     (diagnostics
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 15) (end 1 34))
+        (range (start 1 15) (end 1 37))
       )
       (diagnostic
         (severity warning)
@@ -44,44 +44,69 @@ package ServerSequenceModelOutside {
         (range (start 3 35) (end 3 49))
       )
       (diagnostic
+        (severity warning)
+        (code "unsupported_reference")
+        (source "semantic")
+        (range (start 4 11) (end 4 19))
+      )
+      (diagnostic
         (severity error)
         (code "recovered_part_usage_body_element")
-        (source "sysml")
-        (range (start 5 3) (end 5 57))
+        (source "parser")
+        (range (start 5 3) (end 6 2))
       )
       (diagnostic
         (severity warning)
         (code "recovery_cascade_suppressed")
-        (source "sysml")
-        (range (start 5 3) (end 5 57))
+        (source "parser")
+        (range (start 5 3) (end 6 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_reference")
+        (source "semantic")
+        (range (start 8 11) (end 8 17))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_reference")
+        (source "semantic")
+        (range (start 14 11) (end 14 19))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "01a10f570ee29cf272b81e3fb7b78898ce8cb710fd899c2bae2ea07c98e45cca") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "ServerSequenceModelOutside"))) (kind "package") (name "ServerSequenceModelOutside") (declared-name "ServerSequenceModelOutside"))
-    (element (id (node (document "d0") (qualified-name "ServerSequenceModelOutside::*"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "ServerSequenceModelOutside"))) (authored (membership (kind Import) (visibility "public") (import (reference "ServerSequenceModel::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside"))) (kind "part def") (name "PubSubSequenceOutside") (declared-name "PubSubSequenceOutside") (parent (node (document "d0") (qualified-name "ServerSequenceModelOutside"))) (authored (membership (kind Owning)) (relationships (specializes (reference "PubSubSequence")))))
-    (element (id (node (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside::consumer"))) (kind "part") (name "consumer") (parent (node (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "consumer")))))
-    (element (id (node (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside::producer"))) (kind "part") (name "producer") (parent (node (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "producer")))))
-    (element (id (node (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside::server"))) (kind "part") (name "server") (parent (node (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside"))) (authored (membership (kind Feature)) (relationships (redefinition (reference "server")))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:8cdec04c2e5583ee307a91787fb402dd304852111f1c310e41672e7fb7f7379f") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/server_sequence_model_outside.md") (qualified-name "ServerSequenceModelOutside"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/server_sequence_model_outside.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "ServerSequenceModel") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/server_sequence_model_outside.md") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "PubSubSequence"))))
+    (declaration (id (node (document "memory://snapshot/server_sequence_model_outside.md") (anonymous (kind part) (ordinal 0))))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "producer"))))
+    (declaration (id (node (document "memory://snapshot/server_sequence_model_outside.md") (anonymous (kind part) (ordinal 1))))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "server"))))
+    (declaration (id (node (document "memory://snapshot/server_sequence_model_outside.md") (anonymous (kind part) (ordinal 2))))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "consumer"))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceModelOutside::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ServerSequenceModel::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside"))) (kind specialization) (ordinal 0)) (authored-target "PubSubSequence") (outcome (status unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside::consumer"))) (kind redefinition) (ordinal 0)) (authored-target "consumer") (outcome (status resolved) (target (node (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside::consumer")))))
-    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside::producer"))) (kind redefinition) (ordinal 0)) (authored-target "producer") (outcome (status resolved) (target (node (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside::producer")))))
-    (reference (id (source (node (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside::server"))) (kind redefinition) (ordinal 0)) (authored-target "server") (outcome (status resolved) (target (node (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside::server")))))
+    (reference (id (source (node (document "memory://snapshot/server_sequence_model_outside.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "ServerSequenceModel")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/server_sequence_model_outside.md") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside"))) (kind specialization) (ordinal 0))
+      (authored-target "PubSubSequence")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/server_sequence_model_outside.md") (anonymous (kind part) (ordinal 0))))) (kind redefinition) (ordinal 0))
+      (authored-target "producer")
+      (outcome (status unsupported)))
+    (reference (id (source (node (document "memory://snapshot/server_sequence_model_outside.md") (anonymous (kind part) (ordinal 1))))) (kind redefinition) (ordinal 0))
+      (authored-target "server")
+      (outcome (status unsupported)))
+    (reference (id (source (node (document "memory://snapshot/server_sequence_model_outside.md") (anonymous (kind part) (ordinal 2))))) (kind redefinition) (ordinal 0))
+      (authored-target "consumer")
+      (outcome (status unsupported)))
   )
   (relationships
-    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside::consumer"))) (target (node (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside::consumer"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside::consumer"))) (kind redefinition) (ordinal 0)))
-    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside::producer"))) (target (node (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside::producer"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside::producer"))) (kind redefinition) (ordinal 0)))
-    (relationship (kind redefinition) (source (node (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside::server"))) (target (node (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside::server"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside::server"))) (kind redefinition) (ordinal 0)))
   )
   (evaluation
   )
@@ -90,53 +115,25 @@ package ServerSequenceModelOutside {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 8 11) (end 8 17)) (probe (position 8 11))
-      (reference
-        (source (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside::server"))
-        (kind redefinition) (ordinal 0) (authored-target "server")
-        (range (start 8 11) (end 8 17))
-        (outcome (status resolved)
-          (target (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside::server") (range (start 8 2) (end 8 245)))
-        )
-      )
-    )
-    (query (range (start 4 11) (end 4 19)) (probe (position 4 11))
-      (reference
-        (source (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside::producer"))
-        (kind redefinition) (ordinal 0) (authored-target "producer")
-        (range (start 4 11) (end 4 19))
-        (outcome (status resolved)
-          (target (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside::producer") (range (start 4 2) (end 4 80)))
-        )
-      )
-    )
-    (query (range (start 14 11) (end 14 19)) (probe (position 14 11))
-      (reference
-        (source (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside::consumer"))
-        (kind redefinition) (ordinal 0) (authored-target "consumer")
-        (range (start 14 11) (end 14 19))
-        (outcome (status resolved)
-          (target (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside::consumer") (range (start 14 2) (end 14 247)))
-        )
-      )
-    )
-    (query (range (start 3 35) (end 3 49)) (probe (position 3 35))
-      (reference
-        (source (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside"))
-        (kind specialization) (ordinal 0) (authored-target "PubSubSequence")
-        (range (start 3 35) (end 3 49))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 1 15) (end 1 34)) (probe (position 1 15))
-      (reference
-        (source (document "d0") (qualified-name "ServerSequenceModelOutside::*"))
-        (kind namespaceImport) (ordinal 0) (authored-target "ServerSequenceModel::*")
-        (range (start 1 15) (end 1 34))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/server_sequence_model_outside.md") (range (start 1 15) (end 1 37)) (probe (position 1 15))
+    (reference (id (source (node (document "memory://snapshot/server_sequence_model_outside.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "ServerSequenceModel")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/server_sequence_model_outside.md") (range (start 3 35) (end 3 49)) (probe (position 3 35))
+    (reference (id (source (node (document "memory://snapshot/server_sequence_model_outside.md") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside"))) (kind specialization) (ordinal 0) (authored-target "PubSubSequence")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/server_sequence_model_outside.md") (range (start 4 11) (end 4 19)) (probe (position 4 11))
+    (reference (id (source (node (document "memory://snapshot/server_sequence_model_outside.md") (anonymous (kind part) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "producer")
+      (outcome (status unsupported)))
+  )
+  (query (document "memory://snapshot/server_sequence_model_outside.md") (range (start 8 11) (end 8 17)) (probe (position 8 11))
+    (reference (id (source (node (document "memory://snapshot/server_sequence_model_outside.md") (anonymous (kind part) (ordinal 1))))) (kind redefinition) (ordinal 0) (authored-target "server")
+      (outcome (status unsupported)))
+  )
+  (query (document "memory://snapshot/server_sequence_model_outside.md") (range (start 14 11) (end 14 19)) (probe (position 14 11))
+    (reference (id (source (node (document "memory://snapshot/server_sequence_model_outside.md") (anonymous (kind part) (ordinal 2))))) (kind redefinition) (ordinal 0) (authored-target "consumer")
+      (outcome (status unsupported)))
   )
 )
 ~~~

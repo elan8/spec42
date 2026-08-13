@@ -17,25 +17,36 @@ package Classifications {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "classifications.md"
+  (document "memory://snapshot/classifications.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 1 1) (end 1 9))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 1 1) (end 1 9))
+      )
       (diagnostic
         (severity error)
         (code "unrecognized_declaration_in_scope")
-        (source "sysml")
-        (range (start 2 1) (end 2 95))
+        (source "parser")
+        (range (start 2 1) (end 7 0))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "a00cc4b54d97a73467e6dc373e30d09d4ba1cbe574305005b3848236ff9fea71") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Classifications"))) (kind "package") (name "Classifications") (declared-name "Classifications"))
-    (element (id (node (document "d0") (qualified-name "Classifications::T"))) (kind "classifier decl") (name "T") (declared-name "T") (parent (node (document "d0") (qualified-name "Classifications"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:b88eb90c747239082c87965329d78a58daa1aebb3dd67cdf0685b28cb239e910") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/classifications.md") (qualified-name "Classifications"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

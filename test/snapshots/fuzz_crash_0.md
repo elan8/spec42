@@ -2,8 +2,6 @@
 ~~~ini
 description=Fuzzer crash #0: malformed SysML input
 type=file
-semantic_graph=skip
-semantic_graph_skip_reason=parser recovery for non-empty source produced no typed semantic graph facts
 ~~~
 # SOURCE
 ~~~sysml
@@ -34,23 +32,23 @@ package MassRollup2 {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "fuzz_crash_0.md"
+  (document "memory://snapshot/fuzz_crash_0.md"
     (diagnostics
       (diagnostic
         (severity error)
         (code "missing_closing_brace")
-        (source "sysml")
-        (range (start 22 20) (end 22 21))
+        (source "parser")
+        (range (start 22 20) (end 22 20))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "3db1a8e7c5813d2628ba8c96cc38adf8a0cde552f8d3bb7ebf9327869fe9afe9") (contract-version "canonical-resolution-v1"))
-  (structure
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:d2cdbaae660f4121f88f034ad75b959e812f6345d856120e77d31cf439b47456") (contract-version "parser-owned-resolution-v1"))
+  (declarations
   )
   (references
   )

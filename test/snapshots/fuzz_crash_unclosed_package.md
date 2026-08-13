@@ -2,8 +2,6 @@
 ~~~ini
 description=Fuzzer crash: malformed package with unclosed braces
 type=file
-semantic_graph=skip
-semantic_graph_skip_reason=parser recovery for non-empty source produced no typed semantic graph facts
 ~~~
 # SOURCE
 ~~~sysml
@@ -34,23 +32,23 @@ package MassRollup2 {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "fuzz_crash_unclosed_package.md"
+  (document "memory://snapshot/fuzz_crash_unclosed_package.md"
     (diagnostics
       (diagnostic
         (severity error)
         (code "missing_closing_brace")
-        (source "sysml")
-        (range (start 22 20) (end 22 21))
+        (source "parser")
+        (range (start 22 20) (end 22 20))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "5dad8dcaad926520628130dbf5ac38a8ed405998f1fee2e88a890190ec3ad722") (contract-version "canonical-resolution-v1"))
-  (structure
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:c0d0c2eddd114160f44a83c51be87cb411347f6137aeacd62fc1cd4d0a5cf255") (contract-version "parser-owned-resolution-v1"))
+  (declarations
   )
   (references
   )

@@ -52,63 +52,82 @@ package UseCaseTest {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "use_case_test.md"
+  (document "memory://snapshot/use_case_test.md"
     (diagnostics
       (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "sysml")
-        (range (start 32 2) (end 32 17))
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 5 1) (end 18 2))
       )
       (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "sysml")
-        (range (start 34 2) (end 34 23))
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 20 1) (end 20 18))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 24 1) (end 27 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 29 1) (end 29 24))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_usage_member")
+        (source "semantic")
+        (range (start 32 2) (end 32 14))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_usage_member")
+        (source "semantic")
+        (range (start 33 2) (end 33 12))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_usage_member")
+        (source "semantic")
+        (range (start 34 2) (end 34 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 37 1) (end 40 2))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "136f5674d5168da3277ded2c3ac8fde93ec4892e9e3129e3f0617301d79ddb29") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "UseCaseTest"))) (kind "package") (name "UseCaseTest") (declared-name "UseCaseTest"))
-    (element (id (node (document "d0") (qualified-name "UseCaseTest::System"))) (kind "part def") (name "System") (declared-name "System") (parent (node (document "d0") (qualified-name "UseCaseTest"))))
-    (element (id (node (document "d0") (qualified-name "UseCaseTest::UC1"))) (kind "use case def") (name "UC1") (declared-name "UC1") (parent (node (document "d0") (qualified-name "UseCaseTest"))))
-    (element (id (node (document "d0") (qualified-name "UseCaseTest::UseSystem"))) (kind "use case def") (name "UseSystem") (declared-name "UseSystem") (parent (node (document "d0") (qualified-name "UseCaseTest"))))
-    (element (id (node (document "d0") (qualified-name "UseCaseTest::UseSystem::objective"))) (kind "objective") (name "objective") (declared-name "objective") (parent (node (document "d0") (qualified-name "UseCaseTest::UseSystem"))))
-    (element (id (node (document "d0") (qualified-name "UseCaseTest::UseSystem::system"))) (kind "subject") (name "system") (declared-name "system") (parent (node (document "d0") (qualified-name "UseCaseTest::UseSystem"))) (authored (relationships (typing (reference "System")))))
-    (element (id (node (document "d0") (qualified-name "UseCaseTest::UseSystem::user"))) (kind "actor") (name "user") (declared-name "user") (parent (node (document "d0") (qualified-name "UseCaseTest::UseSystem"))) (authored (membership (kind Actor)) (relationships (typing (reference "User")))))
-    (element (id (node (document "d0") (qualified-name "UseCaseTest::User"))) (kind "part def") (name "User") (declared-name "User") (parent (node (document "d0") (qualified-name "UseCaseTest"))))
-    (element (id (node (document "d0") (qualified-name "UseCaseTest::system"))) (kind "part") (name "system") (declared-name "system") (parent (node (document "d0") (qualified-name "UseCaseTest"))) (authored (membership (kind Feature)) (relationships (typing (reference "System")) (perform (reference "UseCaseTest::system::u")))))
-    (element (id (node (document "d0") (qualified-name "UseCaseTest::system::u"))) (kind "action") (name "u") (declared-name "u") (parent (node (document "d0") (qualified-name "UseCaseTest::system"))))
-    (element (id (node (document "d0") (qualified-name "UseCaseTest::u"))) (kind "use case") (name "u") (declared-name "u") (parent (node (document "d0") (qualified-name "UseCaseTest"))) (authored (membership (kind Feature)) (relationships (typing (reference "UseSystem")))))
-    (element (id (node (document "d0") (qualified-name "UseCaseTest::uc2"))) (kind "use case") (name "uc2") (declared-name "uc2") (parent (node (document "d0") (qualified-name "UseCaseTest"))))
-    (element (id (node (document "d0") (qualified-name "UseCaseTest::uc3"))) (kind "use case") (name "uc3") (declared-name "uc3") (parent (node (document "d0") (qualified-name "UseCaseTest"))))
-    (element (id (node (document "d0") (qualified-name "UseCaseTest::uc3::u"))) (kind "include use case") (name "u") (declared-name "u") (parent (node (document "d0") (qualified-name "UseCaseTest::uc3"))) (authored (relationships (typing (reference "u")))))
-    (element (id (node (document "d0") (qualified-name "UseCaseTest::user"))) (kind "part") (name "user") (declared-name "user") (parent (node (document "d0") (qualified-name "UseCaseTest"))) (authored (membership (kind Feature)) (relationships (typing (reference "User")))))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:c9177640324998bea3516aa02bd078a8abb67fdfab27000797838daab7c9a5a1") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::System"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::User"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::system"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "System"))))
+    (declaration (id (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::user"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "User"))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "UseCaseTest::UseSystem::system"))) (kind featureTyping) (ordinal 0)) (authored-target "System") (outcome (status resolved) (target (node (document "d0") (qualified-name "UseCaseTest::System")))))
-    (reference (id (source (node (document "d0") (qualified-name "UseCaseTest::UseSystem::user"))) (kind featureTyping) (ordinal 0)) (authored-target "User") (outcome (status resolved) (target (node (document "d0") (qualified-name "UseCaseTest::User")))))
-    (reference (id (source (node (document "d0") (qualified-name "UseCaseTest::system"))) (kind featureTyping) (ordinal 0)) (authored-target "System") (outcome (status resolved) (target (node (document "d0") (qualified-name "UseCaseTest::System")))))
-    (reference (id (source (node (document "d0") (qualified-name "UseCaseTest::system"))) (kind performSource) (ordinal 0)) (authored-target "UseCaseTest::system::u") (outcome (status resolved) (target (node (document "d0") (qualified-name "UseCaseTest::system::u")))))
-    (reference (id (source (node (document "d0") (qualified-name "UseCaseTest::u"))) (kind featureTyping) (ordinal 0)) (authored-target "UseSystem") (outcome (status resolved) (target (node (document "d0") (qualified-name "UseCaseTest::UseSystem")))))
-    (reference (id (source (node (document "d0") (qualified-name "UseCaseTest::uc3::u"))) (kind featureTyping) (ordinal 0)) (authored-target "u") (outcome (status resolved) (target (node (document "d0") (qualified-name "UseCaseTest::uc3::u")))))
-    (reference (id (source (node (document "d0") (qualified-name "UseCaseTest::user"))) (kind featureTyping) (ordinal 0)) (authored-target "User") (outcome (status resolved) (target (node (document "d0") (qualified-name "UseCaseTest::User")))))
+    (reference (id (source (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::system"))) (kind featureTyping) (ordinal 0))
+      (authored-target "System")
+      (outcome (status resolved) (target (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::System")))))
+    (reference (id (source (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::user"))) (kind featureTyping) (ordinal 0))
+      (authored-target "User")
+      (outcome (status resolved) (target (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::User")))))
   )
   (relationships
-    (relationship (kind subject) (source (node (document "d0") (qualified-name "UseCaseTest::UseSystem"))) (target (node (document "d0") (qualified-name "UseCaseTest::System"))) (provenance (derived CaseSubjectFromTypedSubject)))
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "UseCaseTest::UseSystem::system"))) (target (node (document "d0") (qualified-name "UseCaseTest::System"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "UseCaseTest::UseSystem::system"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "UseCaseTest::UseSystem::user"))) (target (node (document "d0") (qualified-name "UseCaseTest::User"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "UseCaseTest::UseSystem::user"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "UseCaseTest::system"))) (target (node (document "d0") (qualified-name "UseCaseTest::System"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "UseCaseTest::system"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind perform) (source (node (document "d0") (qualified-name "UseCaseTest::system"))) (target (node (document "d0") (qualified-name "UseCaseTest::system::u"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "UseCaseTest::system"))) (kind performSource) (ordinal 0)))
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "UseCaseTest::u"))) (target (node (document "d0") (qualified-name "UseCaseTest::UseSystem"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "UseCaseTest::u"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "UseCaseTest::uc3::u"))) (target (node (document "d0") (qualified-name "UseCaseTest::uc3::u"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "UseCaseTest::uc3::u"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "UseCaseTest::user"))) (target (node (document "d0") (qualified-name "UseCaseTest::User"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "UseCaseTest::user"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::system"))) (target (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::System"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::system"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::user"))) (target (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::User"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::user"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )
@@ -117,27 +136,13 @@ package UseCaseTest {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 22 13) (end 22 17)) (probe (position 22 13))
-      (reference
-        (source (document "d0") (qualified-name "UseCaseTest::user"))
-        (kind featureTyping) (ordinal 0) (authored-target "User")
-        (range (start 22 13) (end 22 17))
-        (outcome (status resolved)
-          (target (document "d0") (qualified-name "UseCaseTest::User") (range (start 3 1) (end 3 15)))
-        )
-      )
-    )
-    (query (range (start 31 15) (end 31 21)) (probe (position 31 15))
-      (reference
-        (source (document "d0") (qualified-name "UseCaseTest::system"))
-        (kind featureTyping) (ordinal 0) (authored-target "System")
-        (range (start 31 15) (end 31 21))
-        (outcome (status resolved)
-          (target (document "d0") (qualified-name "UseCaseTest::System") (range (start 2 1) (end 2 17)))
-        )
-      )
-    )
+  (query (document "memory://snapshot/use_case_test.md") (range (start 31 15) (end 31 21)) (probe (position 31 15))
+    (reference (id (source (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::system"))) (kind featureTyping) (ordinal 0) (authored-target "System")
+      (outcome (status resolved) (target (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::System")))))
+  )
+  (query (document "memory://snapshot/use_case_test.md") (range (start 22 13) (end 22 17)) (probe (position 22 13))
+    (reference (id (source (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::user"))) (kind featureTyping) (ordinal 0) (authored-target "User")
+      (outcome (status resolved) (target (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::User")))))
   )
 )
 ~~~

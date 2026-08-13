@@ -64,45 +64,151 @@ package MetadataTest {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "metadata_test.md"
+  (document "memory://snapshot/metadata_test.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 5 2) (end 5 56))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 5 2) (end 5 56))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 6 2) (end 6 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 6 2) (end 6 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 7 2) (end 7 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 7 2) (end 7 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 8 2) (end 8 46))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 8 2) (end 8 46))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 10 2) (end 13 3))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 10 2) (end 13 3))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 15 2) (end 15 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 15 2) (end 15 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 18 1) (end 22 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 18 1) (end 22 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 24 1) (end 29 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 24 1) (end 29 2))
+      )
       (diagnostic
         (severity error)
         (code "recovered_package_body_element")
-        (source "sysml")
-        (range (start 31 1) (end 31 44))
+        (source "parser")
+        (range (start 31 1) (end 32 1))
       )
       (diagnostic
         (severity warning)
         (code "recovery_cascade_suppressed")
-        (source "sysml")
-        (range (start 31 1) (end 31 44))
+        (source "parser")
+        (range (start 31 1) (end 32 1))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 51 4) (end 51 7))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 51 7) (end 53 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 51 7) (end 53 5))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "c87bc5414bedfcc6d0ded8a13b737e420a143c04aedea58420882e61f51c4a6a") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "MetadataTest"))) (kind "package") (name "MetadataTest") (declared-name "MetadataTest"))
-    (element (id (node (document "d0") (qualified-name "MetadataTest::*"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "MetadataTest"))) (authored (membership (kind Import) (visibility "private") (import (reference "User Defined Extensions::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "MetadataTest::T"))) (kind "classifier decl") (name "T") (declared-name "T") (parent (node (document "d0") (qualified-name "MetadataTest"))))
-    (element (id (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions"))) (kind "package") (name "User Defined Extensions") (declared-name "User Defined Extensions") (parent (node (document "d0") (qualified-name "MetadataTest"))))
-    (element (id (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::ClassificationLevel"))) (kind "kermlDecl") (name "ClassificationLevel") (declared-name "ClassificationLevel") (parent (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions"))))
-    (element (id (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::Classified"))) (kind "kermlDecl") (name "Classified") (declared-name "Classified") (parent (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions"))))
-    (element (id (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::Security"))) (kind "kermlDecl") (name "Security") (declared-name "Security") (parent (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions"))))
-    (element (id (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::conf1"))) (kind "feature decl") (name "conf1") (declared-name "conf1") (parent (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions"))))
-    (element (id (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::secret1"))) (kind "feature decl") (name "secret1") (declared-name "secret1") (parent (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions"))))
-    (element (id (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::uncl1"))) (kind "feature decl") (name "uncl1") (declared-name "uncl1") (parent (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions"))))
-    (element (id (node (document "d0") (qualified-name "MetadataTest::_M"))) (kind "metadata keyword") (name "M") (declared-name "M") (parent (node (document "d0") (qualified-name "MetadataTest"))))
-    (element (id (node (document "d0") (qualified-name "MetadataTest::x"))) (kind "feature decl") (name "x") (declared-name "x") (parent (node (document "d0") (qualified-name "MetadataTest"))))
-    (element (id (node (document "d0") (qualified-name "MetadataTest::y"))) (kind "feature decl") (name "y") (declared-name "y") (parent (node (document "d0") (qualified-name "MetadataTest"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:25096972910a2fb98dff838639a8b58ba47e584512e0c981b5c96856f61fec70") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/metadata_test.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "User Defined Extensions") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions"))) (kind library-package) (membership (kind owning) (visibility default)))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "MetadataTest::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "User Defined Extensions::*") (outcome (status resolved) (target (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions")))) (import (origin import) (shape namespace) (recursive false) (conformance valid)))
+    (reference (id (source (node (document "memory://snapshot/metadata_test.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "User Defined Extensions")
+      (outcome (status resolved) (target (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions")))))
   )
   (relationships
   )
@@ -113,17 +219,9 @@ package MetadataTest {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 1 16) (end 1 41)) (probe (position 1 16))
-      (reference
-        (source (document "d0") (qualified-name "MetadataTest::*"))
-        (kind namespaceImport) (ordinal 0) (authored-target "User Defined Extensions::*")
-        (range (start 1 16) (end 1 41))
-        (outcome (status resolved)
-          (target (document "d0") (qualified-name "MetadataTest::User Defined Extensions") (range (start 3 1) (end 3 405)))
-        )
-      )
-    )
+  (query (document "memory://snapshot/metadata_test.md") (range (start 1 16) (end 1 44)) (probe (position 1 16))
+    (reference (id (source (node (document "memory://snapshot/metadata_test.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "User Defined Extensions")
+      (outcome (status resolved) (target (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions")))))
   )
 )
 ~~~

@@ -25,27 +25,42 @@ package '12a-Dependency' {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "12a_dependency.md"
+  (document "memory://snapshot/12a_dependency.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 6 1) (end 6 60))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 7 1) (end 7 49))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 13 1) (end 13 22))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "6f50314ec40cbf3d5ca15754d649b0727dcb5e6ef81a112a08caa37b57e17b51") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "12a-Dependency"))) (kind "package") (name "12a-Dependency") (declared-name "12a-Dependency"))
-    (element (id (node (document "d0") (qualified-name "12a-Dependency::Application Layer"))) (kind "package") (name "Application Layer") (declared-name "Application Layer") (parent (node (document "d0") (qualified-name "12a-Dependency"))))
-    (element (id (node (document "d0") (qualified-name "12a-Dependency::Data Layer"))) (kind "package") (name "Data Layer") (declared-name "Data Layer") (parent (node (document "d0") (qualified-name "12a-Dependency"))))
-    (element (id (node (document "d0") (qualified-name "12a-Dependency::Service Layer"))) (kind "package") (name "Service Layer") (declared-name "Service Layer") (parent (node (document "d0") (qualified-name "12a-Dependency"))))
-    (element (id (node (document "d0") (qualified-name "12a-Dependency::Use"))) (kind "dependency") (name "Use") (declared-name "Use") (parent (node (document "d0") (qualified-name "12a-Dependency"))))
-    (element (id (node (document "d0") (qualified-name "12a-Dependency::dependency"))) (kind "dependency") (name "dependency") (declared-name "dependency") (parent (node (document "d0") (qualified-name "12a-Dependency"))))
-    (element (id (node (document "d0") (qualified-name "12a-Dependency::dependency#dependency"))) (kind "dependency") (name "dependency") (declared-name "dependency") (parent (node (document "d0") (qualified-name "12a-Dependency"))))
-    (element (id (node (document "d0") (qualified-name "12a-Dependency::x"))) (kind "attribute def") (name "x") (declared-name "x") (parent (node (document "d0") (qualified-name "12a-Dependency"))))
-    (element (id (node (document "d0") (qualified-name "12a-Dependency::y"))) (kind "attribute def") (name "y") (declared-name "y") (parent (node (document "d0") (qualified-name "12a-Dependency"))))
-    (element (id (node (document "d0") (qualified-name "12a-Dependency::z"))) (kind "attribute def") (name "z") (declared-name "z") (parent (node (document "d0") (qualified-name "12a-Dependency"))))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:b98fc60512e7c7032f2ce12083bf62b01a2242d80f6c0ad80795e05165aeb776") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/12a_dependency.md") (qualified-name "12a-Dependency"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/12a_dependency.md") (qualified-name "12a-Dependency::Application Layer"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/12a_dependency.md") (qualified-name "12a-Dependency::Data Layer"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/12a_dependency.md") (qualified-name "12a-Dependency::Service Layer"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/12a_dependency.md") (qualified-name "12a-Dependency::x"))) (kind attribute-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/12a_dependency.md") (qualified-name "12a-Dependency::y"))) (kind attribute-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/12a_dependency.md") (qualified-name "12a-Dependency::z"))) (kind attribute-def) (membership (kind owning) (visibility default)))
   )
   (references
   )

@@ -20,78 +20,108 @@ package ExtendedExamples {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "coverage_extended.md"
+  (document "memory://snapshot/coverage_extended.md"
     (diagnostics
       (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "sysml")
-        (range (start 1 15) (end 1 32))
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 1 4) (end 1 15))
       )
       (diagnostic
         (severity error)
         (code "unexpected_keyword_in_scope")
-        (source "sysml")
-        (range (start 2 15) (end 2 40))
+        (source "parser")
+        (range (start 1 15) (end 2 4))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 2 4) (end 2 15))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "parser")
+        (range (start 2 15) (end 3 4))
       )
       (diagnostic
         (severity error)
         (code "recovered_package_body_element")
-        (source "sysml")
-        (range (start 3 4) (end 3 49))
+        (source "parser")
+        (range (start 3 4) (end 4 4))
       )
       (diagnostic
         (severity warning)
         (code "unsupported_annotation_syntax")
-        (source "sysml")
-        (range (start 4 4) (end 4 55))
+        (source "parser")
+        (range (start 4 4) (end 5 4))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 5 4) (end 5 15))
       )
       (diagnostic
         (severity error)
         (code "unexpected_keyword_in_scope")
-        (source "sysml")
-        (range (start 5 15) (end 5 43))
+        (source "parser")
+        (range (start 5 15) (end 6 4))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 6 4) (end 6 15))
       )
       (diagnostic
         (severity error)
         (code "unrecognized_declaration_in_scope")
-        (source "sysml")
-        (range (start 6 15) (end 6 31))
+        (source "parser")
+        (range (start 6 15) (end 7 4))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 7 4) (end 7 15))
       )
       (diagnostic
         (severity error)
         (code "unrecognized_declaration_in_scope")
-        (source "sysml")
-        (range (start 7 15) (end 7 26))
+        (source "parser")
+        (range (start 7 15) (end 8 4))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 8 4) (end 8 15))
       )
       (diagnostic
         (severity error)
         (code "unrecognized_declaration_in_scope")
-        (source "sysml")
-        (range (start 8 15) (end 8 29))
+        (source "parser")
+        (range (start 8 15) (end 9 4))
       )
       (diagnostic
         (severity error)
         (code "recovered_package_body_element")
-        (source "sysml")
-        (range (start 9 4) (end 9 32))
+        (source "parser")
+        (range (start 9 4) (end 10 0))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "22ff8990e8de6d1522d19d30f2eb6ee8803010376d14ac6d65f3c78e48a2324e") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "ExtendedExamples"))) (kind "package") (name "ExtendedExamples") (declared-name "ExtendedExamples"))
-    (element (id (node (document "d0") (qualified-name "ExtendedExamples::_situation"))) (kind "metadata keyword") (name "situation") (declared-name "situation") (parent (node (document "d0") (qualified-name "ExtendedExamples"))))
-    (element (id (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword"))) (kind "metadata keyword") (name "situation") (declared-name "situation") (parent (node (document "d0") (qualified-name "ExtendedExamples"))))
-    (element (id (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword2"))) (kind "metadata keyword") (name "situation") (declared-name "situation") (parent (node (document "d0") (qualified-name "ExtendedExamples"))))
-    (element (id (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword3"))) (kind "metadata keyword") (name "situation") (declared-name "situation") (parent (node (document "d0") (qualified-name "ExtendedExamples"))))
-    (element (id (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword4"))) (kind "metadata keyword") (name "situation") (declared-name "situation") (parent (node (document "d0") (qualified-name "ExtendedExamples"))))
-    (element (id (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword5"))) (kind "metadata keyword") (name "situation") (declared-name "situation") (parent (node (document "d0") (qualified-name "ExtendedExamples"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:5a5054966a4ceb012f28acf6959cd39d3f34ebe2ff4dcc8d8f5effb32dc90714") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/coverage_extended.md") (qualified-name "ExtendedExamples"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

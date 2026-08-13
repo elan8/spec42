@@ -45,24 +45,24 @@ package Types {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "types.md"
+  (document "memory://snapshot/types.md"
     (diagnostics
       (diagnostic
         (severity error)
         (code "recovered_package_body_element")
-        (source "sysml")
-        (range (start 1 1) (end 1 947))
+        (source "parser")
+        (range (start 1 1) (end 35 0))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "386a281b8085663a83954ccebae369c6b2f8ed1b6cfae0794731a6ef307d4c3b") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Types"))) (kind "package") (name "Types") (declared-name "Types"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:92bf859ed276e45c4017951a46cdb187a56914e606c9142aeeb6ef6f42b23613") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/types.md") (qualified-name "Types"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

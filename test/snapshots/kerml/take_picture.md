@@ -2,8 +2,6 @@
 ~~~ini
 description=KerML Behavior: TakePicture
 type=file
-semantic_graph=skip
-semantic_graph_skip_reason=KerML behavior, class, and step declarations are opaque parser fallback nodes; their members and relationship endpoints are unavailable as structured semantic inputs
 ~~~
 # SOURCE
 ~~~kerml
@@ -29,17 +27,29 @@ behavior TakePicture {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "take_picture.md"
+  (document "memory://snapshot/take_picture.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 0 0) (end 17 1))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 0 0) (end 17 1))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "05c70ae2e850dd796023b18293fbb57cfcf4130d1b7d3ed003d38872dc08df80") (contract-version "canonical-resolution-v1"))
-  (structure
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:3858e8d89aa17eedefc4517dd85160687281f32d72516dcb42ae47bfe6a63a17") (contract-version "parser-owned-resolution-v1"))
+  (declarations
   )
   (references
   )

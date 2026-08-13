@@ -129,34 +129,102 @@ package TimeVaryingCarDriver {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "time_varying_car_driver.md"
+  (document "memory://snapshot/time_varying_car_driver.md"
     (diagnostics
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 19) (end 1 31))
+        (range (start 1 19) (end 1 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 5 4) (end 7 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 5 4) (end 7 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 9 4) (end 29 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 9 4) (end 29 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 33 4) (end 35 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 33 4) (end 35 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 37 4) (end 57 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 37 4) (end 57 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 62 4) (end 70 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 62 4) (end 70 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 72 4) (end 117 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 72 4) (end 117 5))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "404e0d5861e8b40043847245c9a25842a0cf2972f48989cbe6779f95476cc8e5") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "TimeVaryingCarDriver"))) (kind "package") (name "TimeVaryingCarDriver") (declared-name "TimeVaryingCarDriver"))
-    (element (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::*"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "TimeVaryingCarDriver"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::Car0"))) (kind "classifier decl") (name "Car0") (declared-name "Car0") (parent (node (document "d0") (qualified-name "TimeVaryingCarDriver"))))
-    (element (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::Car1"))) (kind "classifier decl") (name "Car1") (declared-name "Car1") (parent (node (document "d0") (qualified-name "TimeVaryingCarDriver"))))
-    (element (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::Car1_"))) (kind "classifier decl") (name "Car1_") (declared-name "Car1_") (parent (node (document "d0") (qualified-name "TimeVaryingCarDriver"))))
-    (element (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::Person0"))) (kind "classifier decl") (name "Person0") (declared-name "Person0") (parent (node (document "d0") (qualified-name "TimeVaryingCarDriver"))))
-    (element (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::Person1"))) (kind "classifier decl") (name "Person1") (declared-name "Person1") (parent (node (document "d0") (qualified-name "TimeVaryingCarDriver"))))
-    (element (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::Person1_"))) (kind "classifier decl") (name "Person1_") (declared-name "Person1_") (parent (node (document "d0") (qualified-name "TimeVaryingCarDriver"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:962da675c07ef4eb952789bd3d1ec3ac95d2b89ad062d56222e98968990cb945") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/time_varying_car_driver.md") (qualified-name "TimeVaryingCarDriver"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/time_varying_car_driver.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "TimeVaryingCarDriver::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarValues::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
+    (reference (id (source (node (document "memory://snapshot/time_varying_car_driver.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "ScalarValues")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -167,15 +235,9 @@ package TimeVaryingCarDriver {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 1 19) (end 1 31)) (probe (position 1 19))
-      (reference
-        (source (document "d0") (qualified-name "TimeVaryingCarDriver::*"))
-        (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues::*")
-        (range (start 1 19) (end 1 31))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/time_varying_car_driver.md") (range (start 1 19) (end 1 34)) (probe (position 1 19))
+    (reference (id (source (node (document "memory://snapshot/time_varying_car_driver.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues")
+      (outcome (status unresolved)))
   )
 )
 ~~~

@@ -2,8 +2,6 @@
 ~~~ini
 description=Permissive QN parsing: keywords used as specialization target names
 type=file
-semantic_graph=skip
-semantic_graph_skip_reason=standalone KerML step and feature declarations with keyword names are opaque parser fallback nodes; subsetting targets are unavailable as structured semantic inputs
 ~~~
 # SOURCE
 ~~~kerml
@@ -14,17 +12,53 @@ feature f2 subsets do, step;
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "subsets_keyword_names.md"
+  (document "memory://snapshot/subsets_keyword_names.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 0 0) (end 0 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 0 0) (end 0 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 1 0) (end 1 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 1 0) (end 1 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 2 0) (end 2 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 2 0) (end 2 28))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1d16f421f7c93925788f5d8f054dfc93102e56af4b29710a99272be879043e11") (contract-version "canonical-resolution-v1"))
-  (structure
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:870cf7bf1d066adc36b27b6839d7bcafa39bd146446f9bf73557b640a5c403bc") (contract-version "parser-owned-resolution-v1"))
+  (declarations
   )
   (references
   )

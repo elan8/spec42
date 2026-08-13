@@ -12,19 +12,19 @@ package Outer {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "parse_nested_package.md"
+  (document "memory://snapshot/parse_nested_package.md"
     (diagnostics
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "9701dd0051e52f095b6c9b0bb89f51de3c7395b617bc5907a5459dc917c29519") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Outer"))) (kind "package") (name "Outer") (declared-name "Outer"))
-    (element (id (node (document "d0") (qualified-name "Outer::Inner"))) (kind "package") (name "Inner") (declared-name "Inner") (parent (node (document "d0") (qualified-name "Outer"))))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:bff1d2144b9dc7703bf322f04d3aa929115348a0fb0aa5d80157788ff27231fb") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/parse_nested_package.md") (qualified-name "Outer"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/parse_nested_package.md") (qualified-name "Outer::Inner"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

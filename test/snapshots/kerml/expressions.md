@@ -84,13 +84,13 @@ package Expressions {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "expressions.md"
+  (document "memory://snapshot/expressions.md"
     (diagnostics
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 16) (end 1 31))
+        (range (start 1 16) (end 1 34))
       )
       (diagnostic
         (severity warning)
@@ -102,32 +102,38 @@ package Expressions {
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 3 16) (end 3 32))
+        (range (start 3 16) (end 3 35))
       )
       (diagnostic
         (severity error)
         (code "unrecognized_declaration_in_scope")
-        (source "sysml")
-        (range (start 5 1) (end 5 1670))
+        (source "parser")
+        (range (start 5 1) (end 74 0))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "034d42e5bbc2c856ffe13b65b5885161b7603ac93cbba1ef4b2b77bc81e49fdb") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Expressions"))) (kind "package") (name "Expressions") (declared-name "Expressions"))
-    (element (id (node (document "d0") (qualified-name "Expressions::*"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "Expressions"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarFunctions::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "Expressions::*#import"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "Expressions"))) (authored (membership (kind Import) (visibility "private") (import (reference "ControlFunctions::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "Expressions::ToString"))) (kind "import") (name "ToString") (declared-name "ToString") (parent (node (document "d0") (qualified-name "Expressions"))) (authored (membership (kind Import) (visibility "private") (import (reference "BaseFunctions::ToString") (origin Import) (shape Membership) (recursive false)))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:bfa7aa826e271b51c2ad9c25d5aaecec56931d371ebe5d7832d7022f67d44072") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/expressions.md") (qualified-name "Expressions"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/expressions.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarFunctions") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/expressions.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "BaseFunctions::ToString") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/expressions.md") (anonymous (kind import) (ordinal 2))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ControlFunctions") (import (shape namespace) (recursive false)))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "Expressions::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarFunctions::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Expressions::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "ControlFunctions::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Expressions::ToString"))) (kind membershipImport) (ordinal 0)) (authored-target "BaseFunctions::ToString") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
+    (reference (id (source (node (document "memory://snapshot/expressions.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "ScalarFunctions")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/expressions.md") (anonymous (kind import) (ordinal 2))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "ControlFunctions")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/expressions.md") (anonymous (kind import) (ordinal 1))))) (kind membershipImport) (ordinal 0))
+      (authored-target "BaseFunctions::ToString")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -138,31 +144,17 @@ package Expressions {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 1 16) (end 1 31)) (probe (position 1 16))
-      (reference
-        (source (document "d0") (qualified-name "Expressions::*"))
-        (kind namespaceImport) (ordinal 0) (authored-target "ScalarFunctions::*")
-        (range (start 1 16) (end 1 31))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 3 16) (end 3 32)) (probe (position 3 16))
-      (reference
-        (source (document "d0") (qualified-name "Expressions::*#import"))
-        (kind namespaceImport) (ordinal 0) (authored-target "ControlFunctions::*")
-        (range (start 3 16) (end 3 32))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 2 16) (end 2 39)) (probe (position 2 16))
-      (reference
-        (source (document "d0") (qualified-name "Expressions::ToString"))
-        (kind membershipImport) (ordinal 0) (authored-target "BaseFunctions::ToString")
-        (range (start 2 16) (end 2 39))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/expressions.md") (range (start 1 16) (end 1 34)) (probe (position 1 16))
+    (reference (id (source (node (document "memory://snapshot/expressions.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "ScalarFunctions")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/expressions.md") (range (start 3 16) (end 3 35)) (probe (position 3 16))
+    (reference (id (source (node (document "memory://snapshot/expressions.md") (anonymous (kind import) (ordinal 2))))) (kind namespaceImport) (ordinal 0) (authored-target "ControlFunctions")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/expressions.md") (range (start 2 16) (end 2 39)) (probe (position 2 16))
+    (reference (id (source (node (document "memory://snapshot/expressions.md") (anonymous (kind import) (ordinal 1))))) (kind membershipImport) (ordinal 0) (authored-target "BaseFunctions::ToString")
+      (outcome (status unresolved)))
   )
 )
 ~~~

@@ -55,26 +55,42 @@ package Comments {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "comments.md"
+  (document "memory://snapshot/comments.md"
     (diagnostics
       (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "sysml")
-        (range (start 24 1) (end 24 92))
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 34 1) (end 39 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 34 1) (end 39 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 41 1) (end 44 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 41 1) (end 44 2))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "807b81015df756cfa6185f889f5edcc2ef6d73439150124fbb0e72297eeaac40") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Comments"))) (kind "package") (name "Comments") (declared-name "Comments"))
-    (element (id (node (document "d0") (qualified-name "Comments::A"))) (kind "classifier decl") (name "A") (declared-name "A") (parent (node (document "d0") (qualified-name "Comments"))))
-    (element (id (node (document "d0") (qualified-name "Comments::C"))) (kind "classifier decl") (name "C") (declared-name "C") (parent (node (document "d0") (qualified-name "Comments"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:e8a112900c3b200845c2ff34e7933480efbd2709124e0ca7ae3f8141e9b216d9") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/comments.md") (qualified-name "Comments"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

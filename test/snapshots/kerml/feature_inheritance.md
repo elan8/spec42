@@ -16,20 +16,42 @@ package FeatureInheritance {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "feature_inheritance.md"
+  (document "memory://snapshot/feature_inheritance.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 1 1) (end 3 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 1 1) (end 3 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 5 1) (end 5 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 5 1) (end 5 21))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "79adab37d07eb6b20d980a8c1d68360d81d281b5f183edabf4cc31dc649f0ac3") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "FeatureInheritance"))) (kind "package") (name "FeatureInheritance") (declared-name "FeatureInheritance"))
-    (element (id (node (document "d0") (qualified-name "FeatureInheritance::s"))) (kind "feature decl") (name "s") (declared-name "s") (parent (node (document "d0") (qualified-name "FeatureInheritance"))))
-    (element (id (node (document "d0") (qualified-name "FeatureInheritance::u"))) (kind "feature decl") (name "u") (declared-name "u") (parent (node (document "d0") (qualified-name "FeatureInheritance"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:df909931b8c58721d9ed14e94f921f5c9963b522afef74efb37af7c23562a2a1") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/feature_inheritance.md") (qualified-name "FeatureInheritance"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

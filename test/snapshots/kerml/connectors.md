@@ -42,20 +42,42 @@ package Connectors {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "connectors.md"
+  (document "memory://snapshot/connectors.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 2 1) (end 26 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 2 1) (end 26 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 28 1) (end 31 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 28 1) (end 31 2))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "a584141b68b061427b7446ce41755100e73ae0a8daef9b7f35906542c67f2bb3") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Connectors"))) (kind "package") (name "Connectors") (declared-name "Connectors"))
-    (element (id (node (document "d0") (qualified-name "Connectors::A"))) (kind "classifier decl") (name "A") (declared-name "A") (parent (node (document "d0") (qualified-name "Connectors"))))
-    (element (id (node (document "d0") (qualified-name "Connectors::B"))) (kind "classifier decl") (name "B") (declared-name "B") (parent (node (document "d0") (qualified-name "Connectors"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:3158d76107a71413e335a2356ac61791c4750462b6335681a61637e4b2b8bc5b") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

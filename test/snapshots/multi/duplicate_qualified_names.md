@@ -19,11 +19,11 @@ package P {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "alpha.sysml"
+  (document "memory://snapshot/alpha.sysml"
     (diagnostics
     )
   )
-  (document "beta.sysml"
+  (document "memory://snapshot/beta.sysml"
     (diagnostics
     )
   )
@@ -32,12 +32,12 @@ package P {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "378dd26b42b8288df345a08ca74c0a9c71e69cd84be02185d886cb7fed584be4") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "P"))) (kind "package") (name "P") (declared-name "P"))
-    (element (id (node (document "d0") (qualified-name "P::Engine"))) (kind "part def") (name "Engine") (declared-name "Engine") (parent (node (document "d0") (qualified-name "P"))))
-    (element (id (node (document "d1") (qualified-name "P"))) (kind "package") (name "P") (declared-name "P"))
-    (element (id (node (document "d1") (qualified-name "P::Engine"))) (kind "part def") (name "Engine") (declared-name "Engine") (parent (node (document "d1") (qualified-name "P"))))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:6bda00768fa43bd1246923d0312e382648b4511fd4f5adc87630a43fa6ba944a") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/alpha.sysml") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/alpha.sysml") (qualified-name "P::Engine"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/beta.sysml") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/beta.sysml") (qualified-name "P::Engine"))) (kind part-def) (membership (kind owning) (visibility default)))
   )
   (references
   )

@@ -36,35 +36,86 @@ package CoverageIndividual {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "coverage_individual.md"
+  (document "memory://snapshot/coverage_individual.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 1 1) (end 1 19))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 2 1) (end 2 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 3 1) (end 3 24))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 5 1) (end 5 26))
+      )
       (diagnostic
         (severity error)
         (code "recovered_package_body_element")
-        (source "sysml")
-        (range (start 2 1) (end 2 32))
+        (source "parser")
+        (range (start 6 1) (end 7 1))
       )
       (diagnostic
         (severity warning)
         (code "recovery_cascade_suppressed")
-        (source "sysml")
-        (range (start 2 1) (end 2 32))
+        (source "parser")
+        (range (start 6 1) (end 7 1))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 13 1) (end 13 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 19 12) (end 19 15))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 21 1) (end 21 20))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 24 1) (end 24 22))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 25 1) (end 25 21))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "e6303e694313bae52dbf13599fc1cb9173f27ad8ffb059a92daa7cacae3dc96b") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "CoverageIndividual"))) (kind "package") (name "CoverageIndividual") (declared-name "CoverageIndividual"))
-    (element (id (node (document "d0") (qualified-name "CoverageIndividual::D1"))) (kind "individual def") (name "D1") (declared-name "D1") (parent (node (document "d0") (qualified-name "CoverageIndividual"))))
-    (element (id (node (document "d0") (qualified-name "CoverageIndividual::D4"))) (kind "part def") (name "D4") (declared-name "D4") (parent (node (document "d0") (qualified-name "CoverageIndividual"))))
-    (element (id (node (document "d0") (qualified-name "CoverageIndividual::p1"))) (kind "occurrence") (name "p1") (declared-name "p1") (parent (node (document "d0") (qualified-name "CoverageIndividual"))))
-    (element (id (node (document "d0") (qualified-name "CoverageIndividual::p2"))) (kind "part") (name "p2") (declared-name "p2") (parent (node (document "d0") (qualified-name "CoverageIndividual"))))
-    (element (id (node (document "d0") (qualified-name "CoverageIndividual::s1"))) (kind "state") (name "s1") (declared-name "s1") (parent (node (document "d0") (qualified-name "CoverageIndividual"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:cc260e42efc2f0574416b1986958ea8b3cd611f779804213b16cf55f2d510c57") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/coverage_individual.md") (qualified-name "CoverageIndividual"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_individual.md") (qualified-name "CoverageIndividual::D4"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_individual.md") (qualified-name "CoverageIndividual::p2"))) (kind part) (membership (kind feature) (visibility default)))
   )
   (references
   )

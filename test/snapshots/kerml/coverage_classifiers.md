@@ -28,33 +28,198 @@ package ClassifierCoverage {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "coverage_classifiers.md"
+  (document "memory://snapshot/coverage_classifiers.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 1 4) (end 1 20))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 1 4) (end 1 20))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 2 4) (end 2 17))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 2 4) (end 2 17))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 3 4) (end 3 18))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 3 4) (end 3 18))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 4 4) (end 4 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 4 4) (end 4 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 5 4) (end 5 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 5 4) (end 5 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 6 4) (end 6 25))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 6 4) (end 6 25))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 8 4) (end 8 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 8 4) (end 8 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 9 4) (end 9 22))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 9 4) (end 9 22))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 10 4) (end 10 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 10 4) (end 10 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 11 4) (end 11 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 11 4) (end 11 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 12 4) (end 12 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 12 4) (end 12 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 14 4) (end 14 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 14 4) (end 14 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 15 4) (end 15 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 15 4) (end 15 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 16 4) (end 16 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 16 4) (end 16 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 17 4) (end 17 36))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 17 4) (end 17 36))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "7d89267b505b3ad7ef2071c37d8228cfa52002a62ca214d654fcdbe9974e9352") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "ClassifierCoverage"))) (kind "package") (name "ClassifierCoverage") (declared-name "ClassifierCoverage"))
-    (element (id (node (document "d0") (qualified-name "ClassifierCoverage::A"))) (kind "kermlDecl") (name "A") (declared-name "A") (parent (node (document "d0") (qualified-name "ClassifierCoverage"))))
-    (element (id (node (document "d0") (qualified-name "ClassifierCoverage::AbstractMeta"))) (kind "kermlDecl") (name "AbstractMeta") (declared-name "AbstractMeta") (parent (node (document "d0") (qualified-name "ClassifierCoverage"))))
-    (element (id (node (document "d0") (qualified-name "ClassifierCoverage::AbstractRel"))) (kind "kermlDecl") (name "AbstractRel") (declared-name "AbstractRel") (parent (node (document "d0") (qualified-name "ClassifierCoverage"))))
-    (element (id (node (document "d0") (qualified-name "ClassifierCoverage::AbstractScalar"))) (kind "kermlDecl") (name "AbstractScalar") (declared-name "AbstractScalar") (parent (node (document "d0") (qualified-name "ClassifierCoverage"))))
-    (element (id (node (document "d0") (qualified-name "ClassifierCoverage::AbstractVector"))) (kind "classifier decl") (name "AbstractVector") (declared-name "AbstractVector") (parent (node (document "d0") (qualified-name "ClassifierCoverage"))))
-    (element (id (node (document "d0") (qualified-name "ClassifierCoverage::C"))) (kind "classifier decl") (name "C") (declared-name "C") (parent (node (document "d0") (qualified-name "ClassifierCoverage"))))
-    (element (id (node (document "d0") (qualified-name "ClassifierCoverage::D"))) (kind "kermlDecl") (name "D") (declared-name "D") (parent (node (document "d0") (qualified-name "ClassifierCoverage"))))
-    (element (id (node (document "d0") (qualified-name "ClassifierCoverage::Entity"))) (kind "classifier decl") (name "Entity") (declared-name "Entity") (parent (node (document "d0") (qualified-name "ClassifierCoverage"))))
-    (element (id (node (document "d0") (qualified-name "ClassifierCoverage::M"))) (kind "kermlDecl") (name "M") (declared-name "M") (parent (node (document "d0") (qualified-name "ClassifierCoverage"))))
-    (element (id (node (document "d0") (qualified-name "ClassifierCoverage::MetaEntity"))) (kind "kermlDecl") (name "MetaEntity") (declared-name "MetaEntity") (parent (node (document "d0") (qualified-name "ClassifierCoverage"))))
-    (element (id (node (document "d0") (qualified-name "ClassifierCoverage::Relationship"))) (kind "kermlDecl") (name "Relationship") (declared-name "Relationship") (parent (node (document "d0") (qualified-name "ClassifierCoverage"))))
-    (element (id (node (document "d0") (qualified-name "ClassifierCoverage::S"))) (kind "classifier decl") (name "S") (declared-name "S") (parent (node (document "d0") (qualified-name "ClassifierCoverage"))))
-    (element (id (node (document "d0") (qualified-name "ClassifierCoverage::Scalar"))) (kind "kermlDecl") (name "Scalar") (declared-name "Scalar") (parent (node (document "d0") (qualified-name "ClassifierCoverage"))))
-    (element (id (node (document "d0") (qualified-name "ClassifierCoverage::Vector"))) (kind "classifier decl") (name "Vector") (declared-name "Vector") (parent (node (document "d0") (qualified-name "ClassifierCoverage"))))
-    (element (id (node (document "d0") (qualified-name "ClassifierCoverage::struct"))) (kind "kermlDecl") (name "struct") (declared-name "struct") (parent (node (document "d0") (qualified-name "ClassifierCoverage"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:a409938f8c5980767aa1917a6332c2122d4da7f70e11e69d18fdb0a20f2c3502") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/coverage_classifiers.md") (qualified-name "ClassifierCoverage"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

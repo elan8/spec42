@@ -2,8 +2,6 @@
 ~~~ini
 description=Colon family operators
 type=file
-semantic_graph=skip
-semantic_graph_skip_reason=parser recovery for non-empty source produced no typed semantic graph facts
 ~~~
 # SOURCE
 ~~~sysml
@@ -12,12 +10,12 @@ semantic_graph_skip_reason=parser recovery for non-empty source produced no type
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "operators_colon_family.md"
+  (document "memory://snapshot/operators_colon_family.md"
     (diagnostics
       (diagnostic
         (severity error)
         (code "expected_keyword")
-        (source "sysml")
+        (source "parser")
         (range (start 0 0) (end 0 18))
       )
     )
@@ -25,10 +23,10 @@ semantic_graph_skip_reason=parser recovery for non-empty source produced no type
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "19f0ee67d2fc34fdbbe40ce2ba0c6d02b2cdd7e3deb1087781728b803bdb04d5") (contract-version "canonical-resolution-v1"))
-  (structure
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:a03e10e527fd0adf56d7070a263c35541c810bcde8c7b5ff70906c8e395635d5") (contract-version "parser-owned-resolution-v1"))
+  (declarations
   )
   (references
   )

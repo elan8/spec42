@@ -15,24 +15,24 @@ package ConnectorAll {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "connector_all.md"
+  (document "memory://snapshot/connector_all.md"
     (diagnostics
       (diagnostic
         (severity error)
         (code "unrecognized_declaration_in_scope")
-        (source "sysml")
-        (range (start 1 4) (end 1 209))
+        (source "parser")
+        (range (start 1 4) (end 5 0))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "8b1aa2652f6ff9ff643f8ba0e8e37117a2e8dd9df7bc25cbcbf4642536f81fe4") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "ConnectorAll"))) (kind "package") (name "ConnectorAll") (declared-name "ConnectorAll"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:5544e6186e9524f6031d7e6095efc59b0e47848e1809c9197683ca088ff33162") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/connector_all.md") (qualified-name "ConnectorAll"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

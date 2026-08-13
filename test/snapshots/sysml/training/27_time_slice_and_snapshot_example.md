@@ -36,44 +36,66 @@ package 'Time Slice and Snapshot Example' {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "27_time_slice_and_snapshot_example.md"
+  (document "memory://snapshot/27_time_slice_and_snapshot_example.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 3 1) (end 3 17))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_definition_member")
+        (source "semantic")
+        (range (start 6 2) (end 6 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_definition_member")
+        (source "semantic")
+        (range (start 8 2) (end 8 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_definition_member")
+        (source "semantic")
+        (range (start 10 2) (end 12 3))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_definition_member")
+        (source "semantic")
+        (range (start 14 2) (end 22 3))
+      )
       (diagnostic
         (severity error)
         (code "recovered_occurrence_body_element")
-        (source "sysml")
-        (range (start 15 3) (end 15 33))
+        (source "parser")
+        (range (start 15 3) (end 17 3))
       )
       (diagnostic
         (severity warning)
         (code "recovery_cascade_suppressed")
-        (source "sysml")
-        (range (start 15 3) (end 15 33))
+        (source "parser")
+        (range (start 15 3) (end 17 3))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "dd0616e7b95c3d6d4fe2c8c05cec33f4ed4c846803f8b803f3c7cdd55e6784d6") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Time Slice and Snapshot Example"))) (kind "package") (name "Time Slice and Snapshot Example") (declared-name "Time Slice and Snapshot Example"))
-    (element (id (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Date"))) (kind "attribute def") (name "Date") (declared-name "Date") (parent (node (document "d0") (qualified-name "Time Slice and Snapshot Example"))))
-    (element (id (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Person"))) (kind "item def") (name "Person") (declared-name "Person") (parent (node (document "d0") (qualified-name "Time Slice and Snapshot Example"))))
-    (element (id (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Vehicle"))) (kind "part def") (name "Vehicle") (declared-name "Vehicle") (parent (node (document "d0") (qualified-name "Time Slice and Snapshot Example"))))
-    (element (id (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Vehicle::assembly"))) (kind "occurrence") (name "assembly") (declared-name "assembly") (parent (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Vehicle"))))
-    (element (id (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Vehicle::delivery"))) (kind "occurrence") (name "delivery") (declared-name "delivery") (parent (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Vehicle"))))
-    (element (id (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Vehicle::delivery::deliveryDate"))) (kind "attribute") (name "deliveryDate") (declared-name "deliveryDate") (parent (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Vehicle::delivery"))) (authored (membership (kind Feature)) (relationships (typing (reference "Date")))))
-    (element (id (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Vehicle::ownership"))) (kind "occurrence") (name "ownership") (declared-name "ownership") (parent (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Vehicle"))))
-    (element (id (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Vehicle::ownership::driven"))) (kind "occurrence") (name "driven") (declared-name "driven") (parent (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Vehicle::ownership"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:b57bc12caa5547fc29077dd18653ef97509612138b3b83668984234a9e289536") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Date"))) (kind attribute-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Vehicle::delivery::deliveryDate"))) (kind featureTyping) (ordinal 0)) (authored-target "Date") (outcome (status resolved) (target (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Date")))))
   )
   (relationships
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Vehicle::delivery::deliveryDate"))) (target (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Date"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Vehicle::delivery::deliveryDate"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )

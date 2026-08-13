@@ -21,19 +21,30 @@ package P {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "binding_connector_bind_kw.md"
+  (document "memory://snapshot/binding_connector_bind_kw.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 1 4) (end 10 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 1 4) (end 10 5))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "96bd0a1c1f0aa58c1080ae64ad6ecb627109edbe8b0ebfbffcf4e0757e2de203") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "P"))) (kind "package") (name "P") (declared-name "P"))
-    (element (id (node (document "d0") (qualified-name "P::C"))) (kind "classifier decl") (name "C") (declared-name "C") (parent (node (document "d0") (qualified-name "P"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:934a6cefbf30848d75428ac15e460810e90dd4066ce9e38abcbdd0d519da4e8d") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/binding_connector_bind_kw.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

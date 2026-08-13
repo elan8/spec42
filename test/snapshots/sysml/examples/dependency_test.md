@@ -29,32 +29,49 @@ package DependencyTest {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "dependency_test.md"
+  (document "memory://snapshot/dependency_test.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 10 1) (end 10 60))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 11 1) (end 11 49))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 17 1) (end 17 22))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "926210d643d50780f7eae2a2f99497d19ed15e605ea734ee7a9e3c462dce1ec9") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "DependencyTest"))) (kind "package") (name "DependencyTest") (declared-name "DependencyTest"))
-    (element (id (node (document "d0") (qualified-name "DependencyTest::*"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "DependencyTest"))) (authored (membership (kind Import) (visibility "private") (import (reference "System::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "DependencyTest::System"))) (kind "package") (name "System") (declared-name "System") (parent (node (document "d0") (qualified-name "DependencyTest"))))
-    (element (id (node (document "d0") (qualified-name "DependencyTest::System::Application Layer"))) (kind "package") (name "Application Layer") (declared-name "Application Layer") (parent (node (document "d0") (qualified-name "DependencyTest::System"))))
-    (element (id (node (document "d0") (qualified-name "DependencyTest::System::Data Layer"))) (kind "package") (name "Data Layer") (declared-name "Data Layer") (parent (node (document "d0") (qualified-name "DependencyTest::System"))))
-    (element (id (node (document "d0") (qualified-name "DependencyTest::System::Service Layer"))) (kind "package") (name "Service Layer") (declared-name "Service Layer") (parent (node (document "d0") (qualified-name "DependencyTest::System"))))
-    (element (id (node (document "d0") (qualified-name "DependencyTest::Use"))) (kind "dependency") (name "Use") (declared-name "Use") (parent (node (document "d0") (qualified-name "DependencyTest"))))
-    (element (id (node (document "d0") (qualified-name "DependencyTest::dependency"))) (kind "dependency") (name "dependency") (declared-name "dependency") (parent (node (document "d0") (qualified-name "DependencyTest"))))
-    (element (id (node (document "d0") (qualified-name "DependencyTest::dependency#dependency"))) (kind "dependency") (name "dependency") (declared-name "dependency") (parent (node (document "d0") (qualified-name "DependencyTest"))))
-    (element (id (node (document "d0") (qualified-name "DependencyTest::x"))) (kind "attribute def") (name "x") (declared-name "x") (parent (node (document "d0") (qualified-name "DependencyTest"))))
-    (element (id (node (document "d0") (qualified-name "DependencyTest::y"))) (kind "attribute def") (name "y") (declared-name "y") (parent (node (document "d0") (qualified-name "DependencyTest"))))
-    (element (id (node (document "d0") (qualified-name "DependencyTest::z"))) (kind "attribute def") (name "z") (declared-name "z") (parent (node (document "d0") (qualified-name "DependencyTest"))))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:2dea2a5d07ff7629067141fd56c59465f8628bf8e3c84838c935b7a6707fb0be") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/dependency_test.md") (qualified-name "DependencyTest"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/dependency_test.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "System") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/dependency_test.md") (qualified-name "DependencyTest::System"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/dependency_test.md") (qualified-name "DependencyTest::System::Application Layer"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/dependency_test.md") (qualified-name "DependencyTest::System::Data Layer"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/dependency_test.md") (qualified-name "DependencyTest::System::Service Layer"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/dependency_test.md") (qualified-name "DependencyTest::x"))) (kind attribute-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/dependency_test.md") (qualified-name "DependencyTest::y"))) (kind attribute-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/dependency_test.md") (qualified-name "DependencyTest::z"))) (kind attribute-def) (membership (kind owning) (visibility default)))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "DependencyTest::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "System::*") (outcome (status resolved) (target (node (document "d0") (qualified-name "DependencyTest::System")))) (import (origin import) (shape namespace) (recursive false) (conformance valid)))
+    (reference (id (source (node (document "memory://snapshot/dependency_test.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "System")
+      (outcome (status resolved) (target (node (document "memory://snapshot/dependency_test.md") (qualified-name "DependencyTest::System")))))
   )
   (relationships
   )
@@ -65,17 +82,9 @@ package DependencyTest {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 8 16) (end 8 22)) (probe (position 8 16))
-      (reference
-        (source (document "d0") (qualified-name "DependencyTest::*"))
-        (kind namespaceImport) (ordinal 0) (authored-target "System::*")
-        (range (start 8 16) (end 8 22))
-        (outcome (status resolved)
-          (target (document "d0") (qualified-name "DependencyTest::System") (range (start 2 1) (end 2 102)))
-        )
-      )
-    )
+  (query (document "memory://snapshot/dependency_test.md") (range (start 8 16) (end 8 25)) (probe (position 8 16))
+    (reference (id (source (node (document "memory://snapshot/dependency_test.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "System")
+      (outcome (status resolved) (target (node (document "memory://snapshot/dependency_test.md") (qualified-name "DependencyTest::System")))))
   )
 )
 ~~~

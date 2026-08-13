@@ -39,19 +39,37 @@ part def Outer {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "coverage_sysml_body_members.md"
+  (document "memory://snapshot/coverage_sysml_body_members.md"
     (diagnostics
       (diagnostic
-        (severity error)
-        (code "recovered_part_def_body_element")
-        (source "sysml")
-        (range (start 4 4) (end 4 40))
+        (severity warning)
+        (code "unsupported_part_definition_member")
+        (source "semantic")
+        (range (start 2 4) (end 2 54))
       )
       (diagnostic
         (severity warning)
-        (code "unresolved_type_reference")
+        (code "unsupported_part_definition_member")
         (source "semantic")
-        (range (start 9 4) (end 9 26))
+        (range (start 3 4) (end 3 35))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_part_def_body_element")
+        (source "parser")
+        (range (start 4 4) (end 5 4))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_definition_member")
+        (source "semantic")
+        (range (start 5 4) (end 5 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_definition_member")
+        (source "semantic")
+        (range (start 7 4) (end 7 23))
       )
       (diagnostic
         (severity warning)
@@ -61,67 +79,89 @@ part def Outer {
       )
       (diagnostic
         (severity warning)
-        (code "unresolved_type_reference")
+        (code "unsupported_part_definition_member")
         (source "semantic")
         (range (start 10 4) (end 10 23))
       )
       (diagnostic
         (severity warning)
-        (code "unresolved_type_reference")
+        (code "unsupported_part_definition_member")
         (source "semantic")
-        (range (start 12 15) (end 12 38))
+        (range (start 11 4) (end 11 18))
       )
       (diagnostic
         (severity warning)
-        (code "unresolved_type_reference")
+        (code "unsupported_part_definition_member")
+        (source "semantic")
+        (range (start 12 4) (end 12 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_definition_member")
+        (source "semantic")
+        (range (start 13 4) (end 13 25))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_definition_member")
         (source "semantic")
         (range (start 15 4) (end 15 25))
       )
       (diagnostic
+        (severity warning)
+        (code "unsupported_part_definition_member")
+        (source "semantic")
+        (range (start 17 4) (end 17 25))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_definition_member")
+        (source "semantic")
+        (range (start 18 4) (end 18 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_definition_member")
+        (source "semantic")
+        (range (start 19 4) (end 19 19))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_definition_member")
+        (source "semantic")
+        (range (start 20 4) (end 20 18))
+      )
+      (diagnostic
         (severity error)
         (code "unexpected_keyword_in_scope")
-        (source "sysml")
-        (range (start 22 4) (end 22 230))
+        (source "parser")
+        (range (start 22 4) (end 29 0))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "6cc0b875b8cf2f6fd6e7f0c468e19a5613f3f75598020bfaa25a987799308b20") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Outer"))) (kind "part def") (name "Outer") (declared-name "Outer"))
-    (element (id (node (document "d0") (qualified-name "Outer::InnerAttr"))) (kind "attribute def") (name "InnerAttr") (declared-name "InnerAttr") (parent (node (document "d0") (qualified-name "Outer"))))
-    (element (id (node (document "d0") (qualified-name "Outer::InnerItem"))) (kind "item def") (name "InnerItem") (declared-name "InnerItem") (parent (node (document "d0") (qualified-name "Outer"))))
-    (element (id (node (document "d0") (qualified-name "Outer::InnerPart"))) (kind "part def") (name "InnerPart") (declared-name "InnerPart") (parent (node (document "d0") (qualified-name "Outer"))))
-    (element (id (node (document "d0") (qualified-name "Outer::e"))) (kind "enumeration") (name "e") (declared-name "e") (parent (node (document "d0") (qualified-name "Outer"))) (authored (membership (kind Feature)) (relationships (typing (reference "InnerEnum")))))
-    (element (id (node (document "d0") (qualified-name "Outer::ev1"))) (kind "occurrence") (name "ev1") (declared-name "ev1") (parent (node (document "d0") (qualified-name "Outer"))))
-    (element (id (node (document "d0") (qualified-name "Outer::ind1"))) (kind "occurrence") (name "ind1") (declared-name "ind1") (parent (node (document "d0") (qualified-name "Outer"))) (authored (membership (kind Feature)) (relationships (typing (reference "InnerIndividual")))))
-    (element (id (node (document "d0") (qualified-name "Outer::it1"))) (kind "item") (name "it1") (declared-name "it1") (parent (node (document "d0") (qualified-name "Outer"))) (authored (membership (kind Feature)) (relationships (typing (reference "InnerItem")))))
-    (element (id (node (document "d0") (qualified-name "Outer::o1"))) (kind "occurrence") (name "o1") (declared-name "o1") (parent (node (document "d0") (qualified-name "Outer"))))
-    (element (id (node (document "d0") (qualified-name "Outer::p1"))) (kind "part") (name "p1") (declared-name "p1") (parent (node (document "d0") (qualified-name "Outer"))) (authored (membership (kind Feature)) (relationships (typing (reference "InnerPart")))))
-    (element (id (node (document "d0") (qualified-name "Outer::pt1"))) (kind "port") (name "pt1") (declared-name "pt1") (parent (node (document "d0") (qualified-name "Outer"))) (authored (membership (kind Feature)) (relationships (typing (reference "InnerPort")))))
-    (element (id (node (document "d0") (qualified-name "Outer::r1"))) (kind "ref") (name "r1") (declared-name "r1") (parent (node (document "d0") (qualified-name "Outer"))) (authored (membership (kind Feature)) (relationships (typing (reference "InnerPart")))))
-    (element (id (node (document "d0") (qualified-name "Outer::snap1"))) (kind "occurrence") (name "snap1") (declared-name "snap1") (parent (node (document "d0") (qualified-name "Outer"))))
-    (element (id (node (document "d0") (qualified-name "Outer::ts1"))) (kind "occurrence") (name "ts1") (declared-name "ts1") (parent (node (document "d0") (qualified-name "Outer"))))
-    (element (id (node (document "d0") (qualified-name "Outer::x"))) (kind "attribute") (name "x") (declared-name "x") (parent (node (document "d0") (qualified-name "Outer"))) (authored (membership (kind Feature)) (relationships (typing (reference "Integer")) (typing (reference "Integer")))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:f1c6bfba8261a359cbed08e35e082d5daa4fa5fd762fe36991b873012982fd39") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::InnerAttr"))) (kind attribute-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::InnerPart"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::p1"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "InnerPart"))))
+    (declaration (id (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::x"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Integer"))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "Outer::e"))) (kind featureTyping) (ordinal 0)) (authored-target "InnerEnum") (outcome (status unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Outer::ind1"))) (kind featureTyping) (ordinal 0)) (authored-target "InnerIndividual") (outcome (status unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Outer::it1"))) (kind featureTyping) (ordinal 0)) (authored-target "InnerItem") (outcome (status resolved) (target (node (document "d0") (qualified-name "Outer::InnerItem")))))
-    (reference (id (source (node (document "d0") (qualified-name "Outer::p1"))) (kind featureTyping) (ordinal 0)) (authored-target "InnerPart") (outcome (status resolved) (target (node (document "d0") (qualified-name "Outer::InnerPart")))))
-    (reference (id (source (node (document "d0") (qualified-name "Outer::pt1"))) (kind featureTyping) (ordinal 0)) (authored-target "InnerPort") (outcome (status unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Outer::r1"))) (kind featureTyping) (ordinal 0)) (authored-target "InnerPart") (outcome (status resolved) (target (node (document "d0") (qualified-name "Outer::InnerPart")))))
-    (reference (id (source (node (document "d0") (qualified-name "Outer::x"))) (kind featureTyping) (ordinal 0)) (authored-target "Integer") (outcome (status unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Outer::x"))) (kind featureTyping) (ordinal 1)) (authored-target "Integer") (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::p1"))) (kind featureTyping) (ordinal 0))
+      (authored-target "InnerPart")
+      (outcome (status resolved) (target (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::InnerPart")))))
+    (reference (id (source (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::x"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Integer")
+      (outcome (status unresolved)))
   )
   (relationships
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "Outer::it1"))) (target (node (document "d0") (qualified-name "Outer::InnerItem"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Outer::it1"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "Outer::p1"))) (target (node (document "d0") (qualified-name "Outer::InnerPart"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Outer::p1"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "Outer::r1"))) (target (node (document "d0") (qualified-name "Outer::InnerPart"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Outer::r1"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::p1"))) (target (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::InnerPart"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::p1"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )
@@ -130,35 +170,13 @@ part def Outer {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 9 18) (end 9 25)) (probe (position 9 18))
-      (reference
-        (source (document "d0") (qualified-name "Outer::x"))
-        (kind featureTyping) (ordinal 1) (authored-target "Integer")
-        (range (start 9 18) (end 9 25))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 14 14) (end 14 23)) (probe (position 14 14))
-      (reference
-        (source (document "d0") (qualified-name "Outer::p1"))
-        (kind featureTyping) (ordinal 0) (authored-target "InnerPart")
-        (range (start 14 14) (end 14 23))
-        (outcome (status resolved)
-          (target (document "d0") (qualified-name "Outer::InnerPart") (range (start 6 4) (end 6 23)))
-        )
-      )
-    )
-    (query (range (start 18 13) (end 18 22)) (probe (position 18 13))
-      (reference
-        (source (document "d0") (qualified-name "Outer::r1"))
-        (kind featureTyping) (ordinal 0) (authored-target "InnerPart")
-        (range (start 18 13) (end 18 22))
-        (outcome (status resolved)
-          (target (document "d0") (qualified-name "Outer::InnerPart") (range (start 6 4) (end 6 23)))
-        )
-      )
-    )
+  (query (document "memory://snapshot/coverage_sysml_body_members.md") (range (start 14 14) (end 14 23)) (probe (position 14 14))
+    (reference (id (source (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::p1"))) (kind featureTyping) (ordinal 0) (authored-target "InnerPart")
+      (outcome (status resolved) (target (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::InnerPart")))))
+  )
+  (query (document "memory://snapshot/coverage_sysml_body_members.md") (range (start 9 18) (end 9 25)) (probe (position 9 18))
+    (reference (id (source (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::x"))) (kind featureTyping) (ordinal 0) (authored-target "Integer")
+      (outcome (status unresolved)))
   )
 )
 ~~~

@@ -2,8 +2,6 @@
 ~~~ini
 description=Unclosed comment with special characters should be preserved
 type=file
-semantic_graph=skip
-semantic_graph_skip_reason=parser recovery for non-empty source produced no typed semantic graph facts
 ~~~
 # SOURCE
 ~~~sysml
@@ -12,12 +10,12 @@ semantic_graph_skip_reason=parser recovery for non-empty source produced no type
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "unclosed_comment_special_chars.md"
+  (document "memory://snapshot/unclosed_comment_special_chars.md"
     (diagnostics
       (diagnostic
         (severity error)
         (code "expected_keyword")
-        (source "sysml")
+        (source "parser")
         (range (start 0 0) (end 0 17))
       )
     )
@@ -25,10 +23,10 @@ semantic_graph_skip_reason=parser recovery for non-empty source produced no type
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "449f67e2a99307bc657b30ac87378edf7a9a5d3522ff07a55b55342a12053b69") (contract-version "canonical-resolution-v1"))
-  (structure
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:b48eaed3ffef5fa6c2ef90d301a3c3e8aa541a18fc378f7888b82447da3ce8f0") (contract-version "parser-owned-resolution-v1"))
+  (declarations
   )
   (references
   )

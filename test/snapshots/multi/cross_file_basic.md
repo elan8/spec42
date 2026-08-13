@@ -22,14 +22,8 @@ package Usage {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "Definitions.sysml"
+  (document "memory://snapshot/Definitions.sysml"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 2 8) (end 2 44))
-      )
       (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
@@ -38,32 +32,37 @@ package Usage {
       )
     )
   )
-  (document "Usage.sysml"
+  (document "memory://snapshot/Usage.sysml"
     (diagnostics
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "daf9f4108f74be994f93d4db20c6ca8595e5a701391f3fdc4f1cf03479715bb5") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Definitions"))) (kind "package") (name "Definitions") (declared-name "Definitions"))
-    (element (id (node (document "d0") (qualified-name "Definitions::Vehicle"))) (kind "part def") (name "Vehicle") (declared-name "Vehicle") (parent (node (document "d0") (qualified-name "Definitions"))))
-    (element (id (node (document "d0") (qualified-name "Definitions::Vehicle::mass"))) (kind "attribute") (name "mass") (declared-name "mass") (parent (node (document "d0") (qualified-name "Definitions::Vehicle"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real")) (typing (reference "ScalarValues::Real")))))
-    (element (id (node (document "d1") (qualified-name "Usage"))) (kind "package") (name "Usage") (declared-name "Usage"))
-    (element (id (node (document "d1") (qualified-name "Usage::*"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d1") (qualified-name "Usage"))) (authored (membership (kind Import) (import (reference "Definitions::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d1") (qualified-name "Usage::v"))) (kind "part") (name "v") (declared-name "v") (parent (node (document "d1") (qualified-name "Usage"))) (authored (membership (kind Feature)) (relationships (typing (reference "Vehicle")))))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:7034a7a26b6fa6d3ae6735409e0ffb373f757bc8b3b9e3b20845f79655dd1f8b") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/Definitions.sysml") (qualified-name "Definitions"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/Definitions.sysml") (qualified-name "Definitions::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/Definitions.sysml") (qualified-name "Definitions::Vehicle::mass"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ScalarValues::Real"))))
+    (declaration (id (node (document "memory://snapshot/Usage.sysml") (qualified-name "Usage"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/Usage.sysml") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility default)) (authored (membership (kind import) (visibility default)) (relationships (namespaceImport (reference "Definitions") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/Usage.sysml") (qualified-name "Usage::v"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Vehicle"))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "Definitions::Vehicle::mass"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (outcome (status unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Definitions::Vehicle::mass"))) (kind featureTyping) (ordinal 1)) (authored-target "ScalarValues::Real") (outcome (status unresolved)))
-    (reference (id (source (node (document "d1") (qualified-name "Usage::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Definitions::*") (outcome (status resolved) (target (node (document "d0") (qualified-name "Definitions")))) (import (origin import) (shape namespace) (recursive false) (conformance valid)))
-    (reference (id (source (node (document "d1") (qualified-name "Usage::v"))) (kind featureTyping) (ordinal 0)) (authored-target "Vehicle") (outcome (status resolved) (target (node (document "d0") (qualified-name "Definitions::Vehicle")))))
+    (reference (id (source (node (document "memory://snapshot/Definitions.sysml") (qualified-name "Definitions::Vehicle::mass"))) (kind featureTyping) (ordinal 0))
+      (authored-target "ScalarValues::Real")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/Usage.sysml") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "Definitions")
+      (outcome (status resolved) (target (node (document "memory://snapshot/Definitions.sysml") (qualified-name "Definitions")))))
+    (reference (id (source (node (document "memory://snapshot/Usage.sysml") (qualified-name "Usage::v"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Vehicle")
+      (outcome (status resolved) (target (node (document "memory://snapshot/Definitions.sysml") (qualified-name "Definitions::Vehicle")))))
   )
   (relationships
-    (relationship (kind typing) (source (node (document "d1") (qualified-name "Usage::v"))) (target (node (document "d0") (qualified-name "Definitions::Vehicle"))) (provenance authored) (authored-reference (source (node (document "d1") (qualified-name "Usage::v"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/Usage.sysml") (qualified-name "Usage::v"))) (target (node (document "memory://snapshot/Definitions.sysml") (qualified-name "Definitions::Vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/Usage.sysml") (qualified-name "Usage::v"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )
@@ -72,37 +71,17 @@ package Usage {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 2 25) (end 2 43)) (probe (position 2 25))
-      (reference
-        (source (document "d0") (qualified-name "Definitions::Vehicle::mass"))
-        (kind featureTyping) (ordinal 1) (authored-target "ScalarValues::Real")
-        (range (start 2 25) (end 2 43))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/Definitions.sysml") (range (start 2 25) (end 2 43)) (probe (position 2 25))
+    (reference (id (source (node (document "memory://snapshot/Definitions.sysml") (qualified-name "Definitions::Vehicle::mass"))) (kind featureTyping) (ordinal 0) (authored-target "ScalarValues::Real")
+      (outcome (status unresolved)))
   )
-  (document "d1"
-    (query (range (start 2 13) (end 2 20)) (probe (position 2 13))
-      (reference
-        (source (document "d1") (qualified-name "Usage::v"))
-        (kind featureTyping) (ordinal 0) (authored-target "Vehicle")
-        (range (start 2 13) (end 2 20))
-        (outcome (status resolved)
-          (target (document "d0") (qualified-name "Definitions::Vehicle") (range (start 1 4) (end 1 73)))
-        )
-      )
-    )
-    (query (range (start 1 11) (end 1 22)) (probe (position 1 11))
-      (reference
-        (source (document "d1") (qualified-name "Usage::*"))
-        (kind namespaceImport) (ordinal 0) (authored-target "Definitions::*")
-        (range (start 1 11) (end 1 22))
-        (outcome (status resolved)
-          (target (document "d0") (qualified-name "Definitions") (range (start 0 0) (end 0 97)))
-        )
-      )
-    )
+  (query (document "memory://snapshot/Usage.sysml") (range (start 1 11) (end 1 25)) (probe (position 1 11))
+    (reference (id (source (node (document "memory://snapshot/Usage.sysml") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "Definitions")
+      (outcome (status resolved) (target (node (document "memory://snapshot/Definitions.sysml") (qualified-name "Definitions")))))
+  )
+  (query (document "memory://snapshot/Usage.sysml") (range (start 2 13) (end 2 20)) (probe (position 2 13))
+    (reference (id (source (node (document "memory://snapshot/Usage.sysml") (qualified-name "Usage::v"))) (kind featureTyping) (ordinal 0) (authored-target "Vehicle")
+      (outcome (status resolved) (target (node (document "memory://snapshot/Definitions.sysml") (qualified-name "Definitions::Vehicle")))))
   )
 )
 ~~~

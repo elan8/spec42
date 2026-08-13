@@ -66,7 +66,7 @@ standard library package UseCases {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "use_cases.md"
+  (document "memory://snapshot/use_cases.md"
     (diagnostics
       (diagnostic
         (severity warning)
@@ -80,34 +80,40 @@ standard library package UseCases {
         (source "semantic")
         (range (start 7 16) (end 7 28))
       )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 9 1) (end 48 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 50 1) (end 55 2))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "a9d475b7ddb2300aee0fe6e98bcd11a649565f61a10630099957a8359c1e2079") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "UseCases"))) (kind "package") (name "UseCases") (declared-name "UseCases"))
-    (element (id (node (document "d0") (qualified-name "UseCases::Case"))) (kind "import") (name "Case") (declared-name "Case") (parent (node (document "d0") (qualified-name "UseCases"))) (authored (membership (kind Import) (visibility "private") (import (reference "Cases::Case") (origin Import) (shape Membership) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "UseCases::UseCase"))) (kind "use case def") (name "UseCase") (declared-name "UseCase") (parent (node (document "d0") (qualified-name "UseCases"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Case")))))
-    (element (id (node (document "d0") (qualified-name "UseCases::UseCase::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "UseCases::UseCase"))))
-    (element (id (node (document "d0") (qualified-name "UseCases::UseCase::obj"))) (kind "objective") (name "obj") (declared-name "obj") (parent (node (document "d0") (qualified-name "UseCases::UseCase"))))
-    (element (id (node (document "d0") (qualified-name "UseCases::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "UseCases"))))
-    (element (id (node (document "d0") (qualified-name "UseCases::cases"))) (kind "import") (name "cases") (declared-name "cases") (parent (node (document "d0") (qualified-name "UseCases"))) (authored (membership (kind Import) (visibility "private") (import (reference "Cases::cases") (origin Import) (shape Membership) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "UseCases::useCases"))) (kind "use case") (name "useCases") (declared-name "useCases") (parent (node (document "d0") (qualified-name "UseCases"))) (authored (membership (kind Feature)) (relationships (typing (reference "UseCase")))))
-    (element (id (node (document "d0") (qualified-name "UseCases::useCases::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "UseCases::useCases"))))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:225c689a9e4e133dd9e6a66f52741deb42e8982ec5b10788c20a35ee551a36f7") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/use_cases.md") (qualified-name "UseCases"))) (kind library-package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/use_cases.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Cases::Case") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/use_cases.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Cases::cases") (import (shape membership) (recursive false)))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "UseCases::Case"))) (kind membershipImport) (ordinal 0)) (authored-target "Cases::Case") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "UseCases::UseCase"))) (kind specialization) (ordinal 0)) (authored-target "Case") (outcome (status resolved) (target (node (document "d0") (qualified-name "UseCases::Case")))))
-    (reference (id (source (node (document "d0") (qualified-name "UseCases::cases"))) (kind membershipImport) (ordinal 0)) (authored-target "Cases::cases") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "UseCases::useCases"))) (kind featureTyping) (ordinal 0)) (authored-target "UseCase") (outcome (status resolved) (target (node (document "d0") (qualified-name "UseCases::UseCase")))))
+    (reference (id (source (node (document "memory://snapshot/use_cases.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
+      (authored-target "Cases::Case")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/use_cases.md") (anonymous (kind import) (ordinal 1))))) (kind membershipImport) (ordinal 0))
+      (authored-target "Cases::cases")
+      (outcome (status unresolved)))
   )
   (relationships
-    (relationship (kind specializes) (source (node (document "d0") (qualified-name "UseCases::UseCase"))) (target (node (document "d0") (qualified-name "UseCases::Case"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "UseCases::UseCase"))) (kind specialization) (ordinal 0)))
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "UseCases::useCases"))) (target (node (document "d0") (qualified-name "UseCases::UseCase"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "UseCases::useCases"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )
@@ -116,33 +122,13 @@ standard library package UseCases {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 9 25) (end 9 29)) (probe (position 9 25))
-      (reference
-        (source (document "d0") (qualified-name "UseCases::UseCase"))
-        (kind specialization) (ordinal 0) (authored-target "Case")
-        (range (start 9 25) (end 9 29))
-        (outcome (status resolved)
-          (target (document "d0") (qualified-name "UseCases::Case") (range (start 6 1) (end 6 28)))
-        )
-      )
-    )
-    (query (range (start 6 16) (end 6 27)) (probe (position 6 16))
-      (reference
-        (source (document "d0") (qualified-name "UseCases::Case"))
-        (kind membershipImport) (ordinal 0) (authored-target "Cases::Case")
-        (range (start 6 16) (end 6 27))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 7 16) (end 7 28)) (probe (position 7 16))
-      (reference
-        (source (document "d0") (qualified-name "UseCases::cases"))
-        (kind membershipImport) (ordinal 0) (authored-target "Cases::cases")
-        (range (start 7 16) (end 7 28))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/use_cases.md") (range (start 6 16) (end 6 27)) (probe (position 6 16))
+    (reference (id (source (node (document "memory://snapshot/use_cases.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "Cases::Case")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/use_cases.md") (range (start 7 16) (end 7 28)) (probe (position 7 16))
+    (reference (id (source (node (document "memory://snapshot/use_cases.md") (anonymous (kind import) (ordinal 1))))) (kind membershipImport) (ordinal 0) (authored-target "Cases::cases")
+      (outcome (status unresolved)))
   )
 )
 ~~~

@@ -18,21 +18,54 @@ package Conjugation {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "conjugation.md"
+  (document "memory://snapshot/conjugation.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 1 1) (end 3 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 1 1) (end 3 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 5 1) (end 5 22))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 5 1) (end 5 22))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 7 1) (end 7 18))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 7 1) (end 7 18))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "298ce35cd527980bef9b1f60de186509b444966aae024f67e767d6a762c73107") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Conjugation"))) (kind "package") (name "Conjugation") (declared-name "Conjugation"))
-    (element (id (node (document "d0") (qualified-name "Conjugation::A"))) (kind "classifier decl") (name "A") (declared-name "A") (parent (node (document "d0") (qualified-name "Conjugation"))))
-    (element (id (node (document "d0") (qualified-name "Conjugation::B"))) (kind "classifier decl") (name "B") (declared-name "B") (parent (node (document "d0") (qualified-name "Conjugation"))))
-    (element (id (node (document "d0") (qualified-name "Conjugation::g"))) (kind "feature decl") (name "g") (declared-name "g") (parent (node (document "d0") (qualified-name "Conjugation"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:606df734549da2df657d6be0d7c5e2628d713ba1525e5e3b8ae95ce961d9e51a") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/conjugation.md") (qualified-name "Conjugation"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

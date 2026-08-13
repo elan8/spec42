@@ -113,36 +113,114 @@ package VehicleUsages {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "vehicle_usages.md"
+  (document "memory://snapshot/vehicle_usages.md"
     (diagnostics
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 6 16) (end 6 34))
+        (range (start 6 16) (end 6 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 10 1) (end 10 19))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 10 1) (end 10 19))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 11 1) (end 11 19))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 11 1) (end 11 19))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 15 1) (end 18 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 15 1) (end 18 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 20 1) (end 23 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 20 1) (end 23 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 25 1) (end 43 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 25 1) (end 43 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 45 1) (end 86 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 45 1) (end 86 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 88 1) (end 102 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 88 1) (end 102 2))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "41aa674f97203d346bca3a8e960ed2f49799764a91cf2f129861abc7d531cd26") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "VehicleUsages"))) (kind "package") (name "VehicleUsages") (declared-name "VehicleUsages"))
-    (element (id (node (document "d0") (qualified-name "VehicleUsages::*"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "VehicleUsages"))) (authored (membership (kind Import) (visibility "private") (import (reference "VehicleDefinitions::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "VehicleUsages::T1"))) (kind "feature decl") (name "T1") (declared-name "T1") (parent (node (document "d0") (qualified-name "VehicleUsages"))))
-    (element (id (node (document "d0") (qualified-name "VehicleUsages::T2"))) (kind "feature decl") (name "T2") (declared-name "T2") (parent (node (document "d0") (qualified-name "VehicleUsages"))))
-    (element (id (node (document "d0") (qualified-name "VehicleUsages::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "VehicleUsages"))))
-    (element (id (node (document "d0") (qualified-name "VehicleUsages::narrowRimWheel"))) (kind "feature decl") (name "narrowRimWheel") (declared-name "narrowRimWheel") (parent (node (document "d0") (qualified-name "VehicleUsages"))))
-    (element (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1"))) (kind "feature decl") (name "vehicle_C1") (declared-name "vehicle_C1") (parent (node (document "d0") (qualified-name "VehicleUsages"))))
-    (element (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2"))) (kind "feature decl") (name "vehicle_C2") (declared-name "vehicle_C2") (parent (node (document "d0") (qualified-name "VehicleUsages"))))
-    (element (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3"))) (kind "feature decl") (name "vehicle_C3") (declared-name "vehicle_C3") (parent (node (document "d0") (qualified-name "VehicleUsages"))))
-    (element (id (node (document "d0") (qualified-name "VehicleUsages::wideRimWheel"))) (kind "feature decl") (name "wideRimWheel") (declared-name "wideRimWheel") (parent (node (document "d0") (qualified-name "VehicleUsages"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:d4be45bd61d1cb232eb9686b40df25058196ae41734ca466b6646780276eadef") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/vehicle_usages.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "VehicleDefinitions") (import (shape namespace) (recursive false)))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "VehicleUsages::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "VehicleDefinitions::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
+    (reference (id (source (node (document "memory://snapshot/vehicle_usages.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "VehicleDefinitions")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -153,15 +231,9 @@ package VehicleUsages {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 6 16) (end 6 34)) (probe (position 6 16))
-      (reference
-        (source (document "d0") (qualified-name "VehicleUsages::*"))
-        (kind namespaceImport) (ordinal 0) (authored-target "VehicleDefinitions::*")
-        (range (start 6 16) (end 6 34))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/vehicle_usages.md") (range (start 6 16) (end 6 37)) (probe (position 6 16))
+    (reference (id (source (node (document "memory://snapshot/vehicle_usages.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "VehicleDefinitions")
+      (outcome (status unresolved)))
   )
 )
 ~~~

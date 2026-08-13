@@ -41,25 +41,96 @@ package KeywordAsName {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "keyword_as_name.md"
+  (document "memory://snapshot/keyword_as_name.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 2 1) (end 6 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 2 1) (end 6 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 9 1) (end 12 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 9 1) (end 12 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 15 1) (end 15 25))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 15 1) (end 15 25))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 16 1) (end 19 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 16 1) (end 19 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 22 1) (end 22 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 25 1) (end 25 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 25 1) (end 25 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 28 1) (end 30 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 28 1) (end 30 2))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "d9ceab923dbb202c7b1bc5655129b0c10fb5feeead12aabacc5f9437982edbe2") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "KeywordAsName"))) (kind "package") (name "KeywordAsName") (declared-name "KeywordAsName"))
-    (element (id (node (document "d0") (qualified-name "KeywordAsName::Container"))) (kind "classifier decl") (name "Container") (declared-name "Container") (parent (node (document "d0") (qualified-name "KeywordAsName"))))
-    (element (id (node (document "d0") (qualified-name "KeywordAsName::IfThenElse"))) (kind "kermlDecl") (name "IfThenElse") (declared-name "IfThenElse") (parent (node (document "d0") (qualified-name "KeywordAsName"))))
-    (element (id (node (document "d0") (qualified-name "KeywordAsName::MyStruct"))) (kind "classifier decl") (name "MyStruct") (declared-name "MyStruct") (parent (node (document "d0") (qualified-name "KeywordAsName"))))
-    (element (id (node (document "d0") (qualified-name "KeywordAsName::SpatialFrame"))) (kind "classifier decl") (name "SpatialFrame") (declared-name "SpatialFrame") (parent (node (document "d0") (qualified-name "KeywordAsName"))))
-    (element (id (node (document "d0") (qualified-name "KeywordAsName::TestBehavior"))) (kind "kermlDecl") (name "TestBehavior") (declared-name "TestBehavior") (parent (node (document "d0") (qualified-name "KeywordAsName"))))
-    (element (id (node (document "d0") (qualified-name "KeywordAsName::do"))) (kind "feature decl") (name "do") (declared-name "do") (parent (node (document "d0") (qualified-name "KeywordAsName"))))
-    (element (id (node (document "d0") (qualified-name "KeywordAsName::multiplicity"))) (kind "alias") (name "multiplicity") (declared-name "multiplicity") (parent (node (document "d0") (qualified-name "KeywordAsName"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:00159580b8a880f642649626ab8582199534da466003ec034252e9ff802726fd") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

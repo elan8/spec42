@@ -12,19 +12,30 @@ package Foo {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "multiline_body.md"
+  (document "memory://snapshot/multiline_body.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 1 2) (end 1 12))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 1 2) (end 1 12))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "08231c07e2fac8d74bca78e76135339ba11439d9060a1ce612535aeceaf510e7") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Foo"))) (kind "package") (name "Foo") (declared-name "Foo"))
-    (element (id (node (document "d0") (qualified-name "Foo::x"))) (kind "feature decl") (name "x") (declared-name "x") (parent (node (document "d0") (qualified-name "Foo"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:93b897f9dc17771b5ba4213d70ed39228d0a0e1a9ae8512914ee197093e6a250") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/multiline_body.md") (qualified-name "Foo"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

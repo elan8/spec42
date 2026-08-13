@@ -2,8 +2,6 @@
 ~~~ini
 description=Feature with type annotation
 type=file
-semantic_graph=skip
-semantic_graph_skip_reason=standalone KerML feature declarations are opaque parser fallback nodes; no structured feature target is available to semantic construction
 ~~~
 # SOURCE
 ~~~sysml
@@ -12,17 +10,29 @@ feature x : Integer;
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "feature_typing.md"
+  (document "memory://snapshot/feature_typing.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 0 0) (end 0 20))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 0 0) (end 0 20))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "c4d81fc5b52c6b692cf163f606fc32e73ac142224d82ad8d7ed2d3cb3b1a3a9a") (contract-version "canonical-resolution-v1"))
-  (structure
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:273caa5b768cf58a9a4a83d66fd3189f9d6739a9c6a1ca78d34372ac87a213b9") (contract-version "parser-owned-resolution-v1"))
+  (declarations
   )
   (references
   )

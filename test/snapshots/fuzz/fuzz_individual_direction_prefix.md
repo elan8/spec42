@@ -2,8 +2,6 @@
 ~~~ini
 description=Fuzz: individual usage with direction prefix preserves 'individual' keyword
 type=file
-semantic_graph=skip
-semantic_graph_skip_reason=parser recovery for non-empty source produced no typed semantic graph facts
 ~~~
 # SOURCE
 ~~~sysml
@@ -12,12 +10,12 @@ in individual it;
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "fuzz_individual_direction_prefix.md"
+  (document "memory://snapshot/fuzz_individual_direction_prefix.md"
     (diagnostics
       (diagnostic
         (severity error)
         (code "expected_keyword")
-        (source "sysml")
+        (source "parser")
         (range (start 0 0) (end 0 17))
       )
     )
@@ -25,10 +23,10 @@ in individual it;
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "ef7d5cacf4ffda28ef856a92dd9dd19d8c40322bbf707bb42987c977680dea7b") (contract-version "canonical-resolution-v1"))
-  (structure
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:a5029ee6d112b6f709d8ff90b211cc52c379dd08624880a6c94288864dc9ee28") (contract-version "parser-owned-resolution-v1"))
+  (declarations
   )
   (references
   )

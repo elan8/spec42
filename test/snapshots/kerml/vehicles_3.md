@@ -56,54 +56,104 @@ package Vehicles_3 {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "vehicles_3.md"
+  (document "memory://snapshot/vehicles_3.md"
     (diagnostics
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 16) (end 1 28))
+        (range (start 1 16) (end 1 31))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 2 16) (end 2 28))
+        (range (start 2 16) (end 2 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 4 1) (end 9 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 4 1) (end 9 2))
       )
       (diagnostic
         (severity error)
         (code "unrecognized_declaration_in_scope")
-        (source "sysml")
-        (range (start 11 1) (end 11 354))
+        (source "parser")
+        (range (start 11 1) (end 30 1))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 30 16) (end 30 18))
+        (range (start 30 16) (end 30 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 31 1) (end 35 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 31 1) (end 35 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 37 1) (end 39 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 37 1) (end 39 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 41 1) (end 43 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 41 1) (end 43 2))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "53074dc88e83c311a26d3392ceb8d69868fa1a9b5d7c0f272194136eae285c84") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Vehicles_3"))) (kind "package") (name "Vehicles_3") (declared-name "Vehicles_3"))
-    (element (id (node (document "d0") (qualified-name "Vehicles_3::*"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "Vehicles_3"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "Vehicles_3::*#import"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "Vehicles_3"))) (authored (membership (kind Import) (visibility "private") (import (reference "MassRollup_2::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "Vehicles_3::*#import2"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "Vehicles_3"))) (authored (membership (kind Import) (visibility "private") (import (reference "SI::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "Vehicles_3::CarPart"))) (kind "classifier decl") (name "CarPart") (declared-name "CarPart") (parent (node (document "d0") (qualified-name "Vehicles_3"))))
-    (element (id (node (document "d0") (qualified-name "Vehicles_3::e"))) (kind "feature decl") (name "e") (declared-name "e") (parent (node (document "d0") (qualified-name "Vehicles_3"))))
-    (element (id (node (document "d0") (qualified-name "Vehicles_3::t"))) (kind "feature decl") (name "t") (declared-name "t") (parent (node (document "d0") (qualified-name "Vehicles_3"))))
-    (element (id (node (document "d0") (qualified-name "Vehicles_3::v"))) (kind "feature decl") (name "v") (declared-name "v") (parent (node (document "d0") (qualified-name "Vehicles_3"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:fcd65e1426e444ae0a1d57008064d707d1d3d251db73d7755b52e695f79cee58") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/vehicles_3.md") (qualified-name "Vehicles_3"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/vehicles_3.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/vehicles_3.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "MassRollup_2") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/vehicles_3.md") (anonymous (kind import) (ordinal 2))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "SI") (import (shape namespace) (recursive false)))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "Vehicles_3::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarValues::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Vehicles_3::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "MassRollup_2::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Vehicles_3::*#import2"))) (kind namespaceImport) (ordinal 0)) (authored-target "SI::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
+    (reference (id (source (node (document "memory://snapshot/vehicles_3.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "ScalarValues")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/vehicles_3.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "MassRollup_2")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/vehicles_3.md") (anonymous (kind import) (ordinal 2))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "SI")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -114,31 +164,17 @@ package Vehicles_3 {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 30 16) (end 30 18)) (probe (position 30 16))
-      (reference
-        (source (document "d0") (qualified-name "Vehicles_3::*#import2"))
-        (kind namespaceImport) (ordinal 0) (authored-target "SI::*")
-        (range (start 30 16) (end 30 18))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 1 16) (end 1 28)) (probe (position 1 16))
-      (reference
-        (source (document "d0") (qualified-name "Vehicles_3::*"))
-        (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues::*")
-        (range (start 1 16) (end 1 28))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 2 16) (end 2 28)) (probe (position 2 16))
-      (reference
-        (source (document "d0") (qualified-name "Vehicles_3::*#import"))
-        (kind namespaceImport) (ordinal 0) (authored-target "MassRollup_2::*")
-        (range (start 2 16) (end 2 28))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/vehicles_3.md") (range (start 1 16) (end 1 31)) (probe (position 1 16))
+    (reference (id (source (node (document "memory://snapshot/vehicles_3.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/vehicles_3.md") (range (start 2 16) (end 2 31)) (probe (position 2 16))
+    (reference (id (source (node (document "memory://snapshot/vehicles_3.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0) (authored-target "MassRollup_2")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/vehicles_3.md") (range (start 30 16) (end 30 21)) (probe (position 30 16))
+    (reference (id (source (node (document "memory://snapshot/vehicles_3.md") (anonymous (kind import) (ordinal 2))))) (kind namespaceImport) (ordinal 0) (authored-target "SI")
+      (outcome (status unresolved)))
   )
 )
 ~~~

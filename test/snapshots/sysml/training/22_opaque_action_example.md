@@ -28,14 +28,8 @@ package 'Opaque Action Example' {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "22_opaque_action_example.md"
+  (document "memory://snapshot/22_opaque_action_example.md"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 3 2) (end 3 42))
-      )
       (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
@@ -44,35 +38,27 @@ package 'Opaque Action Example' {
       )
       (diagnostic
         (severity warning)
-        (code "unresolved_type_reference")
+        (code "unsupported_package_member")
         (source "semantic")
-        (range (start 7 2) (end 7 25))
-      )
-      (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "sysml")
-        (range (start 8 2) (end 8 145))
+        (range (start 6 1) (end 16 2))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "ccd9ccb41e406150a11c63d073772165660416d4b1036d548e83ca868ec21cea") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Opaque Action Example"))) (kind "package") (name "Opaque Action Example") (declared-name "Opaque Action Example"))
-    (element (id (node (document "d0") (qualified-name "Opaque Action Example::Sensor"))) (kind "part def") (name "Sensor") (declared-name "Sensor") (parent (node (document "d0") (qualified-name "Opaque Action Example"))))
-    (element (id (node (document "d0") (qualified-name "Opaque Action Example::Sensor::ready"))) (kind "attribute") (name "ready") (declared-name "ready") (parent (node (document "d0") (qualified-name "Opaque Action Example::Sensor"))) (authored (membership (kind Feature)) (relationships (typing (reference "Boolean")) (typing (reference "ScalarValues::Boolean")))))
-    (element (id (node (document "d0") (qualified-name "Opaque Action Example::UpdateSensors"))) (kind "action def") (name "UpdateSensors") (declared-name "UpdateSensors") (parent (node (document "d0") (qualified-name "Opaque Action Example"))))
-    (element (id (node (document "d0") (qualified-name "Opaque Action Example::UpdateSensors::sensors"))) (kind "in out parameter") (name "sensors") (declared-name "sensors") (parent (node (document "d0") (qualified-name "Opaque Action Example::UpdateSensors"))) (authored (relationships (typing (reference "sensors : Sensor[*]")))))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:e3f38762e7581315421a7680d5f802703299316857c394fe2bd0254010906ab4") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/22_opaque_action_example.md") (qualified-name "Opaque Action Example"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/22_opaque_action_example.md") (qualified-name "Opaque Action Example::Sensor"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/22_opaque_action_example.md") (qualified-name "Opaque Action Example::Sensor::ready"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ScalarValues::Boolean"))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "Opaque Action Example::Sensor::ready"))) (kind featureTyping) (ordinal 0)) (authored-target "Boolean") (outcome (status unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Opaque Action Example::Sensor::ready"))) (kind featureTyping) (ordinal 1)) (authored-target "ScalarValues::Boolean") (outcome (status unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Opaque Action Example::UpdateSensors::sensors"))) (kind featureTyping) (ordinal 0)) (authored-target "sensors : Sensor[*]") (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/22_opaque_action_example.md") (qualified-name "Opaque Action Example::Sensor::ready"))) (kind featureTyping) (ordinal 0))
+      (authored-target "ScalarValues::Boolean")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -83,15 +69,9 @@ package 'Opaque Action Example' {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 3 20) (end 3 41)) (probe (position 3 20))
-      (reference
-        (source (document "d0") (qualified-name "Opaque Action Example::Sensor::ready"))
-        (kind featureTyping) (ordinal 1) (authored-target "ScalarValues::Boolean")
-        (range (start 3 20) (end 3 41))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/22_opaque_action_example.md") (range (start 3 20) (end 3 41)) (probe (position 3 20))
+    (reference (id (source (node (document "memory://snapshot/22_opaque_action_example.md") (qualified-name "Opaque Action Example::Sensor::ready"))) (kind featureTyping) (ordinal 0) (authored-target "ScalarValues::Boolean")
+      (outcome (status unresolved)))
   )
 )
 ~~~

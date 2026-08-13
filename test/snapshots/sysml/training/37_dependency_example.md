@@ -36,26 +36,46 @@ package 'Dependency Example' {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "37_dependency_example.md"
+  (document "memory://snapshot/37_dependency_example.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 13 2) (end 15 3))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 16 2) (end 18 3))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 21 1) (end 21 78))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 23 1) (end 25 69))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "27d13035eb71259c7e40554d57bccac09cebf8f6e9ad722485d1b8ce99ed28f9") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Dependency Example"))) (kind "package") (name "Dependency Example") (declared-name "Dependency Example"))
-    (element (id (node (document "d0") (qualified-name "Dependency Example::Schemata"))) (kind "dependency") (name "Schemata") (declared-name "Schemata") (parent (node (document "d0") (qualified-name "Dependency Example"))))
-    (element (id (node (document "d0") (qualified-name "Dependency Example::Software Design"))) (kind "package") (name "Software Design") (declared-name "Software Design") (parent (node (document "d0") (qualified-name "Dependency Example"))))
-    (element (id (node (document "d0") (qualified-name "Dependency Example::Software Design::DataSchema"))) (kind "item def") (name "DataSchema") (declared-name "DataSchema") (parent (node (document "d0") (qualified-name "Dependency Example::Software Design"))))
-    (element (id (node (document "d0") (qualified-name "Dependency Example::Software Design::MessageSchema"))) (kind "item def") (name "MessageSchema") (declared-name "MessageSchema") (parent (node (document "d0") (qualified-name "Dependency Example::Software Design"))))
-    (element (id (node (document "d0") (qualified-name "Dependency Example::System Assembly"))) (kind "part") (name "System Assembly") (declared-name "System Assembly") (parent (node (document "d0") (qualified-name "Dependency Example"))))
-    (element (id (node (document "d0") (qualified-name "Dependency Example::System Assembly::Computer Subsystem"))) (kind "part") (name "Computer Subsystem") (declared-name "Computer Subsystem") (parent (node (document "d0") (qualified-name "Dependency Example::System Assembly"))))
-    (element (id (node (document "d0") (qualified-name "Dependency Example::System Assembly::Storage Subsystem"))) (kind "part") (name "Storage Subsystem") (declared-name "Storage Subsystem") (parent (node (document "d0") (qualified-name "Dependency Example::System Assembly"))))
-    (element (id (node (document "d0") (qualified-name "Dependency Example::dependency"))) (kind "dependency") (name "dependency") (declared-name "dependency") (parent (node (document "d0") (qualified-name "Dependency Example"))))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:4839b208edada9d5eee9db58736807e8da58de16f2a620513c8491506e8872e3") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/37_dependency_example.md") (qualified-name "Dependency Example"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/37_dependency_example.md") (qualified-name "Dependency Example::Software Design"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/37_dependency_example.md") (qualified-name "Dependency Example::System Assembly"))) (kind part) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/37_dependency_example.md") (qualified-name "Dependency Example::System Assembly::Computer Subsystem"))) (kind part) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/37_dependency_example.md") (qualified-name "Dependency Example::System Assembly::Storage Subsystem"))) (kind part) (membership (kind feature) (visibility default)))
   )
   (references
   )

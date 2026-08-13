@@ -49,32 +49,120 @@ package Scoping {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "scoping.md"
+  (document "memory://snapshot/scoping.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 2 8) (end 4 9))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 2 8) (end 4 9))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 6 12) (end 8 13))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 6 12) (end 8 13))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 10 16) (end 12 17))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 10 16) (end 12 17))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 16 12) (end 18 13))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 16 12) (end 18 13))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 21 12) (end 25 13))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 21 12) (end 25 13))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 28 12) (end 30 13))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 28 12) (end 30 13))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 31 12) (end 33 13))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 31 12) (end 33 13))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 34 12) (end 36 13))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 34 12) (end 36 13))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "d9c54ac853a06f36f18e0cb28deaae70a122cd1a5c3739092b1eda62cfc99d69") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Scoping"))) (kind "package") (name "Scoping") (declared-name "Scoping"))
-    (element (id (node (document "d0") (qualified-name "Scoping::P1"))) (kind "package") (name "P1") (declared-name "P1") (parent (node (document "d0") (qualified-name "Scoping"))))
-    (element (id (node (document "d0") (qualified-name "Scoping::P1::$"))) (kind "package") (name "$") (declared-name "$") (parent (node (document "d0") (qualified-name "Scoping::P1"))))
-    (element (id (node (document "d0") (qualified-name "Scoping::P1::$::Objects"))) (kind "classifier decl") (name "Objects") (declared-name "Objects") (parent (node (document "d0") (qualified-name "Scoping::P1::$"))))
-    (element (id (node (document "d0") (qualified-name "Scoping::P1::A"))) (kind "classifier decl") (name "A") (declared-name "A") (parent (node (document "d0") (qualified-name "Scoping::P1"))))
-    (element (id (node (document "d0") (qualified-name "Scoping::P1::Objects"))) (kind "package") (name "Objects") (declared-name "Objects") (parent (node (document "d0") (qualified-name "Scoping::P1"))))
-    (element (id (node (document "d0") (qualified-name "Scoping::P1::Objects::Object"))) (kind "classifier decl") (name "Object") (declared-name "Object") (parent (node (document "d0") (qualified-name "Scoping::P1::Objects"))))
-    (element (id (node (document "d0") (qualified-name "Scoping::P1::P2"))) (kind "package") (name "P2") (declared-name "P2") (parent (node (document "d0") (qualified-name "Scoping::P1"))))
-    (element (id (node (document "d0") (qualified-name "Scoping::P1::P2::A"))) (kind "classifier decl") (name "A") (declared-name "A") (parent (node (document "d0") (qualified-name "Scoping::P1::P2"))))
-    (element (id (node (document "d0") (qualified-name "Scoping::P1::P2::P3"))) (kind "package") (name "P3") (declared-name "P3") (parent (node (document "d0") (qualified-name "Scoping::P1::P2"))))
-    (element (id (node (document "d0") (qualified-name "Scoping::P1::P2::P3::B"))) (kind "classifier decl") (name "B") (declared-name "B") (parent (node (document "d0") (qualified-name "Scoping::P1::P2::P3"))))
-    (element (id (node (document "d0") (qualified-name "Scoping::P1::P4"))) (kind "package") (name "P4") (declared-name "P4") (parent (node (document "d0") (qualified-name "Scoping::P1"))))
-    (element (id (node (document "d0") (qualified-name "Scoping::P1::P4::C"))) (kind "classifier decl") (name "C") (declared-name "C") (parent (node (document "d0") (qualified-name "Scoping::P1::P4"))))
-    (element (id (node (document "d0") (qualified-name "Scoping::P1::P4::D"))) (kind "classifier decl") (name "D") (declared-name "D") (parent (node (document "d0") (qualified-name "Scoping::P1::P4"))))
-    (element (id (node (document "d0") (qualified-name "Scoping::P1::P4::E"))) (kind "classifier decl") (name "E") (declared-name "E") (parent (node (document "d0") (qualified-name "Scoping::P1::P4"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:dc02369d6fa0296eaa75f6ba3e3e3047242d8a9310da6da02398d3e536f61e83") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/scoping.md") (qualified-name "Scoping"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/scoping.md") (qualified-name "Scoping::P1"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/scoping.md") (qualified-name "Scoping::P1::$"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/scoping.md") (qualified-name "Scoping::P1::Objects"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/scoping.md") (qualified-name "Scoping::P1::P2"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/scoping.md") (qualified-name "Scoping::P1::P2::P3"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/scoping.md") (qualified-name "Scoping::P1::P4"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

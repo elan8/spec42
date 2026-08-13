@@ -15,8 +15,14 @@ package M {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "case_subject_provenance.md"
+  (document "memory://snapshot/case_subject_provenance.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 2 4) (end 4 5))
+      )
     )
   )
 )
@@ -24,19 +30,14 @@ package M {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "93da094d06d9352c461dc6bd2768302ab81c25a7876613214d1c74fda083ed50") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "M"))) (kind "package") (name "M") (declared-name "M"))
-    (element (id (node (document "d0") (qualified-name "M::A"))) (kind "analysis def") (name "A") (declared-name "A") (parent (node (document "d0") (qualified-name "M"))))
-    (element (id (node (document "d0") (qualified-name "M::A::s"))) (kind "subject") (name "s") (declared-name "s") (parent (node (document "d0") (qualified-name "M::A"))) (authored (relationships (typing (reference "P")))))
-    (element (id (node (document "d0") (qualified-name "M::P"))) (kind "part def") (name "P") (declared-name "P") (parent (node (document "d0") (qualified-name "M"))))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:5e7ca5133ba92cef73efb066c60f959921920855d122a4765f27bdcfa636968b") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/case_subject_provenance.md") (qualified-name "M"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/case_subject_provenance.md") (qualified-name "M::P"))) (kind part-def) (membership (kind owning) (visibility default)))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "M::A::s"))) (kind featureTyping) (ordinal 0)) (authored-target "P") (outcome (status resolved) (target (node (document "d0") (qualified-name "M::P")))))
   )
   (relationships
-    (relationship (kind subject) (source (node (document "d0") (qualified-name "M::A"))) (target (node (document "d0") (qualified-name "M::P"))) (provenance (derived CaseSubjectFromTypedSubject)))
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "M::A::s"))) (target (node (document "d0") (qualified-name "M::P"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "M::A::s"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )

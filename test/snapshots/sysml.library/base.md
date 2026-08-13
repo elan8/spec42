@@ -104,28 +104,126 @@ standard library package Base {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "base.md"
+  (document "memory://snapshot/base.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 7 1) (end 21 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 7 1) (end 21 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 23 1) (end 31 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 23 1) (end 31 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 33 1) (end 47 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 33 1) (end 47 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 49 1) (end 54 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 49 1) (end 54 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 56 1) (end 63 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 56 1) (end 63 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 65 1) (end 70 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 65 1) (end 70 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 72 1) (end 77 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 72 1) (end 77 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 79 1) (end 84 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 79 1) (end 84 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 86 1) (end 92 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 86 1) (end 92 2))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "03a5b99dd3590504feb8a42f066534c12d05c48a56c261b7cb6fa0809a6e63d7") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Base"))) (kind "package") (name "Base") (declared-name "Base"))
-    (element (id (node (document "d0") (qualified-name "Base::Anything"))) (kind "classifier decl") (name "Anything") (declared-name "Anything") (parent (node (document "d0") (qualified-name "Base"))))
-    (element (id (node (document "d0") (qualified-name "Base::DataValue"))) (kind "kermlDecl") (name "DataValue") (declared-name "DataValue") (parent (node (document "d0") (qualified-name "Base"))))
-    (element (id (node (document "d0") (qualified-name "Base::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "Base"))))
-    (element (id (node (document "d0") (qualified-name "Base::dataValues"))) (kind "feature decl") (name "dataValues") (declared-name "dataValues") (parent (node (document "d0") (qualified-name "Base"))))
-    (element (id (node (document "d0") (qualified-name "Base::exactlyOne"))) (kind "kermlDecl") (name "exactlyOne") (declared-name "exactlyOne") (parent (node (document "d0") (qualified-name "Base"))))
-    (element (id (node (document "d0") (qualified-name "Base::naturals"))) (kind "feature decl") (name "naturals") (declared-name "naturals") (parent (node (document "d0") (qualified-name "Base"))))
-    (element (id (node (document "d0") (qualified-name "Base::oneToMany"))) (kind "kermlDecl") (name "oneToMany") (declared-name "oneToMany") (parent (node (document "d0") (qualified-name "Base"))))
-    (element (id (node (document "d0") (qualified-name "Base::things"))) (kind "feature decl") (name "things") (declared-name "things") (parent (node (document "d0") (qualified-name "Base"))))
-    (element (id (node (document "d0") (qualified-name "Base::zeroOrOne"))) (kind "kermlDecl") (name "zeroOrOne") (declared-name "zeroOrOne") (parent (node (document "d0") (qualified-name "Base"))))
-    (element (id (node (document "d0") (qualified-name "Base::zeroToMany"))) (kind "kermlDecl") (name "zeroToMany") (declared-name "zeroToMany") (parent (node (document "d0") (qualified-name "Base"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:93cb44b718e717a9ba8a8c5c0b69f4a8013cd7a555d270b1145d5fed5e3fc8dd") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/base.md") (qualified-name "Base"))) (kind library-package) (membership (kind owning) (visibility default)))
   )
   (references
   )

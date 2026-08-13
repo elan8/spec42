@@ -33,13 +33,13 @@ package 'Individuals and Snapshots Example' {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "28_individuals_and_snapshots_example.md"
+  (document "memory://snapshot/28_individuals_and_snapshots_example.md"
     (diagnostics
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 15) (end 1 40))
+        (range (start 1 15) (end 1 43))
       )
       (diagnostic
         (severity warning)
@@ -50,31 +50,41 @@ package 'Individuals and Snapshots Example' {
       (diagnostic
         (severity error)
         (code "recovered_part_def_body_element")
-        (source "sysml")
-        (range (start 5 2) (end 5 143))
+        (source "parser")
+        (range (start 5 2) (end 13 2))
       )
       (diagnostic
         (severity warning)
         (code "recovery_cascade_suppressed")
-        (source "sysml")
-        (range (start 5 2) (end 5 143))
+        (source "parser")
+        (range (start 5 2) (end 13 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_definition_member")
+        (source "semantic")
+        (range (start 21 2) (end 21 39))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "441947d6f85108b620190eb3115d90d76ac5f4d84d86cfbab5ccd319a35221f9") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Individuals and Snapshots Example"))) (kind "package") (name "Individuals and Snapshots Example") (declared-name "Individuals and Snapshots Example"))
-    (element (id (node (document "d0") (qualified-name "Individuals and Snapshots Example::*"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "Individuals and Snapshots Example"))) (authored (membership (kind Import) (visibility "public") (import (reference "Part Definition Example::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "Individuals and Snapshots Example::Vehicle_1"))) (kind "part def") (name "Vehicle_1") (declared-name "Vehicle_1") (parent (node (document "d0") (qualified-name "Individuals and Snapshots Example"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Vehicle")))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:b258241d80976f581202691a49bd3dc13faf10a7cb0fc91a5f0fe26e74b83a19") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/28_individuals_and_snapshots_example.md") (qualified-name "Individuals and Snapshots Example"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/28_individuals_and_snapshots_example.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "Part Definition Example") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/28_individuals_and_snapshots_example.md") (qualified-name "Individuals and Snapshots Example::Vehicle_1"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Vehicle"))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "Individuals and Snapshots Example::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Part Definition Example::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Individuals and Snapshots Example::Vehicle_1"))) (kind specialization) (ordinal 0)) (authored-target "Vehicle") (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/28_individuals_and_snapshots_example.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "Part Definition Example")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/28_individuals_and_snapshots_example.md") (qualified-name "Individuals and Snapshots Example::Vehicle_1"))) (kind specialization) (ordinal 0))
+      (authored-target "Vehicle")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -85,23 +95,13 @@ package 'Individuals and Snapshots Example' {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 3 34) (end 3 41)) (probe (position 3 34))
-      (reference
-        (source (document "d0") (qualified-name "Individuals and Snapshots Example::Vehicle_1"))
-        (kind specialization) (ordinal 0) (authored-target "Vehicle")
-        (range (start 3 34) (end 3 41))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 1 15) (end 1 40)) (probe (position 1 15))
-      (reference
-        (source (document "d0") (qualified-name "Individuals and Snapshots Example::*"))
-        (kind namespaceImport) (ordinal 0) (authored-target "Part Definition Example::*")
-        (range (start 1 15) (end 1 40))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/28_individuals_and_snapshots_example.md") (range (start 1 15) (end 1 43)) (probe (position 1 15))
+    (reference (id (source (node (document "memory://snapshot/28_individuals_and_snapshots_example.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "Part Definition Example")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/28_individuals_and_snapshots_example.md") (range (start 3 34) (end 3 41)) (probe (position 3 34))
+    (reference (id (source (node (document "memory://snapshot/28_individuals_and_snapshots_example.md") (qualified-name "Individuals and Snapshots Example::Vehicle_1"))) (kind specialization) (ordinal 0) (authored-target "Vehicle")
+      (outcome (status unresolved)))
   )
 )
 ~~~

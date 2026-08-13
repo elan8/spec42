@@ -76,7 +76,7 @@ standard library package Links {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "links.md"
+  (document "memory://snapshot/links.md"
     (diagnostics
       (diagnostic
         (severity warning)
@@ -90,29 +90,98 @@ standard library package Links {
         (source "semantic")
         (range (start 7 19) (end 7 31))
       )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 9 4) (end 16 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 9 4) (end 16 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 18 4) (end 29 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 18 4) (end 29 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 31 4) (end 40 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 31 4) (end 40 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 42 4) (end 47 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 42 4) (end 47 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 49 4) (end 54 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 49 4) (end 54 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 56 4) (end 64 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 56 4) (end 64 5))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "eba81b58d46e6326f4a7605d66c21a1206821ebd35a1d9c0cb11cafc7643bd28") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Links"))) (kind "package") (name "Links") (declared-name "Links"))
-    (element (id (node (document "d0") (qualified-name "Links::Anything"))) (kind "import") (name "Anything") (declared-name "Anything") (parent (node (document "d0") (qualified-name "Links"))) (authored (membership (kind Import) (visibility "private") (import (reference "Base::Anything") (origin Import) (shape Membership) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "Links::Link"))) (kind "kermlDecl") (name "Link") (declared-name "Link") (parent (node (document "d0") (qualified-name "Links"))))
-    (element (id (node (document "d0") (qualified-name "Links::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "Links"))))
-    (element (id (node (document "d0") (qualified-name "Links::all"))) (kind "kermlDecl") (name "all") (declared-name "all") (parent (node (document "d0") (qualified-name "Links"))))
-    (element (id (node (document "d0") (qualified-name "Links::all#kermlDecl"))) (kind "kermlDecl") (name "all") (declared-name "all") (parent (node (document "d0") (qualified-name "Links"))))
-    (element (id (node (document "d0") (qualified-name "Links::binaryLinks"))) (kind "feature decl") (name "binaryLinks") (declared-name "binaryLinks") (parent (node (document "d0") (qualified-name "Links"))))
-    (element (id (node (document "d0") (qualified-name "Links::links"))) (kind "feature decl") (name "links") (declared-name "links") (parent (node (document "d0") (qualified-name "Links"))))
-    (element (id (node (document "d0") (qualified-name "Links::selfLinks"))) (kind "feature decl") (name "selfLinks") (declared-name "selfLinks") (parent (node (document "d0") (qualified-name "Links"))))
-    (element (id (node (document "d0") (qualified-name "Links::things"))) (kind "import") (name "things") (declared-name "things") (parent (node (document "d0") (qualified-name "Links"))) (authored (membership (kind Import) (visibility "private") (import (reference "Base::things") (origin Import) (shape Membership) (recursive false)))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:b5f6d75a4656d8c2b313762c8a63f37565f3a289fbeb71a44521d403bf2328c5") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/links.md") (qualified-name "Links"))) (kind library-package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/links.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Base::Anything") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/links.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Base::things") (import (shape membership) (recursive false)))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "Links::Anything"))) (kind membershipImport) (ordinal 0)) (authored-target "Base::Anything") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Links::things"))) (kind membershipImport) (ordinal 0)) (authored-target "Base::things") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
+    (reference (id (source (node (document "memory://snapshot/links.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
+      (authored-target "Base::Anything")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/links.md") (anonymous (kind import) (ordinal 1))))) (kind membershipImport) (ordinal 0))
+      (authored-target "Base::things")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -123,23 +192,13 @@ standard library package Links {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 7 19) (end 7 31)) (probe (position 7 19))
-      (reference
-        (source (document "d0") (qualified-name "Links::things"))
-        (kind membershipImport) (ordinal 0) (authored-target "Base::things")
-        (range (start 7 19) (end 7 31))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 6 19) (end 6 33)) (probe (position 6 19))
-      (reference
-        (source (document "d0") (qualified-name "Links::Anything"))
-        (kind membershipImport) (ordinal 0) (authored-target "Base::Anything")
-        (range (start 6 19) (end 6 33))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/links.md") (range (start 6 19) (end 6 33)) (probe (position 6 19))
+    (reference (id (source (node (document "memory://snapshot/links.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "Base::Anything")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/links.md") (range (start 7 19) (end 7 31)) (probe (position 7 19))
+    (reference (id (source (node (document "memory://snapshot/links.md") (anonymous (kind import) (ordinal 1))))) (kind membershipImport) (ordinal 0) (authored-target "Base::things")
+      (outcome (status unresolved)))
   )
 )
 ~~~

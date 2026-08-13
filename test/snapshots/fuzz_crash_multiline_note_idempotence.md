@@ -23,30 +23,30 @@ er E specializes C intersects A, B;
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "fuzz_crash_multiline_note_idempotence.md"
+  (document "memory://snapshot/fuzz_crash_multiline_note_idempotence.md"
     (diagnostics
       (diagnostic
         (severity error)
         (code "unrecognized_declaration_in_scope")
-        (source "sysml")
-        (range (start 3 1) (end 3 332))
+        (source "parser")
+        (range (start 3 1) (end 12 0))
       )
       (diagnostic
         (severity error)
         (code "missing_closing_brace")
-        (source "sysml")
-        (range (start 12 1) (end 12 2))
+        (source "parser")
+        (range (start 12 1) (end 12 1))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "5606128b9441d3d77b25f39fa390a7d83e22b38d8b04100d6cbe16a1738026c4") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "ers"))) (kind "package") (name "ers") (declared-name "ers"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:5ef0e4760c2f7811cb9c38c75d1a1bbe739a0b9754b6b66dee31d68795cf20af") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/fuzz_crash_multiline_note_idempotence.md") (qualified-name "ers"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

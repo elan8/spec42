@@ -2,8 +2,6 @@
 ~~~ini
 description=Complex end members with outer specializations before feature keyword
 type=kerml
-semantic_graph=skip
-semantic_graph_skip_reason=KerML association and outer-specialization declarations are opaque parser fallback nodes; end relationships are unavailable as structured semantic inputs
 ~~~
 # SOURCE
 ~~~kerml
@@ -28,17 +26,65 @@ assoc JustOutsideOf specializes OutsideOf {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "end_outer_specializations.md"
+  (document "memory://snapshot/end_outer_specializations.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 0 0) (end 3 1))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 0 0) (end 3 1))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 5 0) (end 7 1))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 5 0) (end 7 1))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 9 0) (end 11 1))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 9 0) (end 11 1))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 13 0) (end 16 1))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 13 0) (end 16 1))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1657944386d0528cfec52b234d5b9f762edd8a31e57a20193066c8c1529c1c88") (contract-version "canonical-resolution-v1"))
-  (structure
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:634c1786fddee30481cb57e559058cc765b2b1be390bafa18eb8fae1980af62f") (contract-version "parser-owned-resolution-v1"))
+  (declarations
   )
   (references
   )

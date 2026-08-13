@@ -52,50 +52,282 @@ standard library package IntegerFunctions {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "integer_functions.md"
+  (document "memory://snapshot/integer_functions.md"
     (diagnostics
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 7 15) (end 7 27))
+        (range (start 7 15) (end 7 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 9 1) (end 9 91))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 9 1) (end 9 91))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 11 1) (end 11 112))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 11 1) (end 11 112))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 12 1) (end 12 112))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 12 1) (end 12 112))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 13 1) (end 13 109))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 13 1) (end 13 109))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 14 1) (end 14 110))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 14 1) (end 14 110))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 15 1) (end 15 111))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 15 1) (end 15 111))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 16 1) (end 16 109))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 16 1) (end 16 109))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 17 1) (end 17 110))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 17 1) (end 17 110))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 19 1) (end 19 109))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 19 1) (end 19 109))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 20 1) (end 20 109))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 20 1) (end 20 109))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 21 1) (end 21 111))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 21 1) (end 21 111))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 22 1) (end 22 111))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 22 1) (end 22 111))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 24 1) (end 24 109))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 24 1) (end 24 109))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 25 1) (end 25 109))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 25 1) (end 25 109))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 27 1) (end 27 113))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 27 1) (end 27 113))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 29 1) (end 29 120))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 29 1) (end 29 120))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 31 1) (end 31 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 31 1) (end 31 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 32 1) (end 32 62))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 32 1) (end 32 62))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 33 1) (end 33 61))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 33 1) (end 33 61))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 35 1) (end 37 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 35 1) (end 37 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 39 1) (end 41 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 39 1) (end 41 2))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "d2a3388ebc05faa3b5e4d38af970d9ec4e3018ead2ce5c681973bd4a580de788") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "IntegerFunctions"))) (kind "package") (name "IntegerFunctions") (declared-name "IntegerFunctions"))
-    (element (id (node (document "d0") (qualified-name "IntegerFunctions::*"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "IntegerFunctions"))) (authored (membership (kind Import) (visibility "public") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "IntegerFunctions::ToInteger"))) (kind "kermlDecl") (name "ToInteger") (declared-name "ToInteger") (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
-    (element (id (node (document "d0") (qualified-name "IntegerFunctions::ToNatural"))) (kind "kermlDecl") (name "ToNatural") (declared-name "ToNatural") (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
-    (element (id (node (document "d0") (qualified-name "IntegerFunctions::ToString"))) (kind "kermlDecl") (name "ToString") (declared-name "ToString") (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
-    (element (id (node (document "d0") (qualified-name "IntegerFunctions::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
-    (element (id (node (document "d0") (qualified-name "IntegerFunctions::abs"))) (kind "kermlDecl") (name "abs") (declared-name "abs") (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
-    (element (id (node (document "d0") (qualified-name "IntegerFunctions::function"))) (kind "kermlDecl") (name "function") (declared-name "function") (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
-    (element (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl"))) (kind "kermlDecl") (name "function") (declared-name "function") (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
-    (element (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl10"))) (kind "kermlDecl") (name "function") (declared-name "function") (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
-    (element (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl11"))) (kind "kermlDecl") (name "function") (declared-name "function") (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
-    (element (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl12"))) (kind "kermlDecl") (name "function") (declared-name "function") (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
-    (element (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl2"))) (kind "kermlDecl") (name "function") (declared-name "function") (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
-    (element (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl3"))) (kind "kermlDecl") (name "function") (declared-name "function") (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
-    (element (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl4"))) (kind "kermlDecl") (name "function") (declared-name "function") (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
-    (element (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl5"))) (kind "kermlDecl") (name "function") (declared-name "function") (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
-    (element (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl6"))) (kind "kermlDecl") (name "function") (declared-name "function") (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
-    (element (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl7"))) (kind "kermlDecl") (name "function") (declared-name "function") (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
-    (element (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl8"))) (kind "kermlDecl") (name "function") (declared-name "function") (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
-    (element (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl9"))) (kind "kermlDecl") (name "function") (declared-name "function") (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
-    (element (id (node (document "d0") (qualified-name "IntegerFunctions::max"))) (kind "kermlDecl") (name "max") (declared-name "max") (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
-    (element (id (node (document "d0") (qualified-name "IntegerFunctions::min"))) (kind "kermlDecl") (name "min") (declared-name "min") (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
-    (element (id (node (document "d0") (qualified-name "IntegerFunctions::product"))) (kind "kermlDecl") (name "product") (declared-name "product") (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
-    (element (id (node (document "d0") (qualified-name "IntegerFunctions::sum"))) (kind "kermlDecl") (name "sum") (declared-name "sum") (parent (node (document "d0") (qualified-name "IntegerFunctions"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:86a6491e16b4292789dc419a9e810ea43b1f4c988d414a829789b6d9de6f2ed9") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/integer_functions.md") (qualified-name "IntegerFunctions"))) (kind library-package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/integer_functions.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "IntegerFunctions::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarValues::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
+    (reference (id (source (node (document "memory://snapshot/integer_functions.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "ScalarValues")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -106,15 +338,9 @@ standard library package IntegerFunctions {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 7 15) (end 7 27)) (probe (position 7 15))
-      (reference
-        (source (document "d0") (qualified-name "IntegerFunctions::*"))
-        (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues::*")
-        (range (start 7 15) (end 7 27))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/integer_functions.md") (range (start 7 15) (end 7 30)) (probe (position 7 15))
+    (reference (id (source (node (document "memory://snapshot/integer_functions.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues")
+      (outcome (status unresolved)))
   )
 )
 ~~~

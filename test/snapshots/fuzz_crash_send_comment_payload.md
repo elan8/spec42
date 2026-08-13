@@ -15,31 +15,30 @@ in send// nd port for HTT3prin  pq  for y  // nd port for HTT3prin items { }
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "fuzz_crash_send_comment_payload.md"
+  (document "memory://snapshot/fuzz_crash_send_comment_payload.md"
     (diagnostics
       (diagnostic
-        (severity error)
-        (code "recovered_action_body_element")
-        (source "sysml")
-        (range (start 2 4) (end 2 87))
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 1 0) (end 4 13))
       )
       (diagnostic
         (severity error)
-        (code "missing_semicolon")
-        (source "sysml")
-        (range (start 4 2) (end 4 12))
+        (code "recovered_action_body_element")
+        (source "parser")
+        (range (start 2 4) (end 4 2))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "d53ebad1f320716a2531ac6fd8d40ee848774b5bfca9ee9291ca1996f6eb8f51") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "P"))) (kind "package") (name "P") (declared-name "P"))
-    (element (id (node (document "d0") (qualified-name "P::A"))) (kind "action def") (name "A") (declared-name "A") (parent (node (document "d0") (qualified-name "P"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:aeb710a8d0ad90ed1f589691d9c9f54cd7f016be1c763ccf63758b62e0100a8e") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/fuzz_crash_send_comment_payload.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

@@ -29,42 +29,89 @@ abstract part def Container {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "coverage_abstract_defs.md"
+  (document "memory://snapshot/coverage_abstract_defs.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 2 0) (end 2 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 3 0) (end 3 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 4 0) (end 4 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 4 0) (end 4 35))
+      )
       (diagnostic
         (severity error)
         (code "expected_keyword")
-        (source "sysml")
+        (source "parser")
         (range (start 5 0) (end 5 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 6 0) (end 6 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_definition_member")
+        (source "semantic")
+        (range (start 9 4) (end 9 25))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_definition_member")
+        (source "semantic")
+        (range (start 10 4) (end 10 24))
       )
       (diagnostic
         (severity error)
         (code "recovered_part_def_body_element")
-        (source "sysml")
-        (range (start 15 4) (end 15 38))
+        (source "parser")
+        (range (start 15 4) (end 16 4))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_definition_member")
+        (source "semantic")
+        (range (start 16 4) (end 16 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_definition_member")
+        (source "semantic")
+        (range (start 18 4) (end 18 32))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "32a9f16ac01b05c658d227c806c11abb5bdbbcf3869d4fdfa87fa442ebf75fd4") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "AbstractEvent"))) (kind "occurrence def") (name "AbstractEvent") (declared-name "AbstractEvent"))
-    (element (id (node (document "d0") (qualified-name "AbstractPort"))) (kind "port def") (name "AbstractPort") (declared-name "AbstractPort"))
-    (element (id (node (document "d0") (qualified-name "AbstractPort::~AbstractPort"))) (kind "conjugated port definition") (name "~AbstractPort") (declared-name "~AbstractPort") (parent (node (document "d0") (qualified-name "AbstractPort"))))
-    (element (id (node (document "d0") (qualified-name "AbstractVehicle"))) (kind "part def") (name "AbstractVehicle") (declared-name "AbstractVehicle"))
-    (element (id (node (document "d0") (qualified-name "AbstractWidget"))) (kind "item def") (name "AbstractWidget") (declared-name "AbstractWidget"))
-    (element (id (node (document "d0") (qualified-name "Container"))) (kind "part def") (name "Container") (declared-name "Container"))
-    (element (id (node (document "d0") (qualified-name "Container::InnerPart"))) (kind "part def") (name "InnerPart") (declared-name "InnerPart") (parent (node (document "d0") (qualified-name "Container"))))
-    (element (id (node (document "d0") (qualified-name "Container::InnerWeight"))) (kind "attribute def") (name "InnerWeight") (declared-name "InnerWeight") (parent (node (document "d0") (qualified-name "Container"))))
-    (element (id (node (document "d0") (qualified-name "Container::InnerWidget"))) (kind "item def") (name "InnerWidget") (declared-name "InnerWidget") (parent (node (document "d0") (qualified-name "Container"))))
-    (element (id (node (document "d0") (qualified-name "EngineChoices"))) (kind "part def") (name "EngineChoices") (declared-name "EngineChoices"))
-    (element (id (node (document "d0") (qualified-name "EngineChoices::fourCyl"))) (kind "part") (name "fourCyl") (declared-name "fourCyl") (parent (node (document "d0") (qualified-name "EngineChoices"))))
-    (element (id (node (document "d0") (qualified-name "EngineChoices::sixCyl"))) (kind "part") (name "sixCyl") (declared-name "sixCyl") (parent (node (document "d0") (qualified-name "EngineChoices"))))
-    (element (id (node (document "d0") (qualified-name "Weight"))) (kind "attribute def") (name "Weight") (declared-name "Weight"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:78b35de4d04c636bb29de5b8d361ee7022e2ce9eb901ed20f63f349bfb04f71d") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "AbstractVehicle"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "Container"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "Container::InnerPart"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "Container::InnerWeight"))) (kind attribute-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "EngineChoices"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "Weight"))) (kind attribute-def) (membership (kind owning) (visibility default)))
   )
   (references
   )

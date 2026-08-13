@@ -132,51 +132,80 @@ standard library package StandardViewDefinitions {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "standard_view_definitions.md"
+  (document "memory://snapshot/standard_view_definitions.md"
     (diagnostics
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 4 18) (end 4 23))
+        (range (start 4 18) (end 4 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 6 4) (end 21 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 23 4) (end 30 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 32 4) (end 50 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 52 4) (end 61 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 63 4) (end 78 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 80 4) (end 100 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 102 4) (end 111 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 113 4) (end 121 5))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "2a9826190845fc2431f58cccead96f0a9101f6641920f75c4be583f6a8541773") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "StandardViewDefinitions"))) (kind "package") (name "StandardViewDefinitions") (declared-name "StandardViewDefinitions"))
-    (element (id (node (document "d0") (qualified-name "StandardViewDefinitions::*"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "StandardViewDefinitions"))) (authored (membership (kind Import) (visibility "public") (import (reference "SysML::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "StandardViewDefinitions::ActionFlowView"))) (kind "view def") (name "ActionFlowView") (declared-name "ActionFlowView") (parent (node (document "d0") (qualified-name "StandardViewDefinitions"))) (authored (membership (kind Owning)) (relationships (specializes (reference "InterconnectionView")))))
-    (element (id (node (document "d0") (qualified-name "StandardViewDefinitions::ActionFlowView::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "StandardViewDefinitions::ActionFlowView"))))
-    (element (id (node (document "d0") (qualified-name "StandardViewDefinitions::BrowserView"))) (kind "view def") (name "BrowserView") (declared-name "BrowserView") (parent (node (document "d0") (qualified-name "StandardViewDefinitions"))))
-    (element (id (node (document "d0") (qualified-name "StandardViewDefinitions::BrowserView::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "StandardViewDefinitions::BrowserView"))))
-    (element (id (node (document "d0") (qualified-name "StandardViewDefinitions::GeneralView"))) (kind "view def") (name "GeneralView") (declared-name "GeneralView") (parent (node (document "d0") (qualified-name "StandardViewDefinitions"))))
-    (element (id (node (document "d0") (qualified-name "StandardViewDefinitions::GeneralView::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "StandardViewDefinitions::GeneralView"))))
-    (element (id (node (document "d0") (qualified-name "StandardViewDefinitions::GeometryView"))) (kind "view def") (name "GeometryView") (declared-name "GeometryView") (parent (node (document "d0") (qualified-name "StandardViewDefinitions"))))
-    (element (id (node (document "d0") (qualified-name "StandardViewDefinitions::GeometryView::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "StandardViewDefinitions::GeometryView"))))
-    (element (id (node (document "d0") (qualified-name "StandardViewDefinitions::GridView"))) (kind "view def") (name "GridView") (declared-name "GridView") (parent (node (document "d0") (qualified-name "StandardViewDefinitions"))))
-    (element (id (node (document "d0") (qualified-name "StandardViewDefinitions::GridView::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "StandardViewDefinitions::GridView"))))
-    (element (id (node (document "d0") (qualified-name "StandardViewDefinitions::InterconnectionView"))) (kind "view def") (name "InterconnectionView") (declared-name "InterconnectionView") (parent (node (document "d0") (qualified-name "StandardViewDefinitions"))))
-    (element (id (node (document "d0") (qualified-name "StandardViewDefinitions::InterconnectionView::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "StandardViewDefinitions::InterconnectionView"))))
-    (element (id (node (document "d0") (qualified-name "StandardViewDefinitions::SequenceView"))) (kind "view def") (name "SequenceView") (declared-name "SequenceView") (parent (node (document "d0") (qualified-name "StandardViewDefinitions"))))
-    (element (id (node (document "d0") (qualified-name "StandardViewDefinitions::SequenceView::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "StandardViewDefinitions::SequenceView"))))
-    (element (id (node (document "d0") (qualified-name "StandardViewDefinitions::StateTransitionView"))) (kind "view def") (name "StateTransitionView") (declared-name "StateTransitionView") (parent (node (document "d0") (qualified-name "StandardViewDefinitions"))) (authored (membership (kind Owning)) (relationships (specializes (reference "InterconnectionView")))))
-    (element (id (node (document "d0") (qualified-name "StandardViewDefinitions::StateTransitionView::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "StandardViewDefinitions::StateTransitionView"))))
-    (element (id (node (document "d0") (qualified-name "StandardViewDefinitions::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "StandardViewDefinitions"))))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:311c30428a7fffa832eba1c3be29d9fd4c11faa3fffa06175c93299b7411638e") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/standard_view_definitions.md") (qualified-name "StandardViewDefinitions"))) (kind library-package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/standard_view_definitions.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "SysML") (import (shape namespace) (recursive false)))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "StandardViewDefinitions::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "SysML::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "StandardViewDefinitions::ActionFlowView"))) (kind specialization) (ordinal 0)) (authored-target "InterconnectionView") (outcome (status resolved) (target (node (document "d0") (qualified-name "StandardViewDefinitions::InterconnectionView")))))
-    (reference (id (source (node (document "d0") (qualified-name "StandardViewDefinitions::StateTransitionView"))) (kind specialization) (ordinal 0)) (authored-target "InterconnectionView") (outcome (status resolved) (target (node (document "d0") (qualified-name "StandardViewDefinitions::InterconnectionView")))))
+    (reference (id (source (node (document "memory://snapshot/standard_view_definitions.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "SysML")
+      (outcome (status unresolved)))
   )
   (relationships
-    (relationship (kind specializes) (source (node (document "d0") (qualified-name "StandardViewDefinitions::ActionFlowView"))) (target (node (document "d0") (qualified-name "StandardViewDefinitions::InterconnectionView"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "StandardViewDefinitions::ActionFlowView"))) (kind specialization) (ordinal 0)))
-    (relationship (kind specializes) (source (node (document "d0") (qualified-name "StandardViewDefinitions::StateTransitionView"))) (target (node (document "d0") (qualified-name "StandardViewDefinitions::InterconnectionView"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "StandardViewDefinitions::StateTransitionView"))) (kind specialization) (ordinal 0)))
   )
   (evaluation
   )
@@ -185,35 +214,9 @@ standard library package StandardViewDefinitions {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 4 18) (end 4 23)) (probe (position 4 18))
-      (reference
-        (source (document "d0") (qualified-name "StandardViewDefinitions::*"))
-        (kind namespaceImport) (ordinal 0) (authored-target "SysML::*")
-        (range (start 4 18) (end 4 23))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 32 46) (end 32 65)) (probe (position 32 46))
-      (reference
-        (source (document "d0") (qualified-name "StandardViewDefinitions::ActionFlowView"))
-        (kind specialization) (ordinal 0) (authored-target "InterconnectionView")
-        (range (start 32 46) (end 32 65))
-        (outcome (status resolved)
-          (target (document "d0") (qualified-name "StandardViewDefinitions::InterconnectionView") (range (start 23 4) (end 23 359)))
-        )
-      )
-    )
-    (query (range (start 52 51) (end 52 70)) (probe (position 52 51))
-      (reference
-        (source (document "d0") (qualified-name "StandardViewDefinitions::StateTransitionView"))
-        (kind specialization) (ordinal 0) (authored-target "InterconnectionView")
-        (range (start 52 51) (end 52 70))
-        (outcome (status resolved)
-          (target (document "d0") (qualified-name "StandardViewDefinitions::InterconnectionView") (range (start 23 4) (end 23 359)))
-        )
-      )
-    )
+  (query (document "memory://snapshot/standard_view_definitions.md") (range (start 4 18) (end 4 26)) (probe (position 4 18))
+    (reference (id (source (node (document "memory://snapshot/standard_view_definitions.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "SysML")
+      (outcome (status unresolved)))
   )
 )
 ~~~

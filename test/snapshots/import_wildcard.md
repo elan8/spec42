@@ -10,33 +10,29 @@ import ScalarValues::*;
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "import_wildcard.md"
+  (document "memory://snapshot/import_wildcard.md"
     (diagnostics
-      (diagnostic
-        (severity information)
-        (code "missing_library_context")
-        (source "semantic")
-        (range (start 0 0) (end 0 23))
-      )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 0 7) (end 0 19))
+        (range (start 0 7) (end 0 22))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "f04fc78cd1d8b899634a177ab1963bcf632cdd3c7e6d4a5b9502bbf39b983268") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "*"))) (kind "import") (name "*") (declared-name "*") (authored (membership (kind Import) (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)))))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:fe29f9182e5693634762d87d29e4d8620020032c1f2a5755fe0ca5c81a1bfe85") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/import_wildcard.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility default)) (authored (membership (kind import) (visibility default)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarValues::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
+    (reference (id (source (node (document "memory://snapshot/import_wildcard.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "ScalarValues")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -47,15 +43,9 @@ import ScalarValues::*;
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 0 7) (end 0 19)) (probe (position 0 7))
-      (reference
-        (source (document "d0") (qualified-name "*"))
-        (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues::*")
-        (range (start 0 7) (end 0 19))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/import_wildcard.md") (range (start 0 7) (end 0 22)) (probe (position 0 7))
+    (reference (id (source (node (document "memory://snapshot/import_wildcard.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues")
+      (outcome (status unresolved)))
   )
 )
 ~~~

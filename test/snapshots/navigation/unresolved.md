@@ -12,7 +12,7 @@ package P {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "unresolved.md"
+  (document "memory://snapshot/unresolved.md"
     (diagnostics
       (diagnostic
         (severity warning)
@@ -27,13 +27,15 @@ package P {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "c699e7270eea0fccaf79e0e2e3f67bab02a00e3ad39699cb4c1a4668c7eb8261") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "P"))) (kind "package") (name "P") (declared-name "P"))
-    (element (id (node (document "d0") (qualified-name "P::engine"))) (kind "part") (name "engine") (declared-name "engine") (parent (node (document "d0") (qualified-name "P"))) (authored (membership (kind Feature)) (relationships (typing (reference "MissingEngine")))))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:166a9a80f38c9979e36ac0c6be417fab282afa58f08bbc8c5ec20b9330399b64") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/unresolved.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/unresolved.md") (qualified-name "P::engine"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MissingEngine"))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "P::engine"))) (kind featureTyping) (ordinal 0)) (authored-target "MissingEngine") (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/unresolved.md") (qualified-name "P::engine"))) (kind featureTyping) (ordinal 0))
+      (authored-target "MissingEngine")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -44,15 +46,9 @@ package P {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 1 18) (end 1 31)) (probe (position 1 18))
-      (reference
-        (source (document "d0") (qualified-name "P::engine"))
-        (kind featureTyping) (ordinal 0) (authored-target "MissingEngine")
-        (range (start 1 18) (end 1 31))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/unresolved.md") (range (start 1 18) (end 1 31)) (probe (position 1 18))
+    (reference (id (source (node (document "memory://snapshot/unresolved.md") (qualified-name "P::engine"))) (kind featureTyping) (ordinal 0) (authored-target "MissingEngine")
+      (outcome (status unresolved)))
   )
 )
 ~~~

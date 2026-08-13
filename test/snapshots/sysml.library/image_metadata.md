@@ -87,7 +87,7 @@ standard library package ImageMetadata {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "image_metadata.md"
+  (document "memory://snapshot/image_metadata.md"
     (diagnostics
       (diagnostic
         (severity warning)
@@ -95,51 +95,71 @@ standard library package ImageMetadata {
         (source "semantic")
         (range (start 8 16) (end 8 36))
       )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 17 22) (end 17 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 25 23) (end 25 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 34 19) (end 34 25))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 41 23) (end 41 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 50 1) (end 75 2))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "18e4e734c7d7ba1946daab05e6a58be06e9ca96f3a023410fb3bc824171fc676") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "ImageMetadata"))) (kind "package") (name "ImageMetadata") (declared-name "ImageMetadata"))
-    (element (id (node (document "d0") (qualified-name "ImageMetadata::Icon"))) (kind "metadata def") (name "Icon") (declared-name "Icon") (parent (node (document "d0") (qualified-name "ImageMetadata"))))
-    (element (id (node (document "d0") (qualified-name "ImageMetadata::Icon::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "ImageMetadata::Icon"))))
-    (element (id (node (document "d0") (qualified-name "ImageMetadata::Icon::fullImage"))) (kind "attribute") (name "fullImage") (declared-name "fullImage") (parent (node (document "d0") (qualified-name "ImageMetadata::Icon"))) (authored (membership (kind Feature)) (relationships (typing (reference "Image")))))
-    (element (id (node (document "d0") (qualified-name "ImageMetadata::Icon::fullImage::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "ImageMetadata::Icon::fullImage"))))
-    (element (id (node (document "d0") (qualified-name "ImageMetadata::Icon::smallImage"))) (kind "attribute") (name "smallImage") (declared-name "smallImage") (parent (node (document "d0") (qualified-name "ImageMetadata::Icon"))) (authored (membership (kind Feature)) (relationships (typing (reference "Image")))))
-    (element (id (node (document "d0") (qualified-name "ImageMetadata::Icon::smallImage::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "ImageMetadata::Icon::smallImage"))))
-    (element (id (node (document "d0") (qualified-name "ImageMetadata::Image"))) (kind "attribute def") (name "Image") (declared-name "Image") (parent (node (document "d0") (qualified-name "ImageMetadata"))))
-    (element (id (node (document "d0") (qualified-name "ImageMetadata::Image::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "ImageMetadata::Image"))))
-    (element (id (node (document "d0") (qualified-name "ImageMetadata::Image::content"))) (kind "attribute") (name "content") (declared-name "content") (parent (node (document "d0") (qualified-name "ImageMetadata::Image"))) (authored (membership (kind Feature)) (relationships (typing (reference "String")))))
-    (element (id (node (document "d0") (qualified-name "ImageMetadata::Image::content::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "ImageMetadata::Image::content"))))
-    (element (id (node (document "d0") (qualified-name "ImageMetadata::Image::encoding"))) (kind "attribute") (name "encoding") (declared-name "encoding") (parent (node (document "d0") (qualified-name "ImageMetadata::Image"))) (authored (membership (kind Feature)) (relationships (typing (reference "String")))))
-    (element (id (node (document "d0") (qualified-name "ImageMetadata::Image::encoding::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "ImageMetadata::Image::encoding"))))
-    (element (id (node (document "d0") (qualified-name "ImageMetadata::Image::location"))) (kind "attribute") (name "location") (declared-name "location") (parent (node (document "d0") (qualified-name "ImageMetadata::Image"))) (authored (membership (kind Feature)) (relationships (typing (reference "String")))))
-    (element (id (node (document "d0") (qualified-name "ImageMetadata::Image::location::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "ImageMetadata::Image::location"))))
-    (element (id (node (document "d0") (qualified-name "ImageMetadata::Image::type"))) (kind "attribute") (name "type") (declared-name "type") (parent (node (document "d0") (qualified-name "ImageMetadata::Image"))) (authored (membership (kind Feature)) (relationships (typing (reference "String")))))
-    (element (id (node (document "d0") (qualified-name "ImageMetadata::Image::type::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "ImageMetadata::Image::type"))))
-    (element (id (node (document "d0") (qualified-name "ImageMetadata::String"))) (kind "import") (name "String") (declared-name "String") (parent (node (document "d0") (qualified-name "ImageMetadata"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::String") (origin Import) (shape Membership) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "ImageMetadata::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "ImageMetadata"))))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:2b83cf119754d6bc9559e41ab3d581375d06e0eb4db5deaf119afeb46265bdf4") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/image_metadata.md") (qualified-name "ImageMetadata"))) (kind library-package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/image_metadata.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::String") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/image_metadata.md") (qualified-name "ImageMetadata::Image"))) (kind attribute-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/image_metadata.md") (qualified-name "ImageMetadata::Image::content"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "String"))))
+    (declaration (id (node (document "memory://snapshot/image_metadata.md") (qualified-name "ImageMetadata::Image::encoding"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "String"))))
+    (declaration (id (node (document "memory://snapshot/image_metadata.md") (qualified-name "ImageMetadata::Image::location"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "String"))))
+    (declaration (id (node (document "memory://snapshot/image_metadata.md") (qualified-name "ImageMetadata::Image::type"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "String"))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "ImageMetadata::Icon::fullImage"))) (kind featureTyping) (ordinal 0)) (authored-target "Image") (outcome (status resolved) (target (node (document "d0") (qualified-name "ImageMetadata::Image")))))
-    (reference (id (source (node (document "d0") (qualified-name "ImageMetadata::Icon::smallImage"))) (kind featureTyping) (ordinal 0)) (authored-target "Image") (outcome (status resolved) (target (node (document "d0") (qualified-name "ImageMetadata::Image")))))
-    (reference (id (source (node (document "d0") (qualified-name "ImageMetadata::Image::content"))) (kind featureTyping) (ordinal 0)) (authored-target "String") (outcome (status resolved) (target (node (document "d0") (qualified-name "ImageMetadata::String")))))
-    (reference (id (source (node (document "d0") (qualified-name "ImageMetadata::Image::encoding"))) (kind featureTyping) (ordinal 0)) (authored-target "String") (outcome (status resolved) (target (node (document "d0") (qualified-name "ImageMetadata::String")))))
-    (reference (id (source (node (document "d0") (qualified-name "ImageMetadata::Image::location"))) (kind featureTyping) (ordinal 0)) (authored-target "String") (outcome (status resolved) (target (node (document "d0") (qualified-name "ImageMetadata::String")))))
-    (reference (id (source (node (document "d0") (qualified-name "ImageMetadata::Image::type"))) (kind featureTyping) (ordinal 0)) (authored-target "String") (outcome (status resolved) (target (node (document "d0") (qualified-name "ImageMetadata::String")))))
-    (reference (id (source (node (document "d0") (qualified-name "ImageMetadata::String"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::String") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
+    (reference (id (source (node (document "memory://snapshot/image_metadata.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
+      (authored-target "ScalarValues::String")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/image_metadata.md") (qualified-name "ImageMetadata::Image::content"))) (kind featureTyping) (ordinal 0))
+      (authored-target "String")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/image_metadata.md") (qualified-name "ImageMetadata::Image::encoding"))) (kind featureTyping) (ordinal 0))
+      (authored-target "String")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/image_metadata.md") (qualified-name "ImageMetadata::Image::location"))) (kind featureTyping) (ordinal 0))
+      (authored-target "String")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/image_metadata.md") (qualified-name "ImageMetadata::Image::type"))) (kind featureTyping) (ordinal 0))
+      (authored-target "String")
+      (outcome (status unresolved)))
   )
   (relationships
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "ImageMetadata::Icon::fullImage"))) (target (node (document "d0") (qualified-name "ImageMetadata::Image"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ImageMetadata::Icon::fullImage"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "ImageMetadata::Icon::smallImage"))) (target (node (document "d0") (qualified-name "ImageMetadata::Image"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ImageMetadata::Icon::smallImage"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "ImageMetadata::Image::content"))) (target (node (document "d0") (qualified-name "ImageMetadata::String"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ImageMetadata::Image::content"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "ImageMetadata::Image::encoding"))) (target (node (document "d0") (qualified-name "ImageMetadata::String"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ImageMetadata::Image::encoding"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "ImageMetadata::Image::location"))) (target (node (document "d0") (qualified-name "ImageMetadata::String"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ImageMetadata::Image::location"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "ImageMetadata::Image::type"))) (target (node (document "d0") (qualified-name "ImageMetadata::String"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ImageMetadata::Image::type"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )
@@ -148,15 +168,25 @@ standard library package ImageMetadata {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 8 16) (end 8 36)) (probe (position 8 16))
-      (reference
-        (source (document "d0") (qualified-name "ImageMetadata::String"))
-        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::String")
-        (range (start 8 16) (end 8 36))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/image_metadata.md") (range (start 8 16) (end 8 36)) (probe (position 8 16))
+    (reference (id (source (node (document "memory://snapshot/image_metadata.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::String")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/image_metadata.md") (range (start 17 22) (end 17 28)) (probe (position 17 22))
+    (reference (id (source (node (document "memory://snapshot/image_metadata.md") (qualified-name "ImageMetadata::Image::content"))) (kind featureTyping) (ordinal 0) (authored-target "String")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/image_metadata.md") (range (start 25 23) (end 25 29)) (probe (position 25 23))
+    (reference (id (source (node (document "memory://snapshot/image_metadata.md") (qualified-name "ImageMetadata::Image::encoding"))) (kind featureTyping) (ordinal 0) (authored-target "String")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/image_metadata.md") (range (start 41 23) (end 41 29)) (probe (position 41 23))
+    (reference (id (source (node (document "memory://snapshot/image_metadata.md") (qualified-name "ImageMetadata::Image::location"))) (kind featureTyping) (ordinal 0) (authored-target "String")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/image_metadata.md") (range (start 34 19) (end 34 25)) (probe (position 34 19))
+    (reference (id (source (node (document "memory://snapshot/image_metadata.md") (qualified-name "ImageMetadata::Image::type"))) (kind featureTyping) (ordinal 0) (authored-target "String")
+      (outcome (status unresolved)))
   )
 )
 ~~~

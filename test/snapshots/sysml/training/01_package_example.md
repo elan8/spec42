@@ -18,7 +18,7 @@ package 'Package Example' {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "01_package_example.md"
+  (document "memory://snapshot/01_package_example.md"
     (diagnostics
       (diagnostic
         (severity warning)
@@ -30,27 +30,41 @@ package 'Package Example' {
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 2 16) (end 2 28))
+        (range (start 2 16) (end 2 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 6 1) (end 6 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 7 1) (end 7 35))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "6a98d27a17982c900449adced1dd81ab7290b27d9f2d02528afa9580e9c46d6a") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Package Example"))) (kind "package") (name "Package Example") (declared-name "Package Example"))
-    (element (id (node (document "d0") (qualified-name "Package Example::*"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "Package Example"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "Package Example::Automobile"))) (kind "part def") (name "Automobile") (declared-name "Automobile") (parent (node (document "d0") (qualified-name "Package Example"))))
-    (element (id (node (document "d0") (qualified-name "Package Example::Car"))) (kind "alias") (name "Car") (declared-name "Car") (parent (node (document "d0") (qualified-name "Package Example"))))
-    (element (id (node (document "d0") (qualified-name "Package Example::Torque"))) (kind "alias") (name "Torque") (declared-name "Torque") (parent (node (document "d0") (qualified-name "Package Example"))))
-    (element (id (node (document "d0") (qualified-name "Package Example::TorqueValue"))) (kind "import") (name "TorqueValue") (declared-name "TorqueValue") (parent (node (document "d0") (qualified-name "Package Example"))) (authored (membership (kind Import) (visibility "public") (import (reference "ISQ::TorqueValue") (origin Import) (shape Membership) (recursive false)))))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:93152d0f4c0505188500bbc40fa825c5801bb20eb17b0187e45a0fc55c75457c") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/01_package_example.md") (qualified-name "Package Example"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/01_package_example.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (membershipImport (reference "ISQ::TorqueValue") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/01_package_example.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/01_package_example.md") (qualified-name "Package Example::Automobile"))) (kind part-def) (membership (kind owning) (visibility private)))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "Package Example::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarValues::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Package Example::TorqueValue"))) (kind membershipImport) (ordinal 0)) (authored-target "ISQ::TorqueValue") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
+    (reference (id (source (node (document "memory://snapshot/01_package_example.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "ScalarValues")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/01_package_example.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
+      (authored-target "ISQ::TorqueValue")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -61,23 +75,13 @@ package 'Package Example' {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 2 16) (end 2 28)) (probe (position 2 16))
-      (reference
-        (source (document "d0") (qualified-name "Package Example::*"))
-        (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues::*")
-        (range (start 2 16) (end 2 28))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 1 15) (end 1 31)) (probe (position 1 15))
-      (reference
-        (source (document "d0") (qualified-name "Package Example::TorqueValue"))
-        (kind membershipImport) (ordinal 0) (authored-target "ISQ::TorqueValue")
-        (range (start 1 15) (end 1 31))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/01_package_example.md") (range (start 2 16) (end 2 31)) (probe (position 2 16))
+    (reference (id (source (node (document "memory://snapshot/01_package_example.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/01_package_example.md") (range (start 1 15) (end 1 31)) (probe (position 1 15))
+    (reference (id (source (node (document "memory://snapshot/01_package_example.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "ISQ::TorqueValue")
+      (outcome (status unresolved)))
   )
 )
 ~~~

@@ -2,8 +2,6 @@
 ~~~ini
 description=String literals and unrestricted names
 type=file
-semantic_graph=skip
-semantic_graph_skip_reason=parser recovery for non-empty source produced no typed semantic graph facts
 ~~~
 # SOURCE
 ~~~sysml
@@ -12,12 +10,12 @@ semantic_graph_skip_reason=parser recovery for non-empty source produced no type
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "string_and_names.md"
+  (document "memory://snapshot/string_and_names.md"
     (diagnostics
       (diagnostic
         (severity error)
         (code "expected_keyword")
-        (source "sysml")
+        (source "parser")
         (range (start 0 0) (end 0 36))
       )
     )
@@ -25,10 +23,10 @@ semantic_graph_skip_reason=parser recovery for non-empty source produced no type
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "856687fe21778474da104771454af27c8ebf93c2c76d7c64d89cbf60b604e870") (contract-version "canonical-resolution-v1"))
-  (structure
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:fef9638bab0f22c9f70af241ca76de86d7fb0908d9566a171091f7229a3f725a") (contract-version "parser-owned-resolution-v1"))
+  (declarations
   )
   (references
   )

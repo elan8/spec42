@@ -43,7 +43,7 @@ standard library package TrigFunctions {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "trig_functions.md"
+  (document "memory://snapshot/trig_functions.md"
     (diagnostics
       (diagnostic
         (severity warning)
@@ -51,33 +51,166 @@ standard library package TrigFunctions {
         (source "semantic")
         (range (start 5 18) (end 5 36))
       )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 7 4) (end 7 22))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 7 4) (end 7 22))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 8 4) (end 8 82))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 8 4) (end 8 82))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 10 4) (end 12 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 10 4) (end 12 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 13 4) (end 15 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 13 4) (end 15 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 17 4) (end 19 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 17 4) (end 19 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 21 4) (end 21 69))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 21 4) (end 21 69))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 22 4) (end 22 69))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 22 4) (end 22 69))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 23 4) (end 25 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 23 4) (end 25 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 26 4) (end 28 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 26 4) (end 28 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 30 4) (end 30 68))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 30 4) (end 30 68))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 31 4) (end 31 68))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 31 4) (end 31 68))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 32 4) (end 32 57))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 32 4) (end 32 57))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "fdc591eb39d947e851856edecd97abb016a4cf7a60975489d9e748777bd0ad7a") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "TrigFunctions"))) (kind "package") (name "TrigFunctions") (declared-name "TrigFunctions"))
-    (element (id (node (document "d0") (qualified-name "TrigFunctions::Real"))) (kind "import") (name "Real") (declared-name "Real") (parent (node (document "d0") (qualified-name "TrigFunctions"))) (authored (membership (kind Import) (visibility "public") (import (reference "ScalarValues::Real") (origin Import) (shape Membership) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "TrigFunctions::UnitBoundedReal"))) (kind "kermlDecl") (name "UnitBoundedReal") (declared-name "UnitBoundedReal") (parent (node (document "d0") (qualified-name "TrigFunctions"))))
-    (element (id (node (document "d0") (qualified-name "TrigFunctions::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "TrigFunctions"))))
-    (element (id (node (document "d0") (qualified-name "TrigFunctions::arccos"))) (kind "kermlDecl") (name "arccos") (declared-name "arccos") (parent (node (document "d0") (qualified-name "TrigFunctions"))))
-    (element (id (node (document "d0") (qualified-name "TrigFunctions::arcsin"))) (kind "kermlDecl") (name "arcsin") (declared-name "arcsin") (parent (node (document "d0") (qualified-name "TrigFunctions"))))
-    (element (id (node (document "d0") (qualified-name "TrigFunctions::arctan"))) (kind "kermlDecl") (name "arctan") (declared-name "arctan") (parent (node (document "d0") (qualified-name "TrigFunctions"))))
-    (element (id (node (document "d0") (qualified-name "TrigFunctions::cos"))) (kind "kermlDecl") (name "cos") (declared-name "cos") (parent (node (document "d0") (qualified-name "TrigFunctions"))))
-    (element (id (node (document "d0") (qualified-name "TrigFunctions::cot"))) (kind "kermlDecl") (name "cot") (declared-name "cot") (parent (node (document "d0") (qualified-name "TrigFunctions"))))
-    (element (id (node (document "d0") (qualified-name "TrigFunctions::deg"))) (kind "kermlDecl") (name "deg") (declared-name "deg") (parent (node (document "d0") (qualified-name "TrigFunctions"))))
-    (element (id (node (document "d0") (qualified-name "TrigFunctions::pi"))) (kind "feature decl") (name "pi") (declared-name "pi") (parent (node (document "d0") (qualified-name "TrigFunctions"))))
-    (element (id (node (document "d0") (qualified-name "TrigFunctions::piPrecision"))) (kind "kermlDecl") (name "piPrecision") (declared-name "piPrecision") (parent (node (document "d0") (qualified-name "TrigFunctions"))))
-    (element (id (node (document "d0") (qualified-name "TrigFunctions::rad"))) (kind "kermlDecl") (name "rad") (declared-name "rad") (parent (node (document "d0") (qualified-name "TrigFunctions"))))
-    (element (id (node (document "d0") (qualified-name "TrigFunctions::sin"))) (kind "kermlDecl") (name "sin") (declared-name "sin") (parent (node (document "d0") (qualified-name "TrigFunctions"))))
-    (element (id (node (document "d0") (qualified-name "TrigFunctions::tan"))) (kind "kermlDecl") (name "tan") (declared-name "tan") (parent (node (document "d0") (qualified-name "TrigFunctions"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:000dea9026902fb35d3bb23a3023acdbc3abc8f6b2d1edbe86f352c730446237") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/trig_functions.md") (qualified-name "TrigFunctions"))) (kind library-package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/trig_functions.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false)))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "TrigFunctions::Real"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Real") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
+    (reference (id (source (node (document "memory://snapshot/trig_functions.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
+      (authored-target "ScalarValues::Real")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -88,15 +221,9 @@ standard library package TrigFunctions {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 5 18) (end 5 36)) (probe (position 5 18))
-      (reference
-        (source (document "d0") (qualified-name "TrigFunctions::Real"))
-        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Real")
-        (range (start 5 18) (end 5 36))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/trig_functions.md") (range (start 5 18) (end 5 36)) (probe (position 5 18))
+    (reference (id (source (node (document "memory://snapshot/trig_functions.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Real")
+      (outcome (status unresolved)))
   )
 )
 ~~~

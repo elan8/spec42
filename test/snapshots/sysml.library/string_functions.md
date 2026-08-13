@@ -34,38 +34,138 @@ standard library package StringFunctions {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "string_functions.md"
+  (document "memory://snapshot/string_functions.md"
     (diagnostics
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 7 15) (end 7 27))
+        (range (start 7 15) (end 7 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 9 1) (end 9 103))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 9 1) (end 9 103))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 11 1) (end 11 57))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 11 1) (end 11 57))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 12 1) (end 12 103))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 12 1) (end 12 103))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 14 1) (end 14 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 14 1) (end 14 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 15 1) (end 15 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 15 1) (end 15 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 16 1) (end 16 107))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 16 1) (end 16 107))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 17 1) (end 17 107))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 17 1) (end 17 107))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 19 1) (end 19 111))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 19 1) (end 19 111))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 21 1) (end 23 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 21 1) (end 23 2))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "49d66d13bdf64b1b0268bb52aea5c2b0fe202a6aa71ced56c82361559702ae14") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "StringFunctions"))) (kind "package") (name "StringFunctions") (declared-name "StringFunctions"))
-    (element (id (node (document "d0") (qualified-name "StringFunctions::*"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "StringFunctions"))) (authored (membership (kind Import) (visibility "public") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "StringFunctions::Length"))) (kind "kermlDecl") (name "Length") (declared-name "Length") (parent (node (document "d0") (qualified-name "StringFunctions"))))
-    (element (id (node (document "d0") (qualified-name "StringFunctions::Substring"))) (kind "kermlDecl") (name "Substring") (declared-name "Substring") (parent (node (document "d0") (qualified-name "StringFunctions"))))
-    (element (id (node (document "d0") (qualified-name "StringFunctions::ToString"))) (kind "kermlDecl") (name "ToString") (declared-name "ToString") (parent (node (document "d0") (qualified-name "StringFunctions"))))
-    (element (id (node (document "d0") (qualified-name "StringFunctions::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "StringFunctions"))))
-    (element (id (node (document "d0") (qualified-name "StringFunctions::function"))) (kind "kermlDecl") (name "function") (declared-name "function") (parent (node (document "d0") (qualified-name "StringFunctions"))))
-    (element (id (node (document "d0") (qualified-name "StringFunctions::function#kermlDecl"))) (kind "kermlDecl") (name "function") (declared-name "function") (parent (node (document "d0") (qualified-name "StringFunctions"))))
-    (element (id (node (document "d0") (qualified-name "StringFunctions::function#kermlDecl2"))) (kind "kermlDecl") (name "function") (declared-name "function") (parent (node (document "d0") (qualified-name "StringFunctions"))))
-    (element (id (node (document "d0") (qualified-name "StringFunctions::function#kermlDecl3"))) (kind "kermlDecl") (name "function") (declared-name "function") (parent (node (document "d0") (qualified-name "StringFunctions"))))
-    (element (id (node (document "d0") (qualified-name "StringFunctions::function#kermlDecl4"))) (kind "kermlDecl") (name "function") (declared-name "function") (parent (node (document "d0") (qualified-name "StringFunctions"))))
-    (element (id (node (document "d0") (qualified-name "StringFunctions::function#kermlDecl5"))) (kind "kermlDecl") (name "function") (declared-name "function") (parent (node (document "d0") (qualified-name "StringFunctions"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:fcc414127abebf17e682bd6f3eec86ed5a9ec4b7f62be2fe89963ca884fcff55") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/string_functions.md") (qualified-name "StringFunctions"))) (kind library-package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/string_functions.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "StringFunctions::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarValues::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
+    (reference (id (source (node (document "memory://snapshot/string_functions.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "ScalarValues")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -76,15 +176,9 @@ standard library package StringFunctions {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 7 15) (end 7 27)) (probe (position 7 15))
-      (reference
-        (source (document "d0") (qualified-name "StringFunctions::*"))
-        (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues::*")
-        (range (start 7 15) (end 7 27))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/string_functions.md") (range (start 7 15) (end 7 30)) (probe (position 7 15))
+    (reference (id (source (node (document "memory://snapshot/string_functions.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues")
+      (outcome (status unresolved)))
   )
 )
 ~~~

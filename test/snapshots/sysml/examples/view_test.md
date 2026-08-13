@@ -55,47 +55,62 @@ package ViewTest {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "view_test.md"
+  (document "memory://snapshot/view_test.md"
     (diagnostics
       (diagnostic
-        (severity error)
-        (code "recovered_view_def_body_element")
-        (source "sysml")
-        (range (start 31 2) (end 31 38))
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 8 1) (end 11 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 13 1) (end 16 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 18 1) (end 20 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 22 1) (end 22 17))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 24 1) (end 24 17))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 26 1) (end 43 2))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "66ec1604a6986754b1782da039f5a86ad738e4656070aa7f5550d928f4fb5520") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "ViewTest"))) (kind "package") (name "ViewTest") (declared-name "ViewTest"))
-    (element (id (node (document "d0") (qualified-name "ViewTest::C"))) (kind "concern def") (name "C") (declared-name "C") (parent (node (document "d0") (qualified-name "ViewTest"))))
-    (element (id (node (document "d0") (qualified-name "ViewTest::C::s"))) (kind "stakeholder") (name "s") (declared-name "s") (parent (node (document "d0") (qualified-name "ViewTest::C"))) (authored (relationships (typing (reference "S")))))
-    (element (id (node (document "d0") (qualified-name "ViewTest::P"))) (kind "package") (name "P") (declared-name "P") (parent (node (document "d0") (qualified-name "ViewTest"))))
-    (element (id (node (document "d0") (qualified-name "ViewTest::P::p1"))) (kind "part") (name "p1") (declared-name "p1") (parent (node (document "d0") (qualified-name "ViewTest::P"))))
-    (element (id (node (document "d0") (qualified-name "ViewTest::P::p2"))) (kind "part") (name "p2") (declared-name "p2") (parent (node (document "d0") (qualified-name "ViewTest::P"))))
-    (element (id (node (document "d0") (qualified-name "ViewTest::R"))) (kind "rendering def") (name "R") (declared-name "R") (parent (node (document "d0") (qualified-name "ViewTest"))))
-    (element (id (node (document "d0") (qualified-name "ViewTest::S"))) (kind "part def") (name "S") (declared-name "S") (parent (node (document "d0") (qualified-name "ViewTest"))))
-    (element (id (node (document "d0") (qualified-name "ViewTest::V"))) (kind "view def") (name "V") (declared-name "V") (parent (node (document "d0") (qualified-name "ViewTest"))))
-    (element (id (node (document "d0") (qualified-name "ViewTest::VP"))) (kind "viewpoint def") (name "VP") (declared-name "VP") (parent (node (document "d0") (qualified-name "ViewTest"))))
-    (element (id (node (document "d0") (qualified-name "ViewTest::VP::c"))) (kind "frame") (name "c") (declared-name "c") (parent (node (document "d0") (qualified-name "ViewTest::VP"))))
-    (element (id (node (document "d0") (qualified-name "ViewTest::c"))) (kind "concern") (name "c") (declared-name "c") (parent (node (document "d0") (qualified-name "ViewTest"))) (authored (membership (kind Feature)) (relationships (typing (reference "C")))))
-    (element (id (node (document "d0") (qualified-name "ViewTest::c::_stakeholder_s1"))) (kind "stakeholder") (name "s1") (declared-name "s1") (parent (node (document "d0") (qualified-name "ViewTest::c"))))
-    (element (id (node (document "d0") (qualified-name "ViewTest::r"))) (kind "rendering") (name "r") (declared-name "r") (parent (node (document "d0") (qualified-name "ViewTest"))) (authored (membership (kind Feature)) (relationships (typing (reference "R")))))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:150602796e98ab955e756693987d3669c877d4c7667d84a2dcf3071d6b5af48f") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::P"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::P::p1"))) (kind part) (membership (kind feature) (visibility public)))
+    (declaration (id (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::P::p2"))) (kind part) (membership (kind feature) (visibility private)))
+    (declaration (id (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::S"))) (kind part-def) (membership (kind owning) (visibility default)))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "ViewTest::C::s"))) (kind featureTyping) (ordinal 0)) (authored-target "S") (outcome (status resolved) (target (node (document "d0") (qualified-name "ViewTest::S")))))
-    (reference (id (source (node (document "d0") (qualified-name "ViewTest::c"))) (kind featureTyping) (ordinal 0)) (authored-target "C") (outcome (status resolved) (target (node (document "d0") (qualified-name "ViewTest::C")))))
-    (reference (id (source (node (document "d0") (qualified-name "ViewTest::r"))) (kind featureTyping) (ordinal 0)) (authored-target "R") (outcome (status resolved) (target (node (document "d0") (qualified-name "ViewTest::R")))))
   )
   (relationships
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "ViewTest::C::s"))) (target (node (document "d0") (qualified-name "ViewTest::S"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ViewTest::C::s"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "ViewTest::c"))) (target (node (document "d0") (qualified-name "ViewTest::C"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ViewTest::c"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "ViewTest::r"))) (target (node (document "d0") (qualified-name "ViewTest::R"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "ViewTest::r"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )

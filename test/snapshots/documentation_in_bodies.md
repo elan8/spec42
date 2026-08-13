@@ -38,37 +38,48 @@ package DocTests {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "documentation_in_bodies.md"
+  (document "memory://snapshot/documentation_in_bodies.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 12 4) (end 15 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 21 4) (end 23 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 25 4) (end 27 5))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1cf8a24e6dc1e2baad52bb8841167eadf3426c2a162b48bdfa216435f910d90e") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "DocTests"))) (kind "package") (name "DocTests") (declared-name "DocTests"))
-    (element (id (node (document "d0") (qualified-name "DocTests::Car"))) (kind "alias") (name "Car") (declared-name "Car") (parent (node (document "d0") (qualified-name "DocTests"))))
-    (element (id (node (document "d0") (qualified-name "DocTests::Color"))) (kind "enum def") (name "Color") (declared-name "Color") (parent (node (document "d0") (qualified-name "DocTests"))))
-    (element (id (node (document "d0") (qualified-name "DocTests::Color::red"))) (kind "enumerated value") (name "red") (declared-name "red") (parent (node (document "d0") (qualified-name "DocTests::Color"))))
-    (element (id (node (document "d0") (qualified-name "DocTests::Payload"))) (kind "item def") (name "Payload") (declared-name "Payload") (parent (node (document "d0") (qualified-name "DocTests"))))
-    (element (id (node (document "d0") (qualified-name "DocTests::Payload::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "DocTests::Payload"))))
-    (element (id (node (document "d0") (qualified-name "DocTests::Speed"))) (kind "attribute def") (name "Speed") (declared-name "Speed") (parent (node (document "d0") (qualified-name "DocTests"))))
-    (element (id (node (document "d0") (qualified-name "DocTests::Speed::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "DocTests::Speed"))))
-    (element (id (node (document "d0") (qualified-name "DocTests::Vehicle"))) (kind "part def") (name "Vehicle") (declared-name "Vehicle") (parent (node (document "d0") (qualified-name "DocTests"))))
-    (element (id (node (document "d0") (qualified-name "DocTests::Vehicle::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "DocTests::Vehicle"))))
-    (element (id (node (document "d0") (qualified-name "DocTests::Vehicle::speed"))) (kind "attribute") (name "speed") (declared-name "speed") (parent (node (document "d0") (qualified-name "DocTests::Vehicle"))))
-    (element (id (node (document "d0") (qualified-name "DocTests::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "DocTests"))))
-    (element (id (node (document "d0") (qualified-name "DocTests::vehicle"))) (kind "part") (name "vehicle") (declared-name "vehicle") (parent (node (document "d0") (qualified-name "DocTests"))) (authored (membership (kind Feature)) (relationships (typing (reference "Vehicle")))))
-    (element (id (node (document "d0") (qualified-name "DocTests::vehicle::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "DocTests::vehicle"))))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:179775f22a464be7ba2dc441823cb6414b25e8568cf89ba186e3b8ffe59e2c5c") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Speed"))) (kind attribute-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Vehicle::speed"))) (kind attribute) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::vehicle"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Vehicle"))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "DocTests::vehicle"))) (kind featureTyping) (ordinal 0)) (authored-target "Vehicle") (outcome (status resolved) (target (node (document "d0") (qualified-name "DocTests::Vehicle")))))
+    (reference (id (source (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::vehicle"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Vehicle")
+      (outcome (status resolved) (target (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Vehicle")))))
   )
   (relationships
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "DocTests::vehicle"))) (target (node (document "d0") (qualified-name "DocTests::Vehicle"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "DocTests::vehicle"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::vehicle"))) (target (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::vehicle"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )
@@ -77,17 +88,9 @@ package DocTests {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 17 19) (end 17 26)) (probe (position 17 19))
-      (reference
-        (source (document "d0") (qualified-name "DocTests::vehicle"))
-        (kind featureTyping) (ordinal 0) (authored-target "Vehicle")
-        (range (start 17 19) (end 17 26))
-        (outcome (status resolved)
-          (target (document "d0") (qualified-name "DocTests::Vehicle") (range (start 3 4) (end 3 95)))
-        )
-      )
-    )
+  (query (document "memory://snapshot/documentation_in_bodies.md") (range (start 17 19) (end 17 26)) (probe (position 17 19))
+    (reference (id (source (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::vehicle"))) (kind featureTyping) (ordinal 0) (authored-target "Vehicle")
+      (outcome (status resolved) (target (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Vehicle")))))
   )
 )
 ~~~

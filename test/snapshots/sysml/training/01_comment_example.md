@@ -33,21 +33,31 @@ package 'Comment Example' {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "01_comment_example.md"
+  (document "memory://snapshot/01_comment_example.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 13 1) (end 18 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 22 1) (end 22 35))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "47bdb833c19db3b715ad43d0b02af99455fc452278c9f335c8b97d729a788456") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Comment Example"))) (kind "package") (name "Comment Example") (declared-name "Comment Example"))
-    (element (id (node (document "d0") (qualified-name "Comment Example::Automobile"))) (kind "part def") (name "Automobile") (declared-name "Automobile") (parent (node (document "d0") (qualified-name "Comment Example"))))
-    (element (id (node (document "d0") (qualified-name "Comment Example::Car"))) (kind "alias") (name "Car") (declared-name "Car") (parent (node (document "d0") (qualified-name "Comment Example"))))
-    (element (id (node (document "d0") (qualified-name "Comment Example::Torque"))) (kind "alias") (name "Torque") (declared-name "Torque") (parent (node (document "d0") (qualified-name "Comment Example"))))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:28c2d48f5427c64c78239d51d094404aed41b924871a7a17ba5f795e6c1b7b47") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/01_comment_example.md") (qualified-name "Comment Example"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/01_comment_example.md") (qualified-name "Comment Example::Automobile"))) (kind part-def) (membership (kind owning) (visibility default)))
   )
   (references
   )

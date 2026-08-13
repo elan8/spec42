@@ -10,24 +10,30 @@ package MyPkg { }; in newX : Real;
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "empty_member_after_package.md"
+  (document "memory://snapshot/empty_member_after_package.md"
     (diagnostics
       (diagnostic
         (severity error)
         (code "expected_keyword")
-        (source "sysml")
+        (source "parser")
         (range (start 0 17) (end 0 34))
+      )
+      (diagnostic
+        (severity error)
+        (code "expected_keyword")
+        (source "parser")
+        (range (start 0 19) (end 0 34))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "4dcfb3745080896bd90a864c32b726a97a6a3f1cfd477732c79f67c29cb4febb") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "MyPkg"))) (kind "package") (name "MyPkg") (declared-name "MyPkg"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:a6a2ea2079b4d1fb5fc110bd88f052231a5b1c0115565e9aacdb373bf82083c1") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/empty_member_after_package.md") (qualified-name "MyPkg"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

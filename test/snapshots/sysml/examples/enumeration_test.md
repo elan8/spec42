@@ -63,92 +63,126 @@ package EnumerationTest {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "enumeration_test.md"
+  (document "memory://snapshot/enumeration_test.md"
     (diagnostics
       (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 3 2) (end 3 40))
+        (range (start 3 18) (end 3 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 6 1) (end 23 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 25 1) (end 25 24))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 26 1) (end 26 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 26 1) (end 26 31))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 39 1) (end 39 159))
+        (range (start 27 20) (end 27 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 29 1) (end 35 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 37 1) (end 37 13))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 39 23) (end 39 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 46 1) (end 50 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 51 1) (end 51 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 51 1) (end 51 30))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "6066b3ef25bb9631b834e7c40f5f8479ae66011271433fcaae24456b020dc372") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "EnumerationTest"))) (kind "package") (name "EnumerationTest") (declared-name "EnumerationTest"))
-    (element (id (node (document "d0") (qualified-name "EnumerationTest::Color"))) (kind "attribute def") (name "Color") (declared-name "Color") (parent (node (document "d0") (qualified-name "EnumerationTest"))))
-    (element (id (node (document "d0") (qualified-name "EnumerationTest::Color::val"))) (kind "attribute") (name "val") (declared-name "val") (parent (node (document "d0") (qualified-name "EnumerationTest::Color"))) (authored (membership (kind Feature)) (relationships (typing (reference "Natural")))))
-    (element (id (node (document "d0") (qualified-name "EnumerationTest::ColorKind"))) (kind "enum def") (name "ColorKind") (declared-name "ColorKind") (parent (node (document "d0") (qualified-name "EnumerationTest"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Color")))))
-    (element (id (node (document "d0") (qualified-name "EnumerationTest::ColorKind::blue"))) (kind "enumerated value") (name "blue") (declared-name "blue") (parent (node (document "d0") (qualified-name "EnumerationTest::ColorKind"))))
-    (element (id (node (document "d0") (qualified-name "EnumerationTest::ColorKind::green"))) (kind "enumerated value") (name "green") (declared-name "green") (parent (node (document "d0") (qualified-name "EnumerationTest::ColorKind"))))
-    (element (id (node (document "d0") (qualified-name "EnumerationTest::ColorKind::red"))) (kind "enumerated value") (name "red") (declared-name "red") (parent (node (document "d0") (qualified-name "EnumerationTest::ColorKind"))))
-    (element (id (node (document "d0") (qualified-name "EnumerationTest::E1"))) (kind "enum def") (name "E1") (declared-name "E1") (parent (node (document "d0") (qualified-name "EnumerationTest"))))
-    (element (id (node (document "d0") (qualified-name "EnumerationTest::E1::a"))) (kind "enumerated value") (name "a") (declared-name "a") (parent (node (document "d0") (qualified-name "EnumerationTest::E1"))))
-    (element (id (node (document "d0") (qualified-name "EnumerationTest::E1::b"))) (kind "enumerated value") (name "b") (declared-name "b") (parent (node (document "d0") (qualified-name "EnumerationTest::E1"))))
-    (element (id (node (document "d0") (qualified-name "EnumerationTest::E1::c"))) (kind "enumerated value") (name "c") (declared-name "c") (parent (node (document "d0") (qualified-name "EnumerationTest::E1"))))
-    (element (id (node (document "d0") (qualified-name "EnumerationTest::E2"))) (kind "enum def") (name "E2") (declared-name "E2") (parent (node (document "d0") (qualified-name "EnumerationTest"))))
-    (element (id (node (document "d0") (qualified-name "EnumerationTest::Size"))) (kind "attribute def") (name "Size") (declared-name "Size") (parent (node (document "d0") (qualified-name "EnumerationTest"))) (authored (membership (kind Owning)) (relationships (typing (reference "Real")))))
-    (element (id (node (document "d0") (qualified-name "EnumerationTest::Size::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "EnumerationTest::Size"))))
-    (element (id (node (document "d0") (qualified-name "EnumerationTest::SizeChoice"))) (kind "enum def") (name "SizeChoice") (declared-name "SizeChoice") (parent (node (document "d0") (qualified-name "EnumerationTest"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Size")))))
-    (element (id (node (document "d0") (qualified-name "EnumerationTest::color"))) (kind "enumeration") (name "color") (declared-name "color") (parent (node (document "d0") (qualified-name "EnumerationTest"))) (authored (membership (kind Feature)) (relationships (typing (reference "ColorKind")))))
-    (element (id (node (document "d0") (qualified-name "EnumerationTest::color1"))) (kind "kermlDecl") (name "color1") (declared-name "color1") (parent (node (document "d0") (qualified-name "EnumerationTest"))))
-    (element (id (node (document "d0") (qualified-name "EnumerationTest::color2"))) (kind "attribute def") (name "color2") (declared-name "color2") (parent (node (document "d0") (qualified-name "EnumerationTest"))) (authored (membership (kind Owning)) (relationships (typing (reference "ColorKind")))))
-    (element (id (node (document "d0") (qualified-name "EnumerationTest::size"))) (kind "kermlDecl") (name "size") (declared-name "size") (parent (node (document "d0") (qualified-name "EnumerationTest"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:a7dbb57100ddd99352c7f95ae719619d0dfeed2669b91d1e4dd9318227c761c3") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::Color"))) (kind attribute-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::Color::val"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ScalarValues::Natural"))))
+    (declaration (id (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::Size"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "ScalarValues::Real"))))
+    (declaration (id (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::color2"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "ColorKind"))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "EnumerationTest::Color::val"))) (kind featureTyping) (ordinal 0)) (authored-target "Natural") (outcome (status unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "EnumerationTest::ColorKind"))) (kind specialization) (ordinal 0)) (authored-target "Color") (outcome (status resolved) (target (node (document "d0") (qualified-name "EnumerationTest::Color")))))
-    (reference (id (source (node (document "d0") (qualified-name "EnumerationTest::Size"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (outcome (status unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "EnumerationTest::SizeChoice"))) (kind specialization) (ordinal 0)) (authored-target "Size") (outcome (status resolved) (target (node (document "d0") (qualified-name "EnumerationTest::Size")))))
-    (reference (id (source (node (document "d0") (qualified-name "EnumerationTest::color"))) (kind featureTyping) (ordinal 0)) (authored-target "ColorKind") (outcome (status resolved) (target (node (document "d0") (qualified-name "EnumerationTest::ColorKind")))))
-    (reference (id (source (node (document "d0") (qualified-name "EnumerationTest::color2"))) (kind featureTyping) (ordinal 0)) (authored-target "ColorKind") (outcome (status resolved) (target (node (document "d0") (qualified-name "EnumerationTest::ColorKind")))))
+    (reference (id (source (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::Color::val"))) (kind featureTyping) (ordinal 0))
+      (authored-target "ScalarValues::Natural")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::Size"))) (kind specialization) (ordinal 0))
+      (authored-target "ScalarValues::Real")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::color2"))) (kind featureTyping) (ordinal 0))
+      (authored-target "ColorKind")
+      (outcome (status unresolved)))
   )
   (relationships
-    (relationship (kind specializes) (source (node (document "d0") (qualified-name "EnumerationTest::ColorKind"))) (target (node (document "d0") (qualified-name "EnumerationTest::Color"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "EnumerationTest::ColorKind"))) (kind specialization) (ordinal 0)))
-    (relationship (kind specializes) (source (node (document "d0") (qualified-name "EnumerationTest::SizeChoice"))) (target (node (document "d0") (qualified-name "EnumerationTest::Size"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "EnumerationTest::SizeChoice"))) (kind specialization) (ordinal 0)))
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "EnumerationTest::color"))) (target (node (document "d0") (qualified-name "EnumerationTest::ColorKind"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "EnumerationTest::color"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "EnumerationTest::color2"))) (target (node (document "d0") (qualified-name "EnumerationTest::ColorKind"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "EnumerationTest::color2"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (node (node (document "d0") (qualified-name "EnumerationTest::color2")) (expression (status "incomplete") (error "expression is incomplete")))
   )
 )
 ~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 46 24) (end 46 28)) (probe (position 46 24))
-      (reference
-        (source (document "d0") (qualified-name "EnumerationTest::SizeChoice"))
-        (kind specialization) (ordinal 0) (authored-target "Size")
-        (range (start 46 24) (end 46 28))
-        (outcome (status resolved)
-          (target (document "d0") (qualified-name "EnumerationTest::Size") (range (start 39 1) (end 39 159)))
-        )
-      )
-    )
-    (query (range (start 6 23) (end 6 28)) (probe (position 6 23))
-      (reference
-        (source (document "d0") (qualified-name "EnumerationTest::ColorKind"))
-        (kind specialization) (ordinal 0) (authored-target "Color")
-        (range (start 6 23) (end 6 28))
-        (outcome (status resolved)
-          (target (document "d0") (qualified-name "EnumerationTest::Color") (range (start 2 1) (end 2 66)))
-        )
-      )
-    )
+  (query (document "memory://snapshot/enumeration_test.md") (range (start 3 18) (end 3 39)) (probe (position 3 18))
+    (reference (id (source (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::Color::val"))) (kind featureTyping) (ordinal 0) (authored-target "ScalarValues::Natural")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/enumeration_test.md") (range (start 39 23) (end 39 41)) (probe (position 39 23))
+    (reference (id (source (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::Size"))) (kind specialization) (ordinal 0) (authored-target "ScalarValues::Real")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/enumeration_test.md") (range (start 27 20) (end 27 29)) (probe (position 27 20))
+    (reference (id (source (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::color2"))) (kind featureTyping) (ordinal 0) (authored-target "ColorKind")
+      (outcome (status unresolved)))
   )
 )
 ~~~

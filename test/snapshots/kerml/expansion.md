@@ -13,7 +13,7 @@ package Expansion {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "expansion.md"
+  (document "memory://snapshot/expansion.md"
     (diagnostics
       (diagnostic
         (severity warning)
@@ -22,26 +22,39 @@ package Expansion {
         (range (start 1 16) (end 1 40))
       )
       (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 2 1) (end 2 46))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 2 1) (end 2 46))
+      )
+      (diagnostic
         (severity error)
         (code "recovered_package_body_element")
-        (source "sysml")
-        (range (start 2 46) (end 2 49))
+        (source "parser")
+        (range (start 2 46) (end 3 0))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "6fcd1a00da42419198d6a99ff64a62349b3071a24702933587ea82bbb87177b7") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Expansion"))) (kind "package") (name "Expansion") (declared-name "Expansion"))
-    (element (id (node (document "d0") (qualified-name "Expansion::select"))) (kind "import") (name "select") (declared-name "select") (parent (node (document "d0") (qualified-name "Expansion"))) (authored (membership (kind Import) (visibility "private") (import (reference "ControlFunctions::select") (origin Import) (shape Membership) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "Expansion::x"))) (kind "feature decl") (name "x") (declared-name "x") (parent (node (document "d0") (qualified-name "Expansion"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:dd4a691d1574584940080c79df61d3840e0ad0de94c68b9950ca3720f8d52ba1") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/expansion.md") (qualified-name "Expansion"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/expansion.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ControlFunctions::select") (import (shape membership) (recursive false)))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "Expansion::select"))) (kind membershipImport) (ordinal 0)) (authored-target "ControlFunctions::select") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
+    (reference (id (source (node (document "memory://snapshot/expansion.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
+      (authored-target "ControlFunctions::select")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -52,15 +65,9 @@ package Expansion {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 1 16) (end 1 40)) (probe (position 1 16))
-      (reference
-        (source (document "d0") (qualified-name "Expansion::select"))
-        (kind membershipImport) (ordinal 0) (authored-target "ControlFunctions::select")
-        (range (start 1 16) (end 1 40))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/expansion.md") (range (start 1 16) (end 1 40)) (probe (position 1 16))
+    (reference (id (source (node (document "memory://snapshot/expansion.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "ControlFunctions::select")
+      (outcome (status unresolved)))
   )
 )
 ~~~

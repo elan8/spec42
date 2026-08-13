@@ -23,7 +23,7 @@ package Atoms {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "a_2_atoms.md"
+  (document "memory://snapshot/a_2_atoms.md"
     (diagnostics
       (diagnostic
         (severity warning)
@@ -31,23 +31,46 @@ package Atoms {
         (source "semantic")
         (range (start 7 16) (end 7 39))
       )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 9 1) (end 9 17))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 9 1) (end 9 17))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 10 1) (end 12 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 10 1) (end 12 2))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1484a0dae521515b571fb71fe10b62d6b07738481eef110c8a5b012d494bc8f3") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Atoms"))) (kind "package") (name "Atoms") (declared-name "Atoms"))
-    (element (id (node (document "d0") (qualified-name "Atoms::Atom"))) (kind "classifier decl") (name "Atom") (declared-name "Atom") (parent (node (document "d0") (qualified-name "Atoms"))))
-    (element (id (node (document "d0") (qualified-name "Atoms::Metaobject"))) (kind "import") (name "Metaobject") (declared-name "Metaobject") (parent (node (document "d0") (qualified-name "Atoms"))) (authored (membership (kind Import) (visibility "private") (import (reference "Metaobjects::Metaobject") (origin Import) (shape Membership) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "Atoms::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "Atoms"))))
-    (element (id (node (document "d0") (qualified-name "Atoms::atom"))) (kind "kermlDecl") (name "atom") (declared-name "atom") (parent (node (document "d0") (qualified-name "Atoms"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:ce6425b889fc153c98df08a93122a3aedca50b5c85670b6ddf82ad7ecd939f6c") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/a_2_atoms.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Metaobjects::Metaobject") (import (shape membership) (recursive false)))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "Atoms::Metaobject"))) (kind membershipImport) (ordinal 0)) (authored-target "Metaobjects::Metaobject") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
+    (reference (id (source (node (document "memory://snapshot/a_2_atoms.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
+      (authored-target "Metaobjects::Metaobject")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -58,15 +81,9 @@ package Atoms {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 7 16) (end 7 39)) (probe (position 7 16))
-      (reference
-        (source (document "d0") (qualified-name "Atoms::Metaobject"))
-        (kind membershipImport) (ordinal 0) (authored-target "Metaobjects::Metaobject")
-        (range (start 7 16) (end 7 39))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/a_2_atoms.md") (range (start 7 16) (end 7 39)) (probe (position 7 16))
+    (reference (id (source (node (document "memory://snapshot/a_2_atoms.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "Metaobjects::Metaobject")
+      (outcome (status unresolved)))
   )
 )
 ~~~

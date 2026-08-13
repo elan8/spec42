@@ -26,19 +26,25 @@ package 'Items Example' {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "08_items_example.md"
+  (document "memory://snapshot/08_items_example.md"
     (diagnostics
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 16) (end 1 28))
+        (range (start 1 16) (end 1 31))
       )
       (diagnostic
         (severity warning)
-        (code "unresolved_type_reference")
+        (code "unsupported_package_member")
         (source "semantic")
-        (range (start 7 2) (end 7 24))
+        (range (start 3 1) (end 3 15))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 4 1) (end 4 17))
       )
       (diagnostic
         (severity warning)
@@ -46,28 +52,40 @@ package 'Items Example' {
         (source "semantic")
         (range (start 7 19) (end 7 23))
       )
+      (diagnostic
+        (severity error)
+        (code "recovered_part_def_body_element")
+        (source "parser")
+        (range (start 9 2) (end 11 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_usage_member")
+        (source "semantic")
+        (range (start 12 3) (end 12 19))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "dbcdfd0cb66ec00a9b48308d56557e51a2fd5b66f8b5ec4882aca513005a774a") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Items Example"))) (kind "package") (name "Items Example") (declared-name "Items Example"))
-    (element (id (node (document "d0") (qualified-name "Items Example::*"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "Items Example"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "Items Example::Fuel"))) (kind "item def") (name "Fuel") (declared-name "Fuel") (parent (node (document "d0") (qualified-name "Items Example"))))
-    (element (id (node (document "d0") (qualified-name "Items Example::Person"))) (kind "item def") (name "Person") (declared-name "Person") (parent (node (document "d0") (qualified-name "Items Example"))))
-    (element (id (node (document "d0") (qualified-name "Items Example::Vehicle"))) (kind "part def") (name "Vehicle") (declared-name "Vehicle") (parent (node (document "d0") (qualified-name "Items Example"))))
-    (element (id (node (document "d0") (qualified-name "Items Example::Vehicle::fuelTank"))) (kind "part") (name "fuelTank") (declared-name "fuelTank") (parent (node (document "d0") (qualified-name "Items Example::Vehicle"))))
-    (element (id (node (document "d0") (qualified-name "Items Example::Vehicle::item"))) (kind "opaque member") (name "item") (declared-name "item") (parent (node (document "d0") (qualified-name "Items Example::Vehicle"))))
-    (element (id (node (document "d0") (qualified-name "Items Example::Vehicle::mass"))) (kind "attribute") (name "mass") (declared-name "mass") (parent (node (document "d0") (qualified-name "Items Example::Vehicle"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real")) (typing (reference "Real")))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:f9b280e7e1f643151513a7985884a425eea5f643b599a947a57892cba08a9e5c") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/08_items_example.md") (qualified-name "Items Example"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/08_items_example.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/08_items_example.md") (qualified-name "Items Example::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/08_items_example.md") (qualified-name "Items Example::Vehicle::fuelTank"))) (kind part) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/08_items_example.md") (qualified-name "Items Example::Vehicle::mass"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Real"))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "Items Example::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarValues::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Items Example::Vehicle::mass"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (outcome (status unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Items Example::Vehicle::mass"))) (kind featureTyping) (ordinal 1)) (authored-target "Real") (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/08_items_example.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "ScalarValues")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/08_items_example.md") (qualified-name "Items Example::Vehicle::mass"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Real")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -78,23 +96,13 @@ package 'Items Example' {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 7 19) (end 7 23)) (probe (position 7 19))
-      (reference
-        (source (document "d0") (qualified-name "Items Example::Vehicle::mass"))
-        (kind featureTyping) (ordinal 1) (authored-target "Real")
-        (range (start 7 19) (end 7 23))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 1 16) (end 1 28)) (probe (position 1 16))
-      (reference
-        (source (document "d0") (qualified-name "Items Example::*"))
-        (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues::*")
-        (range (start 1 16) (end 1 28))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/08_items_example.md") (range (start 1 16) (end 1 31)) (probe (position 1 16))
+    (reference (id (source (node (document "memory://snapshot/08_items_example.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/08_items_example.md") (range (start 7 19) (end 7 23)) (probe (position 7 19))
+    (reference (id (source (node (document "memory://snapshot/08_items_example.md") (qualified-name "Items Example::Vehicle::mass"))) (kind featureTyping) (ordinal 0) (authored-target "Real")
+      (outcome (status unresolved)))
   )
 )
 ~~~

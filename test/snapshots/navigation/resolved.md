@@ -13,7 +13,7 @@ package P {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "resolved.md"
+  (document "memory://snapshot/resolved.md"
     (diagnostics
     )
   )
@@ -22,17 +22,19 @@ package P {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "ecc72463ef9dbae1b5c2af0ceba2adc0b8222e2e1dcaa4e2d31a10e323f1491a") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "P"))) (kind "package") (name "P") (declared-name "P"))
-    (element (id (node (document "d0") (qualified-name "P::Engine"))) (kind "part def") (name "Engine") (declared-name "Engine") (parent (node (document "d0") (qualified-name "P"))))
-    (element (id (node (document "d0") (qualified-name "P::engine"))) (kind "part") (name "engine") (declared-name "engine") (parent (node (document "d0") (qualified-name "P"))) (authored (membership (kind Feature)) (relationships (typing (reference "Engine")))))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:bb87776e2a9c30329de4b07bbf8a3bb99767a60e78eea7f45b53b29fb9bb97ad") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/resolved.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/resolved.md") (qualified-name "P::Engine"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/resolved.md") (qualified-name "P::engine"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Engine"))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "P::engine"))) (kind featureTyping) (ordinal 0)) (authored-target "Engine") (outcome (status resolved) (target (node (document "d0") (qualified-name "P::Engine")))))
+    (reference (id (source (node (document "memory://snapshot/resolved.md") (qualified-name "P::engine"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Engine")
+      (outcome (status resolved) (target (node (document "memory://snapshot/resolved.md") (qualified-name "P::Engine")))))
   )
   (relationships
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "P::engine"))) (target (node (document "d0") (qualified-name "P::Engine"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "P::engine"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/resolved.md") (qualified-name "P::engine"))) (target (node (document "memory://snapshot/resolved.md") (qualified-name "P::Engine"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/resolved.md") (qualified-name "P::engine"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )
@@ -41,17 +43,9 @@ package P {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 2 18) (end 2 24)) (probe (position 2 18))
-      (reference
-        (source (document "d0") (qualified-name "P::engine"))
-        (kind featureTyping) (ordinal 0) (authored-target "Engine")
-        (range (start 2 18) (end 2 24))
-        (outcome (status resolved)
-          (target (document "d0") (qualified-name "P::Engine") (range (start 1 4) (end 1 20)))
-        )
-      )
-    )
+  (query (document "memory://snapshot/resolved.md") (range (start 2 18) (end 2 24)) (probe (position 2 18))
+    (reference (id (source (node (document "memory://snapshot/resolved.md") (qualified-name "P::engine"))) (kind featureTyping) (ordinal 0) (authored-target "Engine")
+      (outcome (status resolved) (target (node (document "memory://snapshot/resolved.md") (qualified-name "P::Engine")))))
   )
 )
 ~~~

@@ -34,34 +34,68 @@ package MedicalDeviceFailure {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "medical_device_failure.md"
+  (document "memory://snapshot/medical_device_failure.md"
     (diagnostics
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 16) (end 1 30))
+        (range (start 1 16) (end 1 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_usage_member")
+        (source "semantic")
+        (range (start 5 3) (end 5 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_usage_member")
+        (source "semantic")
+        (range (start 6 3) (end 6 36))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_usage_member")
+        (source "semantic")
+        (range (start 9 2) (end 9 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_usage_member")
+        (source "semantic")
+        (range (start 11 2) (end 13 3))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_usage_member")
+        (source "semantic")
+        (range (start 15 2) (end 19 3))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_usage_member")
+        (source "semantic")
+        (range (start 21 2) (end 21 59))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e82c988c61c63239d64c376d5dd98c95539cbdd3d0f642cb01e06d74448d9532") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "MedicalDeviceFailure"))) (kind "package") (name "MedicalDeviceFailure") (declared-name "MedicalDeviceFailure"))
-    (element (id (node (document "d0") (qualified-name "MedicalDeviceFailure::*"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "MedicalDeviceFailure"))) (authored (membership (kind Import) (visibility "private") (import (reference "CauseAndEffect::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice"))) (kind "part") (name "medicalDevice") (declared-name "medicalDevice") (parent (node (document "d0") (qualified-name "MedicalDeviceFailure"))))
-    (element (id (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice::battery"))) (kind "part") (name "battery") (declared-name "battery") (parent (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice"))))
-    (element (id (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice::battery::cannotBeCharged"))) (kind "occurrence") (name "cannotBeCharged") (declared-name "cannotBeCharged") (parent (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice::battery"))))
-    (element (id (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice::battery::depleted"))) (kind "occurrence") (name "depleted") (declared-name "depleted") (parent (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice::battery"))))
-    (element (id (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice::deviceFails"))) (kind "occurrence") (name "deviceFails") (declared-name "deviceFails") (parent (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice"))))
-    (element (id (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice::patient"))) (kind "ref") (name "patient") (declared-name "patient") (parent (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice"))))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:51366626473ebc97f3725151bcf295affa7c19f7c78f889c7f47421f9356db44") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/medical_device_failure.md") (qualified-name "MedicalDeviceFailure"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/medical_device_failure.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "CauseAndEffect") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/medical_device_failure.md") (qualified-name "MedicalDeviceFailure::medicalDevice"))) (kind part) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/medical_device_failure.md") (qualified-name "MedicalDeviceFailure::medicalDevice::battery"))) (kind part) (membership (kind feature) (visibility default)))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "MedicalDeviceFailure::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "CauseAndEffect::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
+    (reference (id (source (node (document "memory://snapshot/medical_device_failure.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "CauseAndEffect")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -72,15 +106,9 @@ package MedicalDeviceFailure {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 1 16) (end 1 30)) (probe (position 1 16))
-      (reference
-        (source (document "d0") (qualified-name "MedicalDeviceFailure::*"))
-        (kind namespaceImport) (ordinal 0) (authored-target "CauseAndEffect::*")
-        (range (start 1 16) (end 1 30))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/medical_device_failure.md") (range (start 1 16) (end 1 33)) (probe (position 1 16))
+    (reference (id (source (node (document "memory://snapshot/medical_device_failure.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "CauseAndEffect")
+      (outcome (status unresolved)))
   )
 )
 ~~~

@@ -13,7 +13,7 @@ package P {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "diagnostic_canonical_order.md"
+  (document "memory://snapshot/diagnostic_canonical_order.md"
     (diagnostics
       (diagnostic
         (severity warning)
@@ -34,15 +34,19 @@ package P {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "c3e481ddbf9d9d60a5b83c95dd71bced821e9b828cc334d4406d4fbe9079c88b") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "P"))) (kind "package") (name "P") (declared-name "P"))
-    (element (id (node (document "d0") (qualified-name "P::bad_first"))) (kind "part") (name "bad_first") (declared-name "bad_first") (parent (node (document "d0") (qualified-name "P"))) (authored (membership (kind Feature)) (relationships (typing (reference "MissingFirst")))))
-    (element (id (node (document "d0") (qualified-name "P::bad_second"))) (kind "part") (name "bad_second") (declared-name "bad_second") (parent (node (document "d0") (qualified-name "P"))) (authored (membership (kind Feature)) (relationships (typing (reference "MissingSecond")))))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d557c1a87a521aa276580c656df0928dfdde08d93aeca279d28ec8374aea8603") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/diagnostic_canonical_order.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/diagnostic_canonical_order.md") (qualified-name "P::bad_first"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MissingFirst"))))
+    (declaration (id (node (document "memory://snapshot/diagnostic_canonical_order.md") (qualified-name "P::bad_second"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MissingSecond"))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "P::bad_first"))) (kind featureTyping) (ordinal 0)) (authored-target "MissingFirst") (outcome (status unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "P::bad_second"))) (kind featureTyping) (ordinal 0)) (authored-target "MissingSecond") (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/diagnostic_canonical_order.md") (qualified-name "P::bad_first"))) (kind featureTyping) (ordinal 0))
+      (authored-target "MissingFirst")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/diagnostic_canonical_order.md") (qualified-name "P::bad_second"))) (kind featureTyping) (ordinal 0))
+      (authored-target "MissingSecond")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -53,23 +57,13 @@ package P {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 1 21) (end 1 33)) (probe (position 1 21))
-      (reference
-        (source (document "d0") (qualified-name "P::bad_first"))
-        (kind featureTyping) (ordinal 0) (authored-target "MissingFirst")
-        (range (start 1 21) (end 1 33))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 2 22) (end 2 35)) (probe (position 2 22))
-      (reference
-        (source (document "d0") (qualified-name "P::bad_second"))
-        (kind featureTyping) (ordinal 0) (authored-target "MissingSecond")
-        (range (start 2 22) (end 2 35))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/diagnostic_canonical_order.md") (range (start 1 21) (end 1 33)) (probe (position 1 21))
+    (reference (id (source (node (document "memory://snapshot/diagnostic_canonical_order.md") (qualified-name "P::bad_first"))) (kind featureTyping) (ordinal 0) (authored-target "MissingFirst")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/diagnostic_canonical_order.md") (range (start 2 22) (end 2 35)) (probe (position 2 22))
+    (reference (id (source (node (document "memory://snapshot/diagnostic_canonical_order.md") (qualified-name "P::bad_second"))) (kind featureTyping) (ordinal 0) (authored-target "MissingSecond")
+      (outcome (status unresolved)))
   )
 )
 ~~~

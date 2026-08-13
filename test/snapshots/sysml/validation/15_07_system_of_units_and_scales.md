@@ -55,36 +55,40 @@ package '15_07-System of Units and Scales' {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "15_07_system_of_units_and_scales.md"
+  (document "memory://snapshot/15_07_system_of_units_and_scales.md"
     (diagnostics
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 19) (end 1 22))
+        (range (start 1 19) (end 1 25))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 2 19) (end 2 35))
+        (range (start 2 19) (end 2 38))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "bee86478630525c941e2a70ee23760925b518f5cce05f0cb421e98d35aed5a03") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "15_07-System of Units and Scales"))) (kind "package") (name "15_07-System of Units and Scales") (declared-name "15_07-System of Units and Scales"))
-    (element (id (node (document "d0") (qualified-name "15_07-System of Units and Scales::*"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "15_07-System of Units and Scales"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQ::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "15_07-System of Units and Scales::*#import"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "15_07-System of Units and Scales"))) (authored (membership (kind Import) (visibility "private") (import (reference "USCustomaryUnits::*") (origin Import) (shape Namespace) (recursive false)))))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:9e006ca56a1ee9db24a8167f8a17a3e6e49185b6b8ff43e498434d446d473dd1") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/15_07_system_of_units_and_scales.md") (qualified-name "15_07-System of Units and Scales"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/15_07_system_of_units_and_scales.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ISQ") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/15_07_system_of_units_and_scales.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "USCustomaryUnits") (import (shape namespace) (recursive false)))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "15_07-System of Units and Scales::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ISQ::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "15_07-System of Units and Scales::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "USCustomaryUnits::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
+    (reference (id (source (node (document "memory://snapshot/15_07_system_of_units_and_scales.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "ISQ")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/15_07_system_of_units_and_scales.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "USCustomaryUnits")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -95,23 +99,13 @@ package '15_07-System of Units and Scales' {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 1 19) (end 1 22)) (probe (position 1 19))
-      (reference
-        (source (document "d0") (qualified-name "15_07-System of Units and Scales::*"))
-        (kind namespaceImport) (ordinal 0) (authored-target "ISQ::*")
-        (range (start 1 19) (end 1 22))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 2 19) (end 2 35)) (probe (position 2 19))
-      (reference
-        (source (document "d0") (qualified-name "15_07-System of Units and Scales::*#import"))
-        (kind namespaceImport) (ordinal 0) (authored-target "USCustomaryUnits::*")
-        (range (start 2 19) (end 2 35))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/15_07_system_of_units_and_scales.md") (range (start 1 19) (end 1 25)) (probe (position 1 19))
+    (reference (id (source (node (document "memory://snapshot/15_07_system_of_units_and_scales.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "ISQ")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/15_07_system_of_units_and_scales.md") (range (start 2 19) (end 2 38)) (probe (position 2 19))
+    (reference (id (source (node (document "memory://snapshot/15_07_system_of_units_and_scales.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0) (authored-target "USCustomaryUnits")
+      (outcome (status unresolved)))
   )
 )
 ~~~

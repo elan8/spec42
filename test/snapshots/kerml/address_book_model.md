@@ -22,30 +22,54 @@ package AddressBookModel {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "address_book_model.md"
+  (document "memory://snapshot/address_book_model.md"
     (diagnostics
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 0 15) (end 0 27))
+        (range (start 0 15) (end 0 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 3 1) (end 6 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 3 1) (end 6 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 8 1) (end 10 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 8 1) (end 10 2))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "a2ff6b0a789622e7b61c47aef47962fbd74aae35fa27bc344be488833f10354e") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "*"))) (kind "import") (name "*") (declared-name "*") (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "AddressBookModel"))) (kind "package") (name "AddressBookModel") (declared-name "AddressBookModel"))
-    (element (id (node (document "d0") (qualified-name "AddressBookModel::AddressBook"))) (kind "classifier decl") (name "AddressBook") (declared-name "AddressBook") (parent (node (document "d0") (qualified-name "AddressBookModel"))))
-    (element (id (node (document "d0") (qualified-name "AddressBookModel::Entry"))) (kind "classifier decl") (name "Entry") (declared-name "Entry") (parent (node (document "d0") (qualified-name "AddressBookModel"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:297623dea97756fce5b300d3ecd783d69afb6e05da22e957fa27559f2600c782") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/address_book_model.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/address_book_model.md") (qualified-name "AddressBookModel"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarValues::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
+    (reference (id (source (node (document "memory://snapshot/address_book_model.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "ScalarValues")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -56,15 +80,9 @@ package AddressBookModel {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 0 15) (end 0 27)) (probe (position 0 15))
-      (reference
-        (source (document "d0") (qualified-name "*"))
-        (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues::*")
-        (range (start 0 15) (end 0 27))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/address_book_model.md") (range (start 0 15) (end 0 30)) (probe (position 0 15))
+    (reference (id (source (node (document "memory://snapshot/address_book_model.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues")
+      (outcome (status unresolved)))
   )
 )
 ~~~

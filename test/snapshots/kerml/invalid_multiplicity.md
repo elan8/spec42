@@ -14,21 +14,54 @@ package InvalidMult {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "invalid_multiplicity.md"
+  (document "memory://snapshot/invalid_multiplicity.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 1 4) (end 1 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 1 4) (end 1 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 2 4) (end 2 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 2 4) (end 2 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 3 4) (end 3 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 3 4) (end 3 28))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "77c81d1c2fac3b9db063ddee3325842b91dd55f6a85c6c272194e7b5c1c59d8c") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "InvalidMult"))) (kind "package") (name "InvalidMult") (declared-name "InvalidMult"))
-    (element (id (node (document "d0") (qualified-name "InvalidMult::AlsoBad"))) (kind "classifier decl") (name "AlsoBad") (declared-name "AlsoBad") (parent (node (document "d0") (qualified-name "InvalidMult"))))
-    (element (id (node (document "d0") (qualified-name "InvalidMult::Bad"))) (kind "classifier decl") (name "Bad") (declared-name "Bad") (parent (node (document "d0") (qualified-name "InvalidMult"))))
-    (element (id (node (document "d0") (qualified-name "InvalidMult::Valid"))) (kind "classifier decl") (name "Valid") (declared-name "Valid") (parent (node (document "d0") (qualified-name "InvalidMult"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:84cfa0a389a471ec90c2ee39db33f0677f52c92146ede37f595699a772b912d8") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/invalid_multiplicity.md") (qualified-name "InvalidMult"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

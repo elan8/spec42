@@ -61,7 +61,7 @@ standard library package Metaobjects {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "metaobjects.md"
+  (document "memory://snapshot/metaobjects.md"
     (diagnostics
       (diagnostic
         (severity warning)
@@ -87,32 +87,70 @@ standard library package Metaobjects {
         (source "semantic")
         (range (start 8 19) (end 8 30))
       )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 10 4) (end 24 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 10 4) (end 24 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 26 4) (end 43 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 26 4) (end 43 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 45 4) (end 50 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 45 4) (end 50 5))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "d994c3c865ab8b5ec41202e1c53d7fa377b9ea423d3fb2283bbbf494d33f400f") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Metaobjects"))) (kind "package") (name "Metaobjects") (declared-name "Metaobjects"))
-    (element (id (node (document "d0") (qualified-name "Metaobjects::Element"))) (kind "import") (name "Element") (declared-name "Element") (parent (node (document "d0") (qualified-name "Metaobjects"))) (authored (membership (kind Import) (visibility "private") (import (reference "KerML::Element") (origin Import) (shape Membership) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "Metaobjects::Metaobject"))) (kind "kermlDecl") (name "Metaobject") (declared-name "Metaobject") (parent (node (document "d0") (qualified-name "Metaobjects"))))
-    (element (id (node (document "d0") (qualified-name "Metaobjects::Object"))) (kind "import") (name "Object") (declared-name "Object") (parent (node (document "d0") (qualified-name "Metaobjects"))) (authored (membership (kind Import) (visibility "private") (import (reference "Objects::Object") (origin Import) (shape Membership) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "Metaobjects::SemanticMetadata"))) (kind "metadata def") (name "SemanticMetadata") (declared-name "SemanticMetadata") (parent (node (document "d0") (qualified-name "Metaobjects"))))
-    (element (id (node (document "d0") (qualified-name "Metaobjects::SemanticMetadata::baseType"))) (kind "attribute def") (name "baseType") (declared-name "baseType") (parent (node (document "d0") (qualified-name "Metaobjects::SemanticMetadata"))))
-    (element (id (node (document "d0") (qualified-name "Metaobjects::SemanticMetadata::redefines"))) (kind "attribute def") (name "redefines") (declared-name "redefines") (parent (node (document "d0") (qualified-name "Metaobjects::SemanticMetadata"))))
-    (element (id (node (document "d0") (qualified-name "Metaobjects::Type"))) (kind "import") (name "Type") (declared-name "Type") (parent (node (document "d0") (qualified-name "Metaobjects"))) (authored (membership (kind Import) (visibility "private") (import (reference "KerML::Type") (origin Import) (shape Membership) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "Metaobjects::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "Metaobjects"))))
-    (element (id (node (document "d0") (qualified-name "Metaobjects::metaobjects"))) (kind "feature decl") (name "metaobjects") (declared-name "metaobjects") (parent (node (document "d0") (qualified-name "Metaobjects"))))
-    (element (id (node (document "d0") (qualified-name "Metaobjects::objects"))) (kind "import") (name "objects") (declared-name "objects") (parent (node (document "d0") (qualified-name "Metaobjects"))) (authored (membership (kind Import) (visibility "private") (import (reference "Objects::objects") (origin Import) (shape Membership) (recursive false)))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:17fdd9335fdd59579b9677b75a3df83454d2a5c529007cc2ceaba22762f091a7") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/metaobjects.md") (qualified-name "Metaobjects"))) (kind library-package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/metaobjects.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Objects::Object") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/metaobjects.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Objects::objects") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/metaobjects.md") (anonymous (kind import) (ordinal 2))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "KerML::Element") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/metaobjects.md") (anonymous (kind import) (ordinal 3))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "KerML::Type") (import (shape membership) (recursive false)))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "Metaobjects::Element"))) (kind membershipImport) (ordinal 0)) (authored-target "KerML::Element") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Metaobjects::Object"))) (kind membershipImport) (ordinal 0)) (authored-target "Objects::Object") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Metaobjects::Type"))) (kind membershipImport) (ordinal 0)) (authored-target "KerML::Type") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Metaobjects::objects"))) (kind membershipImport) (ordinal 0)) (authored-target "Objects::objects") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
+    (reference (id (source (node (document "memory://snapshot/metaobjects.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
+      (authored-target "Objects::Object")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/metaobjects.md") (anonymous (kind import) (ordinal 1))))) (kind membershipImport) (ordinal 0))
+      (authored-target "Objects::objects")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/metaobjects.md") (anonymous (kind import) (ordinal 2))))) (kind membershipImport) (ordinal 0))
+      (authored-target "KerML::Element")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/metaobjects.md") (anonymous (kind import) (ordinal 3))))) (kind membershipImport) (ordinal 0))
+      (authored-target "KerML::Type")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -123,39 +161,21 @@ standard library package Metaobjects {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 8 19) (end 8 30)) (probe (position 8 19))
-      (reference
-        (source (document "d0") (qualified-name "Metaobjects::Type"))
-        (kind membershipImport) (ordinal 0) (authored-target "KerML::Type")
-        (range (start 8 19) (end 8 30))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 7 19) (end 7 33)) (probe (position 7 19))
-      (reference
-        (source (document "d0") (qualified-name "Metaobjects::Element"))
-        (kind membershipImport) (ordinal 0) (authored-target "KerML::Element")
-        (range (start 7 19) (end 7 33))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 5 19) (end 5 34)) (probe (position 5 19))
-      (reference
-        (source (document "d0") (qualified-name "Metaobjects::Object"))
-        (kind membershipImport) (ordinal 0) (authored-target "Objects::Object")
-        (range (start 5 19) (end 5 34))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 6 19) (end 6 35)) (probe (position 6 19))
-      (reference
-        (source (document "d0") (qualified-name "Metaobjects::objects"))
-        (kind membershipImport) (ordinal 0) (authored-target "Objects::objects")
-        (range (start 6 19) (end 6 35))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/metaobjects.md") (range (start 5 19) (end 5 34)) (probe (position 5 19))
+    (reference (id (source (node (document "memory://snapshot/metaobjects.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "Objects::Object")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/metaobjects.md") (range (start 6 19) (end 6 35)) (probe (position 6 19))
+    (reference (id (source (node (document "memory://snapshot/metaobjects.md") (anonymous (kind import) (ordinal 1))))) (kind membershipImport) (ordinal 0) (authored-target "Objects::objects")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/metaobjects.md") (range (start 7 19) (end 7 33)) (probe (position 7 19))
+    (reference (id (source (node (document "memory://snapshot/metaobjects.md") (anonymous (kind import) (ordinal 2))))) (kind membershipImport) (ordinal 0) (authored-target "KerML::Element")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/metaobjects.md") (range (start 8 19) (end 8 30)) (probe (position 8 19))
+    (reference (id (source (node (document "memory://snapshot/metaobjects.md") (anonymous (kind import) (ordinal 3))))) (kind membershipImport) (ordinal 0) (authored-target "KerML::Type")
+      (outcome (status unresolved)))
   )
 )
 ~~~

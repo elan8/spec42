@@ -15,25 +15,36 @@ package 'αβ' {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "unicode_identifiers.md"
+  (document "memory://snapshot/unicode_identifiers.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 1 4) (end 1 19))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 1 4) (end 1 19))
+      )
       (diagnostic
         (severity error)
         (code "unrecognized_declaration_in_scope")
-        (source "sysml")
-        (range (start 2 4) (end 2 81))
+        (source "parser")
+        (range (start 2 4) (end 5 0))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "bc71cc2126695b9b4f16f905938197687270248bed2b21f4400605202a6021c9") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "αβ"))) (kind "package") (name "αβ") (declared-name "αβ"))
-    (element (id (node (document "d0") (qualified-name "αβ::class"))) (kind "classifier decl") (name "class") (declared-name "class") (parent (node (document "d0") (qualified-name "αβ"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:f8a23e6174d62e17d3c65b92b6caa884baa28c0d45ccde488656c537a2982539") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/unicode_identifiers.md") (qualified-name "αβ"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

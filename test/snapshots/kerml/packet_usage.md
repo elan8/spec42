@@ -25,13 +25,13 @@ package 'Packet Usage' {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "packet_usage.md"
+  (document "memory://snapshot/packet_usage.md"
     (diagnostics
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 0 15) (end 0 22))
+        (range (start 0 15) (end 0 25))
       )
       (diagnostic
         (severity warning)
@@ -39,25 +39,62 @@ package 'Packet Usage' {
         (source "semantic")
         (range (start 1 15) (end 1 33))
       )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 4 1) (end 4 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 4 1) (end 4 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 5 1) (end 5 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 5 1) (end 5 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 6 1) (end 12 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 6 1) (end 12 2))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "77990fc602b1a57d1e6709a71b2eecafdfdb633c6b0aa15863475ba9f18143b3") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "*"))) (kind "import") (name "*") (declared-name "*") (authored (membership (kind Import) (visibility "private") (import (reference "Packets::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "Packet Usage"))) (kind "package") (name "Packet Usage") (declared-name "Packet Usage"))
-    (element (id (node (document "d0") (qualified-name "Packet Usage::packet1"))) (kind "feature decl") (name "packet1") (declared-name "packet1") (parent (node (document "d0") (qualified-name "Packet Usage"))))
-    (element (id (node (document "d0") (qualified-name "Packet Usage::packet2"))) (kind "feature decl") (name "packet2") (declared-name "packet2") (parent (node (document "d0") (qualified-name "Packet Usage"))))
-    (element (id (node (document "d0") (qualified-name "Packet Usage::packet3"))) (kind "feature decl") (name "packet3") (declared-name "packet3") (parent (node (document "d0") (qualified-name "Packet Usage"))))
-    (element (id (node (document "d0") (qualified-name "Real"))) (kind "import") (name "Real") (declared-name "Real") (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Real") (origin Import) (shape Membership) (recursive false)))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:3355488f143ea1f1ed163b4d5fe64e9bcdc5076435e5801fad2f2806b2c637ac") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/packet_usage.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Packets") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/packet_usage.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/packet_usage.md") (qualified-name "Packet Usage"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Packets::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Real"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Real") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
+    (reference (id (source (node (document "memory://snapshot/packet_usage.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "Packets")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/packet_usage.md") (anonymous (kind import) (ordinal 1))))) (kind membershipImport) (ordinal 0))
+      (authored-target "ScalarValues::Real")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -68,23 +105,13 @@ package 'Packet Usage' {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 0 15) (end 0 22)) (probe (position 0 15))
-      (reference
-        (source (document "d0") (qualified-name "*"))
-        (kind namespaceImport) (ordinal 0) (authored-target "Packets::*")
-        (range (start 0 15) (end 0 22))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 1 15) (end 1 33)) (probe (position 1 15))
-      (reference
-        (source (document "d0") (qualified-name "Real"))
-        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Real")
-        (range (start 1 15) (end 1 33))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/packet_usage.md") (range (start 0 15) (end 0 25)) (probe (position 0 15))
+    (reference (id (source (node (document "memory://snapshot/packet_usage.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "Packets")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/packet_usage.md") (range (start 1 15) (end 1 33)) (probe (position 1 15))
+    (reference (id (source (node (document "memory://snapshot/packet_usage.md") (anonymous (kind import) (ordinal 1))))) (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Real")
+      (outcome (status unresolved)))
   )
 )
 ~~~

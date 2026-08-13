@@ -24,22 +24,19 @@ package Comments {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "comments.md"
+  (document "memory://snapshot/comments.md"
     (diagnostics
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "0e322d9781ce40d4c5e292383b1a32f3fb930c4bf68f3af2c2273f5d341b9054") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Comments"))) (kind "package") (name "Comments") (declared-name "Comments"))
-    (element (id (node (document "d0") (qualified-name "Comments::C"))) (kind "part def") (name "C") (declared-name "C") (parent (node (document "d0") (qualified-name "Comments"))))
-    (element (id (node (document "d0") (qualified-name "Comments::C::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "Comments::C"))))
-    (element (id (node (document "d0") (qualified-name "Comments::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "Comments"))))
-    (element (id (node (document "d0") (qualified-name "Comments::_documentation#documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "Comments"))))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:e183ded80174e3b0ddd4c289f66fa542e972a5051a9a34c42fc99cfc114f4941") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/comments.md") (qualified-name "Comments"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/comments.md") (qualified-name "Comments::C"))) (kind part-def) (membership (kind owning) (visibility default)))
   )
   (references
   )

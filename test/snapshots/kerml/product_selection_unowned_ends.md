@@ -56,25 +56,102 @@ package ProductSelection_UnownedEnds {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "product_selection_unowned_ends.md"
+  (document "memory://snapshot/product_selection_unowned_ends.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 2 1) (end 2 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 2 1) (end 2 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 3 1) (end 5 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 3 1) (end 5 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 6 1) (end 8 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 6 1) (end 8 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 10 1) (end 15 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 10 1) (end 15 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 17 1) (end 20 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 17 1) (end 20 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 23 1) (end 30 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 23 1) (end 30 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 32 1) (end 44 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 32 1) (end 44 2))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "5b89bd65886a6c893e85c52221f0850fc4e785839d43b201091206f05d1d81d4") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds"))) (kind "package") (name "ProductSelection_UnownedEnds") (declared-name "ProductSelection_UnownedEnds"))
-    (element (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds::OnlineCustomer"))) (kind "classifier decl") (name "OnlineCustomer") (declared-name "OnlineCustomer") (parent (node (document "d0") (qualified-name "ProductSelection_UnownedEnds"))))
-    (element (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds::Product"))) (kind "classifier decl") (name "Product") (declared-name "Product") (parent (node (document "d0") (qualified-name "ProductSelection_UnownedEnds"))))
-    (element (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds::ProductSelection"))) (kind "kermlDecl") (name "ProductSelection") (declared-name "ProductSelection") (parent (node (document "d0") (qualified-name "ProductSelection_UnownedEnds"))))
-    (element (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds::SelectionInfo"))) (kind "classifier decl") (name "SelectionInfo") (declared-name "SelectionInfo") (parent (node (document "d0") (qualified-name "ProductSelection_UnownedEnds"))))
-    (element (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds::ShoppingCart"))) (kind "classifier decl") (name "ShoppingCart") (declared-name "ShoppingCart") (parent (node (document "d0") (qualified-name "ProductSelection_UnownedEnds"))))
-    (element (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds::SingleProductSelection"))) (kind "kermlDecl") (name "SingleProductSelection") (declared-name "SingleProductSelection") (parent (node (document "d0") (qualified-name "ProductSelection_UnownedEnds"))))
-    (element (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds::SingleProductSelection1"))) (kind "kermlDecl") (name "SingleProductSelection1") (declared-name "SingleProductSelection1") (parent (node (document "d0") (qualified-name "ProductSelection_UnownedEnds"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:88c3612c9711c48da83f3ee410c82a7a35f2cad03b830bb9bd4eaa4ecb57ab0e") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

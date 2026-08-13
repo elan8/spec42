@@ -42,22 +42,66 @@ package Classes {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "classes.md"
+  (document "memory://snapshot/classes.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 2 1) (end 2 14))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 2 1) (end 2 14))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 4 1) (end 8 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 4 1) (end 8 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 10 1) (end 22 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 10 1) (end 22 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 24 1) (end 30 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 24 1) (end 30 2))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "8a2d88a449dd53a1097534fa3636ffeef7488ed1f20a745e3741de74999bc582") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Classes"))) (kind "package") (name "Classes") (declared-name "Classes"))
-    (element (id (node (document "d0") (qualified-name "Classes::1"))) (kind "classifier decl") (name "1") (declared-name "1") (parent (node (document "d0") (qualified-name "Classes"))))
-    (element (id (node (document "d0") (qualified-name "Classes::2"))) (kind "classifier decl") (name "2") (declared-name "2") (parent (node (document "d0") (qualified-name "Classes"))))
-    (element (id (node (document "d0") (qualified-name "Classes::C"))) (kind "classifier decl") (name "C") (declared-name "C") (parent (node (document "d0") (qualified-name "Classes"))))
-    (element (id (node (document "d0") (qualified-name "Classes::f"))) (kind "feature decl") (name "f") (declared-name "f") (parent (node (document "d0") (qualified-name "Classes"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:4c91479d93359c3d2f3ae0a07da52df75ff5acf6a2a9e45359b56454ef729b47") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/classes.md") (qualified-name "Classes"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

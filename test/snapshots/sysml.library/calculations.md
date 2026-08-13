@@ -46,7 +46,7 @@ standard library package Calculations {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "calculations.md"
+  (document "memory://snapshot/calculations.md"
     (diagnostics
       (diagnostic
         (severity warning)
@@ -72,82 +72,71 @@ standard library package Calculations {
         (source "semantic")
         (range (start 10 16) (end 10 32))
       )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 12 1) (end 28 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 30 1) (end 35 2))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "2784623ca7d31d17862567f20e3eef437646a1c3c3622b31436c64eac39de589") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Calculations"))) (kind "package") (name "Calculations") (declared-name "Calculations"))
-    (element (id (node (document "d0") (qualified-name "Calculations::Action"))) (kind "import") (name "Action") (declared-name "Action") (parent (node (document "d0") (qualified-name "Calculations"))) (authored (membership (kind Import) (visibility "private") (import (reference "Actions::Action") (origin Import) (shape Membership) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "Calculations::Calculation"))) (kind "calc def") (name "Calculation") (declared-name "Calculation") (parent (node (document "d0") (qualified-name "Calculations"))))
-    (element (id (node (document "d0") (qualified-name "Calculations::Calculation::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "Calculations::Calculation"))))
-    (element (id (node (document "d0") (qualified-name "Calculations::Calculation::self"))) (kind "calc") (name "self") (declared-name "self") (parent (node (document "d0") (qualified-name "Calculations::Calculation"))) (authored (membership (kind Feature)) (relationships (typing (reference "Calculation")))))
-    (element (id (node (document "d0") (qualified-name "Calculations::Calculation::subcalculations"))) (kind "calc") (name "subcalculations") (declared-name "subcalculations") (parent (node (document "d0") (qualified-name "Calculations::Calculation"))) (authored (membership (kind Feature)) (relationships (typing (reference "Calculation")))))
-    (element (id (node (document "d0") (qualified-name "Calculations::Calculation::subcalculations::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "Calculations::Calculation::subcalculations"))))
-    (element (id (node (document "d0") (qualified-name "Calculations::Evaluation"))) (kind "import") (name "Evaluation") (declared-name "Evaluation") (parent (node (document "d0") (qualified-name "Calculations"))) (authored (membership (kind Import) (visibility "private") (import (reference "Performances::Evaluation") (origin Import) (shape Membership) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "Calculations::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "Calculations"))))
-    (element (id (node (document "d0") (qualified-name "Calculations::actions"))) (kind "import") (name "actions") (declared-name "actions") (parent (node (document "d0") (qualified-name "Calculations"))) (authored (membership (kind Import) (visibility "private") (import (reference "Actions::actions") (origin Import) (shape Membership) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "Calculations::calculations"))) (kind "calc def") (name "calculations") (declared-name "calculations") (parent (node (document "d0") (qualified-name "Calculations"))))
-    (element (id (node (document "d0") (qualified-name "Calculations::calculations::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "Calculations::calculations"))))
-    (element (id (node (document "d0") (qualified-name "Calculations::evaluations"))) (kind "import") (name "evaluations") (declared-name "evaluations") (parent (node (document "d0") (qualified-name "Calculations"))) (authored (membership (kind Import) (visibility "private") (import (reference "Performances::evaluations") (origin Import) (shape Membership) (recursive false)))))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:76edc93a07e743414784c68e1469af2a857523f9f84b6ed941875b990b53c295") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations"))) (kind library-package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/calculations.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Performances::Evaluation") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/calculations.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Performances::evaluations") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/calculations.md") (anonymous (kind import) (ordinal 2))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Actions::Action") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/calculations.md") (anonymous (kind import) (ordinal 3))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Actions::actions") (import (shape membership) (recursive false)))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "Calculations::Action"))) (kind membershipImport) (ordinal 0)) (authored-target "Actions::Action") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Calculations::Calculation::self"))) (kind featureTyping) (ordinal 0)) (authored-target "Calculation") (outcome (status resolved) (target (node (document "d0") (qualified-name "Calculations::Calculation")))))
-    (reference (id (source (node (document "d0") (qualified-name "Calculations::Calculation::subcalculations"))) (kind featureTyping) (ordinal 0)) (authored-target "Calculation") (outcome (status resolved) (target (node (document "d0") (qualified-name "Calculations::Calculation")))))
-    (reference (id (source (node (document "d0") (qualified-name "Calculations::Evaluation"))) (kind membershipImport) (ordinal 0)) (authored-target "Performances::Evaluation") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Calculations::actions"))) (kind membershipImport) (ordinal 0)) (authored-target "Actions::actions") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Calculations::evaluations"))) (kind membershipImport) (ordinal 0)) (authored-target "Performances::evaluations") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
+    (reference (id (source (node (document "memory://snapshot/calculations.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
+      (authored-target "Performances::Evaluation")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/calculations.md") (anonymous (kind import) (ordinal 1))))) (kind membershipImport) (ordinal 0))
+      (authored-target "Performances::evaluations")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/calculations.md") (anonymous (kind import) (ordinal 2))))) (kind membershipImport) (ordinal 0))
+      (authored-target "Actions::Action")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/calculations.md") (anonymous (kind import) (ordinal 3))))) (kind membershipImport) (ordinal 0))
+      (authored-target "Actions::actions")
+      (outcome (status unresolved)))
   )
   (relationships
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "Calculations::Calculation::self"))) (target (node (document "d0") (qualified-name "Calculations::Calculation"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Calculations::Calculation::self"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "Calculations::Calculation::subcalculations"))) (target (node (document "d0") (qualified-name "Calculations::Calculation"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Calculations::Calculation::subcalculations"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (node (node (document "d0") (qualified-name "Calculations::Calculation")) (expression (status "unresolved") (error "expression has an unresolved reference")))
   )
 )
 ~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 9 16) (end 9 31)) (probe (position 9 16))
-      (reference
-        (source (document "d0") (qualified-name "Calculations::Action"))
-        (kind membershipImport) (ordinal 0) (authored-target "Actions::Action")
-        (range (start 9 16) (end 9 31))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 10 16) (end 10 32)) (probe (position 10 16))
-      (reference
-        (source (document "d0") (qualified-name "Calculations::actions"))
-        (kind membershipImport) (ordinal 0) (authored-target "Actions::actions")
-        (range (start 10 16) (end 10 32))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 7 16) (end 7 40)) (probe (position 7 16))
-      (reference
-        (source (document "d0") (qualified-name "Calculations::Evaluation"))
-        (kind membershipImport) (ordinal 0) (authored-target "Performances::Evaluation")
-        (range (start 7 16) (end 7 40))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 8 16) (end 8 41)) (probe (position 8 16))
-      (reference
-        (source (document "d0") (qualified-name "Calculations::evaluations"))
-        (kind membershipImport) (ordinal 0) (authored-target "Performances::evaluations")
-        (range (start 8 16) (end 8 41))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/calculations.md") (range (start 7 16) (end 7 40)) (probe (position 7 16))
+    (reference (id (source (node (document "memory://snapshot/calculations.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "Performances::Evaluation")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/calculations.md") (range (start 8 16) (end 8 41)) (probe (position 8 16))
+    (reference (id (source (node (document "memory://snapshot/calculations.md") (anonymous (kind import) (ordinal 1))))) (kind membershipImport) (ordinal 0) (authored-target "Performances::evaluations")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/calculations.md") (range (start 9 16) (end 9 31)) (probe (position 9 16))
+    (reference (id (source (node (document "memory://snapshot/calculations.md") (anonymous (kind import) (ordinal 2))))) (kind membershipImport) (ordinal 0) (authored-target "Actions::Action")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/calculations.md") (range (start 10 16) (end 10 32)) (probe (position 10 16))
+    (reference (id (source (node (document "memory://snapshot/calculations.md") (anonymous (kind import) (ordinal 3))))) (kind membershipImport) (ordinal 0) (authored-target "Actions::actions")
+      (outcome (status unresolved)))
   )
 )
 ~~~

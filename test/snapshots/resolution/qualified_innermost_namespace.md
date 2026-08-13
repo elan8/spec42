@@ -18,7 +18,7 @@ package C {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "qualified_innermost_namespace.md"
+  (document "memory://snapshot/qualified_innermost_namespace.md"
     (diagnostics
     )
   )
@@ -27,20 +27,22 @@ package C {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "5c7b706d304eaadd49f72a9a58289c60db6ee9b307666cfc827e564c544905b2") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "A"))) (kind "package") (name "A") (declared-name "A"))
-    (element (id (node (document "d0") (qualified-name "A::T"))) (kind "part def") (name "T") (declared-name "T") (parent (node (document "d0") (qualified-name "A"))))
-    (element (id (node (document "d0") (qualified-name "C"))) (kind "package") (name "C") (declared-name "C"))
-    (element (id (node (document "d0") (qualified-name "C::A"))) (kind "package") (name "A") (declared-name "A") (parent (node (document "d0") (qualified-name "C"))))
-    (element (id (node (document "d0") (qualified-name "C::A::T"))) (kind "part def") (name "T") (declared-name "T") (parent (node (document "d0") (qualified-name "C::A"))))
-    (element (id (node (document "d0") (qualified-name "C::p"))) (kind "part") (name "p") (declared-name "p") (parent (node (document "d0") (qualified-name "C"))) (authored (membership (kind Feature)) (relationships (typing (reference "A::T")))))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:2d824647a809458b422e075f80c32dc855b8f39cfc8a6345bf1d1f7a437168d3") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/qualified_innermost_namespace.md") (qualified-name "A"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/qualified_innermost_namespace.md") (qualified-name "A::T"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/qualified_innermost_namespace.md") (qualified-name "C"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/qualified_innermost_namespace.md") (qualified-name "C::A"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/qualified_innermost_namespace.md") (qualified-name "C::A::T"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/qualified_innermost_namespace.md") (qualified-name "C::p"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "A::T"))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "C::p"))) (kind featureTyping) (ordinal 0)) (authored-target "A::T") (outcome (status resolved) (target (node (document "d0") (qualified-name "C::A::T")))))
+    (reference (id (source (node (document "memory://snapshot/qualified_innermost_namespace.md") (qualified-name "C::p"))) (kind featureTyping) (ordinal 0))
+      (authored-target "A::T")
+      (outcome (status resolved) (target (node (document "memory://snapshot/qualified_innermost_namespace.md") (qualified-name "C::A::T")))))
   )
   (relationships
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "C::p"))) (target (node (document "d0") (qualified-name "C::A::T"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "C::p"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/qualified_innermost_namespace.md") (qualified-name "C::p"))) (target (node (document "memory://snapshot/qualified_innermost_namespace.md") (qualified-name "C::A::T"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/qualified_innermost_namespace.md") (qualified-name "C::p"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )
@@ -49,17 +51,9 @@ package C {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 7 13) (end 7 17)) (probe (position 7 13))
-      (reference
-        (source (document "d0") (qualified-name "C::p"))
-        (kind featureTyping) (ordinal 0) (authored-target "A::T")
-        (range (start 7 13) (end 7 17))
-        (outcome (status resolved)
-          (target (document "d0") (qualified-name "C::A::T") (range (start 5 8) (end 5 19)))
-        )
-      )
-    )
+  (query (document "memory://snapshot/qualified_innermost_namespace.md") (range (start 7 13) (end 7 17)) (probe (position 7 13))
+    (reference (id (source (node (document "memory://snapshot/qualified_innermost_namespace.md") (qualified-name "C::p"))) (kind featureTyping) (ordinal 0) (authored-target "A::T")
+      (outcome (status resolved) (target (node (document "memory://snapshot/qualified_innermost_namespace.md") (qualified-name "C::A::T")))))
   )
 )
 ~~~

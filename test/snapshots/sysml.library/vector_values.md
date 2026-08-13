@@ -66,7 +66,7 @@ standard library package VectorValues {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "vector_values.md"
+  (document "memory://snapshot/vector_values.md"
     (diagnostics
       (diagnostic
         (severity warning)
@@ -86,30 +86,90 @@ standard library package VectorValues {
         (source "semantic")
         (range (start 9 19) (end 9 37))
       )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 11 4) (end 16 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 11 4) (end 16 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 18 4) (end 28 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 18 4) (end 28 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 30 4) (end 40 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 30 4) (end 40 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 42 4) (end 48 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 42 4) (end 48 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 50 4) (end 55 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 50 4) (end 55 5))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "2bbbb529042a81e0a970b62815302faa024b6068ee2cd7463f9cc60e2edde266") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "VectorValues"))) (kind "package") (name "VectorValues") (declared-name "VectorValues"))
-    (element (id (node (document "d0") (qualified-name "VectorValues::Array"))) (kind "import") (name "Array") (declared-name "Array") (parent (node (document "d0") (qualified-name "VectorValues"))) (authored (membership (kind Import) (visibility "private") (import (reference "Collections::Array") (origin Import) (shape Membership) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "VectorValues::CartesianThreeVectorValue"))) (kind "kermlDecl") (name "CartesianThreeVectorValue") (declared-name "CartesianThreeVectorValue") (parent (node (document "d0") (qualified-name "VectorValues"))))
-    (element (id (node (document "d0") (qualified-name "VectorValues::CartesianVectorValue"))) (kind "kermlDecl") (name "CartesianVectorValue") (declared-name "CartesianVectorValue") (parent (node (document "d0") (qualified-name "VectorValues"))))
-    (element (id (node (document "d0") (qualified-name "VectorValues::NumericalValue"))) (kind "import") (name "NumericalValue") (declared-name "NumericalValue") (parent (node (document "d0") (qualified-name "VectorValues"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::NumericalValue") (origin Import) (shape Membership) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "VectorValues::NumericalVectorValue"))) (kind "kermlDecl") (name "NumericalVectorValue") (declared-name "NumericalVectorValue") (parent (node (document "d0") (qualified-name "VectorValues"))))
-    (element (id (node (document "d0") (qualified-name "VectorValues::Real"))) (kind "import") (name "Real") (declared-name "Real") (parent (node (document "d0") (qualified-name "VectorValues"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Real") (origin Import) (shape Membership) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "VectorValues::ThreeVectorValue"))) (kind "kermlDecl") (name "ThreeVectorValue") (declared-name "ThreeVectorValue") (parent (node (document "d0") (qualified-name "VectorValues"))))
-    (element (id (node (document "d0") (qualified-name "VectorValues::VectorValue"))) (kind "kermlDecl") (name "VectorValue") (declared-name "VectorValue") (parent (node (document "d0") (qualified-name "VectorValues"))))
-    (element (id (node (document "d0") (qualified-name "VectorValues::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "VectorValues"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:5530a7186e5bb056a73150c5f4a5b6c31ee462e1423092defdf988a90e351861") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/vector_values.md") (qualified-name "VectorValues"))) (kind library-package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/vector_values.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::NumericalValue") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/vector_values.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/vector_values.md") (anonymous (kind import) (ordinal 2))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Collections::Array") (import (shape membership) (recursive false)))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "VectorValues::Array"))) (kind membershipImport) (ordinal 0)) (authored-target "Collections::Array") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "VectorValues::NumericalValue"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::NumericalValue") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "VectorValues::Real"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Real") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
+    (reference (id (source (node (document "memory://snapshot/vector_values.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
+      (authored-target "ScalarValues::NumericalValue")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/vector_values.md") (anonymous (kind import) (ordinal 1))))) (kind membershipImport) (ordinal 0))
+      (authored-target "ScalarValues::Real")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/vector_values.md") (anonymous (kind import) (ordinal 2))))) (kind membershipImport) (ordinal 0))
+      (authored-target "Collections::Array")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -120,31 +180,17 @@ standard library package VectorValues {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 8 19) (end 8 37)) (probe (position 8 19))
-      (reference
-        (source (document "d0") (qualified-name "VectorValues::Real"))
-        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Real")
-        (range (start 8 19) (end 8 37))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 9 19) (end 9 37)) (probe (position 9 19))
-      (reference
-        (source (document "d0") (qualified-name "VectorValues::Array"))
-        (kind membershipImport) (ordinal 0) (authored-target "Collections::Array")
-        (range (start 9 19) (end 9 37))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 7 19) (end 7 47)) (probe (position 7 19))
-      (reference
-        (source (document "d0") (qualified-name "VectorValues::NumericalValue"))
-        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::NumericalValue")
-        (range (start 7 19) (end 7 47))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/vector_values.md") (range (start 7 19) (end 7 47)) (probe (position 7 19))
+    (reference (id (source (node (document "memory://snapshot/vector_values.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::NumericalValue")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/vector_values.md") (range (start 8 19) (end 8 37)) (probe (position 8 19))
+    (reference (id (source (node (document "memory://snapshot/vector_values.md") (anonymous (kind import) (ordinal 1))))) (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Real")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/vector_values.md") (range (start 9 19) (end 9 37)) (probe (position 9 19))
+    (reference (id (source (node (document "memory://snapshot/vector_values.md") (anonymous (kind import) (ordinal 2))))) (kind membershipImport) (ordinal 0) (authored-target "Collections::Array")
+      (outcome (status unresolved)))
   )
 )
 ~~~

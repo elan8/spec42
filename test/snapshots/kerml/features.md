@@ -81,45 +81,210 @@ package Features {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "features.md"
+  (document "memory://snapshot/features.md"
     (diagnostics
       (diagnostic
-        (severity error)
-        (code "unrecognized_declaration_in_scope")
-        (source "sysml")
-        (range (start 15 1) (end 15 178))
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 1 1) (end 1 14))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 1 1) (end 1 14))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 2 1) (end 2 14))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 2 1) (end 2 14))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 4 1) (end 4 11))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 4 1) (end 4 11))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 5 1) (end 5 11))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 5 1) (end 5 11))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 7 1) (end 7 48))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 7 1) (end 7 48))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 10 1) (end 10 54))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 10 1) (end 10 54))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 12 1) (end 12 14))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 12 1) (end 12 14))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 14 1) (end 14 11))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 14 1) (end 14 11))
       )
       (diagnostic
         (severity error)
         (code "unrecognized_declaration_in_scope")
-        (source "sysml")
-        (range (start 41 1) (end 41 823))
+        (source "parser")
+        (range (start 15 1) (end 24 1))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 24 1) (end 24 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 24 1) (end 24 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 25 1) (end 25 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 25 1) (end 25 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 27 1) (end 27 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 27 1) (end 27 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 29 1) (end 29 17))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 29 1) (end 29 17))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 31 1) (end 36 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 31 1) (end 36 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 38 1) (end 38 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 38 1) (end 38 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 39 1) (end 39 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 39 1) (end 39 38))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "parser")
+        (range (start 41 1) (end 71 0))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "a9b7810e5bf91e8098856ecdb54a0861afd9a020ab2bb994b7013db3ddb479d3") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Features"))) (kind "package") (name "Features") (declared-name "Features"))
-    (element (id (node (document "d0") (qualified-name "Features::A"))) (kind "classifier decl") (name "A") (declared-name "A") (parent (node (document "d0") (qualified-name "Features"))))
-    (element (id (node (document "d0") (qualified-name "Features::B"))) (kind "classifier decl") (name "B") (declared-name "B") (parent (node (document "d0") (qualified-name "Features"))))
-    (element (id (node (document "d0") (qualified-name "Features::C"))) (kind "classifier decl") (name "C") (declared-name "C") (parent (node (document "d0") (qualified-name "Features"))))
-    (element (id (node (document "d0") (qualified-name "Features::Fuel"))) (kind "classifier decl") (name "Fuel") (declared-name "Fuel") (parent (node (document "d0") (qualified-name "Features"))))
-    (element (id (node (document "d0") (qualified-name "Features::Tanks"))) (kind "classifier decl") (name "Tanks") (declared-name "Tanks") (parent (node (document "d0") (qualified-name "Features"))))
-    (element (id (node (document "d0") (qualified-name "Features::adult"))) (kind "feature decl") (name "adult") (declared-name "adult") (parent (node (document "d0") (qualified-name "Features"))))
-    (element (id (node (document "d0") (qualified-name "Features::child"))) (kind "feature decl") (name "child") (declared-name "child") (parent (node (document "d0") (qualified-name "Features"))))
-    (element (id (node (document "d0") (qualified-name "Features::f"))) (kind "feature decl") (name "f") (declared-name "f") (parent (node (document "d0") (qualified-name "Features"))))
-    (element (id (node (document "d0") (qualified-name "Features::g"))) (kind "feature decl") (name "g") (declared-name "g") (parent (node (document "d0") (qualified-name "Features"))))
-    (element (id (node (document "d0") (qualified-name "Features::mother"))) (kind "feature decl") (name "mother") (declared-name "mother") (parent (node (document "d0") (qualified-name "Features"))))
-    (element (id (node (document "d0") (qualified-name "Features::parent12"))) (kind "feature decl") (name "parent12") (declared-name "parent12") (parent (node (document "d0") (qualified-name "Features"))))
-    (element (id (node (document "d0") (qualified-name "Features::person"))) (kind "feature decl") (name "person") (declared-name "person") (parent (node (document "d0") (qualified-name "Features"))))
-    (element (id (node (document "d0") (qualified-name "Features::x"))) (kind "feature decl") (name "x") (declared-name "x") (parent (node (document "d0") (qualified-name "Features"))))
-    (element (id (node (document "d0") (qualified-name "Features::x1"))) (kind "feature decl") (name "x1") (declared-name "x1") (parent (node (document "d0") (qualified-name "Features"))))
-    (element (id (node (document "d0") (qualified-name "Features::y"))) (kind "feature decl") (name "y") (declared-name "y") (parent (node (document "d0") (qualified-name "Features"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:00b61c0e836d1cea4e3d75c9e05025a79f812727ef20f86d6a231fe523e3fdcd") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/features.md") (qualified-name "Features"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

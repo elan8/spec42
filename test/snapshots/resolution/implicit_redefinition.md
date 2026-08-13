@@ -17,25 +17,13 @@ package P {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "implicit_redefinition.md"
+  (document "memory://snapshot/implicit_redefinition.md"
     (diagnostics
       (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 2 8) (end 2 30))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
         (range (start 2 25) (end 2 29))
-      )
-      (diagnostic
-        (severity error)
-        (code "implicit_redefinition_without_operator")
-        (source "semantic")
-        (range (start 5 8) (end 5 30))
       )
     )
   )
@@ -44,49 +32,39 @@ package P {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "61b234f16160faf1d81388d8acb8e8ca61228b185717c5f3c821a2fd5893b9fc") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "P"))) (kind "package") (name "P") (declared-name "P"))
-    (element (id (node (document "d0") (qualified-name "P::Base"))) (kind "part def") (name "Base") (declared-name "Base") (parent (node (document "d0") (qualified-name "P"))))
-    (element (id (node (document "d0") (qualified-name "P::Base::mass"))) (kind "attribute") (name "mass") (declared-name "mass") (parent (node (document "d0") (qualified-name "P::Base"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real")) (typing (reference "Real")))))
-    (element (id (node (document "d0") (qualified-name "P::Child"))) (kind "part def") (name "Child") (declared-name "Child") (parent (node (document "d0") (qualified-name "P"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Base")))))
-    (element (id (node (document "d0") (qualified-name "P::Child::mass"))) (kind "attribute") (name "mass") (declared-name "mass") (parent (node (document "d0") (qualified-name "P::Child"))))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:74d9089eda8be44c1433e4fddd86bfcbe49de9351c5133dee8eaaeae0eb62939") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Base"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Base::mass"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Real"))))
+    (declaration (id (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Child"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Base"))))
+    (declaration (id (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Child::mass"))) (kind attribute) (membership (kind feature) (visibility default)))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "P::Base::mass"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (outcome (status unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "P::Base::mass"))) (kind featureTyping) (ordinal 1)) (authored-target "Real") (outcome (status unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "P::Child"))) (kind specialization) (ordinal 0)) (authored-target "Base") (outcome (status resolved) (target (node (document "d0") (qualified-name "P::Base")))))
+    (reference (id (source (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Base::mass"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Real")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Child"))) (kind specialization) (ordinal 0))
+      (authored-target "Base")
+      (outcome (status resolved) (target (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Base")))))
   )
   (relationships
-    (relationship (kind specializes) (source (node (document "d0") (qualified-name "P::Child"))) (target (node (document "d0") (qualified-name "P::Base"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "P::Child"))) (kind specialization) (ordinal 0)))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Child"))) (target (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Base"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Child"))) (kind specialization) (ordinal 0)))
   )
   (evaluation
-    (node (node (document "d0") (qualified-name "P::Child::mass")) (expression (status "ok") (value (integer 1200))))
   )
 )
 ~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 2 25) (end 2 29)) (probe (position 2 25))
-      (reference
-        (source (document "d0") (qualified-name "P::Base::mass"))
-        (kind featureTyping) (ordinal 1) (authored-target "Real")
-        (range (start 2 25) (end 2 29))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 4 22) (end 4 26)) (probe (position 4 22))
-      (reference
-        (source (document "d0") (qualified-name "P::Child"))
-        (kind specialization) (ordinal 0) (authored-target "Base")
-        (range (start 4 22) (end 4 26))
-        (outcome (status resolved)
-          (target (document "d0") (qualified-name "P::Base") (range (start 1 4) (end 1 56)))
-        )
-      )
-    )
+  (query (document "memory://snapshot/implicit_redefinition.md") (range (start 2 25) (end 2 29)) (probe (position 2 25))
+    (reference (id (source (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Base::mass"))) (kind featureTyping) (ordinal 0) (authored-target "Real")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/implicit_redefinition.md") (range (start 4 22) (end 4 26)) (probe (position 4 22))
+    (reference (id (source (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Child"))) (kind specialization) (ordinal 0) (authored-target "Base")
+      (outcome (status resolved) (target (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Base")))))
   )
 )
 ~~~

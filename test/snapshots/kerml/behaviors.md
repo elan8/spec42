@@ -30,29 +30,64 @@ package Behaviors {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "behaviors.md"
+  (document "memory://snapshot/behaviors.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 1 4) (end 7 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 1 4) (end 7 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 8 4) (end 11 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 8 4) (end 11 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 12 4) (end 18 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 12 4) (end 18 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 19 4) (end 19 27))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "b5c9d6443f1b681e2709c68027980f11ffaa284da08b6b62635da2d377644d03") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Behaviors"))) (kind "package") (name "Behaviors") (declared-name "Behaviors"))
-    (element (id (node (document "d0") (qualified-name "Behaviors::A"))) (kind "kermlDecl") (name "A") (declared-name "A") (parent (node (document "d0") (qualified-name "Behaviors"))))
-    (element (id (node (document "d0") (qualified-name "Behaviors::B"))) (kind "kermlDecl") (name "B") (declared-name "B") (parent (node (document "d0") (qualified-name "Behaviors"))))
-    (element (id (node (document "d0") (qualified-name "Behaviors::C"))) (kind "classifier decl") (name "C") (declared-name "C") (parent (node (document "d0") (qualified-name "Behaviors"))))
-    (element (id (node (document "d0") (qualified-name "Behaviors::msg"))) (kind "flow") (name "msg") (declared-name "msg") (parent (node (document "d0") (qualified-name "Behaviors"))))
-    (element (id (node (document "d0") (qualified-name "Behaviors::msg::_payload"))) (kind "flow payload") (name "_payload") (declared-name "_payload") (parent (node (document "d0") (qualified-name "Behaviors::msg"))) (authored (relationships (typing (reference "C")))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:68865699f91e36a67d4f07c6f249bb6a3e1bcf946c5621a2750834b306b37d8e") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "Behaviors::msg::_payload"))) (kind featureTyping) (ordinal 0)) (authored-target "C") (outcome (status resolved) (target (node (document "d0") (qualified-name "Behaviors::C")))))
   )
   (relationships
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "Behaviors::msg::_payload"))) (target (node (document "d0") (qualified-name "Behaviors::C"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Behaviors::msg::_payload"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )

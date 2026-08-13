@@ -33,36 +33,168 @@ package ExpressionCoverage {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "coverage_expressions.md"
+  (document "memory://snapshot/coverage_expressions.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 1 4) (end 1 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 1 4) (end 1 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 2 4) (end 2 20))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 2 4) (end 2 20))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 4 4) (end 4 24))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 4 4) (end 4 24))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 5 4) (end 5 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 5 4) (end 5 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 6 4) (end 6 20))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 6 4) (end 6 20))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 7 4) (end 7 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 7 4) (end 7 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 8 4) (end 8 20))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 8 4) (end 8 20))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 10 4) (end 10 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 10 4) (end 10 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 11 4) (end 11 27))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 11 4) (end 11 27))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 12 4) (end 12 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 12 4) (end 12 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 13 4) (end 13 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 13 4) (end 13 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 15 4) (end 15 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 15 4) (end 15 34))
+      )
       (diagnostic
         (severity error)
         (code "recovered_package_body_element")
-        (source "sysml")
-        (range (start 15 34) (end 15 195))
+        (source "parser")
+        (range (start 15 34) (end 23 0))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "8853cee9ec7516d18367d1c46605fb53f3ee9b3b9e391a336c2d00b5920f4944") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "ExpressionCoverage"))) (kind "package") (name "ExpressionCoverage") (declared-name "ExpressionCoverage"))
-    (element (id (node (document "d0") (qualified-name "ExpressionCoverage::Item"))) (kind "classifier decl") (name "Item") (declared-name "Item") (parent (node (document "d0") (qualified-name "ExpressionCoverage"))))
-    (element (id (node (document "d0") (qualified-name "ExpressionCoverage::Vehicle"))) (kind "classifier decl") (name "Vehicle") (declared-name "Vehicle") (parent (node (document "d0") (qualified-name "ExpressionCoverage"))))
-    (element (id (node (document "d0") (qualified-name "ExpressionCoverage::all_v"))) (kind "feature decl") (name "all_v") (declared-name "all_v") (parent (node (document "d0") (qualified-name "ExpressionCoverage"))))
-    (element (id (node (document "d0") (qualified-name "ExpressionCoverage::arr"))) (kind "feature decl") (name "arr") (declared-name "arr") (parent (node (document "d0") (qualified-name "ExpressionCoverage"))))
-    (element (id (node (document "d0") (qualified-name "ExpressionCoverage::coll"))) (kind "feature decl") (name "coll") (declared-name "coll") (parent (node (document "d0") (qualified-name "ExpressionCoverage"))))
-    (element (id (node (document "d0") (qualified-name "ExpressionCoverage::h"))) (kind "feature decl") (name "h") (declared-name "h") (parent (node (document "d0") (qualified-name "ExpressionCoverage"))))
-    (element (id (node (document "d0") (qualified-name "ExpressionCoverage::inf"))) (kind "feature decl") (name "inf") (declared-name "inf") (parent (node (document "d0") (qualified-name "ExpressionCoverage"))))
-    (element (id (node (document "d0") (qualified-name "ExpressionCoverage::items"))) (kind "feature decl") (name "items") (declared-name "items") (parent (node (document "d0") (qualified-name "ExpressionCoverage"))))
-    (element (id (node (document "d0") (qualified-name "ExpressionCoverage::n"))) (kind "feature decl") (name "n") (declared-name "n") (parent (node (document "d0") (qualified-name "ExpressionCoverage"))))
-    (element (id (node (document "d0") (qualified-name "ExpressionCoverage::r"))) (kind "feature decl") (name "r") (declared-name "r") (parent (node (document "d0") (qualified-name "ExpressionCoverage"))))
-    (element (id (node (document "d0") (qualified-name "ExpressionCoverage::r2"))) (kind "feature decl") (name "r2") (declared-name "r2") (parent (node (document "d0") (qualified-name "ExpressionCoverage"))))
-    (element (id (node (document "d0") (qualified-name "ExpressionCoverage::s"))) (kind "feature decl") (name "s") (declared-name "s") (parent (node (document "d0") (qualified-name "ExpressionCoverage"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:7a9bb88d3c4b1c3ad264e9edd76f68423257a29ce0610bd33500ba6b555a25a3") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

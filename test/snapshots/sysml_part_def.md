@@ -10,18 +10,18 @@ part def Vehicle { }
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "sysml_part_def.md"
+  (document "memory://snapshot/sysml_part_def.md"
     (diagnostics
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "d98bfc462bf660195d909f7d985d9b83b8814a3fd7b2284b376f80debb99a879") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Vehicle"))) (kind "part def") (name "Vehicle") (declared-name "Vehicle"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:62dc02bc12f624fc7cfeeeed750fcd111f27bee51a8e621f30ffbaa508a13b09") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/sysml_part_def.md") (qualified-name "Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))
   )
   (references
   )

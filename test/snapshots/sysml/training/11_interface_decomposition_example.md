@@ -32,69 +32,62 @@ package 'Interface Decomposition Example' {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "11_interface_decomposition_example.md"
+  (document "memory://snapshot/11_interface_decomposition_example.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 2 1) (end 2 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 3 1) (end 3 17))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 5 1) (end 5 17))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 6 1) (end 6 22))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 8 1) (end 20 2))
+      )
       (diagnostic
         (severity error)
         (code "recovered_interface_def_body_element")
-        (source "sysml")
-        (range (start 9 2) (end 9 92))
+        (source "parser")
+        (range (start 9 2) (end 13 2))
       )
       (diagnostic
         (severity warning)
         (code "recovery_cascade_suppressed")
-        (source "sysml")
-        (range (start 9 2) (end 9 92))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 18 10) (end 18 24))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 18 28) (end 18 43))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 19 10) (end 19 25))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 19 29) (end 19 45))
+        (source "parser")
+        (range (start 9 2) (end 13 2))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "6c9357abe308f76bfcc9447b4287bc69eb0e8243b450c0016900356f31c05763") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Interface Decomposition Example"))) (kind "package") (name "Interface Decomposition Example") (declared-name "Interface Decomposition Example"))
-    (element (id (node (document "d0") (qualified-name "Interface Decomposition Example::Faucet"))) (kind "port def") (name "Faucet") (declared-name "Faucet") (parent (node (document "d0") (qualified-name "Interface Decomposition Example"))))
-    (element (id (node (document "d0") (qualified-name "Interface Decomposition Example::Faucet::~Faucet"))) (kind "conjugated port definition") (name "~Faucet") (declared-name "~Faucet") (parent (node (document "d0") (qualified-name "Interface Decomposition Example::Faucet"))))
-    (element (id (node (document "d0") (qualified-name "Interface Decomposition Example::FaucetInlet"))) (kind "port def") (name "FaucetInlet") (declared-name "FaucetInlet") (parent (node (document "d0") (qualified-name "Interface Decomposition Example"))))
-    (element (id (node (document "d0") (qualified-name "Interface Decomposition Example::FaucetInlet::~FaucetInlet"))) (kind "conjugated port definition") (name "~FaucetInlet") (declared-name "~FaucetInlet") (parent (node (document "d0") (qualified-name "Interface Decomposition Example::FaucetInlet"))))
-    (element (id (node (document "d0") (qualified-name "Interface Decomposition Example::Spigot"))) (kind "port def") (name "Spigot") (declared-name "Spigot") (parent (node (document "d0") (qualified-name "Interface Decomposition Example"))))
-    (element (id (node (document "d0") (qualified-name "Interface Decomposition Example::Spigot::~Spigot"))) (kind "conjugated port definition") (name "~Spigot") (declared-name "~Spigot") (parent (node (document "d0") (qualified-name "Interface Decomposition Example::Spigot"))))
-    (element (id (node (document "d0") (qualified-name "Interface Decomposition Example::SpigotBank"))) (kind "port def") (name "SpigotBank") (declared-name "SpigotBank") (parent (node (document "d0") (qualified-name "Interface Decomposition Example"))))
-    (element (id (node (document "d0") (qualified-name "Interface Decomposition Example::SpigotBank::~SpigotBank"))) (kind "conjugated port definition") (name "~SpigotBank") (declared-name "~SpigotBank") (parent (node (document "d0") (qualified-name "Interface Decomposition Example::SpigotBank"))))
-    (element (id (node (document "d0") (qualified-name "Interface Decomposition Example::WaterDelivery"))) (kind "interface def") (name "WaterDelivery") (declared-name "WaterDelivery") (parent (node (document "d0") (qualified-name "Interface Decomposition Example"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:124c1546ae87be695db20ce8e9d4f40c48a575d97ed9ee727e403097925ecbc0") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/11_interface_decomposition_example.md") (qualified-name "Interface Decomposition Example"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "Interface Decomposition Example::WaterDelivery"))) (kind connectionSource) (ordinal 0)) (authored-target "suppliedBy::hot") (outcome (status unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Interface Decomposition Example::WaterDelivery"))) (kind connectionSource) (ordinal 1)) (authored-target "suppliedBy::cold") (outcome (status unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Interface Decomposition Example::WaterDelivery"))) (kind connectionTarget) (ordinal 0)) (authored-target "deliveredTo::hot") (outcome (status unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Interface Decomposition Example::WaterDelivery"))) (kind connectionTarget) (ordinal 1)) (authored-target "deliveredTo::cold") (outcome (status unresolved)))
   )
   (relationships
   )
@@ -105,39 +98,5 @@ package 'Interface Decomposition Example' {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 18 10) (end 18 24)) (probe (position 18 10))
-      (reference
-        (source (document "d0") (qualified-name "Interface Decomposition Example::WaterDelivery"))
-        (kind connectionSource) (ordinal 0) (authored-target "suppliedBy::hot")
-        (range (start 18 10) (end 18 24))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 18 28) (end 18 43)) (probe (position 18 28))
-      (reference
-        (source (document "d0") (qualified-name "Interface Decomposition Example::WaterDelivery"))
-        (kind connectionTarget) (ordinal 0) (authored-target "deliveredTo::hot")
-        (range (start 18 28) (end 18 43))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 19 10) (end 19 25)) (probe (position 19 10))
-      (reference
-        (source (document "d0") (qualified-name "Interface Decomposition Example::WaterDelivery"))
-        (kind connectionSource) (ordinal 1) (authored-target "suppliedBy::cold")
-        (range (start 19 10) (end 19 25))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 19 29) (end 19 45)) (probe (position 19 29))
-      (reference
-        (source (document "d0") (qualified-name "Interface Decomposition Example::WaterDelivery"))
-        (kind connectionTarget) (ordinal 1) (authored-target "deliveredTo::cold")
-        (range (start 19 29) (end 19 45))
-        (outcome (status unresolved))
-      )
-    )
-  )
 )
 ~~~

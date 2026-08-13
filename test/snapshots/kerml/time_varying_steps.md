@@ -64,21 +64,54 @@ package TimeVaryingSteps {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "time_varying_steps.md"
+  (document "memory://snapshot/time_varying_steps.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 1 1) (end 36 4))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 1 1) (end 36 4))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 38 1) (end 44 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 38 1) (end 44 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 46 1) (end 52 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 46 1) (end 52 2))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "78cac9099ca667ebf5a425c56631645d4b43a562ac2f8058f041691f843dd8bc") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "TimeVaryingSteps"))) (kind "package") (name "TimeVaryingSteps") (declared-name "TimeVaryingSteps"))
-    (element (id (node (document "d0") (qualified-name "TimeVaryingSteps::Camera"))) (kind "classifier decl") (name "Camera") (declared-name "Camera") (parent (node (document "d0") (qualified-name "TimeVaryingSteps"))))
-    (element (id (node (document "d0") (qualified-name "TimeVaryingSteps::MultiCamera"))) (kind "classifier decl") (name "MultiCamera") (declared-name "MultiCamera") (parent (node (document "d0") (qualified-name "TimeVaryingSteps"))))
-    (element (id (node (document "d0") (qualified-name "TimeVaryingSteps::TakePicture"))) (kind "kermlDecl") (name "TakePicture") (declared-name "TakePicture") (parent (node (document "d0") (qualified-name "TimeVaryingSteps"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:0a36bc093b26843f7d8032d2797a7a2ea4143a798a653afffca0b1b0a908c3be") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/time_varying_steps.md") (qualified-name "TimeVaryingSteps"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

@@ -63,25 +63,102 @@ package ExtendedOccurrences {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "extended_occurrences.md"
+  (document "memory://snapshot/extended_occurrences.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 1 4) (end 1 19))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 1 4) (end 1 19))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 2 4) (end 2 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 2 4) (end 2 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 3 4) (end 6 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 3 4) (end 6 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 7 4) (end 10 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 7 4) (end 10 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 11 4) (end 11 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 11 4) (end 11 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 12 4) (end 48 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 12 4) (end 48 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 49 4) (end 51 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 49 4) (end 51 5))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "a485154465639c6a7defd7178f21a4f333d44c73322ea2c9768abe1302df8091") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "ExtendedOccurrences"))) (kind "package") (name "ExtendedOccurrences") (declared-name "ExtendedOccurrences"))
-    (element (id (node (document "d0") (qualified-name "ExtendedOccurrences::ExtendedObject"))) (kind "classifier decl") (name "ExtendedObject") (declared-name "ExtendedObject") (parent (node (document "d0") (qualified-name "ExtendedOccurrences"))))
-    (element (id (node (document "d0") (qualified-name "ExtendedOccurrences::ExtendedOccurrence"))) (kind "classifier decl") (name "ExtendedOccurrence") (declared-name "ExtendedOccurrence") (parent (node (document "d0") (qualified-name "ExtendedOccurrences"))))
-    (element (id (node (document "d0") (qualified-name "ExtendedOccurrences::Interval"))) (kind "classifier decl") (name "Interval") (declared-name "Interval") (parent (node (document "d0") (qualified-name "ExtendedOccurrences"))))
-    (element (id (node (document "d0") (qualified-name "ExtendedOccurrences::Life"))) (kind "classifier decl") (name "Life") (declared-name "Life") (parent (node (document "d0") (qualified-name "ExtendedOccurrences"))))
-    (element (id (node (document "d0") (qualified-name "ExtendedOccurrences::Moment"))) (kind "classifier decl") (name "Moment") (declared-name "Moment") (parent (node (document "d0") (qualified-name "ExtendedOccurrences"))))
-    (element (id (node (document "d0") (qualified-name "ExtendedOccurrences::Snapshot"))) (kind "classifier decl") (name "Snapshot") (declared-name "Snapshot") (parent (node (document "d0") (qualified-name "ExtendedOccurrences"))))
-    (element (id (node (document "d0") (qualified-name "ExtendedOccurrences::Timeslice"))) (kind "classifier decl") (name "Timeslice") (declared-name "Timeslice") (parent (node (document "d0") (qualified-name "ExtendedOccurrences"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:3d83147000b14eef7f50c10362c18c6e228d220c5fef96c7c57258ca5abdeb93") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/extended_occurrences.md") (qualified-name "ExtendedOccurrences"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

@@ -112,35 +112,114 @@ package JohnIndividualExample {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "john_individual_example.md"
+  (document "memory://snapshot/john_individual_example.md"
     (diagnostics
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 16) (end 1 23))
+        (range (start 1 16) (end 1 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 3 1) (end 31 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 3 1) (end 31 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 33 1) (end 42 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 33 1) (end 42 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 44 1) (end 52 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 44 1) (end 52 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 54 1) (end 60 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 54 1) (end 60 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 62 1) (end 76 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 62 1) (end 76 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 78 1) (end 90 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 78 1) (end 90 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 92 1) (end 101 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 92 1) (end 101 2))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "8eb783316dec38b0f043f94f76b428c3e221d609b9ac4e66a950f0dcee863b3a") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "JohnIndividualExample"))) (kind "package") (name "JohnIndividualExample") (declared-name "JohnIndividualExample"))
-    (element (id (node (document "d0") (qualified-name "JohnIndividualExample::*"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "JohnIndividualExample"))) (authored (membership (kind Import) (visibility "private") (import (reference "Objects::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "JohnIndividualExample::Country"))) (kind "classifier decl") (name "Country") (declared-name "Country") (parent (node (document "d0") (qualified-name "JohnIndividualExample"))))
-    (element (id (node (document "d0") (qualified-name "JohnIndividualExample::John"))) (kind "classifier decl") (name "John") (declared-name "John") (parent (node (document "d0") (qualified-name "JohnIndividualExample"))))
-    (element (id (node (document "d0") (qualified-name "JohnIndividualExample::JohnAsPresident"))) (kind "classifier decl") (name "JohnAsPresident") (declared-name "JohnAsPresident") (parent (node (document "d0") (qualified-name "JohnIndividualExample"))))
-    (element (id (node (document "d0") (qualified-name "JohnIndividualExample::Person"))) (kind "classifier decl") (name "Person") (declared-name "Person") (parent (node (document "d0") (qualified-name "JohnIndividualExample"))))
-    (element (id (node (document "d0") (qualified-name "JohnIndividualExample::President"))) (kind "classifier decl") (name "President") (declared-name "President") (parent (node (document "d0") (qualified-name "JohnIndividualExample"))))
-    (element (id (node (document "d0") (qualified-name "JohnIndividualExample::UnitedStates"))) (kind "classifier decl") (name "UnitedStates") (declared-name "UnitedStates") (parent (node (document "d0") (qualified-name "JohnIndividualExample"))))
-    (element (id (node (document "d0") (qualified-name "JohnIndividualExample::UnitedStatesWithJohnAsPresident"))) (kind "classifier decl") (name "UnitedStatesWithJohnAsPresident") (declared-name "UnitedStatesWithJohnAsPresident") (parent (node (document "d0") (qualified-name "JohnIndividualExample"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:56855a5c0d68c6f385b02c5c364523e96d510c33f0f8f978afc28b02bedfd9fe") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/john_individual_example.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Objects") (import (shape namespace) (recursive false)))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "JohnIndividualExample::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Objects::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
+    (reference (id (source (node (document "memory://snapshot/john_individual_example.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "Objects")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -151,15 +230,9 @@ package JohnIndividualExample {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 1 16) (end 1 23)) (probe (position 1 16))
-      (reference
-        (source (document "d0") (qualified-name "JohnIndividualExample::*"))
-        (kind namespaceImport) (ordinal 0) (authored-target "Objects::*")
-        (range (start 1 16) (end 1 23))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/john_individual_example.md") (range (start 1 16) (end 1 26)) (probe (position 1 16))
+    (reference (id (source (node (document "memory://snapshot/john_individual_example.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "Objects")
+      (outcome (status unresolved)))
   )
 )
 ~~~

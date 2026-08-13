@@ -34,24 +34,24 @@ package RelationshipCoverage {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "coverage_relationships.md"
+  (document "memory://snapshot/coverage_relationships.md"
     (diagnostics
       (diagnostic
         (severity error)
         (code "unrecognized_declaration_in_scope")
-        (source "sysml")
-        (range (start 1 4) (end 1 435))
+        (source "parser")
+        (range (start 1 4) (end 24 0))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "cec622b2a991cf3bca978916176416ec28b19282ad1a6ef3d30c5c93bbb65b10") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "RelationshipCoverage"))) (kind "package") (name "RelationshipCoverage") (declared-name "RelationshipCoverage"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:dc703b955cf7eb123eab106df1f01f499ff2c4cb83a66a167742c278ebe09a52") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/coverage_relationships.md") (qualified-name "RelationshipCoverage"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

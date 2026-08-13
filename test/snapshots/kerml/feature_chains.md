@@ -43,30 +43,96 @@ package FeatureChains {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "feature_chains.md"
+  (document "memory://snapshot/feature_chains.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 1 1) (end 3 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 1 1) (end 3 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 5 1) (end 5 15))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 5 1) (end 5 15))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 7 1) (end 9 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 7 1) (end 9 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 11 1) (end 14 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 11 1) (end 14 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 16 1) (end 19 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 16 1) (end 19 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 21 1) (end 21 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 21 1) (end 21 23))
+      )
       (diagnostic
         (severity error)
         (code "unrecognized_declaration_in_scope")
-        (source "sysml")
-        (range (start 22 1) (end 22 265))
+        (source "parser")
+        (range (start 22 1) (end 33 0))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "5d93bcb75ee63af3ca04d532d8582eb105b36f9ce0cfac97527cefb4d2cbc901") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "FeatureChains"))) (kind "package") (name "FeatureChains") (declared-name "FeatureChains"))
-    (element (id (node (document "d0") (qualified-name "FeatureChains::A"))) (kind "classifier decl") (name "A") (declared-name "A") (parent (node (document "d0") (qualified-name "FeatureChains"))))
-    (element (id (node (document "d0") (qualified-name "FeatureChains::B"))) (kind "classifier decl") (name "B") (declared-name "B") (parent (node (document "d0") (qualified-name "FeatureChains"))))
-    (element (id (node (document "d0") (qualified-name "FeatureChains::F"))) (kind "classifier decl") (name "F") (declared-name "F") (parent (node (document "d0") (qualified-name "FeatureChains"))))
-    (element (id (node (document "d0") (qualified-name "FeatureChains::b"))) (kind "feature decl") (name "b") (declared-name "b") (parent (node (document "d0") (qualified-name "FeatureChains"))))
-    (element (id (node (document "d0") (qualified-name "FeatureChains::f"))) (kind "feature decl") (name "f") (declared-name "f") (parent (node (document "d0") (qualified-name "FeatureChains"))))
-    (element (id (node (document "d0") (qualified-name "FeatureChains::g"))) (kind "feature decl") (name "g") (declared-name "g") (parent (node (document "d0") (qualified-name "FeatureChains"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:48b26c0fd1f2ee265267ec9d5aa8c99bcbc717e80655b227e364c9b1741bccf9") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

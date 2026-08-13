@@ -31,7 +31,7 @@ standard library package ScalarValues {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "scalar_values.md"
+  (document "memory://snapshot/scalar_values.md"
     (diagnostics
       (diagnostic
         (severity warning)
@@ -39,32 +39,154 @@ standard library package ScalarValues {
         (source "semantic")
         (range (start 7 19) (end 7 34))
       )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 9 4) (end 9 56))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 9 4) (end 9 56))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 10 4) (end 10 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 10 4) (end 10 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 11 4) (end 11 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 11 4) (end 11 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 12 4) (end 12 61))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 12 4) (end 12 61))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 14 4) (end 14 56))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 14 4) (end 14 56))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 15 4) (end 15 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 15 4) (end 15 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 16 4) (end 16 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 16 4) (end 16 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 17 4) (end 17 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 17 4) (end 17 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 18 4) (end 18 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 18 4) (end 18 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 19 4) (end 19 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 19 4) (end 19 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 20 4) (end 20 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 20 4) (end 20 42))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1581c1e6e3a4f3bd274af51155e25043882415cf9b55c72c7671fa3e493acc42") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "ScalarValues"))) (kind "package") (name "ScalarValues") (declared-name "ScalarValues"))
-    (element (id (node (document "d0") (qualified-name "ScalarValues::Boolean"))) (kind "kermlDecl") (name "Boolean") (declared-name "Boolean") (parent (node (document "d0") (qualified-name "ScalarValues"))))
-    (element (id (node (document "d0") (qualified-name "ScalarValues::Complex"))) (kind "kermlDecl") (name "Complex") (declared-name "Complex") (parent (node (document "d0") (qualified-name "ScalarValues"))))
-    (element (id (node (document "d0") (qualified-name "ScalarValues::DataValue"))) (kind "import") (name "DataValue") (declared-name "DataValue") (parent (node (document "d0") (qualified-name "ScalarValues"))) (authored (membership (kind Import) (visibility "private") (import (reference "Base::DataValue") (origin Import) (shape Membership) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "ScalarValues::Integer"))) (kind "kermlDecl") (name "Integer") (declared-name "Integer") (parent (node (document "d0") (qualified-name "ScalarValues"))))
-    (element (id (node (document "d0") (qualified-name "ScalarValues::Natural"))) (kind "kermlDecl") (name "Natural") (declared-name "Natural") (parent (node (document "d0") (qualified-name "ScalarValues"))))
-    (element (id (node (document "d0") (qualified-name "ScalarValues::Number"))) (kind "kermlDecl") (name "Number") (declared-name "Number") (parent (node (document "d0") (qualified-name "ScalarValues"))))
-    (element (id (node (document "d0") (qualified-name "ScalarValues::NumericalValue"))) (kind "kermlDecl") (name "NumericalValue") (declared-name "NumericalValue") (parent (node (document "d0") (qualified-name "ScalarValues"))))
-    (element (id (node (document "d0") (qualified-name "ScalarValues::Positive"))) (kind "kermlDecl") (name "Positive") (declared-name "Positive") (parent (node (document "d0") (qualified-name "ScalarValues"))))
-    (element (id (node (document "d0") (qualified-name "ScalarValues::Rational"))) (kind "kermlDecl") (name "Rational") (declared-name "Rational") (parent (node (document "d0") (qualified-name "ScalarValues"))))
-    (element (id (node (document "d0") (qualified-name "ScalarValues::Real"))) (kind "kermlDecl") (name "Real") (declared-name "Real") (parent (node (document "d0") (qualified-name "ScalarValues"))))
-    (element (id (node (document "d0") (qualified-name "ScalarValues::ScalarValue"))) (kind "kermlDecl") (name "ScalarValue") (declared-name "ScalarValue") (parent (node (document "d0") (qualified-name "ScalarValues"))))
-    (element (id (node (document "d0") (qualified-name "ScalarValues::String"))) (kind "kermlDecl") (name "String") (declared-name "String") (parent (node (document "d0") (qualified-name "ScalarValues"))))
-    (element (id (node (document "d0") (qualified-name "ScalarValues::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "ScalarValues"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:2da3f0f882de2304c481cc3bc44d33be9421f90ab98191373b36d093aa90d5bf") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/scalar_values.md") (qualified-name "ScalarValues"))) (kind library-package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/scalar_values.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Base::DataValue") (import (shape membership) (recursive false)))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "ScalarValues::DataValue"))) (kind membershipImport) (ordinal 0)) (authored-target "Base::DataValue") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
+    (reference (id (source (node (document "memory://snapshot/scalar_values.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
+      (authored-target "Base::DataValue")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -75,15 +197,9 @@ standard library package ScalarValues {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 7 19) (end 7 34)) (probe (position 7 19))
-      (reference
-        (source (document "d0") (qualified-name "ScalarValues::DataValue"))
-        (kind membershipImport) (ordinal 0) (authored-target "Base::DataValue")
-        (range (start 7 19) (end 7 34))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/scalar_values.md") (range (start 7 19) (end 7 34)) (probe (position 7 19))
+    (reference (id (source (node (document "memory://snapshot/scalar_values.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "Base::DataValue")
+      (outcome (status unresolved)))
   )
 )
 ~~~

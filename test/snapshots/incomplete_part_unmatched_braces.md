@@ -2,8 +2,6 @@
 ~~~ini
 description=Incomplete part definition with unmatched braces - formatter adds compensating braces
 type=file
-semantic_graph=skip
-semantic_graph_skip_reason=parser recovery for non-empty source produced no typed semantic graph facts
 ~~~
 # SOURCE
 ~~~sysml
@@ -14,23 +12,23 @@ package AyPkpowerTrain {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "incomplete_part_unmatched_braces.md"
+  (document "memory://snapshot/incomplete_part_unmatched_braces.md"
     (diagnostics
       (diagnostic
         (severity error)
         (code "missing_closing_brace")
-        (source "sysml")
-        (range (start 2 13) (end 2 14))
+        (source "parser")
+        (range (start 2 13) (end 2 13))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "8433b897766392db984a54288bbf7143b364edb565325e63c3e63cb7531afc30") (contract-version "canonical-resolution-v1"))
-  (structure
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:df2a2f953c2cc0a7983df848811ace14f5e5c2ecbcd71859cf86770ba9d1b74d") (contract-version "parser-owned-resolution-v1"))
+  (declarations
   )
   (references
   )

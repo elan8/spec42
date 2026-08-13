@@ -56,49 +56,270 @@ standard library package ComplexFunctions {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "complex_functions.md"
+  (document "memory://snapshot/complex_functions.md"
     (diagnostics
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 7 15) (end 7 27))
+        (range (start 7 15) (end 7 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 9 1) (end 9 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 9 1) (end 9 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 11 1) (end 11 71))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 11 1) (end 11 71))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 12 1) (end 12 74))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 12 1) (end 12 74))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 14 1) (end 14 52))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 14 1) (end 14 52))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 15 1) (end 15 52))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 15 1) (end 15 52))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 17 1) (end 19 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 17 1) (end 19 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 20 1) (end 22 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 20 1) (end 22 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 24 1) (end 24 89))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 24 1) (end 24 89))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 25 1) (end 25 53))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 25 1) (end 25 53))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 27 1) (end 27 113))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 27 1) (end 27 113))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 28 1) (end 28 113))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 28 1) (end 28 113))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 29 1) (end 29 110))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 29 1) (end 29 110))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 30 1) (end 30 110))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 30 1) (end 30 110))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 31 1) (end 31 112))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 31 1) (end 31 112))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 32 1) (end 32 110))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 32 1) (end 32 110))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 34 1) (end 34 113))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 34 1) (end 34 113))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 36 1) (end 36 96))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 36 1) (end 36 96))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 37 1) (end 37 61))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 37 1) (end 37 61))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 39 1) (end 41 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 39 1) (end 41 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 43 1) (end 45 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 43 1) (end 45 2))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e09e2831ffb9d0edcd243add33f440640d6041e3c91db33246c988c6c30373ba") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "ComplexFunctions"))) (kind "package") (name "ComplexFunctions") (declared-name "ComplexFunctions"))
-    (element (id (node (document "d0") (qualified-name "ComplexFunctions::*"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "ComplexFunctions"))) (authored (membership (kind Import) (visibility "public") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "ComplexFunctions::ToComplex"))) (kind "kermlDecl") (name "ToComplex") (declared-name "ToComplex") (parent (node (document "d0") (qualified-name "ComplexFunctions"))))
-    (element (id (node (document "d0") (qualified-name "ComplexFunctions::ToString"))) (kind "kermlDecl") (name "ToString") (declared-name "ToString") (parent (node (document "d0") (qualified-name "ComplexFunctions"))))
-    (element (id (node (document "d0") (qualified-name "ComplexFunctions::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "ComplexFunctions"))))
-    (element (id (node (document "d0") (qualified-name "ComplexFunctions::abs"))) (kind "kermlDecl") (name "abs") (declared-name "abs") (parent (node (document "d0") (qualified-name "ComplexFunctions"))))
-    (element (id (node (document "d0") (qualified-name "ComplexFunctions::arg"))) (kind "kermlDecl") (name "arg") (declared-name "arg") (parent (node (document "d0") (qualified-name "ComplexFunctions"))))
-    (element (id (node (document "d0") (qualified-name "ComplexFunctions::function"))) (kind "kermlDecl") (name "function") (declared-name "function") (parent (node (document "d0") (qualified-name "ComplexFunctions"))))
-    (element (id (node (document "d0") (qualified-name "ComplexFunctions::function#kermlDecl"))) (kind "kermlDecl") (name "function") (declared-name "function") (parent (node (document "d0") (qualified-name "ComplexFunctions"))))
-    (element (id (node (document "d0") (qualified-name "ComplexFunctions::function#kermlDecl2"))) (kind "kermlDecl") (name "function") (declared-name "function") (parent (node (document "d0") (qualified-name "ComplexFunctions"))))
-    (element (id (node (document "d0") (qualified-name "ComplexFunctions::function#kermlDecl3"))) (kind "kermlDecl") (name "function") (declared-name "function") (parent (node (document "d0") (qualified-name "ComplexFunctions"))))
-    (element (id (node (document "d0") (qualified-name "ComplexFunctions::function#kermlDecl4"))) (kind "kermlDecl") (name "function") (declared-name "function") (parent (node (document "d0") (qualified-name "ComplexFunctions"))))
-    (element (id (node (document "d0") (qualified-name "ComplexFunctions::function#kermlDecl5"))) (kind "kermlDecl") (name "function") (declared-name "function") (parent (node (document "d0") (qualified-name "ComplexFunctions"))))
-    (element (id (node (document "d0") (qualified-name "ComplexFunctions::function#kermlDecl6"))) (kind "kermlDecl") (name "function") (declared-name "function") (parent (node (document "d0") (qualified-name "ComplexFunctions"))))
-    (element (id (node (document "d0") (qualified-name "ComplexFunctions::i"))) (kind "feature decl") (name "i") (declared-name "i") (parent (node (document "d0") (qualified-name "ComplexFunctions"))))
-    (element (id (node (document "d0") (qualified-name "ComplexFunctions::im"))) (kind "kermlDecl") (name "im") (declared-name "im") (parent (node (document "d0") (qualified-name "ComplexFunctions"))))
-    (element (id (node (document "d0") (qualified-name "ComplexFunctions::isUnit"))) (kind "kermlDecl") (name "isUnit") (declared-name "isUnit") (parent (node (document "d0") (qualified-name "ComplexFunctions"))))
-    (element (id (node (document "d0") (qualified-name "ComplexFunctions::isZero"))) (kind "kermlDecl") (name "isZero") (declared-name "isZero") (parent (node (document "d0") (qualified-name "ComplexFunctions"))))
-    (element (id (node (document "d0") (qualified-name "ComplexFunctions::polar"))) (kind "kermlDecl") (name "polar") (declared-name "polar") (parent (node (document "d0") (qualified-name "ComplexFunctions"))))
-    (element (id (node (document "d0") (qualified-name "ComplexFunctions::product"))) (kind "kermlDecl") (name "product") (declared-name "product") (parent (node (document "d0") (qualified-name "ComplexFunctions"))))
-    (element (id (node (document "d0") (qualified-name "ComplexFunctions::re"))) (kind "kermlDecl") (name "re") (declared-name "re") (parent (node (document "d0") (qualified-name "ComplexFunctions"))))
-    (element (id (node (document "d0") (qualified-name "ComplexFunctions::rect"))) (kind "kermlDecl") (name "rect") (declared-name "rect") (parent (node (document "d0") (qualified-name "ComplexFunctions"))))
-    (element (id (node (document "d0") (qualified-name "ComplexFunctions::sum"))) (kind "kermlDecl") (name "sum") (declared-name "sum") (parent (node (document "d0") (qualified-name "ComplexFunctions"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:b1aaf4d5325d6744b755ed862d9086f127b23518a3cc2982bad3679875ee7003") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/complex_functions.md") (qualified-name "ComplexFunctions"))) (kind library-package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/complex_functions.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "ComplexFunctions::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarValues::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
+    (reference (id (source (node (document "memory://snapshot/complex_functions.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "ScalarValues")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -109,15 +330,9 @@ standard library package ComplexFunctions {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 7 15) (end 7 27)) (probe (position 7 15))
-      (reference
-        (source (document "d0") (qualified-name "ComplexFunctions::*"))
-        (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues::*")
-        (range (start 7 15) (end 7 27))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/complex_functions.md") (range (start 7 15) (end 7 30)) (probe (position 7 15))
+    (reference (id (source (node (document "memory://snapshot/complex_functions.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues")
+      (outcome (status unresolved)))
   )
 )
 ~~~

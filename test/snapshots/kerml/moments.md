@@ -48,7 +48,7 @@ package Moments {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "moments.md"
+  (document "memory://snapshot/moments.md"
     (diagnostics
       (diagnostic
         (severity warning)
@@ -64,35 +64,118 @@ package Moments {
       )
       (diagnostic
         (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 4 4) (end 10 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 4 4) (end 10 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 12 4) (end 15 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 12 4) (end 15 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 17 4) (end 17 54))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 17 4) (end 17 54))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 19 4) (end 22 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 19 4) (end 22 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 24 4) (end 27 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 24 4) (end 27 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 29 4) (end 31 53))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 29 4) (end 31 53))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
         (range (start 33 19) (end 33 61))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 35 4) (end 37 72))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 35 4) (end 37 72))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "4073a10b459d571fdeecdfd3082c66de4cffa55a2f213007e2b7422792e3ae48") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Moments"))) (kind "package") (name "Moments") (declared-name "Moments"))
-    (element (id (node (document "d0") (qualified-name "Moments::Eternity"))) (kind "classifier decl") (name "Eternity") (declared-name "Eternity") (parent (node (document "d0") (qualified-name "Moments"))))
-    (element (id (node (document "d0") (qualified-name "Moments::Life"))) (kind "import") (name "Life") (declared-name "Life") (parent (node (document "d0") (qualified-name "Moments"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::Life") (origin Import) (shape Membership) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "Moments::Moment"))) (kind "classifier decl") (name "Moment") (declared-name "Moment") (parent (node (document "d0") (qualified-name "Moments"))))
-    (element (id (node (document "d0") (qualified-name "Moments::Occurrence"))) (kind "import") (name "Occurrence") (declared-name "Occurrence") (parent (node (document "d0") (qualified-name "Moments"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::Occurrence") (origin Import) (shape Membership) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "Moments::Period"))) (kind "classifier decl") (name "Period") (declared-name "Period") (parent (node (document "d0") (qualified-name "Moments"))))
-    (element (id (node (document "d0") (qualified-name "Moments::UniversalEternity"))) (kind "classifier decl") (name "UniversalEternity") (declared-name "UniversalEternity") (parent (node (document "d0") (qualified-name "Moments"))))
-    (element (id (node (document "d0") (qualified-name "Moments::all"))) (kind "classifier decl") (name "all") (declared-name "all") (parent (node (document "d0") (qualified-name "Moments"))))
-    (element (id (node (document "d0") (qualified-name "Moments::coincidentUEPortion"))) (kind "feature decl") (name "coincidentUEPortion") (declared-name "coincidentUEPortion") (parent (node (document "d0") (qualified-name "Moments"))))
-    (element (id (node (document "d0") (qualified-name "Moments::spaceTimeCoincidentOccurrences"))) (kind "import") (name "spaceTimeCoincidentOccurrences") (declared-name "spaceTimeCoincidentOccurrences") (parent (node (document "d0") (qualified-name "Moments"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrence::spaceTimeCoincidentOccurrences") (origin Import) (shape Membership) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "Moments::universalEternity"))) (kind "feature decl") (name "universalEternity") (declared-name "universalEternity") (parent (node (document "d0") (qualified-name "Moments"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:28f9af547ca59cf4b9478dbcc6ea545738b660f90c54caeaf91f4b01860c5101") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/moments.md") (qualified-name "Moments"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/moments.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Occurrences::Life") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/moments.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Occurrences::Occurrence") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/moments.md") (anonymous (kind import) (ordinal 2))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Occurrence::spaceTimeCoincidentOccurrences") (import (shape membership) (recursive false)))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "Moments::Life"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrences::Life") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Moments::Occurrence"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrences::Occurrence") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Moments::spaceTimeCoincidentOccurrences"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrence::spaceTimeCoincidentOccurrences") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
+    (reference (id (source (node (document "memory://snapshot/moments.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
+      (authored-target "Occurrences::Life")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/moments.md") (anonymous (kind import) (ordinal 1))))) (kind membershipImport) (ordinal 0))
+      (authored-target "Occurrences::Occurrence")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/moments.md") (anonymous (kind import) (ordinal 2))))) (kind membershipImport) (ordinal 0))
+      (authored-target "Occurrence::spaceTimeCoincidentOccurrences")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -103,31 +186,17 @@ package Moments {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 1 19) (end 1 36)) (probe (position 1 19))
-      (reference
-        (source (document "d0") (qualified-name "Moments::Life"))
-        (kind membershipImport) (ordinal 0) (authored-target "Occurrences::Life")
-        (range (start 1 19) (end 1 36))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 2 19) (end 2 42)) (probe (position 2 19))
-      (reference
-        (source (document "d0") (qualified-name "Moments::Occurrence"))
-        (kind membershipImport) (ordinal 0) (authored-target "Occurrences::Occurrence")
-        (range (start 2 19) (end 2 42))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 33 19) (end 33 61)) (probe (position 33 19))
-      (reference
-        (source (document "d0") (qualified-name "Moments::spaceTimeCoincidentOccurrences"))
-        (kind membershipImport) (ordinal 0) (authored-target "Occurrence::spaceTimeCoincidentOccurrences")
-        (range (start 33 19) (end 33 61))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/moments.md") (range (start 1 19) (end 1 36)) (probe (position 1 19))
+    (reference (id (source (node (document "memory://snapshot/moments.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "Occurrences::Life")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/moments.md") (range (start 2 19) (end 2 42)) (probe (position 2 19))
+    (reference (id (source (node (document "memory://snapshot/moments.md") (anonymous (kind import) (ordinal 1))))) (kind membershipImport) (ordinal 0) (authored-target "Occurrences::Occurrence")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/moments.md") (range (start 33 19) (end 33 61)) (probe (position 33 19))
+    (reference (id (source (node (document "memory://snapshot/moments.md") (anonymous (kind import) (ordinal 2))))) (kind membershipImport) (ordinal 0) (authored-target "Occurrence::spaceTimeCoincidentOccurrences")
+      (outcome (status unresolved)))
   )
 )
 ~~~

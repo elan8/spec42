@@ -14,19 +14,24 @@ package P {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "fuzz_member_var.md"
+  (document "memory://snapshot/fuzz_member_var.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 1 4) (end 3 5))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "561223b48f09d8c641a7fc81aabebbb0eb286f0e9a75fa37705ab0e529141c80") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "P"))) (kind "package") (name "P") (declared-name "P"))
-    (element (id (node (document "d0") (qualified-name "P::r"))) (kind "requirement") (name "r") (declared-name "r") (parent (node (document "d0") (qualified-name "P"))))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:4cb1bf2c90b90c0cdfb98dd998af4a3a254588ad0cc116cd756da00f2be81ed7") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/fuzz_member_var.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

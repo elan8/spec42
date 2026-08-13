@@ -12,24 +12,30 @@ package P {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "fuzz_binding_name_before_mult.md"
+  (document "memory://snapshot/fuzz_binding_name_before_mult.md"
     (diagnostics
       (diagnostic
+        (severity warning)
+        (code "unsupported_parser_construct")
+        (source "semantic")
+        (range (start 0 0) (end 0 0))
+      )
+      (diagnostic
         (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "sysml")
-        (range (start 1 4) (end 1 28))
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 1 4) (end 2 0))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "7dac02e943abcf3ade3c210395140d238b2a14682cb19602ff8ab3ba2e6c099a") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "P"))) (kind "package") (name "P") (declared-name "P"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:5709f46aa2e48696b5eac15d221d5d7d2762f0382d7b912f4cb4afdfceb63a1d") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/fuzz_binding_name_before_mult.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

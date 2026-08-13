@@ -2,8 +2,6 @@
 ~~~ini
 description=Connector definitions with references in ends
 type=kerml
-semantic_graph=skip
-semantic_graph_skip_reason=KerML class and connector declarations are opaque parser fallback nodes; connector ends and reference targets are unavailable as structured semantic inputs
 ~~~
 # SOURCE
 ~~~kerml
@@ -21,17 +19,29 @@ class A {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "connector_references.md"
+  (document "memory://snapshot/connector_references.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 0 0) (end 9 1))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 0 0) (end 9 1))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "2a4a06dba4df13c61bfeb4acb27e870704424838000addf1386ba036de223782") (contract-version "canonical-resolution-v1"))
-  (structure
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:001058ec9e6d1bb0b353852f260ad84da63f109f327985bcc0021860a6133a43") (contract-version "parser-owned-resolution-v1"))
+  (declarations
   )
   (references
   )

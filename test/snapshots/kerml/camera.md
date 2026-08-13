@@ -2,8 +2,6 @@
 ~~~ini
 description=KerML Behavior: Camera
 type=file
-semantic_graph=skip
-semantic_graph_skip_reason=KerML class portions and successions are opaque parser fallback nodes; containment and succession endpoints are unavailable as structured semantic inputs
 ~~~
 # SOURCE
 ~~~kerml
@@ -19,17 +17,29 @@ class Camera {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "camera.md"
+  (document "memory://snapshot/camera.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 0 0) (end 7 1))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 0 0) (end 7 1))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "63a1d9416e0e67b10556a87afc4a2c2577ecbd981f709571939a8ad9d4a72be4") (contract-version "canonical-resolution-v1"))
-  (structure
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:949760c1f15c1ac357d2c6a1a56ad4841145fcab98e62ffffe81cfe2104554d8") (contract-version "parser-owned-resolution-v1"))
+  (declarations
   )
   (references
   )

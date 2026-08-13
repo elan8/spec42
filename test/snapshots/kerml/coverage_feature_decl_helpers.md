@@ -18,25 +18,102 @@ package FeatureDeclCoverage {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "coverage_feature_decl_helpers.md"
+  (document "memory://snapshot/coverage_feature_decl_helpers.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 1 1) (end 1 17))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 1 1) (end 1 17))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 2 1) (end 2 11))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 2 1) (end 2 11))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 3 1) (end 3 13))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 3 1) (end 3 13))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 4 1) (end 4 13))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 4 1) (end 4 13))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 5 1) (end 5 13))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 5 1) (end 5 13))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 6 1) (end 6 12))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 6 1) (end 6 12))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 7 1) (end 7 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 7 1) (end 7 21))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "cc47ce602a300330b09a9953b4af421aa1b8596cb3bbf2a46e47fdbce8c5187c") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "FeatureDeclCoverage"))) (kind "package") (name "FeatureDeclCoverage") (declared-name "FeatureDeclCoverage"))
-    (element (id (node (document "d0") (qualified-name "FeatureDeclCoverage::Base"))) (kind "classifier decl") (name "Base") (declared-name "Base") (parent (node (document "d0") (qualified-name "FeatureDeclCoverage"))))
-    (element (id (node (document "d0") (qualified-name "FeatureDeclCoverage::b"))) (kind "kermlDecl") (name "b") (declared-name "b") (parent (node (document "d0") (qualified-name "FeatureDeclCoverage"))))
-    (element (id (node (document "d0") (qualified-name "FeatureDeclCoverage::e"))) (kind "kermlDecl") (name "e") (declared-name "e") (parent (node (document "d0") (qualified-name "FeatureDeclCoverage"))))
-    (element (id (node (document "d0") (qualified-name "FeatureDeclCoverage::f"))) (kind "feature decl") (name "f") (declared-name "f") (parent (node (document "d0") (qualified-name "FeatureDeclCoverage"))))
-    (element (id (node (document "d0") (qualified-name "FeatureDeclCoverage::i"))) (kind "kermlDecl") (name "i") (declared-name "i") (parent (node (document "d0") (qualified-name "FeatureDeclCoverage"))))
-    (element (id (node (document "d0") (qualified-name "FeatureDeclCoverage::s"))) (kind "kermlDecl") (name "s") (declared-name "s") (parent (node (document "d0") (qualified-name "FeatureDeclCoverage"))))
-    (element (id (node (document "d0") (qualified-name "FeatureDeclCoverage::s2"))) (kind "kermlDecl") (name "s2") (declared-name "s2") (parent (node (document "d0") (qualified-name "FeatureDeclCoverage"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:4383bf7d587d38cb89fbaf501cd8a6723613fd23d4aa52c1e3dc99ebd16c8517") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

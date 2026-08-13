@@ -34,25 +34,13 @@ package 'Variation Usages' {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "36_variation_usages.md"
+  (document "memory://snapshot/36_variation_usages.md"
     (diagnostics
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 16) (end 1 39))
-      )
-      (diagnostic
-        (severity information)
-        (code "untyped_part_usage")
-        (source "sysml")
-        (range (start 5 1) (end 5 25))
-      )
-      (diagnostic
-        (severity information)
-        (code "untyped_part_usage")
-        (source "sysml")
-        (range (start 6 1) (end 6 28))
+        (range (start 1 16) (end 1 42))
       )
       (diagnostic
         (severity warning)
@@ -60,36 +48,60 @@ package 'Variation Usages' {
         (source "semantic")
         (range (start 9 16) (end 9 29))
       )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_usage_member")
+        (source "semantic")
+        (range (start 12 3) (end 12 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_usage_member")
+        (source "semantic")
+        (range (start 13 3) (end 13 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_usage_member")
+        (source "semantic")
+        (range (start 16 2) (end 21 3))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "dd2905b5ded6a6eb6e0d2a6f2edcb5b46d61a365b181a73103cffd3b12ea2209") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Variation Usages"))) (kind "package") (name "Variation Usages") (declared-name "Variation Usages"))
-    (element (id (node (document "d0") (qualified-name "Variation Usages::*"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "Variation Usages"))) (authored (membership (kind Import) (visibility "private") (import (reference "Variation Definitions::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "Variation Usages::Transmission"))) (kind "part def") (name "Transmission") (declared-name "Transmission") (parent (node (document "d0") (qualified-name "Variation Usages"))))
-    (element (id (node (document "d0") (qualified-name "Variation Usages::Vehicle"))) (kind "part def") (name "Vehicle") (declared-name "Vehicle") (parent (node (document "d0") (qualified-name "Variation Usages"))))
-    (element (id (node (document "d0") (qualified-name "Variation Usages::automaticTransmission"))) (kind "part") (name "automaticTransmission") (declared-name "automaticTransmission") (parent (node (document "d0") (qualified-name "Variation Usages"))))
-    (element (id (node (document "d0") (qualified-name "Variation Usages::manualTransmission"))) (kind "part") (name "manualTransmission") (declared-name "manualTransmission") (parent (node (document "d0") (qualified-name "Variation Usages"))))
-    (element (id (node (document "d0") (qualified-name "Variation Usages::vehicleFamily"))) (kind "part") (name "vehicleFamily") (declared-name "vehicleFamily") (parent (node (document "d0") (qualified-name "Variation Usages"))) (authored (membership (kind Feature)) (relationships (typing (reference "Vehicle")))))
-    (element (id (node (document "d0") (qualified-name "Variation Usages::vehicleFamily::engine"))) (kind "part") (name "engine") (declared-name "engine") (parent (node (document "d0") (qualified-name "Variation Usages::vehicleFamily"))) (authored (membership (kind Feature)) (relationships (typing (reference "EngineChoices")))))
-    (element (id (node (document "d0") (qualified-name "Variation Usages::vehicleFamily::transmission"))) (kind "part") (name "transmission") (declared-name "transmission") (parent (node (document "d0") (qualified-name "Variation Usages::vehicleFamily"))) (authored (membership (kind Feature)) (relationships (typing (reference "Transmission")))))
-    (element (id (node (document "d0") (qualified-name "Variation Usages::vehicleFamily::transmission::automaticTransmission"))) (kind "variant") (name "automaticTransmission") (declared-name "automaticTransmission") (parent (node (document "d0") (qualified-name "Variation Usages::vehicleFamily::transmission"))))
-    (element (id (node (document "d0") (qualified-name "Variation Usages::vehicleFamily::transmission::manualTransmission"))) (kind "variant") (name "manualTransmission") (declared-name "manualTransmission") (parent (node (document "d0") (qualified-name "Variation Usages::vehicleFamily::transmission"))))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:f72db2988c66ac92287bce6752db25cdb9612daf9e3c836aeb1851610af1e0ec") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/36_variation_usages.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Variation Definitions") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::Transmission"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::automaticTransmission"))) (kind part) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::manualTransmission"))) (kind part) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::vehicleFamily"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Vehicle"))))
+    (declaration (id (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::vehicleFamily::engine"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "EngineChoices"))))
+    (declaration (id (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::vehicleFamily::transmission"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Transmission"))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "Variation Usages::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Variation Definitions::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Variation Usages::vehicleFamily"))) (kind featureTyping) (ordinal 0)) (authored-target "Vehicle") (outcome (status resolved) (target (node (document "d0") (qualified-name "Variation Usages::Vehicle")))))
-    (reference (id (source (node (document "d0") (qualified-name "Variation Usages::vehicleFamily::engine"))) (kind featureTyping) (ordinal 0)) (authored-target "EngineChoices") (outcome (status unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Variation Usages::vehicleFamily::transmission"))) (kind featureTyping) (ordinal 0)) (authored-target "Transmission") (outcome (status resolved) (target (node (document "d0") (qualified-name "Variation Usages::Transmission")))))
+    (reference (id (source (node (document "memory://snapshot/36_variation_usages.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "Variation Definitions")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::vehicleFamily"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Vehicle")
+      (outcome (status resolved) (target (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::Vehicle")))))
+    (reference (id (source (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::vehicleFamily::engine"))) (kind featureTyping) (ordinal 0))
+      (authored-target "EngineChoices")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::vehicleFamily::transmission"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Transmission")
+      (outcome (status resolved) (target (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::Transmission")))))
   )
   (relationships
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "Variation Usages::vehicleFamily"))) (target (node (document "d0") (qualified-name "Variation Usages::Vehicle"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Variation Usages::vehicleFamily"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "Variation Usages::vehicleFamily::transmission"))) (target (node (document "d0") (qualified-name "Variation Usages::Transmission"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Variation Usages::vehicleFamily::transmission"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::vehicleFamily"))) (target (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::Vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::vehicleFamily"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::vehicleFamily::transmission"))) (target (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::Transmission"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::vehicleFamily::transmission"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )
@@ -98,43 +110,21 @@ package 'Variation Usages' {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 8 31) (end 8 38)) (probe (position 8 31))
-      (reference
-        (source (document "d0") (qualified-name "Variation Usages::vehicleFamily"))
-        (kind featureTyping) (ordinal 0) (authored-target "Vehicle")
-        (range (start 8 31) (end 8 38))
-        (outcome (status resolved)
-          (target (document "d0") (qualified-name "Variation Usages::Vehicle") (range (start 3 1) (end 3 18)))
-        )
-      )
-    )
-    (query (range (start 11 32) (end 11 44)) (probe (position 11 32))
-      (reference
-        (source (document "d0") (qualified-name "Variation Usages::vehicleFamily::transmission"))
-        (kind featureTyping) (ordinal 0) (authored-target "Transmission")
-        (range (start 11 32) (end 11 44))
-        (outcome (status resolved)
-          (target (document "d0") (qualified-name "Variation Usages::Transmission") (range (start 4 1) (end 4 23)))
-        )
-      )
-    )
-    (query (range (start 9 16) (end 9 29)) (probe (position 9 16))
-      (reference
-        (source (document "d0") (qualified-name "Variation Usages::vehicleFamily::engine"))
-        (kind featureTyping) (ordinal 0) (authored-target "EngineChoices")
-        (range (start 9 16) (end 9 29))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 1 16) (end 1 39)) (probe (position 1 16))
-      (reference
-        (source (document "d0") (qualified-name "Variation Usages::*"))
-        (kind namespaceImport) (ordinal 0) (authored-target "Variation Definitions::*")
-        (range (start 1 16) (end 1 39))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/36_variation_usages.md") (range (start 1 16) (end 1 42)) (probe (position 1 16))
+    (reference (id (source (node (document "memory://snapshot/36_variation_usages.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "Variation Definitions")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/36_variation_usages.md") (range (start 8 31) (end 8 38)) (probe (position 8 31))
+    (reference (id (source (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::vehicleFamily"))) (kind featureTyping) (ordinal 0) (authored-target "Vehicle")
+      (outcome (status resolved) (target (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::Vehicle")))))
+  )
+  (query (document "memory://snapshot/36_variation_usages.md") (range (start 9 16) (end 9 29)) (probe (position 9 16))
+    (reference (id (source (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::vehicleFamily::engine"))) (kind featureTyping) (ordinal 0) (authored-target "EngineChoices")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/36_variation_usages.md") (range (start 11 32) (end 11 44)) (probe (position 11 32))
+    (reference (id (source (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::vehicleFamily::transmission"))) (kind featureTyping) (ordinal 0) (authored-target "Transmission")
+      (outcome (status resolved) (target (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::Transmission")))))
   )
 )
 ~~~

@@ -136,30 +136,162 @@ package ProductSelection_N_ary {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "product_selection_n_ary.md"
+  (document "memory://snapshot/product_selection_n_ary.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 2 1) (end 2 20))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 2 1) (end 2 20))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 3 1) (end 3 15))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 3 1) (end 3 15))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 4 1) (end 4 15))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 4 1) (end 4 15))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 7 1) (end 11 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 7 1) (end 11 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 14 1) (end 18 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 14 1) (end 18 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 21 1) (end 31 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 21 1) (end 31 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 35 1) (end 63 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 35 1) (end 63 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 65 1) (end 69 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 65 1) (end 69 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 71 1) (end 75 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 71 1) (end 75 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 77 1) (end 87 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 77 1) (end 87 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 89 1) (end 114 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 89 1) (end 114 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 116 1) (end 124 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 116 1) (end 124 2))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "f816064ec31fdd0eff5ceb3d889c2f3a79c5353aa28fe4a857aecba5be77a893") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary"))) (kind "package") (name "ProductSelection_N_ary") (declared-name "ProductSelection_N_ary"))
-    (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary::Account"))) (kind "classifier decl") (name "Account") (declared-name "Account") (parent (node (document "d0") (qualified-name "ProductSelection_N_ary"))))
-    (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary::OnlineCustomer"))) (kind "classifier decl") (name "OnlineCustomer") (declared-name "OnlineCustomer") (parent (node (document "d0") (qualified-name "ProductSelection_N_ary"))))
-    (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary::Product"))) (kind "classifier decl") (name "Product") (declared-name "Product") (parent (node (document "d0") (qualified-name "ProductSelection_N_ary"))))
-    (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary::ProductSelection"))) (kind "kermlDecl") (name "ProductSelection") (declared-name "ProductSelection") (parent (node (document "d0") (qualified-name "ProductSelection_N_ary"))))
-    (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary::ProductSelection1"))) (kind "kermlDecl") (name "ProductSelection1") (declared-name "ProductSelection1") (parent (node (document "d0") (qualified-name "ProductSelection_N_ary"))))
-    (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary::ProductSelection2"))) (kind "kermlDecl") (name "ProductSelection2") (declared-name "ProductSelection2") (parent (node (document "d0") (qualified-name "ProductSelection_N_ary"))))
-    (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary::ProductSelection3"))) (kind "kermlDecl") (name "ProductSelection3") (declared-name "ProductSelection3") (parent (node (document "d0") (qualified-name "ProductSelection_N_ary"))))
-    (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary::ShoppingCart"))) (kind "classifier decl") (name "ShoppingCart") (declared-name "ShoppingCart") (parent (node (document "d0") (qualified-name "ProductSelection_N_ary"))))
-    (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary::SingleProductSelection"))) (kind "kermlDecl") (name "SingleProductSelection") (declared-name "SingleProductSelection") (parent (node (document "d0") (qualified-name "ProductSelection_N_ary"))))
-    (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary::SingleProductSelection1"))) (kind "kermlDecl") (name "SingleProductSelection1") (declared-name "SingleProductSelection1") (parent (node (document "d0") (qualified-name "ProductSelection_N_ary"))))
-    (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary::SingleProductSelection2"))) (kind "kermlDecl") (name "SingleProductSelection2") (declared-name "SingleProductSelection2") (parent (node (document "d0") (qualified-name "ProductSelection_N_ary"))))
-    (element (id (node (document "d0") (qualified-name "ProductSelection_N_ary::SingleProductSelection3"))) (kind "kermlDecl") (name "SingleProductSelection3") (declared-name "SingleProductSelection3") (parent (node (document "d0") (qualified-name "ProductSelection_N_ary"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:13d76f0df00af0ed1c3c3edd4982752d35cd22830e948f987403688f3e3bbb67") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/product_selection_n_ary.md") (qualified-name "ProductSelection_N_ary"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

@@ -39,45 +39,157 @@ package FeatureAdvancedCoverage {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "coverage_features_advanced.md"
+  (document "memory://snapshot/coverage_features_advanced.md"
     (diagnostics
       (diagnostic
         (severity error)
         (code "unrecognized_declaration_in_scope")
-        (source "sysml")
-        (range (start 1 4) (end 1 48))
+        (source "parser")
+        (range (start 1 4) (end 4 4))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 6 4) (end 8 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 6 4) (end 8 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 9 4) (end 9 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 9 4) (end 9 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 10 4) (end 10 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 10 4) (end 10 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 12 4) (end 12 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 12 4) (end 12 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 13 4) (end 13 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 13 4) (end 13 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 14 4) (end 14 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 14 4) (end 14 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 15 4) (end 15 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 15 4) (end 15 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 17 4) (end 17 12))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 17 12) (end 17 27))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 17 12) (end 17 27))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 19 4) (end 23 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 19 4) (end 23 5))
       )
       (diagnostic
         (severity error)
         (code "recovered_package_body_element")
-        (source "sysml")
-        (range (start 25 4) (end 25 44))
+        (source "parser")
+        (range (start 25 4) (end 28 4))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_filtered_import")
+        (source "semantic")
+        (range (start 28 11) (end 28 16))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "a1b13c4d4734ee8cf1e59c0ada92967b11e43f55714fe6566514cb1091c4ac2c") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage"))) (kind "package") (name "FeatureAdvancedCoverage") (declared-name "FeatureAdvancedCoverage"))
-    (element (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::C"))) (kind "classifier decl") (name "C") (declared-name "C") (parent (node (document "d0") (qualified-name "FeatureAdvancedCoverage"))))
-    (element (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::C#import"))) (kind "import") (name "C") (declared-name "C") (parent (node (document "d0") (qualified-name "FeatureAdvancedCoverage"))) (authored (membership (kind Import) (import (reference "C") (origin Import) (shape Membership) (recursive true)))))
-    (element (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::MyPackage"))) (kind "package") (name "MyPackage") (declared-name "MyPackage") (parent (node (document "d0") (qualified-name "FeatureAdvancedCoverage"))))
-    (element (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::_Safety"))) (kind "metadata keyword") (name "Safety") (declared-name "Safety") (parent (node (document "d0") (qualified-name "FeatureAdvancedCoverage"))))
-    (element (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::fConj"))) (kind "feature decl") (name "fConj") (declared-name "fConj") (parent (node (document "d0") (qualified-name "FeatureAdvancedCoverage"))))
-    (element (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::fIn"))) (kind "feature decl") (name "fIn") (declared-name "fIn") (parent (node (document "d0") (qualified-name "FeatureAdvancedCoverage"))))
-    (element (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::fOut"))) (kind "feature decl") (name "fOut") (declared-name "fOut") (parent (node (document "d0") (qualified-name "FeatureAdvancedCoverage"))))
-    (element (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::w"))) (kind "feature decl") (name "w") (declared-name "w") (parent (node (document "d0") (qualified-name "FeatureAdvancedCoverage"))))
-    (element (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::x"))) (kind "feature decl") (name "x") (declared-name "x") (parent (node (document "d0") (qualified-name "FeatureAdvancedCoverage"))))
-    (element (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::y"))) (kind "feature decl") (name "y") (declared-name "y") (parent (node (document "d0") (qualified-name "FeatureAdvancedCoverage"))))
-    (element (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::z"))) (kind "feature decl") (name "z") (declared-name "z") (parent (node (document "d0") (qualified-name "FeatureAdvancedCoverage"))))
-    (element (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::z1"))) (kind "feature decl") (name "z1") (declared-name "z1") (parent (node (document "d0") (qualified-name "FeatureAdvancedCoverage"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:b316894a6bb12af4449e04c2ccc74a6daadd36ede6183f995e60a59ff9a7730b") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/coverage_features_advanced.md") (qualified-name "FeatureAdvancedCoverage"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_features_advanced.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility default)) (authored (membership (kind import) (visibility default)) (relationships (membershipImport (reference "C") (import (shape membership) (recursive true)))))
+    (declaration (id (node (document "memory://snapshot/coverage_features_advanced.md") (qualified-name "FeatureAdvancedCoverage::MyPackage"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "FeatureAdvancedCoverage::C#import"))) (kind membershipImport) (ordinal 0)) (authored-target "C") (outcome (status resolved) (target (node (document "d0") (qualified-name "FeatureAdvancedCoverage::C")))) (import (origin import) (shape membership) (recursive true) (conformance valid)))
+    (reference (id (source (node (document "memory://snapshot/coverage_features_advanced.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
+      (authored-target "C")
+      (outcome (status unsupported)))
   )
   (relationships
   )
@@ -88,17 +200,9 @@ package FeatureAdvancedCoverage {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 28 11) (end 28 12)) (probe (position 28 11))
-      (reference
-        (source (document "d0") (qualified-name "FeatureAdvancedCoverage::C#import"))
-        (kind membershipImport) (ordinal 0) (authored-target "C")
-        (range (start 28 11) (end 28 12))
-        (outcome (status resolved)
-          (target (document "d0") (qualified-name "FeatureAdvancedCoverage::C") (range (start 19 4) (end 19 121)))
-        )
-      )
-    )
+  (query (document "memory://snapshot/coverage_features_advanced.md") (range (start 28 11) (end 28 16)) (probe (position 28 11))
+    (reference (id (source (node (document "memory://snapshot/coverage_features_advanced.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "C")
+      (outcome (status unsupported)))
   )
 )
 ~~~

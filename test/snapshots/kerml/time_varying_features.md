@@ -78,20 +78,42 @@ package TimeVaryingFeatures {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "time_varying_features.md"
+  (document "memory://snapshot/time_varying_features.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 1 4) (end 23 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 1 4) (end 23 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 25 4) (end 67 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 25 4) (end 67 5))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "fd4a3b8f06478f2c1540e15ed75dea05308c92bf8458385371cf0d12bb5d03f4") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "TimeVaryingFeatures"))) (kind "package") (name "TimeVaryingFeatures") (declared-name "TimeVaryingFeatures"))
-    (element (id (node (document "d0") (qualified-name "TimeVaryingFeatures::CC0"))) (kind "classifier decl") (name "CC0") (declared-name "CC0") (parent (node (document "d0") (qualified-name "TimeVaryingFeatures"))))
-    (element (id (node (document "d0") (qualified-name "TimeVaryingFeatures::CC1"))) (kind "classifier decl") (name "CC1") (declared-name "CC1") (parent (node (document "d0") (qualified-name "TimeVaryingFeatures"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:31ce1f9122cfe39ecac9be5089bf0c3b6303844c0a94995c0500148c4ba4125a") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/time_varying_features.md") (qualified-name "TimeVaryingFeatures"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

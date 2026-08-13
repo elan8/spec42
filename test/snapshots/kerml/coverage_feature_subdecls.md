@@ -24,32 +24,120 @@ package FeatureSubDeclCoverage {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "coverage_feature_subdecls.md"
+  (document "memory://snapshot/coverage_feature_subdecls.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 1 4) (end 1 18))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 1 4) (end 1 18))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 2 4) (end 2 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 2 4) (end 2 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 3 4) (end 3 19))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 3 4) (end 3 19))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 4 4) (end 4 20))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 4 4) (end 4 20))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 5 4) (end 5 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 5 4) (end 5 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 6 4) (end 6 27))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 6 4) (end 6 27))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 7 4) (end 7 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 7 4) (end 7 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 8 4) (end 8 27))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 8 4) (end 8 27))
+      )
       (diagnostic
         (severity error)
         (code "unrecognized_declaration_in_scope")
-        (source "sysml")
-        (range (start 10 4) (end 10 110))
+        (source "parser")
+        (range (start 10 4) (end 14 0))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "620120a4903666b6ac2fd4f1e68cc8945e6e22fc6f05cccdf1020c33ae9f6522") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "FeatureSubDeclCoverage"))) (kind "package") (name "FeatureSubDeclCoverage") (declared-name "FeatureSubDeclCoverage"))
-    (element (id (node (document "d0") (qualified-name "FeatureSubDeclCoverage::a"))) (kind "feature decl") (name "a") (declared-name "a") (parent (node (document "d0") (qualified-name "FeatureSubDeclCoverage"))))
-    (element (id (node (document "d0") (qualified-name "FeatureSubDeclCoverage::b"))) (kind "feature decl") (name "b") (declared-name "b") (parent (node (document "d0") (qualified-name "FeatureSubDeclCoverage"))))
-    (element (id (node (document "d0") (qualified-name "FeatureSubDeclCoverage::c"))) (kind "feature decl") (name "c") (declared-name "c") (parent (node (document "d0") (qualified-name "FeatureSubDeclCoverage"))))
-    (element (id (node (document "d0") (qualified-name "FeatureSubDeclCoverage::d"))) (kind "feature decl") (name "d") (declared-name "d") (parent (node (document "d0") (qualified-name "FeatureSubDeclCoverage"))))
-    (element (id (node (document "d0") (qualified-name "FeatureSubDeclCoverage::e"))) (kind "feature decl") (name "e") (declared-name "e") (parent (node (document "d0") (qualified-name "FeatureSubDeclCoverage"))))
-    (element (id (node (document "d0") (qualified-name "FeatureSubDeclCoverage::f"))) (kind "feature decl") (name "f") (declared-name "f") (parent (node (document "d0") (qualified-name "FeatureSubDeclCoverage"))))
-    (element (id (node (document "d0") (qualified-name "FeatureSubDeclCoverage::g"))) (kind "feature decl") (name "g") (declared-name "g") (parent (node (document "d0") (qualified-name "FeatureSubDeclCoverage"))))
-    (element (id (node (document "d0") (qualified-name "FeatureSubDeclCoverage::h"))) (kind "feature decl") (name "h") (declared-name "h") (parent (node (document "d0") (qualified-name "FeatureSubDeclCoverage"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:56790a4770c6a0b4a8ca03565fcc54cf91c0375d06d134beee99b07b504c474b") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/coverage_feature_subdecls.md") (qualified-name "FeatureSubDeclCoverage"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

@@ -31,38 +31,88 @@ package Dependencies {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "dependencies.md"
+  (document "memory://snapshot/dependencies.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 10 1) (end 10 60))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 11 1) (end 11 49))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 13 1) (end 13 11))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 13 1) (end 13 11))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 14 1) (end 14 11))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 14 1) (end 14 11))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 15 1) (end 15 11))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 15 1) (end 15 11))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 17 1) (end 19 2))
+      )
       (diagnostic
         (severity error)
         (code "unrecognized_declaration_in_scope")
-        (source "sysml")
-        (range (start 18 2) (end 18 14))
+        (source "parser")
+        (range (start 18 2) (end 19 1))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "5fe9c42d152813184ba3dc882d2f0b9a527835ca4ea89e5714a943e257efac47") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Dependencies"))) (kind "package") (name "Dependencies") (declared-name "Dependencies"))
-    (element (id (node (document "d0") (qualified-name "Dependencies::*"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "Dependencies"))) (authored (membership (kind Import) (visibility "public") (import (reference "System::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "Dependencies::System"))) (kind "package") (name "System") (declared-name "System") (parent (node (document "d0") (qualified-name "Dependencies"))))
-    (element (id (node (document "d0") (qualified-name "Dependencies::System::Application Layer"))) (kind "package") (name "Application Layer") (declared-name "Application Layer") (parent (node (document "d0") (qualified-name "Dependencies::System"))))
-    (element (id (node (document "d0") (qualified-name "Dependencies::System::Data Layer"))) (kind "package") (name "Data Layer") (declared-name "Data Layer") (parent (node (document "d0") (qualified-name "Dependencies::System"))))
-    (element (id (node (document "d0") (qualified-name "Dependencies::System::Service Layer"))) (kind "package") (name "Service Layer") (declared-name "Service Layer") (parent (node (document "d0") (qualified-name "Dependencies::System"))))
-    (element (id (node (document "d0") (qualified-name "Dependencies::Use"))) (kind "dependency") (name "Use") (declared-name "Use") (parent (node (document "d0") (qualified-name "Dependencies"))))
-    (element (id (node (document "d0") (qualified-name "Dependencies::dependency"))) (kind "dependency") (name "dependency") (declared-name "dependency") (parent (node (document "d0") (qualified-name "Dependencies"))))
-    (element (id (node (document "d0") (qualified-name "Dependencies::dependency#dependency"))) (kind "dependency") (name "dependency") (declared-name "dependency") (parent (node (document "d0") (qualified-name "Dependencies"))))
-    (element (id (node (document "d0") (qualified-name "Dependencies::x"))) (kind "feature decl") (name "x") (declared-name "x") (parent (node (document "d0") (qualified-name "Dependencies"))))
-    (element (id (node (document "d0") (qualified-name "Dependencies::y"))) (kind "feature decl") (name "y") (declared-name "y") (parent (node (document "d0") (qualified-name "Dependencies"))))
-    (element (id (node (document "d0") (qualified-name "Dependencies::z"))) (kind "feature decl") (name "z") (declared-name "z") (parent (node (document "d0") (qualified-name "Dependencies"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:526982ee6349689d97406de6cf14dd886e218a1139374ed9119523131c81bbb0") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/dependencies.md") (qualified-name "Dependencies"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/dependencies.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "System") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/dependencies.md") (qualified-name "Dependencies::System"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/dependencies.md") (qualified-name "Dependencies::System::Application Layer"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/dependencies.md") (qualified-name "Dependencies::System::Data Layer"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/dependencies.md") (qualified-name "Dependencies::System::Service Layer"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "Dependencies::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "System::*") (outcome (status resolved) (target (node (document "d0") (qualified-name "Dependencies::System")))) (import (origin import) (shape namespace) (recursive false) (conformance valid)))
+    (reference (id (source (node (document "memory://snapshot/dependencies.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "System")
+      (outcome (status resolved) (target (node (document "memory://snapshot/dependencies.md") (qualified-name "Dependencies::System")))))
   )
   (relationships
   )
@@ -73,17 +123,9 @@ package Dependencies {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 8 15) (end 8 21)) (probe (position 8 15))
-      (reference
-        (source (document "d0") (qualified-name "Dependencies::*"))
-        (kind namespaceImport) (ordinal 0) (authored-target "System::*")
-        (range (start 8 15) (end 8 21))
-        (outcome (status resolved)
-          (target (document "d0") (qualified-name "Dependencies::System") (range (start 2 1) (end 2 102)))
-        )
-      )
-    )
+  (query (document "memory://snapshot/dependencies.md") (range (start 8 15) (end 8 24)) (probe (position 8 15))
+    (reference (id (source (node (document "memory://snapshot/dependencies.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "System")
+      (outcome (status resolved) (target (node (document "memory://snapshot/dependencies.md") (qualified-name "Dependencies::System")))))
   )
 )
 ~~~

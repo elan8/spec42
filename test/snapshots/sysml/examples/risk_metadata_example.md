@@ -28,42 +28,59 @@ package RiskMetadataExample {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "risk_metadata_example.md"
+  (document "memory://snapshot/risk_metadata_example.md"
     (diagnostics
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 16) (end 1 28))
+        (range (start 1 16) (end 1 31))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 2 16) (end 2 29))
+        (range (start 2 16) (end 2 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_usage_member")
+        (source "semantic")
+        (range (start 5 8) (end 9 9))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_usage_member")
+        (source "semantic")
+        (range (start 10 8) (end 15 9))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "parser")
+        (range (start 11 9) (end 15 8))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "d514e1f3d1f4b0ba81a2bd4a8e33bf30bee35ea66a75e369365da9cc6532636c") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "RiskMetadataExample"))) (kind "package") (name "RiskMetadataExample") (declared-name "RiskMetadataExample"))
-    (element (id (node (document "d0") (qualified-name "RiskMetadataExample::*"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "RiskMetadataExample"))) (authored (membership (kind Import) (visibility "private") (import (reference "RiskMetadata::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "RiskMetadataExample::*#import"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "RiskMetadataExample"))) (authored (membership (kind Import) (visibility "private") (import (reference "RiskLevelEnum::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl"))) (kind "part") (name "engine4cyl") (declared-name "engine4cyl") (parent (node (document "d0") (qualified-name "RiskMetadataExample"))))
-    (element (id (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk"))) (kind "metadata usage") (name "Risk") (declared-name "Risk") (parent (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl"))))
-    (element (id (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk#metadata_usage"))) (kind "metadata usage") (name "Risk") (declared-name "Risk") (parent (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl"))))
-    (element (id (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk::scheduleRisk"))) (kind "attribute") (name "scheduleRisk") (declared-name "scheduleRisk") (parent (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk"))))
-    (element (id (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk::technicalRisk"))) (kind "attribute") (name "technicalRisk") (declared-name "technicalRisk") (parent (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk"))))
-    (element (id (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk::totalRisk"))) (kind "attribute") (name "totalRisk") (declared-name "totalRisk") (parent (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:9a8e1678aadad0acf618dfc7835bf6163291ed9c0b8e2739ee83c2b4ac44f0dc") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/risk_metadata_example.md") (qualified-name "RiskMetadataExample"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/risk_metadata_example.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "RiskMetadata") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/risk_metadata_example.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "RiskLevelEnum") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/risk_metadata_example.md") (qualified-name "RiskMetadataExample::engine4cyl"))) (kind part) (membership (kind feature) (visibility default)))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "RiskMetadataExample::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "RiskMetadata::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "RiskMetadataExample::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "RiskLevelEnum::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
+    (reference (id (source (node (document "memory://snapshot/risk_metadata_example.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "RiskMetadata")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/risk_metadata_example.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "RiskLevelEnum")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -74,23 +91,13 @@ package RiskMetadataExample {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 1 16) (end 1 28)) (probe (position 1 16))
-      (reference
-        (source (document "d0") (qualified-name "RiskMetadataExample::*"))
-        (kind namespaceImport) (ordinal 0) (authored-target "RiskMetadata::*")
-        (range (start 1 16) (end 1 28))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 2 16) (end 2 29)) (probe (position 2 16))
-      (reference
-        (source (document "d0") (qualified-name "RiskMetadataExample::*#import"))
-        (kind namespaceImport) (ordinal 0) (authored-target "RiskLevelEnum::*")
-        (range (start 2 16) (end 2 29))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/risk_metadata_example.md") (range (start 1 16) (end 1 31)) (probe (position 1 16))
+    (reference (id (source (node (document "memory://snapshot/risk_metadata_example.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "RiskMetadata")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/risk_metadata_example.md") (range (start 2 16) (end 2 32)) (probe (position 2 16))
+    (reference (id (source (node (document "memory://snapshot/risk_metadata_example.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0) (authored-target "RiskLevelEnum")
+      (outcome (status unresolved)))
   )
 )
 ~~~

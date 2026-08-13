@@ -13,20 +13,20 @@ part def Vehicle {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "parse_part_def_with_body.md"
+  (document "memory://snapshot/parse_part_def_with_body.md"
     (diagnostics
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "3e7bbf2f6f3a0e2359f954e2ddd113e31f250277040183841abe8359c91c9ada") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Vehicle"))) (kind "part def") (name "Vehicle") (declared-name "Vehicle"))
-    (element (id (node (document "d0") (qualified-name "Vehicle::Engine"))) (kind "part def") (name "Engine") (declared-name "Engine") (parent (node (document "d0") (qualified-name "Vehicle"))))
-    (element (id (node (document "d0") (qualified-name "Vehicle::Wheel"))) (kind "part def") (name "Wheel") (declared-name "Wheel") (parent (node (document "d0") (qualified-name "Vehicle"))))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:f0635d73fef4fd8ec5676b4de3f4c07f6589cb7817bd98f5225c548cc0b25180") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/parse_part_def_with_body.md") (qualified-name "Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/parse_part_def_with_body.md") (qualified-name "Vehicle::Engine"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/parse_part_def_with_body.md") (qualified-name "Vehicle::Wheel"))) (kind part-def) (membership (kind owning) (visibility default)))
   )
   (references
   )

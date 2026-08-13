@@ -24,48 +24,54 @@ package VerificationMetadataExample {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "verification_metadata_example.md"
+  (document "memory://snapshot/verification_metadata_example.md"
     (diagnostics
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 16) (end 1 33))
+        (range (start 1 16) (end 1 36))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 2 16) (end 2 38))
+        (range (start 2 16) (end 2 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 4 4) (end 4 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 5 4) (end 12 5))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "822800e1d7f96b08660982aa7e650dd15ed67acf64ead1ec4e157dc5de7fcda1") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "VerificationMetadataExample"))) (kind "package") (name "VerificationMetadataExample") (declared-name "VerificationMetadataExample"))
-    (element (id (node (document "d0") (qualified-name "VerificationMetadataExample::*"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "VerificationMetadataExample"))) (authored (membership (kind Import) (visibility "private") (import (reference "VerificationCases::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "VerificationMetadataExample::*#import"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "VerificationMetadataExample"))) (authored (membership (kind Import) (visibility "private") (import (reference "VerificationMethodKind::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "VerificationMetadataExample::MassTest"))) (kind "verification def") (name "MassTest") (declared-name "MassTest") (parent (node (document "d0") (qualified-name "VerificationMetadataExample"))))
-    (element (id (node (document "d0") (qualified-name "VerificationMetadataExample::massTests"))) (kind "verification") (name "massTests") (declared-name "massTests") (parent (node (document "d0") (qualified-name "VerificationMetadataExample"))) (authored (membership (kind Feature)) (relationships (typing (reference "MassTest")))))
-    (element (id (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::VerificationMethod"))) (kind "metadata usage") (name "VerificationMethod") (declared-name "VerificationMethod") (parent (node (document "d0") (qualified-name "VerificationMetadataExample::massTests"))))
-    (element (id (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::VerificationMethod::kind"))) (kind "attribute") (name "kind") (declared-name "kind") (parent (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::VerificationMethod"))))
-    (element (id (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::objective"))) (kind "objective") (name "objective") (declared-name "objective") (parent (node (document "d0") (qualified-name "VerificationMetadataExample::massTests"))))
-    (element (id (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::weighVehicle"))) (kind "action") (name "weighVehicle") (declared-name "weighVehicle") (parent (node (document "d0") (qualified-name "VerificationMetadataExample::massTests"))))
-    (element (id (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::weighVehicle::VerificationMethod"))) (kind "metadata usage") (name "VerificationMethod") (declared-name "VerificationMethod") (parent (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::weighVehicle"))))
-    (element (id (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::weighVehicle::VerificationMethod::kind"))) (kind "attribute") (name "kind") (declared-name "kind") (parent (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::weighVehicle::VerificationMethod"))))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:156dde3c7b698e68a879dce95ae4026bc5b91e7b745b8418f598ef0bfe690100") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/verification_metadata_example.md") (qualified-name "VerificationMetadataExample"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/verification_metadata_example.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "VerificationCases") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/verification_metadata_example.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "VerificationMethodKind") (import (shape namespace) (recursive false)))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "VerificationMetadataExample::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "VerificationCases::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "VerificationMetadataExample::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "VerificationMethodKind::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "VerificationMetadataExample::massTests"))) (kind featureTyping) (ordinal 0)) (authored-target "MassTest") (outcome (status resolved) (target (node (document "d0") (qualified-name "VerificationMetadataExample::MassTest")))))
+    (reference (id (source (node (document "memory://snapshot/verification_metadata_example.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "VerificationCases")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/verification_metadata_example.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "VerificationMethodKind")
+      (outcome (status unresolved)))
   )
   (relationships
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "VerificationMetadataExample::massTests"))) (target (node (document "d0") (qualified-name "VerificationMetadataExample::MassTest"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "VerificationMetadataExample::massTests"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )
@@ -74,23 +80,13 @@ package VerificationMetadataExample {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 1 16) (end 1 33)) (probe (position 1 16))
-      (reference
-        (source (document "d0") (qualified-name "VerificationMetadataExample::*"))
-        (kind namespaceImport) (ordinal 0) (authored-target "VerificationCases::*")
-        (range (start 1 16) (end 1 33))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 2 16) (end 2 38)) (probe (position 2 16))
-      (reference
-        (source (document "d0") (qualified-name "VerificationMetadataExample::*#import"))
-        (kind namespaceImport) (ordinal 0) (authored-target "VerificationMethodKind::*")
-        (range (start 2 16) (end 2 38))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/verification_metadata_example.md") (range (start 1 16) (end 1 36)) (probe (position 1 16))
+    (reference (id (source (node (document "memory://snapshot/verification_metadata_example.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "VerificationCases")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/verification_metadata_example.md") (range (start 2 16) (end 2 41)) (probe (position 2 16))
+    (reference (id (source (node (document "memory://snapshot/verification_metadata_example.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0) (authored-target "VerificationMethodKind")
+      (outcome (status unresolved)))
   )
 )
 ~~~

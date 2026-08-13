@@ -9,17 +9,17 @@ type=file
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "empty_input.md"
+  (document "memory://snapshot/empty_input.md"
     (diagnostics
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1549f253e83e7ef1793b8438c839915f3a33541c0e142914a5bf28b7325802fd") (contract-version "canonical-resolution-v1"))
-  (structure
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:f30020b723cb623869e6e8e773c21882e7054a6db7348ab80fb76166f992312c") (contract-version "parser-owned-resolution-v1"))
+  (declarations
   )
   (references
   )

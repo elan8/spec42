@@ -49,28 +49,30 @@ package '15_06-System of Quantities' {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "15_06_system_of_quantities.md"
+  (document "memory://snapshot/15_06_system_of_quantities.md"
     (diagnostics
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 19) (end 1 22))
+        (range (start 1 19) (end 1 25))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "57d49526f07152be0c68774c777b254ea7efd33db2d139879cb29f02d2644585") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "15_06-System of Quantities"))) (kind "package") (name "15_06-System of Quantities") (declared-name "15_06-System of Quantities"))
-    (element (id (node (document "d0") (qualified-name "15_06-System of Quantities::*"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "15_06-System of Quantities"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQ::*") (origin Import) (shape Namespace) (recursive false)))))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:995cec352700c65c8a118098daf0d7815096263336553e186839d574f265786a") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/15_06_system_of_quantities.md") (qualified-name "15_06-System of Quantities"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/15_06_system_of_quantities.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ISQ") (import (shape namespace) (recursive false)))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "15_06-System of Quantities::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ISQ::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
+    (reference (id (source (node (document "memory://snapshot/15_06_system_of_quantities.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "ISQ")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -81,15 +83,9 @@ package '15_06-System of Quantities' {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 1 19) (end 1 22)) (probe (position 1 19))
-      (reference
-        (source (document "d0") (qualified-name "15_06-System of Quantities::*"))
-        (kind namespaceImport) (ordinal 0) (authored-target "ISQ::*")
-        (range (start 1 19) (end 1 22))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/15_06_system_of_quantities.md") (range (start 1 19) (end 1 25)) (probe (position 1 19))
+    (reference (id (source (node (document "memory://snapshot/15_06_system_of_quantities.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "ISQ")
+      (outcome (status unresolved)))
   )
 )
 ~~~

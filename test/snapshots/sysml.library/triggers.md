@@ -197,7 +197,7 @@ standard library package Triggers {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "triggers.md"
+  (document "memory://snapshot/triggers.md"
     (diagnostics
       (diagnostic
         (severity warning)
@@ -221,41 +221,94 @@ standard library package Triggers {
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 12 15) (end 12 21))
+        (range (start 12 15) (end 12 24))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 13 15) (end 13 26))
+        (range (start 13 15) (end 13 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 15 1) (end 45 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 15 1) (end 45 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 47 1) (end 88 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 47 1) (end 88 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 90 1) (end 138 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 90 1) (end 138 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 140 1) (end 185 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 140 1) (end 185 2))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "870c469b959364a0b9d42a667902528e5670c07da6322b297c8d7b599f7fd8ca") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Triggers"))) (kind "package") (name "Triggers") (declared-name "Triggers"))
-    (element (id (node (document "d0") (qualified-name "Triggers::*"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "Triggers"))) (authored (membership (kind Import) (visibility "public") (import (reference "Clocks::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "Triggers::*#import"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "Triggers"))) (authored (membership (kind Import) (visibility "public") (import (reference "Observation::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "Triggers::Boolean"))) (kind "import") (name "Boolean") (declared-name "Boolean") (parent (node (document "d0") (qualified-name "Triggers"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Boolean") (origin Import) (shape Membership) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "Triggers::NumericalValue"))) (kind "import") (name "NumericalValue") (declared-name "NumericalValue") (parent (node (document "d0") (qualified-name "Triggers"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::NumericalValue") (origin Import) (shape Membership) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "Triggers::Occurrence"))) (kind "import") (name "Occurrence") (declared-name "Occurrence") (parent (node (document "d0") (qualified-name "Triggers"))) (authored (membership (kind Import) (visibility "private") (import (reference "Occurrences::Occurrence") (origin Import) (shape Membership) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "Triggers::TimeSignal"))) (kind "classifier decl") (name "TimeSignal") (declared-name "TimeSignal") (parent (node (document "d0") (qualified-name "Triggers"))))
-    (element (id (node (document "d0") (qualified-name "Triggers::TriggerAfter"))) (kind "kermlDecl") (name "TriggerAfter") (declared-name "TriggerAfter") (parent (node (document "d0") (qualified-name "Triggers"))))
-    (element (id (node (document "d0") (qualified-name "Triggers::TriggerAt"))) (kind "kermlDecl") (name "TriggerAt") (declared-name "TriggerAt") (parent (node (document "d0") (qualified-name "Triggers"))))
-    (element (id (node (document "d0") (qualified-name "Triggers::TriggerWhen"))) (kind "kermlDecl") (name "TriggerWhen") (declared-name "TriggerWhen") (parent (node (document "d0") (qualified-name "Triggers"))))
-    (element (id (node (document "d0") (qualified-name "Triggers::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "Triggers"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:53f10488723397ed2a09a22d6f301d8c999224bd41a89da6ce79aa64fa11d49e") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/triggers.md") (qualified-name "Triggers"))) (kind library-package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/triggers.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Boolean") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/triggers.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::NumericalValue") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/triggers.md") (anonymous (kind import) (ordinal 2))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Occurrences::Occurrence") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/triggers.md") (anonymous (kind import) (ordinal 3))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "Clocks") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/triggers.md") (anonymous (kind import) (ordinal 4))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "Observation") (import (shape namespace) (recursive false)))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "Triggers::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Clocks::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Triggers::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "Observation::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Triggers::Boolean"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Boolean") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Triggers::NumericalValue"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::NumericalValue") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Triggers::Occurrence"))) (kind membershipImport) (ordinal 0)) (authored-target "Occurrences::Occurrence") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
+    (reference (id (source (node (document "memory://snapshot/triggers.md") (anonymous (kind import) (ordinal 3))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "Clocks")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/triggers.md") (anonymous (kind import) (ordinal 4))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "Observation")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/triggers.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
+      (authored-target "ScalarValues::Boolean")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/triggers.md") (anonymous (kind import) (ordinal 1))))) (kind membershipImport) (ordinal 0))
+      (authored-target "ScalarValues::NumericalValue")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/triggers.md") (anonymous (kind import) (ordinal 2))))) (kind membershipImport) (ordinal 0))
+      (authored-target "Occurrences::Occurrence")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -266,47 +319,25 @@ standard library package Triggers {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 12 15) (end 12 21)) (probe (position 12 15))
-      (reference
-        (source (document "d0") (qualified-name "Triggers::*"))
-        (kind namespaceImport) (ordinal 0) (authored-target "Clocks::*")
-        (range (start 12 15) (end 12 21))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 13 15) (end 13 26)) (probe (position 13 15))
-      (reference
-        (source (document "d0") (qualified-name "Triggers::*#import"))
-        (kind namespaceImport) (ordinal 0) (authored-target "Observation::*")
-        (range (start 13 15) (end 13 26))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 8 16) (end 8 37)) (probe (position 8 16))
-      (reference
-        (source (document "d0") (qualified-name "Triggers::Boolean"))
-        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Boolean")
-        (range (start 8 16) (end 8 37))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 10 16) (end 10 39)) (probe (position 10 16))
-      (reference
-        (source (document "d0") (qualified-name "Triggers::Occurrence"))
-        (kind membershipImport) (ordinal 0) (authored-target "Occurrences::Occurrence")
-        (range (start 10 16) (end 10 39))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 9 16) (end 9 44)) (probe (position 9 16))
-      (reference
-        (source (document "d0") (qualified-name "Triggers::NumericalValue"))
-        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::NumericalValue")
-        (range (start 9 16) (end 9 44))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/triggers.md") (range (start 12 15) (end 12 24)) (probe (position 12 15))
+    (reference (id (source (node (document "memory://snapshot/triggers.md") (anonymous (kind import) (ordinal 3))))) (kind namespaceImport) (ordinal 0) (authored-target "Clocks")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/triggers.md") (range (start 13 15) (end 13 29)) (probe (position 13 15))
+    (reference (id (source (node (document "memory://snapshot/triggers.md") (anonymous (kind import) (ordinal 4))))) (kind namespaceImport) (ordinal 0) (authored-target "Observation")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/triggers.md") (range (start 8 16) (end 8 37)) (probe (position 8 16))
+    (reference (id (source (node (document "memory://snapshot/triggers.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Boolean")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/triggers.md") (range (start 9 16) (end 9 44)) (probe (position 9 16))
+    (reference (id (source (node (document "memory://snapshot/triggers.md") (anonymous (kind import) (ordinal 1))))) (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::NumericalValue")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/triggers.md") (range (start 10 16) (end 10 39)) (probe (position 10 16))
+    (reference (id (source (node (document "memory://snapshot/triggers.md") (anonymous (kind import) (ordinal 2))))) (kind membershipImport) (ordinal 0) (authored-target "Occurrences::Occurrence")
+      (outcome (status unresolved)))
   )
 )
 ~~~

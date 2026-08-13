@@ -23,11 +23,11 @@ package P3 {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "root_package_test.md"
+  (document "memory://snapshot/root_package_test.md"
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unresolved_reference")
+        (code "unsupported_reference")
         (source "semantic")
         (range (start 12 16) (end 12 17))
       )
@@ -36,27 +36,35 @@ package P3 {
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "10125a54963f4eeedc0481ba6c6b954637caa8be1624b5c15bd15622fe526041") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "*"))) (kind "import") (name "*") (declared-name "*") (authored (membership (kind Import) (visibility "private") (import (reference "P2::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "P1"))) (kind "package") (name "P1") (declared-name "P1"))
-    (element (id (node (document "d0") (qualified-name "P1::A"))) (kind "part def") (name "A") (declared-name "A") (parent (node (document "d0") (qualified-name "P1"))))
-    (element (id (node (document "d0") (qualified-name "P2"))) (kind "package") (name "P2") (declared-name "P2"))
-    (element (id (node (document "d0") (qualified-name "P2::*"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "P2"))) (authored (membership (kind Import) (visibility "private") (import (reference "P1::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "P2::a"))) (kind "part") (name "a") (declared-name "a") (parent (node (document "d0") (qualified-name "P2"))) (authored (membership (kind Feature)) (relationships (typing (reference "A")))))
-    (element (id (node (document "d0") (qualified-name "P3"))) (kind "package") (name "P3") (declared-name "P3"))
-    (element (id (node (document "d0") (qualified-name "P3::b"))) (kind "part") (name "b") (declared-name "b") (parent (node (document "d0") (qualified-name "P3"))) (authored (membership (kind Feature)) (relationships (subsetting (reference "a")))))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:715b36879e2e779b906bfe60e084538accfe4fac2c0e01e818b920aeaef52bea") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/root_package_test.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "P2") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/root_package_test.md") (qualified-name "P1"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/root_package_test.md") (qualified-name "P1::A"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/root_package_test.md") (qualified-name "P2"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/root_package_test.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "P1") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/root_package_test.md") (qualified-name "P2::a"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "A"))))
+    (declaration (id (node (document "memory://snapshot/root_package_test.md") (qualified-name "P3"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/root_package_test.md") (qualified-name "P3::b"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "a"))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "*"))) (kind namespaceImport) (ordinal 0)) (authored-target "P2::*") (outcome (status resolved) (target (node (document "d0") (qualified-name "P2")))) (import (origin import) (shape namespace) (recursive false) (conformance valid)))
-    (reference (id (source (node (document "d0") (qualified-name "P2::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "P1::*") (outcome (status resolved) (target (node (document "d0") (qualified-name "P1")))) (import (origin import) (shape namespace) (recursive false) (conformance valid)))
-    (reference (id (source (node (document "d0") (qualified-name "P2::a"))) (kind featureTyping) (ordinal 0)) (authored-target "A") (outcome (status resolved) (target (node (document "d0") (qualified-name "P1::A")))))
-    (reference (id (source (node (document "d0") (qualified-name "P3::b"))) (kind subsetting) (ordinal 0)) (authored-target "a") (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/root_package_test.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "P2")
+      (outcome (status resolved) (target (node (document "memory://snapshot/root_package_test.md") (qualified-name "P2")))))
+    (reference (id (source (node (document "memory://snapshot/root_package_test.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "P1")
+      (outcome (status resolved) (target (node (document "memory://snapshot/root_package_test.md") (qualified-name "P1")))))
+    (reference (id (source (node (document "memory://snapshot/root_package_test.md") (qualified-name "P2::a"))) (kind featureTyping) (ordinal 0))
+      (authored-target "A")
+      (outcome (status resolved) (target (node (document "memory://snapshot/root_package_test.md") (qualified-name "P1::A")))))
+    (reference (id (source (node (document "memory://snapshot/root_package_test.md") (qualified-name "P3::b"))) (kind subsetting) (ordinal 0))
+      (authored-target "a")
+      (outcome (status unsupported)))
   )
   (relationships
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "P2::a"))) (target (node (document "d0") (qualified-name "P1::A"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "P2::a"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/root_package_test.md") (qualified-name "P2::a"))) (target (node (document "memory://snapshot/root_package_test.md") (qualified-name "P1::A"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/root_package_test.md") (qualified-name "P2::a"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )
@@ -65,45 +73,21 @@ package P3 {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 6 10) (end 6 11)) (probe (position 6 10))
-      (reference
-        (source (document "d0") (qualified-name "P2::a"))
-        (kind featureTyping) (ordinal 0) (authored-target "A")
-        (range (start 6 10) (end 6 11))
-        (outcome (status resolved)
-          (target (document "d0") (qualified-name "P1::A") (range (start 1 1) (end 1 12)))
-        )
-      )
-    )
-    (query (range (start 12 16) (end 12 17)) (probe (position 12 16))
-      (reference
-        (source (document "d0") (qualified-name "P3::b"))
-        (kind subsetting) (ordinal 0) (authored-target "a")
-        (range (start 12 16) (end 12 17))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 5 16) (end 5 18)) (probe (position 5 16))
-      (reference
-        (source (document "d0") (qualified-name "P2::*"))
-        (kind namespaceImport) (ordinal 0) (authored-target "P1::*")
-        (range (start 5 16) (end 5 18))
-        (outcome (status resolved)
-          (target (document "d0") (qualified-name "P1") (range (start 0 0) (end 0 27)))
-        )
-      )
-    )
-    (query (range (start 9 15) (end 9 17)) (probe (position 9 15))
-      (reference
-        (source (document "d0") (qualified-name "*"))
-        (kind namespaceImport) (ordinal 0) (authored-target "P2::*")
-        (range (start 9 15) (end 9 17))
-        (outcome (status resolved)
-          (target (document "d0") (qualified-name "P2") (range (start 4 0) (end 4 50)))
-        )
-      )
-    )
+  (query (document "memory://snapshot/root_package_test.md") (range (start 9 15) (end 9 20)) (probe (position 9 15))
+    (reference (id (source (node (document "memory://snapshot/root_package_test.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "P2")
+      (outcome (status resolved) (target (node (document "memory://snapshot/root_package_test.md") (qualified-name "P2")))))
+  )
+  (query (document "memory://snapshot/root_package_test.md") (range (start 5 16) (end 5 21)) (probe (position 5 16))
+    (reference (id (source (node (document "memory://snapshot/root_package_test.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "P1")
+      (outcome (status resolved) (target (node (document "memory://snapshot/root_package_test.md") (qualified-name "P1")))))
+  )
+  (query (document "memory://snapshot/root_package_test.md") (range (start 6 10) (end 6 11)) (probe (position 6 10))
+    (reference (id (source (node (document "memory://snapshot/root_package_test.md") (qualified-name "P2::a"))) (kind featureTyping) (ordinal 0) (authored-target "A")
+      (outcome (status resolved) (target (node (document "memory://snapshot/root_package_test.md") (qualified-name "P1::A")))))
+  )
+  (query (document "memory://snapshot/root_package_test.md") (range (start 12 16) (end 12 17)) (probe (position 12 16))
+    (reference (id (source (node (document "memory://snapshot/root_package_test.md") (qualified-name "P3::b"))) (kind subsetting) (ordinal 0) (authored-target "a")
+      (outcome (status unsupported)))
   )
 )
 ~~~

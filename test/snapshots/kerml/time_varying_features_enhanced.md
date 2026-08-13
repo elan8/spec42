@@ -154,13 +154,25 @@ package TimeVaryingFeaturesEnhanced {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "time_varying_features_enhanced.md"
+  (document "memory://snapshot/time_varying_features_enhanced.md"
     (diagnostics
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 19) (end 1 38))
+        (range (start 1 19) (end 1 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 3 4) (end 45 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 3 4) (end 45 5))
       )
       (diagnostic
         (severity warning)
@@ -174,28 +186,66 @@ package TimeVaryingFeaturesEnhanced {
         (source "semantic")
         (range (start 48 19) (end 48 37))
       )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 50 4) (end 105 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 50 4) (end 105 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 107 4) (end 116 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 107 4) (end 116 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 118 4) (end 142 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 118 4) (end 142 2))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "a287d97f80a3543c6297654d9deecc95dd34aa3cd2134def7fae6d0dcccea6d4") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced"))) (kind "package") (name "TimeVaryingFeaturesEnhanced") (declared-name "TimeVaryingFeaturesEnhanced"))
-    (element (id (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::*"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced"))) (authored (membership (kind Import) (visibility "private") (import (reference "ExtendedOccurrences::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::Boolean"))) (kind "import") (name "Boolean") (declared-name "Boolean") (parent (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Boolean") (origin Import) (shape Membership) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::CC1"))) (kind "classifier decl") (name "CC1") (declared-name "CC1") (parent (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced"))))
-    (element (id (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::Car"))) (kind "classifier decl") (name "Car") (declared-name "Car") (parent (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced"))))
-    (element (id (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::Car1"))) (kind "classifier decl") (name "Car1") (declared-name "Car1") (parent (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced"))))
-    (element (id (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::Person"))) (kind "classifier decl") (name "Person") (declared-name "Person") (parent (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced"))))
-    (element (id (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::Real"))) (kind "import") (name "Real") (declared-name "Real") (parent (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Real") (origin Import) (shape Membership) (recursive false)))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:2618632173d101a5114915b275630b7abae623e5b2bc71f4f7d2e637b270fb36") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/time_varying_features_enhanced.md") (qualified-name "TimeVaryingFeaturesEnhanced"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/time_varying_features_enhanced.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ExtendedOccurrences") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/time_varying_features_enhanced.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Boolean") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/time_varying_features_enhanced.md") (anonymous (kind import) (ordinal 2))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false)))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ExtendedOccurrences::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::Boolean"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Boolean") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::Real"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Real") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
+    (reference (id (source (node (document "memory://snapshot/time_varying_features_enhanced.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "ExtendedOccurrences")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/time_varying_features_enhanced.md") (anonymous (kind import) (ordinal 1))))) (kind membershipImport) (ordinal 0))
+      (authored-target "ScalarValues::Boolean")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/time_varying_features_enhanced.md") (anonymous (kind import) (ordinal 2))))) (kind membershipImport) (ordinal 0))
+      (authored-target "ScalarValues::Real")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -206,31 +256,17 @@ package TimeVaryingFeaturesEnhanced {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 48 19) (end 48 37)) (probe (position 48 19))
-      (reference
-        (source (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::Real"))
-        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Real")
-        (range (start 48 19) (end 48 37))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 1 19) (end 1 38)) (probe (position 1 19))
-      (reference
-        (source (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::*"))
-        (kind namespaceImport) (ordinal 0) (authored-target "ExtendedOccurrences::*")
-        (range (start 1 19) (end 1 38))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 47 19) (end 47 40)) (probe (position 47 19))
-      (reference
-        (source (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::Boolean"))
-        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Boolean")
-        (range (start 47 19) (end 47 40))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/time_varying_features_enhanced.md") (range (start 1 19) (end 1 41)) (probe (position 1 19))
+    (reference (id (source (node (document "memory://snapshot/time_varying_features_enhanced.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "ExtendedOccurrences")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/time_varying_features_enhanced.md") (range (start 47 19) (end 47 40)) (probe (position 47 19))
+    (reference (id (source (node (document "memory://snapshot/time_varying_features_enhanced.md") (anonymous (kind import) (ordinal 1))))) (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Boolean")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/time_varying_features_enhanced.md") (range (start 48 19) (end 48 37)) (probe (position 48 19))
+    (reference (id (source (node (document "memory://snapshot/time_varying_features_enhanced.md") (anonymous (kind import) (ordinal 2))))) (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Real")
+      (outcome (status unresolved)))
   )
 )
 ~~~

@@ -13,20 +13,20 @@ package Vehicles {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "parse_package_with_parts.md"
+  (document "memory://snapshot/parse_package_with_parts.md"
     (diagnostics
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e1551059b903689c0ea709eece0560ac59628a9b65fb8291b9c3251c25a8e047") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Vehicles"))) (kind "package") (name "Vehicles") (declared-name "Vehicles"))
-    (element (id (node (document "d0") (qualified-name "Vehicles::Car"))) (kind "part def") (name "Car") (declared-name "Car") (parent (node (document "d0") (qualified-name "Vehicles"))))
-    (element (id (node (document "d0") (qualified-name "Vehicles::Truck"))) (kind "part def") (name "Truck") (declared-name "Truck") (parent (node (document "d0") (qualified-name "Vehicles"))))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d212773d37d7a51212ddae2d026938fa85d9cfefc759f045bc1408fb5a396501") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/parse_package_with_parts.md") (qualified-name "Vehicles"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/parse_package_with_parts.md") (qualified-name "Vehicles::Car"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/parse_package_with_parts.md") (qualified-name "Vehicles::Truck"))) (kind part-def) (membership (kind owning) (visibility default)))
   )
   (references
   )

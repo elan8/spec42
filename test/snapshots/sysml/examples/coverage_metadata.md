@@ -24,43 +24,61 @@ package Annotated {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "coverage_metadata.md"
+  (document "memory://snapshot/coverage_metadata.md"
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_annotation_syntax")
-        (source "sysml")
-        (range (start 4 4) (end 4 39))
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 0 0) (end 0 24))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 1 0) (end 1 22))
       )
       (diagnostic
         (severity warning)
         (code "unsupported_annotation_syntax")
-        (source "sysml")
-        (range (start 13 4) (end 13 51))
+        (source "parser")
+        (range (start 4 4) (end 6 4))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 9 4) (end 9 50))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 11 4) (end 11 16))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_annotation_syntax")
+        (source "parser")
+        (range (start 13 4) (end 14 0))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "09f4fd17531e2f9f52420cda01132a27aa44df681136c27ef6ee3cb557edf1da") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Annotated"))) (kind "package") (name "Annotated") (declared-name "Annotated"))
-    (element (id (node (document "d0") (qualified-name "Annotated::AnnotatedPart"))) (kind "part def") (name "AnnotatedPart") (declared-name "AnnotatedPart") (parent (node (document "d0") (qualified-name "Annotated"))))
-    (element (id (node (document "d0") (qualified-name "Annotated::Engine"))) (kind "part def") (name "Engine") (declared-name "Engine") (parent (node (document "d0") (qualified-name "Annotated"))))
-    (element (id (node (document "d0") (qualified-name "Annotated::Vehicle"))) (kind "part def") (name "Vehicle") (declared-name "Vehicle") (parent (node (document "d0") (qualified-name "Annotated"))))
-    (element (id (node (document "d0") (qualified-name "Annotated::_Classified"))) (kind "metadata keyword") (name "Classified") (declared-name "Classified") (parent (node (document "d0") (qualified-name "Annotated"))))
-    (element (id (node (document "d0") (qualified-name "Annotated::m"))) (kind "metadata usage") (name "m") (declared-name "m") (parent (node (document "d0") (qualified-name "Annotated"))) (authored (membership (kind Feature)) (relationships (typing (reference "Classified")))))
-    (element (id (node (document "d0") (qualified-name "Approval"))) (kind "metadata def") (name "Approval") (declared-name "Approval"))
-    (element (id (node (document "d0") (qualified-name "Classified"))) (kind "metadata def") (name "Classified") (declared-name "Classified"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:b6dea6c5b4a157636cd1481ba69322e85512b6e1cdab2e60932d7965b6c5b6c0") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Annotated"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Annotated::AnnotatedPart"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Annotated::Engine"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Annotated::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "Annotated::m"))) (kind featureTyping) (ordinal 0)) (authored-target "Classified") (outcome (status resolved) (target (node (document "d0") (qualified-name "Annotated::_Classified")))))
   )
   (relationships
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "Annotated::m"))) (target (node (document "d0") (qualified-name "Annotated::_Classified"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Annotated::m"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )

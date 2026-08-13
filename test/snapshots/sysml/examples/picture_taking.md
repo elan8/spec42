@@ -21,56 +21,41 @@ package PictureTaking {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "picture_taking.md"
+  (document "memory://snapshot/picture_taking.md"
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unresolved_reference")
+        (code "unsupported_package_member")
         (source "semantic")
-        (range (start 8 24) (end 8 34))
+        (range (start 3 1) (end 3 41))
       )
       (diagnostic
         (severity warning)
-        (code "unresolved_reference")
+        (code "unsupported_package_member")
         (source "semantic")
-        (range (start 8 38) (end 8 47))
+        (range (start 4 1) (end 4 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 6 1) (end 10 2))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "d8729fb09d38ed5ef917192bc888ff4f6d24446c820cd13993065900ea79b7a9") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "PictureTaking"))) (kind "package") (name "PictureTaking") (declared-name "PictureTaking"))
-    (element (id (node (document "d0") (qualified-name "PictureTaking::Exposure"))) (kind "part def") (name "Exposure") (declared-name "Exposure") (parent (node (document "d0") (qualified-name "PictureTaking"))))
-    (element (id (node (document "d0") (qualified-name "PictureTaking::Focus"))) (kind "action def") (name "Focus") (declared-name "Focus") (parent (node (document "d0") (qualified-name "PictureTaking"))))
-    (element (id (node (document "d0") (qualified-name "PictureTaking::Focus::xrsl"))) (kind "in out parameter") (name "xrsl") (declared-name "xrsl") (parent (node (document "d0") (qualified-name "PictureTaking::Focus"))) (authored (relationships (typing (reference "Exposure")))))
-    (element (id (node (document "d0") (qualified-name "PictureTaking::Shoot"))) (kind "action def") (name "Shoot") (declared-name "Shoot") (parent (node (document "d0") (qualified-name "PictureTaking"))))
-    (element (id (node (document "d0") (qualified-name "PictureTaking::Shoot::xsf"))) (kind "in out parameter") (name "xsf") (declared-name "xsf") (parent (node (document "d0") (qualified-name "PictureTaking::Shoot"))) (authored (relationships (typing (reference "Exposure")))))
-    (element (id (node (document "d0") (qualified-name "PictureTaking::takePicture"))) (kind "action") (name "takePicture") (declared-name "takePicture") (parent (node (document "d0") (qualified-name "PictureTaking"))) (authored (membership (kind Feature)) (relationships (perform (reference "PictureTaking::takePicture::focus")) (perform (reference "PictureTaking::takePicture::shoot")))))
-    (element (id (node (document "d0") (qualified-name "PictureTaking::takePicture::focus"))) (kind "action") (name "focus") (declared-name "focus") (parent (node (document "d0") (qualified-name "PictureTaking::takePicture"))) (authored (membership (kind Feature)) (relationships (typing (reference "Focus")))))
-    (element (id (node (document "d0") (qualified-name "PictureTaking::takePicture::shoot"))) (kind "action") (name "shoot") (declared-name "shoot") (parent (node (document "d0") (qualified-name "PictureTaking::takePicture"))) (authored (membership (kind Feature)) (relationships (typing (reference "Shoot")))))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:3330ae8b3a68d2bed4e6ba537d9454d61aecf30edd80f5a25040ff04ffa1de2a") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/picture_taking.md") (qualified-name "PictureTaking"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/picture_taking.md") (qualified-name "PictureTaking::Exposure"))) (kind part-def) (membership (kind owning) (visibility default)))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "PictureTaking::Focus::xrsl"))) (kind featureTyping) (ordinal 0)) (authored-target "Exposure") (outcome (status resolved) (target (node (document "d0") (qualified-name "PictureTaking::Exposure")))))
-    (reference (id (source (node (document "d0") (qualified-name "PictureTaking::Shoot::xsf"))) (kind featureTyping) (ordinal 0)) (authored-target "Exposure") (outcome (status resolved) (target (node (document "d0") (qualified-name "PictureTaking::Exposure")))))
-    (reference (id (source (node (document "d0") (qualified-name "PictureTaking::takePicture"))) (kind flowSource) (ordinal 0)) (authored-target "focus::xrsl") (outcome (status unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "PictureTaking::takePicture"))) (kind flowTarget) (ordinal 0)) (authored-target "shoot::xsf") (outcome (status unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "PictureTaking::takePicture"))) (kind performSource) (ordinal 0)) (authored-target "PictureTaking::takePicture::focus") (outcome (status resolved) (target (node (document "d0") (qualified-name "PictureTaking::takePicture::focus")))))
-    (reference (id (source (node (document "d0") (qualified-name "PictureTaking::takePicture"))) (kind performSource) (ordinal 1)) (authored-target "PictureTaking::takePicture::shoot") (outcome (status resolved) (target (node (document "d0") (qualified-name "PictureTaking::takePicture::shoot")))))
-    (reference (id (source (node (document "d0") (qualified-name "PictureTaking::takePicture::focus"))) (kind featureTyping) (ordinal 0)) (authored-target "Focus") (outcome (status resolved) (target (node (document "d0") (qualified-name "PictureTaking::Focus")))))
-    (reference (id (source (node (document "d0") (qualified-name "PictureTaking::takePicture::shoot"))) (kind featureTyping) (ordinal 0)) (authored-target "Shoot") (outcome (status resolved) (target (node (document "d0") (qualified-name "PictureTaking::Shoot")))))
   )
   (relationships
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "PictureTaking::Focus::xrsl"))) (target (node (document "d0") (qualified-name "PictureTaking::Exposure"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "PictureTaking::Focus::xrsl"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "PictureTaking::Shoot::xsf"))) (target (node (document "d0") (qualified-name "PictureTaking::Exposure"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "PictureTaking::Shoot::xsf"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind perform) (source (node (document "d0") (qualified-name "PictureTaking::takePicture"))) (target (node (document "d0") (qualified-name "PictureTaking::takePicture::focus"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "PictureTaking::takePicture"))) (kind performSource) (ordinal 0)))
-    (relationship (kind perform) (source (node (document "d0") (qualified-name "PictureTaking::takePicture"))) (target (node (document "d0") (qualified-name "PictureTaking::takePicture::shoot"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "PictureTaking::takePicture"))) (kind performSource) (ordinal 1)))
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "PictureTaking::takePicture::focus"))) (target (node (document "d0") (qualified-name "PictureTaking::Focus"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "PictureTaking::takePicture::focus"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "PictureTaking::takePicture::shoot"))) (target (node (document "d0") (qualified-name "PictureTaking::Shoot"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "PictureTaking::takePicture::shoot"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )
@@ -79,23 +64,5 @@ package PictureTaking {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 8 38) (end 8 47)) (probe (position 8 38))
-      (reference
-        (source (document "d0") (qualified-name "PictureTaking::takePicture"))
-        (kind flowTarget) (ordinal 0) (authored-target "shoot::xsf")
-        (range (start 8 38) (end 8 47))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 8 24) (end 8 34)) (probe (position 8 24))
-      (reference
-        (source (document "d0") (qualified-name "PictureTaking::takePicture"))
-        (kind flowSource) (ordinal 0) (authored-target "focus::xrsl")
-        (range (start 8 24) (end 8 34))
-        (outcome (status unresolved))
-      )
-    )
-  )
 )
 ~~~

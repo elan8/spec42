@@ -68,63 +68,64 @@ package JohnIndividualExample {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "john_individual_example.md"
+  (document "memory://snapshot/john_individual_example.md"
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unresolved_type_reference")
+        (code "unsupported_package_member")
         (source "semantic")
-        (range (start 8 2) (end 8 40))
+        (range (start 2 1) (end 16 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 18 1) (end 24 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 26 1) (end 33 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 35 1) (end 46 2))
       )
       (diagnostic
         (severity error)
         (code "unexpected_keyword_in_scope")
-        (source "sysml")
-        (range (start 10 2) (end 10 131))
+        (source "parser")
+        (range (start 44 6) (end 45 4))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 48 12) (end 57 2))
       )
       (diagnostic
         (severity error)
-        (code "recovered_package_body_element")
-        (source "sysml")
-        (range (start 18 1) (end 18 163))
-      )
-      (diagnostic
-        (severity warning)
-        (code "recovery_cascade_suppressed")
-        (source "sysml")
-        (range (start 18 1) (end 18 163))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 48 12) (end 48 325))
+        (code "recovered_occurrence_body_element")
+        (source "parser")
+        (range (start 49 5) (end 57 1))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "f06ae08bb55bea9ac734edac0ca5b0ed8206f2634ea7be75d58675d5d46af3a2") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "JohnIndividualExample"))) (kind "package") (name "JohnIndividualExample") (declared-name "JohnIndividualExample"))
-    (element (id (node (document "d0") (qualified-name "JohnIndividualExample::Country"))) (kind "item def") (name "Country") (declared-name "Country") (parent (node (document "d0") (qualified-name "JohnIndividualExample"))))
-    (element (id (node (document "d0") (qualified-name "JohnIndividualExample::Country::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "JohnIndividualExample::Country"))))
-    (element (id (node (document "d0") (qualified-name "JohnIndividualExample::Country::presidentOfCountry"))) (kind "ref") (name "presidentOfCountry") (declared-name "presidentOfCountry") (parent (node (document "d0") (qualified-name "JohnIndividualExample::Country"))) (authored (membership (kind Feature)) (relationships (typing (reference "Person")))))
-    (element (id (node (document "d0") (qualified-name "JohnIndividualExample::Person"))) (kind "item def") (name "Person") (declared-name "Person") (parent (node (document "d0") (qualified-name "JohnIndividualExample"))))
-    (element (id (node (document "d0") (qualified-name "JohnIndividualExample::Person::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "JohnIndividualExample::Person"))))
-    (element (id (node (document "d0") (qualified-name "JohnIndividualExample::Person::age"))) (kind "attribute") (name "age") (declared-name "age") (parent (node (document "d0") (qualified-name "JohnIndividualExample::Person"))) (authored (membership (kind Feature)) (relationships (typing (reference "Natural")))))
-    (element (id (node (document "d0") (qualified-name "JohnIndividualExample::UnitedStatesWithJohnAsPresident"))) (kind "occurrence") (name "UnitedStatesWithJohnAsPresident") (declared-name "UnitedStatesWithJohnAsPresident") (parent (node (document "d0") (qualified-name "JohnIndividualExample"))) (authored (membership (kind Feature)) (relationships (typing (reference "UnitedStates")))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:b21982bd258772fdc2c06901a8c859b8b5913deba876cd21a39a07c949854382") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "JohnIndividualExample::Country::presidentOfCountry"))) (kind featureTyping) (ordinal 0)) (authored-target "Person") (outcome (status resolved) (target (node (document "d0") (qualified-name "JohnIndividualExample::Person")))))
-    (reference (id (source (node (document "d0") (qualified-name "JohnIndividualExample::Person::age"))) (kind featureTyping) (ordinal 0)) (authored-target "Natural") (outcome (status unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "JohnIndividualExample::UnitedStatesWithJohnAsPresident"))) (kind featureTyping) (ordinal 0)) (authored-target "UnitedStates") (outcome (status unresolved)))
   )
   (relationships
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "JohnIndividualExample::Country::presidentOfCountry"))) (target (node (document "d0") (qualified-name "JohnIndividualExample::Person"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "JohnIndividualExample::Country::presidentOfCountry"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )
@@ -133,17 +134,5 @@ package JohnIndividualExample {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 32 32) (end 32 39)) (probe (position 32 32))
-      (reference
-        (source (document "d0") (qualified-name "JohnIndividualExample::Country::presidentOfCountry"))
-        (kind featureTyping) (ordinal 0) (authored-target "Person")
-        (range (start 32 32) (end 32 39))
-        (outcome (status resolved)
-          (target (document "d0") (qualified-name "JohnIndividualExample::Person") (range (start 2 1) (end 2 294)))
-        )
-      )
-    )
-  )
 )
 ~~~

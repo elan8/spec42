@@ -43,48 +43,62 @@ package 'Interaction Example-2' {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "27_interaction_example_2.md"
+  (document "memory://snapshot/27_interaction_example_2.md"
     (diagnostics
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 16) (end 1 42))
+        (range (start 1 16) (end 1 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 3 1) (end 3 19))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 4 1) (end 4 22))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 5 1) (end 5 22))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 7 1) (end 32 2))
       )
       (diagnostic
         (severity error)
         (code "unexpected_keyword_in_scope")
-        (source "sysml")
-        (range (start 30 2) (end 30 52))
+        (source "parser")
+        (range (start 30 2) (end 31 2))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "c06e73a7887c1631d274c208e54cb6662dd079021f340d5ff2917efe0576297b") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Interaction Example-2"))) (kind "package") (name "Interaction Example-2") (declared-name "Interaction Example-2"))
-    (element (id (node (document "d0") (qualified-name "Interaction Example-2::*"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "Interaction Example-2"))) (authored (membership (kind Import) (visibility "private") (import (reference "Event Occurrence Example::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "Interaction Example-2::CruiseControlInteraction"))) (kind "occurrence def") (name "CruiseControlInteraction") (declared-name "CruiseControlInteraction") (parent (node (document "d0") (qualified-name "Interaction Example-2"))))
-    (element (id (node (document "d0") (qualified-name "Interaction Example-2::CruiseControlInteraction::fuelCommandMessage"))) (kind "flow") (name "fuelCommandMessage") (declared-name "fuelCommandMessage") (parent (node (document "d0") (qualified-name "Interaction Example-2::CruiseControlInteraction"))))
-    (element (id (node (document "d0") (qualified-name "Interaction Example-2::CruiseControlInteraction::fuelCommandMessage::_payload"))) (kind "flow payload") (name "_payload") (declared-name "_payload") (parent (node (document "d0") (qualified-name "Interaction Example-2::CruiseControlInteraction::fuelCommandMessage"))) (authored (relationships (typing (reference "FuelCommand")))))
-    (element (id (node (document "d0") (qualified-name "Interaction Example-2::CruiseControlInteraction::setSpeedMessage"))) (kind "flow") (name "setSpeedMessage") (declared-name "setSpeedMessage") (parent (node (document "d0") (qualified-name "Interaction Example-2::CruiseControlInteraction"))))
-    (element (id (node (document "d0") (qualified-name "Interaction Example-2::CruiseControlInteraction::setSpeedMessage::_payload"))) (kind "flow payload") (name "_payload") (declared-name "_payload") (parent (node (document "d0") (qualified-name "Interaction Example-2::CruiseControlInteraction::setSpeedMessage"))) (authored (relationships (typing (reference "SetSpeed")))))
-    (element (id (node (document "d0") (qualified-name "Interaction Example-2::FuelCommand"))) (kind "item def") (name "FuelCommand") (declared-name "FuelCommand") (parent (node (document "d0") (qualified-name "Interaction Example-2"))))
-    (element (id (node (document "d0") (qualified-name "Interaction Example-2::SensedSpeed"))) (kind "item def") (name "SensedSpeed") (declared-name "SensedSpeed") (parent (node (document "d0") (qualified-name "Interaction Example-2"))))
-    (element (id (node (document "d0") (qualified-name "Interaction Example-2::SetSpeed"))) (kind "item def") (name "SetSpeed") (declared-name "SetSpeed") (parent (node (document "d0") (qualified-name "Interaction Example-2"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:a7d64d59aa843b02caf516aad5856077fb1fec8581e6cedd28cdcf6c23048bec") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/27_interaction_example_2.md") (qualified-name "Interaction Example-2"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/27_interaction_example_2.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Event Occurrence Example") (import (shape namespace) (recursive false)))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "Interaction Example-2::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Event Occurrence Example::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Interaction Example-2::CruiseControlInteraction::fuelCommandMessage::_payload"))) (kind featureTyping) (ordinal 0)) (authored-target "FuelCommand") (outcome (status resolved) (target (node (document "d0") (qualified-name "Interaction Example-2::FuelCommand")))))
-    (reference (id (source (node (document "d0") (qualified-name "Interaction Example-2::CruiseControlInteraction::setSpeedMessage::_payload"))) (kind featureTyping) (ordinal 0)) (authored-target "SetSpeed") (outcome (status resolved) (target (node (document "d0") (qualified-name "Interaction Example-2::SetSpeed")))))
+    (reference (id (source (node (document "memory://snapshot/27_interaction_example_2.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "Event Occurrence Example")
+      (outcome (status unresolved)))
   )
   (relationships
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "Interaction Example-2::CruiseControlInteraction::fuelCommandMessage::_payload"))) (target (node (document "d0") (qualified-name "Interaction Example-2::FuelCommand"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Interaction Example-2::CruiseControlInteraction::fuelCommandMessage::_payload"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "Interaction Example-2::CruiseControlInteraction::setSpeedMessage::_payload"))) (target (node (document "d0") (qualified-name "Interaction Example-2::SetSpeed"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Interaction Example-2::CruiseControlInteraction::setSpeedMessage::_payload"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )
@@ -93,15 +107,9 @@ package 'Interaction Example-2' {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 1 16) (end 1 42)) (probe (position 1 16))
-      (reference
-        (source (document "d0") (qualified-name "Interaction Example-2::*"))
-        (kind namespaceImport) (ordinal 0) (authored-target "Event Occurrence Example::*")
-        (range (start 1 16) (end 1 42))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/27_interaction_example_2.md") (range (start 1 16) (end 1 45)) (probe (position 1 16))
+    (reference (id (source (node (document "memory://snapshot/27_interaction_example_2.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "Event Occurrence Example")
+      (outcome (status unresolved)))
   )
 )
 ~~~

@@ -23,44 +23,50 @@ part def Camera {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "camera.md"
+  (document "memory://snapshot/camera.md"
     (diagnostics
       (diagnostic
-        (severity error)
-        (code "recovered_part_def_body_element")
-        (source "sysml")
-        (range (start 3 1) (end 3 65))
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 32))
       )
       (diagnostic
         (severity warning)
-        (code "unresolved_reference")
+        (code "unsupported_part_definition_member")
         (source "semantic")
-        (range (start 5 1) (end 5 57))
+        (range (start 3 1) (end 3 61))
       )
       (diagnostic
         (severity warning)
-        (code "unresolved_reference")
+        (code "unsupported_part_usage_member")
         (source "semantic")
-        (range (start 9 1) (end 9 56))
+        (range (start 6 2) (end 6 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_usage_member")
+        (source "semantic")
+        (range (start 10 2) (end 10 28))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "2b5d836d254f62c2255d5cb1f0011736b166da63af27110833e1cbd0ad3134cc") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Camera"))) (kind "part def") (name "Camera") (declared-name "Camera"))
-    (element (id (node (document "d0") (qualified-name "Camera::focusingSubsystem"))) (kind "part") (name "focusingSubsystem") (declared-name "focusingSubsystem") (parent (node (document "d0") (qualified-name "Camera"))) (authored (membership (kind Feature)) (relationships (perform (reference "Camera::focusingSubsystem::takePicture::focus")))))
-    (element (id (node (document "d0") (qualified-name "Camera::focusingSubsystem::takePicture.focus"))) (kind "action") (name "takePicture.focus") (declared-name "takePicture.focus") (parent (node (document "d0") (qualified-name "Camera::focusingSubsystem"))))
-    (element (id (node (document "d0") (qualified-name "Camera::imagingSubsystem"))) (kind "part") (name "imagingSubsystem") (declared-name "imagingSubsystem") (parent (node (document "d0") (qualified-name "Camera"))) (authored (membership (kind Feature)) (relationships (perform (reference "Camera::imagingSubsystem::takePicture::shoot")))))
-    (element (id (node (document "d0") (qualified-name "Camera::imagingSubsystem::takePicture.shoot"))) (kind "action") (name "takePicture.shoot") (declared-name "takePicture.shoot") (parent (node (document "d0") (qualified-name "Camera::imagingSubsystem"))))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:34a79bdb4b0822dc0d09cf0a11f9f27d7aeec66e8ea5ea2088896cf56d4c1122") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/camera.md") (qualified-name "Camera"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/camera.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "PictureTaking") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/camera.md") (qualified-name "Camera::focusingSubsystem"))) (kind part) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/camera.md") (qualified-name "Camera::imagingSubsystem"))) (kind part) (membership (kind feature) (visibility default)))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "Camera::focusingSubsystem"))) (kind performSource) (ordinal 0)) (authored-target "Camera::focusingSubsystem::takePicture::focus") (outcome (status unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Camera::imagingSubsystem"))) (kind performSource) (ordinal 0)) (authored-target "Camera::imagingSubsystem::takePicture::shoot") (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/camera.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "PictureTaking")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -71,5 +77,9 @@ part def Camera {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/camera.md") (range (start 1 16) (end 1 32)) (probe (position 1 16))
+    (reference (id (source (node (document "memory://snapshot/camera.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "PictureTaking")
+      (outcome (status unresolved)))
+  )
 )
 ~~~

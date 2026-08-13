@@ -53,29 +53,138 @@ package VehicleDefinitions {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "vehicle_definitions.md"
+  (document "memory://snapshot/vehicle_definitions.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 9 1) (end 9 15))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 9 1) (end 9 15))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 10 1) (end 10 20))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 10 1) (end 10 20))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 11 1) (end 11 20))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 11 1) (end 11 20))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 12 1) (end 12 12))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 12 1) (end 12 12))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 13 1) (end 13 13))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 13 1) (end 13 13))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 14 1) (end 16 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 14 1) (end 16 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 20 1) (end 22 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 20 1) (end 22 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 24 1) (end 26 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 24 1) (end 26 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 28 1) (end 30 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 28 1) (end 30 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 34 1) (end 42 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 34 1) (end 42 2))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1652e7d6af92c08caeabfd71905dad0a96d0fbca10acc71ca53ca44f68c9efab") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "VehicleDefinitions"))) (kind "package") (name "VehicleDefinitions") (declared-name "VehicleDefinitions"))
-    (element (id (node (document "d0") (qualified-name "VehicleDefinitions::Axle"))) (kind "classifier decl") (name "Axle") (declared-name "Axle") (parent (node (document "d0") (qualified-name "VehicleDefinitions"))))
-    (element (id (node (document "d0") (qualified-name "VehicleDefinitions::AxleAssembly"))) (kind "classifier decl") (name "AxleAssembly") (declared-name "AxleAssembly") (parent (node (document "d0") (qualified-name "VehicleDefinitions"))))
-    (element (id (node (document "d0") (qualified-name "VehicleDefinitions::AxleMountIF"))) (kind "classifier decl") (name "AxleMountIF") (declared-name "AxleMountIF") (parent (node (document "d0") (qualified-name "VehicleDefinitions"))))
-    (element (id (node (document "d0") (qualified-name "VehicleDefinitions::DriveIF"))) (kind "classifier decl") (name "DriveIF") (declared-name "DriveIF") (parent (node (document "d0") (qualified-name "VehicleDefinitions"))))
-    (element (id (node (document "d0") (qualified-name "VehicleDefinitions::Lugbolt"))) (kind "classifier decl") (name "Lugbolt") (declared-name "Lugbolt") (parent (node (document "d0") (qualified-name "VehicleDefinitions"))))
-    (element (id (node (document "d0") (qualified-name "VehicleDefinitions::Mounting"))) (kind "kermlDecl") (name "Mounting") (declared-name "Mounting") (parent (node (document "d0") (qualified-name "VehicleDefinitions"))))
-    (element (id (node (document "d0") (qualified-name "VehicleDefinitions::Transmission"))) (kind "classifier decl") (name "Transmission") (declared-name "Transmission") (parent (node (document "d0") (qualified-name "VehicleDefinitions"))))
-    (element (id (node (document "d0") (qualified-name "VehicleDefinitions::Vehicle"))) (kind "classifier decl") (name "Vehicle") (declared-name "Vehicle") (parent (node (document "d0") (qualified-name "VehicleDefinitions"))))
-    (element (id (node (document "d0") (qualified-name "VehicleDefinitions::Wheel"))) (kind "classifier decl") (name "Wheel") (declared-name "Wheel") (parent (node (document "d0") (qualified-name "VehicleDefinitions"))))
-    (element (id (node (document "d0") (qualified-name "VehicleDefinitions::WheelHubIF"))) (kind "classifier decl") (name "WheelHubIF") (declared-name "WheelHubIF") (parent (node (document "d0") (qualified-name "VehicleDefinitions"))))
-    (element (id (node (document "d0") (qualified-name "VehicleDefinitions::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "VehicleDefinitions"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:3aa32456befbff78b8183a70fdff1f9ba0f041bcf9da292650a02745ce14cb03") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/vehicle_definitions.md") (qualified-name "VehicleDefinitions"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

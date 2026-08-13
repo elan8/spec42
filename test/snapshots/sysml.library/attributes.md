@@ -31,7 +31,7 @@ standard library package Attributes {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "attributes.md"
+  (document "memory://snapshot/attributes.md"
     (diagnostics
       (diagnostic
         (severity warning)
@@ -45,25 +45,38 @@ standard library package Attributes {
         (source "semantic")
         (range (start 7 19) (end 7 35))
       )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 9 4) (end 14 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 16 4) (end 20 5))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "ba64be3c3af135ff38ece80726bf37d9c063a941aaeada3325ec3f32a7516faa") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Attributes"))) (kind "package") (name "Attributes") (declared-name "Attributes"))
-    (element (id (node (document "d0") (qualified-name "Attributes::AttributeValue"))) (kind "alias") (name "AttributeValue") (declared-name "AttributeValue") (parent (node (document "d0") (qualified-name "Attributes"))))
-    (element (id (node (document "d0") (qualified-name "Attributes::DataValue"))) (kind "import") (name "DataValue") (declared-name "DataValue") (parent (node (document "d0") (qualified-name "Attributes"))) (authored (membership (kind Import) (visibility "private") (import (reference "Base::DataValue") (origin Import) (shape Membership) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "Attributes::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "Attributes"))))
-    (element (id (node (document "d0") (qualified-name "Attributes::attributeValues"))) (kind "alias") (name "attributeValues") (declared-name "attributeValues") (parent (node (document "d0") (qualified-name "Attributes"))))
-    (element (id (node (document "d0") (qualified-name "Attributes::dataValues"))) (kind "import") (name "dataValues") (declared-name "dataValues") (parent (node (document "d0") (qualified-name "Attributes"))) (authored (membership (kind Import) (visibility "private") (import (reference "Base::dataValues") (origin Import) (shape Membership) (recursive false)))))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:cada5bf0e4466e5bac58e24d7c47b92a4742f379f473bae01e84dd27744dd34c") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/attributes.md") (qualified-name "Attributes"))) (kind library-package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/attributes.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Base::DataValue") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/attributes.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Base::dataValues") (import (shape membership) (recursive false)))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "Attributes::DataValue"))) (kind membershipImport) (ordinal 0)) (authored-target "Base::DataValue") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Attributes::dataValues"))) (kind membershipImport) (ordinal 0)) (authored-target "Base::dataValues") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
+    (reference (id (source (node (document "memory://snapshot/attributes.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
+      (authored-target "Base::DataValue")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/attributes.md") (anonymous (kind import) (ordinal 1))))) (kind membershipImport) (ordinal 0))
+      (authored-target "Base::dataValues")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -74,23 +87,13 @@ standard library package Attributes {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 6 19) (end 6 34)) (probe (position 6 19))
-      (reference
-        (source (document "d0") (qualified-name "Attributes::DataValue"))
-        (kind membershipImport) (ordinal 0) (authored-target "Base::DataValue")
-        (range (start 6 19) (end 6 34))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 7 19) (end 7 35)) (probe (position 7 19))
-      (reference
-        (source (document "d0") (qualified-name "Attributes::dataValues"))
-        (kind membershipImport) (ordinal 0) (authored-target "Base::dataValues")
-        (range (start 7 19) (end 7 35))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/attributes.md") (range (start 6 19) (end 6 34)) (probe (position 6 19))
+    (reference (id (source (node (document "memory://snapshot/attributes.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "Base::DataValue")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/attributes.md") (range (start 7 19) (end 7 35)) (probe (position 7 19))
+    (reference (id (source (node (document "memory://snapshot/attributes.md") (anonymous (kind import) (ordinal 1))))) (kind membershipImport) (ordinal 0) (authored-target "Base::dataValues")
+      (outcome (status unresolved)))
   )
 )
 ~~~

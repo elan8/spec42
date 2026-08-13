@@ -21,29 +21,91 @@ package Circular {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "circular.md"
+  (document "memory://snapshot/circular.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 1 1) (end 1 12))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 1 1) (end 1 12))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 2 1) (end 2 14))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 2 1) (end 2 14))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 3 1) (end 3 25))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 8 1) (end 8 16))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 8 1) (end 8 16))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 9 1) (end 9 16))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 9 1) (end 9 16))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 10 1) (end 10 16))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 10 1) (end 10 16))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "00aebb6ba004439ee30b63301928598e49736318f230bb516c5dbd7f3ceebae1") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Circular"))) (kind "package") (name "Circular") (declared-name "Circular"))
-    (element (id (node (document "d0") (qualified-name "Circular::A"))) (kind "classifier decl") (name "A") (declared-name "A") (parent (node (document "d0") (qualified-name "Circular"))))
-    (element (id (node (document "d0") (qualified-name "Circular::Circ"))) (kind "alias") (name "Circ") (declared-name "Circ") (parent (node (document "d0") (qualified-name "Circular"))))
-    (element (id (node (document "d0") (qualified-name "Circular::P"))) (kind "package") (name "P") (declared-name "P") (parent (node (document "d0") (qualified-name "Circular"))))
-    (element (id (node (document "d0") (qualified-name "Circular::P::*"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "Circular::P"))) (authored (membership (kind Import) (visibility "public") (import (reference "Circular::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "Circular::a"))) (kind "feature decl") (name "a") (declared-name "a") (parent (node (document "d0") (qualified-name "Circular"))))
-    (element (id (node (document "d0") (qualified-name "Circular::x"))) (kind "feature decl") (name "x") (declared-name "x") (parent (node (document "d0") (qualified-name "Circular"))))
-    (element (id (node (document "d0") (qualified-name "Circular::y"))) (kind "feature decl") (name "y") (declared-name "y") (parent (node (document "d0") (qualified-name "Circular"))))
-    (element (id (node (document "d0") (qualified-name "Circular::z"))) (kind "feature decl") (name "z") (declared-name "z") (parent (node (document "d0") (qualified-name "Circular"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:33b40769c2b01f3ecc9bf9406b603b8c7dd94965ced45e5f4123464ed99ca427") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/circular.md") (qualified-name "Circular"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/circular.md") (qualified-name "Circular::P"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/circular.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "Circular") (import (shape namespace) (recursive false)))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "Circular::P::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Circular::*") (outcome (status resolved) (target (node (document "d0") (qualified-name "Circular")))) (import (origin import) (shape namespace) (recursive false) (conformance valid)))
+    (reference (id (source (node (document "memory://snapshot/circular.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "Circular")
+      (outcome (status resolved) (target (node (document "memory://snapshot/circular.md") (qualified-name "Circular")))))
   )
   (relationships
   )
@@ -54,17 +116,9 @@ package Circular {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 5 16) (end 5 24)) (probe (position 5 16))
-      (reference
-        (source (document "d0") (qualified-name "Circular::P::*"))
-        (kind namespaceImport) (ordinal 0) (authored-target "Circular::*")
-        (range (start 5 16) (end 5 24))
-        (outcome (status resolved)
-          (target (document "d0") (qualified-name "Circular") (range (start 0 0) (end 0 172)))
-        )
-      )
-    )
+  (query (document "memory://snapshot/circular.md") (range (start 5 16) (end 5 27)) (probe (position 5 16))
+    (reference (id (source (node (document "memory://snapshot/circular.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "Circular")
+      (outcome (status resolved) (target (node (document "memory://snapshot/circular.md") (qualified-name "Circular")))))
   )
 )
 ~~~

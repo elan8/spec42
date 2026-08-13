@@ -41,7 +41,7 @@ package 'User Keyword Example' {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "41_user_keyword_example.md"
+  (document "memory://snapshot/41_user_keyword_example.md"
     (diagnostics
       (diagnostic
         (severity warning)
@@ -53,7 +53,7 @@ package 'User Keyword Example' {
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 2 16) (end 2 43))
+        (range (start 2 16) (end 2 46))
       )
       (diagnostic
         (severity warning)
@@ -62,39 +62,55 @@ package 'User Keyword Example' {
         (range (start 3 16) (end 3 39))
       )
       (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 7 21) (end 7 25))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 11 1) (end 11 11))
+      )
+      (diagnostic
         (severity error)
         (code "unexpected_keyword_in_scope")
-        (source "sysml")
-        (range (start 11 11) (end 11 418))
+        (source "parser")
+        (range (start 11 11) (end 31 0))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "8e134a3b55d7ad69ae40419928e2f634e648a5d66cdf3a414e58beda17f9d935") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "User Keyword Example"))) (kind "package") (name "User Keyword Example") (declared-name "User Keyword Example"))
-    (element (id (node (document "d0") (qualified-name "User Keyword Example::*"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "User Keyword Example"))) (authored (membership (kind Import) (visibility "private") (import (reference "Semantic Metadata Example::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "User Keyword Example::Device"))) (kind "part def") (name "Device") (declared-name "Device") (parent (node (document "d0") (qualified-name "User Keyword Example"))))
-    (element (id (node (document "d0") (qualified-name "User Keyword Example::Device::battery"))) (kind "part") (name "battery") (declared-name "battery") (parent (node (document "d0") (qualified-name "User Keyword Example::Device"))))
-    (element (id (node (document "d0") (qualified-name "User Keyword Example::Device::battery::power"))) (kind "attribute") (name "power") (declared-name "power") (parent (node (document "d0") (qualified-name "User Keyword Example::Device::battery"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real")) (typing (reference "Real")))))
-    (element (id (node (document "d0") (qualified-name "User Keyword Example::LevelEnum"))) (kind "import") (name "LevelEnum") (declared-name "LevelEnum") (parent (node (document "d0") (qualified-name "User Keyword Example"))) (authored (membership (kind Import) (visibility "private") (import (reference "RiskMetadata::LevelEnum") (origin Import) (shape Membership) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "User Keyword Example::Real"))) (kind "import") (name "Real") (declared-name "Real") (parent (node (document "d0") (qualified-name "User Keyword Example"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Real") (origin Import) (shape Membership) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "User Keyword Example::_scenario"))) (kind "metadata keyword") (name "scenario") (declared-name "scenario") (parent (node (document "d0") (qualified-name "User Keyword Example"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:b67a8c645e7b6c2fe182f63260be6d01a995d648542e390c9f164fa4ad04810c") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/41_user_keyword_example.md") (qualified-name "User Keyword Example"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/41_user_keyword_example.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/41_user_keyword_example.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Semantic Metadata Example") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/41_user_keyword_example.md") (anonymous (kind import) (ordinal 2))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "RiskMetadata::LevelEnum") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/41_user_keyword_example.md") (qualified-name "User Keyword Example::Device"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/41_user_keyword_example.md") (qualified-name "User Keyword Example::Device::battery"))) (kind part) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/41_user_keyword_example.md") (qualified-name "User Keyword Example::Device::battery::power"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Real"))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "User Keyword Example::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Semantic Metadata Example::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "User Keyword Example::Device::battery::power"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (outcome (status resolved) (target (node (document "d0") (qualified-name "User Keyword Example::Real")))))
-    (reference (id (source (node (document "d0") (qualified-name "User Keyword Example::Device::battery::power"))) (kind featureTyping) (ordinal 1)) (authored-target "Real") (outcome (status resolved) (target (node (document "d0") (qualified-name "User Keyword Example::Real")))))
-    (reference (id (source (node (document "d0") (qualified-name "User Keyword Example::LevelEnum"))) (kind membershipImport) (ordinal 0)) (authored-target "RiskMetadata::LevelEnum") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "User Keyword Example::Real"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Real") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
+    (reference (id (source (node (document "memory://snapshot/41_user_keyword_example.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "Semantic Metadata Example")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/41_user_keyword_example.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
+      (authored-target "ScalarValues::Real")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/41_user_keyword_example.md") (anonymous (kind import) (ordinal 2))))) (kind membershipImport) (ordinal 0))
+      (authored-target "RiskMetadata::LevelEnum")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/41_user_keyword_example.md") (qualified-name "User Keyword Example::Device::battery::power"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Real")
+      (outcome (status unresolved)))
   )
   (relationships
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "User Keyword Example::Device::battery::power"))) (target (node (document "d0") (qualified-name "User Keyword Example::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "User Keyword Example::Device::battery::power"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "User Keyword Example::Device::battery::power"))) (target (node (document "d0") (qualified-name "User Keyword Example::Real"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "User Keyword Example::Device::battery::power"))) (kind featureTyping) (ordinal 1)))
   )
   (evaluation
   )
@@ -103,41 +119,21 @@ package 'User Keyword Example' {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 7 21) (end 7 25)) (probe (position 7 21))
-      (reference
-        (source (document "d0") (qualified-name "User Keyword Example::Device::battery::power"))
-        (kind featureTyping) (ordinal 1) (authored-target "Real")
-        (range (start 7 21) (end 7 25))
-        (outcome (status resolved)
-          (target (document "d0") (qualified-name "User Keyword Example::Real") (range (start 1 1) (end 1 35)))
-        )
-      )
-    )
-    (query (range (start 1 16) (end 1 34)) (probe (position 1 16))
-      (reference
-        (source (document "d0") (qualified-name "User Keyword Example::Real"))
-        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Real")
-        (range (start 1 16) (end 1 34))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 3 16) (end 3 39)) (probe (position 3 16))
-      (reference
-        (source (document "d0") (qualified-name "User Keyword Example::LevelEnum"))
-        (kind membershipImport) (ordinal 0) (authored-target "RiskMetadata::LevelEnum")
-        (range (start 3 16) (end 3 39))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 2 16) (end 2 43)) (probe (position 2 16))
-      (reference
-        (source (document "d0") (qualified-name "User Keyword Example::*"))
-        (kind namespaceImport) (ordinal 0) (authored-target "Semantic Metadata Example::*")
-        (range (start 2 16) (end 2 43))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/41_user_keyword_example.md") (range (start 2 16) (end 2 46)) (probe (position 2 16))
+    (reference (id (source (node (document "memory://snapshot/41_user_keyword_example.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0) (authored-target "Semantic Metadata Example")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/41_user_keyword_example.md") (range (start 1 16) (end 1 34)) (probe (position 1 16))
+    (reference (id (source (node (document "memory://snapshot/41_user_keyword_example.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Real")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/41_user_keyword_example.md") (range (start 3 16) (end 3 39)) (probe (position 3 16))
+    (reference (id (source (node (document "memory://snapshot/41_user_keyword_example.md") (anonymous (kind import) (ordinal 2))))) (kind membershipImport) (ordinal 0) (authored-target "RiskMetadata::LevelEnum")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/41_user_keyword_example.md") (range (start 7 21) (end 7 25)) (probe (position 7 21))
+    (reference (id (source (node (document "memory://snapshot/41_user_keyword_example.md") (qualified-name "User Keyword Example::Device::battery::power"))) (kind featureTyping) (ordinal 0) (authored-target "Real")
+      (outcome (status unresolved)))
   )
 )
 ~~~

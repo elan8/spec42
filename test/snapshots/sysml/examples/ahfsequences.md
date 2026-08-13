@@ -131,109 +131,116 @@ package AHFNorwaySequences {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "ahfsequences.md"
+  (document "memory://snapshot/ahfsequences.md"
     (diagnostics
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 3 16) (end 3 29))
+        (range (start 3 16) (end 3 32))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 4 16) (end 4 26))
+        (range (start 4 16) (end 4 29))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 5 16) (end 5 25))
+        (range (start 5 16) (end 5 28))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 6 16) (end 6 28))
+        (range (start 6 16) (end 6 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_usage_member")
+        (source "semantic")
+        (range (start 9 2) (end 55 3))
       )
       (diagnostic
         (severity error)
-        (code "implicit_redefinition_without_operator")
+        (code "unexpected_keyword_in_scope")
+        (source "parser")
+        (range (start 46 3) (end 48 3))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "parser")
+        (range (start 52 3) (end 53 3))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_usage_member")
         (source "semantic")
-        (range (start 8 1) (end 8 4415))
+        (range (start 57 2) (end 73 3))
       )
       (diagnostic
         (severity error)
         (code "recovered_part_usage_body_element")
-        (source "sysml")
-        (range (start 76 2) (end 76 1677))
+        (source "parser")
+        (range (start 76 2) (end 120 1))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "73ef026b28d9e6146db040a8a092587c6ac68da33d3efdb9beebc2a926cb0e87") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "AHFNorwaySequences"))) (kind "package") (name "AHFNorwaySequences") (declared-name "AHFNorwaySequences"))
-    (element (id (node (document "d0") (qualified-name "AHFNorwaySequences::*"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "AHFNorwaySequences"))) (authored (membership (kind Import) (visibility "private") (import (reference "AHFProfileLib::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "AHFNorwaySequences::*#import"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "AHFNorwaySequences"))) (authored (membership (kind Import) (visibility "private") (import (reference "AHFCoreLib::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "AHFNorwaySequences::*#import2"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "AHFNorwaySequences"))) (authored (membership (kind Import) (visibility "private") (import (reference "AHFNorway::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "AHFNorwaySequences::*#import3"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "AHFNorwaySequences"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "AHFNorwaySequences::AHFN_LocalCloudDD_Seqs"))) (kind "part") (name "AHFN_LocalCloudDD_Seqs") (declared-name "AHFN_LocalCloudDD_Seqs") (parent (node (document "d0") (qualified-name "AHFNorwaySequences"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:c523dfb40a40053478955a61e9a3269bf9070ed2e3c64c21d6ab58aa7c0b1ee6") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/ahfsequences.md") (qualified-name "AHFNorwaySequences"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/ahfsequences.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "AHFProfileLib") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/ahfsequences.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "AHFCoreLib") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/ahfsequences.md") (anonymous (kind import) (ordinal 2))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "AHFNorway") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/ahfsequences.md") (anonymous (kind import) (ordinal 3))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/ahfsequences.md") (qualified-name "AHFNorwaySequences::AHFN_LocalCloudDD_Seqs"))) (kind part) (membership (kind feature) (visibility default)))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "AHFNorwaySequences::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "AHFProfileLib::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "AHFNorwaySequences::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "AHFCoreLib::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "AHFNorwaySequences::*#import2"))) (kind namespaceImport) (ordinal 0)) (authored-target "AHFNorway::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "AHFNorwaySequences::*#import3"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarValues::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
+    (reference (id (source (node (document "memory://snapshot/ahfsequences.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "AHFProfileLib")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/ahfsequences.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "AHFCoreLib")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/ahfsequences.md") (anonymous (kind import) (ordinal 2))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "AHFNorway")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/ahfsequences.md") (anonymous (kind import) (ordinal 3))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "ScalarValues")
+      (outcome (status unresolved)))
   )
   (relationships
   )
   (evaluation
-    (node (node (document "d0") (qualified-name "AHFNorwaySequences::AHFN_LocalCloudDD_Seqs")) (expression (status "unresolved") (error "expression has an unresolved reference")))
   )
 )
 ~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 5 16) (end 5 25)) (probe (position 5 16))
-      (reference
-        (source (document "d0") (qualified-name "AHFNorwaySequences::*#import2"))
-        (kind namespaceImport) (ordinal 0) (authored-target "AHFNorway::*")
-        (range (start 5 16) (end 5 25))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 4 16) (end 4 26)) (probe (position 4 16))
-      (reference
-        (source (document "d0") (qualified-name "AHFNorwaySequences::*#import"))
-        (kind namespaceImport) (ordinal 0) (authored-target "AHFCoreLib::*")
-        (range (start 4 16) (end 4 26))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 6 16) (end 6 28)) (probe (position 6 16))
-      (reference
-        (source (document "d0") (qualified-name "AHFNorwaySequences::*#import3"))
-        (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues::*")
-        (range (start 6 16) (end 6 28))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 3 16) (end 3 29)) (probe (position 3 16))
-      (reference
-        (source (document "d0") (qualified-name "AHFNorwaySequences::*"))
-        (kind namespaceImport) (ordinal 0) (authored-target "AHFProfileLib::*")
-        (range (start 3 16) (end 3 29))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/ahfsequences.md") (range (start 3 16) (end 3 32)) (probe (position 3 16))
+    (reference (id (source (node (document "memory://snapshot/ahfsequences.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "AHFProfileLib")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/ahfsequences.md") (range (start 4 16) (end 4 29)) (probe (position 4 16))
+    (reference (id (source (node (document "memory://snapshot/ahfsequences.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0) (authored-target "AHFCoreLib")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/ahfsequences.md") (range (start 5 16) (end 5 28)) (probe (position 5 16))
+    (reference (id (source (node (document "memory://snapshot/ahfsequences.md") (anonymous (kind import) (ordinal 2))))) (kind namespaceImport) (ordinal 0) (authored-target "AHFNorway")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/ahfsequences.md") (range (start 6 16) (end 6 31)) (probe (position 6 16))
+    (reference (id (source (node (document "memory://snapshot/ahfsequences.md") (anonymous (kind import) (ordinal 3))))) (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues")
+      (outcome (status unresolved)))
   )
 )
 ~~~

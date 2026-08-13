@@ -15,24 +15,66 @@ package BindingNamedMult {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "binding_named_mult.md"
+  (document "memory://snapshot/binding_named_mult.md"
     (diagnostics
       (diagnostic
+        (severity warning)
+        (code "unsupported_parser_construct")
+        (source "semantic")
+        (range (start 0 0) (end 0 0))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_parser_construct")
+        (source "semantic")
+        (range (start 0 0) (end 0 0))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_parser_construct")
+        (source "semantic")
+        (range (start 0 0) (end 0 0))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_parser_construct")
+        (source "semantic")
+        (range (start 0 0) (end 0 0))
+      )
+      (diagnostic
         (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "sysml")
-        (range (start 1 4) (end 1 145))
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 1 4) (end 2 4))
+      )
+      (diagnostic
+        (severity error)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 2 4) (end 3 4))
+      )
+      (diagnostic
+        (severity error)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 3 4) (end 4 4))
+      )
+      (diagnostic
+        (severity error)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 4 4) (end 5 0))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "7c2487bd245ddce46d7627113ad0700cae3f11c429b5605ed54e21443a5260de") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "BindingNamedMult"))) (kind "package") (name "BindingNamedMult") (declared-name "BindingNamedMult"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:646e291c0e43444b0e1d47c6e4b0376ce33307d9f638fd9a8f7e21ed5ec55562") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/binding_named_mult.md") (qualified-name "BindingNamedMult"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

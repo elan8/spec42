@@ -29,34 +29,47 @@ package 'Terminate Actions Example-2' {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "19_terminate_actions_example_2.md"
+  (document "memory://snapshot/19_terminate_actions_example_2.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 1 1) (end 1 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_definition_member")
+        (source "semantic")
+        (range (start 4 2) (end 4 47))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_definition_member")
+        (source "semantic")
+        (range (start 6 2) (end 8 3))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 11 1) (end 17 2))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "5158bfd670672b6a790faa5d2576494c77d8dc0073f2d67b67438b321e9b40bf") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Terminate Actions Example-2"))) (kind "package") (name "Terminate Actions Example-2") (declared-name "Terminate Actions Example-2"))
-    (element (id (node (document "d0") (qualified-name "Terminate Actions Example-2::Processor"))) (kind "part def") (name "Processor") (declared-name "Processor") (parent (node (document "d0") (qualified-name "Terminate Actions Example-2"))))
-    (element (id (node (document "d0") (qualified-name "Terminate Actions Example-2::Processor::internalProcess"))) (kind "action") (name "internalProcess") (declared-name "internalProcess") (parent (node (document "d0") (qualified-name "Terminate Actions Example-2::Processor"))))
-    (element (id (node (document "d0") (qualified-name "Terminate Actions Example-2::Processor::workflowProcess"))) (kind "action") (name "workflowProcess") (declared-name "workflowProcess") (parent (node (document "d0") (qualified-name "Terminate Actions Example-2::Processor"))) (authored (membership (kind Feature)) (relationships (typing (reference "WorkflowProcess")))))
-    (element (id (node (document "d0") (qualified-name "Terminate Actions Example-2::WorkflowProcess"))) (kind "action def") (name "WorkflowProcess") (declared-name "WorkflowProcess") (parent (node (document "d0") (qualified-name "Terminate Actions Example-2"))))
-    (element (id (node (document "d0") (qualified-name "Terminate Actions Example-2::terminateProcessing"))) (kind "action") (name "terminateProcessing") (declared-name "terminateProcessing") (parent (node (document "d0") (qualified-name "Terminate Actions Example-2"))))
-    (element (id (node (document "d0") (qualified-name "Terminate Actions Example-2::terminateProcessing::_terminate"))) (kind "terminate") (name "terminate") (declared-name "terminate") (parent (node (document "d0") (qualified-name "Terminate Actions Example-2::terminateProcessing"))))
-    (element (id (node (document "d0") (qualified-name "Terminate Actions Example-2::terminateProcessing::_terminate#terminate"))) (kind "terminate") (name "terminate") (declared-name "terminate") (parent (node (document "d0") (qualified-name "Terminate Actions Example-2::terminateProcessing"))))
-    (element (id (node (document "d0") (qualified-name "Terminate Actions Example-2::terminateProcessing::processor"))) (kind "in out parameter") (name "processor") (declared-name "processor") (parent (node (document "d0") (qualified-name "Terminate Actions Example-2::terminateProcessing"))) (authored (relationships (typing (reference "Processor")))))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:7a5095e259d46b27a63a257e3aa3bbe06f5e139ff8dced52719d91f7e581b968") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::Processor"))) (kind part-def) (membership (kind owning) (visibility default)))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "Terminate Actions Example-2::Processor::workflowProcess"))) (kind featureTyping) (ordinal 0)) (authored-target "WorkflowProcess") (outcome (status resolved) (target (node (document "d0") (qualified-name "Terminate Actions Example-2::WorkflowProcess")))))
-    (reference (id (source (node (document "d0") (qualified-name "Terminate Actions Example-2::terminateProcessing::processor"))) (kind featureTyping) (ordinal 0)) (authored-target "Processor") (outcome (status resolved) (target (node (document "d0") (qualified-name "Terminate Actions Example-2::Processor")))))
   )
   (relationships
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "Terminate Actions Example-2::Processor::workflowProcess"))) (target (node (document "d0") (qualified-name "Terminate Actions Example-2::WorkflowProcess"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Terminate Actions Example-2::Processor::workflowProcess"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "Terminate Actions Example-2::terminateProcessing::processor"))) (target (node (document "d0") (qualified-name "Terminate Actions Example-2::Processor"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Terminate Actions Example-2::terminateProcessing::processor"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )

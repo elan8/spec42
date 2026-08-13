@@ -13,18 +13,23 @@ state def SD {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "step_usage_in_body.md"
+  (document "memory://snapshot/step_usage_in_body.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 0 0) (end 3 1))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e9e2624754eb01275138bbffc80303620ebea34703648a8c0852b73a2ef83245") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "SD"))) (kind "state def") (name "SD") (declared-name "SD"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:5b6a0353f334c3fa5f401057c487dc98fcaf34b96326f5cd040c65cb6a8c5596") (contract-version "parser-owned-resolution-v1"))
+  (declarations
   )
   (references
   )

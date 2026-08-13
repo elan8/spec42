@@ -11,25 +11,27 @@ part p : Foo;
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "feature_typing_mismatch.md"
+  (document "memory://snapshot/feature_typing_mismatch.md"
     (diagnostics
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "23e98f5558e3d57dd65559049008fb675754bfa5c81a8351c984362356fce3c6") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Foo"))) (kind "attribute def") (name "Foo") (declared-name "Foo"))
-    (element (id (node (document "d0") (qualified-name "p"))) (kind "part") (name "p") (declared-name "p") (authored (membership (kind Feature)) (relationships (typing (reference "Foo")))))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:a0a856788cf1ca3fd0dda5bb3371ffcf886813008ca1718209210cbd802e6668") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/feature_typing_mismatch.md") (qualified-name "Foo"))) (kind attribute-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/feature_typing_mismatch.md") (qualified-name "p"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Foo"))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "p"))) (kind featureTyping) (ordinal 0)) (authored-target "Foo") (outcome (status resolved) (target (node (document "d0") (qualified-name "Foo")))))
+    (reference (id (source (node (document "memory://snapshot/feature_typing_mismatch.md") (qualified-name "p"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Foo")
+      (outcome (status resolved) (target (node (document "memory://snapshot/feature_typing_mismatch.md") (qualified-name "Foo")))))
   )
   (relationships
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "p"))) (target (node (document "d0") (qualified-name "Foo"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "p"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/feature_typing_mismatch.md") (qualified-name "p"))) (target (node (document "memory://snapshot/feature_typing_mismatch.md") (qualified-name "Foo"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/feature_typing_mismatch.md") (qualified-name "p"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )
@@ -38,17 +40,9 @@ part p : Foo;
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 1 9) (end 1 12)) (probe (position 1 9))
-      (reference
-        (source (document "d0") (qualified-name "p"))
-        (kind featureTyping) (ordinal 0) (authored-target "Foo")
-        (range (start 1 9) (end 1 12))
-        (outcome (status resolved)
-          (target (document "d0") (qualified-name "Foo") (range (start 0 0) (end 0 20)))
-        )
-      )
-    )
+  (query (document "memory://snapshot/feature_typing_mismatch.md") (range (start 1 9) (end 1 12)) (probe (position 1 9))
+    (reference (id (source (node (document "memory://snapshot/feature_typing_mismatch.md") (qualified-name "p"))) (kind featureTyping) (ordinal 0) (authored-target "Foo")
+      (outcome (status resolved) (target (node (document "memory://snapshot/feature_typing_mismatch.md") (qualified-name "Foo")))))
   )
 )
 ~~~

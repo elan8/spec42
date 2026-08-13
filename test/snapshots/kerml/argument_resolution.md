@@ -26,21 +26,54 @@ package ArgumentResolutionBug {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "argument_resolution.md"
+  (document "memory://snapshot/argument_resolution.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 1 1) (end 3 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 1 1) (end 3 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 5 1) (end 8 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 5 1) (end 8 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 10 1) (end 15 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 10 1) (end 15 2))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "168d41ced08f9a9163ae5446c034a66acc1a27d514697af3ccb6cfdf8df87f88") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "ArgumentResolutionBug"))) (kind "package") (name "ArgumentResolutionBug") (declared-name "ArgumentResolutionBug"))
-    (element (id (node (document "d0") (qualified-name "ArgumentResolutionBug::A"))) (kind "classifier decl") (name "A") (declared-name "A") (parent (node (document "d0") (qualified-name "ArgumentResolutionBug"))))
-    (element (id (node (document "d0") (qualified-name "ArgumentResolutionBug::B"))) (kind "kermlDecl") (name "B") (declared-name "B") (parent (node (document "d0") (qualified-name "ArgumentResolutionBug"))))
-    (element (id (node (document "d0") (qualified-name "ArgumentResolutionBug::C"))) (kind "classifier decl") (name "C") (declared-name "C") (parent (node (document "d0") (qualified-name "ArgumentResolutionBug"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:b753ec2a1688d588b7fc25704884c3a36dbeb6ed77aafa28f53b6a331363e5bc") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/argument_resolution.md") (qualified-name "ArgumentResolutionBug"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

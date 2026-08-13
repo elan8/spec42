@@ -13,25 +13,25 @@ package Foo {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "parse_malformed_recovery.md"
+  (document "memory://snapshot/parse_malformed_recovery.md"
     (diagnostics
       (diagnostic
         (severity error)
         (code "recovered_package_body_element")
-        (source "sysml")
-        (range (start 1 4) (end 1 21))
+        (source "parser")
+        (range (start 1 4) (end 2 4))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "cda5a6f40388b019f8774c8e73b793d835738fe30bc045f5c3363ff67b9e21dd") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Foo"))) (kind "package") (name "Foo") (declared-name "Foo"))
-    (element (id (node (document "d0") (qualified-name "Foo::Bar"))) (kind "part def") (name "Bar") (declared-name "Bar") (parent (node (document "d0") (qualified-name "Foo"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:f491eea378f800426817629bbafa921ea3e956f72e6489a11a5fe34827bff600") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/parse_malformed_recovery.md") (qualified-name "Foo"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/parse_malformed_recovery.md") (qualified-name "Foo::Bar"))) (kind part-def) (membership (kind owning) (visibility default)))
   )
   (references
   )

@@ -53,33 +53,20 @@ package CommentTest {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "comment_test.md"
+  (document "memory://snapshot/comment_test.md"
     (diagnostics
-      (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "sysml")
-        (range (start 24 1) (end 24 92))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_package_body_element")
-        (source "sysml")
-        (range (start 31 1) (end 31 55))
-      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "71a49d648e41b8100cb032c1a6868dd51734bc1a8124bfc011efb05fc1134669") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "CommentTest"))) (kind "package") (name "CommentTest") (declared-name "CommentTest"))
-    (element (id (node (document "d0") (qualified-name "CommentTest::A"))) (kind "part def") (name "A") (declared-name "A") (parent (node (document "d0") (qualified-name "CommentTest"))))
-    (element (id (node (document "d0") (qualified-name "CommentTest::C"))) (kind "part def") (name "C") (declared-name "C") (parent (node (document "d0") (qualified-name "CommentTest"))))
-    (element (id (node (document "d0") (qualified-name "CommentTest::C::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "CommentTest::C"))))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:cab89b300cc637b967bd447c61b4cac265bebc1c080a13e79122f6699df11964") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/comment_test.md") (qualified-name "CommentTest"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/comment_test.md") (qualified-name "CommentTest::A"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/comment_test.md") (qualified-name "CommentTest::C"))) (kind part-def) (membership (kind owning) (visibility default)))
   )
   (references
   )

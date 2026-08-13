@@ -28,7 +28,7 @@ package TextualRepresentation {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "textual_representation.md"
+  (document "memory://snapshot/textual_representation.md"
     (diagnostics
       (diagnostic
         (severity warning)
@@ -36,22 +36,46 @@ package TextualRepresentation {
         (source "semantic")
         (range (start 1 16) (end 1 34))
       )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 3 1) (end 9 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 3 1) (end 9 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 11 1) (end 16 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 11 1) (end 16 2))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "5bb99bb7a28f7328de54bcbeafe79f8ca9317e68e658348f156f8b8878ba0d86") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "TextualRepresentation"))) (kind "package") (name "TextualRepresentation") (declared-name "TextualRepresentation"))
-    (element (id (node (document "d0") (qualified-name "TextualRepresentation::C"))) (kind "classifier decl") (name "C") (declared-name "C") (parent (node (document "d0") (qualified-name "TextualRepresentation"))))
-    (element (id (node (document "d0") (qualified-name "TextualRepresentation::Real"))) (kind "import") (name "Real") (declared-name "Real") (parent (node (document "d0") (qualified-name "TextualRepresentation"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Real") (origin Import) (shape Membership) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "TextualRepresentation::setX"))) (kind "kermlDecl") (name "setX") (declared-name "setX") (parent (node (document "d0") (qualified-name "TextualRepresentation"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:d4f81f9512462339d824ecced521ffffcb6f645d3746d27d76d38c13f7c91b29") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/textual_representation.md") (qualified-name "TextualRepresentation"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/textual_representation.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false)))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "TextualRepresentation::Real"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Real") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
+    (reference (id (source (node (document "memory://snapshot/textual_representation.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
+      (authored-target "ScalarValues::Real")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -62,15 +86,9 @@ package TextualRepresentation {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 1 16) (end 1 34)) (probe (position 1 16))
-      (reference
-        (source (document "d0") (qualified-name "TextualRepresentation::Real"))
-        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Real")
-        (range (start 1 16) (end 1 34))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/textual_representation.md") (range (start 1 16) (end 1 34)) (probe (position 1 16))
+    (reference (id (source (node (document "memory://snapshot/textual_representation.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Real")
+      (outcome (status unresolved)))
   )
 )
 ~~~

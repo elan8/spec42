@@ -20,29 +20,42 @@ package MassRollup_1 {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "mass_rollup_1.md"
+  (document "memory://snapshot/mass_rollup_1.md"
     (diagnostics
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 16) (end 1 34))
+        (range (start 1 16) (end 1 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 3 1) (end 9 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 3 1) (end 9 2))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "5921eb11629ca2daccaacc5c585ac41fcaf59c110b0d81d55446501f9f58037b") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "MassRollup_1"))) (kind "package") (name "MassRollup_1") (declared-name "MassRollup_1"))
-    (element (id (node (document "d0") (qualified-name "MassRollup_1::*"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "MassRollup_1"))) (authored (membership (kind Import) (visibility "private") (import (reference "NumericalFunctions::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "MassRollup_1::MassedThing"))) (kind "classifier decl") (name "MassedThing") (declared-name "MassedThing") (parent (node (document "d0") (qualified-name "MassRollup_1"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:050cb6d5a2677fd04625c53665d71621fc0745133638e729e678c91c4095fcb8") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/mass_rollup_1.md") (qualified-name "MassRollup_1"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/mass_rollup_1.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "NumericalFunctions") (import (shape namespace) (recursive false)))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "MassRollup_1::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "NumericalFunctions::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
+    (reference (id (source (node (document "memory://snapshot/mass_rollup_1.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "NumericalFunctions")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -53,15 +66,9 @@ package MassRollup_1 {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 1 16) (end 1 34)) (probe (position 1 16))
-      (reference
-        (source (document "d0") (qualified-name "MassRollup_1::*"))
-        (kind namespaceImport) (ordinal 0) (authored-target "NumericalFunctions::*")
-        (range (start 1 16) (end 1 34))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/mass_rollup_1.md") (range (start 1 16) (end 1 37)) (probe (position 1 16))
+    (reference (id (source (node (document "memory://snapshot/mass_rollup_1.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "NumericalFunctions")
+      (outcome (status unresolved)))
   )
 )
 ~~~

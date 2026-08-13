@@ -2,8 +2,6 @@
 ~~~ini
 description=Class with specialization
 type=file
-semantic_graph=skip
-semantic_graph_skip_reason=standalone KerML class declarations are opaque parser fallback nodes; no structured specialization is available to semantic construction
 ~~~
 # SOURCE
 ~~~sysml
@@ -12,17 +10,29 @@ class B :> A { }
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "class_specialization.md"
+  (document "memory://snapshot/class_specialization.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 0 0) (end 0 16))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 0 0) (end 0 16))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "7cb10869a753c15dde0b32b4924eee486d3dad8e80177d650ebfdbff6b187fdc") (contract-version "canonical-resolution-v1"))
-  (structure
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:70cd1d0dc28ee204383a65ad77622c9dea4ae28b3f1ad23f51ab5625c6d08f7a") (contract-version "parser-owned-resolution-v1"))
+  (declarations
   )
   (references
   )

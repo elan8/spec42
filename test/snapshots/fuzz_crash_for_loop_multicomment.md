@@ -18,18 +18,24 @@ perform action doS : Dff {     for y // ndent g {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "fuzz_crash_for_loop_multicomment.md"
+  (document "memory://snapshot/fuzz_crash_for_loop_multicomment.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 1 0) (end 7 5))
+      )
       (diagnostic
         (severity error)
         (code "recovered_action_body_element")
-        (source "sysml")
-        (range (start 2 4) (end 2 109))
+        (source "parser")
+        (range (start 2 4) (end 7 4))
       )
       (diagnostic
         (severity error)
         (code "unexpected_closing_brace")
-        (source "sysml")
+        (source "parser")
         (range (start 8 0) (end 8 1))
       )
     )
@@ -37,12 +43,11 @@ perform action doS : Dff {     for y // ndent g {
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "ef6c1e6418519dc4728aebf3cc1be05819c45b28d08aaae982c77d1e4847d635") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "P"))) (kind "package") (name "P") (declared-name "P"))
-    (element (id (node (document "d0") (qualified-name "P::A"))) (kind "action def") (name "A") (declared-name "A") (parent (node (document "d0") (qualified-name "P"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:dd299cf26d8301e7e63c85e3d821fcc1050bf3e826a926bc09df6e79a2e6bea3") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/fuzz_crash_for_loop_multicomment.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

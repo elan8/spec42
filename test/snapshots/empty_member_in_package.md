@@ -10,12 +10,12 @@ package MyPkg {;}
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "empty_member_in_package.md"
+  (document "memory://snapshot/empty_member_in_package.md"
     (diagnostics
       (diagnostic
         (severity error)
         (code "recovered_package_body_element")
-        (source "sysml")
+        (source "parser")
         (range (start 0 15) (end 0 16))
       )
     )
@@ -23,11 +23,11 @@ package MyPkg {;}
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "11a983feba5a56728927d8fab9766a65e7c413be19a1d78ca2f4560df1370cf3") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "MyPkg"))) (kind "package") (name "MyPkg") (declared-name "MyPkg"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:744031c731b0ec3646fe31804d0ca7395a1ec1da006ae096a83fb05c4c3b2808") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/empty_member_in_package.md") (qualified-name "MyPkg"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

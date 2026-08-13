@@ -24,26 +24,48 @@ package Inverses {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "inverses.md"
+  (document "memory://snapshot/inverses.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 1 1) (end 4 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 1 1) (end 4 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 6 1) (end 8 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 6 1) (end 8 2))
+      )
       (diagnostic
         (severity error)
         (code "unrecognized_declaration_in_scope")
-        (source "sysml")
-        (range (start 10 1) (end 10 114))
+        (source "parser")
+        (range (start 10 1) (end 14 0))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "4ae52aa499248f0bbc9aa17266e6a7dd3df26dde1807060e2d796bcc9567831b") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Inverses"))) (kind "package") (name "Inverses") (declared-name "Inverses"))
-    (element (id (node (document "d0") (qualified-name "Inverses::A"))) (kind "classifier decl") (name "A") (declared-name "A") (parent (node (document "d0") (qualified-name "Inverses"))))
-    (element (id (node (document "d0") (qualified-name "Inverses::B"))) (kind "classifier decl") (name "B") (declared-name "B") (parent (node (document "d0") (qualified-name "Inverses"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:9b8082649edd57d5c889bad34e80d0ba66845a57081bcb129570c18006dcadd4") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

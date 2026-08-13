@@ -52,95 +52,45 @@ package 'Use Case Usage Example' {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "35_use_case_usage_example.md"
+  (document "memory://snapshot/35_use_case_usage_example.md"
     (diagnostics
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 2 16) (end 2 45))
+        (range (start 2 16) (end 2 48))
       )
       (diagnostic
         (severity warning)
-        (code "unresolved_type_reference")
+        (code "unsupported_package_member")
         (source "semantic")
-        (range (start 6 1) (end 6 820))
+        (range (start 6 1) (end 35 2))
       )
       (diagnostic
         (severity warning)
-        (code "unresolved_type_reference")
+        (code "unsupported_package_member")
         (source "semantic")
-        (range (start 7 5) (end 7 21))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 18 12) (end 18 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 23 16) (end 23 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 38 2) (end 38 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 39 2) (end 39 24))
+        (range (start 37 1) (end 41 2))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "2a17bbaa7e6013b49850b2740b8a51e2143815cfbeb680a8148c3ede4ffeaae5") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Use Case Usage Example"))) (kind "package") (name "Use Case Usage Example") (declared-name "Use Case Usage Example"))
-    (element (id (node (document "d0") (qualified-name "Use Case Usage Example::*"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "Use Case Usage Example"))) (authored (membership (kind Import) (visibility "private") (import (reference "Use Case Definition Example::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "Use Case Usage Example::Fuel Station"))) (kind "part def") (name "Fuel Station") (declared-name "Fuel Station") (parent (node (document "d0") (qualified-name "Use Case Usage Example"))))
-    (element (id (node (document "d0") (qualified-name "Use Case Usage Example::add fuel"))) (kind "use case") (name "add fuel") (declared-name "add fuel") (parent (node (document "d0") (qualified-name "Use Case Usage Example"))))
-    (element (id (node (document "d0") (qualified-name "Use Case Usage Example::add fuel::fuel station"))) (kind "actor") (name "fuel station") (declared-name "fuel station") (parent (node (document "d0") (qualified-name "Use Case Usage Example::add fuel"))) (authored (membership (kind Actor)) (relationships (typing (reference "Fuel Station")))))
-    (element (id (node (document "d0") (qualified-name "Use Case Usage Example::add fuel::fueler"))) (kind "actor") (name "fueler") (declared-name "fueler") (parent (node (document "d0") (qualified-name "Use Case Usage Example::add fuel"))) (authored (membership (kind Actor)) (relationships (typing (reference "Person")))))
-    (element (id (node (document "d0") (qualified-name "Use Case Usage Example::add fuel::vehicle"))) (kind "subject") (name "vehicle") (declared-name "vehicle") (parent (node (document "d0") (qualified-name "Use Case Usage Example::add fuel"))) (authored (relationships (typing (reference "Vehicle")))))
-    (element (id (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation"))) (kind "use case") (name "provide transportation") (declared-name "provide transportation") (parent (node (document "d0") (qualified-name "Use Case Usage Example"))) (authored (membership (kind Feature)) (relationships (typing (reference "Provide Transportation")) (flow (reference "Use Case Usage Example::provide transportation::start")))))
-    (element (id (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::_verdict"))) (kind "verdict") (name "done") (declared-name "done") (parent (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation"))))
-    (element (id (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::drive vehicle"))) (kind "use case") (name "drive vehicle") (declared-name "drive vehicle") (parent (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation"))) (authored (membership (kind Feature)) (relationships (flow (reference "Use Case Usage Example::provide transportation::_verdict")))))
-    (element (id (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::drive vehicle::add fuel"))) (kind "include use case") (name "add fuel") (declared-name "add fuel") (parent (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::drive vehicle"))) (authored (relationships (typing (reference "add fuel")))))
-    (element (id (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::drive vehicle::add fuel::vehicle"))) (kind "subject") (name "vehicle") (declared-name "vehicle") (parent (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::drive vehicle::add fuel"))) (authored (relationships (typing (reference "")))))
-    (element (id (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::drive vehicle::vehicle"))) (kind "subject") (name "vehicle") (declared-name "vehicle") (parent (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::drive vehicle"))) (authored (relationships (typing (reference "")))))
-    (element (id (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::start"))) (kind "succession") (name "start") (declared-name "start") (parent (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation"))) (authored (relationships (flow (reference "Use Case Usage Example::provide transportation::drive vehicle")))))
-    (element (id (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::vehicle"))) (kind "subject") (name "vehicle") (declared-name "vehicle") (parent (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation"))) (authored (relationships (typing (reference "")))))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:978b14a368c7e7a64320e8cc6ffcfb059789f65349b6bb1baceb6c8cbaf78168") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/35_use_case_usage_example.md") (qualified-name "Use Case Usage Example"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/35_use_case_usage_example.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Use Case Definition Example") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/35_use_case_usage_example.md") (qualified-name "Use Case Usage Example::Fuel Station"))) (kind part-def) (membership (kind owning) (visibility default)))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "Use Case Usage Example::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Use Case Definition Example::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Use Case Usage Example::add fuel::fuel station"))) (kind featureTyping) (ordinal 0)) (authored-target "Fuel Station") (outcome (status resolved) (target (node (document "d0") (qualified-name "Use Case Usage Example::Fuel Station")))))
-    (reference (id (source (node (document "d0") (qualified-name "Use Case Usage Example::add fuel::fueler"))) (kind featureTyping) (ordinal 0)) (authored-target "Person") (outcome (status unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Use Case Usage Example::add fuel::vehicle"))) (kind featureTyping) (ordinal 0)) (authored-target "Vehicle") (outcome (status unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation"))) (kind featureTyping) (ordinal 0)) (authored-target "Provide Transportation") (outcome (status unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation"))) (kind flowSource) (ordinal 0)) (authored-target "Use Case Usage Example::provide transportation::start") (outcome (status resolved) (target (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::start")))))
-    (reference (id (source (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::drive vehicle"))) (kind flowSource) (ordinal 0)) (authored-target "Use Case Usage Example::provide transportation::_verdict") (outcome (status resolved) (target (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::_verdict")))))
-    (reference (id (source (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::drive vehicle::add fuel"))) (kind featureTyping) (ordinal 0)) (authored-target "add fuel") (outcome (status resolved) (target (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::drive vehicle::add fuel")))))
-    (reference (id (source (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::drive vehicle::add fuel::vehicle"))) (kind featureTyping) (ordinal 0)) (authored-target "") (outcome (status unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::drive vehicle::vehicle"))) (kind featureTyping) (ordinal 0)) (authored-target "") (outcome (status unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::start"))) (kind flowSource) (ordinal 0)) (authored-target "Use Case Usage Example::provide transportation::drive vehicle") (outcome (status resolved) (target (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::drive vehicle")))))
-    (reference (id (source (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::vehicle"))) (kind featureTyping) (ordinal 0)) (authored-target "") (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/35_use_case_usage_example.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "Use Case Definition Example")
+      (outcome (status unresolved)))
   )
   (relationships
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "Use Case Usage Example::add fuel::fuel station"))) (target (node (document "d0") (qualified-name "Use Case Usage Example::Fuel Station"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Use Case Usage Example::add fuel::fuel station"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind flow) (source (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation"))) (target (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::start"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation"))) (kind flowSource) (ordinal 0)))
-    (relationship (kind flow) (source (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::drive vehicle"))) (target (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::_verdict"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::drive vehicle"))) (kind flowSource) (ordinal 0)))
-    (relationship (kind typing) (source (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::drive vehicle::add fuel"))) (target (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::drive vehicle::add fuel"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::drive vehicle::add fuel"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind flow) (source (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::start"))) (target (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::drive vehicle"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::start"))) (kind flowSource) (ordinal 0)))
   )
   (evaluation
   )
@@ -149,15 +99,9 @@ package 'Use Case Usage Example' {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 2 16) (end 2 45)) (probe (position 2 16))
-      (reference
-        (source (document "d0") (qualified-name "Use Case Usage Example::*"))
-        (kind namespaceImport) (ordinal 0) (authored-target "Use Case Definition Example::*")
-        (range (start 2 16) (end 2 45))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/35_use_case_usage_example.md") (range (start 2 16) (end 2 48)) (probe (position 2 16))
+    (reference (id (source (node (document "memory://snapshot/35_use_case_usage_example.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "Use Case Definition Example")
+      (outcome (status unresolved)))
   )
 )
 ~~~

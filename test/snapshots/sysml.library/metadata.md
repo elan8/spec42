@@ -41,7 +41,7 @@ doc
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "metadata.md"
+  (document "memory://snapshot/metadata.md"
     (diagnostics
       (diagnostic
         (severity warning)
@@ -67,41 +67,48 @@ doc
         (source "semantic")
         (range (start 10 16) (end 10 28))
       )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 12 1) (end 20 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 22 1) (end 30 2))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "14a3a29d073aaa821087fa6a86f771f17bdbc3cb0690fa9a21e50cf8f6bd77fc") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Metadata"))) (kind "package") (name "Metadata") (declared-name "Metadata"))
-    (element (id (node (document "d0") (qualified-name "Metadata::Item"))) (kind "import") (name "Item") (declared-name "Item") (parent (node (document "d0") (qualified-name "Metadata"))) (authored (membership (kind Import) (visibility "private") (import (reference "Items::Item") (origin Import) (shape Membership) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "Metadata::MetadataItem"))) (kind "metadata def") (name "MetadataItem") (declared-name "MetadataItem") (parent (node (document "d0") (qualified-name "Metadata"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Metaobject")) (specializes (reference "Item")))))
-    (element (id (node (document "d0") (qualified-name "Metadata::MetadataItem::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "Metadata::MetadataItem"))))
-    (element (id (node (document "d0") (qualified-name "Metadata::Metaobject"))) (kind "import") (name "Metaobject") (declared-name "Metaobject") (parent (node (document "d0") (qualified-name "Metadata"))) (authored (membership (kind Import) (visibility "private") (import (reference "Metaobjects::Metaobject") (origin Import) (shape Membership) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "Metadata::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "Metadata"))))
-    (element (id (node (document "d0") (qualified-name "Metadata::items"))) (kind "import") (name "items") (declared-name "items") (parent (node (document "d0") (qualified-name "Metadata"))) (authored (membership (kind Import) (visibility "private") (import (reference "Items::items") (origin Import) (shape Membership) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "Metadata::metadataItems"))) (kind "item def") (name "metadataItems") (declared-name "metadataItems") (parent (node (document "d0") (qualified-name "Metadata"))) (authored (membership (kind Owning)) (relationships (specializes (reference "metaobjects")) (specializes (reference "items")))))
-    (element (id (node (document "d0") (qualified-name "Metadata::metadataItems::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "Metadata::metadataItems"))))
-    (element (id (node (document "d0") (qualified-name "Metadata::metaobjects"))) (kind "import") (name "metaobjects") (declared-name "metaobjects") (parent (node (document "d0") (qualified-name "Metadata"))) (authored (membership (kind Import) (visibility "private") (import (reference "Metaobjects::metaobjects") (origin Import) (shape Membership) (recursive false)))))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:35078522e6e2f1bce94728d1620219b7bd4fd4365a8eb2502bfd5e3a6be4bdfb") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/metadata.md") (qualified-name "Metadata"))) (kind library-package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/metadata.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Metaobjects::Metaobject") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/metadata.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Metaobjects::metaobjects") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/metadata.md") (anonymous (kind import) (ordinal 2))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Items::Item") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/metadata.md") (anonymous (kind import) (ordinal 3))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Items::items") (import (shape membership) (recursive false)))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "Metadata::Item"))) (kind membershipImport) (ordinal 0)) (authored-target "Items::Item") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Metadata::MetadataItem"))) (kind specialization) (ordinal 0)) (authored-target "Metaobject") (outcome (status resolved) (target (node (document "d0") (qualified-name "Metadata::Metaobject")))))
-    (reference (id (source (node (document "d0") (qualified-name "Metadata::MetadataItem"))) (kind specialization) (ordinal 1)) (authored-target "Item") (outcome (status resolved) (target (node (document "d0") (qualified-name "Metadata::Item")))))
-    (reference (id (source (node (document "d0") (qualified-name "Metadata::Metaobject"))) (kind membershipImport) (ordinal 0)) (authored-target "Metaobjects::Metaobject") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Metadata::items"))) (kind membershipImport) (ordinal 0)) (authored-target "Items::items") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Metadata::metadataItems"))) (kind specialization) (ordinal 0)) (authored-target "metaobjects") (outcome (status resolved) (target (node (document "d0") (qualified-name "Metadata::metaobjects")))))
-    (reference (id (source (node (document "d0") (qualified-name "Metadata::metadataItems"))) (kind specialization) (ordinal 1)) (authored-target "items") (outcome (status resolved) (target (node (document "d0") (qualified-name "Metadata::items")))))
-    (reference (id (source (node (document "d0") (qualified-name "Metadata::metaobjects"))) (kind membershipImport) (ordinal 0)) (authored-target "Metaobjects::metaobjects") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
+    (reference (id (source (node (document "memory://snapshot/metadata.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
+      (authored-target "Metaobjects::Metaobject")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/metadata.md") (anonymous (kind import) (ordinal 1))))) (kind membershipImport) (ordinal 0))
+      (authored-target "Metaobjects::metaobjects")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/metadata.md") (anonymous (kind import) (ordinal 2))))) (kind membershipImport) (ordinal 0))
+      (authored-target "Items::Item")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/metadata.md") (anonymous (kind import) (ordinal 3))))) (kind membershipImport) (ordinal 0))
+      (authored-target "Items::items")
+      (outcome (status unresolved)))
   )
   (relationships
-    (relationship (kind specializes) (source (node (document "d0") (qualified-name "Metadata::MetadataItem"))) (target (node (document "d0") (qualified-name "Metadata::Item"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Metadata::MetadataItem"))) (kind specialization) (ordinal 1)))
-    (relationship (kind specializes) (source (node (document "d0") (qualified-name "Metadata::MetadataItem"))) (target (node (document "d0") (qualified-name "Metadata::Metaobject"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Metadata::MetadataItem"))) (kind specialization) (ordinal 0)))
-    (relationship (kind specializes) (source (node (document "d0") (qualified-name "Metadata::metadataItems"))) (target (node (document "d0") (qualified-name "Metadata::items"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Metadata::metadataItems"))) (kind specialization) (ordinal 1)))
-    (relationship (kind specializes) (source (node (document "d0") (qualified-name "Metadata::metadataItems"))) (target (node (document "d0") (qualified-name "Metadata::metaobjects"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Metadata::metadataItems"))) (kind specialization) (ordinal 0)))
   )
   (evaluation
   )
@@ -110,79 +117,21 @@ doc
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 12 51) (end 12 55)) (probe (position 12 51))
-      (reference
-        (source (document "d0") (qualified-name "Metadata::MetadataItem"))
-        (kind specialization) (ordinal 1) (authored-target "Item")
-        (range (start 12 51) (end 12 55))
-        (outcome (status resolved)
-          (target (document "d0") (qualified-name "Metadata::Item") (range (start 9 1) (end 9 28)))
-        )
-      )
-    )
-    (query (range (start 0 13) (end 0 18)) (probe (position 0 13))
-      (reference
-        (source (document "d0") (qualified-name "Metadata::metadataItems"))
-        (kind specialization) (ordinal 1) (authored-target "items")
-        (range (start 0 13) (end 0 18))
-        (outcome (status resolved)
-          (target (document "d0") (qualified-name "Metadata::items") (range (start 10 1) (end 10 29)))
-        )
-      )
-    )
-    (query (range (start 12 39) (end 12 49)) (probe (position 12 39))
-      (reference
-        (source (document "d0") (qualified-name "Metadata::MetadataItem"))
-        (kind specialization) (ordinal 0) (authored-target "Metaobject")
-        (range (start 12 39) (end 12 49))
-        (outcome (status resolved)
-          (target (document "d0") (qualified-name "Metadata::Metaobject") (range (start 7 1) (end 7 40)))
-        )
-      )
-    )
-    (query (range (start 0 0) (end 0 11)) (probe (position 0 0))
-      (reference
-        (source (document "d0") (qualified-name "Metadata::metadataItems"))
-        (kind specialization) (ordinal 0) (authored-target "metaobjects")
-        (range (start 0 0) (end 0 11))
-        (outcome (status resolved)
-          (target (document "d0") (qualified-name "Metadata::metaobjects") (range (start 8 1) (end 8 41)))
-        )
-      )
-    )
-    (query (range (start 9 16) (end 9 27)) (probe (position 9 16))
-      (reference
-        (source (document "d0") (qualified-name "Metadata::Item"))
-        (kind membershipImport) (ordinal 0) (authored-target "Items::Item")
-        (range (start 9 16) (end 9 27))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 10 16) (end 10 28)) (probe (position 10 16))
-      (reference
-        (source (document "d0") (qualified-name "Metadata::items"))
-        (kind membershipImport) (ordinal 0) (authored-target "Items::items")
-        (range (start 10 16) (end 10 28))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 7 16) (end 7 39)) (probe (position 7 16))
-      (reference
-        (source (document "d0") (qualified-name "Metadata::Metaobject"))
-        (kind membershipImport) (ordinal 0) (authored-target "Metaobjects::Metaobject")
-        (range (start 7 16) (end 7 39))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 8 16) (end 8 40)) (probe (position 8 16))
-      (reference
-        (source (document "d0") (qualified-name "Metadata::metaobjects"))
-        (kind membershipImport) (ordinal 0) (authored-target "Metaobjects::metaobjects")
-        (range (start 8 16) (end 8 40))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/metadata.md") (range (start 7 16) (end 7 39)) (probe (position 7 16))
+    (reference (id (source (node (document "memory://snapshot/metadata.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "Metaobjects::Metaobject")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/metadata.md") (range (start 8 16) (end 8 40)) (probe (position 8 16))
+    (reference (id (source (node (document "memory://snapshot/metadata.md") (anonymous (kind import) (ordinal 1))))) (kind membershipImport) (ordinal 0) (authored-target "Metaobjects::metaobjects")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/metadata.md") (range (start 9 16) (end 9 27)) (probe (position 9 16))
+    (reference (id (source (node (document "memory://snapshot/metadata.md") (anonymous (kind import) (ordinal 2))))) (kind membershipImport) (ordinal 0) (authored-target "Items::Item")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/metadata.md") (range (start 10 16) (end 10 28)) (probe (position 10 16))
+    (reference (id (source (node (document "memory://snapshot/metadata.md") (anonymous (kind import) (ordinal 3))))) (kind membershipImport) (ordinal 0) (authored-target "Items::items")
+      (outcome (status unresolved)))
   )
 )
 ~~~

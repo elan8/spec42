@@ -42,40 +42,88 @@ package VehicleTanks {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "vehicle_tanks.md"
+  (document "memory://snapshot/vehicle_tanks.md"
     (diagnostics
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 16) (end 1 28))
+        (range (start 1 16) (end 1 31))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 2 16) (end 2 29))
+        (range (start 2 16) (end 2 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 4 1) (end 4 16))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 4 1) (end 4 16))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 6 1) (end 8 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 6 1) (end 8 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 10 1) (end 14 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 10 1) (end 14 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 16 1) (end 31 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 16 1) (end 31 2))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "cc8383cdf1b30e3f50c79173da128515ca4ca44834e970d864f6df74d57af57d") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "VehicleTanks"))) (kind "package") (name "VehicleTanks") (declared-name "VehicleTanks"))
-    (element (id (node (document "d0") (qualified-name "VehicleTanks::*"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "VehicleTanks"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "VehicleTanks::*#import"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "VehicleTanks"))) (authored (membership (kind Import) (visibility "private") (import (reference "RealFunctions::*") (origin Import) (shape Namespace) (recursive false)))))
-    (element (id (node (document "d0") (qualified-name "VehicleTanks::Tank"))) (kind "classifier decl") (name "Tank") (declared-name "Tank") (parent (node (document "d0") (qualified-name "VehicleTanks"))))
-    (element (id (node (document "d0") (qualified-name "VehicleTanks::V6Engine"))) (kind "classifier decl") (name "V6Engine") (declared-name "V6Engine") (parent (node (document "d0") (qualified-name "VehicleTanks"))))
-    (element (id (node (document "d0") (qualified-name "VehicleTanks::Vehicle"))) (kind "classifier decl") (name "Vehicle") (declared-name "Vehicle") (parent (node (document "d0") (qualified-name "VehicleTanks"))))
-    (element (id (node (document "d0") (qualified-name "VehicleTanks::Vehicle1"))) (kind "classifier decl") (name "Vehicle1") (declared-name "Vehicle1") (parent (node (document "d0") (qualified-name "VehicleTanks"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:2bc16b5623fe75da617e955786ee67d632a845045ffce0ce0f382e2fb7652435") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/vehicle_tanks.md") (qualified-name "VehicleTanks"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/vehicle_tanks.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/vehicle_tanks.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "RealFunctions") (import (shape namespace) (recursive false)))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "VehicleTanks::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarValues::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "VehicleTanks::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "RealFunctions::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
+    (reference (id (source (node (document "memory://snapshot/vehicle_tanks.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "ScalarValues")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/vehicle_tanks.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "RealFunctions")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -86,23 +134,13 @@ package VehicleTanks {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 1 16) (end 1 28)) (probe (position 1 16))
-      (reference
-        (source (document "d0") (qualified-name "VehicleTanks::*"))
-        (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues::*")
-        (range (start 1 16) (end 1 28))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 2 16) (end 2 29)) (probe (position 2 16))
-      (reference
-        (source (document "d0") (qualified-name "VehicleTanks::*#import"))
-        (kind namespaceImport) (ordinal 0) (authored-target "RealFunctions::*")
-        (range (start 2 16) (end 2 29))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/vehicle_tanks.md") (range (start 1 16) (end 1 31)) (probe (position 1 16))
+    (reference (id (source (node (document "memory://snapshot/vehicle_tanks.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/vehicle_tanks.md") (range (start 2 16) (end 2 32)) (probe (position 2 16))
+    (reference (id (source (node (document "memory://snapshot/vehicle_tanks.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0) (authored-target "RealFunctions")
+      (outcome (status unresolved)))
   )
 )
 ~~~

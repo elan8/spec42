@@ -18,7 +18,7 @@ package P {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "fuzz_flow_value_no_name.md"
+  (document "memory://snapshot/fuzz_flow_value_no_name.md"
     (diagnostics
       (diagnostic
         (severity warning)
@@ -35,25 +35,29 @@ package P {
       (diagnostic
         (severity error)
         (code "missing_semicolon")
-        (source "sysml")
-        (range (start 4 8) (end 4 108))
+        (source "parser")
+        (range (start 4 8) (end 7 4))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "c7a97b9d18e0ee31e371a3fdb03948e6160f424e7052f92c690b270f16f6721b") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "P"))) (kind "package") (name "P") (declared-name "P"))
-    (element (id (node (document "d0") (qualified-name "P::vehicle"))) (kind "part") (name "vehicle") (declared-name "vehicle") (parent (node (document "d0") (qualified-name "P"))) (authored (membership (kind Feature)) (relationships (typing (reference "Vehicle")))))
-    (element (id (node (document "d0") (qualified-name "P::vehicle::eng"))) (kind "part") (name "eng") (declared-name "eng") (parent (node (document "d0") (qualified-name "P::vehicle"))) (authored (membership (kind Feature)) (relationships (typing (reference "Engine")))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:6dc68fefb70a074b0c037f34f251cf4f9e3d4d84de07bfba423957f8759c84f8") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/fuzz_flow_value_no_name.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/fuzz_flow_value_no_name.md") (qualified-name "P::vehicle"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Vehicle"))))
+    (declaration (id (node (document "memory://snapshot/fuzz_flow_value_no_name.md") (qualified-name "P::vehicle::eng"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Engine"))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "P::vehicle"))) (kind featureTyping) (ordinal 0)) (authored-target "Vehicle") (outcome (status unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "P::vehicle::eng"))) (kind featureTyping) (ordinal 0)) (authored-target "Engine") (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/fuzz_flow_value_no_name.md") (qualified-name "P::vehicle"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Vehicle")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/fuzz_flow_value_no_name.md") (qualified-name "P::vehicle::eng"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Engine")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -64,23 +68,13 @@ package P {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 2 19) (end 2 25)) (probe (position 2 19))
-      (reference
-        (source (document "d0") (qualified-name "P::vehicle::eng"))
-        (kind featureTyping) (ordinal 0) (authored-target "Engine")
-        (range (start 2 19) (end 2 25))
-        (outcome (status unresolved))
-      )
-    )
-    (query (range (start 1 19) (end 1 26)) (probe (position 1 19))
-      (reference
-        (source (document "d0") (qualified-name "P::vehicle"))
-        (kind featureTyping) (ordinal 0) (authored-target "Vehicle")
-        (range (start 1 19) (end 1 26))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/fuzz_flow_value_no_name.md") (range (start 1 19) (end 1 26)) (probe (position 1 19))
+    (reference (id (source (node (document "memory://snapshot/fuzz_flow_value_no_name.md") (qualified-name "P::vehicle"))) (kind featureTyping) (ordinal 0) (authored-target "Vehicle")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/fuzz_flow_value_no_name.md") (range (start 2 19) (end 2 25)) (probe (position 2 19))
+    (reference (id (source (node (document "memory://snapshot/fuzz_flow_value_no_name.md") (qualified-name "P::vehicle::eng"))) (kind featureTyping) (ordinal 0) (authored-target "Engine")
+      (outcome (status unresolved)))
   )
 )
 ~~~

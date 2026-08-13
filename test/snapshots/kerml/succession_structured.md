@@ -17,24 +17,90 @@ package SuccessionStructured {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "succession_structured.md"
+  (document "memory://snapshot/succession_structured.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 1 4) (end 1 46))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 1 4) (end 1 46))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 2 4) (end 2 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 2 4) (end 2 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 3 4) (end 3 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 3 4) (end 3 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 4 4) (end 4 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 4 4) (end 4 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 5 4) (end 5 48))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 5 4) (end 5 48))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 6 4) (end 6 17))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 6 4) (end 6 17))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "144ece9b737878fb006b0daa89efe8396ffe6ebeea915096e34e21067daf206e") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "SuccessionStructured"))) (kind "package") (name "SuccessionStructured") (declared-name "SuccessionStructured"))
-    (element (id (node (document "d0") (qualified-name "SuccessionStructured::1"))) (kind "kermlDecl") (name "1") (declared-name "1") (parent (node (document "d0") (qualified-name "SuccessionStructured"))))
-    (element (id (node (document "d0") (qualified-name "SuccessionStructured::all"))) (kind "kermlDecl") (name "all") (declared-name "all") (parent (node (document "d0") (qualified-name "SuccessionStructured"))))
-    (element (id (node (document "d0") (qualified-name "SuccessionStructured::all#kermlDecl"))) (kind "kermlDecl") (name "all") (declared-name "all") (parent (node (document "d0") (qualified-name "SuccessionStructured"))))
-    (element (id (node (document "d0") (qualified-name "SuccessionStructured::first"))) (kind "kermlDecl") (name "first") (declared-name "first") (parent (node (document "d0") (qualified-name "SuccessionStructured"))))
-    (element (id (node (document "d0") (qualified-name "SuccessionStructured::s"))) (kind "kermlDecl") (name "s") (declared-name "s") (parent (node (document "d0") (qualified-name "SuccessionStructured"))))
-    (element (id (node (document "d0") (qualified-name "SuccessionStructured::x"))) (kind "kermlDecl") (name "x") (declared-name "x") (parent (node (document "d0") (qualified-name "SuccessionStructured"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:b08e203ed72d12009c7ad384a8071acbd7c4f1a389b32d77e1a1bee0d231a3db") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/succession_structured.md") (qualified-name "SuccessionStructured"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

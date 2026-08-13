@@ -15,8 +15,14 @@ package DependencyCoverage {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "dependency_endpoints.md"
+  (document "memory://snapshot/dependency_endpoints.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 3 4) (end 3 37))
+      )
     )
   )
 )
@@ -24,12 +30,11 @@ package DependencyCoverage {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "27187138feadae208a5dcf65a51f6d67b652e974bf50a4ec19ddbdd0f7f6c248") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "DependencyCoverage"))) (kind "package") (name "DependencyCoverage") (declared-name "DependencyCoverage"))
-    (element (id (node (document "d0") (qualified-name "DependencyCoverage::Source"))) (kind "part def") (name "Source") (declared-name "Source") (parent (node (document "d0") (qualified-name "DependencyCoverage"))))
-    (element (id (node (document "d0") (qualified-name "DependencyCoverage::Target"))) (kind "part def") (name "Target") (declared-name "Target") (parent (node (document "d0") (qualified-name "DependencyCoverage"))))
-    (element (id (node (document "d0") (qualified-name "DependencyCoverage::dependency"))) (kind "dependency") (name "dependency") (declared-name "dependency") (parent (node (document "d0") (qualified-name "DependencyCoverage"))))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:76777b26487a9109cac088b98f883a3a8b1a01cefb04c5e9f4f8976363db0988") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/dependency_endpoints.md") (qualified-name "DependencyCoverage"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/dependency_endpoints.md") (qualified-name "DependencyCoverage::Source"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/dependency_endpoints.md") (qualified-name "DependencyCoverage::Target"))) (kind part-def) (membership (kind owning) (visibility default)))
   )
   (references
   )

@@ -2,8 +2,6 @@
 ~~~ini
 description=Empty member (bare semicolon) at file level
 type=file
-semantic_graph=skip
-semantic_graph_skip_reason=parser recovery for non-empty source produced no typed semantic graph facts
 ~~~
 # SOURCE
 ~~~sysml
@@ -12,23 +10,29 @@ semantic_graph_skip_reason=parser recovery for non-empty source produced no type
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "empty_member_at_file_level.md"
+  (document "memory://snapshot/empty_member_at_file_level.md"
     (diagnostics
       (diagnostic
         (severity error)
         (code "expected_keyword")
-        (source "sysml")
+        (source "parser")
         (range (start 0 0) (end 0 17))
+      )
+      (diagnostic
+        (severity error)
+        (code "expected_keyword")
+        (source "parser")
+        (range (start 0 2) (end 0 17))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "fefede073c8c7ce43930b22b1d1c30639364c8e8b3185e2ef91212bd14218998") (contract-version "canonical-resolution-v1"))
-  (structure
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:00822b861e583c5aba03c15441e4b75ab39e4ee721a8a593dee5c678e970552a") (contract-version "parser-owned-resolution-v1"))
+  (declarations
   )
   (references
   )

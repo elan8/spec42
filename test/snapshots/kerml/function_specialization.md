@@ -19,26 +19,114 @@ package FuncSpec {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "function_specialization.md"
+  (document "memory://snapshot/function_specialization.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 1 4) (end 1 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 1 4) (end 1 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 2 4) (end 2 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 2 4) (end 2 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 3 4) (end 3 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 3 4) (end 3 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 4 4) (end 4 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 4 4) (end 4 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 5 4) (end 5 27))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 5 4) (end 5 27))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 6 4) (end 6 58))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 6 4) (end 6 58))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 7 4) (end 7 68))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 7 4) (end 7 68))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 8 4) (end 8 19))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 8 4) (end 8 19))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "acd43b8e528f1be93e2512b4afaf0b5a4447d0e1f0cd45c5931d0741a293f352") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "FuncSpec"))) (kind "package") (name "FuncSpec") (declared-name "FuncSpec"))
-    (element (id (node (document "d0") (qualified-name "FuncSpec::F"))) (kind "kermlDecl") (name "F") (declared-name "F") (parent (node (document "d0") (qualified-name "FuncSpec"))))
-    (element (id (node (document "d0") (qualified-name "FuncSpec::FI"))) (kind "kermlDecl") (name "FI") (declared-name "FI") (parent (node (document "d0") (qualified-name "FuncSpec"))))
-    (element (id (node (document "d0") (qualified-name "FuncSpec::H"))) (kind "kermlDecl") (name "H") (declared-name "H") (parent (node (document "d0") (qualified-name "FuncSpec"))))
-    (element (id (node (document "d0") (qualified-name "FuncSpec::I"))) (kind "kermlDecl") (name "I") (declared-name "I") (parent (node (document "d0") (qualified-name "FuncSpec"))))
-    (element (id (node (document "d0") (qualified-name "FuncSpec::K"))) (kind "kermlDecl") (name "K") (declared-name "K") (parent (node (document "d0") (qualified-name "FuncSpec"))))
-    (element (id (node (document "d0") (qualified-name "FuncSpec::P"))) (kind "kermlDecl") (name "P") (declared-name "P") (parent (node (document "d0") (qualified-name "FuncSpec"))))
-    (element (id (node (document "d0") (qualified-name "FuncSpec::PI"))) (kind "kermlDecl") (name "PI") (declared-name "PI") (parent (node (document "d0") (qualified-name "FuncSpec"))))
-    (element (id (node (document "d0") (qualified-name "FuncSpec::R"))) (kind "kermlDecl") (name "R") (declared-name "R") (parent (node (document "d0") (qualified-name "FuncSpec"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:dfcdfda5c349979d632045feed31aec73306106fb0e6f1511d985d326a0970d9") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/function_specialization.md") (qualified-name "FuncSpec"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

@@ -47,43 +47,181 @@ package ModelingInstancesWithAtoms {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "a_2_modeling_instances.md"
+  (document "memory://snapshot/a_2_modeling_instances.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 5 1) (end 5 20))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 5 1) (end 5 20))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 6 1) (end 6 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 6 1) (end 6 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 7 1) (end 7 43))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 7 1) (end 7 43))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 8 1) (end 8 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 8 1) (end 8 66))
+      )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
         (range (start 16 16) (end 16 27))
       )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 18 1) (end 18 20))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 18 1) (end 18 20))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 19 1) (end 19 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 19 1) (end 19 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 21 1) (end 22 1))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 22 1) (end 22 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 22 1) (end 22 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 23 1) (end 24 1))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 24 1) (end 24 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 24 1) (end 24 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 28 1) (end 30 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 28 1) (end 30 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 31 1) (end 31 47))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 31 1) (end 31 47))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 33 1) (end 34 1))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 34 1) (end 36 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 34 1) (end 36 2))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "67d5b71f69b703c5155328bc785c8cba7493f57b826d4809c00711cd8f67dfdf") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "ModelingInstances"))) (kind "package") (name "ModelingInstances") (declared-name "ModelingInstances"))
-    (element (id (node (document "d0") (qualified-name "ModelingInstances::Bicycle"))) (kind "classifier decl") (name "Bicycle") (declared-name "Bicycle") (parent (node (document "d0") (qualified-name "ModelingInstances"))))
-    (element (id (node (document "d0") (qualified-name "ModelingInstances::MyBike"))) (kind "classifier decl") (name "MyBike") (declared-name "MyBike") (parent (node (document "d0") (qualified-name "ModelingInstances"))))
-    (element (id (node (document "d0") (qualified-name "ModelingInstances::Vehicle"))) (kind "classifier decl") (name "Vehicle") (declared-name "Vehicle") (parent (node (document "d0") (qualified-name "ModelingInstances"))))
-    (element (id (node (document "d0") (qualified-name "ModelingInstances::YourBike"))) (kind "classifier decl") (name "YourBike") (declared-name "YourBike") (parent (node (document "d0") (qualified-name "ModelingInstances"))))
-    (element (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms"))) (kind "package") (name "ModelingInstancesWithAtoms") (declared-name "ModelingInstancesWithAtoms"))
-    (element (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::Bicycle"))) (kind "classifier decl") (name "Bicycle") (declared-name "Bicycle") (parent (node (document "d0") (qualified-name "ModelingInstancesWithAtoms"))))
-    (element (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::Garage"))) (kind "classifier decl") (name "Garage") (declared-name "Garage") (parent (node (document "d0") (qualified-name "ModelingInstancesWithAtoms"))))
-    (element (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::MyBike"))) (kind "classifier decl") (name "MyBike") (declared-name "MyBike") (parent (node (document "d0") (qualified-name "ModelingInstancesWithAtoms"))))
-    (element (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::OurBicycle"))) (kind "classifier decl") (name "OurBicycle") (declared-name "OurBicycle") (parent (node (document "d0") (qualified-name "ModelingInstancesWithAtoms"))))
-    (element (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::OurGarage"))) (kind "classifier decl") (name "OurGarage") (declared-name "OurGarage") (parent (node (document "d0") (qualified-name "ModelingInstancesWithAtoms"))))
-    (element (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::Vehicle"))) (kind "classifier decl") (name "Vehicle") (declared-name "Vehicle") (parent (node (document "d0") (qualified-name "ModelingInstancesWithAtoms"))))
-    (element (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::YourBike"))) (kind "classifier decl") (name "YourBike") (declared-name "YourBike") (parent (node (document "d0") (qualified-name "ModelingInstancesWithAtoms"))))
-    (element (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::_atom"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (parent (node (document "d0") (qualified-name "ModelingInstancesWithAtoms"))))
-    (element (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::_atom#metadata_keyword"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (parent (node (document "d0") (qualified-name "ModelingInstancesWithAtoms"))))
-    (element (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::_atom#metadata_keyword2"))) (kind "metadata keyword") (name "atom") (declared-name "atom") (parent (node (document "d0") (qualified-name "ModelingInstancesWithAtoms"))))
-    (element (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::atom"))) (kind "import") (name "atom") (declared-name "atom") (parent (node (document "d0") (qualified-name "ModelingInstancesWithAtoms"))) (authored (membership (kind Import) (visibility "private") (import (reference "Atoms::atom") (origin Import) (shape Membership) (recursive false)))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:97dd5c0e74303f65eb1d7f699eefcbf0ea890c8cdd99ab55731c0c854f9376e5") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/a_2_modeling_instances.md") (qualified-name "ModelingInstances"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/a_2_modeling_instances.md") (qualified-name "ModelingInstancesWithAtoms"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/a_2_modeling_instances.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Atoms::atom") (import (shape membership) (recursive false)))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::atom"))) (kind membershipImport) (ordinal 0)) (authored-target "Atoms::atom") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
+    (reference (id (source (node (document "memory://snapshot/a_2_modeling_instances.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
+      (authored-target "Atoms::atom")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -94,15 +232,9 @@ package ModelingInstancesWithAtoms {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (document "d0"
-    (query (range (start 16 16) (end 16 27)) (probe (position 16 16))
-      (reference
-        (source (document "d0") (qualified-name "ModelingInstancesWithAtoms::atom"))
-        (kind membershipImport) (ordinal 0) (authored-target "Atoms::atom")
-        (range (start 16 16) (end 16 27))
-        (outcome (status unresolved))
-      )
-    )
+  (query (document "memory://snapshot/a_2_modeling_instances.md") (range (start 16 16) (end 16 27)) (probe (position 16 16))
+    (reference (id (source (node (document "memory://snapshot/a_2_modeling_instances.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "Atoms::atom")
+      (outcome (status unresolved)))
   )
 )
 ~~~

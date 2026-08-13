@@ -25,26 +25,48 @@ package Classifiers {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "classifiers.md"
+  (document "memory://snapshot/classifiers.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 1 1) (end 1 14))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 1 1) (end 1 14))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 2 1) (end 2 14))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 2 1) (end 2 14))
+      )
       (diagnostic
         (severity error)
         (code "unrecognized_declaration_in_scope")
-        (source "sysml")
-        (range (start 4 1) (end 4 319))
+        (source "parser")
+        (range (start 4 1) (end 15 0))
       )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "bbd89ba924d113a6e36c5064f2984c023c4412681dbd95db31b1488feca8e554") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Classifiers"))) (kind "package") (name "Classifiers") (declared-name "Classifiers"))
-    (element (id (node (document "d0") (qualified-name "Classifiers::A"))) (kind "classifier decl") (name "A") (declared-name "A") (parent (node (document "d0") (qualified-name "Classifiers"))))
-    (element (id (node (document "d0") (qualified-name "Classifiers::B"))) (kind "classifier decl") (name "B") (declared-name "B") (parent (node (document "d0") (qualified-name "Classifiers"))))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:715d0cd223e7dbf7c86afe8131c35b26cfcefd7525691936f6f2fc9cc129b41d") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/classifiers.md") (qualified-name "Classifiers"))) (kind package) (membership (kind owning) (visibility default)))
   )
   (references
   )

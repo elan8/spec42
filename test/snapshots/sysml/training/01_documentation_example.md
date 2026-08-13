@@ -23,23 +23,31 @@ package 'Documentation Example' {
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "01_documentation_example.md"
+  (document "memory://snapshot/01_documentation_example.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 9 1) (end 11 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 12 1) (end 12 35))
+      )
     )
   )
 )
 ~~~
 # SMG
-~~~
+~~~sexpr
 (semantic-model
-  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "f3f683404d38cf3968db482d13574f52fecc8109de330a070ea8d97f3c4afb51") (contract-version "canonical-resolution-v1"))
-  (structure
-    (element (id (node (document "d0") (qualified-name "Documentation Example"))) (kind "package") (name "Documentation Example") (declared-name "Documentation Example"))
-    (element (id (node (document "d0") (qualified-name "Documentation Example::Automobile"))) (kind "part def") (name "Automobile") (declared-name "Automobile") (parent (node (document "d0") (qualified-name "Documentation Example"))))
-    (element (id (node (document "d0") (qualified-name "Documentation Example::Automobile::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "Documentation Example::Automobile"))))
-    (element (id (node (document "d0") (qualified-name "Documentation Example::Car"))) (kind "alias") (name "Car") (declared-name "Car") (parent (node (document "d0") (qualified-name "Documentation Example"))))
-    (element (id (node (document "d0") (qualified-name "Documentation Example::Torque"))) (kind "alias") (name "Torque") (declared-name "Torque") (parent (node (document "d0") (qualified-name "Documentation Example"))))
-    (element (id (node (document "d0") (qualified-name "Documentation Example::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "Documentation Example"))))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:32ecc55bb2194619a264cda408f62f9556562d3826918fcd0b37ee8bacfc6ed1") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/01_documentation_example.md") (qualified-name "Documentation Example"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/01_documentation_example.md") (qualified-name "Documentation Example::Automobile"))) (kind part-def) (membership (kind owning) (visibility default)))
   )
   (references
   )
