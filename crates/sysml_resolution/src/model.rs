@@ -12779,6 +12779,36 @@ mod tests {
     }
 
     #[test]
+    fn kerml_feature_member_nested_inside_classifier_decl_resolves_its_typing() {
+        // `classifier { ... }` bodies share the `CalcDefBody` grammar (b7d6ac36), so a bare
+        // `feature` member inside a `classifier` body dispatches through the same
+        // `CalcDefBodyElement::KermlFeature` -> `lower_kerml_feature_member` path already used
+        // for package-level and calc-def-nested feature members; it should resolve identically.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tclassifier Wheel {}\n\
+             \tclassifier Bicycle {\n\
+             \t\tfeature rollsOn : Wheel [2];\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::Bicycle::rollsOn\"))) (kind kerml-feature)"),
+            "expected a nested kerml-feature declaration for rollsOn, got:\n{output}"
+        );
+        assert!(
+            output.contains("(relationships (featureTyping (reference \"Wheel\")))"),
+            "expected rollsOn's FeatureTyping reference, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(outcome (status resolved) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Wheel\"))))"
+            ),
+            "expected rollsOn's featureTyping reference to Wheel to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
     fn calc_def_nested_inside_calc_def_lowers_to_a_declaration() {
         // `CalcDefBodyElement::CalcDef`/`CalcUsage`/`PartUsage` dispatch into a `calc def`
         // body's own already-existing `lower_calc_def`/`lower_calc_usage`/`lower_part_usage`
