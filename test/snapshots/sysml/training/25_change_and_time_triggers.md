@@ -98,9 +98,9 @@ package 'Change and Time Triggers' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_action_usage_member")
+        (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 16 27) (end 16 55))
+        (range (start 16 38) (end 16 54))
       )
       (diagnostic
         (severity warning)
@@ -177,6 +177,7 @@ package 'Change and Time Triggers' {
     (declaration (id (node (document "memory://snapshot/25_change_and_time_triggers.md") (qualified-name "Change and Time Triggers::healthStates::maintenance"))) (kind state) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/25_change_and_time_triggers.md") (qualified-name "Change and Time Triggers::healthStates::normal"))) (kind state) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/25_change_and_time_triggers.md") (qualified-name "Change and Time Triggers::senseTemperature"))) (kind action) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/25_change_and_time_triggers.md") (qualified-name "Change and Time Triggers::senseTemperature::temp"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "TemperatureValue") (direction out))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/25_change_and_time_triggers.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
@@ -206,6 +207,9 @@ package 'Change and Time Triggers' {
     (reference (id (source (node (document "memory://snapshot/25_change_and_time_triggers.md") (anonymous (kind initial-state) (ordinal 0))))) (kind initialState) (ordinal 0))
       (authored-target "normal")
       (outcome (status resolved) (target (node (document "memory://snapshot/25_change_and_time_triggers.md") (qualified-name "Change and Time Triggers::healthStates::normal")))))
+    (reference (id (source (node (document "memory://snapshot/25_change_and_time_triggers.md") (qualified-name "Change and Time Triggers::senseTemperature::temp"))) (kind featureTyping) (ordinal 0))
+      (authored-target "TemperatureValue")
+      (outcome (status unresolved)))
   )
   (relationships
     (relationship (kind doActionBinding) (source (node (document "memory://snapshot/25_change_and_time_triggers.md") (anonymous (kind do-action-binding) (ordinal 0))))) (target (node (document "memory://snapshot/25_change_and_time_triggers.md") (qualified-name "Change and Time Triggers::senseTemperature"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/25_change_and_time_triggers.md") (anonymous (kind do-action-binding) (ordinal 0))))) (kind doActionBinding) (ordinal 0)))
@@ -253,6 +257,10 @@ package 'Change and Time Triggers' {
   (query (document "memory://snapshot/25_change_and_time_triggers.md") (range (start 22 14) (end 22 20)) (probe (position 22 14))
     (reference (id (source (node (document "memory://snapshot/25_change_and_time_triggers.md") (anonymous (kind initial-state) (ordinal 0))))) (kind initialState) (ordinal 0) (authored-target "normal")
       (outcome (status resolved) (target (node (document "memory://snapshot/25_change_and_time_triggers.md") (qualified-name "Change and Time Triggers::healthStates::normal")))))
+  )
+  (query (document "memory://snapshot/25_change_and_time_triggers.md") (range (start 16 38) (end 16 54)) (probe (position 16 38))
+    (reference (id (source (node (document "memory://snapshot/25_change_and_time_triggers.md") (qualified-name "Change and Time Triggers::senseTemperature::temp"))) (kind featureTyping) (ordinal 0) (authored-target "TemperatureValue")
+      (outcome (status unresolved)))
   )
 )
 ~~~

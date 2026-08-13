@@ -286,18 +286,6 @@ standard library package States {
         (severity warning)
         (code "unsupported_action_definition_member")
         (source "semantic")
-        (range (start 89 2) (end 89 22))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_action_definition_member")
-        (source "semantic")
-        (range (start 90 2) (end 90 18))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_action_definition_member")
-        (source "semantic")
         (range (start 92 2) (end 92 34))
       )
       (diagnostic
@@ -335,6 +323,8 @@ standard library package States {
     (declaration (id (node (document "memory://snapshot/states.md") (qualified-name "States::StateAction"))) (kind state-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Action")) (specialization (reference "StatePerformance"))))
     (declaration (id (node (document "memory://snapshot/states.md") (qualified-name "States::StateAction::exclusiveStates"))) (kind state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "StateAction")) (subsetting (reference "substates"))))
     (declaration (id (node (document "memory://snapshot/states.md") (qualified-name "States::StateTransitionAction"))) (kind action-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "TransitionAction")) (specialization (reference "StateTransitionPerformance"))))
+    (declaration (id (node (document "memory://snapshot/states.md") (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/states.md") (qualified-name "States::StateTransitionAction::payload"))) (kind parameter) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/states.md") (qualified-name "States::stateActions"))) (kind state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "StateAction")) (subsetting (reference "actions"))))
   )
   (references

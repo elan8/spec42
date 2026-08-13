@@ -367,6 +367,9 @@ fn write_relationships(model: &ResolvedSemanticModel, output: &mut dyn fmt::Writ
         if reference.flags.conjugated {
             write!(output, " (conjugated true)")?;
         }
+        if let Some(direction) = reference.flags.direction {
+            write!(output, " (direction {})", parameter_direction(direction))?;
+        }
         write!(output, " (source ")?;
         write_node_identity(model, reference.source, output)?;
         write!(output, ") (target ")?;
@@ -500,6 +503,9 @@ fn write_authored(
         write!(output, ")")?;
         if reference.flags.conjugated {
             write!(output, " (conjugated true)")?;
+        }
+        if let Some(direction) = reference.flags.direction {
+            write!(output, " (direction {})", parameter_direction(direction))?;
         }
         if let Some(import) = reference.import {
             write_import(import, output)?;
@@ -698,6 +704,14 @@ fn document_identity(model: &ResolvedSemanticModel, id: DocumentId) -> &str {
         .map_or("<invalid-document>", |document| document.identity.as_ref())
 }
 
+fn parameter_direction(direction: ParameterDirection) -> &'static str {
+    match direction {
+        ParameterDirection::In => "in",
+        ParameterDirection::Out => "out",
+        ParameterDirection::InOut => "inout",
+    }
+}
+
 fn declaration_kind(kind: DeclarationKind) -> &'static str {
     match kind {
         DeclarationKind::Namespace => "namespace",
@@ -754,6 +768,7 @@ fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::DoActionBinding => "do-action-binding",
         DeclarationKind::ExitActionBinding => "exit-action-binding",
         DeclarationKind::InitialState => "initial-state",
+        DeclarationKind::ParameterUsage => "parameter",
     }
 }
 

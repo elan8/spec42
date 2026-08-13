@@ -63,12 +63,6 @@ package 'Transition Actions' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_action_usage_member")
-        (source "semantic")
-        (range (start 13 26) (end 13 47))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_state_definition_member")
         (source "semantic")
         (range (start 18 2) (end 18 2))
@@ -133,6 +127,7 @@ package 'Transition Actions' {
     (declaration (id (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::VehicleStartSignal"))) (kind attribute-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::VehicleStates"))) (kind state-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::performSelfTest"))) (kind action) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::performSelfTest::vehicle"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Vehicle") (direction in))))
     (declaration (id (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::vehicleStates"))) (kind state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "VehicleStates"))))
     (declaration (id (node (document "memory://snapshot/25_transition_actions.md") (anonymous (kind initial-state) (ordinal 0))))) (kind initial-state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (initialState (reference "off"))))
     (declaration (id (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::vehicleStates::off"))) (kind state) (membership (kind feature) (visibility default)))
@@ -143,6 +138,9 @@ package 'Transition Actions' {
     (declaration (id (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::vehicleStates::starting"))) (kind state) (membership (kind feature) (visibility default)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::performSelfTest::vehicle"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Vehicle")
+      (outcome (status resolved) (target (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::Vehicle")))))
     (reference (id (source (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::vehicleStates"))) (kind featureTyping) (ordinal 0))
       (authored-target "VehicleStates")
       (outcome (status resolved) (target (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::VehicleStates")))))
@@ -160,6 +158,7 @@ package 'Transition Actions' {
       (outcome (status unresolved)))
   )
   (relationships
+    (relationship (kind typing) (direction in) (source (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::performSelfTest::vehicle"))) (target (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::Vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::performSelfTest::vehicle"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::vehicleStates"))) (target (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::VehicleStates"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::vehicleStates"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind initialState) (source (node (document "memory://snapshot/25_transition_actions.md") (anonymous (kind initial-state) (ordinal 0))))) (target (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::vehicleStates::off"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/25_transition_actions.md") (anonymous (kind initial-state) (ordinal 0))))) (kind initialState) (ordinal 0)))
     (relationship (kind entryActionBinding) (source (node (document "memory://snapshot/25_transition_actions.md") (anonymous (kind entry-action-binding) (ordinal 0))))) (target (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::performSelfTest"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/25_transition_actions.md") (anonymous (kind entry-action-binding) (ordinal 0))))) (kind entryActionBinding) (ordinal 0)))
@@ -171,6 +170,10 @@ package 'Transition Actions' {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/25_transition_actions.md") (range (start 13 39) (end 13 46)) (probe (position 13 39))
+    (reference (id (source (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::performSelfTest::vehicle"))) (kind featureTyping) (ordinal 0) (authored-target "Vehicle")
+      (outcome (status resolved) (target (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::Vehicle")))))
+  )
   (query (document "memory://snapshot/25_transition_actions.md") (range (start 17 23) (end 17 36)) (probe (position 17 23))
     (reference (id (source (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::vehicleStates"))) (kind featureTyping) (ordinal 0) (authored-target "VehicleStates")
       (outcome (status resolved) (target (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::VehicleStates")))))

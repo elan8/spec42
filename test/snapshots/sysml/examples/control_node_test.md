@@ -54,12 +54,6 @@ action def ControlNodeTest {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_action_usage_member")
-        (source "semantic")
-        (range (start 5 5) (end 5 11))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_action_definition_member")
         (source "semantic")
         (range (start 7 1) (end 7 8))
@@ -108,21 +102,9 @@ action def ControlNodeTest {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_action_usage_member")
-        (source "semantic")
-        (range (start 24 5) (end 24 10))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_action_definition_member")
         (source "semantic")
         (range (start 26 1) (end 26 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_action_usage_member")
-        (source "semantic")
-        (range (start 29 5) (end 29 10))
       )
       (diagnostic
         (severity warning)
@@ -148,8 +130,11 @@ action def ControlNodeTest {
     (declaration (id (node (document "memory://snapshot/control_node_test.md") (qualified-name "ControlNodeTest"))) (kind action-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/control_node_test.md") (qualified-name "ControlNodeTest::A1"))) (kind action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/control_node_test.md") (qualified-name "ControlNodeTest::A2"))) (kind action) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/control_node_test.md") (qualified-name "ControlNodeTest::A2::a"))) (kind parameter) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/control_node_test.md") (qualified-name "ControlNodeTest::B1"))) (kind action) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/control_node_test.md") (qualified-name "ControlNodeTest::B1::b"))) (kind parameter) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/control_node_test.md") (qualified-name "ControlNodeTest::B2"))) (kind action) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/control_node_test.md") (qualified-name "ControlNodeTest::B2::b"))) (kind parameter) (membership (kind feature) (visibility default)))
   )
   (references
   )

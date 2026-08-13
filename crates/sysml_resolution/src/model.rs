@@ -25,9 +25,9 @@ use sysml_v2_parser_next::{
         ConstraintUsage as ParserConstraintUsage, DefinitionBody, DefinitionBodyElement, DoAction,
         EndDecl, EndIdentity, EntryAction, EnumDef, EnumerationBody,
         EnumerationUsage as ParserEnumerationUsage, ExitAction, Expression, FirstStmt, FlowDef,
-        Import, ImportShape, InterfaceDef, InterfaceDefBody, InterfaceDefBodyElement,
-        InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement, ItemDef,
-        ItemUsage as ParserItemUsage, LibraryPackage, Membership,
+        Import, ImportShape, InOut, InOutDecl, InterfaceDef, InterfaceDefBody,
+        InterfaceDefBodyElement, InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement,
+        ItemDef, ItemUsage as ParserItemUsage, LibraryPackage, Membership,
         MembershipKind as ParserMembershipKind, MetadataDef, MetadataUsage as ParserMetadataUsage,
         NamespaceDecl, Node, OccurrenceBodyElement, OccurrenceDef,
         OccurrenceUsage as ParserOccurrenceUsage, OccurrenceUsageBody, Package, PackageBody,
@@ -408,6 +408,20 @@ enum DeclarationKind {
     /// <target>;` body element (BNF `ThenStmt.state_reference`), owned by the enclosing state
     /// declaration, mirroring `EntryActionBinding`'s nested-declaration shape.
     InitialState,
+    /// A directed `in`/`out`/`inout` parameter declaration (BNF `InOutDecl`, `ast::InOutDecl`)
+    /// found in a `calc def`/`constraint def`/`action def` body, e.g. `in partMasses :
+    /// MassValue[0..*];`. Mirrors `ItemUsage`/`MetadataUsage` lowering: ownership, membership,
+    /// and (when present) a `FeatureTyping` reference to the declared type. The `in`/`out`/
+    /// `inout` direction itself is not modeled as a distinct declaration kind's own field --
+    /// it is carried as an explicit `RelationshipFlags::direction` fact on the pushed
+    /// `FeatureTyping` reference, mirroring how `PortUsage`'s conjugation polarity rides the
+    /// `conjugated` flag on the same reference rather than becoming a new relationship kind.
+    /// When the parameter has no type (`type_name` is `None`, e.g. a bare `in :>> target = ...`
+    /// redefinition form), no `FeatureTyping` reference is pushed and the direction fact is not
+    /// recorded -- only the declaration/membership shell is lowered for that shape. Multiplicity
+    /// (`[0..*]`) is not modeled anywhere else in this codebase yet (attribute/part usages with
+    /// array types don't carry a multiplicity fact either), so it is left unrepresented here too.
+    ParameterUsage,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -503,6 +517,17 @@ struct RelationshipFlags {
     implied: bool,
     recursive: bool,
     wildcard: bool,
+    direction: Option<ParameterDirection>,
+}
+
+/// The `in`/`out`/`inout` direction prefix on a directed parameter declaration (BNF `InOutDecl`),
+/// carried as a fact on the declaration's `FeatureTyping` reference (see
+/// `DeclarationKind::ParameterUsage`).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum ParameterDirection {
+    In,
+    Out,
+    InOut,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -2102,6 +2127,66 @@ impl SemanticModelBuilder {
         self.lower_attribute_body(document, declaration, &node.value.body)
     }
 
+    /// Lowers a directed `in`/`out`/`inout` parameter declaration (BNF `InOutDecl`) found in a
+    /// `calc def`/`constraint def`/`action def` body, e.g. `in partMasses : MassValue[0..*];`,
+    /// mirroring `lower_item_usage`: ownership, membership, and (when a type is present) a
+    /// `FeatureTyping` reference to the declared type, carrying an explicit
+    /// `RelationshipFlags::direction` fact mirroring the `conjugated` flag precedent set by
+    /// `PortUsage`. Anonymous redefinition-only parameters (`type_name` is `None`, e.g. a bare
+    /// `in :>> target = expr;`) get only the declaration/membership shell -- no `FeatureTyping`
+    /// reference (and hence no direction fact) is pushed for them, and their `redefines`/`value`
+    /// clauses are left unlowered (out of scope for this slice, matching multiplicity). The
+    /// declared name may be empty for that same anonymous shape; `intern_declared_name` already
+    /// treats an empty name as anonymous (see its callers for `EnumerationLiteral` etc.).
+    fn lower_parameter_declaration(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<InOutDecl>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declared_name(&node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::ParameterUsage,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span.clone(),
+        )?;
+        if let Some(type_name) = node.value.type_name {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(type_name)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span
+                .clone();
+            let direction = Some(match node.value.direction {
+                InOut::In => ParameterDirection::In,
+                InOut::Out => ParameterDirection::Out,
+                InOut::InOut => ParameterDirection::InOut,
+            });
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::FeatureTyping,
+                document,
+                local: type_name,
+                flags: RelationshipFlags {
+                    direction,
+                    ..RelationshipFlags::default()
+                },
+                span,
+                import: None,
+            })?;
+        }
+        Ok(())
+    }
+
     /// Lowers a `metadata def` (BNF MetadataDefinition), mirroring `lower_item_def`: ownership,
     /// membership, and an optional `:>` specialization relationship. `MetadataDef`'s body is a
     /// plain `AttributeBody` (shared with `AttributeDef`/`ItemDef`), so its owned members are
@@ -2283,9 +2368,11 @@ impl SemanticModelBuilder {
                         first_stmt,
                     )?;
                 }
+                ActionDefBodyElement::InOutDecl(param) => {
+                    self.lower_parameter_declaration(document, Some(owner), param)?;
+                }
                 ActionDefBodyElement::Doc(_) => {}
-                ActionDefBodyElement::InOutDecl(_)
-                | ActionDefBodyElement::Annotation(_)
+                ActionDefBodyElement::Annotation(_)
                 | ActionDefBodyElement::MetadataAnnotation(_)
                 | ActionDefBodyElement::MetadataKeywordUsage(_)
                 | ActionDefBodyElement::TextualRep(_)
@@ -2403,12 +2490,14 @@ impl SemanticModelBuilder {
                         first_stmt,
                     )?;
                 }
+                ActionUsageBodyElement::InOutDecl(param) => {
+                    self.lower_parameter_declaration(document, Some(owner), param)?;
+                }
                 ActionUsageBodyElement::Doc(_) => {}
                 ActionUsageBodyElement::Annotation(_)
                 | ActionUsageBodyElement::MetadataAnnotation(_)
                 | ActionUsageBodyElement::MetadataKeywordUsage(_)
                 | ActionUsageBodyElement::TextualRep(_)
-                | ActionUsageBodyElement::InOutDecl(_)
                 | ActionUsageBodyElement::RefDecl(_)
                 | ActionUsageBodyElement::Bind(_)
                 | ActionUsageBodyElement::FlowUsage(_)
@@ -4445,9 +4534,11 @@ impl SemanticModelBuilder {
                     ConstraintDefBodyElement::Constraint(constraint) => {
                         self.lower_constraint_usage(document, Some(declaration), constraint)?;
                     }
+                    ConstraintDefBodyElement::InOutDecl(param) => {
+                        self.lower_parameter_declaration(document, Some(declaration), param)?;
+                    }
                     ConstraintDefBodyElement::Doc(_) => {}
-                    ConstraintDefBodyElement::InOutDecl(_)
-                    | ConstraintDefBodyElement::MetadataAnnotation(_)
+                    ConstraintDefBodyElement::MetadataAnnotation(_)
                     | ConstraintDefBodyElement::Expression(_)
                     | ConstraintDefBodyElement::AttributeUsage(_)
                     | ConstraintDefBodyElement::Other(_) => self.push_unsupported(
@@ -4583,9 +4674,11 @@ impl SemanticModelBuilder {
                     CalcDefBodyElement::PartUsage(part_usage) => {
                         self.lower_part_usage(document, Some(declaration), part_usage)?;
                     }
+                    CalcDefBodyElement::InOutDecl(param) => {
+                        self.lower_parameter_declaration(document, Some(declaration), param)?;
+                    }
                     CalcDefBodyElement::Doc(_) => {}
-                    CalcDefBodyElement::InOutDecl(_)
-                    | CalcDefBodyElement::ReturnDecl(_)
+                    CalcDefBodyElement::ReturnDecl(_)
                     | CalcDefBodyElement::MetadataAnnotation(_)
                     | CalcDefBodyElement::Expression(_)
                     | CalcDefBodyElement::Other(_) => self.push_unsupported(
@@ -6692,6 +6785,74 @@ mod tests {
                 "(kind typing) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Holder::w\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
             ),
             "expected w's typing reference to Base to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn constraint_def_in_parameter_lowers_and_resolves_with_a_direction_fact() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tattribute def MassValue;\n\
+             \tconstraint def MassConstraint {\n\
+             \t\tin partMasses : MassValue;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(qualified-name \"Demo::MassConstraint::partMasses\"))) (kind parameter)"
+            ),
+            "expected a parameter declaration for partMasses, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind typing) (direction in) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::MassConstraint::partMasses\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::MassValue\")))"
+            ),
+            "expected partMasses's typing reference to MassValue to resolve with an `in` direction fact, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn calc_def_out_parameter_lowers_and_resolves_with_a_direction_fact() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tattribute def Real;\n\
+             \tcalc def Sum {\n\
+             \t\tout result : Real;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::Sum::result\"))) (kind parameter)"),
+            "expected a parameter declaration for result, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind typing) (direction out) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Sum::result\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Real\")))"
+            ),
+            "expected result's typing reference to Real to resolve with an `out` direction fact, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn action_def_inout_parameter_lowers_and_resolves_with_a_direction_fact() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \titem def Image;\n\
+             \taction def Focus {\n\
+             \t\tinout image : Image;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::Focus::image\"))) (kind parameter)"),
+            "expected a parameter declaration for image, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind typing) (direction inout) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Focus::image\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Image\")))"
+            ),
+            "expected image's typing reference to Image to resolve with an `inout` direction fact, got:\n{output}"
         );
     }
 

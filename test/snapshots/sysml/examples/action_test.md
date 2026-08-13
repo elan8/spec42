@@ -66,21 +66,9 @@ package ActionTest {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_action_definition_member")
-        (source "semantic")
-        (range (start 1 15) (end 1 20))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 4 8) (end 4 13))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_action_usage_member")
-        (source "semantic")
-        (range (start 6 13) (end 6 22))
       )
       (diagnostic
         (severity warning)
@@ -146,19 +134,7 @@ package ActionTest {
         (severity warning)
         (code "unsupported_action_usage_member")
         (source "semantic")
-        (range (start 28 2) (end 28 11))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_action_usage_member")
-        (source "semantic")
         (range (start 32 2) (end 32 33))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_action_usage_member")
-        (source "semantic")
-        (range (start 34 3) (end 34 22))
       )
       (diagnostic
         (severity warning)
@@ -207,6 +183,7 @@ package ActionTest {
   (declarations
     (declaration (id (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::A"))) (kind action-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::A::x"))) (kind parameter) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::S"))) (kind attribute-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a"))) (kind action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "A"))))
     (declaration (id (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a1"))) (kind action) (membership (kind feature) (visibility default)))
@@ -214,10 +191,13 @@ package ActionTest {
     (declaration (id (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a2"))) (kind action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a2::aa"))) (kind action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a2::aa::target"))) (kind part) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a2::s"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "S") (direction in))))
     (declaration (id (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a2::snd"))) (kind action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a2::snd2"))) (kind action) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/action_test.md") (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/action_test.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (succession (reference "start"))))
     (declaration (id (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a::b"))) (kind action) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a::b::y"))) (kind parameter) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::b"))) (kind action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::c"))) (kind action-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/action_test.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (succession (reference "start"))))
@@ -229,6 +209,9 @@ package ActionTest {
     (reference (id (source (node (document "memory://snapshot/action_test.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0))
       (authored-target "start")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a2::s"))) (kind featureTyping) (ordinal 0))
+      (authored-target "S")
+      (outcome (status resolved) (target (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::S")))))
     (reference (id (source (node (document "memory://snapshot/action_test.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0))
       (authored-target "start")
       (outcome (status unresolved)))
@@ -238,6 +221,7 @@ package ActionTest {
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a"))) (target (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::A"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (direction in) (source (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a2::s"))) (target (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::S"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a2::s"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )
@@ -253,6 +237,10 @@ package ActionTest {
   (query (document "memory://snapshot/action_test.md") (range (start 14 8) (end 14 13)) (probe (position 14 8))
     (reference (id (source (node (document "memory://snapshot/action_test.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0) (authored-target "start")
       (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/action_test.md") (range (start 28 9) (end 28 10)) (probe (position 28 9))
+    (reference (id (source (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a2::s"))) (kind featureTyping) (ordinal 0) (authored-target "S")
+      (outcome (status resolved) (target (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::S")))))
   )
   (query (document "memory://snapshot/action_test.md") (range (start 4 8) (end 4 13)) (probe (position 4 8))
     (reference (id (source (node (document "memory://snapshot/action_test.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0) (authored-target "start")
