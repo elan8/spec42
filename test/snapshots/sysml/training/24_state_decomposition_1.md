@@ -38,15 +38,33 @@ package 'State Decomposition-1' {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_state_definition_member")
         (source "semantic")
-        (range (start 6 1) (end 6 25))
+        (range (start 9 2) (end 9 2))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_state_definition_member")
         (source "semantic")
-        (range (start 8 1) (end 22 2))
+        (range (start 9 9) (end 9 9))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_state_definition_member")
+        (source "semantic")
+        (range (start 12 2) (end 12 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_state_definition_member")
+        (source "semantic")
+        (range (start 16 2) (end 16 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_state_definition_member")
+        (source "semantic")
+        (range (start 20 2) (end 20 2))
       )
     )
   )
@@ -61,10 +79,19 @@ package 'State Decomposition-1' {
     (declaration (id (node (document "memory://snapshot/24_state_decomposition_1.md") (qualified-name "State Decomposition-1::VehicleOffSignal"))) (kind attribute-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/24_state_decomposition_1.md") (qualified-name "State Decomposition-1::VehicleOnSignal"))) (kind attribute-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/24_state_decomposition_1.md") (qualified-name "State Decomposition-1::VehicleStartSignal"))) (kind attribute-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/24_state_decomposition_1.md") (qualified-name "State Decomposition-1::VehicleStates"))) (kind state-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/24_state_decomposition_1.md") (qualified-name "State Decomposition-1::vehicleStates"))) (kind state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "VehicleStates"))))
+    (declaration (id (node (document "memory://snapshot/24_state_decomposition_1.md") (qualified-name "State Decomposition-1::vehicleStates::off"))) (kind state) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/24_state_decomposition_1.md") (qualified-name "State Decomposition-1::vehicleStates::on"))) (kind state) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/24_state_decomposition_1.md") (qualified-name "State Decomposition-1::vehicleStates::starting"))) (kind state) (membership (kind feature) (visibility default)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/24_state_decomposition_1.md") (qualified-name "State Decomposition-1::vehicleStates"))) (kind featureTyping) (ordinal 0))
+      (authored-target "VehicleStates")
+      (outcome (status resolved) (target (node (document "memory://snapshot/24_state_decomposition_1.md") (qualified-name "State Decomposition-1::VehicleStates")))))
   )
   (relationships
+    (relationship (kind typing) (source (node (document "memory://snapshot/24_state_decomposition_1.md") (qualified-name "State Decomposition-1::vehicleStates"))) (target (node (document "memory://snapshot/24_state_decomposition_1.md") (qualified-name "State Decomposition-1::VehicleStates"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/24_state_decomposition_1.md") (qualified-name "State Decomposition-1::vehicleStates"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )
@@ -73,5 +100,9 @@ package 'State Decomposition-1' {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/24_state_decomposition_1.md") (range (start 8 23) (end 8 36)) (probe (position 8 23))
+    (reference (id (source (node (document "memory://snapshot/24_state_decomposition_1.md") (qualified-name "State Decomposition-1::vehicleStates"))) (kind featureTyping) (ordinal 0) (authored-target "VehicleStates")
+      (outcome (status resolved) (target (node (document "memory://snapshot/24_state_decomposition_1.md") (qualified-name "State Decomposition-1::VehicleStates")))))
+  )
 )
 ~~~

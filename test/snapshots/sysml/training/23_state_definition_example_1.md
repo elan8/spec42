@@ -45,9 +45,33 @@ package 'State Definition Example-1' {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_state_definition_member")
         (source "semantic")
-        (range (start 6 1) (end 29 2))
+        (range (start 7 2) (end 7 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_state_definition_member")
+        (source "semantic")
+        (range (start 7 9) (end 7 9))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_state_definition_member")
+        (source "semantic")
+        (range (start 11 2) (end 11 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_state_definition_member")
+        (source "semantic")
+        (range (start 18 2) (end 18 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_state_definition_member")
+        (source "semantic")
+        (range (start 25 2) (end 25 2))
       )
     )
   )
@@ -62,6 +86,10 @@ package 'State Definition Example-1' {
     (declaration (id (node (document "memory://snapshot/23_state_definition_example_1.md") (qualified-name "State Definition Example-1::VehicleOffSignal"))) (kind attribute-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/23_state_definition_example_1.md") (qualified-name "State Definition Example-1::VehicleOnSignal"))) (kind attribute-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/23_state_definition_example_1.md") (qualified-name "State Definition Example-1::VehicleStartSignal"))) (kind attribute-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/23_state_definition_example_1.md") (qualified-name "State Definition Example-1::VehicleStates"))) (kind state-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/23_state_definition_example_1.md") (qualified-name "State Definition Example-1::VehicleStates::off"))) (kind state) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/23_state_definition_example_1.md") (qualified-name "State Definition Example-1::VehicleStates::on"))) (kind state) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/23_state_definition_example_1.md") (qualified-name "State Definition Example-1::VehicleStates::starting"))) (kind state) (membership (kind feature) (visibility default)))
   )
   (references
   )

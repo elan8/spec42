@@ -25,6 +25,7 @@ use sysml_v2_parser_next::{
         PortBodyElement, PortDef, PortDefBody, PortDefBodyElement, PortUsage as ParserPortUsage,
         QualifiedIdentification, QualifiedReferenceId, RequirementDef, RequirementDefBody,
         RequirementDefBodyElement, RequirementUsage as ParserRequirementUsage, RootElement, Span,
+        StateDef, StateDefBody, StateDefBodyElement, StateUsage as ParserStateUsage,
         SubsettingKind, SubsettingRelationship, Visibility as ParserVisibility,
     },
     ParseError, ParsedDocument,
@@ -121,6 +122,15 @@ enum DeclarationKind {
     /// `PartUsage`, `ActionUsage`'s typing is a structured `TypingRelationship` (not a bare
     /// `QualifiedReferenceId`).
     ActionUsage,
+    /// `state def` (BNF StateDefinition): a type whose owned members are attribute/item/action/
+    /// nested state usages, mirroring ActionDefinition lowering. State-machine-specific semantics
+    /// (entry/do/exit action bindings, transitions, exclusive/parallel substates, history) are out
+    /// of scope here; only ownership, specialization, and owned-declaration structure are lowered.
+    StateDefinition,
+    /// A package/definition/usage-level `state` feature member (BNF StateUsage), e.g.
+    /// `state s;` or `state s : SomeState;`. Mirrors ActionUsage lowering. `StateUsage`'s typing
+    /// is a structured `TypingRelationship` (not a bare `QualifiedReferenceId`).
+    StateUsage,
     /// `metadata def` (BNF MetadataDefinition): a type whose owned members are attribute/nested
     /// usages, mirroring ItemDefinition lowering: ownership, membership, an optional `:>`
     /// specialization relationship, and owned-member structure through the shared
@@ -210,6 +220,9 @@ enum UnsupportedFamily {
     PortUsageMember,
     ActionDefinitionMember,
     ActionUsageMember,
+    /// Shared by `state def` and `state` usage bodies (both use `StateDefBody`/
+    /// `StateDefBodyElement` in the typed AST -- there is no separate `StateUsageBody`).
+    StateDefinitionMember,
     ParserUnsupported,
 }
 
@@ -720,16 +733,10 @@ impl SemanticModelBuilder {
                 UnsupportedFamily::PackageMember,
                 node.span.clone(),
             ),
-            PackageBodyElement::StateDef(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
-            PackageBodyElement::StateUsage(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::StateDef(node) => self.lower_state_def(document, owner, node)?,
+            PackageBodyElement::StateUsage(node) => {
+                self.lower_state_usage(document, owner, node)?
+            }
             PackageBodyElement::ItemDef(node) => self.lower_item_def(document, owner, node)?,
             PackageBodyElement::MetadataDef(node) => {
                 self.lower_metadata_def(document, owner, node)?
@@ -1095,6 +1102,12 @@ impl SemanticModelBuilder {
                     PartDefBodyElement::ActionUsage(action_usage) => {
                         self.lower_action_usage(document, Some(declaration), action_usage)?;
                     }
+                    PartDefBodyElement::StateDef(state_def) => {
+                        self.lower_state_def(document, Some(declaration), state_def)?;
+                    }
+                    PartDefBodyElement::StateUsage(state_usage) => {
+                        self.lower_state_usage(document, Some(declaration), state_usage)?;
+                    }
                     PartDefBodyElement::Doc(_) | PartDefBodyElement::Comment(_) => {}
                     PartDefBodyElement::Annotation(_)
                     | PartDefBodyElement::MetadataAnnotation(_)
@@ -1115,11 +1128,9 @@ impl SemanticModelBuilder {
                     | PartDefBodyElement::CalcUsage(_)
                     | PartDefBodyElement::ConstraintDef(_)
                     | PartDefBodyElement::ConstraintUsage(_)
-                    | PartDefBodyElement::StateUsage(_)
                     | PartDefBodyElement::AssertConstraint(_)
                     | PartDefBodyElement::Satisfy(_)
                     | PartDefBodyElement::VariantUsage(_)
-                    | PartDefBodyElement::StateDef(_)
                     | PartDefBodyElement::FlowDef(_)
                     | PartDefBodyElement::OccurrenceDef(_)
                     | PartDefBodyElement::ConnectionDef(_)
@@ -1242,6 +1253,12 @@ impl SemanticModelBuilder {
                     PartUsageBodyElement::ActionUsage(action_usage) => {
                         self.lower_action_usage(document, Some(declaration), action_usage)?;
                     }
+                    PartUsageBodyElement::StateDef(state_def) => {
+                        self.lower_state_def(document, Some(declaration), state_def)?;
+                    }
+                    PartUsageBodyElement::StateUsage(state_usage) => {
+                        self.lower_state_usage(document, Some(declaration), state_usage)?;
+                    }
                     PartUsageBodyElement::Doc(_) => {}
                     PartUsageBodyElement::Annotation(_)
                     | PartUsageBodyElement::DefaultReferenceUsage(_)
@@ -1255,11 +1272,9 @@ impl SemanticModelBuilder {
                     | PartUsageBodyElement::SuccessionUsage(_)
                     | PartUsageBodyElement::Allocate(_)
                     | PartUsageBodyElement::Satisfy(_)
-                    | PartUsageBodyElement::StateUsage(_)
                     | PartUsageBodyElement::MetadataAnnotation(_)
                     | PartUsageBodyElement::MetadataKeywordUsage(_)
                     | PartUsageBodyElement::VariantUsage(_)
-                    | PartUsageBodyElement::StateDef(_)
                     | PartUsageBodyElement::FlowDef(_)
                     | PartUsageBodyElement::OccurrenceDef(_)
                     | PartUsageBodyElement::CalcDef(_)
@@ -1774,6 +1789,9 @@ impl SemanticModelBuilder {
                 ActionDefBodyElement::MetadataUsage(metadata_usage) => {
                     self.lower_metadata_usage(document, Some(owner), metadata_usage)?;
                 }
+                ActionDefBodyElement::StateUsage(state_usage) => {
+                    self.lower_state_usage(document, Some(owner), state_usage)?;
+                }
                 ActionDefBodyElement::Doc(_) => {}
                 ActionDefBodyElement::InOutDecl(_)
                 | ActionDefBodyElement::Annotation(_)
@@ -1793,7 +1811,6 @@ impl SemanticModelBuilder {
                 | ActionDefBodyElement::WhileStmt(_)
                 | ActionDefBodyElement::LoopStmt(_)
                 | ActionDefBodyElement::IfStmt(_)
-                | ActionDefBodyElement::StateUsage(_)
                 | ActionDefBodyElement::PartUsage(_)
                 | ActionDefBodyElement::AssertConstraint(_)
                 | ActionDefBodyElement::OccurrenceUsage(_)
@@ -1881,6 +1898,9 @@ impl SemanticModelBuilder {
                 ActionUsageBodyElement::MetadataUsage(metadata_usage) => {
                     self.lower_metadata_usage(document, Some(owner), metadata_usage)?;
                 }
+                ActionUsageBodyElement::StateUsage(state_usage) => {
+                    self.lower_state_usage(document, Some(owner), state_usage)?;
+                }
                 ActionUsageBodyElement::Doc(_) => {}
                 ActionUsageBodyElement::Annotation(_)
                 | ActionUsageBodyElement::MetadataAnnotation(_)
@@ -1899,7 +1919,6 @@ impl SemanticModelBuilder {
                 | ActionUsageBodyElement::WhileStmt(_)
                 | ActionUsageBodyElement::LoopStmt(_)
                 | ActionUsageBodyElement::IfStmt(_)
-                | ActionUsageBodyElement::StateUsage(_)
                 | ActionUsageBodyElement::PartUsage(_)
                 | ActionUsageBodyElement::AssertConstraint(_)
                 | ActionUsageBodyElement::OccurrenceUsage(_)
@@ -1916,6 +1935,134 @@ impl SemanticModelBuilder {
             }
         }
         Ok(())
+    }
+
+    /// Lowers a `state def` (BNF StateDefinition), mirroring `lower_action_def`: ownership,
+    /// membership, an optional `:>` specialization relationship, and owned declarations.
+    /// State-machine-specific semantics (entry/do/exit action bindings, transitions, exclusive/
+    /// parallel substates, history) are explicitly out of scope; unrecognized body elements fall
+    /// through to `unsupported_state_definition_member` via `lower_state_def_body`.
+    fn lower_state_def(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<StateDef>,
+    ) -> Result<(), ConstructionError> {
+        let name = node
+            .value
+            .identification
+            .name
+            .as_deref()
+            .filter(|name| !name.is_empty())
+            .map(|name| self.intern_name(name))
+            .transpose()?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::StateDefinition,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Owning,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::OwningMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(relationship) = &node.value.specializes {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        self.lower_state_def_body(document, declaration, &node.value.body)
+    }
+
+    /// Lowers the `StateDefBody` shared by `state def` and by a `state` usage's own owned
+    /// members (BNF `StateDefBodyElement`): the only recognized owned member is a nested state
+    /// usage; everything else -- entry/do/exit action bindings, `then`/`final` state markers,
+    /// `ref` bindings, transitions -- falls through to `unsupported_state_definition_member`.
+    /// This is the genuinely out-of-scope state-machine surface for this slice.
+    fn lower_state_def_body(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        body: &StateDefBody,
+    ) -> Result<(), ConstructionError> {
+        let StateDefBody::Brace { elements } = body else {
+            return Ok(());
+        };
+        for element in elements {
+            match &element.value {
+                StateDefBodyElement::Error(error) => {
+                    self.push_recovery(document, error.span.clone());
+                }
+                StateDefBodyElement::StateUsage(state_usage) => {
+                    self.lower_state_usage(document, Some(owner), state_usage)?;
+                }
+                StateDefBodyElement::Doc(_) => {}
+                StateDefBodyElement::Annotation(_)
+                | StateDefBodyElement::MetadataAnnotation(_)
+                | StateDefBodyElement::MetadataKeywordUsage(_)
+                | StateDefBodyElement::Other(_)
+                | StateDefBodyElement::InOutDecl(_)
+                | StateDefBodyElement::Entry(_)
+                | StateDefBodyElement::Do(_)
+                | StateDefBodyElement::Exit(_)
+                | StateDefBodyElement::Then(_)
+                | StateDefBodyElement::FinalState(_)
+                | StateDefBodyElement::Ref(_)
+                | StateDefBodyElement::RequirementUsage(_)
+                | StateDefBodyElement::Transition(_) => self.push_unsupported(
+                    document,
+                    UnsupportedFamily::StateDefinitionMember,
+                    element.span.clone(),
+                ),
+            }
+        }
+        Ok(())
+    }
+
+    /// Lowers a package/definition/usage-level `state` feature member (BNF StateUsage), e.g.
+    /// `state s;` or `state s : SomeState;`, mirroring `lower_action_usage`. `StateUsage`'s
+    /// typing is a structured `TypingRelationship` (like `ActionUsage.typing`), not a bare
+    /// `QualifiedReferenceId`. Behavioral clauses (`entry`/`do`/`exit`, transitions,
+    /// abstract/reference/individual prefixes) are explicitly out of scope; owned members lower
+    /// through the same `lower_state_def_body` as a `state def`'s body (both share
+    /// `StateDefBody`/`StateDefBodyElement`).
+    fn lower_state_usage(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<ParserStateUsage>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declared_name(&node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::StateUsage,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::FeatureMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(relationship) = &node.value.typing {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.subsets {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.redefines {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        self.lower_state_def_body(document, declaration, &node.value.body)
     }
 
     /// Lowers a `requirement def` (BNF RequirementDefinition), mirroring `lower_part_def`:
@@ -3176,6 +3323,93 @@ mod tests {
             output.contains("unsupported_action_definition_member"),
             "expected the first/then succession statement to surface as an explicit unsupported \
              action-definition-member diagnostic, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn state_def_lowers_to_a_declaration() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tstate def SD {\n\
+             \t\tstate s;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::SD\"))) (kind state-def)"),
+            "expected a state-def declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::SD::s\"))) (kind state)"),
+            "expected an owned nested state usage declaration under the state def, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn state_def_specializing_another_state_def_resolves_its_specialization_reference() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tstate def Base;\n\
+             \tstate def Derived :> Base;\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind specialization) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Derived\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
+            ),
+            "expected Derived's specialization of Base to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn state_usage_typed_by_a_state_def_resolves() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tstate def Base;\n\
+             \tstate s : Base;\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::s\"))) (kind state)"),
+            "expected a state usage declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind typing) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::s\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
+            ),
+            "expected s's typing reference to Base to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn transition_inside_a_state_def_still_surfaces_as_unsupported() {
+        let request = crate::BuildRequest::new(
+            vec![crate::SourceInput::new(
+                "memory://test/enum.sysml",
+                "package Demo {\n\
+                 \tstate def SD {\n\
+                 \t\tstate s1;\n\
+                 \t\tstate s2;\n\
+                 \t\ttransition t first s1 then s2;\n\
+                 \t}\n\
+                 }\n"
+                .to_string(),
+                crate::SourceKind::Workspace,
+            )],
+            crate::ConstructionSchedule::Sequential,
+            "test-contract-v1",
+        )
+        .unwrap();
+        let published = crate::build(request).unwrap();
+        let mut output = String::new();
+        published
+            .debug()
+            .write_diagnostics_sexpr(&mut output)
+            .unwrap();
+        assert!(
+            output.contains("unsupported_state_definition_member"),
+            "expected the transition statement to surface as an explicit unsupported \
+             state-definition-member diagnostic, got:\n{output}"
         );
     }
 

@@ -74,12 +74,6 @@ package CoverageIndividual {
         (source "semantic")
         (range (start 19 12) (end 19 15))
       )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 25 1) (end 25 21))
-      )
     )
   )
 )
@@ -96,6 +90,7 @@ package CoverageIndividual {
     (declaration (id (node (document "memory://snapshot/coverage_individual.md") (qualified-name "CoverageIndividual::a1"))) (kind action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_individual.md") (qualified-name "CoverageIndividual::i1"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_individual.md") (qualified-name "CoverageIndividual::p2"))) (kind part) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_individual.md") (qualified-name "CoverageIndividual::s1"))) (kind state) (membership (kind feature) (visibility default)))
   )
   (references
   )

@@ -130,12 +130,6 @@ package PartTest {
         (severity warning)
         (code "unsupported_part_definition_member")
         (source "semantic")
-        (range (start 32 2) (end 32 11))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_part_definition_member")
-        (source "semantic")
         (range (start 33 2) (end 33 19))
       )
       (diagnostic
@@ -207,6 +201,7 @@ package PartTest {
     (declaration (id (node (document "memory://snapshot/part_test.md") (qualified-name "PartTest::B::a1::aa"))) (kind action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/part_test.md") (qualified-name "PartTest::B::b"))) (kind part) (membership (kind feature) (visibility public)) (authored (membership (kind feature) (visibility public)) (relationships (subsetting (reference "a"))))
     (declaration (id (node (document "memory://snapshot/part_test.md") (qualified-name "PartTest::B::c"))) (kind part) (membership (kind feature) (visibility public)) (authored (membership (kind feature) (visibility public)) (relationships (subsetting (reference "a"))))
+    (declaration (id (node (document "memory://snapshot/part_test.md") (qualified-name "PartTest::B::s1"))) (kind state) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/part_test.md") (qualified-name "PartTest::B::x"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "C") (conjugated true))))
     (declaration (id (node (document "memory://snapshot/part_test.md") (qualified-name "PartTest::B::x::p"))) (kind port) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/part_test.md") (qualified-name "PartTest::C"))) (kind port-def) (membership (kind owning) (visibility private)))

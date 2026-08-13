@@ -967,9 +967,9 @@ standard library package Actions {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_action_definition_member")
+        (code "unsupported_state_definition_member")
         (source "semantic")
-        (range (start 226 2) (end 228 3))
+        (range (start 227 3) (end 227 3))
       )
       (diagnostic
         (severity warning)
@@ -1324,6 +1324,7 @@ standard library package Actions {
     (declaration (id (node (document "memory://snapshot/actions.md") (anonymous (kind import) (ordinal 22))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Flows::MessageAction") (import (shape membership) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/actions.md") (anonymous (kind import) (ordinal 23))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "OccurrenceFunctions::destroy") (import (shape membership) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/actions.md") (qualified-name "Actions::AcceptAction"))) (kind action-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "AcceptMessageAction"))))
+    (declaration (id (node (document "memory://snapshot/actions.md") (qualified-name "Actions::AcceptAction::aState"))) (kind state) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/actions.md") (qualified-name "Actions::AcceptMessageAction"))) (kind action-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Action")) (specialization (reference "AcceptPerformance"))))
     (declaration (id (node (document "memory://snapshot/actions.md") (qualified-name "Actions::Action"))) (kind action-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Performance"))))
     (declaration (id (node (document "memory://snapshot/actions.md") (qualified-name "Actions::Action::acceptSubactions"))) (kind action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "AcceptAction")) (subsetting (reference "subactions")) (subsetting (reference "acceptActions"))))

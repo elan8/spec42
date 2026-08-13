@@ -46,9 +46,15 @@ package 'State Exhibition Example' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_part_usage_member")
+        (code "unsupported_state_definition_member")
         (source "semantic")
-        (range (start 7 2) (end 10 3))
+        (range (start 8 3) (end 8 3))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_state_definition_member")
+        (source "semantic")
+        (range (start 9 3) (end 9 3))
       )
     )
   )
@@ -62,6 +68,7 @@ package 'State Exhibition Example' {
     (declaration (id (node (document "memory://snapshot/26_state_exhibition_example.md") (qualified-name "State Exhibition Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/26_state_exhibition_example.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Transition Actions") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/26_state_exhibition_example.md") (qualified-name "State Exhibition Example::vehicle"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Vehicle"))))
+    (declaration (id (node (document "memory://snapshot/26_state_exhibition_example.md") (anonymous (kind state) (ordinal 0))))) (kind state) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/26_state_exhibition_example.md") (qualified-name "State Exhibition Example::vehicle::vehicleController"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "VehicleController"))))
   )
   (references
