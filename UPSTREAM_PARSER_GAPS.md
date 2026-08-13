@@ -15,7 +15,14 @@ entry should carry enough detail to file/update an upstream issue against
   published.
 - **Representative input:** `feature x : Integer;`
 - **Representative snapshot:** `test/snapshots/feature_typing.md`
-- **Scale:** ~131/503 snapshots blocked as of this writing (largest single blocked bucket).
+- **Scale:** ~131/503 snapshots blocked as of this writing (largest single blocked bucket). Also
+  covers bare top-level `class X { ... }`/`class B specializes A { ... }` KerML declarations --
+  both `"feature"` and `"class"` are keyword-starters routed through the same
+  `kerml_semantic_decl` raw-text catch-all in `sysml-v2-parser`'s `src/parser/package.rs`, so a
+  `class`-only fixture with no `feature` at all hits the identical `unsupported_grammar_form`/
+  `unsupported_package_member` pair (see `test/snapshots/kerml/inheritance.md`, where `class A`,
+  `class B specializes A`, `feature y: A { ... }`, and `feature w subsets y;` are all unlowered
+  this way, leaving `alias z for y::g;`/`alias us for w::g;` unresolved as a downstream effect).
 - **Status:** reported to Luke directly (parser repo owner); branch already diverges from
   `main`, which has more grammar coverage merged. Likely a rebase/merge issue rather than
   missing grammar work, per other local `sysml-v2-parser` worktrees at `main`.
@@ -387,6 +394,55 @@ entry should carry enough detail to file/update an upstream issue against
   `parser::requirement::concern_usage` to populate them from the `UsageHeader` it already
   computes. Not attempted here -- out of scope for `sysml_resolution`/`sysml_query`/
   `spec42-snapshot` to work around.
+
+### 10. Bare forward-declared `classifier X;` (and `feature`) collapse to a raw-text fallback node -- no name/membership field at all
+
+- **Symptom:** `classifier SpatialFrame;` (a `;`-terminated forward declaration with no body)
+  produces `unsupported_grammar_form` (source: parser), cascading to
+  `unsupported_package_member` (semantic). Zero declaration is published for `SpatialFrame`, so
+  every reference to it -- including a same-file `alias multiplicity for SpatialFrame;` --
+  reports `unresolved_reference` even though nothing about the reference or the resolver's
+  lookup is at fault: there is no declaration to find.
+- **Root cause:** `PackageBodyElement::ClassifierDecl` (crate `sysml-v2-parser`,
+  `src/ast/kerml_fallback.rs`) is a raw catch-all fallback struct -- `{ keyword: String, text:
+  String }`, no structured name/body/membership fields whatsoever -- functionally identical to
+  `FeatureDecl` (see gap #1) but for the `classifier`/`class` bare-declaration grammar form.
+  `sysml_resolution`'s lowering (`crates/sysml_resolution/src/model.rs`,
+  `PackageBodyElement::ClassifierDecl` arm) has no typed field to read a name or members from,
+  so it can only call `push_unsupported`; there is no parser-contract surface in scope to lower
+  against.
+- **Representative input:** `classifier SpatialFrame;` at package scope.
+- **Representative snapshot:** `test/snapshots/kerml/keyword_as_name.md` (line ~23; the
+  `alias multiplicity for SpatialFrame;` at line ~30 stays `unresolved_reference` purely as a
+  downstream consequence -- verified by direct declaration-list inspection: only the enclosing
+  `Package` and the two `Alias` declarations exist for that file, `SpatialFrame` has zero
+  declarations of any kind).
+- **Status:** blocking, same shape as gap #1/#2 (raw catch-all fallback node, no structured AST
+  to lower from). Needs an upstream `sysml-v2-parser` change giving bare/forward-declared
+  `classifier`/`class` declarations (and their KerML `feature` sibling, see gap #1) a proper
+  typed AST node with a `name` field, mirroring the body-bearing forms. Not attempted here --
+  out of scope for `sysml_resolution`/`sysml_query`/`spec42-snapshot` to work around without
+  re-parsing the fallback `text` blob independently (duplicating parser logic, fragile).
+
+### Cases traced back to gap #1, not new gaps
+
+- `test/snapshots/kerml/inheritance.md`'s `alias z for y::g;` (same-file qualified lookup to a
+  directly-owned member) and `alias us for w::g;` (same-file qualified lookup through a
+  `subsets` relationship) were investigated as possible `sysml_resolution` visibility/qualified-
+  lookup bugs (the originating hypothesis was a KerML-vs-SysML default-visibility mismatch in
+  `exported_names`/`MembershipIndex`). Direct declaration-list inspection during this
+  investigation shows this hypothesis does not hold: for this fixture, only the enclosing
+  `Package` plus the two top-level `Alias` declarations (`z`, `us`) exist at all. `class A`,
+  `class B specializes A`, `feature y: A { ... feature g redefines f; }`, and `feature w subsets
+  y;` are every one of them entirely unlowered -- each produces its own
+  `unsupported_grammar_form`/`unsupported_package_member` pair, the exact fallback described in
+  gap #1 (`kerml_semantic_decl`'s `"class"`/`"feature"` keyword-starter catch-all, not a
+  dedicated typed node). `y` and `w` never become resolvable `DeclarationId`s in the first place,
+  so `y::g`/`w::g` cannot resolve regardless of any visibility rule -- there is nothing in
+  `sysml_resolution` to fix for these two cases specifically. No resolver change was made; no
+  fixture changed as a result of investigating this pair. Gap #1 already tracks the fix (and its
+  scale note already covers `class`, not just `feature`, per the shared `kerml_semantic_decl`
+  fallback path in `sysml-v2-parser`).
 
 ## Resolved / not blocked (kept for history)
 
