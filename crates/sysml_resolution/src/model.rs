@@ -29,21 +29,22 @@ use sysml_v2_parser_next::{
         FirstMergeBody, FirstMergeBodyElement, FirstStmt, FlowDef, FlowUsage, FrameMember, Import,
         ImportShape, InOut, InOutDecl, IncludeUseCase, InterfaceDef, InterfaceDefBody,
         InterfaceDefBodyElement, InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement,
-        ItemDef, ItemUsage as ParserItemUsage, LibraryPackage, Membership,
-        MembershipKind as ParserMembershipKind, MetadataAnnotation, MetadataDef,
-        MetadataUsage as ParserMetadataUsage, NamespaceDecl, Node, OccurrenceBodyElement,
-        OccurrenceDef, OccurrenceUsage as ParserOccurrenceUsage, OccurrenceUsageBody, Package,
-        PackageBody, PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement, PartUsage,
-        PartUsageBody, PartUsageBodyElement, Perform as ParserPerform, PerformBody,
-        PerformBodyElement, PortBody, PortBodyElement, PortDef, PortDefBody, PortDefBodyElement,
-        PortUsage as ParserPortUsage, PurposeMember, QualifiedIdentification, QualifiedReferenceId,
-        RefBody, RefBodyElement, RefDecl, RelationshipBodyElement, RenderingDef, RenderingDefBody,
-        RenderingDefBodyElement, RequirementActorDecl, RequirementDef, RequirementDefBody,
-        RequirementDefBodyElement, RequirementUsage as ParserRequirementUsage, ReturnDecl,
-        RootElement, Satisfy, SatisfyViewMember, SendPayload, Span, StakeholderMember, StateDef,
-        StateDefBody, StateDefBodyElement, StateUsage as ParserStateUsage, SubjectDecl,
-        SubsettingKind, SubsettingRelationship, TerminateStmt, ThenAction, ThenStmt, ThenTarget,
-        Transition, TransitionAccept, TransitionEffect, UnaryOperator, UseCaseDef, UseCaseDefBody,
+        ItemDef, ItemUsage as ParserItemUsage, KermlClassifierDecl, KermlFeatureMember,
+        LibraryPackage, Membership, MembershipKind as ParserMembershipKind, MetadataAnnotation,
+        MetadataDef, MetadataUsage as ParserMetadataUsage, NamespaceDecl, Node,
+        OccurrenceBodyElement, OccurrenceDef, OccurrenceUsage as ParserOccurrenceUsage,
+        OccurrenceUsageBody, Package, PackageBody, PackageBodyElement, PartDef, PartDefBody,
+        PartDefBodyElement, PartUsage, PartUsageBody, PartUsageBodyElement,
+        Perform as ParserPerform, PerformBody, PerformBodyElement, PortBody, PortBodyElement,
+        PortDef, PortDefBody, PortDefBodyElement, PortUsage as ParserPortUsage, PurposeMember,
+        QualifiedIdentification, QualifiedReferenceId, RefBody, RefBodyElement, RefDecl,
+        RelationshipBodyElement, RenderingDef, RenderingDefBody, RenderingDefBodyElement,
+        RequirementActorDecl, RequirementDef, RequirementDefBody, RequirementDefBodyElement,
+        RequirementUsage as ParserRequirementUsage, ReturnDecl, RootElement, Satisfy,
+        SatisfyViewMember, SendPayload, Span, StakeholderMember, StateDef, StateDefBody,
+        StateDefBodyElement, StateUsage as ParserStateUsage, SubjectDecl, SubsettingKind,
+        SubsettingRelationship, TerminateStmt, ThenAction, ThenStmt, ThenTarget, Transition,
+        TransitionAccept, TransitionEffect, UnaryOperator, UseCaseDef, UseCaseDefBody,
         UseCaseDefBodyElement, VariantUsage, VerificationCaseDef, VerifyRequirementMember,
         ViewBody, ViewBodyElement, ViewDef, ViewDefBody, ViewDefBodyElement,
         ViewUsage as ParserViewUsage, ViewpointDef, Visibility as ParserVisibility,
@@ -600,6 +601,27 @@ enum DeclarationKind {
     /// merely an unresolved reference, mirroring `Satisfy::inline_requirement`'s own scope boundary)
     /// is out of scope and left as an explicit unsupported-member diagnostic.
     VerifyRequirement,
+    /// A bodied KerML classifier declaration (`KermlClassifierDecl`), e.g. `function isZero
+    /// specializes DataFunctions::isZero { ... }`, `struct S { ... }`, `assoc A { ... }`,
+    /// `behavior B { ... }`, `interaction I { ... }`, `predicate P { ... }`, `multiplicity m
+    /// [0..1] { ... }`, `subclassifier`/`classifier`/`class`/`assoc struct` bodied forms. Mirrors
+    /// `ClassDefinition` lowering: ownership, an optional `specializes` relationship, and
+    /// owned-member structure through the shared `lower_calc_def_body` walker (the same body
+    /// grammar `calc def` uses). The distinct keyword spellings (`KermlClassifierKeyword`) are
+    /// not modeled as separate `DeclarationKind` variants -- they share identical structural
+    /// semantics (name, specialization, owned members). Header `type_relationships` (`disjoint
+    /// from`/`unions`/`intersects`) are out of scope for this slice.
+    KermlClassifier,
+    /// A bare/bodied KerML feature member (`KermlFeatureMember`), e.g. `feature x : Integer;`,
+    /// `derived var feature annotatedElement : Element[1..*] ordered redefines
+    /// annotatedElement;`, `step performances : Performance[0..*] subsets occurrences { ... }`.
+    /// Mirrors `ReferenceUsage`/`AttributeUsage` lowering: ownership, membership, an optional
+    /// `:` typing target (`FeatureTyping`), and `subsets`/`redefines` relationships, with owned
+    /// members walked through the shared `lower_calc_def_body` (the same body grammar `calc def`
+    /// uses). `is_member`/`is_derived`/`is_abstract`/`is_composite`/`is_portion`/`is_var`/
+    /// `is_end`/`is_all`/the specific `KermlFeatureKind` spelling/`references`/`chains`/
+    /// `inverse_of`/`type_relationships` are not modeled as distinct facts here.
+    KermlFeature,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -2670,21 +2692,20 @@ impl SemanticModelBuilder {
                 UnsupportedFamily::PackageMember,
                 node.span.clone(),
             ),
-            PackageBodyElement::KermlClassifier(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::KermlClassifier(node) => {
+                self.lower_kerml_classifier_decl(document, owner, node)?
+            }
             PackageBodyElement::KermlInvariant(node) => self.push_unsupported(
                 document,
                 UnsupportedFamily::PackageMember,
                 node.span.clone(),
             ),
-            PackageBodyElement::KermlFeatureMember(node) => self.push_unsupported(
+            PackageBodyElement::KermlFeatureMember(node) => self.lower_kerml_feature_member(
                 document,
+                owner,
                 UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+                node,
+            )?,
             PackageBodyElement::ExtendedLibraryDecl(node) => self.push_unsupported(
                 document,
                 UnsupportedFamily::PackageMember,
@@ -3793,6 +3814,99 @@ impl SemanticModelBuilder {
             self.lower_typing_relationship(document, declaration, relationship)?;
         }
         self.lower_attribute_body(document, declaration, &node.value.body)
+    }
+
+    /// Lowers a bodied KerML classifier declaration (`KermlClassifierDecl`), mirroring
+    /// `lower_class_def`: ownership, an optional `specializes` relationship, and owned-member
+    /// structure. Its body shares the `CalcDefBody` grammar (parameters, `return` results,
+    /// feature members, invariants, expressions, documentation), the same shape `calc def`
+    /// bodies use, so it is walked through the existing `lower_calc_def_body` rather than
+    /// `lower_attribute_body`. `is_abstract`/`is_all`/`multiplicity`/`type_relationships` and the
+    /// specific `KermlClassifierKeyword` spelling are not modeled as distinct facts here (see
+    /// `DeclarationKind::KermlClassifier`).
+    fn lower_kerml_classifier_decl(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<KermlClassifierDecl>,
+    ) -> Result<(), ConstructionError> {
+        let name = node
+            .value
+            .identification
+            .name
+            .as_deref()
+            .filter(|name| !name.is_empty())
+            .map(|name| self.intern_name(name))
+            .transpose()?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::KermlClassifier,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Owning,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::OwningMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(relationship) = &node.value.specializes {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        self.lower_calc_def_body(document, declaration, &node.value.body)
+    }
+
+    /// Lowers a bare/bodied KerML feature member (`KermlFeatureMember`, gap #14: previously an
+    /// opaque `FeatureDecl { keyword, text }` raw-text fallback, now a fully typed shape),
+    /// mirroring `lower_ref_decl`: ownership, membership, an optional `:` typing target, and
+    /// `subsets`/`redefines` relationships. Its `= expr` value, when present, is classified and
+    /// lowered through the same `classify_calc_expression`/`lower_calc_expression` pipeline
+    /// `lower_parameter_declaration`/`lower_return_decl` use. Its body shares the `CalcDefBody`
+    /// grammar, so owned members are walked through the existing `lower_calc_def_body`. See
+    /// `DeclarationKind::KermlFeature` for the facts intentionally left unmodeled.
+    fn lower_kerml_feature_member(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        family: UnsupportedFamily,
+        node: &Node<KermlFeatureMember>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declared_name(&node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::KermlFeature,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::FeatureMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(relationship) = &node.value.typing {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.subsets {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.redefines {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(feature_value) = &node.value.value {
+            let expression = feature_value.value.expression.clone();
+            self.push_evaluation_fact(declaration, classify_calc_expression(&expression.value));
+            self.lower_calc_expression(document, declaration, family, &expression)?;
+        }
+        self.lower_calc_def_body(document, declaration, &node.value.body)
     }
 
     /// Lowers a package/definition/usage-level `item` feature member (BNF ItemUsage), e.g.
@@ -8606,8 +8720,18 @@ impl SemanticModelBuilder {
                     CalcDefBodyElement::AttributeUsage(nested) => {
                         self.lower_attribute_usage(document, Some(declaration), nested)?;
                     }
+                    CalcDefBodyElement::KermlClassifier(nested) => {
+                        self.lower_kerml_classifier_decl(document, Some(declaration), nested)?;
+                    }
+                    CalcDefBodyElement::KermlFeature(nested) => {
+                        self.lower_kerml_feature_member(
+                            document,
+                            Some(declaration),
+                            UnsupportedFamily::CalcDefinitionMember,
+                            nested,
+                        )?;
+                    }
                     CalcDefBodyElement::TypedParameter(_)
-                    | CalcDefBodyElement::KermlFeature(_)
                     | CalcDefBodyElement::Invariant(_)
                     | CalcDefBodyElement::Connector(_)
                     | CalcDefBodyElement::Binding(_)
@@ -8616,7 +8740,6 @@ impl SemanticModelBuilder {
                     | CalcDefBodyElement::Import(_)
                     | CalcDefBodyElement::Comment(_)
                     | CalcDefBodyElement::AssertConstraint(_)
-                    | CalcDefBodyElement::KermlClassifier(_)
                     | CalcDefBodyElement::DefaultReferenceUsage(_) => self.push_unsupported(
                         document,
                         UnsupportedFamily::CalcDefinitionMember,
@@ -12406,6 +12529,90 @@ mod tests {
                 "(kind specialization) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Derived\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
             ),
             "expected Derived's specialization of Base to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn kerml_classifier_decl_lowers_to_a_declaration() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tstruct Widget {\n\
+             \t\tattribute mass : Real;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::Widget\"))) (kind kerml-classifier)"),
+            "expected a kerml-classifier declaration for struct Widget, got:\n{output}"
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::Widget::mass\"))) (kind attribute)"),
+            "expected an owned attribute declaration under the struct, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn kerml_classifier_decl_specializing_another_classifier_resolves_its_specialization_reference()
+    {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tstruct Base;\n\
+             \tstruct Derived specializes Base;\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind specialization) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Derived\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
+            ),
+            "expected Derived's specialization of Base to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn kerml_classifier_decl_nested_inside_calc_def_lowers_to_a_declaration() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tcalc def Outer {\n\
+             \t\tstruct Inner;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::Outer::Inner\"))) (kind kerml-classifier)"),
+            "expected a nested kerml-classifier declaration inside the calc def, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn kerml_feature_member_lowers_to_a_declaration_with_typing() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tderived feature x : Integer;\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::x\"))) (kind kerml-feature)"),
+            "expected a kerml-feature declaration for x, got:\n{output}"
+        );
+        assert!(
+            output.contains("(relationships (featureTyping (reference \"Integer\")))"),
+            "expected x's FeatureTyping reference, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn kerml_feature_member_redefines_resolves_its_target() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tderived feature base : Integer;\n\
+             \tderived feature x redefines base;\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::base\")))"
+            ),
+            "expected x's redefinition of base to resolve, got:\n{output}"
         );
     }
 

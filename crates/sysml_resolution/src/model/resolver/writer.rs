@@ -858,6 +858,8 @@ fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::RequirementActor => "requirement-actor",
         DeclarationKind::Frame => "frame",
         DeclarationKind::VerifyRequirement => "verify-requirement",
+        DeclarationKind::KermlClassifier => "kerml-classifier",
+        DeclarationKind::KermlFeature => "kerml-feature",
     }
 }
 
