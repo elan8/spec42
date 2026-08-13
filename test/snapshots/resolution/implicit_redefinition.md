@@ -50,6 +50,7 @@ package P {
   )
   (relationships
     (relationship (kind specialization) (source (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Child"))) (target (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Base"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Child"))) (kind specialization) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Child::mass"))) (target (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Base::mass"))) (provenance implied))
   )
   (evaluation
   )

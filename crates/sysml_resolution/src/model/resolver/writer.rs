@@ -356,6 +356,24 @@ fn write_relationships(model: &ResolvedSemanticModel, output: &mut dyn fmt::Writ
             reference.ordinal,
         )?;
     }
+    let mut implied: Vec<&ImpliedRelationship> =
+        model.resolution.implied_relationships.iter().collect();
+    implied.sort_by_key(|relationship| {
+        (
+            declaration_path_key(model, relationship.source),
+            declaration_path_key(model, relationship.target),
+        )
+    });
+    for relationship in implied {
+        let Some(kind) = relationship_kind(relationship.kind) else {
+            continue;
+        };
+        write!(output, "    (relationship (kind {kind}) (source ")?;
+        write_node_identity(model, relationship.source, output)?;
+        write!(output, ") (target ")?;
+        write_node_identity(model, relationship.target, output)?;
+        writeln!(output, ") (provenance implied))")?;
+    }
     writeln!(output, "  )")
 }
 

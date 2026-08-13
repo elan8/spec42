@@ -261,11 +261,24 @@ struct DiagnosticRecord {
     outcome: DiagnosticOutcome,
 }
 
+/// A resolver-synthesized relationship fact that has no authored reference site. The narrow slice
+/// currently covered here is same-name inherited-member redefinition against an immediate
+/// (directly specialized) parent's own directly owned feature. Multi-level/diamond inherited
+/// redefinition is intentionally out of scope: an ambiguous or absent immediate-parent match is
+/// left unresolved rather than guessed.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+struct ImpliedRelationship {
+    kind: ReferenceKind,
+    source: DeclarationId,
+    target: DeclarationId,
+}
+
 #[derive(Debug)]
 struct ResolutionResults {
     outcomes: Box<[ResolutionStatus]>,
     ambiguous_candidates: Box<[DeclarationId]>,
     solver_status: SolverStatus,
+    implied_relationships: Box<[ImpliedRelationship]>,
     #[cfg(test)]
     work: ResolutionWork,
 }
@@ -497,6 +510,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     references: &[R],
     pass_limit: usize,
 ) -> Result<(NameIndex, NameIndex, ResolutionResults), ResolutionError> {
+    let membership_records = memberships;
     let memberships = MembershipIndex::build(declarations, memberships)?;
     let direct_names = build_direct_name_index(declarations, None)?;
     let exported_names = build_direct_name_index(declarations, Some(&memberships))?;
@@ -622,6 +636,22 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             .map_err(|_| ResolutionError::Capacity)?;
     }
 
+    // The implied-redefinition family reads only settled Subclassification outcomes and the
+    // already-built owner-scoped direct-name index above; it is not mutually recursive with the
+    // import/typing fixed point above and therefore runs once, after that fixed point settles,
+    // rather than joining it as another per-pass family.
+    let implied_relationships = if converged {
+        synthesize_implied_redefinitions(
+            declarations,
+            membership_records,
+            references,
+            &direct_names,
+            &outcomes,
+        )?
+    } else {
+        Box::default()
+    };
+
     Ok((
         direct_names,
         effective_imports,
@@ -629,10 +659,80 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             outcomes: outcomes.into_boxed_slice(),
             ambiguous_candidates: ambiguous_candidates.into_boxed_slice(),
             solver_status,
+            implied_relationships,
             #[cfg(test)]
             work,
         },
     ))
+}
+
+/// Synthesizes implied same-name inherited-member redefinition facts.
+///
+/// Scope: a feature member `f` directly owned by a type `Child`, where `Child` has a resolved
+/// `Subclassification` reference to `Parent`, and `Parent` directly (not transitively) owns
+/// exactly one feature member also named `f`. This deliberately does not chase multi-level or
+/// diamond ancestry: if the immediate parent has zero or more than one directly owned same-name
+/// feature candidate, no implied fact is synthesized for that pair rather than guessing. A member
+/// that already carries an explicit `:>>` redefinition to any target is left to that authored fact
+/// and is never also given an implied one.
+fn synthesize_implied_redefinitions<R: ResolutionReferenceFact>(
+    declarations: &[Declaration],
+    memberships: &[MembershipRecord],
+    references: &[R],
+    direct_names: &NameIndex,
+    outcomes: &[ResolutionStatus],
+) -> Result<Box<[ImpliedRelationship]>, ResolutionError> {
+    let mut membership_kind: Vec<Option<MembershipKind>> = vec![None; declarations.len()];
+    for membership in memberships {
+        if let Some(slot) = membership_kind.get_mut(membership.member.index()) {
+            *slot = Some(membership.kind);
+        }
+    }
+    let is_feature = |id: DeclarationId| {
+        membership_kind.get(id.index()).copied().flatten() == Some(MembershipKind::Feature)
+    };
+
+    let mut explicitly_redefines: std::collections::BTreeSet<DeclarationId> = Default::default();
+    for reference in references {
+        if reference.kind() == ReferenceKind::Redefinition {
+            explicitly_redefines.insert(reference.source());
+        }
+    }
+
+    let mut implied = Vec::new();
+    for (index, reference) in references.iter().enumerate() {
+        if reference.kind() != ReferenceKind::Subclassification {
+            continue;
+        }
+        let ResolutionStatus::Resolved(parent) = outcomes[index] else {
+            continue;
+        };
+        let child = reference.source();
+        for (name, member_candidates) in direct_names.entries_for_owner(Some(child)) {
+            for &member in member_candidates {
+                if !is_feature(member) || explicitly_redefines.contains(&member) {
+                    continue;
+                }
+                let parent_candidates = direct_names.candidates(Some(parent), name);
+                let mut matches = parent_candidates.iter().copied().filter(|c| is_feature(*c));
+                let Some(single_match) = matches.next() else {
+                    continue;
+                };
+                if matches.next().is_some() {
+                    // Ambiguous immediate-parent candidates: leave unresolved rather than guess.
+                    continue;
+                }
+                implied.push(ImpliedRelationship {
+                    kind: ReferenceKind::Redefinition,
+                    source: member,
+                    target: single_match,
+                });
+            }
+        }
+    }
+    implied.sort_by_key(|relationship| (relationship.source.0, relationship.target.0));
+    implied.dedup();
+    Ok(implied.into_boxed_slice())
 }
 
 fn supported_import_domain(reference: &impl ResolutionReferenceFact) -> Option<DeclarationDomain> {
@@ -1444,6 +1544,137 @@ mod tests {
             paths: paths.freeze(),
             references: references.into_boxed_slice(),
         }
+    }
+
+    fn redefinition_fixture() -> ResolverFixture {
+        let mut symbols = SymbolTableBuilder::default();
+        let p_name = symbols.intern("P").unwrap();
+        let base_name = symbols.intern("Base").unwrap();
+        let child_name = symbols.intern("Child").unwrap();
+        let mass_name = symbols.intern("mass").unwrap();
+        let mut paths = SymbolPathArenaBuilder::default();
+        let base_path = paths.push(&[base_name], false).unwrap();
+
+        let package = DeclarationId(0);
+        let base = DeclarationId(1);
+        let child = DeclarationId(3);
+        let declarations = vec![
+            declaration(DocumentId(0), None, Some(p_name), DeclarationKind::Package),
+            declaration(
+                DocumentId(0),
+                Some(package),
+                Some(base_name),
+                DeclarationKind::PartDefinition,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(base),
+                Some(mass_name),
+                DeclarationKind::AttributeUsage,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(package),
+                Some(child_name),
+                DeclarationKind::PartDefinition,
+            ),
+            declaration(
+                DocumentId(0),
+                Some(child),
+                Some(mass_name),
+                DeclarationKind::AttributeUsage,
+            ),
+        ];
+        let memberships = declarations
+            .iter()
+            .enumerate()
+            .map(|(index, declaration)| {
+                let member = DeclarationId::from_index(index).unwrap();
+                let kind = if matches!(
+                    declaration.kind,
+                    DeclarationKind::AttributeUsage | DeclarationKind::PartUsage
+                ) {
+                    MembershipKind::Feature
+                } else {
+                    MembershipKind::Owning
+                };
+                MembershipRecord {
+                    member,
+                    kind,
+                    visibility: Visibility::Default,
+                    span: Span::dummy(),
+                }
+            })
+            .collect::<Vec<_>>()
+            .into_boxed_slice();
+        let references = vec![reference(
+            child,
+            ReferenceKind::Subclassification,
+            base_path,
+            false,
+        )];
+        let _symbols = symbols.freeze();
+        ResolverFixture {
+            declarations: declarations.into_boxed_slice(),
+            memberships,
+            paths: paths.freeze(),
+            references: references.into_boxed_slice(),
+        }
+    }
+
+    #[test]
+    fn same_name_direct_parent_feature_synthesizes_implied_redefinition() {
+        let fixture = redefinition_fixture();
+        let (_, _, resolution) = resolve_fixture(&fixture);
+        assert_eq!(resolution.solver_status, SolverStatus::Converged);
+        assert_eq!(
+            resolution.implied_relationships.as_ref(),
+            &[ImpliedRelationship {
+                kind: ReferenceKind::Redefinition,
+                source: DeclarationId(4),
+                target: DeclarationId(2),
+            }]
+        );
+    }
+
+    #[test]
+    fn explicit_redefinition_suppresses_implied_duplicate() {
+        let mut fixture = redefinition_fixture();
+        let mut references = fixture.references.into_vec();
+        references.push(reference(
+            DeclarationId(4),
+            ReferenceKind::Redefinition,
+            references[0].path,
+            false,
+        ));
+        fixture.references = references.into_boxed_slice();
+        let (_, _, resolution) = resolve_fixture(&fixture);
+        assert!(resolution.implied_relationships.is_empty());
+    }
+
+    #[test]
+    fn ambiguous_immediate_parent_candidates_leave_no_implied_fact() {
+        let mut fixture = redefinition_fixture();
+        let mut declarations = fixture.declarations.into_vec();
+        // A second directly owned `mass` feature on Base makes the immediate-parent same-name
+        // lookup ambiguous; the synthesis must not guess a target.
+        declarations.push(declaration(
+            DocumentId(0),
+            Some(DeclarationId(1)),
+            Some(declarations[2].name.unwrap()),
+            DeclarationKind::AttributeUsage,
+        ));
+        fixture.declarations = declarations.into_boxed_slice();
+        let mut memberships = fixture.memberships.into_vec();
+        memberships.push(MembershipRecord {
+            member: DeclarationId(5),
+            kind: MembershipKind::Feature,
+            visibility: Visibility::Default,
+            span: Span::dummy(),
+        });
+        fixture.memberships = memberships.into_boxed_slice();
+        let (_, _, resolution) = resolve_fixture(&fixture);
+        assert!(resolution.implied_relationships.is_empty());
     }
 
     #[test]
