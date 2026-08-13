@@ -155,12 +155,6 @@ package '15_19-Materials with Properties' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 9 98) (end 9 100))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 10 34) (end 10 53))
@@ -206,12 +200,6 @@ package '15_19-Materials with Properties' {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 11 89) (end 11 97))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 11 100) (end 11 102))
       )
       (diagnostic
         (severity warning)
@@ -449,6 +437,8 @@ package '15_19-Materials with Properties' {
     (relationship (kind typing) (source (node (document "memory://snapshot/15_19_materials_with_properties.md") (qualified-name "15_19-Materials with Properties::newton per square millimetre"))) (target (node (document "memory://snapshot/15_19_materials_with_properties.md") (qualified-name "15_19-Materials with Properties::TensileStrengthUnit"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/15_19_materials_with_properties.md") (qualified-name "15_19-Materials with Properties::newton per square millimetre"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/15_19_materials_with_properties.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer -2)))
+    (evaluated (declaration (node (document "memory://snapshot/15_19_materials_with_properties.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer -1)))
     (evaluated (declaration (node (document "memory://snapshot/15_19_materials_with_properties.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
   )
 )

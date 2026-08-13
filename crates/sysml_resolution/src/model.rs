@@ -43,9 +43,10 @@ use sysml_v2_parser_next::{
         SatisfyViewMember, SendPayload, Span, StateDef, StateDefBody, StateDefBodyElement,
         StateUsage as ParserStateUsage, SubjectDecl, SubsettingKind, SubsettingRelationship,
         TerminateStmt, ThenAction, ThenStmt, ThenTarget, Transition, TransitionAccept,
-        TransitionEffect, UseCaseDef, UseCaseDefBody, UseCaseDefBodyElement, VariantUsage,
-        VerificationCaseDef, ViewBody, ViewBodyElement, ViewDef, ViewDefBody, ViewDefBodyElement,
-        ViewUsage as ParserViewUsage, ViewpointDef, Visibility as ParserVisibility,
+        TransitionEffect, UnaryOperator, UseCaseDef, UseCaseDefBody, UseCaseDefBodyElement,
+        VariantUsage, VerificationCaseDef, ViewBody, ViewBodyElement, ViewDef, ViewDefBody,
+        ViewDefBodyElement, ViewUsage as ParserViewUsage, ViewpointDef,
+        Visibility as ParserVisibility,
     },
     ParseError, ParsedDocument,
 };
@@ -977,10 +978,10 @@ enum EvalNode {
     /// `chassisMass + engine.mass` as a comparison operand), so a constraint body's `EvalNode` tree
     /// may now contain both `Comparison`/`Logical` and `Arithmetic` nodes, unlike slices 1-3.
     Arithmetic(BinaryOperator, Box<EvalNode>, Box<EvalNode>),
-    /// A logical `BinaryOp` (`and`/`or`, `is_logical_operator`) combining two constraint-body
-    /// sub-expressions, each of which folds to a `Boolean` (typically a `Comparison`). Only
-    /// `classify_constraint_node` builds this variant -- calc bodies stay comparison/logical-free,
-    /// unchanged. `xor`/`implies` are not represented (see `is_logical_operator`).
+    /// A logical `BinaryOp` (`and`/`or`/`xor`/`implies`, `is_logical_operator`) combining two
+    /// constraint-body sub-expressions, each of which folds to a `Boolean` (typically a
+    /// `Comparison`). Only `classify_constraint_node` builds this variant -- calc bodies stay
+    /// comparison/logical-free, unchanged.
     Logical(BinaryOperator, Box<EvalNode>, Box<EvalNode>),
     /// An `Expression::Invocation`/`Expression::Constructor` node (reference-resolution slice; see
     /// `ReferenceKind::InvocationCallee`). Carries each argument's own classified `EvalNode` purely
@@ -991,6 +992,13 @@ enum EvalNode {
     /// straight to `EvaluatedValue::NonConstant` regardless of its children's folded values,
     /// exactly as evaluating an invocation's function/constructor semantics is out of scope.
     Invocation(Vec<EvalNode>),
+    /// A unary prefix `UnaryOp` (`-x` negation or `not x` logical negation, see
+    /// `UnaryOperator::Minus`/`UnaryOperator::Not`) wrapping a single classified operand, built by
+    /// both `classify_constraint_node` and `classify_calc_node` using the exact same recursive
+    /// classification call already used for every other single-child shape (`Parenthesized`).
+    /// `Plus`/`BitNot`/`Other` unary operators are deliberately out of scope (unsupported), mirroring
+    /// `is_arithmetic_operator`'s narrow-slice precedent: only `-`/`not` are folded (`fold_unary`).
+    Unary(UnaryOperator, Box<EvalNode>),
 }
 
 /// The classification `classify_constraint_expression`/`classify_calc_expression` assign to one
@@ -1159,9 +1167,45 @@ fn fold_logical(op: BinaryOperator, left: EvaluatedValue, right: EvaluatedValue)
             EvaluatedValue::Boolean(match op {
                 BinaryOperator::And => left && right,
                 BinaryOperator::Or => left || right,
+                // `Xor`/`Implies` share `And`/`Or`'s Boolean/Boolean truth-table shape exactly --
+                // no new failure state, just a different two-operand boolean combination.
+                BinaryOperator::Xor => left != right,
+                BinaryOperator::Implies => !left || right,
                 _ => return EvaluatedValue::NonConstant,
             })
         }
+        _ => EvaluatedValue::NonConstant,
+    }
+}
+
+/// Folds a unary `-`/`not` operation on an already-folded operand. `Minus` negates a constant
+/// `Integer`/`Real` (`Integer` negation uses `checked_neg`, mirroring `fold_arithmetic`'s
+/// conservative "cannot fold" `NonConstant` posture for `i64::MIN`'s unrepresentable negation rather
+/// than panicking or silently wrapping); `Not` negates a constant `Boolean`. Any other operator/
+/// operand-type pairing (unreachable via `classify_constraint_node`/`classify_calc_node`, which only
+/// ever build this node for `Minus`/`Not`) conservatively falls to `NonConstant`, mirroring
+/// `fold_literal_comparison`/`fold_arithmetic`/`fold_logical`'s own defensive fallback for a
+/// mistyped pairing. `NonConverged`/`UnresolvedOperand`/`NonConstant` operands propagate through
+/// unchanged, in the same priority order the binary folds already use.
+fn fold_unary(op: &UnaryOperator, value: EvaluatedValue) -> EvaluatedValue {
+    match value {
+        EvaluatedValue::NonConverged => EvaluatedValue::NonConverged,
+        EvaluatedValue::UnresolvedOperand => EvaluatedValue::UnresolvedOperand,
+        EvaluatedValue::NonConstant => EvaluatedValue::NonConstant,
+        EvaluatedValue::Integer(value) => match op {
+            UnaryOperator::Minus => value
+                .checked_neg()
+                .map_or(EvaluatedValue::NonConstant, EvaluatedValue::Integer),
+            _ => EvaluatedValue::NonConstant,
+        },
+        EvaluatedValue::Real(value) => match op {
+            UnaryOperator::Minus => EvaluatedValue::Real(-value),
+            _ => EvaluatedValue::NonConstant,
+        },
+        EvaluatedValue::Boolean(value) => match op {
+            UnaryOperator::Not => EvaluatedValue::Boolean(!value),
+            _ => EvaluatedValue::NonConstant,
+        },
         _ => EvaluatedValue::NonConstant,
     }
 }
@@ -1231,6 +1275,10 @@ fn classify_constraint_node(node: &Expression, ordinal: &mut u32) -> Option<Eval
             }
             Some(EvalNode::Invocation(children))
         }
+        Expression::UnaryOp { op, operand } if is_unary_operator(op) => {
+            let operand = classify_constraint_node(&operand.value, ordinal)?;
+            Some(EvalNode::Unary(op.clone(), Box::new(operand)))
+        }
         _ => None,
     }
 }
@@ -1273,6 +1321,10 @@ fn classify_calc_node(node: &Expression, ordinal: &mut u32) -> Option<EvalNode> 
             }
             Some(EvalNode::Invocation(children))
         }
+        Expression::UnaryOp { op, operand } if is_unary_operator(op) => {
+            let operand = classify_calc_node(&operand.value, ordinal)?;
+            Some(EvalNode::Unary(op.clone(), Box::new(operand)))
+        }
         _ => None,
     }
 }
@@ -1288,6 +1340,7 @@ fn eval_node_is_pure_literal(node: &EvalNode) -> bool {
         | EvalNode::Logical(_, left, right) => {
             eval_node_is_pure_literal(left) && eval_node_is_pure_literal(right)
         }
+        EvalNode::Unary(_, operand) => eval_node_is_pure_literal(operand),
         // Always `NonConstant` once folded (see `EvalNode::Invocation`'s doc comment), never a
         // "genuinely known" literal, regardless of how many/which literal arguments it carries.
         EvalNode::Invocation(_) => false,
@@ -1344,6 +1397,10 @@ fn fold_eval_node_pending(
             Some(fold_logical(op.clone(), left, right))
         }
         EvalNode::Invocation(_) => Some(EvaluatedValue::NonConstant),
+        EvalNode::Unary(op, operand) => {
+            let operand = fold_eval_node_pending(operand, resolve_operand)?;
+            Some(fold_unary(op, operand))
+        }
     }
 }
 
@@ -1398,12 +1455,26 @@ fn is_comparison_operator(op: &BinaryOperator) -> bool {
     )
 }
 
-/// Whether a `BinaryOperator` is one of the two boolean-combination operators a `filter <expr>;`
-/// statement's condition supports (`lower_filter_expression`'s `BinaryOp` shape): `and`, `or`.
-/// `xor`/`implies` are deliberately excluded from this narrow slice, mirroring
-/// `is_comparison_operator`'s exclusion of KerML strict-identity comparison.
+/// Whether a `BinaryOperator` is one of the four boolean-combination operators
+/// `classify_constraint_node`/`lower_constraint_expression`'s logical `BinaryOp` shape supports:
+/// `and`, `or`, `xor`, `implies`. `xor`/`implies` share `and`/`or`'s exact Boolean/Boolean
+/// two-operand truth-table shape (`fold_logical`), so widening this predicate is the whole of their
+/// support -- no new `EvalNode` variant or failure state needed.
 fn is_logical_operator(op: &BinaryOperator) -> bool {
-    matches!(op, BinaryOperator::And | BinaryOperator::Or)
+    matches!(
+        op,
+        BinaryOperator::And | BinaryOperator::Or | BinaryOperator::Xor | BinaryOperator::Implies
+    )
+}
+
+/// Whether a `UnaryOperator` is one of the two unary operators `classify_constraint_node`/
+/// `classify_calc_node`/`lower_constraint_expression`/`lower_calc_expression` support: `-` (negation,
+/// `fold_unary`) and `not` (logical negation). `+` (`Plus`, a structural no-op the grammar rarely if
+/// ever needs folded) and `~` (`BitNot`, no corresponding `EvaluatedValue` bit type) are deliberately
+/// out of scope, mirroring `is_arithmetic_operator`'s precedent of excluding operators that would not
+/// make any additional real-corpus expression foldable.
+fn is_unary_operator(op: &UnaryOperator) -> bool {
+    matches!(op, UnaryOperator::Minus | UnaryOperator::Not)
 }
 
 /// Whether a `BinaryOperator` is one of the five basic arithmetic operators
@@ -4848,7 +4919,7 @@ impl SemanticModelBuilder {
     /// (`Eq`/`Ne`/`Lt`/`Le`/`Gt`/`Ge` -- `StrictEq`/`StrictNe` KerML identity comparisons are
     /// deliberately excluded, left unsupported like every other operator), an arithmetic `BinaryOp`
     /// (`is_arithmetic_operator`, e.g. an operand like `chassisMass + engine.mass`), or a logical
-    /// `BinaryOp` (`is_logical_operator`, `and`/`or`, combining multiple comparisons, e.g. `... and
+    /// `BinaryOp` (`is_logical_operator`, `and`/`or`/`xor`/`implies`, combining multiple comparisons, e.g. `... and
     /// mass > 0[kg]`; `xor`/`implies` deliberately excluded) -- every one of these `BinaryOp` arms
     /// simply recurses into both operands identically, since reference resolution does not care
     /// which of the three operator families is used, only evaluation (`classify_constraint_node`)
@@ -4928,6 +4999,9 @@ impl SemanticModelBuilder {
                 }
                 Ok(())
             }
+            Expression::UnaryOp { op, operand } if is_unary_operator(op) => {
+                self.lower_constraint_expression(document, declaration, family, operand)
+            }
             _ => {
                 self.push_unsupported(document, family, node.span.clone());
                 Ok(())
@@ -4947,9 +5021,10 @@ impl SemanticModelBuilder {
     /// `lower_constraint_expression`'s comparison arm. Also supports `Expression::Invocation`/
     /// `Expression::Constructor` (e.g. `sum(partMasses)`, `new PusherOutput(pusherForce)`),
     /// exactly like `lower_constraint_expression`'s own Invocation/Constructor arm: reference
-    /// resolution only, never evaluation. Unary ops, `Exp`/`Pow`, and every other expression shape
-    /// stay unsupported, falling through to the existing `unsupported_calc_definition_member`
-    /// diagnostic, unchanged from prior behavior.
+    /// resolution only, never evaluation. Also supports a unary `-`/`not` `UnaryOp` (see
+    /// `is_unary_operator`), recursing into its single operand exactly like `Parenthesized`.
+    /// `Exp`/`Pow` and every other expression shape stay unsupported, falling through to the
+    /// existing `unsupported_calc_definition_member` diagnostic, unchanged from prior behavior.
     fn lower_calc_expression(
         &mut self,
         document: DocumentId,
@@ -5014,6 +5089,9 @@ impl SemanticModelBuilder {
                 }
                 Ok(())
             }
+            Expression::UnaryOp { op, operand } if is_unary_operator(op) => {
+                self.lower_calc_expression(document, declaration, family, operand)
+            }
             _ => {
                 self.push_unsupported(document, family, node.span.clone());
                 Ok(())
@@ -5036,7 +5114,7 @@ impl SemanticModelBuilder {
     /// (`Expression::Classification`, e.g. `@Safety`) is resolved as a new
     /// `ReferenceKind::FilterMetadataTest` reference through the same `DeclarationDomain::Type`
     /// lexical lookup fixed point `MetadataAnnotation` uses (`Safety` must name a metadata def);
-    /// and a logical `BinaryOp` (`and`/`or`, `is_logical_operator`) whose operands are recursed
+    /// and a logical `BinaryOp` (`and`/`or`/`xor`/`implies`, `is_logical_operator`) whose operands are recursed
     /// into, alongside comparison operators.
     ///
     /// `declaration` is the enclosing package's own declaration (the filter statement's owner,
@@ -9618,13 +9696,14 @@ mod tests {
     #[test]
     fn constraint_unsupported_expression_shape_still_falls_through_to_diagnostic() {
         // `Expression::Invocation` (e.g. `compute(x, y)`) is a supported shape as of this slice
-        // (see `lower_invocation_callee`/`ReferenceKind::InvocationCallee`); a unary op remains
-        // genuinely unsupported.
+        // (see `lower_invocation_callee`/`ReferenceKind::InvocationCallee`); `-`/`not` unary ops
+        // are now supported too (`is_unary_operator`), so `~x` (`UnaryOperator::BitNot`, out of
+        // scope, see `is_unary_operator`'s doc comment) exercises the still-unsupported path.
         let request = crate::BuildRequest::new(
             vec![crate::SourceInput::new(
                 "memory://test/enum.sysml",
                 "package Demo {\n\
-                 \tconstraint def C { not x }\n\
+                 \tconstraint def C { ~x }\n\
                  }\n"
                 .to_string(),
                 crate::SourceKind::Workspace,
@@ -9641,7 +9720,7 @@ mod tests {
             .unwrap();
         assert!(
             output.contains("unsupported_constraint_definition_member"),
-            "expected a unary-op expression to still surface as an unsupported \
+            "expected a still-unsupported unary-op expression to surface as an unsupported \
              constraint-definition-member diagnostic, got:\n{output}"
         );
     }
@@ -9787,11 +9866,12 @@ mod tests {
     #[test]
     fn constraint_unsupported_arithmetic_shape_publishes_no_evaluation_fact() {
         // See `constraint_unsupported_expression_shape_still_falls_through_to_diagnostic`: an
-        // invocation is now a supported (reference-resolvable) shape, so this uses a unary op,
-        // still genuinely unsupported, to exercise the no-evaluation-fact path.
+        // invocation and `-`/`not` unary ops are now supported (reference-resolvable) shapes, so
+        // this uses `~x` (`UnaryOperator::BitNot`), still genuinely unsupported, to exercise the
+        // no-evaluation-fact path.
         let output = build_semantic_sexpr(
             "package Demo {\n\
-             \tconstraint def C { not x }\n\
+             \tconstraint def C { ~x }\n\
              }\n",
         );
         assert!(
@@ -10001,6 +10081,104 @@ mod tests {
             ),
             "expected `(mass1 + mass2) < massLimit and isActive` to fold to Boolean(true) \
              (2 + 3 = 5 < 10, and isActive is true), got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn calc_unary_minus_negates_literal_integer() {
+        // Unary negation (`UnaryOperator::Minus`) on a pure-literal calc body folds at
+        // construction time (`eval_node_is_pure_literal`), exactly like a bare literal.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tcalc def Calc { -5 }\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::Calc\"))) (value (kind integer) (integer -5)))"
+            ),
+            "expected `-5` to fold to Integer(-5), got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn constraint_unary_not_negates_literal_boolean() {
+        // Unary logical negation (`UnaryOperator::Not`) on a literal boolean constraint body.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tconstraint def C { not true }\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::C\"))) (value (kind boolean) (boolean false)))"
+            ),
+            "expected `not true` to fold to Boolean(false), got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn calc_unary_minus_resolves_feature_operand() {
+        // `-x` with a resolvable feature operand: the operand reference resolves and, since it
+        // has a known constant value, the whole expression folds through `fold_unary`.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tattribute mass = 5;\n\
+             \tcalc def Calc { -mass }\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::Calc\"))) (value (kind integer) (integer -5)))"
+            ),
+            "expected `-mass` (mass = 5) to resolve the operand reference and fold to \
+             Integer(-5), got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn constraint_logical_xor_combines_two_comparisons_to_boolean() {
+        // `xor` shares `and`/`or`'s exact Boolean/Boolean truth-table shape (`is_logical_operator`
+        // widened, `fold_logical`'s new `Xor` arm): true xor false = true.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tattribute mass1 = 2;\n\
+             \tattribute massLimit = 10;\n\
+             \tattribute isActive = false;\n\
+             \tconstraint def C { mass1 < massLimit xor isActive }\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::C\"))) (value (kind boolean) (boolean true)))"
+            ),
+            "expected `mass1 < massLimit xor isActive` (true xor false) to fold to \
+             Boolean(true), got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn constraint_logical_implies_combines_two_comparisons_to_boolean() {
+        // `implies`: false implies anything is true (`!left || right`).
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tattribute mass1 = 20;\n\
+             \tattribute massLimit = 10;\n\
+             \tattribute isActive = false;\n\
+             \tconstraint def C { mass1 < massLimit implies isActive }\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::C\"))) (value (kind boolean) (boolean true)))"
+            ),
+            "expected `mass1 < massLimit implies isActive` (false implies false) to fold to \
+             Boolean(true), got:\n{output}"
         );
     }
 

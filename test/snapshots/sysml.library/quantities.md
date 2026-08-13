@@ -240,12 +240,6 @@ standard library package Quantities {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_constraint_definition_member")
-        (source "semantic")
-        (range (start 36 69) (end 36 80))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 36 85) (end 36 97))
@@ -299,7 +293,7 @@ standard library package Quantities {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:53c4b35e8ea71181ea0684b4ed831ac8f2885db3788df60f52c6762fd74bb4d4") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:53c4b35e8ea71181ea0684b4ed831ac8f2885db3788df60f52c6762fd74bb4d4") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/quantities.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Collections") (import (shape namespace) (recursive false)))))
@@ -325,7 +319,7 @@ standard library package Quantities {
     (declaration (id (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::SystemOfQuantities::baseQuantities"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ScalarQuantityValue")) (subsetting (reference "scalarQuantities"))))
     (declaration (id (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::TensorQuantityValue"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Array"))))
     (declaration (id (node (document "memory://snapshot/quantities.md") (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "dimensions")) (memberAccessOperand (reference "mRef::dimensions"))))
-    (declaration (id (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::TensorQuantityValue::boundMatch"))) (kind constraint) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "isBound")) (memberAccessOperand (reference "mRef::isBound")) (memberAccessOperand (reference "mRef::isBound"))))
+    (declaration (id (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::TensorQuantityValue::boundMatch"))) (kind constraint) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "isBound")) (expressionOperand (reference "isBound")) (memberAccessOperand (reference "mRef::isBound")) (memberAccessOperand (reference "mRef::isBound"))))
     (declaration (id (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::TensorQuantityValue::contravariantOrder"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Natural"))))
     (declaration (id (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::TensorQuantityValue::covariantOrder"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Natural"))))
     (declaration (id (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::TensorQuantityValue::isBound"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Boolean"))))
@@ -423,6 +417,9 @@ standard library package Quantities {
     (reference (id (source (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::TensorQuantityValue::boundMatch"))) (kind expressionOperand) (ordinal 0))
       (authored-target "isBound")
       (outcome (status resolved) (target (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::TensorQuantityValue::isBound")))))
+    (reference (id (source (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::TensorQuantityValue::boundMatch"))) (kind expressionOperand) (ordinal 1))
+      (authored-target "isBound")
+      (outcome (status resolved) (target (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::TensorQuantityValue::isBound")))))
     (reference (id (source (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::TensorQuantityValue::boundMatch"))) (kind memberAccessOperand) (ordinal 0))
       (authored-target "mRef::isBound")
       (outcome (status unresolved)))
@@ -498,6 +495,7 @@ standard library package Quantities {
     (relationship (kind typing) (source (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::SystemOfQuantities::baseQuantities"))) (target (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::ScalarQuantityValue"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::SystemOfQuantities::baseQuantities"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::SystemOfQuantities::baseQuantities"))) (target (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::scalarQuantities"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::SystemOfQuantities::baseQuantities"))) (kind subsetting) (ordinal 0)))
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::TensorQuantityValue::boundMatch"))) (target (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::TensorQuantityValue::isBound"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::TensorQuantityValue::boundMatch"))) (kind expressionOperand) (ordinal 0)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::TensorQuantityValue::boundMatch"))) (target (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::TensorQuantityValue::isBound"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::TensorQuantityValue::boundMatch"))) (kind expressionOperand) (ordinal 1)))
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::TensorQuantityValue::orderSum"))) (target (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::TensorQuantityValue::contravariantOrder"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::TensorQuantityValue::orderSum"))) (kind expressionOperand) (ordinal 0)))
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::TensorQuantityValue::orderSum"))) (target (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::TensorQuantityValue::covariantOrder"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::TensorQuantityValue::orderSum"))) (kind expressionOperand) (ordinal 1)))
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::TensorQuantityValue::orderSum"))) (target (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::TensorQuantityValue::order"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::TensorQuantityValue::orderSum"))) (kind expressionOperand) (ordinal 2)))
@@ -623,6 +621,10 @@ standard library package Quantities {
   )
   (query (document "memory://snapshot/quantities.md") (range (start 36 40) (end 36 47)) (probe (position 36 40))
     (reference (id (source (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::TensorQuantityValue::boundMatch"))) (kind expressionOperand) (ordinal 0) (authored-target "isBound")
+      (outcome (status resolved) (target (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::TensorQuantityValue::isBound")))))
+  )
+  (query (document "memory://snapshot/quantities.md") (range (start 36 73) (end 36 80)) (probe (position 36 73))
+    (reference (id (source (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::TensorQuantityValue::boundMatch"))) (kind expressionOperand) (ordinal 1) (authored-target "isBound")
       (outcome (status resolved) (target (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::TensorQuantityValue::isBound")))))
   )
   (query (document "memory://snapshot/quantities.md") (range (start 36 51) (end 36 63)) (probe (position 36 51))

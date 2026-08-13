@@ -497,12 +497,6 @@ package VehicleGeometryAndCoordinateFrames {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 93 51) (end 93 56))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 94 40) (end 94 44))
@@ -1001,6 +995,7 @@ package VehicleGeometryAndCoordinateFrames {
     (evaluated (declaration (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind integer) (integer 3)))
+    (evaluated (declaration (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (qualified-name "VehicleGeometryAndCoordinateFrames::vehicle::rearWheelXShift"))) (value (kind integer) (integer -1820)))
     (evaluated (declaration (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (qualified-name "VehicleGeometryAndCoordinateFrames::vehicle::wheelYShift"))) (value (kind integer) (integer 720)))

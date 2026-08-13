@@ -192,12 +192,6 @@ package AnalysisIndividualExample {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 11 99) (end 11 101))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 12 23) (end 12 40))
@@ -583,6 +577,7 @@ package AnalysisIndividualExample {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/analysis_individual_example.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/analysis_individual_example.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer -3)))
     (evaluated (declaration (node (document "memory://snapshot/analysis_individual_example.md") (qualified-name "AnalysisIndividualExample::VehicleQuantities::mpg"))) (value (kind unresolved-operand)))
   )
 )

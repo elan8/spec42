@@ -698,12 +698,6 @@ standard library package ISQAcoustics {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 183 98) (end 183 100))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 184 34) (end 184 53))
@@ -749,12 +743,6 @@ standard library package ISQAcoustics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 185 89) (end 185 97))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 185 100) (end 185 102))
       )
       (diagnostic
         (severity warning)
@@ -863,12 +851,6 @@ standard library package ISQAcoustics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 243 89) (end 243 97))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 243 100) (end 243 102))
       )
       (diagnostic
         (severity warning)
@@ -986,12 +968,6 @@ standard library package ISQAcoustics {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 293 98) (end 293 100))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 294 34) (end 294 53))
@@ -1037,12 +1013,6 @@ standard library package ISQAcoustics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 295 89) (end 295 97))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 295 100) (end 295 102))
       )
       (diagnostic
         (severity warning)
@@ -1118,12 +1088,6 @@ standard library package ISQAcoustics {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 320 98) (end 320 100))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 321 34) (end 321 53))
@@ -1169,12 +1133,6 @@ standard library package ISQAcoustics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 322 89) (end 322 97))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 322 100) (end 322 102))
       )
       (diagnostic
         (severity warning)
@@ -1250,12 +1208,6 @@ standard library package ISQAcoustics {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 347 98) (end 347 100))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 348 34) (end 348 53))
@@ -1301,12 +1253,6 @@ standard library package ISQAcoustics {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 349 89) (end 349 97))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 349 100) (end 349 102))
       )
       (diagnostic
         (severity warning)
@@ -2118,6 +2064,8 @@ standard library package ISQAcoustics {
     (relationship (kind aliasBinding) (source (node (document "memory://snapshot/isq_acoustics.md") (qualified-name "ISQAcoustics::volumeFlowRate"))) (target (node (document "memory://snapshot/isq_acoustics.md") (qualified-name "ISQAcoustics::volumeVelocity"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/isq_acoustics.md") (qualified-name "ISQAcoustics::volumeFlowRate"))) (kind aliasBinding) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/isq_acoustics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer -1)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_acoustics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer -4)))
     (evaluated (declaration (node (document "memory://snapshot/isq_acoustics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
     (evaluated (declaration (node (document "memory://snapshot/isq_acoustics.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind boolean) (boolean false)))
     (evaluated (declaration (node (document "memory://snapshot/isq_acoustics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind boolean) (boolean true)))
@@ -2125,9 +2073,16 @@ standard library package ISQAcoustics {
     (evaluated (declaration (node (document "memory://snapshot/isq_acoustics.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind boolean) (boolean false)))
     (evaluated (declaration (node (document "memory://snapshot/isq_acoustics.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind boolean) (boolean false)))
     (evaluated (declaration (node (document "memory://snapshot/isq_acoustics.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind boolean) (boolean false)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_acoustics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer -1)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_acoustics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer -2)))
     (evaluated (declaration (node (document "memory://snapshot/isq_acoustics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_acoustics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer -2)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_acoustics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer -1)))
     (evaluated (declaration (node (document "memory://snapshot/isq_acoustics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_acoustics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer -3)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_acoustics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer -2)))
     (evaluated (declaration (node (document "memory://snapshot/isq_acoustics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 2)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_acoustics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer -3)))
     (evaluated (declaration (node (document "memory://snapshot/isq_acoustics.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
   )
 )

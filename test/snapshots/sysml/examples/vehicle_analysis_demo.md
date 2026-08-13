@@ -383,12 +383,6 @@ package 'Vehicle Analysis Demo' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 17 99) (end 17 101))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 18 23) (end 18 40))
@@ -1673,6 +1667,7 @@ package 'Vehicle Analysis Demo' {
     (evaluated (declaration (node (document "memory://snapshot/vehicle_analysis_demo.md") (qualified-name "Vehicle Analysis Demo::VehicleModel::FuelTank::fuelLevel"))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/vehicle_analysis_demo.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind unresolved-operand)))
     (evaluated (declaration (node (document "memory://snapshot/vehicle_analysis_demo.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/vehicle_analysis_demo.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer -3)))
     (evaluated (declaration (node (document "memory://snapshot/vehicle_analysis_demo.md") (qualified-name "Vehicle Analysis Demo::VehicleQuantities::mpg"))) (value (kind unresolved-operand)))
     (evaluated (declaration (node (document "memory://snapshot/vehicle_analysis_demo.md") (qualified-name "Vehicle Analysis Demo::vehicleFuelEconomyAnalysisContext::cityFuelEconomyAnalysis::scenario"))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/vehicle_analysis_demo.md") (qualified-name "Vehicle Analysis Demo::vehicleFuelEconomyAnalysisContext::highwayFuelEconomyAnalysis::scenario"))) (value (kind non-constant)))

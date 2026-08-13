@@ -1175,12 +1175,6 @@ standard library package ISQInformation {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 169 100) (end 169 102))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 170 22) (end 170 39))
@@ -1244,12 +1238,6 @@ standard library package ISQInformation {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 198 89) (end 198 97))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 198 100) (end 198 102))
       )
       (diagnostic
         (severity warning)
@@ -1379,12 +1367,6 @@ standard library package ISQInformation {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 273 100) (end 273 102))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 274 22) (end 274 39))
@@ -1454,12 +1436,6 @@ standard library package ISQInformation {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 314 89) (end 314 97))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 314 100) (end 314 102))
       )
       (diagnostic
         (severity warning)
@@ -1535,12 +1511,6 @@ standard library package ISQInformation {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 361 100) (end 361 102))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 362 22) (end 362 39))
@@ -1604,12 +1574,6 @@ standard library package ISQInformation {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 390 89) (end 390 97))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 390 100) (end 390 102))
       )
       (diagnostic
         (severity warning)
@@ -2093,12 +2057,6 @@ standard library package ISQInformation {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 853 100) (end 853 102))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 854 22) (end 854 39))
@@ -2192,12 +2150,6 @@ standard library package ISQInformation {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 901 89) (end 901 97))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 901 100) (end 901 102))
       )
       (diagnostic
         (severity warning)
@@ -2297,12 +2249,6 @@ standard library package ISQInformation {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
-        (source "semantic")
-        (range (start 953 100) (end 953 102))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 954 22) (end 954 39))
@@ -2320,7 +2266,7 @@ standard library package ISQInformation {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:4c098a60ddef7e0429882aa3571aea514990c7ac1534c9ddf2adaaa84e5d9c17") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:4c098a60ddef7e0429882aa3571aea514990c7ac1534c9ddf2adaaa84e5d9c17") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/isq_information.md") (qualified-name "ISQInformation"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/isq_information.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false)))))
@@ -3621,14 +3567,23 @@ standard library package ISQInformation {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/isq_information.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_information.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer -1)))
     (evaluated (declaration (node (document "memory://snapshot/isq_information.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_information.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer -1)))
     (evaluated (declaration (node (document "memory://snapshot/isq_information.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_information.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer -1)))
     (evaluated (declaration (node (document "memory://snapshot/isq_information.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_information.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer -1)))
     (evaluated (declaration (node (document "memory://snapshot/isq_information.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_information.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer -1)))
     (evaluated (declaration (node (document "memory://snapshot/isq_information.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_information.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer -1)))
     (evaluated (declaration (node (document "memory://snapshot/isq_information.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_information.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer -1)))
     (evaluated (declaration (node (document "memory://snapshot/isq_information.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_information.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer -1)))
     (evaluated (declaration (node (document "memory://snapshot/isq_information.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/isq_information.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind integer) (integer -1)))
   )
 )
 ~~~
