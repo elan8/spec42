@@ -335,12 +335,6 @@ package '2a-Parts Interconnection' {
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
-        (range (start 196 36) (end 196 63))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
         (range (start 197 32) (end 197 47))
       )
       (diagnostic
@@ -608,7 +602,7 @@ package '2a-Parts Interconnection' {
       (outcome (status resolved) (target (node (document "memory://snapshot/2a_parts_interconnection.md") (qualified-name "2a-Parts Interconnection::Definitions::Transmission")))))
     (reference (id (source (node (document "memory://snapshot/2a_parts_interconnection.md") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::vehicleToRoadPort"))) (kind redefinition) (ordinal 0))
       (authored-target "VehicleA::vehicleToRoadPort")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/2a_parts_interconnection.md") (qualified-name "2a-Parts Interconnection::Definitions::VehicleA::vehicleToRoadPort")))))
     (reference (id (source (node (document "memory://snapshot/2a_parts_interconnection.md") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::vehicleToRoadPort::leftWheelToRoadPort"))) (kind subsetting) (ordinal 0))
       (authored-target "wheelToRoadPort")
       (outcome (status unresolved)))
@@ -661,6 +655,7 @@ package '2a-Parts Interconnection' {
     (relationship (kind typing) (source (node (document "memory://snapshot/2a_parts_interconnection.md") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::rightWheel::wheelToAxlePort"))) (target (node (document "memory://snapshot/2a_parts_interconnection.md") (qualified-name "2a-Parts Interconnection::Definitions::WheelToAxlePort"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/2a_parts_interconnection.md") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::rightWheel::wheelToAxlePort"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/2a_parts_interconnection.md") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::rightWheel::wheelToRoadPort"))) (target (node (document "memory://snapshot/2a_parts_interconnection.md") (qualified-name "2a-Parts Interconnection::Definitions::WheelToRoadPort"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/2a_parts_interconnection.md") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::rightWheel::wheelToRoadPort"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/2a_parts_interconnection.md") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::transmission"))) (target (node (document "memory://snapshot/2a_parts_interconnection.md") (qualified-name "2a-Parts Interconnection::Definitions::Transmission"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/2a_parts_interconnection.md") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::transmission"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/2a_parts_interconnection.md") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::vehicleToRoadPort"))) (target (node (document "memory://snapshot/2a_parts_interconnection.md") (qualified-name "2a-Parts Interconnection::Definitions::VehicleA::vehicleToRoadPort"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/2a_parts_interconnection.md") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::vehicleToRoadPort"))) (kind redefinition) (ordinal 0)))
   )
   (evaluation
   )
@@ -895,7 +890,7 @@ package '2a-Parts Interconnection' {
   )
   (query (document "memory://snapshot/2a_parts_interconnection.md") (range (start 196 36) (end 196 63)) (probe (position 196 36))
     (reference (id (source (node (document "memory://snapshot/2a_parts_interconnection.md") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::vehicleToRoadPort"))) (kind redefinition) (ordinal 0) (authored-target "VehicleA::vehicleToRoadPort")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/2a_parts_interconnection.md") (qualified-name "2a-Parts Interconnection::Definitions::VehicleA::vehicleToRoadPort")))))
   )
   (query (document "memory://snapshot/2a_parts_interconnection.md") (range (start 197 32) (end 197 47)) (probe (position 197 32))
     (reference (id (source (node (document "memory://snapshot/2a_parts_interconnection.md") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::vehicleToRoadPort::leftWheelToRoadPort"))) (kind subsetting) (ordinal 0) (authored-target "wheelToRoadPort")

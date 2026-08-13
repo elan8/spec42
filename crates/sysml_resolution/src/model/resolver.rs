@@ -2022,7 +2022,22 @@ fn resolve_reference<R: ResolutionReferenceFact>(
         scratch.next_candidates.clear();
         for candidate in scratch.candidates.iter().copied() {
             record_lookup(scratch.work)?;
-            let direct = indexes.exported_names.candidates(Some(candidate), *segment);
+            // A qualified name's later segments name a member OWNED by the previous segment's
+            // resolved declaration, exactly as if that member were being looked up from within
+            // its owner's own scope (KerML's "public by default unless owned by a non-Package
+            // namespace" visibility rule governs whether a *wildcard* import/general lookup can
+            // reach a name, not whether an explicit qualified reference that already names the
+            // owner can reach its direct member). `direct_names` is therefore the right index
+            // here -- the same one `extend_inherited_names_with_usage_typing`'s inherited-member
+            // traversal reads from for redefinition targets like `ManagedRequirement::status`
+            // (owned by a Type, not a Package, yet still reachable). `exported_names` is reserved
+            // for cross-file import propagation (`NamespaceImport`/`MembershipImport`), which is
+            // a different visibility question -- whether a *different* file can pull the name in
+            // via `import`, not whether this file's own qualified reference can name it directly.
+            // Import fallback still applies when the owner itself was reached only through an
+            // import (the member is not locally owned at all), so cross-package traversal through
+            // imported namespaces keeps working.
+            let direct = indexes.direct_names.candidates(Some(candidate), *segment);
             if !direct.is_empty() {
                 scratch.next_candidates.extend_from_slice(direct);
             } else if let Some(imports) = indexes.exported_imports {

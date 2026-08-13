@@ -10140,17 +10140,12 @@ mod tests {
     #[test]
     fn redefinition_value_with_a_qualified_reference_is_pushed_and_classified() {
         // The exact `enum_status_redefinition.md` shape (`attribute :>> status =
-        // RequirementStatusKind::approved;`): before this widening, the `=
-        // RequirementStatusKind::approved` value portion was never lowered at all -- no
-        // reference, no evaluation fact. Now it publishes an `ExpressionOperand` reference (the
-        // shared lookup every constraint/calc operand reference already uses) sourced at the
-        // redefining attribute's own anonymous declaration. The reference itself stays
-        // `unresolved`: a multi-segment (`::`-qualified) `ExpressionOperand` target is a
-        // pre-existing, separate lexical-lookup limitation (every such reference in the real
-        // corpus -- e.g. `kerml/filtering.md`'s `Element::name`, `Annotations::
-        // ApprovalAnnotation::approved` -- stays unresolved too), orthogonal to value-assignment
-        // evaluation and unaffected by this widening either way -- this is not a regression, and
-        // fixing the underlying qualified-path lookup is out of scope here.
+        // RequirementStatusKind::approved;`): the `= RequirementStatusKind::approved` value
+        // portion publishes an `ExpressionOperand` reference (the shared lookup every
+        // constraint/calc operand reference already uses) sourced at the redefining attribute's
+        // own anonymous declaration, and -- since the multi-segment qualified-path lookup bug
+        // fixed alongside this test -- now resolves to the enum literal, exactly as the same
+        // qualified name would resolve if used as e.g. a `FeatureTyping` target.
         let output = build_semantic_sexpr(
             "package Demo {\n\
              \tenum def RequirementStatusKind {\n\
@@ -10167,19 +10162,43 @@ mod tests {
         assert!(
             output.contains(
                 "(authored-target \"RequirementStatusKind::approved\")\n      (outcome (status \
-                 unresolved)))"
+                 resolved) (target (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::RequirementStatusKind::approved\")))))"
             ),
-            "expected the redefinition value `RequirementStatusKind::approved` to publish an \
-             ExpressionOperand reference (even though it stays unresolved, a pre-existing \
-             qualified-path lookup limitation), got:\n{output}"
+            "expected the redefinition value `RequirementStatusKind::approved` to resolve its \
+             ExpressionOperand reference to the enum literal, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn multi_segment_qualified_expression_operand_resolves_through_nested_namespaces() {
+        // Regression for the qualified-path `ExpressionOperand` lookup bug: `resolve_reference`'s
+        // multi-segment segment loop was reading `exported_names` (the cross-file import
+        // propagation index, which treats a member owned by a non-Package/LibraryPackage
+        // namespace as private by KerML's default-visibility rule) instead of `direct_names` (the
+        // unfiltered index every other same-scope qualified traversal -- e.g. usage-typing
+        // redefinition targets -- reads from). A three-segment qualified name reaching through two
+        // nested non-Package namespaces (`Outer::Inner::member`, `Inner` owned by `Outer`, not by
+        // a package) now resolves, matching how `Outer::Inner` alone already resolved as e.g. a
+        // `FeatureTyping` target.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpart def Outer {\n\
+             \t\tpart def Inner {\n\
+             \t\t\tattribute member = 5;\n\
+             \t\t}\n\
+             \t}\n\
+             \tattribute x = Outer::Inner::member;\n\
+             }\n",
         );
         assert!(
             output.contains(
-                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (anonymous (kind attribute) (ordinal 0))))) (value (kind unresolved-operand)))"
+                "(authored-target \"Outer::Inner::member\")\n      (outcome (status resolved) \
+                 (target (node (document \"memory://test/enum.sysml\") (qualified-name \
+                 \"Demo::Outer::Inner::member\")))))"
             ),
-            "expected the redefinition value to publish an UnresolvedOperand evaluation fact \
-             (never a fabricated value) since its sole operand reference did not resolve, got:\n{output}"
+            "expected the three-segment qualified name `Outer::Inner::member` to resolve its \
+             ExpressionOperand reference to the nested attribute, got:\n{output}"
         );
     }
 

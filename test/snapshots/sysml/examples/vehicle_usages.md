@@ -285,12 +285,6 @@ package VehicleUsages {
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
-        (range (start 64 34) (end 64 62))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
         (range (start 65 30) (end 65 39))
       )
       (diagnostic
@@ -508,7 +502,7 @@ package VehicleUsages {
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C2::rearAxleAssembly"))) (kind redefinition) (ordinal 0))
       (authored-target "vehicle_C1::rearAxleAssembly")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly")))))
     (reference (id (source (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C2::rearAxleAssembly::leftRearMount"))) (kind featureTyping) (ordinal 0))
       (authored-target "Mounting")
       (outcome (status unresolved)))
@@ -562,6 +556,7 @@ package VehicleUsages {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly::frontWheel"))) (target (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::narrowRimWheel"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly::frontWheel"))) (kind subsetting) (ordinal 0)))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly::rearWheel"))) (target (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::wideRimWheel"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly::rearWheel"))) (kind subsetting) (ordinal 0)))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C2"))) (target (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C1"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C2"))) (kind subsetting) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C2::rearAxleAssembly"))) (target (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C2::rearAxleAssembly"))) (kind redefinition) (ordinal 0)))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C3"))) (target (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C2"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C3"))) (kind subsetting) (ordinal 0)))
   )
   (evaluation
@@ -691,7 +686,7 @@ package VehicleUsages {
   )
   (query (document "memory://snapshot/vehicle_usages.md") (range (start 64 34) (end 64 62)) (probe (position 64 34))
     (reference (id (source (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C2::rearAxleAssembly"))) (kind redefinition) (ordinal 0) (authored-target "vehicle_C1::rearAxleAssembly")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly")))))
   )
   (query (document "memory://snapshot/vehicle_usages.md") (range (start 68 28) (end 68 36)) (probe (position 68 28))
     (reference (id (source (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C2::rearAxleAssembly::leftRearMount"))) (kind featureTyping) (ordinal 0) (authored-target "Mounting")

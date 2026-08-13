@@ -261,12 +261,6 @@ package '5-State-based Behavior-2' {
       )
       (diagnostic
         (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 115 31) (end 115 56))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_action_usage_member")
         (source "semantic")
         (range (start 116 4) (end 116 37))
@@ -469,7 +463,7 @@ package '5-State-based Behavior-2' {
       (outcome (status resolved) (target (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA")))))
     (reference (id (source (node (document "memory://snapshot/5_state_based_behavior_2.md") (anonymous (kind perform-action) (ordinal 0))))) (kind redefinition) (ordinal 0))
       (authored-target "VehicleA::provide power")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA::provide power")))))
     (reference (id (source (node (document "memory://snapshot/5_state_based_behavior_2.md") (anonymous (kind state) (ordinal 0))))) (kind redefinition) (ordinal 0))
       (authored-target "VehicleA::vehicle states")
       (outcome (status unresolved)))
@@ -521,6 +515,7 @@ package '5-State-based Behavior-2' {
     (relationship (kind entryActionBinding) (source (node (document "memory://snapshot/5_state_based_behavior_2.md") (anonymous (kind entry-action-binding) (ordinal 0))))) (target (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Usages::perform self test"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/5_state_based_behavior_2.md") (anonymous (kind entry-action-binding) (ordinal 0))))) (kind entryActionBinding) (ordinal 0)))
     (relationship (kind exitActionBinding) (source (node (document "memory://snapshot/5_state_based_behavior_2.md") (anonymous (kind exit-action-binding) (ordinal 0))))) (target (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Usages::apply parking brake"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/5_state_based_behavior_2.md") (anonymous (kind exit-action-binding) (ordinal 0))))) (kind exitActionBinding) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1"))) (target (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/5_state_based_behavior_2.md") (anonymous (kind perform-action) (ordinal 0))))) (target (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA::provide power"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/5_state_based_behavior_2.md") (anonymous (kind perform-action) (ordinal 0))))) (kind redefinition) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::vehicleController"))) (target (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Definitions::VehicleController"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::vehicleController"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
@@ -676,7 +671,7 @@ package '5-State-based Behavior-2' {
   )
   (query (document "memory://snapshot/5_state_based_behavior_2.md") (range (start 115 31) (end 115 56)) (probe (position 115 31))
     (reference (id (source (node (document "memory://snapshot/5_state_based_behavior_2.md") (anonymous (kind perform-action) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "VehicleA::provide power")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA::provide power")))))
   )
   (query (document "memory://snapshot/5_state_based_behavior_2.md") (range (start 119 32) (end 119 58)) (probe (position 119 32))
     (reference (id (source (node (document "memory://snapshot/5_state_based_behavior_2.md") (anonymous (kind state) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "VehicleA::vehicle states")

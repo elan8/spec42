@@ -90,12 +90,6 @@ package Packets {
       )
       (diagnostic
         (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 27 41) (end 27 88))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 28 25) (end 28 33))
@@ -176,7 +170,7 @@ package Packets {
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Thermal Data Packet::packet data field::user data field"))) (kind redefinition) (ordinal 0))
       (authored-target "Packets::packet data field::user data field")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/packets.md") (qualified-name "Packets::packet data field::user data field")))))
     (reference (id (source (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Thermal Data Packet::packet data field::user data field::temperature"))) (kind featureTyping) (ordinal 0))
       (authored-target "Real")
       (outcome (status unresolved)))
@@ -193,6 +187,7 @@ package Packets {
     (relationship (kind specialization) (source (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Thermal Data Packet"))) (target (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Data Packet"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Thermal Data Packet"))) (kind specialization) (ordinal 0)))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Thermal Data Packet::packet data field"))) (target (node (document "memory://snapshot/packets.md") (qualified-name "Packets::packet data field"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Thermal Data Packet::packet data field"))) (kind redefinition) (ordinal 0)))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Thermal Data Packet::packet data field::packet secondary header"))) (target (node (document "memory://snapshot/packets.md") (qualified-name "Packets::packet header"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Thermal Data Packet::packet data field::packet secondary header"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Thermal Data Packet::packet data field::user data field"))) (target (node (document "memory://snapshot/packets.md") (qualified-name "Packets::packet data field::user data field"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Thermal Data Packet::packet data field::user data field"))) (kind redefinition) (ordinal 0)))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/packets.md") (qualified-name "Packets::packet data field::packet secondary header"))) (target (node (document "memory://snapshot/packets.md") (qualified-name "Packets::packet header"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/packets.md") (qualified-name "Packets::packet data field::packet secondary header"))) (kind redefinition) (ordinal 0)))
   )
   (evaluation
@@ -252,7 +247,7 @@ package Packets {
   )
   (query (document "memory://snapshot/packets.md") (range (start 27 41) (end 27 88)) (probe (position 27 41))
     (reference (id (source (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Thermal Data Packet::packet data field::user data field"))) (kind redefinition) (ordinal 0) (authored-target "Packets::packet data field::user data field")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/packets.md") (qualified-name "Packets::packet data field::user data field")))))
   )
   (query (document "memory://snapshot/packets.md") (range (start 29 27) (end 29 31)) (probe (position 29 27))
     (reference (id (source (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Thermal Data Packet::packet data field::user data field::temperature"))) (kind featureTyping) (ordinal 0) (authored-target "Real")

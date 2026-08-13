@@ -121,12 +121,6 @@ package '11b-Safety and Security Feaure Views' {
       )
       (diagnostic
         (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 56 10) (end 56 29))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_view_definition_member")
         (source "semantic")
         (range (start 60 3) (end 60 55))
@@ -232,7 +226,7 @@ package '11b-Safety and Security Feaure Views' {
       (outcome (status resolved) (target (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::Views::vehicleSafetyFeatureView")))))
     (reference (id (source (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::Views::vehicleMandatorySafetyFeatureView"))) (kind expressionOperand) (ordinal 0))
       (authored-target "Safety::isMandatory")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::AnnotationDefinitions::Safety::isMandatory")))))
     (reference (id (source (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::Views::vehicleSafetyFeatureView"))) (kind featureTyping) (ordinal 0))
       (authored-target "SafetyFeatureView")
       (outcome (status resolved) (target (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::ViewDefinitions::SafetyFeatureView")))))
@@ -249,6 +243,7 @@ package '11b-Safety and Security Feaure Views' {
     (relationship (kind metadataAnnotation) (source (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::PartsTree::vehicle::wheelAssy::antilockBrakes"))) (target (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::AnnotationDefinitions::Safety"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::PartsTree::vehicle::wheelAssy::antilockBrakes"))) (kind metadataAnnotation) (ordinal 0)))
     (relationship (kind filterMetadataTest) (source (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::ViewDefinitions::SafetyFeatureView"))) (target (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::AnnotationDefinitions::Safety"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::ViewDefinitions::SafetyFeatureView"))) (kind filterMetadataTest) (ordinal 0)))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::Views::vehicleMandatorySafetyFeatureView"))) (target (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::Views::vehicleSafetyFeatureView"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::Views::vehicleMandatorySafetyFeatureView"))) (kind subsetting) (ordinal 0)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::Views::vehicleMandatorySafetyFeatureView"))) (target (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::AnnotationDefinitions::Safety::isMandatory"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::Views::vehicleMandatorySafetyFeatureView"))) (kind expressionOperand) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::Views::vehicleSafetyFeatureView"))) (target (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::ViewDefinitions::SafetyFeatureView"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::Views::vehicleSafetyFeatureView"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
@@ -320,7 +315,7 @@ package '11b-Safety and Security Feaure Views' {
   )
   (query (document "memory://snapshot/11b_safety_and_security_feature_views.md") (range (start 56 10) (end 56 29)) (probe (position 56 10))
     (reference (id (source (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::Views::vehicleMandatorySafetyFeatureView"))) (kind expressionOperand) (ordinal 0) (authored-target "Safety::isMandatory")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::AnnotationDefinitions::Safety::isMandatory")))))
   )
   (query (document "memory://snapshot/11b_safety_and_security_feature_views.md") (range (start 50 34) (end 50 51)) (probe (position 50 34))
     (reference (id (source (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::Views::vehicleSafetyFeatureView"))) (kind featureTyping) (ordinal 0) (authored-target "SafetyFeatureView")
