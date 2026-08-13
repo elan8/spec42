@@ -438,12 +438,6 @@ package '6-Individual and Snapshots' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_occurrence_definition_member")
-        (source "semantic")
-        (range (start 112 5) (end 118 6))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 121 27) (end 121 35))
@@ -501,12 +495,6 @@ package '6-Individual and Snapshots' {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 134 9) (end 134 21))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_occurrence_definition_member")
-        (source "semantic")
-        (range (start 136 5) (end 136 30))
       )
       (diagnostic
         (severity warning)
@@ -570,12 +558,6 @@ package '6-Individual and Snapshots' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_occurrence_definition_member")
-        (source "semantic")
-        (range (start 156 5) (end 156 31))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 159 27) (end 159 35))
@@ -621,6 +603,7 @@ package '6-Individual and Snapshots' {
     (declaration (id (node (document "memory://snapshot/6_individual_and_snapshots.md") (anonymous (kind attribute) (ordinal 1))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "position"))))
     (declaration (id (node (document "memory://snapshot/6_individual_and_snapshots.md") (anonymous (kind attribute) (ordinal 2))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "velocity"))))
     (declaration (id (node (document "memory://snapshot/6_individual_and_snapshots.md") (anonymous (kind attribute) (ordinal 3))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "acceleration"))))
+    (declaration (id (node (document "memory://snapshot/6_individual_and_snapshots.md") (anonymous (kind state) (ordinal 0))))) (kind state) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/6_individual_and_snapshots.md") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots::reference::context_t1"))) (kind occurrence) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "VehicleRoadContext_ID1"))))
     (declaration (id (node (document "memory://snapshot/6_individual_and_snapshots.md") (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "t"))))
     (declaration (id (node (document "memory://snapshot/6_individual_and_snapshots.md") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots::reference::context_t1::road_ID1_t1"))) (kind occurrence) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Road_ID1"))))
@@ -631,6 +614,7 @@ package '6-Individual and Snapshots' {
     (declaration (id (node (document "memory://snapshot/6_individual_and_snapshots.md") (anonymous (kind attribute) (ordinal 1))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "position"))))
     (declaration (id (node (document "memory://snapshot/6_individual_and_snapshots.md") (anonymous (kind attribute) (ordinal 2))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "velocity"))))
     (declaration (id (node (document "memory://snapshot/6_individual_and_snapshots.md") (anonymous (kind attribute) (ordinal 3))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "acceleration"))))
+    (declaration (id (node (document "memory://snapshot/6_individual_and_snapshots.md") (anonymous (kind state) (ordinal 0))))) (kind state) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/6_individual_and_snapshots.md") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots::reference::context_tn"))) (kind occurrence) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "VehicleRoadContext_ID1"))))
     (declaration (id (node (document "memory://snapshot/6_individual_and_snapshots.md") (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "t"))))
     (declaration (id (node (document "memory://snapshot/6_individual_and_snapshots.md") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots::reference::context_tn::road_ID1_tn"))) (kind occurrence) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Road_ID1"))))
@@ -641,6 +625,7 @@ package '6-Individual and Snapshots' {
     (declaration (id (node (document "memory://snapshot/6_individual_and_snapshots.md") (anonymous (kind attribute) (ordinal 1))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "position"))))
     (declaration (id (node (document "memory://snapshot/6_individual_and_snapshots.md") (anonymous (kind attribute) (ordinal 2))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "velocity"))))
     (declaration (id (node (document "memory://snapshot/6_individual_and_snapshots.md") (anonymous (kind attribute) (ordinal 3))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "acceleration"))))
+    (declaration (id (node (document "memory://snapshot/6_individual_and_snapshots.md") (anonymous (kind state) (ordinal 0))))) (kind state) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/6_individual_and_snapshots.md") (qualified-name "6-Individual and Snapshots::Part Definitions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/6_individual_and_snapshots.md") (qualified-name "6-Individual and Snapshots::Part Definitions::Road"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/6_individual_and_snapshots.md") (qualified-name "6-Individual and Snapshots::Part Definitions::Road::angle"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Real"))))

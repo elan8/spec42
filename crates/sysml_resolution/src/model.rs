@@ -1613,11 +1613,13 @@ impl SemanticModelBuilder {
                 AttributeBodyElement::PartUsage(part) => {
                     self.lower_part_usage(document, Some(owner), part)?;
                 }
+                AttributeBodyElement::OccurrenceUsage(occurrence_usage) => {
+                    self.lower_occurrence_usage(document, Some(owner), occurrence_usage)?;
+                }
                 AttributeBodyElement::Connect(_)
                 | AttributeBodyElement::MetadataKeywordUsage(_)
                 | AttributeBodyElement::AssertConstraint(_)
                 | AttributeBodyElement::RefDecl(_)
-                | AttributeBodyElement::OccurrenceUsage(_)
                 | AttributeBodyElement::Other(_) => self.push_unsupported(
                     document,
                     UnsupportedFamily::AttributeMember,
@@ -2007,6 +2009,9 @@ impl SemanticModelBuilder {
                 ActionDefBodyElement::StateUsage(state_usage) => {
                     self.lower_state_usage(document, Some(owner), state_usage)?;
                 }
+                ActionDefBodyElement::OccurrenceUsage(occurrence_usage) => {
+                    self.lower_occurrence_usage(document, Some(owner), occurrence_usage)?;
+                }
                 ActionDefBodyElement::Doc(_) => {}
                 ActionDefBodyElement::InOutDecl(_)
                 | ActionDefBodyElement::Annotation(_)
@@ -2028,7 +2033,6 @@ impl SemanticModelBuilder {
                 | ActionDefBodyElement::IfStmt(_)
                 | ActionDefBodyElement::PartUsage(_)
                 | ActionDefBodyElement::AssertConstraint(_)
-                | ActionDefBodyElement::OccurrenceUsage(_)
                 | ActionDefBodyElement::Assign(_)
                 | ActionDefBodyElement::ForLoop(_)
                 | ActionDefBodyElement::ThenAction(_)
@@ -2116,6 +2120,9 @@ impl SemanticModelBuilder {
                 ActionUsageBodyElement::StateUsage(state_usage) => {
                     self.lower_state_usage(document, Some(owner), state_usage)?;
                 }
+                ActionUsageBodyElement::OccurrenceUsage(occurrence_usage) => {
+                    self.lower_occurrence_usage(document, Some(owner), occurrence_usage)?;
+                }
                 ActionUsageBodyElement::Doc(_) => {}
                 ActionUsageBodyElement::Annotation(_)
                 | ActionUsageBodyElement::MetadataAnnotation(_)
@@ -2136,7 +2143,6 @@ impl SemanticModelBuilder {
                 | ActionUsageBodyElement::IfStmt(_)
                 | ActionUsageBodyElement::PartUsage(_)
                 | ActionUsageBodyElement::AssertConstraint(_)
-                | ActionUsageBodyElement::OccurrenceUsage(_)
                 | ActionUsageBodyElement::Assign(_)
                 | ActionUsageBodyElement::ForLoop(_)
                 | ActionUsageBodyElement::ThenAction(_)
@@ -2215,6 +2221,9 @@ impl SemanticModelBuilder {
                 StateDefBodyElement::StateUsage(state_usage) => {
                     self.lower_state_usage(document, Some(owner), state_usage)?;
                 }
+                StateDefBodyElement::RequirementUsage(requirement_usage) => {
+                    self.lower_requirement_usage(document, Some(owner), requirement_usage)?;
+                }
                 StateDefBodyElement::Doc(_) => {}
                 StateDefBodyElement::Annotation(_)
                 | StateDefBodyElement::MetadataAnnotation(_)
@@ -2227,7 +2236,6 @@ impl SemanticModelBuilder {
                 | StateDefBodyElement::Then(_)
                 | StateDefBodyElement::FinalState(_)
                 | StateDefBodyElement::Ref(_)
-                | StateDefBodyElement::RequirementUsage(_)
                 | StateDefBodyElement::Transition(_) => self.push_unsupported(
                     document,
                     UnsupportedFamily::StateDefinitionMember,
@@ -3065,9 +3073,11 @@ impl SemanticModelBuilder {
                     ConnectionDefBodyElement::PartUsage(part_usage) => {
                         self.lower_part_usage(document, Some(declaration), part_usage)?;
                     }
+                    ConnectionDefBodyElement::OccurrenceUsage(occurrence_usage) => {
+                        self.lower_occurrence_usage(document, Some(declaration), occurrence_usage)?;
+                    }
                     ConnectionDefBodyElement::RefDecl(_)
                     | ConnectionDefBodyElement::AssertConstraint(_)
-                    | ConnectionDefBodyElement::OccurrenceUsage(_)
                     | ConnectionDefBodyElement::SuccessionUsage(_) => self.push_unsupported(
                         document,
                         UnsupportedFamily::ConnectionDefinitionMember,
@@ -3526,14 +3536,16 @@ impl SemanticModelBuilder {
             OccurrenceBodyElement::EndDecl(end_decl) => {
                 self.lower_end_decl(document, owner, end_decl)?;
             }
+            OccurrenceBodyElement::StateUsage(state_usage) => {
+                self.lower_state_usage(document, Some(owner), state_usage)?;
+            }
             OccurrenceBodyElement::Annotation(_)
             | OccurrenceBodyElement::AssertConstraint(_)
             | OccurrenceBodyElement::Other(_)
             | OccurrenceBodyElement::FlowUsage(_)
             | OccurrenceBodyElement::SuccessionUsage(_)
             | OccurrenceBodyElement::Satisfy(_)
-            | OccurrenceBodyElement::Allocate(_)
-            | OccurrenceBodyElement::StateUsage(_) => self.push_unsupported(
+            | OccurrenceBodyElement::Allocate(_) => self.push_unsupported(
                 document,
                 UnsupportedFamily::OccurrenceDefinitionMember,
                 element.span.clone(),

@@ -240,4 +240,76 @@ mod tests {
 
         assert_eq!(sequential.identity(), parallel.identity());
     }
+
+    fn semantic_sexpr_for(source: &str) -> String {
+        let request = BuildRequest::new(
+            vec![SourceInput::new(
+                "memory://test.sysml",
+                source.to_string(),
+                SourceKind::Workspace,
+            )],
+            ConstructionSchedule::Sequential,
+            "contract-v1",
+        )
+        .unwrap();
+        let published = build(request).unwrap();
+        let mut output = String::new();
+        published.debug().write_semantic_sexpr(&mut output).unwrap();
+        output
+    }
+
+    /// A nested `part` usage inside an `attribute def` body (BNF `AttributeBodyElement::PartUsage`,
+    /// shared with `item def`/`item` usage bodies per the OMG `14c-Language Extensions.sysml`
+    /// FMEA library example) must lower as its own `part` declaration, not fall through to
+    /// `unsupported_attribute_member`.
+    #[test]
+    fn nested_part_usage_inside_attribute_def_body_lowers_as_part() {
+        let sexpr = semantic_sexpr_for(
+            "package P { attribute def Show { part frame : Frame; attribute def Frame; } }",
+        );
+        assert!(
+            sexpr.contains("P::Show::frame"),
+            "expected nested part declaration, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("unsupported_attribute_member"),
+            "did not expect unsupported_attribute_member, got: {sexpr}"
+        );
+    }
+
+    /// A nested `occurrence` usage inside an `attribute def` body (BNF
+    /// `AttributeBodyElement::OccurrenceUsage`, e.g. the FMEA library's `#prevention occurs;`-style
+    /// members) must lower as its own `occurrence` declaration via the already-existing
+    /// `lower_occurrence_usage`, not fall through to `unsupported_attribute_member`.
+    #[test]
+    fn nested_occurrence_usage_inside_attribute_def_body_lowers_as_occurrence() {
+        let sexpr = semantic_sexpr_for("package P { attribute def Show { occurrence flash; } }");
+        assert!(
+            sexpr.contains("P::Show::flash"),
+            "expected nested occurrence declaration, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("unsupported_attribute_member"),
+            "did not expect unsupported_attribute_member, got: {sexpr}"
+        );
+    }
+
+    /// A nested `exhibit` state usage inside an `occurrence def`/usage body (BNF
+    /// `OccurrenceBodyElement::StateUsage`, e.g. `exhibit vehicleStates.on;` from the OMG spec
+    /// Annex's individuals/snapshots examples) must lower as its own `state` declaration via the
+    /// already-existing `lower_state_usage`, not fall through to
+    /// `unsupported_occurrence_definition_member`.
+    #[test]
+    fn nested_state_usage_inside_occurrence_def_body_lowers_as_state() {
+        let sexpr =
+            semantic_sexpr_for("package P { occurrence def O { exhibit vehicleStates.on; } }");
+        assert!(
+            sexpr.contains("(kind state)"),
+            "expected nested state declaration, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("unsupported_occurrence_definition_member"),
+            "did not expect unsupported_occurrence_definition_member, got: {sexpr}"
+        );
+    }
 }

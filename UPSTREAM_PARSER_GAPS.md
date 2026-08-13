@@ -424,6 +424,35 @@ entry should carry enough detail to file/update an upstream issue against
   out of scope for `sysml_resolution`/`sysml_query`/`spec42-snapshot` to work around without
   re-parsing the fallback `text` blob independently (duplicating parser logic, fragile).
 
+### 11. `item <name> : <Type>;` nested inside an `attribute def`/`attribute`/`item def`/`item`
+usage body is captured opaquely, not as a structured `ItemUsage` node
+
+- **Symptom:** `attribute def Show { item picture : Picture; }` (see
+  `test/snapshots/sysml/training/21_messaging_with_ports.md`) reports `unsupported_attribute_member`
+  for the `item picture : Picture;` member; no `picture` declaration is published at all.
+- **Root cause:** `AttributeBodyElement` (crate `sysml-v2-parser`, `src/ast/structure.rs`) has no
+  `ItemUsage` variant. `sysml_resolution`'s existing `lower_item_usage` (used successfully when an
+  `item` is nested in a `part def`/`part usage`/package body, whose body-element enums *do* carry a
+  structured `ItemUsage` variant) has nothing to dispatch to here: `crate::parser::attribute::attribute_body_element`
+  (`src/parser/attribute.rs`) lists `item`/`individual` in `ATTRIBUTE_OPAQUE_STARTERS` and routes
+  them through `capture_opaque_member` into `AttributeBodyElement::Other(String)` -- a raw text
+  blob, not a typed node -- before any `ItemUsage`-shaped alternative gets a chance to run. This is
+  the same "no structured AST to lower from" shape as gaps #1/#2/#10, not a dispatch gap in
+  `sysml_resolution` (verified: `PartDefBodyElement`/`PartUsageBodyElement`/`ActionDefBodyElement`/
+  `ActionUsageBodyElement`/`ConnectionDefBodyElement`/`OccurrenceBodyElement` were all audited for
+  the analogous "existing lowering function not wired into an existing typed variant" pattern in
+  the same slice that landed this note; `AttributeBodyElement::OccurrenceUsage` and
+  `StateDefBodyElement::RequirementUsage` and `OccurrenceBodyElement::StateUsage` *were* genuine
+  dispatch gaps of that shape and got wired up, but this `item`-in-attribute-body case is not: there
+  is no `AttributeBodyElement::ItemUsage` variant to match on).
+- **Representative input:** `attribute def Show { item picture : Picture; }`.
+- **Representative snapshot:** `test/snapshots/sysml/training/21_messaging_with_ports.md`.
+- **Status:** blocking, needs an upstream `sysml-v2-parser` change adding a real
+  `AttributeBodyElement::ItemUsage(Box<Node<ItemUsage>>)` variant (parsed before the
+  `ATTRIBUTE_OPAQUE_STARTERS` opaque-capture fallback, mirroring how `PartUsage`/`OccurrenceUsage`
+  already get a dedicated variant in the same shared body). Not attempted here -- out of scope for
+  `sysml_resolution`/`sysml_query`/`spec42-snapshot` to work around.
+
 ### Cases traced back to gap #1, not new gaps
 
 - `test/snapshots/kerml/inheritance.md`'s `alias z for y::g;` (same-file qualified lookup to a
