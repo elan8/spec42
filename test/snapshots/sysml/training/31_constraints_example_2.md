@@ -170,7 +170,7 @@ package 'Constraints Example-2' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:1401b94c195cf681c773b33c51257cac88eec771fd607c5e2b716d4656834f0e") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:1401b94c195cf681c773b33c51257cac88eec771fd607c5e2b716d4656834f0e") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/31_constraints_example_2.md") (qualified-name "Constraints Example-2"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/31_constraints_example_2.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ISQ") (import (shape namespace) (recursive false)))))
@@ -249,6 +249,14 @@ package 'Constraints Example-2' {
     (relationship (kind typing) (source (node (document "memory://snapshot/31_constraints_example_2.md") (qualified-name "Constraints Example-2::Vehicle::transmission"))) (target (node (document "memory://snapshot/31_constraints_example_2.md") (qualified-name "Constraints Example-2::Engine"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/31_constraints_example_2.md") (qualified-name "Constraints Example-2::Vehicle::transmission"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/31_constraints_example_2.md") (qualified-name "Constraints Example-2::MassConstraint"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/31_constraints_example_2.md") (qualified-name "Constraints Example-2::MassConstraint"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/31_constraints_example_2.md") (qualified-name "Constraints Example-2::MassConstraint"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/31_constraints_example_2.md") (qualified-name "Constraints Example-2::MassConstraint"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/31_constraints_example_2.md") (qualified-name "Constraints Example-2::Vehicle::massConstraint"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/31_constraints_example_2.md") (qualified-name "Constraints Example-2::Vehicle::massConstraint"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/31_constraints_example_2.md") (qualified-name "Constraints Example-2::Vehicle::massConstraint"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/31_constraints_example_2.md") (qualified-name "Constraints Example-2::Vehicle::massConstraint"))) (value (kind unresolved-operand)))
   )
 )
 ~~~

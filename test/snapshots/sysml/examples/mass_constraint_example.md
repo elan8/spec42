@@ -363,7 +363,7 @@ package MassConstraintExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:1d2684d0a7f09166084f2e2a5d7168b0f44a3fef8251785edc5141512a68536c") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:1d2684d0a7f09166084f2e2a5d7168b0f44a3fef8251785edc5141512a68536c") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/mass_constraint_example.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ISQ") (import (shape namespace) (recursive false)))))
@@ -585,6 +585,7 @@ package MassConstraintExample {
     (relationship (kind typing) (source (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::mc"))) (target (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::MassConstraint4"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::mc"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::MassLimit"))) (value (kind unresolved-operand)))
   )
 )
 ~~~

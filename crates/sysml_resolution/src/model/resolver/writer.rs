@@ -18,7 +18,7 @@ pub(super) fn write_semantic(
     write_declarations(model, output)?;
     write_references(model, output)?;
     write_relationships(model, output)?;
-    writeln!(output, "  (evaluation\n  )")?;
+    write_evaluation(model, output)?;
     write!(output, ")")
 }
 
@@ -405,6 +405,60 @@ fn write_relationships(model: &ResolvedSemanticModel, output: &mut dyn fmt::Writ
         writeln!(output, ") (provenance implied))")?;
     }
     writeln!(output, "  )")
+}
+
+fn write_evaluation(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fmt::Result {
+    writeln!(output, "  (evaluation")?;
+    for index in canonical_evaluation_indices(model) {
+        let fact = &model.evaluation[index];
+        write!(output, "    (evaluated (declaration ")?;
+        write_node_identity(model, fact.declaration, output)?;
+        write!(output, ") ")?;
+        write_evaluated_value(fact.outcome, output)?;
+        writeln!(output, ")")?;
+    }
+    writeln!(output, "  )")
+}
+
+fn write_evaluated_value(value: EvaluatedValue, output: &mut dyn fmt::Write) -> fmt::Result {
+    match value {
+        EvaluatedValue::Boolean(value) => {
+            write!(output, "(value (kind boolean) (boolean {value}))")
+        }
+        EvaluatedValue::Integer(value) => {
+            write!(output, "(value (kind integer) (integer {value}))")
+        }
+        EvaluatedValue::Real(value) => write!(output, "(value (kind real) (real {value}))"),
+        EvaluatedValue::NotEvaluated => write!(output, "(value (kind not-evaluated))"),
+        EvaluatedValue::UnresolvedOperand => write!(output, "(value (kind unresolved-operand))"),
+        EvaluatedValue::NonConstant => write!(output, "(value (kind non-constant))"),
+    }
+}
+
+fn canonical_evaluation_indices(model: &ResolvedSemanticModel) -> Vec<usize> {
+    let mut indices = (0..model.evaluation.len()).collect::<Vec<_>>();
+    indices.sort_by(|left, right| {
+        let left_fact = &model.evaluation[*left];
+        let right_fact = &model.evaluation[*right];
+        let left_document = model
+            .storage
+            .declaration(left_fact.declaration)
+            .map(|declaration| document_identity(model, declaration.document))
+            .unwrap_or("<invalid-document>");
+        let right_document = model
+            .storage
+            .declaration(right_fact.declaration)
+            .map(|declaration| document_identity(model, declaration.document))
+            .unwrap_or("<invalid-document>");
+        left_document
+            .cmp(right_document)
+            .then_with(|| {
+                declaration_path_key(model, left_fact.declaration)
+                    .cmp(&declaration_path_key(model, right_fact.declaration))
+            })
+            .then_with(|| left.cmp(right))
+    });
+    indices
 }
 
 fn write_navigation(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fmt::Result {
@@ -853,6 +907,7 @@ mod tests {
             recovery: Box::new([]),
             symbols: SymbolTableBuilder::default().freeze(),
             paths: SymbolPathArenaBuilder::default().freeze(),
+            evaluation_facts: Box::new([]),
         };
         let (_, _, resolution) = resolve_dense(
             &storage.declarations,
@@ -861,9 +916,11 @@ mod tests {
             &storage.references,
         )
         .unwrap();
+        let evaluation = compute_evaluation(&storage, &resolution);
         let model = ResolvedSemanticModel {
             storage,
             resolution,
+            evaluation,
             metadata: PublicationMetadata {
                 phase: PublicationPhase::Resolved,
                 completeness: PublicationCompleteness::Complete,
@@ -882,6 +939,7 @@ mod tests {
         assert!(output.contains("  (declarations\n  )"));
         assert!(output.contains("  (references\n  )"));
         assert!(output.contains("  (relationships\n  )"));
+        assert!(output.contains("  (evaluation\n  )"));
         output.clear();
         model.write_navigation_sexpr(&mut output).unwrap();
         assert_eq!(output, "(navigation\n)");

@@ -122,7 +122,7 @@ standard library package Constraints {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:a2662fc9318e275b4298e4f830ae8f2f2576fca8b2566b7bb92fca80941a2e57") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:a2662fc9318e275b4298e4f830ae8f2f2576fca8b2566b7bb92fca80941a2e57") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/constraints.md") (qualified-name "Constraints"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/constraints.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Performances::BooleanEvaluation") (import (shape membership) (recursive false)))))
@@ -186,6 +186,7 @@ standard library package Constraints {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/constraints.md") (qualified-name "Constraints::negatedConstraintChecks"))) (target (node (document "memory://snapshot/constraints.md") (qualified-name "Constraints::constraintChecks"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/constraints.md") (qualified-name "Constraints::negatedConstraintChecks"))) (kind subsetting) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/constraints.md") (qualified-name "Constraints::ConstraintCheck"))) (value (kind unresolved-operand)))
   )
 )
 ~~~

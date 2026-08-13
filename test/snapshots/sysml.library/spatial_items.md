@@ -486,7 +486,7 @@ standard library package SpatialItems {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:bd57ce9933edb79205cf90aa83c854b8cd85638d43c8dd0680c9e4f74638a197") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:bd57ce9933edb79205cf90aa83c854b8cd85638d43c8dd0680c9e4f74638a197") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/spatial_items.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Objects::Point") (import (shape membership) (recursive false)))))
@@ -691,6 +691,10 @@ standard library package SpatialItems {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem::subSpatialParts"))) (target (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem::subSpatialItems"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem::subSpatialParts"))) (kind subsetting) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::CurrentDisplacementOf"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::CurrentPositionOf"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::DisplacementOf"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::PositionOf"))) (value (kind unresolved-operand)))
   )
 )
 ~~~

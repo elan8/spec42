@@ -416,7 +416,7 @@ standard library package Requirements {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:d88ac67d997f213f4f536ab0338a318b2b9d53074d455c67debf6f3ac07173da") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:d88ac67d997f213f4f536ab0338a318b2b9d53074d455c67debf6f3ac07173da") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/requirements.md") (qualified-name "Requirements"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/requirements.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Base::Anything") (import (shape membership) (recursive false)))))
@@ -603,6 +603,8 @@ standard library package Requirements {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/requirements.md") (qualified-name "Requirements::satisfiedRequirementChecks"))) (target (node (document "memory://snapshot/requirements.md") (qualified-name "Requirements::requirementChecks"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/requirements.md") (qualified-name "Requirements::satisfiedRequirementChecks"))) (kind subsetting) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck"))) (value (kind unresolved-operand)))
   )
 )
 ~~~

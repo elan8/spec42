@@ -199,7 +199,7 @@ package 'Analytical Constraints' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:38f93a877fba3054bdff73b329c39c14b3803a9f07cca4d081f02ea3d71c33a3") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:38f93a877fba3054bdff73b329c39c14b3803a9f07cca4d081f02ea3d71c33a3") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/31_analytical_constraints.md") (qualified-name "Analytical Constraints"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/31_analytical_constraints.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ISQ") (import (shape namespace) (recursive false)))))
@@ -288,6 +288,8 @@ package 'Analytical Constraints' {
   (relationships
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/31_analytical_constraints.md") (qualified-name "Analytical Constraints::StraightLineDynamicsEquations"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/31_analytical_constraints.md") (qualified-name "Analytical Constraints::StraightLineDynamicsEquations"))) (value (kind unresolved-operand)))
   )
 )
 ~~~

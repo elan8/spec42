@@ -293,10 +293,80 @@ impl ResolutionResults {
     }
 }
 
+/// The published outcome of evaluating one `PendingEvaluationFact`: the declaration the supported
+/// constraint/calc expression belongs to, and its final `EvaluatedValue`. See `compute_evaluation`.
+#[derive(Debug, Clone, Copy, PartialEq)]
+struct EvaluationFact {
+    declaration: DeclarationId,
+    outcome: EvaluatedValue,
+}
+
+/// Slice 2 of the constraint/calc expression fact family (see `4ca42166` for slice 1). Runs
+/// strictly after `resolve_dense`'s resolution fixed point settles, mirroring where slice 1's own
+/// `ExpressionOperand` references are resolved: literal-only expressions never depend on
+/// resolution and could in principle fold earlier, but folding here keeps evaluation a single
+/// pass over one immutable resolved state, with no risk of an evaluation fact observing a
+/// mid-fixed-point resolution outcome.
+///
+/// If resolution itself did not converge, no evaluation fact is published: an expression whose
+/// operand's own resolution outcome is not settled cannot be conservatively classified as
+/// resolved/unresolved, so evaluation stays vacuous for that publication (an empty `evaluation`
+/// section, `has-evaluation` false) rather than guessing.
+fn compute_evaluation(
+    storage: &SemanticModelStorage,
+    resolution: &ResolutionResults,
+) -> Box<[EvaluationFact]> {
+    if resolution.solver_status != SolverStatus::Converged {
+        return Box::new([]);
+    }
+    let mut facts = Vec::with_capacity(storage.evaluation_facts.len());
+    for pending in storage.evaluation_facts.iter() {
+        let outcome = match pending.shape {
+            ExpressionEvalShape::Literal(value) => value,
+            ExpressionEvalShape::HasOperand => {
+                let mut has_operand_reference = false;
+                let mut all_resolved = true;
+                for (index, reference) in storage.references.iter().enumerate() {
+                    if reference.source != pending.declaration
+                        || reference.kind != ReferenceKind::ExpressionOperand
+                    {
+                        continue;
+                    }
+                    has_operand_reference = true;
+                    let Ok(id) = AuthoredReferenceId::from_index(index) else {
+                        all_resolved = false;
+                        continue;
+                    };
+                    if !matches!(resolution.outcome(id), Some(ResolutionStatus::Resolved(_))) {
+                        all_resolved = false;
+                    }
+                }
+                if !has_operand_reference {
+                    // Should not happen: `HasOperand` is only classified when the same walk that
+                    // pushes an `ExpressionOperand` reference found a feature-reference leaf.
+                    // Conservative fallback rather than a panic on a storage inconsistency.
+                    EvaluatedValue::UnresolvedOperand
+                } else if all_resolved {
+                    EvaluatedValue::NonConstant
+                } else {
+                    EvaluatedValue::UnresolvedOperand
+                }
+            }
+            ExpressionEvalShape::Unsupported => continue,
+        };
+        facts.push(EvaluationFact {
+            declaration: pending.declaration,
+            outcome,
+        });
+    }
+    facts.into_boxed_slice()
+}
+
 #[derive(Debug)]
 pub(crate) struct ResolvedSemanticModel {
     storage: SemanticModelStorage,
     resolution: ResolutionResults,
+    evaluation: Box<[EvaluationFact]>,
     metadata: PublicationMetadata,
 }
 
@@ -444,13 +514,16 @@ impl SemanticModelStorage {
         } else {
             PublicationCompleteness::Complete
         };
+        let evaluation = compute_evaluation(&self, &resolution);
+        let has_evaluation = !evaluation.is_empty();
         Ok(ResolvedSemanticModel {
             storage: self,
             resolution,
+            evaluation,
             metadata: PublicationMetadata {
                 phase: PublicationPhase::Resolved,
                 completeness,
-                has_evaluation: false,
+                has_evaluation,
             },
         })
     }

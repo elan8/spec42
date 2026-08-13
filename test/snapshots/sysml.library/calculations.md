@@ -121,7 +121,7 @@ standard library package Calculations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:76edc93a07e743414784c68e1469af2a857523f9f84b6ed941875b990b53c295") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:76edc93a07e743414784c68e1469af2a857523f9f84b6ed941875b990b53c295") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/calculations.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Performances::Evaluation") (import (shape membership) (recursive false)))))
@@ -179,6 +179,7 @@ standard library package Calculations {
     (relationship (kind typing) (source (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations::Calculation::subcalculations"))) (target (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations::Calculation"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations::Calculation::subcalculations"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations::Calculation"))) (value (kind unresolved-operand)))
   )
 )
 ~~~

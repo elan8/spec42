@@ -275,7 +275,7 @@ standard library package Interfaces {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:d6d9003112ba8ccb2d20b49c088947a95fa9449a7658ba20dd58f05186fc0ca2") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:d6d9003112ba8ccb2d20b49c088947a95fa9449a7658ba20dd58f05186fc0ca2") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/interfaces.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Connections::Connection") (import (shape membership) (recursive false)))))
@@ -366,6 +366,9 @@ standard library package Interfaces {
     (relationship (kind specialization) (source (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::binaryInterfaces"))) (target (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::interfaces"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::binaryInterfaces"))) (kind specialization) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::excludingOnce"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::excludingOnce"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::excludingOnce"))) (value (kind unresolved-operand)))
   )
 )
 ~~~

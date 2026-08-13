@@ -187,7 +187,7 @@ package 'Trade Study Analysis Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:274a63a85b793cf406d13f0fe83aaf7af1f4187ddc54484969c9785666688456") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:274a63a85b793cf406d13f0fe83aaf7af1f4187ddc54484969c9785666688456") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/33_trade_study_analysis_example.md") (qualified-name "Trade Study Analysis Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/33_trade_study_analysis_example.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false)))))
@@ -313,6 +313,10 @@ package 'Trade Study Analysis Example' {
     (relationship (kind typing) (source (node (document "memory://snapshot/33_trade_study_analysis_example.md") (qualified-name "Trade Study Analysis Example::engineTradeStudy::::powerRollup"))) (target (node (document "memory://snapshot/33_trade_study_analysis_example.md") (qualified-name "Trade Study Analysis Example::PowerRollup"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/33_trade_study_analysis_example.md") (qualified-name "Trade Study Analysis Example::engineTradeStudy::::powerRollup"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/33_trade_study_analysis_example.md") (qualified-name "Trade Study Analysis Example::engineTradeStudy::::costRollup"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/33_trade_study_analysis_example.md") (qualified-name "Trade Study Analysis Example::engineTradeStudy::::efficiencyRollup"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/33_trade_study_analysis_example.md") (qualified-name "Trade Study Analysis Example::engineTradeStudy::::massRollup"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/33_trade_study_analysis_example.md") (qualified-name "Trade Study Analysis Example::engineTradeStudy::::powerRollup"))) (value (kind unresolved-operand)))
   )
 )
 ~~~

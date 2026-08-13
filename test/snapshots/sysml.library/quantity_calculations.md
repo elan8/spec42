@@ -748,7 +748,7 @@ standard library package QuantityCalculations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:7f5be5954e0a181f8d7a24827f111a25d513fe0471efb1538f82fb586b5b6b7f") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:7f5be5954e0a181f8d7a24827f111a25d513fe0471efb1538f82fb586b5b6b7f") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/quantity_calculations.md") (qualified-name "QuantityCalculations"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/quantity_calculations.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
@@ -1066,6 +1066,17 @@ standard library package QuantityCalculations {
   (relationships
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/quantity_calculations.md") (qualified-name "QuantityCalculations::["))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/quantity_calculations.md") (qualified-name "QuantityCalculations::product"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/quantity_calculations.md") (qualified-name "QuantityCalculations::product"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/quantity_calculations.md") (qualified-name "QuantityCalculations::product"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/quantity_calculations.md") (qualified-name "QuantityCalculations::product"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/quantity_calculations.md") (qualified-name "QuantityCalculations::product"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/quantity_calculations.md") (qualified-name "QuantityCalculations::sum"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/quantity_calculations.md") (qualified-name "QuantityCalculations::sum"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/quantity_calculations.md") (qualified-name "QuantityCalculations::sum"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/quantity_calculations.md") (qualified-name "QuantityCalculations::sum"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/quantity_calculations.md") (qualified-name "QuantityCalculations::sum"))) (value (kind unresolved-operand)))
   )
 )
 ~~~

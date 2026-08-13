@@ -296,7 +296,7 @@ package 'Turbojet Stage Analysis' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:320de94f6327b2bbe79d44377e84cb7b43b26059601b1470058e66918e50ceb3") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:320de94f6327b2bbe79d44377e84cb7b43b26059601b1470058e66918e50ceb3") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/turbojet_stage_analysis.md") (qualified-name "Turbojet Stage Analysis"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/turbojet_stage_analysis.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Quantities::ScalarQuantityValue") (import (shape membership) (recursive false)))))
@@ -428,6 +428,10 @@ package 'Turbojet Stage Analysis' {
     (relationship (kind specialization) (source (node (document "memory://snapshot/turbojet_stage_analysis.md") (qualified-name "Turbojet Stage Analysis::Thermodynamics Structure::Reversible Adiabatic Process"))) (target (node (document "memory://snapshot/turbojet_stage_analysis.md") (qualified-name "Turbojet Stage Analysis::Thermodynamics Structure::Adiabatic Process"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/turbojet_stage_analysis.md") (qualified-name "Turbojet Stage Analysis::Thermodynamics Structure::Reversible Adiabatic Process"))) (kind specialization) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/turbojet_stage_analysis.md") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Ideal Gas Law"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/turbojet_stage_analysis.md") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Reversible Adiabatic Compression Density"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/turbojet_stage_analysis.md") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Reversible Adiabatic Compression Temperature"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/turbojet_stage_analysis.md") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Total Enthalpy"))) (value (kind unresolved-operand)))
   )
 )
 ~~~

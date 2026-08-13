@@ -197,7 +197,7 @@ package 'Calculation Definitions' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:5c649927f6fe2bb32ac760b92a33d0e0ef146edb51749cbdb1012ba0cad7b917") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:5c649927f6fe2bb32ac760b92a33d0e0ef146edb51749cbdb1012ba0cad7b917") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/30_calculation_definitions.md") (qualified-name "Calculation Definitions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/30_calculation_definitions.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false)))))
@@ -286,6 +286,10 @@ package 'Calculation Definitions' {
   (relationships
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/30_calculation_definitions.md") (qualified-name "Calculation Definitions::Power"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/30_calculation_definitions.md") (qualified-name "Calculation Definitions::Power"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/30_calculation_definitions.md") (qualified-name "Calculation Definitions::Power"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/30_calculation_definitions.md") (qualified-name "Calculation Definitions::Power"))) (value (kind unresolved-operand)))
   )
 )
 ~~~

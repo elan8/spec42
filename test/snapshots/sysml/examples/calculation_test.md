@@ -90,7 +90,7 @@ package CalculationExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:d0c80a0d91a8d81aff9f9961a53c439c40dff92c1b18f08d25eab88a25bd083f") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:d0c80a0d91a8d81aff9f9961a53c439c40dff92c1b18f08d25eab88a25bd083f") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/calculation_test.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ISQ") (import (shape namespace) (recursive false)))))
@@ -153,6 +153,7 @@ package CalculationExample {
     (relationship (kind typing) (source (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::vehicle::trans"))) (target (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::VehiclePart"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::vehicle::trans"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::ms"))) (value (kind unresolved-operand)))
   )
 )
 ~~~

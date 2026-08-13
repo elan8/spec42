@@ -259,7 +259,7 @@ standard library package VerificationCases {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:384c8158e574ea87aca9b808965096c93cd9d2b821afefb35a2d06f83d3cf900") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:384c8158e574ea87aca9b808965096c93cd9d2b821afefb35a2d06f83d3cf900") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/verification_cases.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Cases::Case") (import (shape membership) (recursive false)))))
@@ -319,6 +319,8 @@ standard library package VerificationCases {
     (relationship (kind typing) (source (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases::VerificationMethod::kind"))) (target (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases::VerificationMethodKind"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases::VerificationMethod::kind"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases::PassIf"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases::PassIf"))) (value (kind unresolved-operand)))
   )
 )
 ~~~

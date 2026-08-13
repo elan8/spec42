@@ -640,7 +640,7 @@ standard library package Time {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:8aceb913828a5bc9600d9b45befbf6d1d985bdf139ced7122bd86515ebbf7e6d") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:8aceb913828a5bc9600d9b45befbf6d1d985bdf139ced7122bd86515ebbf7e6d") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/time.md") (qualified-name "Time"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/time.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Occurrences::Occurrence") (import (shape membership) (recursive false)))))
@@ -923,6 +923,9 @@ standard library package Time {
     (relationship (kind typing) (source (node (document "memory://snapshot/time.md") (qualified-name "Time::utcTimeInstant"))) (target (node (document "memory://snapshot/time.md") (qualified-name "Time::UtcTimeInstantValue"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/time.md") (qualified-name "Time::utcTimeInstant"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/time.md") (qualified-name "Time::TimeOf"))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/time.md") (qualified-name "Time::convertIso8601StructureToDateTime"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/time.md") (qualified-name "Time::convertIso8601StructureToDateTime"))) (value (kind unresolved-operand)))
   )
 )
 ~~~

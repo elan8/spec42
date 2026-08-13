@@ -178,7 +178,7 @@ package AssignmentTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:9a9130e71b13757d4c986fc821a94556e68b5ad1a1afe13a2cc4ca1a081e88c4") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:9a9130e71b13757d4c986fc821a94556e68b5ad1a1afe13a2cc4ca1a081e88c4") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::Counter"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -225,6 +225,8 @@ package AssignmentTest {
     (relationship (kind typing) (source (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::a::counting"))) (target (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::Counting"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::a::counting"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::Increment"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::Increment"))) (value (kind unresolved-operand)))
   )
 )
 ~~~

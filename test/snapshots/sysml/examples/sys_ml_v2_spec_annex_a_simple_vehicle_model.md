@@ -3968,7 +3968,7 @@ package SimpleVehicleModel{
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:90be26144f137fa77c52045c140f97a4dd6322eb6ab6064954b9b91f6bb9d5b5") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:90be26144f137fa77c52045c140f97a4dd6322eb6ab6064954b9b91f6bb9d5b5") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "Definitions") (import (shape namespace) (recursive false)))))
@@ -6261,6 +6261,17 @@ package SimpleVehicleModel{
     (relationship (kind specialization) (source (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewDefinitions::PartsTreeView"))) (target (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewDefinitions::TreeView"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewDefinitions::PartsTreeView"))) (kind specialization) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::BestFuelConsumptionPerDistance"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::BestFuelConsumptionPerDistance"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::BestFuelConsumptionPerDistance"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::FuelConsumption"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::FuelConsumption"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::IdlingFuelConsumptionPerTime"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::IdlingFuelConsumptionPerTime"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (anonymous (kind calc) (ordinal 0))))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (anonymous (kind calc) (ordinal 0))))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (anonymous (kind calc) (ordinal 1))))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (anonymous (kind calc) (ordinal 1))))) (value (kind unresolved-operand)))
   )
 )
 ~~~

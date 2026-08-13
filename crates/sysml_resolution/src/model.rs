@@ -528,6 +528,158 @@ enum ReferenceKind {
     ExpressionOperand,
 }
 
+/// The computed or explicit outcome of evaluating one supported constraint/calc expression
+/// (slice 2 of the constraint/calc expression fact family; slice 1, `4ca42166`, only resolved
+/// operand references and never evaluated anything). Only expressions within slice 1's supported
+/// syntactic shapes (literal leaves, a comparison `BinaryOp` of two literals, `Parenthesized`
+/// wrapping a supported shape) reach this pass at all -- a shape slice 1 leaves unsupported
+/// publishes no evaluation fact, per `classify_constraint_expression`/`classify_calc_expression`.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub(crate) enum EvaluatedValue {
+    /// A genuinely computed constant `bool` result: a literal boolean leaf, or a comparison of
+    /// two literal operands.
+    Boolean(bool),
+    /// A genuinely computed constant integer result: a literal integer leaf.
+    Integer(i64),
+    /// A genuinely computed constant real result: a literal real leaf.
+    Real(f64),
+    /// Evaluation did not run for this expression. Reserved for a future evaluation-policy gate;
+    /// the current pass attempts evaluation for every slice-1-supported expression whenever
+    /// resolution itself converges (see `SemanticModelStorage::resolve`), so no fact currently
+    /// publishes this variant, but consumers must not assume every supported expression yields a
+    /// value.
+    #[allow(dead_code)]
+    NotEvaluated,
+    /// The expression tree references at least one operand
+    /// (`ReferenceKind::ExpressionOperand`) that resolution left unresolved, ambiguous,
+    /// unsupported, or non-converged. What such an operand would evaluate to is unknown, so the
+    /// expression cannot be folded.
+    UnresolvedOperand,
+    /// The expression is a slice-1-supported syntactic shape, but at least one leaf is a
+    /// *resolved* feature reference rather than a literal. This slice does not look up what a
+    /// resolved feature reference itself evaluates to (constant propagation through resolved
+    /// operand references is deferred to a future slice), so the expression is conservatively
+    /// not a constant.
+    NonConstant,
+}
+
+/// The classification `classify_constraint_expression`/`classify_calc_expression` assign to one
+/// expression node before resolution's fixed point runs. `Literal` expressions need no resolved
+/// state at all (their value is already known); `HasOperand` expressions need the resolved
+/// outcome of their `ExpressionOperand` reference(s) to settle to `UnresolvedOperand` or
+/// `NonConstant`; `Unsupported` expressions (any shape `lower_constraint_expression`/
+/// `lower_calc_expression` does not recognize) publish no evaluation fact at all.
+#[derive(Debug, Clone, Copy, PartialEq)]
+enum ExpressionEvalShape {
+    Literal(EvaluatedValue),
+    HasOperand,
+    Unsupported,
+}
+
+/// Folds a comparison of two already-literal operands to a `Boolean` outcome. Integer/Real
+/// operands compare numerically (mixed Integer/Real is widened to `f64`); Boolean operands
+/// support only `Eq`/`Ne`, mirroring `is_comparison_operator`'s scope. Any other literal-type
+/// pairing (e.g. comparing a Boolean to an Integer) is conservatively `NonConstant`: SysML typing
+/// would reject it, but this slice does not perform type checking, so it never fabricates a
+/// truth value for a shape it cannot type.
+fn fold_literal_comparison(
+    op: BinaryOperator,
+    left: EvaluatedValue,
+    right: EvaluatedValue,
+) -> EvaluatedValue {
+    fn as_f64(value: EvaluatedValue) -> Option<f64> {
+        match value {
+            EvaluatedValue::Integer(value) => Some(value as f64),
+            EvaluatedValue::Real(value) => Some(value),
+            _ => None,
+        }
+    }
+    let result = match (left, right) {
+        (EvaluatedValue::Boolean(left), EvaluatedValue::Boolean(right)) => match op {
+            BinaryOperator::Eq => Some(left == right),
+            BinaryOperator::Ne => Some(left != right),
+            _ => None,
+        },
+        (left, right) => match (as_f64(left), as_f64(right)) {
+            (Some(left), Some(right)) => Some(match op {
+                BinaryOperator::Eq => left == right,
+                BinaryOperator::Ne => left != right,
+                BinaryOperator::Lt => left < right,
+                BinaryOperator::Le => left <= right,
+                BinaryOperator::Gt => left > right,
+                BinaryOperator::Ge => left >= right,
+                _ => return EvaluatedValue::NonConstant,
+            }),
+            _ => None,
+        },
+    };
+    result.map_or(EvaluatedValue::NonConstant, EvaluatedValue::Boolean)
+}
+
+fn literal_expression_value(node: &Expression) -> Option<EvaluatedValue> {
+    match node {
+        Expression::LiteralBoolean(value) => Some(EvaluatedValue::Boolean(*value)),
+        Expression::LiteralInteger(value) => Some(EvaluatedValue::Integer(*value)),
+        Expression::LiteralReal(text) => text.parse::<f64>().ok().map(EvaluatedValue::Real),
+        _ => None,
+    }
+}
+
+/// Classifies a constraint-body expression exactly along `lower_constraint_expression`'s
+/// supported-shape boundary, without pushing any reference or diagnostic (a pure, side-effect-free
+/// mirror used only to decide whether/how to publish an evaluation fact). See `EvaluatedValue`.
+fn classify_constraint_expression(node: &Expression) -> ExpressionEvalShape {
+    match node {
+        Expression::LiteralInteger(_)
+        | Expression::LiteralReal(_)
+        | Expression::LiteralBoolean(_) => literal_expression_value(node)
+            .map_or(ExpressionEvalShape::Unsupported, |value| {
+                ExpressionEvalShape::Literal(value)
+            }),
+        Expression::FeatureRef(_) | Expression::FeatureChainRef(_) => {
+            ExpressionEvalShape::HasOperand
+        }
+        Expression::Parenthesized(inner) => classify_constraint_expression(&inner.value),
+        Expression::BinaryOp { op, left, right } if is_comparison_operator(op) => {
+            match (
+                classify_constraint_expression(&left.value),
+                classify_constraint_expression(&right.value),
+            ) {
+                (ExpressionEvalShape::Unsupported, _) | (_, ExpressionEvalShape::Unsupported) => {
+                    ExpressionEvalShape::Unsupported
+                }
+                (ExpressionEvalShape::HasOperand, _) | (_, ExpressionEvalShape::HasOperand) => {
+                    ExpressionEvalShape::HasOperand
+                }
+                (ExpressionEvalShape::Literal(left), ExpressionEvalShape::Literal(right)) => {
+                    ExpressionEvalShape::Literal(fold_literal_comparison(op.clone(), left, right))
+                }
+            }
+        }
+        _ => ExpressionEvalShape::Unsupported,
+    }
+}
+
+/// Classifies a calc-body expression exactly along `lower_calc_expression`'s supported-shape
+/// boundary (the same leaf/reference/parenthesized shapes as `classify_constraint_expression`,
+/// minus comparison-operator support, since calc bodies are typically arithmetic formulas and
+/// arithmetic `BinaryOp`s are not part of slice 1's supported scope).
+fn classify_calc_expression(node: &Expression) -> ExpressionEvalShape {
+    match node {
+        Expression::LiteralInteger(_)
+        | Expression::LiteralReal(_)
+        | Expression::LiteralBoolean(_) => literal_expression_value(node)
+            .map_or(ExpressionEvalShape::Unsupported, |value| {
+                ExpressionEvalShape::Literal(value)
+            }),
+        Expression::FeatureRef(_) | Expression::FeatureChainRef(_) => {
+            ExpressionEvalShape::HasOperand
+        }
+        Expression::Parenthesized(inner) => classify_calc_expression(&inner.value),
+        _ => ExpressionEvalShape::Unsupported,
+    }
+}
+
 /// Whether a `BinaryOperator` is one of the six boolean comparison operators
 /// (`lower_constraint_expression`'s supported `BinaryOp` shape): `==`, `!=`, `<`, `<=`, `>`, `>=`.
 /// KerML's strict-identity `===`/`!==` (`StrictEq`/`StrictNe`) are deliberately excluded from this
@@ -711,6 +863,16 @@ struct PendingReference {
     import: Option<AuthoredImportFacts>,
 }
 
+/// A construction-time-classified evaluation candidate: the declaration a supported constraint/
+/// calc expression belongs to, plus its `ExpressionEvalShape`. Only `Literal`/`HasOperand` shapes
+/// are ever stored (see `SemanticModelBuilder::push_evaluation_fact`); `Unsupported` publishes no
+/// fact, keeping the evaluation pass strictly within slice 1's supported syntactic scope.
+#[derive(Debug, Clone, Copy)]
+struct PendingEvaluationFact {
+    declaration: DeclarationId,
+    shape: ExpressionEvalShape,
+}
+
 #[derive(Debug)]
 struct SemanticModelStorage {
     documents: Box<[CanonicalDocument]>,
@@ -721,6 +883,7 @@ struct SemanticModelStorage {
     recovery: Box<[RecoveryRecord]>,
     symbols: SymbolTable,
     paths: SymbolPathArena,
+    evaluation_facts: Box<[PendingEvaluationFact]>,
 }
 
 impl SemanticModelStorage {
@@ -747,6 +910,7 @@ struct SemanticModelBuilder {
     references: Vec<AuthoredReference>,
     unsupported: Vec<UnsupportedRecord>,
     recovery: Vec<RecoveryRecord>,
+    evaluation_facts: Vec<PendingEvaluationFact>,
     symbols: SymbolTableBuilder,
     paths: SymbolPathArenaBuilder,
     path_scratch: Vec<SymbolId>,
@@ -947,6 +1111,20 @@ impl SemanticModelBuilder {
         self.recovery.push(RecoveryRecord { document, span });
     }
 
+    /// Records one evaluation candidate for a slice-1-supported constraint/calc expression,
+    /// classified by `classify_constraint_expression`/`classify_calc_expression` at the point the
+    /// expression is lowered. `Unsupported` is deliberately dropped here rather than stored: an
+    /// expression shape slice 1 does not recognize must publish no evaluation fact at all (mirrors
+    /// its existing `unsupported_constraint_definition_member`/`unsupported_calc_definition_member`
+    /// diagnostic boundary).
+    fn push_evaluation_fact(&mut self, declaration: DeclarationId, shape: ExpressionEvalShape) {
+        if matches!(shape, ExpressionEvalShape::Unsupported) {
+            return;
+        }
+        self.evaluation_facts
+            .push(PendingEvaluationFact { declaration, shape });
+    }
+
     fn freeze(self) -> SemanticModelStorage {
         SemanticModelStorage {
             documents: self.documents.into_boxed_slice(),
@@ -957,6 +1135,7 @@ impl SemanticModelBuilder {
             recovery: self.recovery.into_boxed_slice(),
             symbols: self.symbols.freeze(),
             paths: self.paths.freeze(),
+            evaluation_facts: self.evaluation_facts.into_boxed_slice(),
         }
     }
 
@@ -4821,13 +5000,18 @@ impl SemanticModelBuilder {
                         self.lower_parameter_declaration(document, Some(declaration), param)?;
                     }
                     ConstraintDefBodyElement::Doc(_) => {}
-                    ConstraintDefBodyElement::Expression(expression) => self
-                        .lower_constraint_expression(
+                    ConstraintDefBodyElement::Expression(expression) => {
+                        self.push_evaluation_fact(
+                            declaration,
+                            classify_constraint_expression(&expression.value),
+                        );
+                        self.lower_constraint_expression(
                             document,
                             declaration,
                             UnsupportedFamily::ConstraintDefinitionMember,
                             expression,
-                        )?,
+                        )?
+                    }
                     ConstraintDefBodyElement::MetadataAnnotation(_)
                     | ConstraintDefBodyElement::AttributeUsage(_)
                     | ConstraintDefBodyElement::Other(_) => self.push_unsupported(
@@ -4967,12 +5151,18 @@ impl SemanticModelBuilder {
                         self.lower_parameter_declaration(document, Some(declaration), param)?;
                     }
                     CalcDefBodyElement::Doc(_) => {}
-                    CalcDefBodyElement::Expression(expression) => self.lower_calc_expression(
-                        document,
-                        declaration,
-                        UnsupportedFamily::CalcDefinitionMember,
-                        expression,
-                    )?,
+                    CalcDefBodyElement::Expression(expression) => {
+                        self.push_evaluation_fact(
+                            declaration,
+                            classify_calc_expression(&expression.value),
+                        );
+                        self.lower_calc_expression(
+                            document,
+                            declaration,
+                            UnsupportedFamily::CalcDefinitionMember,
+                            expression,
+                        )?
+                    }
                     CalcDefBodyElement::ReturnDecl(_)
                     | CalcDefBodyElement::MetadataAnnotation(_)
                     | CalcDefBodyElement::Other(_) => self.push_unsupported(
@@ -6487,6 +6677,95 @@ mod tests {
             output.contains("unsupported_constraint_definition_member"),
             "expected a function-call expression to still surface as an unsupported \
              constraint-definition-member diagnostic, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn constraint_literal_comparison_evaluates_to_boolean_true() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tconstraint def C { 1 < 2 }\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::C\"))) (value (kind boolean) (boolean true)))"
+            ),
+            "expected `1 < 2` to fold to a published Boolean(true) evaluation fact, got:\n{output}"
+        );
+        assert!(
+            output.contains("(has-evaluation true)"),
+            "expected has-evaluation to flip true once a fact publishes, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn constraint_literal_comparison_evaluates_to_boolean_false() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tconstraint def C { 2 < 1 }\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::C\"))) (value (kind boolean) (boolean false)))"
+            ),
+            "expected `2 < 1` to fold to a published Boolean(false) evaluation fact, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn constraint_resolved_feature_ref_operand_evaluates_to_non_constant() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tattribute x : ScalarValues::Integer;\n\
+             \tconstraint def C { x < 2 }\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::C\"))) (value (kind non-constant)))"
+            ),
+            "expected a resolved but non-literal operand `x` to publish NonConstant rather than \
+             a fabricated boolean, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn constraint_undeclared_feature_ref_operand_evaluates_to_unresolved_operand() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tconstraint def C { x < 2 }\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::C\"))) (value (kind unresolved-operand)))"
+            ),
+            "expected an undeclared operand `x` to publish UnresolvedOperand rather than a \
+             fabricated boolean, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn constraint_unsupported_arithmetic_shape_publishes_no_evaluation_fact() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tconstraint def C { compute(x, y) }\n\
+             }\n",
+        );
+        assert!(
+            !output.contains("(evaluated (declaration"),
+            "expected an unsupported (non-comparison) expression shape to publish no evaluation \
+             fact at all, got:\n{output}"
+        );
+        assert!(
+            output.contains("(has-evaluation false)"),
+            "expected has-evaluation to stay false when nothing evaluates, got:\n{output}"
         );
     }
 

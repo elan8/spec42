@@ -338,7 +338,7 @@ standard library package VectorCalculations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:cf109ab4e6563103889612ca5a3f9a77ebdc78269c2fd5a15d026a5544e13ed4") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:cf109ab4e6563103889612ca5a3f9a77ebdc78269c2fd5a15d026a5544e13ed4") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/vector_calculations.md") (qualified-name "VectorCalculations"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/vector_calculations.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Boolean") (import (shape membership) (recursive false)))))
@@ -449,6 +449,11 @@ standard library package VectorCalculations {
     (relationship (kind aliasBinding) (source (node (document "memory://snapshot/vector_calculations.md") (qualified-name "VectorCalculations::*"))) (target (node (document "memory://snapshot/vector_calculations.md") (qualified-name "VectorCalculations::scalarVectorMult"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vector_calculations.md") (qualified-name "VectorCalculations::*"))) (kind aliasBinding) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/vector_calculations.md") (qualified-name "VectorCalculations::["))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/vector_calculations.md") (qualified-name "VectorCalculations::["))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/vector_calculations.md") (qualified-name "VectorCalculations::["))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/vector_calculations.md") (qualified-name "VectorCalculations::["))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/vector_calculations.md") (qualified-name "VectorCalculations::transform"))) (value (kind unresolved-operand)))
   )
 )
 ~~~

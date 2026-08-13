@@ -371,7 +371,7 @@ standard library package SampledFunctions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:1636fc5a3a196fef891bfa1348935c76e2f9eab7265ee64586fed8e7fddf64fb") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:1636fc5a3a196fef891bfa1348935c76e2f9eab7265ee64586fed8e7fddf64fb") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sampled_functions.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Base::Anything") (import (shape membership) (recursive false)))))
@@ -522,6 +522,20 @@ standard library package SampledFunctions {
     (relationship (kind typing) (direction in) (source (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::interpolateLinear::fn"))) (target (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::SampledFunction"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::interpolateLinear::fn"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::Interpolate"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::Interpolate"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::Sample"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::interpolateLinear"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::interpolateLinear"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::interpolateLinear"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::interpolateLinear"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::interpolateLinear"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::interpolateLinear"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::interpolateLinear"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::interpolateLinear::Linear"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::interpolateLinear::Linear"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::interpolateLinear::Linear"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::interpolateLinear::Linear"))) (value (kind unresolved-operand)))
   )
 )
 ~~~

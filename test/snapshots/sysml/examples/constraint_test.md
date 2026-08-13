@@ -366,7 +366,7 @@ package ConstraintTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:97e018ed81220c84820a4c857b5eb4b015afff7d271f32bc06ca8de652f1a910") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:97e018ed81220c84820a4c857b5eb4b015afff7d271f32bc06ca8de652f1a910") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/constraint_test.md") (qualified-name "ConstraintTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/constraint_test.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ISQ::MassValue") (import (shape membership) (recursive false)))))
@@ -508,6 +508,13 @@ package ConstraintTest {
     (relationship (kind typing) (source (node (document "memory://snapshot/constraint_test.md") (qualified-name "ConstraintTest::vehicle::rearAxleAssembly"))) (target (node (document "memory://snapshot/constraint_test.md") (qualified-name "ConstraintTest::Component"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/constraint_test.md") (qualified-name "ConstraintTest::vehicle::rearAxleAssembly"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/constraint_test.md") (qualified-name "ConstraintTest::MassAnalysis"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/constraint_test.md") (qualified-name "ConstraintTest::MassAnalysis"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/constraint_test.md") (qualified-name "ConstraintTest::MassAnalysis"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/constraint_test.md") (qualified-name "ConstraintTest::MassAnalysis"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/constraint_test.md") (qualified-name "ConstraintTest::massLimitation"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/constraint_test.md") (qualified-name "ConstraintTest::massLimitation"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/constraint_test.md") (qualified-name "ConstraintTest::massLimitation"))) (value (kind unresolved-operand)))
   )
 )
 ~~~
