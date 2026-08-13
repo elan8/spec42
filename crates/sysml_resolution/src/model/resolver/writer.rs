@@ -222,6 +222,7 @@ fn unsupported_code(family: UnsupportedFamily) -> &'static str {
         UnsupportedFamily::ConnectionDefinitionMember => "unsupported_connection_definition_member",
         UnsupportedFamily::InterfaceDefinitionMember => "unsupported_interface_definition_member",
         UnsupportedFamily::ViewDefinitionMember => "unsupported_view_definition_member",
+        UnsupportedFamily::RenderingDefinitionMember => "unsupported_rendering_definition_member",
         UnsupportedFamily::OccurrenceDefinitionMember => "unsupported_occurrence_definition_member",
         UnsupportedFamily::AnalysisCaseDefinitionMember => {
             "unsupported_analysis_case_definition_member"
@@ -731,6 +732,10 @@ fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::CaseDefinition => "case-def",
         DeclarationKind::VerificationCaseDefinition => "verification-def",
         DeclarationKind::UseCaseDefinition => "use-case-def",
+        DeclarationKind::ViewpointDefinition => "viewpoint-def",
+        DeclarationKind::RenderingDefinition => "rendering-def",
+        DeclarationKind::AllocationDefinition => "allocation-def",
+        DeclarationKind::FlowDefinition => "flow-def",
     }
 }
 

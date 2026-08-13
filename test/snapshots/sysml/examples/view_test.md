@@ -71,15 +71,9 @@ package ViewTest {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_requirement_definition_member")
         (source "semantic")
-        (range (start 18 1) (end 20 2))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 22 1) (end 22 17))
+        (range (start 19 2) (end 19 10))
       )
       (diagnostic
         (severity warning)
@@ -118,8 +112,10 @@ package ViewTest {
     (declaration (id (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::P"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::P::p1"))) (kind part) (membership (kind feature) (visibility public)))
     (declaration (id (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::P::p2"))) (kind part) (membership (kind feature) (visibility private)))
+    (declaration (id (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::R"))) (kind rendering-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::S"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::V"))) (kind view-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::VP"))) (kind viewpoint-def) (membership (kind owning) (visibility default)))
   )
   (references
   )

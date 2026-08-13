@@ -60,12 +60,6 @@ package Demo {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 16 4) (end 16 40))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
         (range (start 17 4) (end 19 5))
       )
     )
@@ -79,6 +73,7 @@ package Demo {
   (declarations
     (declaration (id (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::ArchitectureView"))) (kind view-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::ArchitectureViewpoint"))) (kind viewpoint-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::Controller"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::Process"))) (kind action-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::Requirement"))) (kind requirement-def) (membership (kind owning) (visibility default)))

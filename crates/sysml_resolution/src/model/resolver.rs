@@ -1224,6 +1224,10 @@ impl DeclarationDomain {
                     | DeclarationKind::CaseDefinition
                     | DeclarationKind::VerificationCaseDefinition
                     | DeclarationKind::UseCaseDefinition
+                    | DeclarationKind::ViewpointDefinition
+                    | DeclarationKind::RenderingDefinition
+                    | DeclarationKind::AllocationDefinition
+                    | DeclarationKind::FlowDefinition
                     | DeclarationKind::Alias
             ),
         }

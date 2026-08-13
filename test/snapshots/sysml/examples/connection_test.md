@@ -113,12 +113,6 @@ package ConnectionTest {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 45 1) (end 45 21))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_grammar_form")
         (source "parser")
         (range (start 47 1) (end 47 25))
@@ -163,6 +157,7 @@ package ConnectionTest {
     (declaration (id (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::B"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::C"))) (kind connection-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::C::p"))) (kind part) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::F"))) (kind flow-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::M"))) (kind metadata-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::P"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::P::p1"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "p"))))

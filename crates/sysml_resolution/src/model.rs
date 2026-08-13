@@ -15,24 +15,24 @@ use hashbrown::HashTable;
 use sysml_v2_parser_next::{
     ast::{
         ActionDef, ActionDefBody, ActionDefBodyElement, ActionUsage as ParserActionUsage,
-        ActionUsageBody, ActionUsageBodyElement, AliasDef, AnalysisCaseDef, AttributeBody,
-        AttributeBodyElement, AttributeDef, AttributeUsage, CaseDef, ConnectStmt, ConnectionDef,
-        ConnectionDefBody, ConnectionDefBodyElement, ConnectionEnd,
+        ActionUsageBody, ActionUsageBodyElement, AliasDef, AllocationDef, AnalysisCaseDef,
+        AttributeBody, AttributeBodyElement, AttributeDef, AttributeUsage, CaseDef, ConnectStmt,
+        ConnectionDef, ConnectionDefBody, ConnectionDefBodyElement, ConnectionEnd,
         ConnectionUsageMember as ParserConnectionUsage, DefinitionBody, DefinitionBodyElement,
         EndDecl, EndIdentity, EnumDef, EnumerationBody, EnumerationUsage as ParserEnumerationUsage,
-        Expression, Import, ImportShape, InterfaceDef, InterfaceDefBody, InterfaceDefBodyElement,
-        ItemDef, ItemUsage as ParserItemUsage, LibraryPackage, Membership,
+        Expression, FlowDef, Import, ImportShape, InterfaceDef, InterfaceDefBody,
+        InterfaceDefBodyElement, ItemDef, ItemUsage as ParserItemUsage, LibraryPackage, Membership,
         MembershipKind as ParserMembershipKind, MetadataDef, MetadataUsage as ParserMetadataUsage,
         NamespaceDecl, Node, OccurrenceBodyElement, OccurrenceDef,
         OccurrenceUsage as ParserOccurrenceUsage, OccurrenceUsageBody, Package, PackageBody,
         PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement, PartUsage, PartUsageBody,
         PartUsageBodyElement, PortBody, PortBodyElement, PortDef, PortDefBody, PortDefBodyElement,
-        PortUsage as ParserPortUsage, QualifiedIdentification, QualifiedReferenceId,
-        RequirementDef, RequirementDefBody, RequirementDefBodyElement,
-        RequirementUsage as ParserRequirementUsage, RootElement, Span, StateDef, StateDefBody,
-        StateDefBodyElement, StateUsage as ParserStateUsage, SubsettingKind,
-        SubsettingRelationship, UseCaseDef, UseCaseDefBody, UseCaseDefBodyElement,
-        VerificationCaseDef, ViewDef, ViewDefBody, ViewDefBodyElement,
+        PortUsage as ParserPortUsage, QualifiedIdentification, QualifiedReferenceId, RenderingDef,
+        RenderingDefBody, RenderingDefBodyElement, RequirementDef, RequirementDefBody,
+        RequirementDefBodyElement, RequirementUsage as ParserRequirementUsage, RootElement, Span,
+        StateDef, StateDefBody, StateDefBodyElement, StateUsage as ParserStateUsage,
+        SubsettingKind, SubsettingRelationship, UseCaseDef, UseCaseDefBody, UseCaseDefBodyElement,
+        VerificationCaseDef, ViewDef, ViewDefBody, ViewDefBodyElement, ViewpointDef,
         Visibility as ParserVisibility,
     },
     ParseError, ParsedDocument,
@@ -236,6 +236,59 @@ enum DeclarationKind {
     /// lowering is deferred (see UPSTREAM_PARSER_GAPS.md #5: `UseCaseUsage` silently drops parsed
     /// `:>`/`:>>` clauses, unlike `UseCaseDef`, which has full field parity).
     UseCaseDefinition,
+    /// `viewpoint def` (BNF ViewpointDefinition, Clause 8.2.2.27): a type whose owned members
+    /// share `RequirementDefBody` with `RequirementDefinition`, mirroring `lower_requirement_def`
+    /// lowering: ownership, membership, an optional `:>` specialization relationship
+    /// participating in the shared `DeclarationDomain::Type` fixed point, and owned
+    /// attribute/nested-requirement members via the same shared body walker `requirement def`
+    /// uses. Verified `ViewpointDef`'s `specializes: Option<Node<TypingRelationship>>` field
+    /// carries full parity with `RequirementDef`/`ConnectionDef`. Stakeholder/concern-binding
+    /// semantics (the viewpoint-specific surface, e.g. `stakeholder`/`concern` clauses) are out
+    /// of scope for this slice and fall through to `RequirementDefinitionMember` diagnostics
+    /// alongside the other unmodeled `RequirementDefBody` members. `viewpoint` usage lowering is
+    /// deferred: `ast::ViewpointUsage` has only `type_name` (bare `QualifiedReferenceId`), no
+    /// `subsets`/`redefines` fields at all -- the same gap class as `ViewUsage`
+    /// (UPSTREAM_PARSER_GAPS.md #8).
+    ViewpointDefinition,
+    /// `rendering def` (BNF RenderingDefinition, Clause 8.2.2.26): a type whose owned members
+    /// share `RenderingDefBody`/`RenderingDefBodyElement` with `ViewDefBody`/`ViewDefBodyElement`
+    /// (same shape: `Filter`/`ViewRendering`/`Other`/`Doc`/`Error`), mirroring `lower_view_def`
+    /// lowering: ownership, membership, an optional `:>` specialization relationship
+    /// participating in the shared `DeclarationDomain::Type` fixed point. Verified
+    /// `RenderingDef`'s `specializes: Option<Node<TypingRelationship>>` field carries full parity
+    /// with `ViewDef`/`ConnectionDef`. Render-specific body semantics (`filter`/`render` members)
+    /// are out of scope for this slice and fall through to a dedicated
+    /// `RenderingDefinitionMember` diagnostic. `rendering` usage lowering is deferred:
+    /// `ast::RenderingUsage` has only `type_name` (bare `QualifiedReferenceId`), no
+    /// `subsets`/`redefines` fields at all -- the same gap class as `ViewUsage`.
+    RenderingDefinition,
+    /// `allocation def` (BNF AllocationDefinition): a type whose owned members share
+    /// `DefinitionBody`/`OccurrenceBodyElement` with `OccurrenceDefinition`, mirroring
+    /// `lower_occurrence_def` lowering: ownership, membership, an optional `:>` specialization
+    /// relationship participating in the shared `DeclarationDomain::Type` fixed point, and owned
+    /// attribute/part/item/nested-occurrence members plus `end` connector-end structure (reusing
+    /// `ReferenceKind::ConnectorEnd`/`lower_end_decl`, the same machinery `connection def` uses)
+    /// via the shared `lower_occurrence_body_element` walker. Verified `AllocationDef`'s
+    /// `specializes: Option<Node<TypingRelationship>>` field carries full parity with
+    /// `OccurrenceDef`/`ConnectionDef`. Allocation-specific semantics (the `allocate ... to ...`
+    /// binding itself) are out of scope here and stay `unsupported_occurrence_definition_member`
+    /// (the shared family `lower_occurrence_body_element` already uses). `allocation` usage
+    /// lowering is deferred entirely: `AllocationUsage` was not verified for field parity and is
+    /// not attempted here.
+    AllocationDefinition,
+    /// `flow def` (BNF FlowDefinition, Clause 8.2.2.16): a type whose owned members share
+    /// `DefinitionBody`/`OccurrenceBodyElement` with `OccurrenceDefinition`/`AllocationDefinition`,
+    /// mirroring `lower_allocation_def`/`lower_occurrence_def` lowering: ownership, membership, an
+    /// optional `:>` specialization relationship participating in the shared
+    /// `DeclarationDomain::Type` fixed point, and owned attribute/part/item/nested-occurrence
+    /// members plus `end` connector-end structure via the same shared
+    /// `lower_occurrence_body_element` walker. Verified `FlowDef`'s `specializes: Option<Node<
+    /// TypingRelationship>>` field carries full parity with `OccurrenceDef`/`ConnectionDef`.
+    /// Flow-payload (`ref :>> payload : Type;`) and succession-flow semantics are out of scope
+    /// here and stay `unsupported_occurrence_definition_member`. `flow` usage lowering is
+    /// deferred entirely: `FlowUsage` was not verified for field parity and is not attempted
+    /// here.
+    FlowDefinition,
     Import,
     Alias,
 }
@@ -347,6 +400,11 @@ enum UnsupportedFamily {
     /// `filter` (view composition), `expose`/`satisfy` are `view` usage-body-only constructs
     /// (`ViewBodyElement`, not `ViewDefBodyElement`) and don't appear here at all.
     ViewDefinitionMember,
+    /// `rendering def` body members not modeled by this slice: shares the same `filter`/`render`
+    /// member set as `ViewDefinitionMember` (`RenderingDefBody`/`RenderingDefBodyElement` mirror
+    /// `ViewDefBody`/`ViewDefBodyElement` exactly), kept as its own family name so `rendering def`
+    /// diagnostics stay distinct from `view def` ones at the same span shape.
+    RenderingDefinitionMember,
     /// `case def` body members not modeled by this slice (subject/actor/objective/first-
     /// succession/return/nested case structure); shares `UseCaseDefBody`/`UseCaseDefBodyElement`
     /// with `analysis`/`verification`/`use case` case bodies in the typed AST, but this family
@@ -897,16 +955,12 @@ impl SemanticModelBuilder {
                 node.span.clone(),
             ),
             PackageBodyElement::ViewDef(node) => self.lower_view_def(document, owner, node)?,
-            PackageBodyElement::ViewpointDef(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
-            PackageBodyElement::RenderingDef(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::ViewpointDef(node) => {
+                self.lower_viewpoint_def(document, owner, node)?
+            }
+            PackageBodyElement::RenderingDef(node) => {
+                self.lower_rendering_def(document, owner, node)?
+            }
             PackageBodyElement::ViewUsage(node) => self.push_unsupported(
                 document,
                 UnsupportedFamily::PackageMember,
@@ -936,21 +990,15 @@ impl SemanticModelBuilder {
                 UnsupportedFamily::PackageMember,
                 node.span.clone(),
             ),
-            PackageBodyElement::AllocationDef(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::AllocationDef(node) => {
+                self.lower_allocation_def(document, owner, node)?
+            }
             PackageBodyElement::AllocationUsage(node) => self.push_unsupported(
                 document,
                 UnsupportedFamily::PackageMember,
                 node.span.clone(),
             ),
-            PackageBodyElement::FlowDef(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::FlowDef(node) => self.lower_flow_def(document, owner, node)?,
             PackageBodyElement::FlowUsage(node) => self.push_unsupported(
                 document,
                 UnsupportedFamily::PackageMember,
@@ -1252,6 +1300,18 @@ impl SemanticModelBuilder {
                     PartDefBodyElement::ViewDef(view_def) => {
                         self.lower_view_def(document, Some(declaration), view_def)?;
                     }
+                    PartDefBodyElement::ViewpointDef(viewpoint_def) => {
+                        self.lower_viewpoint_def(document, Some(declaration), viewpoint_def)?;
+                    }
+                    PartDefBodyElement::RenderingDef(rendering_def) => {
+                        self.lower_rendering_def(document, Some(declaration), rendering_def)?;
+                    }
+                    PartDefBodyElement::AllocationDef(allocation_def) => {
+                        self.lower_allocation_def(document, Some(declaration), allocation_def)?;
+                    }
+                    PartDefBodyElement::FlowDef(flow_def) => {
+                        self.lower_flow_def(document, Some(declaration), flow_def)?;
+                    }
                     PartDefBodyElement::Connection(connection_usage) => {
                         self.lower_connection_usage(document, Some(declaration), connection_usage)?;
                     }
@@ -1281,14 +1341,10 @@ impl SemanticModelBuilder {
                     | PartDefBodyElement::AssertConstraint(_)
                     | PartDefBodyElement::Satisfy(_)
                     | PartDefBodyElement::VariantUsage(_)
-                    | PartDefBodyElement::FlowDef(_)
                     | PartDefBodyElement::CalcDef(_)
-                    | PartDefBodyElement::AllocationDef(_)
                     | PartDefBodyElement::AllocationUsage(_)
                     | PartDefBodyElement::ViewUsage(_)
-                    | PartDefBodyElement::ViewpointDef(_)
                     | PartDefBodyElement::ViewpointUsage(_)
-                    | PartDefBodyElement::RenderingDef(_)
                     | PartDefBodyElement::RenderingUsage(_)
                     | PartDefBodyElement::CaseUsage(_)
                     | PartDefBodyElement::UseCaseUsage(_)
@@ -1421,6 +1477,9 @@ impl SemanticModelBuilder {
                     PartUsageBodyElement::OccurrenceUsage(occurrence_usage) => {
                         self.lower_occurrence_usage(document, Some(declaration), occurrence_usage)?;
                     }
+                    PartUsageBodyElement::FlowDef(flow_def) => {
+                        self.lower_flow_def(document, Some(declaration), flow_def)?;
+                    }
                     PartUsageBodyElement::Doc(_) => {}
                     PartUsageBodyElement::Annotation(_)
                     | PartUsageBodyElement::DefaultReferenceUsage(_)
@@ -1436,7 +1495,6 @@ impl SemanticModelBuilder {
                     | PartUsageBodyElement::MetadataAnnotation(_)
                     | PartUsageBodyElement::MetadataKeywordUsage(_)
                     | PartUsageBodyElement::VariantUsage(_)
-                    | PartUsageBodyElement::FlowDef(_)
                     | PartUsageBodyElement::CalcDef(_)
                     | PartUsageBodyElement::AssertConstraint(_)
                     | PartUsageBodyElement::ConstraintDef(_)
@@ -2329,6 +2387,25 @@ impl SemanticModelBuilder {
         owner: DeclarationId,
         body: &RequirementDefBody,
     ) -> Result<(), ConstructionError> {
+        self.lower_requirement_shaped_body(
+            document,
+            owner,
+            body,
+            UnsupportedFamily::RequirementDefinitionMember,
+        )
+    }
+
+    /// Shared body walker for grammar productions using `RequirementDefBody`/
+    /// `RequirementDefBodyElement` (`requirement def`/`requirement` usage and `viewpoint def`),
+    /// parameterized by the caller-supplied `unsupported` family so each kind's diagnostics stay
+    /// distinct even though the typed AST body shape is identical.
+    fn lower_requirement_shaped_body(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        body: &RequirementDefBody,
+        unsupported: UnsupportedFamily,
+    ) -> Result<(), ConstructionError> {
         let RequirementDefBody::Brace { elements } = body else {
             return Ok(());
         };
@@ -2362,14 +2439,60 @@ impl SemanticModelBuilder {
                 | RequirementDefBodyElement::RequireConstraint(_)
                 | RequirementDefBodyElement::Constraint(_)
                 | RequirementDefBodyElement::Frame(_)
-                | RequirementDefBodyElement::TextualRep(_) => self.push_unsupported(
-                    document,
-                    UnsupportedFamily::RequirementDefinitionMember,
-                    element.span.clone(),
-                ),
+                | RequirementDefBodyElement::TextualRep(_) => {
+                    self.push_unsupported(document, unsupported, element.span.clone())
+                }
             }
         }
         Ok(())
+    }
+
+    /// Lowers a `viewpoint def` (BNF ViewpointDefinition), mirroring `lower_requirement_def`:
+    /// ownership, membership, an optional `:>` specialization relationship, and owned
+    /// attribute/nested-requirement members via the shared `RequirementDefBody` walker.
+    /// Stakeholder/concern-binding semantics are out of scope; unrecognized body elements fall
+    /// through to `unsupported_requirement_definition_member` (the same family `requirement def`
+    /// uses, since `ViewpointDef` shares its exact body shape). `viewpoint` usage lowering is
+    /// deferred -- see `DeclarationKind::ViewpointDefinition`'s doc comment.
+    fn lower_viewpoint_def(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<ViewpointDef>,
+    ) -> Result<(), ConstructionError> {
+        let name = node
+            .value
+            .identification
+            .name
+            .as_deref()
+            .filter(|name| !name.is_empty())
+            .map(|name| self.intern_name(name))
+            .transpose()?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::ViewpointDefinition,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Owning,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::OwningMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(relationship) = &node.value.specializes {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        self.lower_requirement_shaped_body(
+            document,
+            declaration,
+            &node.value.body,
+            UnsupportedFamily::RequirementDefinitionMember,
+        )
     }
 
     /// Lowers an `analysis def` (BNF AnalysisCaseDefinition), mirroring `lower_requirement_def`:
@@ -3244,6 +3367,64 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
+    /// Lowers a `rendering def` (BNF RenderingDefinition), mirroring `lower_view_def`: ownership,
+    /// membership, an optional `:>` specialization relationship (participates in the shared
+    /// `DeclarationDomain::Type` fixed point). Render-specific body members (`filter`/`render`)
+    /// are out of scope -- see `DeclarationKind::RenderingDefinition`'s doc comment.
+    fn lower_rendering_def(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<RenderingDef>,
+    ) -> Result<(), ConstructionError> {
+        let name = node
+            .value
+            .identification
+            .name
+            .as_deref()
+            .filter(|name| !name.is_empty())
+            .map(|name| self.intern_name(name))
+            .transpose()?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::RenderingDefinition,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Owning,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::OwningMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(relationship) = &node.value.specializes {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        let RenderingDefBody::Brace { elements } = &node.value.body else {
+            return Ok(());
+        };
+        for element in elements {
+            match &element.value {
+                RenderingDefBodyElement::Error(error) => {
+                    self.push_recovery(document, error.span.clone());
+                }
+                RenderingDefBodyElement::Doc(_) => {}
+                RenderingDefBodyElement::Filter(_)
+                | RenderingDefBodyElement::ViewRendering(_)
+                | RenderingDefBodyElement::Other(_) => self.push_unsupported(
+                    document,
+                    UnsupportedFamily::RenderingDefinitionMember,
+                    element.span.clone(),
+                ),
+            }
+        }
+        Ok(())
+    }
+
     /// Lowers an `occurrence def` (BNF OccurrenceDefinition), mirroring `lower_port_def`:
     /// ownership, membership, an optional `:>` specialization relationship, and owned
     /// attribute/item/part/nested-occurrence declarations. Occurrence-specific semantics
@@ -3310,12 +3491,15 @@ impl SemanticModelBuilder {
     }
 
     /// Lowers one `OccurrenceBodyElement`, shared by `occurrence def`'s body (wrapped in
-    /// `DefinitionBodyElement::OccurrenceMember`) and by an `occurrence` usage's own owned members
-    /// (`OccurrenceUsageBody` holds `OccurrenceBodyElement` directly): recognized owned members are
-    /// attribute/part/item/nested-occurrence usages; everything else -- `assert constraint`, flow
-    /// usages, succession usages, `satisfy`, `allocate`, `end` declarations, `exhibit` state
-    /// usages -- falls through to `unsupported_occurrence_definition_member`. This is the
-    /// genuinely out-of-scope occurrence-specific surface for this slice.
+    /// `DefinitionBodyElement::OccurrenceMember`), an `occurrence` usage's own owned members
+    /// (`OccurrenceUsageBody` holds `OccurrenceBodyElement` directly), and `allocation def`/
+    /// `flow def` bodies (also `DefinitionBodyElement::OccurrenceMember`): recognized owned
+    /// members are attribute/part/item/nested-occurrence usages plus `end` declarations (lowered
+    /// as connector-end references through the same `lower_end_decl`/`ReferenceKind::ConnectorEnd`
+    /// machinery `connection def`/`interface def` use); everything else -- `assert constraint`,
+    /// flow usages, succession usages, `satisfy`, `allocate`, `exhibit` state usages -- falls
+    /// through to `unsupported_occurrence_definition_member`. This is the genuinely out-of-scope
+    /// occurrence-specific surface for this slice.
     fn lower_occurrence_body_element(
         &mut self,
         document: DocumentId,
@@ -3339,6 +3523,9 @@ impl SemanticModelBuilder {
             OccurrenceBodyElement::OccurrenceUsage(occurrence) => {
                 self.lower_occurrence_usage(document, Some(owner), occurrence)?;
             }
+            OccurrenceBodyElement::EndDecl(end_decl) => {
+                self.lower_end_decl(document, owner, end_decl)?;
+            }
             OccurrenceBodyElement::Annotation(_)
             | OccurrenceBodyElement::AssertConstraint(_)
             | OccurrenceBodyElement::Other(_)
@@ -3346,7 +3533,6 @@ impl SemanticModelBuilder {
             | OccurrenceBodyElement::SuccessionUsage(_)
             | OccurrenceBodyElement::Satisfy(_)
             | OccurrenceBodyElement::Allocate(_)
-            | OccurrenceBodyElement::EndDecl(_)
             | OccurrenceBodyElement::StateUsage(_) => self.push_unsupported(
                 document,
                 UnsupportedFamily::OccurrenceDefinitionMember,
@@ -3431,6 +3617,131 @@ impl SemanticModelBuilder {
         };
         for element in elements {
             self.lower_occurrence_body_element(document, declaration, element)?;
+        }
+        Ok(())
+    }
+
+    /// Lowers an `allocation def` (BNF AllocationDefinition), mirroring `lower_occurrence_def`:
+    /// ownership, membership, an optional `:>` specialization relationship, and owned
+    /// attribute/part/item/nested-occurrence declarations plus `end` connector-end structure via
+    /// the shared `lower_occurrence_body_element` walker (`AllocationDef.body` is the same
+    /// `DefinitionBody`/`OccurrenceBodyElement` shape `OccurrenceDef.body` uses). Allocation-
+    /// specific semantics (the `allocate ... to ...` binding itself) are explicitly out of scope
+    /// here -- see `DeclarationKind::AllocationDefinition`'s doc comment.
+    fn lower_allocation_def(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<AllocationDef>,
+    ) -> Result<(), ConstructionError> {
+        let name = node
+            .value
+            .identification
+            .name
+            .as_deref()
+            .filter(|name| !name.is_empty())
+            .map(|name| self.intern_name(name))
+            .transpose()?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::AllocationDefinition,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Owning,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::OwningMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(relationship) = &node.value.specializes {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        let DefinitionBody::Brace { elements } = &node.value.body else {
+            return Ok(());
+        };
+        for element in elements {
+            match &element.value {
+                DefinitionBodyElement::Error(error) => {
+                    self.push_recovery(document, error.span.clone());
+                }
+                DefinitionBodyElement::Doc(_) => {}
+                DefinitionBodyElement::OccurrenceMember(member) => {
+                    self.lower_occurrence_body_element(document, declaration, member)?;
+                }
+                DefinitionBodyElement::Other(_) => self.push_unsupported(
+                    document,
+                    UnsupportedFamily::OccurrenceDefinitionMember,
+                    element.span.clone(),
+                ),
+            }
+        }
+        Ok(())
+    }
+
+    /// Lowers a `flow def` (BNF FlowDefinition), mirroring `lower_allocation_def`/
+    /// `lower_occurrence_def`: ownership, membership, an optional `:>` specialization
+    /// relationship, and owned attribute/part/item/nested-occurrence declarations plus `end`
+    /// connector-end structure via the shared `lower_occurrence_body_element` walker
+    /// (`FlowDef.body` is the same `DefinitionBody`/`OccurrenceBodyElement` shape
+    /// `OccurrenceDef.body`/`AllocationDef.body` use). Flow-payload (`ref :>> payload : Type;`)
+    /// and succession-flow semantics are explicitly out of scope here -- see
+    /// `DeclarationKind::FlowDefinition`'s doc comment.
+    fn lower_flow_def(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<FlowDef>,
+    ) -> Result<(), ConstructionError> {
+        let name = node
+            .value
+            .identification
+            .name
+            .as_deref()
+            .filter(|name| !name.is_empty())
+            .map(|name| self.intern_name(name))
+            .transpose()?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::FlowDefinition,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Owning,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::OwningMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(relationship) = &node.value.specializes {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        let DefinitionBody::Brace { elements } = &node.value.body else {
+            return Ok(());
+        };
+        for element in elements {
+            match &element.value {
+                DefinitionBodyElement::Error(error) => {
+                    self.push_recovery(document, error.span.clone());
+                }
+                DefinitionBodyElement::Doc(_) => {}
+                DefinitionBodyElement::OccurrenceMember(member) => {
+                    self.lower_occurrence_body_element(document, declaration, member)?;
+                }
+                DefinitionBodyElement::Other(_) => self.push_unsupported(
+                    document,
+                    UnsupportedFamily::OccurrenceDefinitionMember,
+                    element.span.clone(),
+                ),
+            }
         }
         Ok(())
     }
@@ -5022,6 +5333,140 @@ mod tests {
             output.contains("unsupported_state_definition_member"),
             "expected the transition statement to surface as an explicit unsupported \
              state-definition-member diagnostic, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn viewpoint_def_lowers_to_a_declaration() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tviewpoint def V;\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::V\"))) (kind viewpoint-def)"),
+            "expected a viewpoint-def declaration, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn viewpoint_def_specializing_another_viewpoint_def_resolves_its_specialization_reference() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tviewpoint def Base;\n\
+             \tviewpoint def Derived :> Base;\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind specialization) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Derived\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
+            ),
+            "expected Derived's specialization of Base to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn rendering_def_lowers_to_a_declaration() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \trendering def R;\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::R\"))) (kind rendering-def)"),
+            "expected a rendering-def declaration, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn rendering_def_specializing_another_rendering_def_resolves_its_specialization_reference() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \trendering def Base;\n\
+             \trendering def Derived :> Base;\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind specialization) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Derived\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
+            ),
+            "expected Derived's specialization of Base to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn allocation_def_lowers_to_a_declaration_with_connector_end_references() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpart def Logical;\n\
+             \tpart def Physical;\n\
+             \tallocation def A {\n\
+             \t\tend logical : Logical;\n\
+             \t\tend physical : Physical;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::A\"))) (kind allocation-def)"),
+            "expected an allocation-def declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::A::logical\"))) (kind connection)"),
+            "expected an owned end declaration under the allocation def, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn allocation_def_specializing_another_allocation_def_resolves_its_specialization_reference() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tallocation def Base;\n\
+             \tallocation def Derived :> Base;\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind specialization) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Derived\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
+            ),
+            "expected Derived's specialization of Base to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn flow_def_lowers_to_a_declaration_with_connector_end_references() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tport def SupplierPort;\n\
+             \tport def ConsumerPort;\n\
+             \tflow def F {\n\
+             \t\tend supplierPort : SupplierPort;\n\
+             \t\tend consumerPort : ConsumerPort;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::F\"))) (kind flow-def)"),
+            "expected a flow-def declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::F::supplierPort\"))) (kind connection)"),
+            "expected an owned end declaration under the flow def, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn flow_def_specializing_another_flow_def_resolves_its_specialization_reference() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tflow def Base;\n\
+             \tflow def Derived :> Base;\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind specialization) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Derived\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
+            ),
+            "expected Derived's specialization of Base to resolve, got:\n{output}"
         );
     }
 

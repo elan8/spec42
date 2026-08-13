@@ -23,12 +23,6 @@ package ViewCoverage {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 1 4) (end 1 40))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
         (range (start 3 4) (end 5 5))
       )
     )
@@ -42,6 +36,7 @@ package ViewCoverage {
   (declarations
     (declaration (id (node (document "memory://snapshot/view_body_satisfy.md") (qualified-name "ViewCoverage"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/view_body_satisfy.md") (qualified-name "ViewCoverage::ArchitectureView"))) (kind view-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/view_body_satisfy.md") (qualified-name "ViewCoverage::ArchitectureViewpoint"))) (kind viewpoint-def) (membership (kind owning) (visibility default)))
   )
   (references
   )

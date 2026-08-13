@@ -1922,12 +1922,6 @@ package SimpleVehicleModel{
         (range (start 332 16) (end 334 12))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 337 12) (end 340 13))
-      )
-      (diagnostic
         (severity error)
         (code "recovered_definition_body_element")
         (source "parser")
@@ -4185,15 +4179,9 @@ package SimpleVehicleModel{
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_requirement_definition_member")
         (source "semantic")
-        (range (start 1543 12) (end 1543 44))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 1544 12) (end 1546 13))
+        (range (start 1545 16) (end 1545 47))
       )
       (diagnostic
         (severity warning)
@@ -4269,6 +4257,7 @@ package SimpleVehicleModel{
     (declaration (id (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::SenseTemperature"))) (kind action-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::TransferTorque"))) (kind action-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Definitions::AllocationDefinitions"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Definitions::AllocationDefinitions::LogicalToPhysical"))) (kind allocation-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Definitions::AttributeDefinitions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "Quantities") (import (shape namespace) (recursive false)))))
@@ -4826,7 +4815,9 @@ package SimpleVehicleModel{
     (declaration (id (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewDefinitions::TableView"))) (kind view-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewDefinitions::TreeView"))) (kind view-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewpointDefinitions"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewpointDefinitions::BehaviorViewpoint"))) (kind viewpoint-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewpointDefinitions::SafetyEngineer"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewpointDefinitions::SafetyViewpoint"))) (kind viewpoint-def) (membership (kind owning) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
