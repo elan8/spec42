@@ -19,12 +19,6 @@ package C {
 (fixture-diagnostics
   (document "memory://snapshot/lexical_inner_shadow.md"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 6 13) (end 6 14))
-      )
     )
   )
 )
@@ -47,9 +41,10 @@ package C {
       (outcome (status resolved) (target (node (document "memory://snapshot/lexical_inner_shadow.md") (qualified-name "A")))))
     (reference (id (source (node (document "memory://snapshot/lexical_inner_shadow.md") (qualified-name "C::p"))) (kind featureTyping) (ordinal 0))
       (authored-target "T")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/lexical_inner_shadow.md") (qualified-name "C::T")))))
   )
   (relationships
+    (relationship (kind typing) (source (node (document "memory://snapshot/lexical_inner_shadow.md") (qualified-name "C::p"))) (target (node (document "memory://snapshot/lexical_inner_shadow.md") (qualified-name "C::T"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/lexical_inner_shadow.md") (qualified-name "C::p"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )
@@ -64,7 +59,7 @@ package C {
   )
   (query (document "memory://snapshot/lexical_inner_shadow.md") (range (start 6 13) (end 6 14)) (probe (position 6 13))
     (reference (id (source (node (document "memory://snapshot/lexical_inner_shadow.md") (qualified-name "C::p"))) (kind featureTyping) (ordinal 0) (authored-target "T")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/lexical_inner_shadow.md") (qualified-name "C::T")))))
   )
 )
 ~~~

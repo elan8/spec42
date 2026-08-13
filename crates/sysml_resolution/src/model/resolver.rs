@@ -1134,11 +1134,24 @@ fn resolve_reference<R: ResolutionReferenceFact>(
             .candidates
             .extend_from_slice(indexes.exported_names.candidates(None, segments[0]));
     } else {
+        // When the first segment is also the last (a plain unqualified reference), the winning
+        // precedence tier's candidates *are* the final resolution target, so domain compatibility
+        // is applied per tier below (an incompatible-domain local binding still shadows a
+        // compatible outer/imported one; see RESOLUTION_LAYER_DESIGN.md section 11.1). When more
+        // segments follow, this first segment denotes an intermediate namespace/type owner, not
+        // the reference's final target, so no domain filtering applies here: `Any` accepts
+        // everything and the tier logic degrades to plain name-presence shadowing.
+        let first_segment_domain = if segments.len() == 1 {
+            domain
+        } else {
+            DeclarationDomain::Any
+        };
         lookup_lexical_into(
             declarations,
             &indexes,
             source.owner,
             segments[0],
+            first_segment_domain,
             scratch.candidates,
             scratch.work,
         )?;
@@ -1162,11 +1175,18 @@ fn resolve_reference<R: ResolutionReferenceFact>(
         scratch.next_candidates.dedup();
         std::mem::swap(scratch.candidates, scratch.next_candidates);
     }
-    scratch.candidates.retain(|candidate| {
-        declarations
-            .get(candidate.index())
-            .is_some_and(|declaration| domain.accepts(declaration.kind))
-    });
+    // The non-rooted, single-segment case already applied domain-aware tier selection inside
+    // `lookup_lexical_into` above (including the incompatible-domain shadow rule), so re-filtering
+    // here would silently discard a shadowed candidate and regress it to `Unresolved`. Every other
+    // case (rooted lookups, and the final segment of a multi-segment qualified name) still needs
+    // this domain check applied to its result.
+    if rooted || segments.len() > 1 {
+        scratch.candidates.retain(|candidate| {
+            declarations
+                .get(candidate.index())
+                .is_some_and(|declaration| domain.accepts(declaration.kind))
+        });
+    }
     status_from_candidates(scratch.candidates, scratch.ambiguous_candidates)
 }
 
@@ -1175,26 +1195,52 @@ fn resolve_reference<R: ResolutionReferenceFact>(
 /// the scope-origin precedence in `RESOLUTION_LAYER_DESIGN.md` section 6 ("owned members, then
 /// inherited/general members, then imports"). `inherited_names` is `None` for reference kinds that
 /// do not read inherited scope (for example Subclassification itself).
+///
+/// `domain` is the broad metamodel-domain filter for the reference's final target (section 6 step
+/// 8). Per section 11.1 ("an incompatible inner `Type` still shadows a compatible outer type,
+/// followed by validation"), domain compatibility never changes *which* precedence tier wins: at
+/// each tier, a domain-compatible candidate is preferred when one exists, but a tier that has any
+/// same-name binding still shadows lower-precedence tiers even if every candidate at that tier is
+/// domain-incompatible. Passing `DeclarationDomain::Any` disables this preference entirely (every
+/// candidate matches), which is what callers use when this lookup does not produce the reference's
+/// final target (an interior segment of a qualified name).
 fn lookup_lexical_into(
     declarations: &[Declaration],
     indexes: &ResolutionIndexes<'_>,
     mut owner: Option<DeclarationId>,
     name: SymbolId,
+    domain: DeclarationDomain,
     candidates: &mut Vec<DeclarationId>,
     work: &mut ResolutionWork,
 ) -> Result<(), ResolutionError> {
+    let select_tier = |raw: &[DeclarationId], out: &mut Vec<DeclarationId>| {
+        let compatible = raw
+            .iter()
+            .copied()
+            .filter(|candidate| {
+                declarations
+                    .get(candidate.index())
+                    .is_some_and(|declaration| domain.accepts(declaration.kind))
+            })
+            .collect::<Vec<_>>();
+        if compatible.is_empty() {
+            out.extend_from_slice(raw);
+        } else {
+            out.extend(compatible);
+        }
+    };
     loop {
         record_lookup(work)?;
         let direct = indexes.direct_names.candidates(owner, name);
         if !direct.is_empty() {
-            candidates.extend_from_slice(direct);
+            select_tier(direct, candidates);
             return Ok(());
         }
         if let Some(inherited) = indexes.inherited_names {
             record_lookup(work)?;
             let inherited = inherited.candidates(owner, name);
             if !inherited.is_empty() {
-                candidates.extend_from_slice(inherited);
+                select_tier(inherited, candidates);
                 return Ok(());
             }
         }
@@ -1202,7 +1248,7 @@ fn lookup_lexical_into(
             record_lookup(work)?;
             let imported = imports.candidates(owner, name);
             if !imported.is_empty() {
-                candidates.extend_from_slice(imported);
+                select_tier(imported, candidates);
                 return Ok(());
             }
         }
@@ -2386,6 +2432,133 @@ mod tests {
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(2)),
             Some(ResolutionStatus::NonConverged)
+        );
+    }
+
+    /// `package A { part def T; } package C { import A::*; part T; part p : T; }` — mirrors
+    /// `test/snapshots/resolution/lexical_inner_shadow.md`. `nested` controls whether the
+    /// FeatureTyping reference lives directly on `C::p` (false) or one namespace level deeper, on
+    /// a feature owned by an intermediate `Inner` namespace inside `C` (true), so the same local
+    /// binding is reached by walking one extra step of the enclosing-namespace chain.
+    fn local_shadow_fixture(nested: bool) -> ResolverFixture {
+        let mut symbols = SymbolTableBuilder::default();
+        let a_name = symbols.intern("A").unwrap();
+        let t_name = symbols.intern("T").unwrap();
+        let c_name = symbols.intern("C").unwrap();
+        let p_name = symbols.intern("p").unwrap();
+        let inner_name = symbols.intern("Inner").unwrap();
+        let mut paths = SymbolPathArenaBuilder::default();
+        let a_path = paths.push(&[a_name], false).unwrap();
+        let t_path = paths.push(&[t_name], false).unwrap();
+
+        let a = DeclarationId(0);
+        let c = DeclarationId(2);
+        let mut declarations = vec![
+            declaration(DocumentId(0), None, Some(a_name), DeclarationKind::Package),
+            declaration(
+                DocumentId(0),
+                Some(a),
+                Some(t_name),
+                DeclarationKind::PartDefinition,
+            ),
+            declaration(DocumentId(0), None, Some(c_name), DeclarationKind::Package),
+            declaration(DocumentId(0), Some(c), None, DeclarationKind::Import),
+            declaration(
+                DocumentId(0),
+                Some(c),
+                Some(t_name),
+                DeclarationKind::PartUsage,
+            ),
+        ];
+        let p_owner = if nested {
+            let inner = DeclarationId(u32::try_from(declarations.len()).unwrap());
+            declarations.push(declaration(
+                DocumentId(0),
+                Some(c),
+                Some(inner_name),
+                DeclarationKind::Namespace,
+            ));
+            inner
+        } else {
+            c
+        };
+        declarations.push(declaration(
+            DocumentId(0),
+            Some(p_owner),
+            Some(p_name),
+            DeclarationKind::PartUsage,
+        ));
+        let p = DeclarationId(u32::try_from(declarations.len() - 1).unwrap());
+        let references = vec![
+            reference(
+                DeclarationId(3),
+                ReferenceKind::NamespaceImport,
+                a_path,
+                true,
+            ),
+            reference(p, ReferenceKind::FeatureTyping, t_path, false),
+        ];
+        let memberships = memberships_for(&declarations, &[]);
+        let _symbols = symbols.freeze();
+        ResolverFixture {
+            declarations: declarations.into_boxed_slice(),
+            memberships,
+            paths: paths.freeze(),
+            references: references.into_boxed_slice(),
+        }
+    }
+
+    #[test]
+    fn local_feature_shadows_an_incompatible_imported_type_of_the_same_name() {
+        // C::T (a PartUsage feature) is domain-incompatible as a FeatureTyping target, but it is
+        // still owned directly by C, the reference's enclosing namespace, so per
+        // RESOLUTION_LAYER_DESIGN.md section 11.1 it must shadow the imported, domain-compatible
+        // A::T rather than being silently discarded in favor of the import or left Unresolved.
+        let fixture = local_shadow_fixture(false);
+        let (_, _, resolution) = resolve_fixture(&fixture);
+        assert_eq!(resolution.solver_status, SolverStatus::Converged);
+        assert_eq!(
+            resolution.outcome(AuthoredReferenceId(1)),
+            Some(ResolutionStatus::Resolved(DeclarationId(4)))
+        );
+    }
+
+    #[test]
+    fn without_a_local_binding_lookup_still_falls_through_to_the_import() {
+        // Regression guard: removing C::T (and its membership record) must not disturb the
+        // fallback to the imported A::T once no local/inherited candidate exists at any tier.
+        let mut fixture = local_shadow_fixture(false);
+        let mut declarations = fixture.declarations.into_vec();
+        declarations.remove(4);
+        fixture.declarations = declarations.into_boxed_slice();
+        // Rebuild memberships from scratch rather than splicing: `MembershipRecord::member` is a
+        // `DeclarationId` into the just-mutated declarations array, so it must be recomputed
+        // against the post-removal indices, not the pre-removal ones.
+        fixture.memberships = memberships_for(&fixture.declarations, &[]);
+        // The FeatureTyping reference source shifts down by one index after the removal.
+        let mut references = fixture.references.into_vec();
+        references[1].source = DeclarationId(4);
+        fixture.references = references.into_boxed_slice();
+        let (_, _, resolution) = resolve_fixture(&fixture);
+        assert_eq!(resolution.solver_status, SolverStatus::Converged);
+        assert_eq!(
+            resolution.outcome(AuthoredReferenceId(1)),
+            Some(ResolutionStatus::Resolved(DeclarationId(1)))
+        );
+    }
+
+    #[test]
+    fn intermediate_namespace_local_binding_shadows_the_outer_import() {
+        // p lives inside C::Inner, one level below C itself. The local C::T binding is neither
+        // owned by nor inherited into Inner directly, so the walk must climb the enclosing-scope
+        // chain to C, find C::T there, and shadow A::T at that outer tier before ever consulting
+        // imports.
+        let fixture = local_shadow_fixture(true);
+        let (_, _, resolution) = resolve_fixture(&fixture);
+        assert_eq!(resolution.solver_status, SolverStatus::Converged);
+        assert_eq!(
+            resolution.outcome(AuthoredReferenceId(1)),
+            Some(ResolutionStatus::Resolved(DeclarationId(4)))
         );
     }
 
