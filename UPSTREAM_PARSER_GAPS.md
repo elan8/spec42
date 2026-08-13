@@ -26,8 +26,37 @@ entry should carry enough detail to file/update an upstream issue against
   mirroring `ClassDef` minus the body) filed upstream against
   `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
 
+- Gap 14. Bare KerML `feature x : Integer;` (`PackageBodyElement::FeatureDecl`, and its
+  `KermlFeatureDecl` sibling for the bodied form) still collapses to the raw-text fallback node
+  `FeatureDecl { keyword: String, text: String }` in the pinned `0757de13` checkout (see
+  `src/ast/kerml_fallback.rs` and `feature_decl()`/`kerml_feature_decl()` in
+  `src/parser/package.rs`). Re-verified directly against the checkout while attempting to lower
+  the top-level `feature` gap previously (incorrectly) marked resolved as Gap 1 below: unlike
+  `ItemDef`/`ItemUsage` (typed `identification`/`specializes`/`type_name`/`redefines`/`body`
+  fields), this construct has no typed name, typing, specialization, subsetting, or redefinition
+  fields at all -- only the leading keyword and the full captured source text of the declaration.
+  There is no way to lower this to a named declaration with resolvable
+  typing/specialization/subsetting/redefinition facts without re-parsing the captured `text`,
+  which spec42 deliberately avoids (parser-owned resolution boundary). Currently routed through
+  the generic `unsupported_package_member` fallback in `crates/sysml_resolution/src/model.rs`
+  (`PackageBodyElement::FeatureDecl`/`PackageBodyElement::KermlFeatureDecl` arms). Blocks
+  `test/snapshots/feature_typing.md` and the ~86 other fixtures using bare `feature`
+  declarations (see `kerml/feature_chains.md`, `kerml/a_3_8_changing_feature_values.md`, etc.)
+  from resolving name/typing/specialization facts for those declarations. Needs a typed
+  `FeatureDecl` shape (e.g. `identification`/`type_name` (or a `TypingRelationship`)/`subsets`/
+  `redefines`/`membership`/`body` fields mirroring `ItemUsage`) filed upstream against
+  `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+
 ## Resolved / not blocked (kept for history)
-- Gap 1. Top-level `feature` declarations were unparsed grammar. Resolved upstream in 0757de13 -- confirmed via direct AST/parser inspection of the pinned checkout (typed fields/nodes/dispatch now present); wired into `sysml_resolution` lowering where applicable (see commits on `closing-the-gap`).
+- Gap 1. Top-level `feature` declarations were unparsed grammar. Originally recorded as resolved
+  upstream in 0757de13 (the raw `unsupported_grammar_form` parser diagnostic is indeed gone, and
+  `feature x : Integer;` now parses without a parser-level error). **Correction (re-verified
+  while attempting to lower it for `sysml_resolution`):** the resulting AST node
+  (`PackageBodyElement::FeatureDecl`) is still a raw/opaque fallback (`{ keyword: String, text:
+  String }`, no name/typing/specialization fields), the same pattern as Gap 10/13's
+  `ClassifierDecl` correction -- the parser no longer *rejects* the grammar, but it also doesn't
+  produce a typed node `sysml_resolution` can lower without re-parsing text. Re-tracked as Gap 14
+  above.
 - Gap 2. Class specialization (`:>`) inside a `class` body was unparsed. Resolved upstream in 0757de13 -- confirmed via direct AST/parser inspection of the pinned checkout (typed fields/nodes/dispatch now present); wired into `sysml_resolution` lowering where applicable (see commits on `closing-the-gap`).
 - Gap 3. `CalcDef` dropped the parsed `:>` specialization clause. Resolved upstream in 0757de13 -- confirmed via direct AST/parser inspection of the pinned checkout (typed fields/nodes/dispatch now present); wired into `sysml_resolution` lowering where applicable (see commits on `closing-the-gap`).
 - Gap 4. `ConstraintUsage` dropped the parsed `:>`/`:>>` specialization clauses. Resolved upstream in 0757de13 -- confirmed via direct AST/parser inspection of the pinned checkout (typed fields/nodes/dispatch now present); wired into `sysml_resolution` lowering where applicable (see commits on `closing-the-gap`).
