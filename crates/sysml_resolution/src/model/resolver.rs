@@ -787,6 +787,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     | ReferenceKind::TransitionEffect
                     | ReferenceKind::SatisfySource
                     | ReferenceKind::SatisfyTarget
+                    | ReferenceKind::Variant
             )
             .then_some(index)
         })
@@ -1654,7 +1655,8 @@ fn supported_import_domain(reference: &impl ResolutionReferenceFact) -> Option<D
         | ReferenceKind::FilterMetadataTest
         | ReferenceKind::SatisfySource
         | ReferenceKind::SatisfyTarget
-        | ReferenceKind::SatisfyViewpoint => None,
+        | ReferenceKind::SatisfyViewpoint
+        | ReferenceKind::Variant => None,
     }
 }
 
@@ -1828,7 +1830,8 @@ fn build_effective_import_indexes<R: ResolutionReferenceFact>(
             | ReferenceKind::FilterMetadataTest
             | ReferenceKind::SatisfySource
             | ReferenceKind::SatisfyTarget
-            | ReferenceKind::SatisfyViewpoint => {}
+            | ReferenceKind::SatisfyViewpoint
+            | ReferenceKind::Variant => {}
         }
     }
     Ok((

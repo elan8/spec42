@@ -367,6 +367,9 @@ fn write_relationships(model: &ResolvedSemanticModel, output: &mut dyn fmt::Writ
         if reference.flags.conjugated {
             write!(output, " (conjugated true)")?;
         }
+        if reference.flags.variation {
+            write!(output, " (variation true)")?;
+        }
         if let Some(direction) = reference.flags.direction {
             write!(output, " (direction {})", parameter_direction(direction))?;
         }
@@ -560,6 +563,9 @@ fn write_authored(
         write!(output, ")")?;
         if reference.flags.conjugated {
             write!(output, " (conjugated true)")?;
+        }
+        if reference.flags.variation {
+            write!(output, " (variation true)")?;
         }
         if let Some(direction) = reference.flags.direction {
             write!(output, " (direction {})", parameter_direction(direction))?;
@@ -880,6 +886,7 @@ fn reference_kind(kind: ReferenceKind) -> &'static str {
         ReferenceKind::SatisfySource => "satisfySource",
         ReferenceKind::SatisfyTarget => "satisfyTarget",
         ReferenceKind::SatisfyViewpoint => "satisfyViewpoint",
+        ReferenceKind::Variant => "variant",
     }
 }
 
@@ -909,6 +916,7 @@ fn relationship_kind(kind: ReferenceKind) -> Option<&'static str> {
         ReferenceKind::SatisfySource => Some("satisfySource"),
         ReferenceKind::SatisfyTarget => Some("satisfyTarget"),
         ReferenceKind::SatisfyViewpoint => Some("satisfyViewpoint"),
+        ReferenceKind::Variant => Some("variant"),
         ReferenceKind::NamespaceImport
         | ReferenceKind::MembershipImport
         | ReferenceKind::FilterImport => None,

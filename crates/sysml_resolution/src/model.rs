@@ -22,8 +22,8 @@ use sysml_v2_parser_next::{
         ConcernUsage as ParserConcernUsage, ConnectStmt, ConnectionDef, ConnectionDefBody,
         ConnectionDefBodyElement, ConnectionEnd, ConnectionUsageMember as ParserConnectionUsage,
         ConstraintDef, ConstraintDefBody, ConstraintDefBodyElement,
-        ConstraintUsage as ParserConstraintUsage, DefinitionBody, DefinitionBodyElement, DoAction,
-        EndDecl, EndIdentity, EntryAction, EnumDef, EnumerationBody,
+        ConstraintUsage as ParserConstraintUsage, DefinitionBody, DefinitionBodyElement,
+        DefinitionPrefix, DoAction, EndDecl, EndIdentity, EntryAction, EnumDef, EnumerationBody,
         EnumerationUsage as ParserEnumerationUsage, ExitAction, Expression, FeatureValue,
         FirstStmt, FlowDef, Import, ImportShape, InOut, InOutDecl, InterfaceDef, InterfaceDefBody,
         InterfaceDefBodyElement, InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement,
@@ -40,8 +40,8 @@ use sysml_v2_parser_next::{
         RootElement, Satisfy, SatisfyViewMember, Span, StateDef, StateDefBody, StateDefBodyElement,
         StateUsage as ParserStateUsage, SubjectDecl, SubsettingKind, SubsettingRelationship,
         ThenStmt, Transition, TransitionAccept, TransitionEffect, UseCaseDef, UseCaseDefBody,
-        UseCaseDefBodyElement, VerificationCaseDef, ViewBody, ViewBodyElement, ViewDef,
-        ViewDefBody, ViewDefBodyElement, ViewUsage as ParserViewUsage, ViewpointDef,
+        UseCaseDefBodyElement, VariantUsage, VerificationCaseDef, ViewBody, ViewBodyElement,
+        ViewDef, ViewDefBody, ViewDefBodyElement, ViewUsage as ParserViewUsage, ViewpointDef,
         Visibility as ParserVisibility,
     },
     ParseError, ParsedDocument,
@@ -635,6 +635,24 @@ enum ReferenceKind {
     /// `view` usage declaration (no anonymous nested-declaration scope shift is needed, since the
     /// viewpoint reference is not itself paired with a second operand the way `Satisfy` is).
     SatisfyViewpoint,
+    /// The authored target of a `variant <name>;` member (`VariantUsage.reference`, BNF
+    /// `VariantUsageElement`'s untyped reference form) inside a `variation part`/`variation part
+    /// def` body, resolved through the same `DeclarationDomain::Any` lexical lookup as
+    /// `Succession`/`SatisfySource`: the referenced variant can be any owned sibling feature, not
+    /// just a Type (e.g. `part manualTransmission;` declared as a sibling of the enclosing
+    /// `vehicleFamily` part, referenced from `variant manualTransmission;` nested inside
+    /// `variation part transmission { ... }`). Sourced directly at the enclosing `variation`
+    /// declaration itself (no anonymous nested-declaration scope shift, unlike `Succession`/
+    /// `Satisfy`), since each `variant` member carries only a single operand -- mirroring
+    /// `SatisfyViewpoint`'s single-operand shape rather than `Succession`'s paired-ends shape.
+    /// Multiple `variant` members owned by the same variation declaration become multiple
+    /// `Variant` references from that one source, distinguished by ordinal like any other
+    /// multi-target reference family (e.g. `Subclassification`'s multiple `:>` targets). The typed
+    /// inline form (`variant part name : Type { ... }`, `VariantUsage.typed`) introduces a new
+    /// usage rather than referencing an existing one -- out of scope, like `Satisfy`'s
+    /// `inline_requirement` form -- and left as an explicit unsupported-member diagnostic; so is
+    /// any optional nested body on the untyped reference form (`VariantUsage.body`).
+    Variant,
 }
 
 /// The computed or explicit outcome of evaluating one supported constraint/calc expression
@@ -1087,6 +1105,14 @@ struct RelationshipFlags {
     recursive: bool,
     wildcard: bool,
     direction: Option<ParameterDirection>,
+    /// Mirrors the `variation` keyword prefix (BNF `BasicDefinitionPrefix`, `DefinitionPrefix::
+    /// Variation`) on the owning `part`/`part def` declaration whose `FeatureTyping`/
+    /// `Subclassification` reference carries this flag -- the same convention `conjugated` uses
+    /// for a port's typing target polarity, rather than inventing a new relationship kind. Set on
+    /// `lower_part_usage`'s own typing reference (e.g. `variation part transmission :
+    /// Transmission;`); the sibling `abstract` prefix is deliberately left unrepresented, as
+    /// before this slice.
+    variation: bool,
 }
 
 /// The `in`/`out`/`inout` direction prefix on a directed parameter declaration (BNF `InOutDecl`),
@@ -2190,6 +2216,14 @@ impl SemanticModelBuilder {
                             first_stmt,
                         )?;
                     }
+                    PartDefBodyElement::VariantUsage(node) => {
+                        self.lower_variant_usage(
+                            document,
+                            declaration,
+                            UnsupportedFamily::PartDefinitionMember,
+                            node,
+                        )?;
+                    }
                     PartDefBodyElement::Annotation(_)
                     | PartDefBodyElement::MetadataKeywordUsage(_)
                     | PartDefBodyElement::Dependency(_)
@@ -2201,7 +2235,6 @@ impl SemanticModelBuilder {
                     | PartDefBodyElement::Allocate(_)
                     | PartDefBodyElement::ExhibitState(_)
                     | PartDefBodyElement::AssertConstraint(_)
-                    | PartDefBodyElement::VariantUsage(_)
                     | PartDefBodyElement::AllocationUsage(_)
                     | PartDefBodyElement::ViewpointUsage(_)
                     | PartDefBodyElement::RenderingUsage(_)
@@ -2247,7 +2280,12 @@ impl SemanticModelBuilder {
             node.value.membership.span.clone(),
         )?;
         if let Some(relationship) = &node.value.typing {
-            self.lower_typing_relationship(document, declaration, relationship)?;
+            self.lower_typing_relationship_impl(
+                document,
+                declaration,
+                relationship,
+                matches!(node.value.usage_prefix, Some(DefinitionPrefix::Variation)),
+            )?;
         }
         if let Some((relationship, _)) = &node.value.subsets {
             self.lower_subsetting_relationship(document, declaration, relationship)?;
@@ -2375,6 +2413,14 @@ impl SemanticModelBuilder {
                             node,
                         )?;
                     }
+                    PartUsageBodyElement::VariantUsage(node) => {
+                        self.lower_variant_usage(
+                            document,
+                            declaration,
+                            UnsupportedFamily::PartUsageMember,
+                            node,
+                        )?;
+                    }
                     PartUsageBodyElement::Annotation(_)
                     | PartUsageBodyElement::DefaultReferenceUsage(_)
                     | PartUsageBodyElement::Bind(_)
@@ -2384,7 +2430,6 @@ impl SemanticModelBuilder {
                     | PartUsageBodyElement::SuccessionUsage(_)
                     | PartUsageBodyElement::Allocate(_)
                     | PartUsageBodyElement::MetadataKeywordUsage(_)
-                    | PartUsageBodyElement::VariantUsage(_)
                     | PartUsageBodyElement::AssertConstraint(_)
                     | PartUsageBodyElement::IncludeUseCase(_)
                     | PartUsageBodyElement::UseCaseUsage(_)
@@ -6708,6 +6753,20 @@ impl SemanticModelBuilder {
         source: DeclarationId,
         relationship: &Node<sysml_v2_parser_next::ast::TypingRelationship>,
     ) -> Result<(), ConstructionError> {
+        self.lower_typing_relationship_impl(document, source, relationship, false)
+    }
+
+    /// Shared implementation behind `lower_typing_relationship`, with an extra `variation` flag
+    /// only `lower_part_usage` sets (when its `usage_prefix` is `DefinitionPrefix::Variation`),
+    /// mirroring the `conjugated` flag convention on a port's typing target: every other caller
+    /// goes through the `lower_typing_relationship` wrapper above with `variation: false`.
+    fn lower_typing_relationship_impl(
+        &mut self,
+        document: DocumentId,
+        source: DeclarationId,
+        relationship: &Node<sysml_v2_parser_next::ast::TypingRelationship>,
+        variation: bool,
+    ) -> Result<(), ConstructionError> {
         let kind = match relationship.value.kind {
             sysml_v2_parser_next::ast::TypingKind::Typing => ReferenceKind::FeatureTyping,
             sysml_v2_parser_next::ast::TypingKind::Subclassification => {
@@ -6730,12 +6789,59 @@ impl SemanticModelBuilder {
                 flags: RelationshipFlags {
                     conjugated: relationship.value.is_conjugated,
                     implied: relationship.value.is_implied,
+                    variation,
                     ..RelationshipFlags::default()
                 },
                 span,
                 import: None,
             })?;
         }
+        Ok(())
+    }
+
+    /// Lowers a `variant <name>;` member (BNF `VariantUsageElement`'s untyped reference form,
+    /// `ast::VariantUsage`) found inside a `variation part`/`variation part def` body, mirroring
+    /// `lower_view_satisfy`: the referenced sibling usage is a bare `QualifiedReferenceId` (not
+    /// wrapped in an `Expression`), resolved as an authored `Variant` reference sourced directly
+    /// at the enclosing variation `owner` declaration through the same `DeclarationDomain::Any`
+    /// lexical lookup fixed point as `Succession`/`SatisfySource` -- no anonymous nested-
+    /// declaration scope shift, since (unlike `Succession`/`Satisfy`) there is only one operand.
+    /// The typed inline form (`VariantUsage.typed`, e.g. `variant part name : Type { ... }`)
+    /// introduces a new usage rather than referencing an existing one -- out of scope, like
+    /// `Satisfy.inline_requirement` -- and falls through to an explicit unsupported-member
+    /// diagnostic, as does the untyped form's optional nested body (`VariantUsage.body`) and the
+    /// case where neither `reference` nor `typed` is present.
+    fn lower_variant_usage(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        family: UnsupportedFamily,
+        node: &Node<VariantUsage>,
+    ) -> Result<(), ConstructionError> {
+        if node.value.typed.is_some() || node.value.body.is_some() {
+            self.push_unsupported(document, family, node.span.clone());
+            return Ok(());
+        }
+        let Some(target) = node.value.reference else {
+            self.push_unsupported(document, family, node.span.clone());
+            return Ok(());
+        };
+        let span = self.documents[document.index()]
+            .parsed
+            .qualified_reference(target)
+            .ok_or(ConstructionError::InvalidParserReference)?
+            .metadata
+            .span
+            .clone();
+        self.push_reference(PendingReference {
+            source: owner,
+            kind: ReferenceKind::Variant,
+            document,
+            local: target,
+            flags: RelationshipFlags::default(),
+            span,
+            import: None,
+        })?;
         Ok(())
     }
 
@@ -9431,6 +9537,78 @@ mod tests {
             output.contains("(kind satisfySource)")
                 && output.contains("(authored-target \"r\")\n      (outcome (status resolved)"),
             "expected the satisfy source to still resolve independently, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn variation_part_resolves_both_variant_members_to_sibling_declarations() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpart def Transmission;\n\
+             \tpart manualTransmission;\n\
+             \tpart automaticTransmission;\n\
+             \tpart vehicle {\n\
+             \t\tvariation part transmission : Transmission {\n\
+             \t\t\tvariant manualTransmission;\n\
+             \t\t\tvariant automaticTransmission;\n\
+             \t\t}\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.matches("(kind variant)").count() >= 2,
+            "expected two variant relationship kinds, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind variant) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::vehicle::transmission\""
+            ),
+            "expected both variant references to be sourced at the variation declaration \
+             itself (no anonymous nested-declaration shift), got:\n{output}"
+        );
+        assert!(
+            output.contains("(authored-target \"manualTransmission\")")
+                && output.contains("(authored-target \"automaticTransmission\")"),
+            "expected both variant targets to be authored, got:\n{output}"
+        );
+        assert!(
+            !output.contains("(status unresolved)"),
+            "expected both variant members to resolve to their sibling declarations, \
+             got:\n{output}"
+        );
+        assert!(
+            output.contains("(variation true)"),
+            "expected the variation part's own typing reference to carry the variation flag, \
+             got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn variant_with_an_unresolvable_target_stays_explicitly_unresolved() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpart def Transmission;\n\
+             \tpart manualTransmission;\n\
+             \tpart vehicle {\n\
+             \t\tvariation part transmission : Transmission {\n\
+             \t\t\tvariant manualTransmission;\n\
+             \t\t\tvariant missingVariant;\n\
+             \t\t}\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(kind variant)")
+                && output.contains("(authored-target \"missingVariant\")")
+                && output.contains("(status unresolved)"),
+            "expected the unresolvable variant target to stay explicitly unresolved (not \
+             fabricated), got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(authored-target \"manualTransmission\")\n      (outcome (status resolved)"
+            ),
+            "expected the resolvable variant to still resolve independently, got:\n{output}"
         );
     }
 
