@@ -422,11 +422,16 @@ enum DeclarationKind {
     /// it is carried as an explicit `RelationshipFlags::direction` fact on the pushed
     /// `FeatureTyping` reference, mirroring how `PortUsage`'s conjugation polarity rides the
     /// `conjugated` flag on the same reference rather than becoming a new relationship kind.
-    /// When the parameter has no type (`type_name` is `None`, e.g. a bare `in :>> target = ...`
+    /// When the parameter has no type (`type_name` is `None`, e.g. a bare `in seq[1..*] nonunique
+    /// ordered;` untyped/collection-modified form, or the leading `in :>> target = ...`
     /// redefinition form), no `FeatureTyping` reference is pushed and the direction fact is not
-    /// recorded -- only the declaration/membership shell is lowered for that shape. Multiplicity
-    /// (`[0..*]`) is not modeled anywhere else in this codebase yet (attribute/part usages with
-    /// array types don't carry a multiplicity fact either), so it is left unrepresented here too.
+    /// recorded -- only the declaration/membership shell is lowered for that shape. A `redefines`
+    /// (`ast::InOutDecl::redefines`, BNF `:>`/`:>>`) clause -- e.g. `in value[1] :> seq;`
+    /// subsetting another parameter -- is lowered via the shared `lower_subsetting_relationship`
+    /// helper, exactly as `AttributeUsage`/`ItemUsage` already do, independent of whether a type
+    /// is present. Multiplicity (`[0..*]`/`[1..*]`) and collection modifiers (`nonunique`/
+    /// `ordered`) are not modeled anywhere else in this codebase yet (attribute/part usages with
+    /// array types don't carry a multiplicity fact either), so they are left unrepresented here too.
     ParameterUsage,
     /// A `subject` declaration (BNF `SubjectDecl`, `ast::SubjectDecl`) found in a requirement/
     /// concern/case-family def or usage body, e.g. `subject vehicle : Vehicle;` inside
@@ -3655,12 +3660,17 @@ impl SemanticModelBuilder {
     /// mirroring `lower_item_usage`: ownership, membership, and (when a type is present) a
     /// `FeatureTyping` reference to the declared type, carrying an explicit
     /// `RelationshipFlags::direction` fact mirroring the `conjugated` flag precedent set by
-    /// `PortUsage`. Anonymous redefinition-only parameters (`type_name` is `None`, e.g. a bare
-    /// `in :>> target = expr;`) get only the declaration/membership shell -- no `FeatureTyping`
-    /// reference (and hence no direction fact) is pushed for them, and their `redefines`/`value`
-    /// clauses are left unlowered (out of scope for this slice, matching multiplicity). The
-    /// declared name may be empty for that same anonymous shape; `intern_declared_name` already
-    /// treats an empty name as anonymous (see its callers for `EnumerationLiteral` etc.).
+    /// `PortUsage`. Untyped parameters (`type_name` is `None`, e.g. a bare `in :>> target = expr;`
+    /// redefinition form, or `in seq[1..*] nonunique ordered;` with only a multiplicity/collection
+    /// modifiers) still get the declaration/membership shell lowered -- only the `FeatureTyping`
+    /// reference (and hence the direction fact) is skipped when there is no type to reference. A
+    /// `redefines`/`subsets` clause (`ast::InOutDecl::redefines`, e.g. `in value[1] :> seq;`) is
+    /// lowered via `lower_subsetting_relationship` regardless of whether a type is present,
+    /// reusing the exact same helper `AttributeUsage`/`ItemUsage` already call. The declared name
+    /// may be empty for the anonymous redefinition shape; `intern_declared_name` already treats an
+    /// empty name as anonymous (see its callers for `EnumerationLiteral` etc.). Multiplicity and
+    /// collection modifiers (`nonunique`/`ordered`) remain out of scope, matching every other
+    /// declaration kind in this codebase.
     fn lower_parameter_declaration(
         &mut self,
         document: DocumentId,
@@ -3707,6 +3717,9 @@ impl SemanticModelBuilder {
                 span,
                 import: None,
             })?;
+        }
+        if let Some(relationship) = &node.value.redefines {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
         }
         // Widened value-assignment handling (see `lower_value_assignment`/`lower_return_decl`'s
         // own `= expr` handling, which this mirrors exactly): a parameter default value
@@ -11443,6 +11456,83 @@ mod tests {
                 "(kind typing) (direction inout) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Focus::image\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Image\")))"
             ),
             "expected image's typing reference to Image to resolve with an `inout` direction fact, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn calc_def_untyped_parameter_still_lowers_a_declaration_shell() {
+        // `in seq[1..*];` (BNF `InOutDecl` with no `type_name`, only a multiplicity) must still
+        // lower as a declaration -- no `FeatureTyping`/direction fact is pushed for it (there is
+        // no type to reference), but the declaration/membership shell is not skipped. Mirrors
+        // `sysml.library/interfaces.md`'s `excludingOnce` calc's `in seq[1..*] nonunique ordered;`
+        // line minus the `nonunique`/`ordered` collection modifiers, which the pinned parser
+        // cannot parse at all yet (see UPSTREAM_PARSER_GAPS.md Gap 31) and are out of scope here.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tcalc def ExcludingOnce {\n\
+             \t\tin seq[1..*];\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::ExcludingOnce::seq\"))) (kind parameter)"),
+            "expected a parameter declaration for untyped seq, got:\n{output}"
+        );
+        assert!(
+            !output.contains("(kind typing)"),
+            "expected no FeatureTyping reference for untyped seq, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn calc_def_parameter_typed_via_colon_gt_shorthand_resolves_as_feature_typing() {
+        // `in value :> seq;` on a *named* `InOutDecl` folds the `:>` prefix into `type_name` via
+        // the same `qualified_reference` parse as a plain `:` (verified directly against the
+        // pinned parser checkout's `in_out_decl_inner`, see UPSTREAM_PARSER_GAPS.md Gap 31) --
+        // it never reaches `ast::InOutDecl::redefines`. So this resolves as an ordinary
+        // `FeatureTyping` reference to `seq`, not a `Subsetting` reference.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tcalc def ExcludingOnce {\n\
+             \t\tin seq;\n\
+             \t\tin value :> seq;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind typing) (direction in) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::ExcludingOnce::value\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::ExcludingOnce::seq\")))"
+            ),
+            "expected value's `:>` shorthand to resolve as a FeatureTyping reference to seq, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn calc_def_anonymous_redefinition_parameter_lowers_its_redefines_relationship() {
+        // The leading `in :>> target = expr;` spelling is the one case that actually populates
+        // `ast::InOutDecl::redefines` (a `Node<SubsettingRelationship>`), independent of whether a
+        // type is present (`type_name` stays `None` here). `lower_parameter_declaration` now
+        // lowers this via the same `lower_subsetting_relationship` helper `AttributeUsage`/
+        // `ItemUsage` already call, so the redefinition target reference resolves.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tcalc def Sum {\n\
+             \t\tin target;\n\
+             \t\tin :>> target = 1;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind redefinition) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Sum::\")))"
+            ) || output.contains("(kind redefinition)"),
+            "expected an anonymous parameter's redefinition reference to lower, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Sum::target\")))"
+            ),
+            "expected the redefinition reference to resolve to target, got:\n{output}"
         );
     }
 

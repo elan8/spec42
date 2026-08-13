@@ -324,6 +324,33 @@ entry should carry enough detail to file/update an upstream issue against
   variant added to `ThenTarget`, mirroring `Merge`/`Fork`/`Decide`'s own dedicated variants, filed
   upstream against `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
 
+- Gap 31. `InOutDecl` (`src/parser/action.rs`, `in_out_decl_inner`) has no grammar support for the
+  ordering/uniqueness collection modifiers `nonunique`/`ordered` on a parameter declaration, e.g.
+  `in seq[1..*] nonunique ordered;` (`sysml.library/interfaces.md`'s `excludingOnce` calc). Traced
+  directly in the pinned `0757de13` checkout: the named-parameter branch parses an optional
+  `qualified_reference` type (`:`/`:>`, folded into `type_name` either way -- see below), then an
+  optional `multiplicity_node`, then jumps straight to an optional `= expr` value and the closing
+  `;`/`{ ... }` terminator -- there is no `nonunique`/`ordered` token handling anywhere in the
+  function, and the `InOutDecl` struct itself (`src/ast/behavior.rs`) has no field to hold such a
+  fact even if there were. Confirmed via a minimal `sysml_resolution` unit-test probe: `in
+  seq[1..*] nonunique;` and `in seq[1..*] ordered;` both push the whole statement into
+  parse-recovery (`CalcDefBodyElement::Error`) -- nothing reaches `lower_parameter_declaration` at
+  all for either modifier, so this is a hard parse failure, not a resolution-layer typing/lowering
+  gap. `in seq[1..*];` alone (no modifiers) parses and lowers cleanly. Blocks
+  `excludingOnce`'s `in seq[1..*] nonunique ordered;` line in `sysml.library/interfaces.md` from
+  producing anything but a parse-recovery diagnostic. Needs `nonunique`/`ordered` (and, per the
+  BNF, `unique`/`nonordered`) modifier tokens recognized after the optional multiplicity in
+  `in_out_decl_inner`, with a corresponding fact field added to `InOutDecl`, filed upstream against
+  `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121). Separately noted while tracing
+  this: `in_out_decl_inner`'s named-parameter branch folds a `:>` prefix into `type_name` via the
+  same `qualified_reference` parse as a plain `:` (`action.rs:402-417`) rather than into the
+  `redefines: Option<Node<SubsettingRelationship>>` field -- so `in value[1] :> seq;` is *not* a
+  parser gap needing a resolution-side subsetting fix; it already resolves as an ordinary
+  `FeatureTyping` reference to `seq` via the existing `type_name`-present path. Only the
+  leading-`:>>`/anonymous-redefinition spelling (`in :>> target = expr;`) actually populates
+  `redefines`; `sysml_resolution::lower_parameter_declaration` now lowers that field too (this
+  slice), independent of whether the multiplicity-modifier gap above is ever resolved upstream.
+
 ## False-positive check (spec42-side surfacing bug?)
 Traced end-to-end for a diverse sample (Gap 15's `feature` case, Gap 17's `portion` case, Gap 22's
 `type`/`subset` case, and Gap 23's bare-identifier case) plus a repo-wide search:
