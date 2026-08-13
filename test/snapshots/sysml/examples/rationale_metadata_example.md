@@ -55,9 +55,9 @@ package RationaleMetadataExample {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 10 4) (end 13 5))
+        (range (start 10 40) (end 10 49))
       )
       (diagnostic
         (severity warning)
@@ -86,6 +86,9 @@ package RationaleMetadataExample {
     (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engine"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engine4cyl"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "engine"))))
     (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engine6cyl"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "engine"))))
+    (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineSelectionRationale"))) (kind metadata) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Rationale"))))
+    (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineSelectionRationale::explanation"))) (kind attribute) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineSelectionRationale::text"))) (kind attribute) (membership (kind feature) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/rationale_metadata_example.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0))
@@ -100,6 +103,9 @@ package RationaleMetadataExample {
     (reference (id (source (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engine6cyl"))) (kind subsetting) (ordinal 0))
       (authored-target "engine")
       (outcome (status unsupported)))
+    (reference (id (source (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineSelectionRationale"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Rationale")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -125,6 +131,10 @@ package RationaleMetadataExample {
   (query (document "memory://snapshot/rationale_metadata_example.md") (range (start 8 23) (end 8 29)) (probe (position 8 23))
     (reference (id (source (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engine6cyl"))) (kind subsetting) (ordinal 0) (authored-target "engine")
       (outcome (status unsupported)))
+  )
+  (query (document "memory://snapshot/rationale_metadata_example.md") (range (start 10 40) (end 10 49)) (probe (position 10 40))
+    (reference (id (source (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineSelectionRationale"))) (kind featureTyping) (ordinal 0) (authored-target "Rationale")
+      (outcome (status unresolved)))
   )
 )
 ~~~

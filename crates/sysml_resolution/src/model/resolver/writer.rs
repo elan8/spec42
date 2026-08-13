@@ -704,6 +704,8 @@ fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::ItemUsage => "item",
         DeclarationKind::ActionDefinition => "action-def",
         DeclarationKind::ActionUsage => "action",
+        DeclarationKind::MetadataDefinition => "metadata-def",
+        DeclarationKind::MetadataUsage => "metadata",
     }
 }
 

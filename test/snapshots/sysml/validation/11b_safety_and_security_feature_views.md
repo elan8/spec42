@@ -91,15 +91,9 @@ package '11b-Safety and Security Feaure Views' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 5 2) (end 7 3))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 8 2) (end 8 24))
+        (range (start 6 27) (end 6 34))
       )
       (diagnostic
         (severity warning)
@@ -179,6 +173,9 @@ package '11b-Safety and Security Feaure Views' {
     (declaration (id (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::AnnotationDefinitions"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::AnnotationDefinitions::Safety"))) (kind metadata-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::AnnotationDefinitions::Safety::isMandatory"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Boolean"))))
+    (declaration (id (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::AnnotationDefinitions::Security"))) (kind metadata-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::PartsTree"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "AnnotationDefinitions") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::PartsTree::vehicle"))) (kind part) (membership (kind feature) (visibility default)))
@@ -204,6 +201,9 @@ package '11b-Safety and Security Feaure Views' {
   (references
     (reference (id (source (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
       (authored-target "ScalarValues")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::AnnotationDefinitions::Safety::isMandatory"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Boolean")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
       (authored-target "AnnotationDefinitions")
@@ -232,6 +232,10 @@ package '11b-Safety and Security Feaure Views' {
 (navigation
   (query (document "memory://snapshot/11b_safety_and_security_feature_views.md") (range (start 2 16) (end 2 31)) (probe (position 2 16))
     (reference (id (source (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/11b_safety_and_security_feature_views.md") (range (start 6 27) (end 6 34)) (probe (position 6 27))
+    (reference (id (source (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::AnnotationDefinitions::Safety::isMandatory"))) (kind featureTyping) (ordinal 0) (authored-target "Boolean")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/11b_safety_and_security_feature_views.md") (range (start 12 16) (end 12 40)) (probe (position 12 16))

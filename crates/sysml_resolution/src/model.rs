@@ -19,13 +19,13 @@ use sysml_v2_parser_next::{
         AttributeDef, AttributeUsage, EnumDef, EnumerationBody,
         EnumerationUsage as ParserEnumerationUsage, Import, ImportShape, ItemDef,
         ItemUsage as ParserItemUsage, LibraryPackage, Membership,
-        MembershipKind as ParserMembershipKind, NamespaceDecl, Node, Package, PackageBody,
-        PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement, PartUsage, PartUsageBody,
-        PartUsageBodyElement, PortBody, PortBodyElement, PortDef, PortDefBody, PortDefBodyElement,
-        PortUsage as ParserPortUsage, QualifiedIdentification, QualifiedReferenceId,
-        RequirementDef, RequirementDefBody, RequirementDefBodyElement,
-        RequirementUsage as ParserRequirementUsage, RootElement, Span, SubsettingKind,
-        SubsettingRelationship, Visibility as ParserVisibility,
+        MembershipKind as ParserMembershipKind, MetadataDef, MetadataUsage as ParserMetadataUsage,
+        NamespaceDecl, Node, Package, PackageBody, PackageBodyElement, PartDef, PartDefBody,
+        PartDefBodyElement, PartUsage, PartUsageBody, PartUsageBodyElement, PortBody,
+        PortBodyElement, PortDef, PortDefBody, PortDefBodyElement, PortUsage as ParserPortUsage,
+        QualifiedIdentification, QualifiedReferenceId, RequirementDef, RequirementDefBody,
+        RequirementDefBodyElement, RequirementUsage as ParserRequirementUsage, RootElement, Span,
+        SubsettingKind, SubsettingRelationship, Visibility as ParserVisibility,
     },
     ParseError, ParsedDocument,
 };
@@ -121,6 +121,18 @@ enum DeclarationKind {
     /// `PartUsage`, `ActionUsage`'s typing is a structured `TypingRelationship` (not a bare
     /// `QualifiedReferenceId`).
     ActionUsage,
+    /// `metadata def` (BNF MetadataDefinition): a type whose owned members are attribute/nested
+    /// usages, mirroring ItemDefinition lowering: ownership, membership, an optional `:>`
+    /// specialization relationship, and owned-member structure through the shared
+    /// `lower_attribute_body`. Metadata-specific semantics (annotation application, `about`
+    /// targets) are out of scope here.
+    MetadataDefinition,
+    /// A package/definition/usage-level `metadata` feature member (BNF MetadataUsage), e.g.
+    /// `metadata m : SomeMetadata;`. Mirrors ItemUsage lowering: its `:` typing target is a bare
+    /// `QualifiedReferenceId`. The `about` clause (targets this usage annotates) is out of scope
+    /// here -- a distinct annotation-application fact family, not the declaration/typing shape
+    /// covered by this slice.
+    MetadataUsage,
     Import,
     Alias,
 }
@@ -719,6 +731,9 @@ impl SemanticModelBuilder {
                 node.span.clone(),
             ),
             PackageBodyElement::ItemDef(node) => self.lower_item_def(document, owner, node)?,
+            PackageBodyElement::MetadataDef(node) => {
+                self.lower_metadata_def(document, owner, node)?
+            }
             PackageBodyElement::IndividualDef(node) => self.push_unsupported(
                 document,
                 UnsupportedFamily::PackageMember,
@@ -770,16 +785,6 @@ impl SemanticModelBuilder {
                 node.span.clone(),
             ),
             PackageBodyElement::ConnectionDef(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
-            PackageBodyElement::MetadataDef(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
-            PackageBodyElement::MetadataUsage(node) => self.push_unsupported(
                 document,
                 UnsupportedFamily::PackageMember,
                 node.span.clone(),
@@ -885,6 +890,9 @@ impl SemanticModelBuilder {
                 node.span.clone(),
             ),
             PackageBodyElement::ItemUsage(node) => self.lower_item_usage(document, owner, node)?,
+            PackageBodyElement::MetadataUsage(node) => {
+                self.lower_metadata_usage(document, owner, node)?
+            }
             PackageBodyElement::PortUsage(node) => self.lower_port_usage(document, owner, node)?,
             PackageBodyElement::ConnectionUsage(node) => self.push_unsupported(
                 document,
@@ -1075,6 +1083,12 @@ impl SemanticModelBuilder {
                     PartDefBodyElement::ItemUsage(item_usage) => {
                         self.lower_item_usage(document, Some(declaration), item_usage)?;
                     }
+                    PartDefBodyElement::MetadataDef(metadata_def) => {
+                        self.lower_metadata_def(document, Some(declaration), metadata_def)?;
+                    }
+                    PartDefBodyElement::MetadataUsage(metadata_usage) => {
+                        self.lower_metadata_usage(document, Some(declaration), metadata_usage)?;
+                    }
                     PartDefBodyElement::ActionDef(action_def) => {
                         self.lower_action_def(document, Some(declaration), action_def)?;
                     }
@@ -1106,8 +1120,6 @@ impl SemanticModelBuilder {
                     | PartDefBodyElement::Satisfy(_)
                     | PartDefBodyElement::VariantUsage(_)
                     | PartDefBodyElement::StateDef(_)
-                    | PartDefBodyElement::MetadataDef(_)
-                    | PartDefBodyElement::MetadataUsage(_)
                     | PartDefBodyElement::FlowDef(_)
                     | PartDefBodyElement::OccurrenceDef(_)
                     | PartDefBodyElement::ConnectionDef(_)
@@ -1221,6 +1233,12 @@ impl SemanticModelBuilder {
                     PartUsageBodyElement::ItemUsage(item_usage) => {
                         self.lower_item_usage(document, Some(declaration), item_usage)?;
                     }
+                    PartUsageBodyElement::MetadataDef(metadata_def) => {
+                        self.lower_metadata_def(document, Some(declaration), metadata_def)?;
+                    }
+                    PartUsageBodyElement::MetadataUsage(metadata_usage) => {
+                        self.lower_metadata_usage(document, Some(declaration), metadata_usage)?;
+                    }
                     PartUsageBodyElement::ActionUsage(action_usage) => {
                         self.lower_action_usage(document, Some(declaration), action_usage)?;
                     }
@@ -1242,7 +1260,6 @@ impl SemanticModelBuilder {
                     | PartUsageBodyElement::MetadataKeywordUsage(_)
                     | PartUsageBodyElement::VariantUsage(_)
                     | PartUsageBodyElement::StateDef(_)
-                    | PartUsageBodyElement::MetadataDef(_)
                     | PartUsageBodyElement::FlowDef(_)
                     | PartUsageBodyElement::OccurrenceDef(_)
                     | PartUsageBodyElement::CalcDef(_)
@@ -1252,7 +1269,6 @@ impl SemanticModelBuilder {
                     | PartUsageBodyElement::ConstraintDef(_)
                     | PartUsageBodyElement::ConstraintUsage(_)
                     | PartUsageBodyElement::CalcUsage(_)
-                    | PartUsageBodyElement::MetadataUsage(_)
                     | PartUsageBodyElement::AnalysisCaseDef(_)
                     | PartUsageBodyElement::AnalysisCaseUsage(_)
                     | PartUsageBodyElement::AliasDef(_)
@@ -1594,6 +1610,98 @@ impl SemanticModelBuilder {
         self.lower_attribute_body(document, declaration, &node.value.body)
     }
 
+    /// Lowers a `metadata def` (BNF MetadataDefinition), mirroring `lower_item_def`: ownership,
+    /// membership, and an optional `:>` specialization relationship. `MetadataDef`'s body is a
+    /// plain `AttributeBody` (shared with `AttributeDef`/`ItemDef`), so its owned members are
+    /// lowered through the existing `lower_attribute_body`.
+    fn lower_metadata_def(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<MetadataDef>,
+    ) -> Result<(), ConstructionError> {
+        let name = node
+            .value
+            .identification
+            .name
+            .as_deref()
+            .filter(|name| !name.is_empty())
+            .map(|name| self.intern_name(name))
+            .transpose()?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::MetadataDefinition,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Owning,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::OwningMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(relationship) = &node.value.specializes {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        self.lower_attribute_body(document, declaration, &node.value.body)
+    }
+
+    /// Lowers a package/definition/usage-level `metadata` feature member (BNF MetadataUsage),
+    /// e.g. `metadata m : SomeMetadata;`, mirroring `lower_item_usage`. `type_reference` is a
+    /// bare `QualifiedReferenceId`, so its `FeatureTyping` reference is pushed directly rather
+    /// than through `lower_typing_relationship`. `MetadataUsage`'s body is a plain
+    /// `AttributeBody` (see `lower_metadata_def`), so owned members are lowered through
+    /// `lower_attribute_body`. The `about` clause (annotation targets) is deliberately not
+    /// lowered here -- it belongs to the separate annotation-application fact family, out of
+    /// scope for this slice.
+    fn lower_metadata_usage(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<ParserMetadataUsage>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declared_name(&node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::MetadataUsage,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::FeatureMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(type_reference) = node.value.type_reference {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(type_reference)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span
+                .clone();
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::FeatureTyping,
+                document,
+                local: type_reference,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
+        self.lower_attribute_body(document, declaration, &node.value.body)
+    }
+
     /// Lowers an `action def` (BNF ActionDefinition), mirroring `lower_part_def`: ownership,
     /// membership, an optional `:>` specialization relationship, and owned declarations.
     /// Behavioral/control-flow body elements (parameters, succession, decision/merge/fork/join,
@@ -1663,12 +1771,14 @@ impl SemanticModelBuilder {
                 ActionDefBodyElement::ItemUsage(item_usage) => {
                     self.lower_item_usage(document, Some(owner), item_usage)?;
                 }
+                ActionDefBodyElement::MetadataUsage(metadata_usage) => {
+                    self.lower_metadata_usage(document, Some(owner), metadata_usage)?;
+                }
                 ActionDefBodyElement::Doc(_) => {}
                 ActionDefBodyElement::InOutDecl(_)
                 | ActionDefBodyElement::Annotation(_)
                 | ActionDefBodyElement::MetadataAnnotation(_)
                 | ActionDefBodyElement::MetadataKeywordUsage(_)
-                | ActionDefBodyElement::MetadataUsage(_)
                 | ActionDefBodyElement::TextualRep(_)
                 | ActionDefBodyElement::RefDecl(_)
                 | ActionDefBodyElement::Perform(_)
@@ -1768,11 +1878,13 @@ impl SemanticModelBuilder {
                 ActionUsageBodyElement::ItemUsage(item_usage) => {
                     self.lower_item_usage(document, Some(owner), item_usage)?;
                 }
+                ActionUsageBodyElement::MetadataUsage(metadata_usage) => {
+                    self.lower_metadata_usage(document, Some(owner), metadata_usage)?;
+                }
                 ActionUsageBodyElement::Doc(_) => {}
                 ActionUsageBodyElement::Annotation(_)
                 | ActionUsageBodyElement::MetadataAnnotation(_)
                 | ActionUsageBodyElement::MetadataKeywordUsage(_)
-                | ActionUsageBodyElement::MetadataUsage(_)
                 | ActionUsageBodyElement::TextualRep(_)
                 | ActionUsageBodyElement::InOutDecl(_)
                 | ActionUsageBodyElement::RefDecl(_)
@@ -2918,6 +3030,63 @@ mod tests {
                 "(kind typing) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Holder::w\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
             ),
             "expected w's typing reference to Base to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn metadata_def_lowers_to_a_declaration() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tmetadata def Safety {\n\
+             \t\tattribute isMandatory : Boolean;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::Safety\"))) (kind metadata-def)"),
+            "expected a metadata-def declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::Safety::isMandatory\"))) (kind attribute)"),
+            "expected an owned attribute declaration under the metadata def, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn metadata_def_specializing_another_metadata_def_resolves_its_specialization_reference() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tmetadata def Base;\n\
+             \tmetadata def Derived :> Base;\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind specialization) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Derived\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
+            ),
+            "expected Derived's specialization of Base to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn metadata_usage_typed_by_a_metadata_def_resolves() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tmetadata def Base;\n\
+             \tpart def Holder {\n\
+             \t\tmetadata m : Base;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::Holder::m\"))) (kind metadata)"),
+            "expected a metadata usage declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind typing) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Holder::m\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
+            ),
+            "expected m's typing reference to Base to resolve, got:\n{output}"
         );
     }
 

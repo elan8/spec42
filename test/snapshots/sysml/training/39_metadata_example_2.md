@@ -41,12 +41,6 @@ package 'Metadata Example-2' {
         (severity warning)
         (code "unsupported_action_usage_member")
         (source "semantic")
-        (range (start 5 2) (end 8 3))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_action_usage_member")
-        (source "semantic")
         (range (start 10 2) (end 10 75))
       )
       (diagnostic
@@ -90,6 +84,9 @@ package 'Metadata Example-2' {
   (declarations
     (declaration (id (node (document "memory://snapshot/39_metadata_example_2.md") (qualified-name "Metadata Example-2"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/39_metadata_example_2.md") (qualified-name "Metadata Example-2::computeDynamics"))) (kind action) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/39_metadata_example_2.md") (qualified-name "Metadata Example-2::computeDynamics::ToolExecution"))) (kind metadata) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/39_metadata_example_2.md") (qualified-name "Metadata Example-2::computeDynamics::ToolExecution::toolName"))) (kind attribute) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/39_metadata_example_2.md") (qualified-name "Metadata Example-2::computeDynamics::ToolExecution::uri"))) (kind attribute) (membership (kind feature) (visibility default)))
   )
   (references
   )

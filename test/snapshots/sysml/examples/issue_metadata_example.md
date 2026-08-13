@@ -49,9 +49,9 @@ package IssueMetadataExample {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 5 4) (end 10 5))
+        (range (start 5 43) (end 5 48))
       )
       (diagnostic
         (severity warning)
@@ -78,6 +78,8 @@ package IssueMetadataExample {
     (declaration (id (node (document "memory://snapshot/issue_metadata_example.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ModelingMetadata::Issue") (import (shape membership) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::ClutchPort"))) (kind port-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::DrivePwrPort"))) (kind port-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::InterfaceCompatibilityIssue"))) (kind metadata) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Issue"))))
+    (declaration (id (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::InterfaceCompatibilityIssue::text"))) (kind attribute) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::engine"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::engine::drivePwrPort"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "DrivePwrPort"))))
     (declaration (id (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::transmission"))) (kind part) (membership (kind feature) (visibility default)))
@@ -86,6 +88,9 @@ package IssueMetadataExample {
   (references
     (reference (id (source (node (document "memory://snapshot/issue_metadata_example.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
       (authored-target "ModelingMetadata::Issue")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::InterfaceCompatibilityIssue"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Issue")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::engine::drivePwrPort"))) (kind featureTyping) (ordinal 0))
       (authored-target "DrivePwrPort")
@@ -107,6 +112,10 @@ package IssueMetadataExample {
 (navigation
   (query (document "memory://snapshot/issue_metadata_example.md") (range (start 1 16) (end 1 39)) (probe (position 1 16))
     (reference (id (source (node (document "memory://snapshot/issue_metadata_example.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "ModelingMetadata::Issue")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/issue_metadata_example.md") (range (start 5 43) (end 5 48)) (probe (position 5 43))
+    (reference (id (source (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::InterfaceCompatibilityIssue"))) (kind featureTyping) (ordinal 0) (authored-target "Issue")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/issue_metadata_example.md") (range (start 20 26) (end 20 38)) (probe (position 20 26))

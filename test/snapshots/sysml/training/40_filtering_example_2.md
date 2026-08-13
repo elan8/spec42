@@ -54,9 +54,9 @@ package 'Filtering Example-2' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 3 1) (end 5 2))
+        (range (start 4 26) (end 4 33))
       )
       (diagnostic
         (severity warning)
@@ -107,8 +107,10 @@ package 'Filtering Example-2' {
     (declaration (id (node (document "memory://snapshot/40_filtering_example_2.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Boolean") (import (shape membership) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/40_filtering_example_2.md") (qualified-name "Filtering Example-2::Mandatory Safety Features"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/40_filtering_example_2.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (filterImport (reference "vehicle") (import (shape filtered-namespace) (recursive true)))))
+    (declaration (id (node (document "memory://snapshot/40_filtering_example_2.md") (qualified-name "Filtering Example-2::Safety"))) (kind metadata-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/40_filtering_example_2.md") (qualified-name "Filtering Example-2::Safety Features"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/40_filtering_example_2.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (filterImport (reference "vehicle") (import (shape filtered-namespace) (recursive true)))))
+    (declaration (id (node (document "memory://snapshot/40_filtering_example_2.md") (qualified-name "Filtering Example-2::Safety::isMandatory"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Boolean"))))
     (declaration (id (node (document "memory://snapshot/40_filtering_example_2.md") (qualified-name "Filtering Example-2::vehicle"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/40_filtering_example_2.md") (qualified-name "Filtering Example-2::vehicle::bodyAssy"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/40_filtering_example_2.md") (qualified-name "Filtering Example-2::vehicle::bodyAssy::body"))) (kind part) (membership (kind feature) (visibility default)))
@@ -133,6 +135,9 @@ package 'Filtering Example-2' {
     (reference (id (source (node (document "memory://snapshot/40_filtering_example_2.md") (anonymous (kind import) (ordinal 0))))) (kind filterImport) (ordinal 0))
       (authored-target "vehicle")
       (outcome (status unsupported)))
+    (reference (id (source (node (document "memory://snapshot/40_filtering_example_2.md") (qualified-name "Filtering Example-2::Safety::isMandatory"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Boolean")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -154,6 +159,10 @@ package 'Filtering Example-2' {
   (query (document "memory://snapshot/40_filtering_example_2.md") (range (start 27 16) (end 27 36)) (probe (position 27 16))
     (reference (id (source (node (document "memory://snapshot/40_filtering_example_2.md") (anonymous (kind import) (ordinal 0))))) (kind filterImport) (ordinal 0) (authored-target "vehicle")
       (outcome (status unsupported)))
+  )
+  (query (document "memory://snapshot/40_filtering_example_2.md") (range (start 4 26) (end 4 33)) (probe (position 4 26))
+    (reference (id (source (node (document "memory://snapshot/40_filtering_example_2.md") (qualified-name "Filtering Example-2::Safety::isMandatory"))) (kind featureTyping) (ordinal 0) (authored-target "Boolean")
+      (outcome (status unresolved)))
   )
 )
 ~~~

@@ -59,12 +59,6 @@ package AnalysisAnnotation {
         (severity warning)
         (code "unsupported_action_definition_member")
         (source "semantic")
-        (range (start 6 2) (end 9 3))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_action_definition_member")
-        (source "semantic")
         (range (start 11 2) (end 11 70))
       )
       (diagnostic
@@ -135,6 +129,9 @@ package AnalysisAnnotation {
     (declaration (id (node (document "memory://snapshot/analysis_annotation.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "AnalysisTooling") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/analysis_annotation.md") (anonymous (kind import) (ordinal 2))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ISQ") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/analysis_annotation.md") (qualified-name "AnalysisAnnotation::ComputeDynamics"))) (kind action-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/analysis_annotation.md") (qualified-name "AnalysisAnnotation::ComputeDynamics::ToolExecution"))) (kind metadata) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/analysis_annotation.md") (qualified-name "AnalysisAnnotation::ComputeDynamics::ToolExecution::toolName"))) (kind attribute) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/analysis_annotation.md") (qualified-name "AnalysisAnnotation::ComputeDynamics::ToolExecution::uri"))) (kind attribute) (membership (kind feature) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/analysis_annotation.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0))
