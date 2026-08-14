@@ -22,42 +22,9 @@ pub fn apply_incremental_change(text: &str, range: &Range, new_text: &str) -> Op
     Some(out)
 }
 
-/// Normalize file URIs so that file:///C:/... and file:///c%3A/... (from client) match in the index.
-/// Uses lowercase drive letter and decoded path so both server (from_file_path) and client URIs align.
+/// Reuse the repository-owned URI identity policy at the LSP admission boundary.
 pub fn normalize_file_uri(uri: &Url) -> Url {
-    if uri.scheme() != "file" {
-        return uri.clone();
-    }
-    // Prefer filesystem roundtrip: decodes percent-encoding (e.g. c%3A -> c:)
-    // and yields consistent file URI formatting across client/server.
-    if let Ok(path) = uri.to_file_path() {
-        if let Ok(mut normalized) = Url::from_file_path(path) {
-            let p = normalized.path();
-            if p.len() >= 3 {
-                let mut chars: Vec<char> = p.chars().collect();
-                if chars[0] == '/' && chars[1].is_ascii_alphabetic() && chars.get(2) == Some(&':') {
-                    chars[1] = chars[1].to_ascii_lowercase();
-                    let new_path: String = chars.into_iter().collect();
-                    if let Ok(u) = Url::parse(&format!("file://{}", new_path)) {
-                        normalized = u;
-                    }
-                }
-            }
-            return normalized;
-        }
-    }
-    let path = uri.path();
-    if path.len() >= 3 {
-        let mut chars: Vec<char> = path.chars().collect();
-        if chars[0] == '/' && chars[1].is_ascii_alphabetic() && chars.get(2) == Some(&':') {
-            chars[1] = chars[1].to_ascii_lowercase();
-            let new_path: String = chars.into_iter().collect();
-            if let Ok(u) = Url::parse(&format!("file://{}", new_path)) {
-                return u;
-            }
-        }
-    }
-    uri.clone()
+    language_service::uri::normalize_uri(uri)
 }
 
 /// When parse fails, get diagnostic messages from parse_with_diagnostics for logging.
@@ -297,10 +264,32 @@ pub fn symbol_hover_markdown(entry: &SymbolEntry, show_location: bool) -> String
 #[cfg(test)]
 mod tests {
     use super::{
-        apply_incremental_change, import_statement_ranges, parse_diagnose_library_paths_from_value,
-        untyped_part_usage_diagnostics,
+        apply_incremental_change, import_statement_ranges, normalize_file_uri,
+        parse_diagnose_library_paths_from_value, untyped_part_usage_diagnostics,
     };
     use tower_lsp::lsp_types::{Position, Range};
+
+    #[cfg(unix)]
+    #[test]
+    fn file_uri_admission_collapses_filesystem_aliases() {
+        use std::os::unix::fs::symlink;
+
+        let temp = tempfile::tempdir().expect("tempdir");
+        let real = temp.path().join("real");
+        let alias = temp.path().join("alias");
+        std::fs::create_dir(&real).expect("real directory");
+        symlink(&real, &alias).expect("directory alias");
+        let real_file = real.join("Model.sysml");
+        std::fs::write(&real_file, "package Model;").expect("model");
+
+        let real_uri = tower_lsp::lsp_types::Url::from_file_path(real_file).expect("real URI");
+        let alias_uri = tower_lsp::lsp_types::Url::from_file_path(alias.join("Model.sysml"))
+            .expect("alias URI");
+        assert_eq!(
+            normalize_file_uri(&real_uri),
+            normalize_file_uri(&alias_uri)
+        );
+    }
 
     #[test]
     fn apply_incremental_change_handles_ascii_edit() {

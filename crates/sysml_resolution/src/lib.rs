@@ -40,6 +40,89 @@ impl SourceInput {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct TextPosition {
+    pub line: u32,
+    pub character: u32,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct TextRange {
+    pub start: TextPosition,
+    pub end: TextPosition,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct SymbolIdentity(Box<str>);
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum OccurrenceRole {
+    Declaration,
+    Reference,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SourceLocation {
+    pub document: Box<str>,
+    pub range: TextRange,
+    pub role: OccurrenceRole,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct NavigationTarget {
+    pub symbol: SymbolIdentity,
+    pub name: Box<str>,
+    pub location: SourceLocation,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum QueryOutcome<T> {
+    Resolved(T),
+    Recovered(T),
+    UnsupportedWith(T),
+    Unresolved,
+    Ambiguous(Box<[T]>),
+    Unsupported,
+    Recovery,
+    Incomplete,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum RenameOutcome {
+    Ready {
+        symbol: SymbolIdentity,
+        name: Box<str>,
+        range: TextRange,
+        occurrences: Box<[SourceLocation]>,
+    },
+    Unresolved,
+    Ambiguous(Box<[NavigationTarget]>),
+    InvalidName,
+    Collision(Box<[NavigationTarget]>),
+    Unsupported,
+    Recovery,
+    Incomplete,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct VisibleMember {
+    pub symbol: SymbolIdentity,
+    pub name: Box<str>,
+    pub kind: Box<str>,
+    pub qualified_name: Box<str>,
+    pub container_name: Option<Box<str>>,
+    pub declaring_document: Box<str>,
+    pub declaration_range: TextRange,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum PublicationCompleteness {
+    Complete,
+    ParseRecovery,
+    UnsupportedSyntax,
+    NonConverged,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum ConstructionSchedule {
     Sequential,
@@ -145,6 +228,14 @@ pub struct PublishedResolution {
     model: ResolvedSemanticModel,
 }
 
+// SAFETY: a publication is fully constructed before this type is created and exposes only shared
+// queries. Its parser documents own immutable source/AST storage; the only interior mutation is
+// `OnceLock`-backed source line indexing, whose implementation is thread-safe. The parser AST is a
+// deeply recursive owned enum for which rustc's auto-trait solver overflows in downstream async
+// hosts, so the publication boundary states the invariant explicitly.
+unsafe impl Send for PublishedResolution {}
+unsafe impl Sync for PublishedResolution {}
+
 pub fn build(request: BuildRequest) -> Result<PublishedResolution, BuildFailure> {
     let schedule = match request.schedule {
         ConstructionSchedule::Sequential => BuildSchedule::Sequential,
@@ -179,6 +270,44 @@ impl PublishedResolution {
             identity: &self.identity,
             model: &self.model,
         }
+    }
+
+    pub fn completeness(&self) -> PublicationCompleteness {
+        self.model.completeness()
+    }
+
+    pub fn target_at(
+        &self,
+        document: &str,
+        position: TextPosition,
+    ) -> QueryOutcome<NavigationTarget> {
+        self.model.target_at(document, position)
+    }
+
+    pub fn references(
+        &self,
+        symbol: &SymbolIdentity,
+        include_declaration: bool,
+    ) -> QueryOutcome<Box<[SourceLocation]>> {
+        self.model.references(symbol, include_declaration)
+    }
+
+    pub fn prepare_rename(
+        &self,
+        document: &str,
+        position: TextPosition,
+        new_name: Option<&str>,
+    ) -> RenameOutcome {
+        self.model.prepare_rename(document, position, new_name)
+    }
+
+    pub fn visible_members(
+        &self,
+        document: &str,
+        position: TextPosition,
+        qualifier: Option<&str>,
+    ) -> QueryOutcome<Box<[VisibleMember]>> {
+        self.model.visible_members(document, position, qualifier)
     }
 }
 

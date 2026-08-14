@@ -145,7 +145,11 @@ pub(crate) fn rename(
         }
     }
 
-    let edits = language_service::apply_rename(&snapshot, &path, to_core_position(pos), &new_name);
+    let Some(edits) =
+        language_service::apply_rename(&snapshot, &path, to_core_position(pos), &new_name)
+    else {
+        return Ok(None);
+    };
     if edits.is_empty() {
         return Ok(Some(WorkspaceEdit::default()));
     }

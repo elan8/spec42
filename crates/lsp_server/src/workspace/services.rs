@@ -213,6 +213,7 @@ pub(crate) fn store_parsed_document_text(
             include_in_semantic_graph: true,
         },
     );
+    crate::workspace::state::refresh_published_model(state);
     refresh_symbols_for_uri(state, uri_norm);
     warning_from_parse_errors(uri_norm, parse_errors, diagnostic_count, context)
 }
@@ -338,6 +339,7 @@ pub(crate) fn ingest_parsed_scan_entries_batch(
         );
         loaded.push((uri_norm, warning));
     }
+    crate::workspace::state::refresh_published_model(state);
     loaded
 }
 

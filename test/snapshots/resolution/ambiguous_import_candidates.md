@@ -13,6 +13,10 @@ package Use {
     part usage : Thing;
 }
 ~~~
+# EDITOR QUERIES
+~~~ini
+probe ambiguous_import_candidates.md 5 18
+~~~
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
@@ -83,6 +87,16 @@ package Use {
   (query (document "memory://snapshot/ambiguous_import_candidates.md") (range (start 5 17) (end 5 22)) (probe (position 5 17))
     (reference (id (source (node (document "memory://snapshot/ambiguous_import_candidates.md") (qualified-name "Use::usage"))) (kind featureTyping) (ordinal 0) (authored-target "Thing")
       (outcome (status ambiguous) (candidates (node (document "memory://snapshot/ambiguous_import_candidates.md") (qualified-name "A::Thing")) (node (document "memory://snapshot/ambiguous_import_candidates.md") (qualified-name "B::Thing")))))
+  )
+)
+~~~
+# EDITOR RESULTS
+~~~sexpr
+(editor-queries
+  (probe (document "memory://snapshot/ambiguous_import_candidates.md") (position 5 18)
+    (target (status ambiguous) (candidates (candidate (name "Thing") (location (document "memory://snapshot/ambiguous_import_candidates.md") (range (start 0 21) (end 0 26)) (role Declaration))) (candidate (name "Thing") (location (document "memory://snapshot/ambiguous_import_candidates.md") (range (start 1 21) (end 1 26)) (role Declaration)))))
+    (rename (status ambiguous) (candidates 2)))
+    (visible-members (candidates (member (name "A") (qualified-name "A") (kind "Package")) (member (name "B") (qualified-name "B") (kind "Package")) (member (name "Thing") (qualified-name "A::Thing") (kind "PartDefinition")) (member (name "Thing") (qualified-name "B::Thing") (kind "PartDefinition")) (member (name "Use") (qualified-name "Use") (kind "Package")) (member (name "usage") (qualified-name "Use::usage") (kind "PartUsage"))))
   )
 )
 ~~~

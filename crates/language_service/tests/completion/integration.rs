@@ -205,6 +205,8 @@ package B {
     part def Sensor;
 }
 package Main {
+    import A::*;
+    import B::*;
     part device: S
 }"#;
     let workspace = single_doc(path, content);
@@ -276,7 +278,7 @@ fn complete_survives_incomplete_syntax() {
 
 #[test]
 fn complete_cross_file_includes_workspace_symbols() {
-    let use_content = "package Q { part motor: En }";
+    let use_content = "package Q { import P::*; part motor: En }";
     let workspace = multi_doc(&[
         ("defs.sysml", "package P { part def Engine; }"),
         ("use.sysml", use_content),

@@ -1042,7 +1042,7 @@ mod tests {
             paths: SymbolPathArenaBuilder::default().freeze(),
             evaluation_facts: Box::new([]),
         };
-        let (_, _, resolution) = resolve_dense(
+        let (direct_names, effective_imports, resolution) = resolve_dense(
             &storage.declarations,
             &storage.memberships,
             &storage.paths,
@@ -1052,6 +1052,8 @@ mod tests {
         let evaluation = compute_evaluation(&storage, &resolution);
         let model = ResolvedSemanticModel {
             storage,
+            direct_names,
+            effective_imports,
             resolution,
             evaluation,
             metadata: PublicationMetadata {

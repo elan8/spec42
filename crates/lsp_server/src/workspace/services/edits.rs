@@ -99,6 +99,7 @@ pub(crate) fn apply_parsed_document_update(
         .cloned();
     update_semantic_graph_for_uri(state, uri_norm, parsed.as_ref(), evaluate);
     refresh_symbols_for_uri(state, uri_norm);
+    crate::workspace::state::refresh_published_model(state);
 
     runtime_warnings
 }
@@ -162,4 +163,5 @@ pub(crate) fn remove_document(state: &mut impl DocumentStore, uri_norm: &Url) {
         .symbol_table_mut()
         .retain(|entry| entry.uri != *uri_norm);
     state.semantic_graph_mut().remove_nodes_for_uri(uri_norm);
+    crate::workspace::state::refresh_published_model(state);
 }

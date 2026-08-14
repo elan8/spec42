@@ -95,6 +95,36 @@ fn designated_consumers_use_the_query_facade_and_direct_model_dependencies_do_no
 }
 
 #[test]
+fn facade_tests_do_not_duplicate_semantic_pipeline_snapshots() {
+    let tests = repository_root().join("crates/sysml_query/tests");
+    let mut violations = Vec::new();
+    for entry in fs::read_dir(&tests).expect("read sysml_query tests") {
+        let path = entry.expect("test entry").path();
+        if path.extension().is_none_or(|extension| extension != "rs")
+            || path
+                .file_name()
+                .is_some_and(|name| name == "architecture.rs")
+        {
+            continue;
+        }
+        let source = fs::read_to_string(&path).expect("read facade test");
+        if source.contains("BuildRequest")
+            || source.contains("SourceDocument")
+            || source.contains("target_at(")
+            || source.contains("visible_members(")
+            || source.contains("prepare_rename(")
+        {
+            violations.push(path);
+        }
+    }
+    assert!(
+        violations.is_empty(),
+        "sysml_query facade tests must not reconstruct models to duplicate semantic behavior; \
+         add an owner-defined projection and a standalone snapshot fixture instead: {violations:?}"
+    );
+}
+
+#[test]
 fn immutable_snapshot_runner_has_an_exact_graph_free_dependency_boundary() {
     let root = repository_root();
     let output = Command::new(env!("CARGO"))

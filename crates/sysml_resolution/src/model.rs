@@ -11595,6 +11595,13 @@ impl SymbolTable {
         let end = start.checked_add(len)?;
         self.bytes.get(start as usize..end as usize)
     }
+
+    fn find(&self, value: &str) -> Option<SymbolId> {
+        self.spans.iter().enumerate().find_map(|(index, _)| {
+            let id = SymbolId::from_index(index).ok()?;
+            (self.get(id) == Some(value)).then_some(id)
+        })
+    }
 }
 
 #[derive(Debug, Default)]

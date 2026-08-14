@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use sysml_model::{ElementKind, TextPosition, TextRange};
+use sysml_model::{TextPosition, TextRange};
 use url::Url;
 
 use crate::dto::{
@@ -8,7 +8,6 @@ use crate::dto::{
     CompletionResult, CompletionTextEditDto,
 };
 use crate::keywords::{keyword_doc, sysml_keywords};
-use crate::presentation_hover::hover_markdown_for_node;
 use crate::references::TYPE_LOOKUP_KINDS;
 use crate::text::{completion_prefix, line_prefix_at_position};
 use crate::workspace::WorkspaceSnapshot;
@@ -300,9 +299,9 @@ fn typed_declaration_keyword(prefix: &str) -> Option<&str> {
 }
 
 fn refine_completion_context(
-    workspace: &impl WorkspaceSnapshot,
-    uri: &Url,
-    pos: TextPosition,
+    _workspace: &impl WorkspaceSnapshot,
+    _uri: &Url,
+    _pos: TextPosition,
     context: CompletionContext,
 ) -> CompletionContext {
     match context {
@@ -311,14 +310,6 @@ fn refine_completion_context(
         | CompletionContext::BodyStatement { prefix }
             if prefix.is_empty() =>
         {
-            if let Some(node) = workspace
-                .semantic_graph()
-                .find_deepest_node_at_position(uri, pos)
-            {
-                if node.element_kind == ElementKind::Package || node.element_kind.is_definition() {
-                    return CompletionContext::BodyStatement { prefix };
-                }
-            }
             CompletionContext::TopLevelKeyword { prefix }
         }
         other => other,
@@ -328,7 +319,7 @@ fn refine_completion_context(
 fn completion_semantic_hints(
     workspace: &impl WorkspaceSnapshot,
     uri: &Url,
-    pos: TextPosition,
+    _pos: TextPosition,
     context: &CompletionContext,
 ) -> CompletionSemanticHints {
     if !workspace.supports_semantic_queries() {
@@ -339,21 +330,6 @@ fn completion_semantic_hints(
         same_file_uri: Some(workspace.normalize_uri(uri)),
         ..CompletionSemanticHints::default()
     };
-
-    let graph = workspace.semantic_graph();
-    if let Some(node) = graph.find_deepest_node_at_position(uri, pos) {
-        hints.preferred_names.insert(node.name.clone());
-        if let Some(parent_id) = &node.parent_id {
-            hints
-                .container_names
-                .insert(parent_id.qualified_name.clone());
-        }
-        for ancestor in graph.ancestors_of(node) {
-            hints
-                .container_names
-                .insert(ancestor.id.qualified_name.clone());
-        }
-    }
 
     match context {
         CompletionContext::TypeReference {
@@ -565,7 +541,7 @@ fn collect_keyword_candidates(
 
 fn collect_symbol_candidates(
     workspace: &impl WorkspaceSnapshot,
-    _current_uri: &Url,
+    current_uri: &Url,
     context: &CompletionContext,
     hints: &CompletionSemanticHints,
     edit_shape: &CompletionEditShape,
@@ -595,43 +571,75 @@ fn collect_symbol_candidates(
     }
 
     let qualifier = match context {
-        CompletionContext::QualifiedReference { qualifier, .. } => Some(qualifier.as_str()),
+        CompletionContext::TypeReference {
+            qualifier: Some(qualifier),
+            ..
+        }
+        | CompletionContext::QualifiedReference { qualifier, .. } => Some(qualifier.as_str()),
         CompletionContext::MemberReference { receiver, .. } => Some(receiver.as_str()),
         _ => None,
     };
 
-    let graph = workspace.semantic_graph();
-
-    for entry in workspace.symbol_table() {
-        if !prefix.is_empty() && !entry.name.to_lowercase().contains(&prefix) {
+    let query_position = edit_shape.replace_range.end;
+    let Some(model) = workspace.published_model() else {
+        return;
+    };
+    let outcome = model.completion().visible_members(
+        current_uri.as_str(),
+        sysml_query::resolved_slice::TextPosition {
+            line: query_position.line,
+            character: query_position.character,
+        },
+        qualifier.map(|value| value.trim_end_matches(':')),
+    );
+    let mut members = match outcome {
+        sysml_query::resolved_slice::QueryOutcome::Resolved(members)
+        | sysml_query::resolved_slice::QueryOutcome::Recovered(members)
+        | sysml_query::resolved_slice::QueryOutcome::UnsupportedWith(members) => members.into_vec(),
+        _ => return,
+    };
+    if qualifier.is_some() {
+        match model.completion().visible_members(
+            current_uri.as_str(),
+            sysml_query::resolved_slice::TextPosition {
+                line: query_position.line,
+                character: query_position.character,
+            },
+            None,
+        ) {
+            sysml_query::resolved_slice::QueryOutcome::Resolved(extra)
+            | sysml_query::resolved_slice::QueryOutcome::Recovered(extra)
+            | sysml_query::resolved_slice::QueryOutcome::UnsupportedWith(extra) => {
+                members.extend(extra.into_vec())
+            }
+            _ => {}
+        }
+    }
+    members.sort_by(|a, b| a.symbol.cmp(&b.symbol));
+    members.dedup_by(|a, b| a.symbol == b.symbol);
+    for member in members {
+        let name = member.name.to_string();
+        if !prefix.is_empty() && !name.to_lowercase().contains(&prefix) {
             continue;
         }
-        let detail = entry.detail.clone();
-        let node = graph.nodes_for_uri(&entry.uri).into_iter().find(|node| {
-            node.name == entry.name
-                && detail
-                    .as_deref()
-                    .is_none_or(|detail| detail == node.element_kind)
-        });
-        let documentation = node
-            .map(|node| hover_markdown_for_node(graph, node, false))
-            .or_else(|| entry.description.clone());
-        let label_details =
-            entry
+        let detail = Some(query_kind_label(&member.kind).to_string());
+        let documentation = Some(format!(
+            "**{}**\n\nQualified name: `{}`",
+            name, member.qualified_name
+        ));
+        let label_details = Some(CompletionItemLabelDetailsDto {
+            detail: Some(format!(" - {}", member.kind)),
+            description: member
                 .container_name
                 .as_ref()
-                .map(|container| CompletionItemLabelDetailsDto {
-                    detail: Some(format!(
-                        " - {}",
-                        entry.detail.as_deref().unwrap_or("symbol")
-                    )),
-                    description: Some(container.clone()),
-                });
-        let kind = entry.detail.as_deref().map(element_kind_to_completion_kind);
+                .map(ToString::to_string)
+                .or_else(|| Some(member.declaring_document.to_string())),
+        });
+        let kind = Some(element_kind_to_completion_kind(&member.kind));
         out.push(CompletionCandidate {
-            label: entry.name.clone(),
+            label: name.clone(),
             item: CompletionItemDto {
-                label: entry.name.clone(),
+                label: name.clone(),
                 kind,
                 detail: detail.clone(),
                 documentation: documentation.clone(),
@@ -639,10 +647,10 @@ fn collect_symbol_candidates(
                     .as_ref()
                     .is_some_and(|doc| doc.contains("```")),
                 label_details,
-                filter_text: Some(entry.name.clone()),
+                filter_text: Some(name.clone()),
                 text_edit: Some(CompletionTextEditDto {
                     range: edit_shape.replace_range,
-                    new_text: entry.name.clone(),
+                    new_text: name.clone(),
                 }),
                 insert_text_format_snippet: false,
                 sort_text: None,
@@ -651,11 +659,15 @@ fn collect_symbol_candidates(
                 resolve_detail: detail,
                 resolve_documentation: documentation,
             },
-            tier: if qualifier.is_some_and(|qualifier| {
-                container_matches_qualifier(entry.container_name.as_deref(), qualifier)
-            }) {
+            tier: if qualifier
+                .is_some_and(|qualifier| member.declaring_document.contains(qualifier))
+            {
                 TIER_CONTEXT_COMPATIBLE_SAME_SCOPE
-            } else if hints.same_file_uri.as_ref() == Some(&entry.uri) {
+            } else if hints
+                .same_file_uri
+                .as_ref()
+                .is_some_and(|uri| uri.as_str() == member.declaring_document.as_ref())
+            {
                 TIER_SAME_FILE_COMPATIBLE
             } else {
                 TIER_GENERIC_SYMBOL
@@ -675,6 +687,32 @@ fn element_kind_to_completion_kind(kind: &str) -> CompletionItemKindDto {
         "part" | "item" => CompletionItemKindDto::Variable,
         "requirement def" | "case def" | "analysis def" => CompletionItemKindDto::Event,
         _ => CompletionItemKindDto::Reference,
+    }
+}
+
+fn query_kind_label(kind: &str) -> &str {
+    match kind {
+        "PartDefinition" => "part def",
+        "PortDefinition" => "port def",
+        "InterfaceDefinition" => "interface def",
+        "ItemDefinition" => "item def",
+        "AttributeDefinition" => "attribute def",
+        "ActionDefinition" => "action def",
+        "OccurrenceDefinition" => "occurrence def",
+        "FlowDefinition" => "flow def",
+        "AllocationDefinition" => "allocation def",
+        "StateDefinition" => "state def",
+        "RequirementDefinition" => "requirement def",
+        "UseCaseDefinition" => "use case def",
+        "ConcernDefinition" => "concern def",
+        "EnumerationDefinition" => "enum def",
+        "Package" | "LibraryPackage" => "package",
+        "PartUsage" => "part",
+        "PortUsage" => "port",
+        "ItemUsage" => "item",
+        "AttributeUsage" => "attribute",
+        "ActionUsage" => "action",
+        other => other,
     }
 }
 
@@ -762,14 +800,6 @@ fn entry_kind_matches(detail: Option<&str>, expected_kinds: &[&str]) -> bool {
     detail
         .map(|detail| expected_kinds.contains(&detail))
         .unwrap_or(false)
-}
-
-fn container_matches_qualifier(container_name: Option<&str>, qualifier: &str) -> bool {
-    let qualifier_lc = qualifier.to_ascii_lowercase();
-    container_name.is_some_and(|container| {
-        let container_lc = container.to_ascii_lowercase();
-        container_lc == qualifier_lc || container_lc.ends_with(&format!("::{qualifier_lc}"))
-    })
 }
 
 fn dedupe_completion_candidates(candidates: Vec<CompletionCandidate>) -> Vec<CompletionCandidate> {
