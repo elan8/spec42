@@ -25,12 +25,6 @@ package P3 {
 (fixture-diagnostics
   (document "memory://snapshot/root_package_test.md"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unsupported_reference")
-        (source "semantic")
-        (range (start 12 16) (end 12 17))
-      )
     )
   )
 )
@@ -61,10 +55,11 @@ package P3 {
       (outcome (status resolved) (target (node (document "memory://snapshot/root_package_test.md") (qualified-name "P1::A")))))
     (reference (id (source (node (document "memory://snapshot/root_package_test.md") (qualified-name "P3::b"))) (kind subsetting) (ordinal 0))
       (authored-target "a")
-      (outcome (status unsupported)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/root_package_test.md") (qualified-name "P2::a")))))
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/root_package_test.md") (qualified-name "P2::a"))) (target (node (document "memory://snapshot/root_package_test.md") (qualified-name "P1::A"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/root_package_test.md") (qualified-name "P2::a"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/root_package_test.md") (qualified-name "P3::b"))) (target (node (document "memory://snapshot/root_package_test.md") (qualified-name "P2::a"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/root_package_test.md") (qualified-name "P3::b"))) (kind subsetting) (ordinal 0)))
   )
   (evaluation
   )
@@ -87,7 +82,7 @@ package P3 {
   )
   (query (document "memory://snapshot/root_package_test.md") (range (start 12 16) (end 12 17)) (probe (position 12 16))
     (reference (id (source (node (document "memory://snapshot/root_package_test.md") (qualified-name "P3::b"))) (kind subsetting) (ordinal 0) (authored-target "a")
-      (outcome (status unsupported)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/root_package_test.md") (qualified-name "P2::a")))))
   )
 )
 ~~~

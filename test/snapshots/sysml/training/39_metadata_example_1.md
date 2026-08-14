@@ -44,28 +44,48 @@ package 'Metadata Example-1' {
   (document "memory://snapshot/39_metadata_example_1.md"
     (diagnostics
       (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
+        (severity error)
+        (code "ambiguous_reference")
         (source "semantic")
-        (range (start 2 1) (end 2 28))
+        (range (start 4 5) (end 4 21))
+        (related-information
+          (related
+            (uri "memory://snapshot/39_metadata_example_1.md")
+            (range (start 4 2) (end 4 46))
+          )
+          (related
+            (uri "memory://snapshot/39_metadata_example_1.md")
+            (range (start 5 2) (end 5 41))
+          )
+        )
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 3 1) (end 6 2))
+        (range (start 4 24) (end 4 45))
+      )
+      (diagnostic
+        (severity error)
+        (code "ambiguous_reference")
+        (source "semantic")
+        (range (start 5 5) (end 5 21))
+        (related-information
+          (related
+            (uri "memory://snapshot/39_metadata_example_1.md")
+            (range (start 4 2) (end 4 46))
+          )
+          (related
+            (uri "memory://snapshot/39_metadata_example_1.md")
+            (range (start 5 2) (end 5 41))
+          )
+        )
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 8 1) (end 11 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 13 1) (end 15 34))
+        (range (start 5 24) (end 5 40))
       )
     )
   )
@@ -74,9 +94,15 @@ package 'Metadata Example-1' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:694bd463877f28b2b6a7a1f5c2d83bc308f8facc4fd1af76e7b82e2c5b7dbcb8") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:694bd463877f28b2b6a7a1f5c2d83bc308f8facc4fd1af76e7b82e2c5b7dbcb8") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/39_metadata_example_1.md") (qualified-name "Metadata Example-1"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/39_metadata_example_1.md") (qualified-name "Metadata Example-1::SafetyFeature"))) (kind metadata-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/39_metadata_example_1.md") (qualified-name "Metadata Example-1::SafetyFeature"))) (kind metadata) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/39_metadata_example_1.md") (qualified-name "Metadata Example-1::SecurityFeature"))) (kind metadata-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/39_metadata_example_1.md") (qualified-name "Metadata Example-1::SecurityFeature"))) (kind metadata) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/39_metadata_example_1.md") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "SysML::PartDefinition")) (subsetting (reference "annotatedElement"))))
+    (declaration (id (node (document "memory://snapshot/39_metadata_example_1.md") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "SysML::PartUsage")) (subsetting (reference "annotatedElement"))))
     (declaration (id (node (document "memory://snapshot/39_metadata_example_1.md") (qualified-name "Metadata Example-1::vehicle"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/39_metadata_example_1.md") (qualified-name "Metadata Example-1::vehicle::bodyAssy"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/39_metadata_example_1.md") (qualified-name "Metadata Example-1::vehicle::bodyAssy::body"))) (kind part) (membership (kind feature) (visibility default)))
@@ -89,6 +115,18 @@ package 'Metadata Example-1' {
     (declaration (id (node (document "memory://snapshot/39_metadata_example_1.md") (qualified-name "Metadata Example-1::vehicle::interior::seatBelt"))) (kind part) (membership (kind feature) (visibility default)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/39_metadata_example_1.md") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement"))) (kind featureTyping) (ordinal 0))
+      (authored-target "SysML::PartDefinition")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/39_metadata_example_1.md") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement"))) (kind featureTyping) (ordinal 0))
+      (authored-target "SysML::PartUsage")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/39_metadata_example_1.md") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement"))) (kind subsetting) (ordinal 0))
+      (authored-target "annotatedElement")
+      (outcome (status ambiguous) (candidates (node (document "memory://snapshot/39_metadata_example_1.md") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement")) (node (document "memory://snapshot/39_metadata_example_1.md") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement")))))
+    (reference (id (source (node (document "memory://snapshot/39_metadata_example_1.md") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement"))) (kind subsetting) (ordinal 0))
+      (authored-target "annotatedElement")
+      (outcome (status ambiguous) (candidates (node (document "memory://snapshot/39_metadata_example_1.md") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement")) (node (document "memory://snapshot/39_metadata_example_1.md") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement")))))
   )
   (relationships
   )
@@ -99,5 +137,21 @@ package 'Metadata Example-1' {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/39_metadata_example_1.md") (range (start 4 24) (end 4 45)) (probe (position 4 24))
+    (reference (id (source (node (document "memory://snapshot/39_metadata_example_1.md") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement"))) (kind featureTyping) (ordinal 0) (authored-target "SysML::PartDefinition")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/39_metadata_example_1.md") (range (start 5 24) (end 5 40)) (probe (position 5 24))
+    (reference (id (source (node (document "memory://snapshot/39_metadata_example_1.md") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement"))) (kind featureTyping) (ordinal 0) (authored-target "SysML::PartUsage")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/39_metadata_example_1.md") (range (start 4 5) (end 4 21)) (probe (position 4 5))
+    (reference (id (source (node (document "memory://snapshot/39_metadata_example_1.md") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement"))) (kind subsetting) (ordinal 0) (authored-target "annotatedElement")
+      (outcome (status ambiguous) (candidates (node (document "memory://snapshot/39_metadata_example_1.md") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement")) (node (document "memory://snapshot/39_metadata_example_1.md") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement")))))
+  )
+  (query (document "memory://snapshot/39_metadata_example_1.md") (range (start 5 5) (end 5 21)) (probe (position 5 5))
+    (reference (id (source (node (document "memory://snapshot/39_metadata_example_1.md") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement"))) (kind subsetting) (ordinal 0) (authored-target "annotatedElement")
+      (outcome (status ambiguous) (candidates (node (document "memory://snapshot/39_metadata_example_1.md") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement")) (node (document "memory://snapshot/39_metadata_example_1.md") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement")))))
+  )
 )
 ~~~

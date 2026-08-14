@@ -22,9 +22,21 @@ package P {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 1 4) (end 7 5))
+        (range (start 2 17) (end 2 20))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 3 37) (end 3 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 4 25) (end 4 30))
       )
     )
   )
@@ -33,20 +45,49 @@ package P {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:058d3de74b320ebf59c3665087064fa28dc5af41d2a7abd88b7c720a8445f7ef") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:058d3de74b320ebf59c3665087064fa28dc5af41d2a7abd88b7c720a8445f7ef") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/fuzz_perform_action_keyword.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/fuzz_perform_action_keyword.md") (qualified-name "P::A"))) (kind action-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/fuzz_perform_action_keyword.md") (anonymous (kind for-loop) (ordinal 0))))) (kind for-loop) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "seq"))))
+    (declaration (id (node (document "memory://snapshot/fuzz_perform_action_keyword.md") (qualified-name "P::A::::doStuff"))) (kind perform-action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "DoStuff"))))
+    (declaration (id (node (document "memory://snapshot/fuzz_perform_action_keyword.md") (anonymous (kind for-loop) (ordinal 0))))) (kind for-loop) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "items"))))
+    (declaration (id (node (document "memory://snapshot/fuzz_perform_action_keyword.md") (qualified-name "P::A::::doStuff::::y"))) (kind for-loop-variable) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/fuzz_perform_action_keyword.md") (qualified-name "P::A::::x"))) (kind for-loop-variable) (membership (kind feature) (visibility default)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/fuzz_perform_action_keyword.md") (anonymous (kind for-loop) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
+      (authored-target "seq")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/fuzz_perform_action_keyword.md") (qualified-name "P::A::::doStuff"))) (kind featureTyping) (ordinal 0))
+      (authored-target "DoStuff")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/fuzz_perform_action_keyword.md") (anonymous (kind for-loop) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
+      (authored-target "items")
+      (outcome (status unresolved)))
   )
   (relationships
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/fuzz_perform_action_keyword.md") (anonymous (kind for-loop) (ordinal 0))))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/fuzz_perform_action_keyword.md") (anonymous (kind for-loop) (ordinal 0))))) (value (kind unresolved-operand)))
   )
 )
 ~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/fuzz_perform_action_keyword.md") (range (start 2 17) (end 2 20)) (probe (position 2 17))
+    (reference (id (source (node (document "memory://snapshot/fuzz_perform_action_keyword.md") (anonymous (kind for-loop) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "seq")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/fuzz_perform_action_keyword.md") (range (start 3 37) (end 3 44)) (probe (position 3 37))
+    (reference (id (source (node (document "memory://snapshot/fuzz_perform_action_keyword.md") (qualified-name "P::A::::doStuff"))) (kind featureTyping) (ordinal 0) (authored-target "DoStuff")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/fuzz_perform_action_keyword.md") (range (start 4 25) (end 4 30)) (probe (position 4 25))
+    (reference (id (source (node (document "memory://snapshot/fuzz_perform_action_keyword.md") (anonymous (kind for-loop) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "items")
+      (outcome (status unresolved)))
+  )
 )
 ~~~

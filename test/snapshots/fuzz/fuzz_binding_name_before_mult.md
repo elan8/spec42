@@ -16,15 +16,15 @@ package P {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_parser_construct")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 0 0) (end 0 0))
+        (range (start 1 21) (end 1 22))
       )
       (diagnostic
-        (severity error)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 1 4) (end 2 0))
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 1 25) (end 1 26))
       )
     )
   )
@@ -33,11 +33,18 @@ package P {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:5709f46aa2e48696b5eac15d221d5d7d2762f0382d7b912f4cb4afdfceb63a1d") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:5709f46aa2e48696b5eac15d221d5d7d2762f0382d7b912f4cb4afdfceb63a1d") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/fuzz_binding_name_before_mult.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/fuzz_binding_name_before_mult.md") (anonymous (kind bind) (ordinal 0))))) (kind bind) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (bindSource (reference "a")) (bindTarget (reference "c"))))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/fuzz_binding_name_before_mult.md") (anonymous (kind bind) (ordinal 0))))) (kind bindSource) (ordinal 0))
+      (authored-target "a")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/fuzz_binding_name_before_mult.md") (anonymous (kind bind) (ordinal 0))))) (kind bindTarget) (ordinal 0))
+      (authored-target "c")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -48,5 +55,13 @@ package P {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/fuzz_binding_name_before_mult.md") (range (start 1 21) (end 1 22)) (probe (position 1 21))
+    (reference (id (source (node (document "memory://snapshot/fuzz_binding_name_before_mult.md") (anonymous (kind bind) (ordinal 0))))) (kind bindSource) (ordinal 0) (authored-target "a")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/fuzz_binding_name_before_mult.md") (range (start 1 25) (end 1 26)) (probe (position 1 25))
+    (reference (id (source (node (document "memory://snapshot/fuzz_binding_name_before_mult.md") (anonymous (kind bind) (ordinal 0))))) (kind bindTarget) (ordinal 0) (authored-target "c")
+      (outcome (status unresolved)))
+  )
 )
 ~~~

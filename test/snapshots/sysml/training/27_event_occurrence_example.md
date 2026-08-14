@@ -40,42 +40,6 @@ package 'Event Occurrence Example' {
 (fixture-diagnostics
   (document "memory://snapshot/27_event_occurrence_example.md"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unsupported_part_usage_member")
-        (source "semantic")
-        (range (start 8 2) (end 8 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_part_usage_member")
-        (source "semantic")
-        (range (start 14 3) (end 14 37))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_part_usage_member")
-        (source "semantic")
-        (range (start 15 3) (end 15 45))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_part_usage_member")
-        (source "semantic")
-        (range (start 16 3) (end 16 41))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_part_usage_member")
-        (source "semantic")
-        (range (start 20 3) (end 20 36))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_part_usage_member")
-        (source "semantic")
-        (range (start 24 3) (end 24 40))
-      )
     )
   )
 )
@@ -83,7 +47,7 @@ package 'Event Occurrence Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:da535832be0b11f483e1f8407c97f16accae2b8c4bfc9d742e736ce9b64407ae") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:da535832be0b11f483e1f8407c97f16accae2b8c4bfc9d742e736ce9b64407ae") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/27_event_occurrence_example.md") (qualified-name "Event Occurrence Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/27_event_occurrence_example.md") (qualified-name "Event Occurrence Example::CruiseController"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -92,10 +56,16 @@ package 'Event Occurrence Example' {
     (declaration (id (node (document "memory://snapshot/27_event_occurrence_example.md") (qualified-name "Event Occurrence Example::Speedometer"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/27_event_occurrence_example.md") (qualified-name "Event Occurrence Example::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/27_event_occurrence_example.md") (qualified-name "Event Occurrence Example::driver"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Driver"))))
+    (declaration (id (node (document "memory://snapshot/27_event_occurrence_example.md") (qualified-name "Event Occurrence Example::driver::setSpeedSent"))) (kind occurrence) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/27_event_occurrence_example.md") (qualified-name "Event Occurrence Example::vehicle"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Vehicle"))))
     (declaration (id (node (document "memory://snapshot/27_event_occurrence_example.md") (qualified-name "Event Occurrence Example::vehicle::cruiseController"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "CruiseController"))))
+    (declaration (id (node (document "memory://snapshot/27_event_occurrence_example.md") (qualified-name "Event Occurrence Example::vehicle::cruiseController::fuelCommandSent"))) (kind occurrence) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/27_event_occurrence_example.md") (qualified-name "Event Occurrence Example::vehicle::cruiseController::sensedSpeedReceived"))) (kind occurrence) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/27_event_occurrence_example.md") (qualified-name "Event Occurrence Example::vehicle::cruiseController::setSpeedReceived"))) (kind occurrence) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/27_event_occurrence_example.md") (qualified-name "Event Occurrence Example::vehicle::engine"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Engine"))))
+    (declaration (id (node (document "memory://snapshot/27_event_occurrence_example.md") (qualified-name "Event Occurrence Example::vehicle::engine::fuelCommandReceived"))) (kind occurrence) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/27_event_occurrence_example.md") (qualified-name "Event Occurrence Example::vehicle::speedometer"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Speedometer"))))
+    (declaration (id (node (document "memory://snapshot/27_event_occurrence_example.md") (qualified-name "Event Occurrence Example::vehicle::speedometer::sensedSpeedSent"))) (kind occurrence) (membership (kind feature) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/27_event_occurrence_example.md") (qualified-name "Event Occurrence Example::driver"))) (kind featureTyping) (ordinal 0))

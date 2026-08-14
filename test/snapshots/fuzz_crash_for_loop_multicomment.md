@@ -21,12 +21,6 @@ perform action doS : Dff {     for y // ndent g {
   (document "memory://snapshot/fuzz_crash_for_loop_multicomment.md"
     (diagnostics
       (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 1 0) (end 7 5))
-      )
-      (diagnostic
         (severity error)
         (code "recovered_action_body_element")
         (source "parser")
@@ -48,6 +42,7 @@ perform action doS : Dff {     for y // ndent g {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:dd299cf26d8301e7e63c85e3d821fcc1050bf3e826a926bc09df6e79a2e6bea3") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/fuzz_crash_for_loop_multicomment.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/fuzz_crash_for_loop_multicomment.md") (qualified-name "P::A"))) (kind action-def) (membership (kind owning) (visibility default)))
   )
   (references
   )

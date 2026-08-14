@@ -21,15 +21,27 @@ class Camera {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 0 0) (end 7 1))
+        (code "unsupported_attribute_member")
+        (source "semantic")
+        (range (start 1 1) (end 1 32))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 0 0) (end 7 1))
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "parser")
+        (range (start 3 1) (end 4 1))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "parser")
+        (range (start 4 1) (end 6 1))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "parser")
+        (range (start 6 1) (end 7 0))
       )
     )
   )
@@ -40,6 +52,7 @@ class Camera {
 (semantic-model
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:949760c1f15c1ac357d2c6a1a56ad4841145fcab98e62ffffe81cfe2104554d8") (contract-version "parser-owned-resolution-v1"))
   (declarations
+    (declaration (id (node (document "memory://snapshot/camera.md") (qualified-name "Camera"))) (kind class-def) (membership (kind owning) (visibility default)))
   )
   (references
   )

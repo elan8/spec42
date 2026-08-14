@@ -24,12 +24,6 @@ package Demo {
 (fixture-diagnostics
   (document "memory://snapshot/enum_name_not_semantic.md"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 1 4) (end 3 5))
-      )
     )
   )
 )
@@ -37,12 +31,14 @@ package Demo {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:52a96ed63257e6aa657a59707b52382ade3d5e7c882c7a02722ca5d3a69a3191") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:52a96ed63257e6aa657a59707b52382ade3d5e7c882c7a02722ca5d3a69a3191") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::Base"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::Base::value"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "StatusNamedType"))))
     (declaration (id (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::Derived"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Base"))))
+    (declaration (id (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::StateCode"))) (kind enum-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::StateCode::approved"))) (kind enum-literal) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::StatusNamedType"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::host"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Derived"))))
     (declaration (id (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::host::value"))) (kind attribute) (membership (kind feature) (visibility default)))
@@ -64,6 +60,7 @@ package Demo {
     (relationship (kind typing) (source (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::host"))) (target (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::Derived"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::host"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::host::value"))) (value (kind string) (value "approved")))
   )
 )
 ~~~

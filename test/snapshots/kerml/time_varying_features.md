@@ -81,28 +81,40 @@ package TimeVaryingFeatures {
   (document "memory://snapshot/time_varying_features.md"
     (diagnostics
       (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
         (source "parser")
-        (range (start 1 4) (end 23 5))
+        (range (start 2 8) (end 4 8))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 1 4) (end 23 5))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
         (source "parser")
-        (range (start 25 4) (end 67 5))
+        (range (start 4 8) (end 8 8))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 25 4) (end 67 5))
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "parser")
+        (range (start 8 8) (end 23 4))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "parser")
+        (range (start 27 8) (end 32 8))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "parser")
+        (range (start 32 8) (end 39 8))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "parser")
+        (range (start 39 8) (end 67 4))
       )
     )
   )
@@ -114,6 +126,8 @@ package TimeVaryingFeatures {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:31ce1f9122cfe39ecac9be5089bf0c3b6303844c0a94995c0500148c4ba4125a") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/time_varying_features.md") (qualified-name "TimeVaryingFeatures"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/time_varying_features.md") (qualified-name "TimeVaryingFeatures::CC0"))) (kind class-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/time_varying_features.md") (qualified-name "TimeVaryingFeatures::CC1"))) (kind class-def) (membership (kind owning) (visibility default)))
   )
   (references
   )

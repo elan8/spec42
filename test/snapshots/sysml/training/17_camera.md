@@ -43,10 +43,10 @@ package Camera {
         (range (start 1 16) (end 1 41))
       )
       (diagnostic
-        (severity error)
-        (code "recovered_part_usage_body_element")
-        (source "parser")
-        (range (start 8 2) (end 9 2))
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 8 19) (end 8 24))
       )
       (diagnostic
         (severity warning)
@@ -90,6 +90,7 @@ package Camera {
     (declaration (id (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::autoFocus"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::imager"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::photos"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Picture"))))
+    (declaration (id (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::scene"))) (kind ref) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Scene"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/17_camera.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
@@ -100,6 +101,9 @@ package Camera {
       (outcome (status resolved) (target (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::Camera")))))
     (reference (id (source (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::photos"))) (kind featureTyping) (ordinal 0))
       (authored-target "Picture")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::scene"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Scene")
       (outcome (status unresolved)))
   )
   (relationships
@@ -122,6 +126,10 @@ package Camera {
   )
   (query (document "memory://snapshot/17_camera.md") (range (start 9 16) (end 9 23)) (probe (position 9 16))
     (reference (id (source (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::photos"))) (kind featureTyping) (ordinal 0) (authored-target "Picture")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/17_camera.md") (range (start 8 19) (end 8 24)) (probe (position 8 19))
+    (reference (id (source (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::scene"))) (kind featureTyping) (ordinal 0) (authored-target "Scene")
       (outcome (status unresolved)))
   )
 )

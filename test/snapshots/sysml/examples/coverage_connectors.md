@@ -28,30 +28,6 @@ part def System {
   (document "memory://snapshot/coverage_connectors.md"
     (diagnostics
       (diagnostic
-        (severity warning)
-        (code "unsupported_part_definition_member")
-        (source "semantic")
-        (range (start 0 13) (end 0 21))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_part_definition_member")
-        (source "semantic")
-        (range (start 0 22) (end 0 30))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_part_definition_member")
-        (source "semantic")
-        (range (start 1 13) (end 1 21))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_part_definition_member")
-        (source "semantic")
-        (range (start 1 22) (end 1 30))
-      )
-      (diagnostic
         (severity error)
         (code "unrecognized_declaration_in_scope")
         (source "parser")
@@ -67,7 +43,11 @@ part def System {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:161429c0dd614f928a85292a7c7f59528ada4f3eaebf79d2bb8facd801568277") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/coverage_connectors.md") (qualified-name "A"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_connectors.md") (qualified-name "A::p1"))) (kind port) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_connectors.md") (qualified-name "A::p2"))) (kind port) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_connectors.md") (qualified-name "B"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_connectors.md") (qualified-name "B::q1"))) (kind port) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_connectors.md") (qualified-name "B::q2"))) (kind port) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_connectors.md") (qualified-name "System"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_connectors.md") (qualified-name "System::a"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "A"))))
     (declaration (id (node (document "memory://snapshot/coverage_connectors.md") (qualified-name "System::b"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "B"))))

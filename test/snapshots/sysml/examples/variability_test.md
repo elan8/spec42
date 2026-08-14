@@ -114,9 +114,9 @@ package VariabilityTest {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_requirement_definition_member")
         (source "semantic")
-        (range (start 36 4) (end 38 5))
+        (range (start 37 5) (end 37 28))
       )
     )
   )
@@ -134,7 +134,8 @@ package VariabilityTest {
     (declaration (id (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::Q"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "P"))))
     (declaration (id (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::V"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "P"))))
     (declaration (id (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::q"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Q"))))
-    (declaration (id (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::v"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "P"))))
+    (declaration (id (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::r"))) (kind requirement) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::v"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "P") (variation true))))
     (declaration (id (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::y"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "P"))))
   )
   (references
@@ -158,7 +159,7 @@ package VariabilityTest {
     (relationship (kind specialization) (source (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::Q"))) (target (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::P"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::Q"))) (kind specialization) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::V"))) (target (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::P"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::V"))) (kind specialization) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::q"))) (target (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::Q"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::q"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind typing) (source (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::v"))) (target (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::P"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::v"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (variation true) (source (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::v"))) (target (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::P"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::v"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::y"))) (target (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::P"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::y"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation

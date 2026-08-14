@@ -42,27 +42,33 @@ package 'Interaction Example-1' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_occurrence_definition_member")
         (source "semantic")
-        (range (start 3 1) (end 3 19))
+        (range (start 8 2) (end 8 22))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_occurrence_definition_member")
         (source "semantic")
-        (range (start 4 1) (end 4 22))
+        (range (start 9 2) (end 9 23))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_occurrence_definition_member")
         (source "semantic")
-        (range (start 5 1) (end 5 22))
+        (range (start 11 2) (end 12 73))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unsupported_occurrence_definition_member")
         (source "semantic")
-        (range (start 7 1) (end 21 2))
+        (range (start 14 2) (end 15 92))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_occurrence_definition_member")
+        (source "semantic")
+        (range (start 17 2) (end 18 87))
       )
       (diagnostic
         (severity error)
@@ -81,6 +87,10 @@ package 'Interaction Example-1' {
   (declarations
     (declaration (id (node (document "memory://snapshot/27_interaction_example_1.md") (qualified-name "Interaction Example-1"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/27_interaction_example_1.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "Event Occurrence Example") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/27_interaction_example_1.md") (qualified-name "Interaction Example-1::CruiseControlInteraction"))) (kind occurrence-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/27_interaction_example_1.md") (qualified-name "Interaction Example-1::FuelCommand"))) (kind item-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/27_interaction_example_1.md") (qualified-name "Interaction Example-1::SensedSpeed"))) (kind item-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/27_interaction_example_1.md") (qualified-name "Interaction Example-1::SetSpeed"))) (kind item-def) (membership (kind owning) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/27_interaction_example_1.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))

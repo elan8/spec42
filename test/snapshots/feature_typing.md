@@ -14,15 +14,9 @@ feature x : Integer;
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 0 0) (end 0 20))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
+        (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 0 0) (end 0 20))
+        (range (start 0 12) (end 0 19))
       )
     )
   )
@@ -31,10 +25,14 @@ feature x : Integer;
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:273caa5b768cf58a9a4a83d66fd3189f9d6739a9c6a1ca78d34372ac87a213b9") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:273caa5b768cf58a9a4a83d66fd3189f9d6739a9c6a1ca78d34372ac87a213b9") (contract-version "parser-owned-resolution-v1"))
   (declarations
+    (declaration (id (node (document "memory://snapshot/feature_typing.md") (qualified-name "x"))) (kind default-reference) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Integer"))))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/feature_typing.md") (qualified-name "x"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Integer")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -45,5 +43,9 @@ feature x : Integer;
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/feature_typing.md") (range (start 0 12) (end 0 19)) (probe (position 0 12))
+    (reference (id (source (node (document "memory://snapshot/feature_typing.md") (qualified-name "x"))) (kind featureTyping) (ordinal 0) (authored-target "Integer")
+      (outcome (status unresolved)))
+  )
 )
 ~~~

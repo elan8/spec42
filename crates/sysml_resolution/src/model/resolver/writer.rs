@@ -18,7 +18,7 @@ pub(super) fn write_semantic(
     write_declarations(model, output)?;
     write_references(model, output)?;
     write_relationships(model, output)?;
-    writeln!(output, "  (evaluation\n  )")?;
+    write_evaluation(model, output)?;
     write!(output, ")")
 }
 
@@ -211,6 +211,30 @@ fn unsupported_code(family: UnsupportedFamily) -> &'static str {
         UnsupportedFamily::PartDefinitionMember => "unsupported_part_definition_member",
         UnsupportedFamily::PartUsageMember => "unsupported_part_usage_member",
         UnsupportedFamily::AttributeMember => "unsupported_attribute_member",
+        UnsupportedFamily::RequirementDefinitionMember => {
+            "unsupported_requirement_definition_member"
+        }
+        UnsupportedFamily::PortDefinitionMember => "unsupported_port_definition_member",
+        UnsupportedFamily::PortUsageMember => "unsupported_port_usage_member",
+        UnsupportedFamily::ActionDefinitionMember => "unsupported_action_definition_member",
+        UnsupportedFamily::ActionUsageMember => "unsupported_action_usage_member",
+        UnsupportedFamily::StateDefinitionMember => "unsupported_state_definition_member",
+        UnsupportedFamily::ConnectionDefinitionMember => "unsupported_connection_definition_member",
+        UnsupportedFamily::InterfaceDefinitionMember => "unsupported_interface_definition_member",
+        UnsupportedFamily::ViewDefinitionMember => "unsupported_view_definition_member",
+        UnsupportedFamily::ConstraintDefinitionMember => "unsupported_constraint_definition_member",
+        UnsupportedFamily::CalcDefinitionMember => "unsupported_calc_definition_member",
+        UnsupportedFamily::RenderingDefinitionMember => "unsupported_rendering_definition_member",
+        UnsupportedFamily::OccurrenceDefinitionMember => "unsupported_occurrence_definition_member",
+        UnsupportedFamily::AnalysisCaseDefinitionMember => {
+            "unsupported_analysis_case_definition_member"
+        }
+        UnsupportedFamily::CaseDefinitionMember => "unsupported_case_definition_member",
+        UnsupportedFamily::VerificationCaseDefinitionMember => {
+            "unsupported_verification_case_definition_member"
+        }
+        UnsupportedFamily::UseCaseDefinitionMember => "unsupported_use_case_definition_member",
+        UnsupportedFamily::ReferenceUsageMember => "unsupported_reference_usage_member",
         UnsupportedFamily::ParserUnsupported => "unsupported_parser_construct",
     }
 }
@@ -340,7 +364,17 @@ fn write_relationships(model: &ResolvedSemanticModel, output: &mut dyn fmt::Writ
         let Some(kind) = relationship_kind(reference.kind) else {
             continue;
         };
-        write!(output, "    (relationship (kind {kind}) (source ")?;
+        write!(output, "    (relationship (kind {kind})")?;
+        if reference.flags.conjugated {
+            write!(output, " (conjugated true)")?;
+        }
+        if reference.flags.variation {
+            write!(output, " (variation true)")?;
+        }
+        if let Some(direction) = reference.flags.direction {
+            write!(output, " (direction {})", parameter_direction(direction))?;
+        }
+        write!(output, " (source ")?;
         write_node_identity(model, reference.source, output)?;
         write!(output, ") (target ")?;
         write_node_identity(model, target, output)?;
@@ -356,7 +390,90 @@ fn write_relationships(model: &ResolvedSemanticModel, output: &mut dyn fmt::Writ
             reference.ordinal,
         )?;
     }
+    let mut implied: Vec<&ImpliedRelationship> =
+        model.resolution.implied_relationships.iter().collect();
+    implied.sort_by_key(|relationship| {
+        (
+            declaration_path_key(model, relationship.source),
+            declaration_path_key(model, relationship.target),
+        )
+    });
+    for relationship in implied {
+        let Some(kind) = relationship_kind(relationship.kind) else {
+            continue;
+        };
+        write!(output, "    (relationship (kind {kind}) (source ")?;
+        write_node_identity(model, relationship.source, output)?;
+        write!(output, ") (target ")?;
+        write_node_identity(model, relationship.target, output)?;
+        writeln!(output, ") (provenance implied))")?;
+    }
     writeln!(output, "  )")
+}
+
+fn write_evaluation(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fmt::Result {
+    writeln!(output, "  (evaluation")?;
+    for index in canonical_evaluation_indices(model) {
+        let fact = &model.evaluation[index];
+        write!(output, "    (evaluated (declaration ")?;
+        write_node_identity(model, fact.declaration, output)?;
+        write!(output, ") ")?;
+        write_evaluated_value(&fact.outcome, output)?;
+        writeln!(output, ")")?;
+    }
+    writeln!(output, "  )")
+}
+
+fn write_evaluated_value(value: &EvaluatedValue, output: &mut dyn fmt::Write) -> fmt::Result {
+    match value {
+        EvaluatedValue::Boolean(value) => {
+            write!(output, "(value (kind boolean) (boolean {value}))")
+        }
+        EvaluatedValue::Integer(value) => {
+            write!(output, "(value (kind integer) (integer {value}))")
+        }
+        EvaluatedValue::Real(value) => write!(output, "(value (kind real) (real {value}))"),
+        EvaluatedValue::String(value) => {
+            write!(output, "(value (kind string) (value {value:?}))")
+        }
+        EvaluatedValue::Quantity(magnitude, unit) => {
+            write!(output, "(value (kind quantity) (magnitude ")?;
+            write_evaluated_value(magnitude, output)?;
+            write!(output, ") (unit {unit:?}))")
+        }
+        EvaluatedValue::NotEvaluated => write!(output, "(value (kind not-evaluated))"),
+        EvaluatedValue::UnresolvedOperand => write!(output, "(value (kind unresolved-operand))"),
+        EvaluatedValue::NonConstant => write!(output, "(value (kind non-constant))"),
+        EvaluatedValue::NonConverged => write!(output, "(value (kind non-converged))"),
+        EvaluatedValue::DivisionByZero => write!(output, "(value (kind division-by-zero))"),
+        EvaluatedValue::TypeMismatch => write!(output, "(value (kind type-mismatch))"),
+    }
+}
+
+fn canonical_evaluation_indices(model: &ResolvedSemanticModel) -> Vec<usize> {
+    let mut indices = (0..model.evaluation.len()).collect::<Vec<_>>();
+    indices.sort_by(|left, right| {
+        let left_fact = &model.evaluation[*left];
+        let right_fact = &model.evaluation[*right];
+        let left_document = model
+            .storage
+            .declaration(left_fact.declaration)
+            .map(|declaration| document_identity(model, declaration.document))
+            .unwrap_or("<invalid-document>");
+        let right_document = model
+            .storage
+            .declaration(right_fact.declaration)
+            .map(|declaration| document_identity(model, declaration.document))
+            .unwrap_or("<invalid-document>");
+        left_document
+            .cmp(right_document)
+            .then_with(|| {
+                declaration_path_key(model, left_fact.declaration)
+                    .cmp(&declaration_path_key(model, right_fact.declaration))
+            })
+            .then_with(|| left.cmp(right))
+    });
+    indices
 }
 
 fn write_navigation(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fmt::Result {
@@ -453,6 +570,15 @@ fn write_authored(
         write!(output, " ({} (reference ", reference_kind(reference.kind))?;
         write_reference_path(model, reference.path, output)?;
         write!(output, ")")?;
+        if reference.flags.conjugated {
+            write!(output, " (conjugated true)")?;
+        }
+        if reference.flags.variation {
+            write!(output, " (variation true)")?;
+        }
+        if let Some(direction) = reference.flags.direction {
+            write!(output, " (direction {})", parameter_direction(direction))?;
+        }
         if let Some(import) = reference.import {
             write_import(import, output)?;
         }
@@ -650,6 +776,14 @@ fn document_identity(model: &ResolvedSemanticModel, id: DocumentId) -> &str {
         .map_or("<invalid-document>", |document| document.identity.as_ref())
 }
 
+fn parameter_direction(direction: ParameterDirection) -> &'static str {
+    match direction {
+        ParameterDirection::In => "in",
+        ParameterDirection::Out => "out",
+        ParameterDirection::InOut => "inout",
+    }
+}
+
 fn declaration_kind(kind: DeclarationKind) -> &'static str {
     match kind {
         DeclarationKind::Namespace => "namespace",
@@ -660,6 +794,94 @@ fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::AttributeDefinition => "attribute-def",
         DeclarationKind::AttributeUsage => "attribute",
         DeclarationKind::Import => "import",
+        DeclarationKind::Alias => "alias",
+        DeclarationKind::EnumerationDefinition => "enum-def",
+        DeclarationKind::EnumerationUsage => "enum",
+        DeclarationKind::EnumerationLiteral => "enum-literal",
+        DeclarationKind::RequirementDefinition => "requirement-def",
+        DeclarationKind::RequirementUsage => "requirement",
+        DeclarationKind::PortDefinition => "port-def",
+        DeclarationKind::PortUsage => "port",
+        DeclarationKind::ItemDefinition => "item-def",
+        DeclarationKind::ItemUsage => "item",
+        DeclarationKind::ActionDefinition => "action-def",
+        DeclarationKind::ActionUsage => "action",
+        DeclarationKind::Succession => "succession",
+        DeclarationKind::StateDefinition => "state-def",
+        DeclarationKind::StateUsage => "state",
+        DeclarationKind::MetadataDefinition => "metadata-def",
+        DeclarationKind::MetadataUsage => "metadata",
+        DeclarationKind::ConnectionDefinition => "connection-def",
+        DeclarationKind::InterfaceDefinition => "interface-def",
+        DeclarationKind::ConnectionUsage => "connection",
+        DeclarationKind::OccurrenceDefinition => "occurrence-def",
+        DeclarationKind::OccurrenceUsage => "occurrence",
+        DeclarationKind::AnalysisCaseDefinition => "analysis-def",
+        DeclarationKind::AnalysisCaseUsage => "analysis",
+        DeclarationKind::ViewDefinition => "view-def",
+        DeclarationKind::CaseDefinition => "case-def",
+        DeclarationKind::CaseUsage => "case",
+        DeclarationKind::VerificationCaseDefinition => "verification-def",
+        DeclarationKind::UseCaseDefinition => "use-case-def",
+        DeclarationKind::ViewpointDefinition => "viewpoint-def",
+        DeclarationKind::RenderingDefinition => "rendering-def",
+        DeclarationKind::AllocationDefinition => "allocation-def",
+        DeclarationKind::FlowDefinition => "flow-def",
+        DeclarationKind::ViewUsage => "view",
+        DeclarationKind::RenderingUsage => "rendering",
+        DeclarationKind::UseCaseUsage => "use-case",
+        DeclarationKind::VerificationCaseUsage => "verification",
+        DeclarationKind::ViewpointUsage => "viewpoint",
+        DeclarationKind::InterfaceUsage => "interface",
+        DeclarationKind::ConstraintDefinition => "constraint-def",
+        DeclarationKind::ConstraintUsage => "constraint",
+        DeclarationKind::ConcernDefinition => "concern-def",
+        DeclarationKind::ConcernUsage => "concern",
+        DeclarationKind::CalcDefinition => "calc-def",
+        DeclarationKind::CalcUsage => "calc",
+        DeclarationKind::ClassDefinition => "class-def",
+        DeclarationKind::EntryActionBinding => "entry-action-binding",
+        DeclarationKind::DoActionBinding => "do-action-binding",
+        DeclarationKind::ExitActionBinding => "exit-action-binding",
+        DeclarationKind::InitialState => "initial-state",
+        DeclarationKind::FinalState => "final-state",
+        DeclarationKind::ParameterUsage => "parameter",
+        DeclarationKind::SubjectUsage => "subject",
+        DeclarationKind::PerformActionUsage => "perform-action",
+        DeclarationKind::Transition => "transition",
+        DeclarationKind::Satisfy => "satisfy",
+        DeclarationKind::Allocate => "allocate",
+        DeclarationKind::Bind => "bind",
+        DeclarationKind::ReferenceUsage => "ref",
+        DeclarationKind::Decide => "decide",
+        DeclarationKind::Merge => "merge",
+        DeclarationKind::Fork => "fork",
+        DeclarationKind::Join => "join",
+        DeclarationKind::ThenContinuation => "then-continuation",
+        DeclarationKind::Flow => "flow",
+        DeclarationKind::StakeholderUsage => "stakeholder",
+        DeclarationKind::RequirementActor => "requirement-actor",
+        DeclarationKind::CaseActor => "case-actor",
+        DeclarationKind::Frame => "frame",
+        DeclarationKind::VerifyRequirement => "verify-requirement",
+        DeclarationKind::KermlClassifier => "kerml-classifier",
+        DeclarationKind::KermlFeature => "kerml-feature",
+        DeclarationKind::DefaultReferenceUsage => "default-reference",
+        DeclarationKind::KermlConnector => "kerml-connector",
+        DeclarationKind::KermlBinding => "kerml-binding",
+        DeclarationKind::KermlInvariant => "kerml-invariant",
+        DeclarationKind::KermlEnd => "kerml-end",
+        DeclarationKind::Assign => "assign",
+        DeclarationKind::While => "while",
+        DeclarationKind::Loop => "loop",
+        DeclarationKind::If => "if",
+        DeclarationKind::ForLoop => "for-loop",
+        DeclarationKind::ForLoopVariable => "for-loop-variable",
+        DeclarationKind::Dependency => "dependency",
+        DeclarationKind::ExtendedDefinition => "extended-definition",
+        DeclarationKind::IndividualDefinition => "individual-definition",
+        DeclarationKind::BareConnect => "bare-connect",
+        DeclarationKind::PerformParameterBinding => "perform-parameter-binding",
     }
 }
 
@@ -668,6 +890,7 @@ fn membership_kind(kind: MembershipKind) -> &'static str {
         MembershipKind::Owning => "owning",
         MembershipKind::Feature => "feature",
         MembershipKind::Import => "import",
+        MembershipKind::Alias => "alias",
     }
 }
 
@@ -692,6 +915,52 @@ fn reference_kind(kind: ReferenceKind) -> &'static str {
         ReferenceKind::References => "referenceSubsetting",
         ReferenceKind::Crosses => "crossSubsetting",
         ReferenceKind::Intersects => "intersects",
+        ReferenceKind::AliasBinding => "aliasBinding",
+        ReferenceKind::ConnectorEnd => "connectorEnd",
+        ReferenceKind::Succession => "succession",
+        ReferenceKind::EntryActionBinding => "entryActionBinding",
+        ReferenceKind::DoActionBinding => "doActionBinding",
+        ReferenceKind::ExitActionBinding => "exitActionBinding",
+        ReferenceKind::InitialState => "initialState",
+        ReferenceKind::ExpressionOperand => "expressionOperand",
+        ReferenceKind::TransitionSource => "transitionSource",
+        ReferenceKind::TransitionTarget => "transitionTarget",
+        ReferenceKind::TransitionTrigger => "transitionTrigger",
+        ReferenceKind::TransitionEffect => "transitionEffect",
+        ReferenceKind::MetadataAnnotation => "metadataAnnotation",
+        ReferenceKind::FilterMetadataTest => "filterMetadataTest",
+        ReferenceKind::SatisfySource => "satisfySource",
+        ReferenceKind::SatisfyTarget => "satisfyTarget",
+        ReferenceKind::AllocateSource => "allocateSource",
+        ReferenceKind::AllocateTarget => "allocateTarget",
+        ReferenceKind::BindSource => "bindSource",
+        ReferenceKind::BindTarget => "bindTarget",
+        ReferenceKind::SatisfyViewpoint => "satisfyViewpoint",
+        ReferenceKind::Variant => "variant",
+        ReferenceKind::IncludeUseCase => "includeUseCase",
+        ReferenceKind::MemberAccessOperand => "memberAccessOperand",
+        ReferenceKind::InvocationCallee => "invocationCallee",
+        ReferenceKind::DecisionInput => "decisionInput",
+        ReferenceKind::MergeInput => "mergeInput",
+        ReferenceKind::ForkInput => "forkInput",
+        ReferenceKind::JoinInput => "joinInput",
+        ReferenceKind::ThenTarget => "thenTarget",
+        ReferenceKind::AcceptVia => "acceptVia",
+        ReferenceKind::SendTarget => "sendTarget",
+        ReferenceKind::AcceptPayloadType => "acceptPayloadType",
+        ReferenceKind::TerminateTarget => "terminateTarget",
+        ReferenceKind::FlowSource => "flowSource",
+        ReferenceKind::FlowTarget => "flowTarget",
+        ReferenceKind::TypeCheckTarget => "typeCheckTarget",
+        ReferenceKind::MetaCastTarget => "metaCastTarget",
+        ReferenceKind::StakeholderTarget => "stakeholderTarget",
+        ReferenceKind::PurposeTarget => "purposeTarget",
+        ReferenceKind::VerifyRequirementTarget => "verifyRequirementTarget",
+        ReferenceKind::AssignTarget => "assignTarget",
+        ReferenceKind::DependencyClient => "dependencyClient",
+        ReferenceKind::DependencySupplier => "dependencySupplier",
+        ReferenceKind::PerformParameterTarget => "performParameterTarget",
+        ReferenceKind::FlowPayloadType => "flowPayloadType",
     }
 }
 
@@ -704,6 +973,52 @@ fn relationship_kind(kind: ReferenceKind) -> Option<&'static str> {
         ReferenceKind::References => Some("referenceSubsetting"),
         ReferenceKind::Crosses => Some("crossSubsetting"),
         ReferenceKind::Intersects => Some("intersects"),
+        ReferenceKind::AliasBinding => Some("aliasBinding"),
+        ReferenceKind::ConnectorEnd => Some("connectorEnd"),
+        ReferenceKind::Succession => Some("succession"),
+        ReferenceKind::EntryActionBinding => Some("entryActionBinding"),
+        ReferenceKind::DoActionBinding => Some("doActionBinding"),
+        ReferenceKind::ExitActionBinding => Some("exitActionBinding"),
+        ReferenceKind::InitialState => Some("initialState"),
+        ReferenceKind::ExpressionOperand => Some("expressionOperand"),
+        ReferenceKind::TransitionSource => Some("transitionSource"),
+        ReferenceKind::TransitionTarget => Some("transitionTarget"),
+        ReferenceKind::TransitionTrigger => Some("transitionTrigger"),
+        ReferenceKind::TransitionEffect => Some("transitionEffect"),
+        ReferenceKind::MetadataAnnotation => Some("metadataAnnotation"),
+        ReferenceKind::FilterMetadataTest => Some("filterMetadataTest"),
+        ReferenceKind::SatisfySource => Some("satisfySource"),
+        ReferenceKind::SatisfyTarget => Some("satisfyTarget"),
+        ReferenceKind::AllocateSource => Some("allocateSource"),
+        ReferenceKind::AllocateTarget => Some("allocateTarget"),
+        ReferenceKind::BindSource => Some("bindSource"),
+        ReferenceKind::BindTarget => Some("bindTarget"),
+        ReferenceKind::SatisfyViewpoint => Some("satisfyViewpoint"),
+        ReferenceKind::Variant => Some("variant"),
+        ReferenceKind::IncludeUseCase => Some("includeUseCase"),
+        ReferenceKind::MemberAccessOperand => Some("memberAccessOperand"),
+        ReferenceKind::InvocationCallee => Some("invocationCallee"),
+        ReferenceKind::DecisionInput => Some("decisionInput"),
+        ReferenceKind::MergeInput => Some("mergeInput"),
+        ReferenceKind::ForkInput => Some("forkInput"),
+        ReferenceKind::JoinInput => Some("joinInput"),
+        ReferenceKind::ThenTarget => Some("thenTarget"),
+        ReferenceKind::AcceptVia => Some("acceptVia"),
+        ReferenceKind::SendTarget => Some("sendTarget"),
+        ReferenceKind::AcceptPayloadType => Some("acceptPayloadType"),
+        ReferenceKind::TerminateTarget => Some("terminateTarget"),
+        ReferenceKind::FlowSource => Some("flowSource"),
+        ReferenceKind::FlowTarget => Some("flowTarget"),
+        ReferenceKind::TypeCheckTarget => Some("typeCheckTarget"),
+        ReferenceKind::MetaCastTarget => Some("metaCastTarget"),
+        ReferenceKind::StakeholderTarget => Some("stakeholderTarget"),
+        ReferenceKind::PurposeTarget => Some("purposeTarget"),
+        ReferenceKind::VerifyRequirementTarget => Some("verifyRequirementTarget"),
+        ReferenceKind::AssignTarget => Some("assignTarget"),
+        ReferenceKind::DependencyClient => Some("dependencyClient"),
+        ReferenceKind::DependencySupplier => Some("dependencySupplier"),
+        ReferenceKind::PerformParameterTarget => Some("performParameterTarget"),
+        ReferenceKind::FlowPayloadType => Some("flowPayloadType"),
         ReferenceKind::NamespaceImport
         | ReferenceKind::MembershipImport
         | ReferenceKind::FilterImport => None,
@@ -725,6 +1040,7 @@ mod tests {
             recovery: Box::new([]),
             symbols: SymbolTableBuilder::default().freeze(),
             paths: SymbolPathArenaBuilder::default().freeze(),
+            evaluation_facts: Box::new([]),
         };
         let (_, _, resolution) = resolve_dense(
             &storage.declarations,
@@ -733,9 +1049,11 @@ mod tests {
             &storage.references,
         )
         .unwrap();
+        let evaluation = compute_evaluation(&storage, &resolution);
         let model = ResolvedSemanticModel {
             storage,
             resolution,
+            evaluation,
             metadata: PublicationMetadata {
                 phase: PublicationPhase::Resolved,
                 completeness: PublicationCompleteness::Complete,
@@ -754,6 +1072,7 @@ mod tests {
         assert!(output.contains("  (declarations\n  )"));
         assert!(output.contains("  (references\n  )"));
         assert!(output.contains("  (relationships\n  )"));
+        assert!(output.contains("  (evaluation\n  )"));
         output.clear();
         model.write_navigation_sexpr(&mut output).unwrap();
         assert_eq!(output, "(navigation\n)");

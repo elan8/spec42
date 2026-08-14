@@ -49,24 +49,6 @@ package 'Viewpoint Example' {
 (fixture-diagnostics
   (document "memory://snapshot/42_viewpoint_example.md"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 4 1) (end 13 2))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 15 1) (end 23 2))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 25 1) (end 36 2))
-      )
     )
   )
 )
@@ -74,15 +56,36 @@ package 'Viewpoint Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:d14fa0256ca285c72af45b71f970995b504670a2493409d301d26045eba4dffb") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d14fa0256ca285c72af45b71f970995b504670a2493409d301d26045eba4dffb") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/42_viewpoint_example.md") (qualified-name "Viewpoint Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/42_viewpoint_example.md") (qualified-name "Viewpoint Example::IV&V"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/42_viewpoint_example.md") (qualified-name "Viewpoint Example::Systems Engineer"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/42_viewpoint_example.md") (qualified-name "Viewpoint Example::modularity"))) (kind concern) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/42_viewpoint_example.md") (qualified-name "Viewpoint Example::modularity::se"))) (kind stakeholder) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Systems Engineer"))))
+    (declaration (id (node (document "memory://snapshot/42_viewpoint_example.md") (qualified-name "Viewpoint Example::system breakdown"))) (kind concern) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/42_viewpoint_example.md") (qualified-name "Viewpoint Example::system breakdown::ivv"))) (kind stakeholder) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "IV&V"))))
+    (declaration (id (node (document "memory://snapshot/42_viewpoint_example.md") (qualified-name "Viewpoint Example::system breakdown::se"))) (kind stakeholder) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Systems Engineer"))))
+    (declaration (id (node (document "memory://snapshot/42_viewpoint_example.md") (qualified-name "Viewpoint Example::system structure perspective"))) (kind viewpoint) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/42_viewpoint_example.md") (anonymous (kind constraint) (ordinal 0))))) (kind constraint) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/42_viewpoint_example.md") (qualified-name "Viewpoint Example::system structure perspective::modularity"))) (kind frame) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/42_viewpoint_example.md") (qualified-name "Viewpoint Example::system structure perspective::system breakdown"))) (kind frame) (membership (kind feature) (visibility default)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/42_viewpoint_example.md") (qualified-name "Viewpoint Example::modularity::se"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Systems Engineer")
+      (outcome (status resolved) (target (node (document "memory://snapshot/42_viewpoint_example.md") (qualified-name "Viewpoint Example::Systems Engineer")))))
+    (reference (id (source (node (document "memory://snapshot/42_viewpoint_example.md") (qualified-name "Viewpoint Example::system breakdown::ivv"))) (kind featureTyping) (ordinal 0))
+      (authored-target "IV&V")
+      (outcome (status resolved) (target (node (document "memory://snapshot/42_viewpoint_example.md") (qualified-name "Viewpoint Example::IV&V")))))
+    (reference (id (source (node (document "memory://snapshot/42_viewpoint_example.md") (qualified-name "Viewpoint Example::system breakdown::se"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Systems Engineer")
+      (outcome (status resolved) (target (node (document "memory://snapshot/42_viewpoint_example.md") (qualified-name "Viewpoint Example::Systems Engineer")))))
   )
   (relationships
+    (relationship (kind typing) (source (node (document "memory://snapshot/42_viewpoint_example.md") (qualified-name "Viewpoint Example::modularity::se"))) (target (node (document "memory://snapshot/42_viewpoint_example.md") (qualified-name "Viewpoint Example::Systems Engineer"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/42_viewpoint_example.md") (qualified-name "Viewpoint Example::modularity::se"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/42_viewpoint_example.md") (qualified-name "Viewpoint Example::system breakdown::ivv"))) (target (node (document "memory://snapshot/42_viewpoint_example.md") (qualified-name "Viewpoint Example::IV&V"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/42_viewpoint_example.md") (qualified-name "Viewpoint Example::system breakdown::ivv"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/42_viewpoint_example.md") (qualified-name "Viewpoint Example::system breakdown::se"))) (target (node (document "memory://snapshot/42_viewpoint_example.md") (qualified-name "Viewpoint Example::Systems Engineer"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/42_viewpoint_example.md") (qualified-name "Viewpoint Example::system breakdown::se"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )
@@ -91,5 +94,17 @@ package 'Viewpoint Example' {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/42_viewpoint_example.md") (range (start 22 19) (end 22 37)) (probe (position 22 19))
+    (reference (id (source (node (document "memory://snapshot/42_viewpoint_example.md") (qualified-name "Viewpoint Example::modularity::se"))) (kind featureTyping) (ordinal 0) (authored-target "Systems Engineer")
+      (outcome (status resolved) (target (node (document "memory://snapshot/42_viewpoint_example.md") (qualified-name "Viewpoint Example::Systems Engineer")))))
+  )
+  (query (document "memory://snapshot/42_viewpoint_example.md") (range (start 12 20) (end 12 26)) (probe (position 12 20))
+    (reference (id (source (node (document "memory://snapshot/42_viewpoint_example.md") (qualified-name "Viewpoint Example::system breakdown::ivv"))) (kind featureTyping) (ordinal 0) (authored-target "IV&V")
+      (outcome (status resolved) (target (node (document "memory://snapshot/42_viewpoint_example.md") (qualified-name "Viewpoint Example::IV&V")))))
+  )
+  (query (document "memory://snapshot/42_viewpoint_example.md") (range (start 11 19) (end 11 37)) (probe (position 11 19))
+    (reference (id (source (node (document "memory://snapshot/42_viewpoint_example.md") (qualified-name "Viewpoint Example::system breakdown::se"))) (kind featureTyping) (ordinal 0) (authored-target "Systems Engineer")
+      (outcome (status resolved) (target (node (document "memory://snapshot/42_viewpoint_example.md") (qualified-name "Viewpoint Example::Systems Engineer")))))
+  )
 )
 ~~~
