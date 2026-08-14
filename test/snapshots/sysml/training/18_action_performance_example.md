@@ -54,18 +54,18 @@ package 'Action Performance Example' {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:4792da0794e77a0d60357e60c04671e31362262b5ed5dd78100aad24ae05af99") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/18_action_performance_example.md") (qualified-name "Action Performance Example"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/18_action_performance_example.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Action Decomposition") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/18_action_performance_example.md") (path (name "Action Performance Example") (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Action Decomposition") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/18_action_performance_example.md") (qualified-name "Action Performance Example::AutoFocus"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/18_action_performance_example.md") (qualified-name "Action Performance Example::Camera"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/18_action_performance_example.md") (qualified-name "Action Performance Example::Imager"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/18_action_performance_example.md") (qualified-name "Action Performance Example::camera"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Camera"))))
     (declaration (id (node (document "memory://snapshot/18_action_performance_example.md") (qualified-name "Action Performance Example::camera::f"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "AutoFocus"))))
-    (declaration (id (node (document "memory://snapshot/18_action_performance_example.md") (anonymous (kind perform-action) (ordinal 0))))) (kind perform-action) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/18_action_performance_example.md") (path (name "Action Performance Example") (name "camera") (name "f") (anonymous (kind perform-action) (ordinal 0)))))) (kind perform-action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/18_action_performance_example.md") (qualified-name "Action Performance Example::camera::i"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Imager"))))
-    (declaration (id (node (document "memory://snapshot/18_action_performance_example.md") (anonymous (kind perform-action) (ordinal 0))))) (kind perform-action) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/18_action_performance_example.md") (path (name "Action Performance Example") (name "camera") (name "i") (anonymous (kind perform-action) (ordinal 0)))))) (kind perform-action) (membership (kind feature) (visibility default)))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/18_action_performance_example.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/18_action_performance_example.md") (path (name "Action Performance Example") (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0))
       (authored-target "Action Decomposition")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/18_action_performance_example.md") (qualified-name "Action Performance Example::camera"))) (kind featureTyping) (ordinal 0))
@@ -91,7 +91,7 @@ package 'Action Performance Example' {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/18_action_performance_example.md") (range (start 1 16) (end 1 41)) (probe (position 1 16))
-    (reference (id (source (node (document "memory://snapshot/18_action_performance_example.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "Action Decomposition")
+    (reference (id (source (node (document "memory://snapshot/18_action_performance_example.md") (path (name "Action Performance Example") (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0) (authored-target "Action Decomposition")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/18_action_performance_example.md") (range (start 7 15) (end 7 21)) (probe (position 7 15))

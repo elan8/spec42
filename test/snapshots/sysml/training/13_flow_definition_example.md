@@ -84,7 +84,7 @@ package 'Flow Definition Example' {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:edf480a47678c7d31ed14319668b48abff2d01f1d173188265f73e3684d4aefd") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/13_flow_definition_example.md") (qualified-name "Flow Definition Example"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/13_flow_definition_example.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Port Example") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/13_flow_definition_example.md") (path (name "Flow Definition Example") (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Port Example") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/13_flow_definition_example.md") (qualified-name "Flow Definition Example::FuelFlow"))) (kind flow-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/13_flow_definition_example.md") (qualified-name "Flow Definition Example::FuelFlow::consumerPort"))) (kind connection) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "FuelInPort"))))
     (declaration (id (node (document "memory://snapshot/13_flow_definition_example.md") (qualified-name "Flow Definition Example::FuelFlow::supplierPort"))) (kind connection) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "FuelOutPort"))))
@@ -94,7 +94,7 @@ package 'Flow Definition Example' {
     (declaration (id (node (document "memory://snapshot/13_flow_definition_example.md") (qualified-name "Flow Definition Example::vehicle::tankAssy"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "FuelTankAssembly"))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/13_flow_definition_example.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/13_flow_definition_example.md") (path (name "Flow Definition Example") (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0))
       (authored-target "Port Example")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/13_flow_definition_example.md") (qualified-name "Flow Definition Example::FuelFlow::consumerPort"))) (kind featureTyping) (ordinal 0))
@@ -124,7 +124,7 @@ package 'Flow Definition Example' {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/13_flow_definition_example.md") (range (start 1 16) (end 1 33)) (probe (position 1 16))
-    (reference (id (source (node (document "memory://snapshot/13_flow_definition_example.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "Port Example")
+    (reference (id (source (node (document "memory://snapshot/13_flow_definition_example.md") (path (name "Flow Definition Example") (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0) (authored-target "Port Example")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/13_flow_definition_example.md") (range (start 8 26) (end 8 36)) (probe (position 8 26))

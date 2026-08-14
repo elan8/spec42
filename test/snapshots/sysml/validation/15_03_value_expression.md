@@ -105,8 +105,8 @@ package '15_03-Value Expression' {
   (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:ab6e6b6a6cd6a866eb38d6f8518d8a43a43df59027973ba7299092fb8c8c5b88") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/15_03_value_expression.md") (qualified-name "15_03-Value Expression"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/15_03_value_expression.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "SI") (import (shape namespace) (recursive false)))))
-    (declaration (id (node (document "memory://snapshot/15_03_value_expression.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "USCustomaryUnits") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/15_03_value_expression.md") (path (name "15_03-Value Expression") (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "SI") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/15_03_value_expression.md") (path (name "15_03-Value Expression") (anonymous (kind import) (ordinal 1)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "USCustomaryUnits") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/15_03_value_expression.md") (qualified-name "15_03-Value Expression::Tire"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/15_03_value_expression.md") (qualified-name "15_03-Value Expression::Tire::hasLegalProfileDepth"))) (kind constraint) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "profileDepth"))))
     (declaration (id (node (document "memory://snapshot/15_03_value_expression.md") (qualified-name "15_03-Value Expression::Tire::height"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "LengthValue"))))
@@ -123,10 +123,10 @@ package '15_03-Value Expression' {
     (declaration (id (node (document "memory://snapshot/15_03_value_expression.md") (qualified-name "15_03-Value Expression::Wheel::width"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "LengthValue"))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/15_03_value_expression.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/15_03_value_expression.md") (path (name "15_03-Value Expression") (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0))
       (authored-target "SI")
       (outcome (status unresolved)))
-    (reference (id (source (node (document "memory://snapshot/15_03_value_expression.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/15_03_value_expression.md") (path (name "15_03-Value Expression") (anonymous (kind import) (ordinal 1)))))) (kind namespaceImport) (ordinal 0))
       (authored-target "USCustomaryUnits")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/15_03_value_expression.md") (qualified-name "15_03-Value Expression::Tire::hasLegalProfileDepth"))) (kind expressionOperand) (ordinal 0))
@@ -192,11 +192,11 @@ package '15_03-Value Expression' {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/15_03_value_expression.md") (range (start 1 19) (end 1 24)) (probe (position 1 19))
-    (reference (id (source (node (document "memory://snapshot/15_03_value_expression.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "SI")
+    (reference (id (source (node (document "memory://snapshot/15_03_value_expression.md") (path (name "15_03-Value Expression") (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0) (authored-target "SI")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/15_03_value_expression.md") (range (start 2 19) (end 2 38)) (probe (position 2 19))
-    (reference (id (source (node (document "memory://snapshot/15_03_value_expression.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0) (authored-target "USCustomaryUnits")
+    (reference (id (source (node (document "memory://snapshot/15_03_value_expression.md") (path (name "15_03-Value Expression") (anonymous (kind import) (ordinal 1)))))) (kind namespaceImport) (ordinal 0) (authored-target "USCustomaryUnits")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/15_03_value_expression.md") (range (start 26 41) (end 26 53)) (probe (position 26 41))

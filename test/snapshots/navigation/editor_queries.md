@@ -42,13 +42,13 @@ probe editor_queries.md 10 17 rename=Base
     (declaration (id (node (document "memory://snapshot/editor_queries.md") (qualified-name "Types::Base::inheritedMember"))) (kind attribute) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/editor_queries.md") (qualified-name "Types::Other"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/editor_queries.md") (qualified-name "Use"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/editor_queries.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility default)) (authored (membership (kind import) (visibility default)) (relationships (namespaceImport (reference "Types") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/editor_queries.md") (path (name "Use") (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility default)) (authored (membership (kind import) (visibility default)) (relationships (namespaceImport (reference "Types") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/editor_queries.md") (qualified-name "Use::Child"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Base"))))
     (declaration (id (node (document "memory://snapshot/editor_queries.md") (qualified-name "Use::Child::ownMember"))) (kind attribute) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/editor_queries.md") (qualified-name "Use::Child::x"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Other"))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/editor_queries.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/editor_queries.md") (path (name "Use") (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0))
       (authored-target "Types")
       (outcome (status resolved) (target (node (document "memory://snapshot/editor_queries.md") (qualified-name "Types")))))
     (reference (id (source (node (document "memory://snapshot/editor_queries.md") (qualified-name "Use::Child"))) (kind specialization) (ordinal 0))
@@ -70,7 +70,7 @@ probe editor_queries.md 10 17 rename=Base
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/editor_queries.md") (range (start 7 11) (end 7 19)) (probe (position 7 11))
-    (reference (id (source (node (document "memory://snapshot/editor_queries.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "Types")
+    (reference (id (source (node (document "memory://snapshot/editor_queries.md") (path (name "Use") (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0) (authored-target "Types")
       (outcome (status resolved) (target (node (document "memory://snapshot/editor_queries.md") (qualified-name "Types")))))
   )
   (query (document "memory://snapshot/editor_queries.md") (range (start 8 22) (end 8 26)) (probe (position 8 22))

@@ -182,8 +182,8 @@ standard library package RequirementDerivation {
   (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b7f51bd4b732338a6319aef4cd5597637c1e1318d6af91bdafb7289b71c16091") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/requirement_derivation.md") (qualified-name "RequirementDerivation"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text " This package provides language-extension metadata for modeling requirement derivation. "))))
-    (declaration (id (node (document "memory://snapshot/requirement_derivation.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "DerivationConnections") (import (shape namespace) (recursive false)))))
-    (declaration (id (node (document "memory://snapshot/requirement_derivation.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Metaobjects::SemanticMetadata") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/requirement_derivation.md") (path (name "RequirementDerivation") (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "DerivationConnections") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/requirement_derivation.md") (path (name "RequirementDerivation") (anonymous (kind import) (ordinal 1)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Metaobjects::SemanticMetadata") (import (shape membership) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/requirement_derivation.md") (qualified-name "RequirementDerivation::DerivationMetadata"))) (kind metadata-def) (membership (kind owning) (visibility default)) (facts (short-name "derivation")) (documentation (doc (text "\n\t\t * DerivationMetadata is SemanticMetadata for a Derivation connection.\n\t\t "))) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "SemanticMetadata"))))
     (declaration (id (node (document "memory://snapshot/requirement_derivation.md") (qualified-name "RequirementDerivation::DerivationMetadata::annotatedElement"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "SysML::ConnectionDefinition")) (subsetting (reference "annotatedElement"))))
     (declaration (id (node (document "memory://snapshot/requirement_derivation.md") (qualified-name "RequirementDerivation::DerivationMetadata::annotatedElement"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "SysML::ConnectionUsage")) (subsetting (reference "annotatedElement"))))
@@ -196,10 +196,10 @@ standard library package RequirementDerivation {
     (declaration (id (node (document "memory://snapshot/requirement_derivation.md") (qualified-name "RequirementDerivation::OriginalRequirementMetadata::baseType"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "baseType")) (expressionOperand (reference "originalRequirements")) (metaCastTarget (reference "SysML::Usage"))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/requirement_derivation.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/requirement_derivation.md") (path (name "RequirementDerivation") (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0))
       (authored-target "DerivationConnections")
       (outcome (status unresolved)))
-    (reference (id (source (node (document "memory://snapshot/requirement_derivation.md") (anonymous (kind import) (ordinal 1))))) (kind membershipImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/requirement_derivation.md") (path (name "RequirementDerivation") (anonymous (kind import) (ordinal 1)))))) (kind membershipImport) (ordinal 0))
       (authored-target "Metaobjects::SemanticMetadata")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/requirement_derivation.md") (qualified-name "RequirementDerivation::DerivationMetadata"))) (kind specialization) (ordinal 0))
@@ -281,11 +281,11 @@ standard library package RequirementDerivation {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/requirement_derivation.md") (range (start 3 15) (end 3 39)) (probe (position 3 15))
-    (reference (id (source (node (document "memory://snapshot/requirement_derivation.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "DerivationConnections")
+    (reference (id (source (node (document "memory://snapshot/requirement_derivation.md") (path (name "RequirementDerivation") (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0) (authored-target "DerivationConnections")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/requirement_derivation.md") (range (start 4 16) (end 4 45)) (probe (position 4 16))
-    (reference (id (source (node (document "memory://snapshot/requirement_derivation.md") (anonymous (kind import) (ordinal 1))))) (kind membershipImport) (ordinal 0) (authored-target "Metaobjects::SemanticMetadata")
+    (reference (id (source (node (document "memory://snapshot/requirement_derivation.md") (path (name "RequirementDerivation") (anonymous (kind import) (ordinal 1)))))) (kind membershipImport) (ordinal 0) (authored-target "Metaobjects::SemanticMetadata")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/requirement_derivation.md") (range (start 28 49) (end 28 65)) (probe (position 28 49))

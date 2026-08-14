@@ -14531,7 +14531,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (anonymous (kind parameter) (ordinal 0))))) (value (kind integer) (integer 5)))"
+                 (path (name \"Demo\") (name \"Calc\") (anonymous (kind parameter) (ordinal 0)))))) (value (kind integer) (integer 5)))"
             ),
             "expected `return : Type = 2 + 3;` to fold to a published Integer(5) evaluation fact \
              on the anonymous return declaration, got:\n{output}"
@@ -14696,7 +14696,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::Vehicle::seatBelt::::isMandatory\"))) (value (kind \
+                 (path (name \"Demo\") (name \"Vehicle\") (name \"seatBelt\") (anonymous (kind metadata) (ordinal 0)) (name \"isMandatory\"))))) (value (kind \
                  boolean) (boolean true)))"
             ),
             "expected `isMandatory = true;` inside `@Safety{{...}}` to publish its own \
@@ -15881,7 +15881,7 @@ mod tests {
         );
         assert!(
             output.contains(
-                "(kind redefinition) (source (node (document \"memory://test/enum.sysml\") (anonymous (kind stakeholder) (ordinal 0))))"
+                "(kind redefinition) (source (node (document \"memory://test/enum.sysml\") (path (name \"Demo\") (name \"SystemView\") (anonymous (kind stakeholder) (ordinal 0)))))"
             ),
             "expected a redefinition reference sourced at the anonymous stakeholder declaration, got:\n{output}"
         );
@@ -16403,13 +16403,13 @@ mod tests {
         );
         assert!(
             output.contains(
-                "(kind redefinition) (source (node (document \"memory://test/enum.sysml\") (anonymous (kind parameter) (ordinal 0))))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::C::a\")))"
+                "(kind redefinition) (source (node (document \"memory://test/enum.sysml\") (path (name \"Demo\") (name \"C\") (anonymous (kind parameter) (ordinal 0)))))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::C::a\")))"
             ),
             "expected the anonymous parameter's redefines to resolve to a, got:\n{output}"
         );
         assert!(
             output.contains(
-                "(anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference \"Boolean\"))))"
+                "(path (name \"Demo\") (name \"C\") (anonymous (kind parameter) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference \"Boolean\"))))"
             ),
             "expected the nested anonymous return declaration (typed `: Boolean`, no direction/\
              redefines) to lower too, got:\n{output}"
@@ -16510,19 +16510,19 @@ mod tests {
         );
         assert!(
             output.contains(
-                "(kind expressionOperand) (source (node (document \"memory://test/enum.sysml\") (anonymous (kind parameter) (ordinal 0))))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::C::a\")))"
+                "(kind expressionOperand) (source (node (document \"memory://test/enum.sysml\") (path (name \"Demo\") (name \"C\") (anonymous (kind parameter) (ordinal 0)))))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::C::a\")))"
             ),
             "expected the return's conditional expression to resolve its operand a, got:\n{output}"
         );
         assert!(
             output.contains(
-                "(kind expressionOperand) (source (node (document \"memory://test/enum.sysml\") (anonymous (kind parameter) (ordinal 0))))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::C::b\")))"
+                "(kind expressionOperand) (source (node (document \"memory://test/enum.sysml\") (path (name \"Demo\") (name \"C\") (anonymous (kind parameter) (ordinal 0)))))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::C::b\")))"
             ),
             "expected the return's conditional expression to resolve its operand b, got:\n{output}"
         );
         assert!(
             output.contains(
-                "(kind expressionOperand) (source (node (document \"memory://test/enum.sysml\") (anonymous (kind parameter) (ordinal 0))))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::C::c\")))"
+                "(kind expressionOperand) (source (node (document \"memory://test/enum.sysml\") (path (name \"Demo\") (name \"C\") (anonymous (kind parameter) (ordinal 0)))))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::C::c\")))"
             ),
             "expected the return's conditional expression to resolve its operand c, got:\n{output}"
         );

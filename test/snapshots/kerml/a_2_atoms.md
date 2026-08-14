@@ -65,12 +65,12 @@ package Atoms {
   (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:ce6425b889fc153c98df08a93122a3aedca50b5c85670b6ddf82ad7ecd939f6c") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms"))) (kind package) (membership (kind owning) (visibility default)) (documentation (doc (text " This package defines a keyword (atom) for classifiers with\n\t * exactly one instance and are disjoint from any others\n\t * marked with this keyword.\n\t "))))
-    (declaration (id (node (document "memory://snapshot/a_2_atoms.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Metaobjects::Metaobject") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/a_2_atoms.md") (path (name "Atoms") (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Metaobjects::Metaobject") (import (shape membership) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms::AtomMetadata"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (facts (short-name "atom")) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Metaobject"))))
     (declaration (id (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms::AtomMetadata::baseType"))) (kind default-reference) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "Atom")) (metaCastTarget (reference "KerML::Classifier"))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/a_2_atoms.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/a_2_atoms.md") (path (name "Atoms") (anonymous (kind import) (ordinal 0)))))) (kind membershipImport) (ordinal 0))
       (authored-target "Metaobjects::Metaobject")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms::AtomMetadata"))) (kind specialization) (ordinal 0))
@@ -94,7 +94,7 @@ package Atoms {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/a_2_atoms.md") (range (start 7 16) (end 7 39)) (probe (position 7 16))
-    (reference (id (source (node (document "memory://snapshot/a_2_atoms.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "Metaobjects::Metaobject")
+    (reference (id (source (node (document "memory://snapshot/a_2_atoms.md") (path (name "Atoms") (anonymous (kind import) (ordinal 0)))))) (kind membershipImport) (ordinal 0) (authored-target "Metaobjects::Metaobject")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/a_2_atoms.md") (range (start 10 43) (end 10 53)) (probe (position 10 43))

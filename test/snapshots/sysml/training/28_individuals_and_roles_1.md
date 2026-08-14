@@ -61,7 +61,7 @@ package 'Individuals and Roles' {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:cff966f014c18aeb0707ebc6f25bb04248a25c55679d878a6453cdccdefe645c") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/28_individuals_and_roles_1.md") (qualified-name "Individuals and Roles"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/28_individuals_and_roles_1.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Part Definition Example") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/28_individuals_and_roles_1.md") (path (name "Individuals and Roles") (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Part Definition Example") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/28_individuals_and_roles_1.md") (qualified-name "Individuals and Roles::Vehicle_1"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (modifiers individual)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Vehicle"))))
     (declaration (id (node (document "memory://snapshot/28_individuals_and_roles_1.md") (qualified-name "Individuals and Roles::Vehicle_1::leftFrontWheel"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Wheel"))))
     (declaration (id (node (document "memory://snapshot/28_individuals_and_roles_1.md") (qualified-name "Individuals and Roles::Vehicle_1::rightFrontWheel"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Wheel"))))
@@ -70,7 +70,7 @@ package 'Individuals and Roles' {
     (declaration (id (node (document "memory://snapshot/28_individuals_and_roles_1.md") (qualified-name "Individuals and Roles::vehicle_1"))) (kind part) (membership (kind feature) (visibility default)) (facts (modifiers individual)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Vehicle_1"))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/28_individuals_and_roles_1.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/28_individuals_and_roles_1.md") (path (name "Individuals and Roles") (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0))
       (authored-target "Part Definition Example")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/28_individuals_and_roles_1.md") (qualified-name "Individuals and Roles::Vehicle_1"))) (kind specialization) (ordinal 0))
@@ -103,7 +103,7 @@ package 'Individuals and Roles' {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/28_individuals_and_roles_1.md") (range (start 1 16) (end 1 44)) (probe (position 1 16))
-    (reference (id (source (node (document "memory://snapshot/28_individuals_and_roles_1.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "Part Definition Example")
+    (reference (id (source (node (document "memory://snapshot/28_individuals_and_roles_1.md") (path (name "Individuals and Roles") (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0) (authored-target "Part Definition Example")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/28_individuals_and_roles_1.md") (range (start 5 34) (end 5 41)) (probe (position 5 34))

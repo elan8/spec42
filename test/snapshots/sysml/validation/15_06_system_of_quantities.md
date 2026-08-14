@@ -67,10 +67,10 @@ package '15_06-System of Quantities' {
   (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:995cec352700c65c8a118098daf0d7815096263336553e186839d574f265786a") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/15_06_system_of_quantities.md") (qualified-name "15_06-System of Quantities"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/15_06_system_of_quantities.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ISQ") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/15_06_system_of_quantities.md") (path (name "15_06-System of Quantities") (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ISQ") (import (shape namespace) (recursive false)))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/15_06_system_of_quantities.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/15_06_system_of_quantities.md") (path (name "15_06-System of Quantities") (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0))
       (authored-target "ISQ")
       (outcome (status unresolved)))
   )
@@ -84,7 +84,7 @@ package '15_06-System of Quantities' {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/15_06_system_of_quantities.md") (range (start 1 19) (end 1 25)) (probe (position 1 19))
-    (reference (id (source (node (document "memory://snapshot/15_06_system_of_quantities.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "ISQ")
+    (reference (id (source (node (document "memory://snapshot/15_06_system_of_quantities.md") (path (name "15_06-System of Quantities") (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0) (authored-target "ISQ")
       (outcome (status unresolved)))
   )
 )

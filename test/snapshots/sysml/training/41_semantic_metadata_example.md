@@ -148,8 +148,8 @@ library package 'Semantic Metadata Example' {
   (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:e0c1c0b68b24381a5f8a1279613b84349cc4db692849a7f5d1baeaafc15fc4c1") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/41_semantic_metadata_example.md") (qualified-name "Semantic Metadata Example"))) (kind library-package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/41_semantic_metadata_example.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Model Library Example") (import (shape namespace) (recursive false)))))
-    (declaration (id (node (document "memory://snapshot/41_semantic_metadata_example.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Metaobjects::SemanticMetadata") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/41_semantic_metadata_example.md") (path (name "Semantic Metadata Example") (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Model Library Example") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/41_semantic_metadata_example.md") (path (name "Semantic Metadata Example") (anonymous (kind import) (ordinal 1)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Metaobjects::SemanticMetadata") (import (shape membership) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/41_semantic_metadata_example.md") (qualified-name "Semantic Metadata Example::causation"))) (kind metadata-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "SemanticMetadata"))))
     (declaration (id (node (document "memory://snapshot/41_semantic_metadata_example.md") (qualified-name "Semantic Metadata Example::causation::baseType"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "baseType")) (expressionOperand (reference "causations")) (metaCastTarget (reference "SysML::Usage"))))
     (declaration (id (node (document "memory://snapshot/41_semantic_metadata_example.md") (qualified-name "Semantic Metadata Example::cause"))) (kind metadata-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "SemanticMetadata"))))
@@ -162,10 +162,10 @@ library package 'Semantic Metadata Example' {
     (declaration (id (node (document "memory://snapshot/41_semantic_metadata_example.md") (qualified-name "Semantic Metadata Example::situation::baseType"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "baseType")) (expressionOperand (reference "situations")) (metaCastTarget (reference "SysML::Usage"))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/41_semantic_metadata_example.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/41_semantic_metadata_example.md") (path (name "Semantic Metadata Example") (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0))
       (authored-target "Model Library Example")
       (outcome (status unresolved)))
-    (reference (id (source (node (document "memory://snapshot/41_semantic_metadata_example.md") (anonymous (kind import) (ordinal 1))))) (kind membershipImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/41_semantic_metadata_example.md") (path (name "Semantic Metadata Example") (anonymous (kind import) (ordinal 1)))))) (kind membershipImport) (ordinal 0))
       (authored-target "Metaobjects::SemanticMetadata")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/41_semantic_metadata_example.md") (qualified-name "Semantic Metadata Example::causation"))) (kind specialization) (ordinal 0))
@@ -249,11 +249,11 @@ library package 'Semantic Metadata Example' {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/41_semantic_metadata_example.md") (range (start 1 16) (end 1 42)) (probe (position 1 16))
-    (reference (id (source (node (document "memory://snapshot/41_semantic_metadata_example.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "Model Library Example")
+    (reference (id (source (node (document "memory://snapshot/41_semantic_metadata_example.md") (path (name "Semantic Metadata Example") (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0) (authored-target "Model Library Example")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/41_semantic_metadata_example.md") (range (start 2 16) (end 2 45)) (probe (position 2 16))
-    (reference (id (source (node (document "memory://snapshot/41_semantic_metadata_example.md") (anonymous (kind import) (ordinal 1))))) (kind membershipImport) (ordinal 0) (authored-target "Metaobjects::SemanticMetadata")
+    (reference (id (source (node (document "memory://snapshot/41_semantic_metadata_example.md") (path (name "Semantic Metadata Example") (anonymous (kind import) (ordinal 1)))))) (kind membershipImport) (ordinal 0) (authored-target "Metaobjects::SemanticMetadata")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/41_semantic_metadata_example.md") (range (start 16 27) (end 16 43)) (probe (position 16 27))

@@ -26,6 +26,175 @@ struct NameKey {
     name: SymbolId,
 }
 
+/// Version tag on the canonical structural identity encoding.
+///
+/// The encoding is opaque to consumers, but it is compared for equality across builds of the same
+/// sources, so a change to its shape has to be a deliberate, visible one.
+const IDENTITY_ENCODING_VERSION: &str = "element/v1";
+
+/// Canonical structural identity for every declaration, plus the lookup index over it.
+///
+/// An identity is the owning document followed by the ordered scope path from that document's
+/// root. A named path segment is the authored name; an anonymous segment is the declaration's kind
+/// together with its owner-local ordinal.
+///
+/// Including the whole owner chain is what makes an anonymous declaration's identity unique:
+/// anonymous ordinals are allocated per `(document, owner, kind)`, so an identity that named only
+/// the kind and ordinal could not tell two same-kind anonymous declarations under different owners
+/// apart. A path whose segments are all named can still match more than one declaration when the
+/// source authors two identically named siblings; that stays an explicit ambiguous outcome rather
+/// than an arbitrary pick, which is why the index resolves to a chain and not to a single answer.
+struct IdentityIndex {
+    /// One canonical identity string per `DeclarationId`, parallel to `storage.declarations`.
+    text: Box<[Box<str>]>,
+    /// Lowest-numbered declaration for each distinct identity.
+    heads: HashTable<DeclarationId>,
+    hash_builder: RandomState,
+    /// Next declaration sharing this one's identity, in ascending `DeclarationId` order.
+    next: Box<[Option<DeclarationId>]>,
+}
+
+impl std::fmt::Debug for IdentityIndex {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        // A disposable lookup accelerator; its bucket layout is not semantic content and printing
+        // it would only add noise to a published model's debug output.
+        formatter
+            .debug_struct("IdentityIndex")
+            .field("declarations", &self.text.len())
+            .finish_non_exhaustive()
+    }
+}
+
+impl IdentityIndex {
+    fn build(storage: &SemanticModelStorage) -> Result<Self, ResolutionError> {
+        let mut text = Vec::with_capacity(storage.declarations.len());
+        for index in 0..storage.declarations.len() {
+            let id = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+            text.push(encode_identity(storage, id)?.into_boxed_str());
+        }
+        let mut next = vec![None; text.len()];
+        let hash_builder = RandomState::default();
+        let mut heads: HashTable<DeclarationId> = HashTable::new();
+        // Reverse order so each chain ends up in ascending `DeclarationId` order, which keeps an
+        // ambiguous outcome's candidate list canonically ordered without a later sort.
+        for index in (0..text.len()).rev() {
+            let id = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+            let hash = hash_builder.hash_one(text[index].as_ref());
+            let matches = |candidate: &DeclarationId| text[candidate.index()] == text[index];
+            if let Some(existing) = heads.find_mut(hash, matches) {
+                next[index] = Some(*existing);
+                *existing = id;
+            } else {
+                let rehash = |candidate: &DeclarationId| {
+                    hash_builder.hash_one(text[candidate.index()].as_ref())
+                };
+                heads
+                    .try_reserve(1, rehash)
+                    .map_err(|_| ResolutionError::Capacity)?;
+                heads.insert_unique(hash, id, rehash);
+            }
+        }
+        Ok(Self {
+            text: text.into_boxed_slice(),
+            heads,
+            hash_builder,
+            next: next.into_boxed_slice(),
+        })
+    }
+
+    fn identity(&self, id: DeclarationId) -> Option<&str> {
+        self.text.get(id.index()).map(AsRef::as_ref)
+    }
+
+    /// Every declaration carrying `identity`, in ascending `DeclarationId` order.
+    fn declarations(&self, identity: &str) -> Vec<DeclarationId> {
+        let hash = self.hash_builder.hash_one(identity);
+        let Some(head) = self
+            .heads
+            .find(hash, |candidate| {
+                self.text[candidate.index()].as_ref() == identity
+            })
+            .copied()
+        else {
+            return Vec::new();
+        };
+        let mut chain = vec![head];
+        let mut cursor = self.next[head.index()];
+        while let Some(current) = cursor {
+            chain.push(current);
+            cursor = self.next[current.index()];
+        }
+        chain
+    }
+}
+
+/// Appends one length-prefixed field, so a document identity or an authored name containing any
+/// byte sequence -- including the encoding's own punctuation -- cannot forge a segment boundary.
+fn push_identity_field(output: &mut String, value: &str) {
+    output.push_str(&value.len().to_string());
+    output.push(':');
+    output.push_str(value);
+}
+
+fn encode_identity(
+    storage: &SemanticModelStorage,
+    id: DeclarationId,
+) -> Result<String, ResolutionError> {
+    let declaration = storage
+        .declaration(id)
+        .ok_or(ResolutionError::InvalidStorage)?;
+    let mut chain = vec![id];
+    let mut cursor = declaration.owner;
+    while let Some(current) = cursor {
+        if chain.len() > storage.declarations.len() {
+            // An ownership cycle would otherwise loop forever; the solver reports cycles
+            // separately, so this is a storage-invariant failure rather than a semantic outcome.
+            return Err(ResolutionError::InvalidStorage);
+        }
+        chain.push(current);
+        cursor = storage
+            .declaration(current)
+            .ok_or(ResolutionError::InvalidStorage)?
+            .owner;
+    }
+    let mut output = String::from(IDENTITY_ENCODING_VERSION);
+    push_identity_field(
+        &mut output,
+        &storage
+            .document(declaration.document)
+            .ok_or(ResolutionError::InvalidStorage)?
+            .identity,
+    );
+    for current in chain.iter().rev() {
+        let segment = storage
+            .declaration(*current)
+            .ok_or(ResolutionError::InvalidStorage)?;
+        match segment.name {
+            Some(name) => {
+                output.push('n');
+                push_identity_field(
+                    &mut output,
+                    storage
+                        .symbol(name)
+                        .ok_or(ResolutionError::InvalidStorage)?,
+                );
+            }
+            None => {
+                output.push('a');
+                push_identity_field(&mut output, writer::declaration_kind(segment.kind));
+                push_identity_field(
+                    &mut output,
+                    &segment
+                        .anonymous_ordinal
+                        .ok_or(ResolutionError::InvalidStorage)?
+                        .to_string(),
+                );
+            }
+        }
+    }
+    Ok(output)
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 struct CandidateRange {
     start: u32,
@@ -426,6 +595,7 @@ pub(crate) struct ResolvedSemanticModel {
     storage: SemanticModelStorage,
     direct_names: NameIndex,
     effective_imports: NameIndex,
+    identities: IdentityIndex,
     resolution: ResolutionResults,
     evaluation: Box<[EvaluationFact]>,
     metadata: PublicationMetadata,
@@ -470,24 +640,29 @@ impl ResolvedSemanticModel {
         }
     }
 
-    fn symbol_identity(id: DeclarationId) -> SymbolIdentity {
-        SymbolIdentity(format!("declaration:{}", id.index()).into_boxed_str())
+    /// The canonical structural identity of one declaration.
+    ///
+    /// Stable across builds of the same sources, unlike the dense storage ordinal, so a consumer
+    /// may hold one across a rebuild; see `IdentityIndex`.
+    fn symbol_identity(&self, id: DeclarationId) -> Option<SymbolIdentity> {
+        self.identities
+            .identity(id)
+            .map(|text| SymbolIdentity(text.into()))
     }
 
-    fn identity_declaration(identity: &SymbolIdentity) -> Option<DeclarationId> {
-        identity
-            .0
-            .strip_prefix("declaration:")?
-            .parse::<usize>()
-            .ok()
-            .and_then(|index| DeclarationId::from_index(index).ok())
+    /// Every declaration carrying `identity`.
+    ///
+    /// More than one only when the source authors identically named siblings; callers publish that
+    /// as an explicit ambiguous outcome rather than choosing between them.
+    fn identity_declarations(&self, identity: &SymbolIdentity) -> Vec<DeclarationId> {
+        self.identities.declarations(&identity.0)
     }
 
     fn declaration_target(&self, id: DeclarationId) -> Option<NavigationTarget> {
         let declaration = self.storage.declaration(id)?;
         let name = self.storage.symbol(declaration.name?)?;
         Some(NavigationTarget {
-            symbol: Self::symbol_identity(id),
+            symbol: self.symbol_identity(id)?,
             name: name.into(),
             location: SourceLocation {
                 document: self
@@ -602,9 +777,35 @@ impl ResolvedSemanticModel {
         ) {
             return QueryOutcome::Incomplete;
         }
-        let Some(target) = Self::identity_declaration(symbol) else {
+        let mut targets = self.identity_declarations(symbol);
+        if targets.len() > 1 {
+            // The caller's identity names identically authored siblings. Answering for one of
+            // them would silently pick; answering for all of them as one list would merge distinct
+            // elements' references, so each candidate's own list is published separately.
+            let per_candidate = targets
+                .into_iter()
+                .map(
+                    |target| match self.references_for(target, include_declaration) {
+                        QueryOutcome::Resolved(locations)
+                        | QueryOutcome::Recovered(locations)
+                        | QueryOutcome::UnsupportedWith(locations) => locations,
+                        _ => Box::default(),
+                    },
+                )
+                .collect::<Vec<_>>();
+            return QueryOutcome::Ambiguous(per_candidate.into_boxed_slice());
+        }
+        let Some(target) = targets.pop() else {
             return QueryOutcome::Unresolved;
         };
+        self.references_for(target, include_declaration)
+    }
+
+    fn references_for(
+        &self,
+        target: DeclarationId,
+        include_declaration: bool,
+    ) -> QueryOutcome<Box<[SourceLocation]>> {
         let Some(target_declaration) = self.storage.declaration(target) else {
             return QueryOutcome::Unresolved;
         };
@@ -670,7 +871,16 @@ impl ResolvedSemanticModel {
             if !valid_identifier(name) {
                 return RenameOutcome::InvalidName;
             }
-            let Some(id) = Self::identity_declaration(&target.symbol) else {
+            let mut candidates = self.identity_declarations(&target.symbol);
+            if candidates.len() > 1 {
+                let mut ambiguous = candidates
+                    .into_iter()
+                    .filter_map(|candidate| self.declaration_target(candidate))
+                    .collect::<Vec<_>>();
+                ambiguous.sort_by(target_order);
+                return RenameOutcome::Ambiguous(ambiguous.into_boxed_slice());
+            }
+            let Some(id) = candidates.pop() else {
                 return RenameOutcome::Incomplete;
             };
             let Some(declaration) = self.storage.declaration(id) else {
@@ -1100,10 +1310,12 @@ impl SemanticModelStorage {
         };
         let evaluation = compute_evaluation(&self, &resolution);
         let has_evaluation = !evaluation.is_empty();
+        let identities = IdentityIndex::build(&self)?;
         Ok(ResolvedSemanticModel {
             storage: self,
             direct_names,
             effective_imports,
+            identities,
             resolution,
             evaluation,
             metadata: PublicationMetadata {

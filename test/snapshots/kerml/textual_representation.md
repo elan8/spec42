@@ -70,14 +70,14 @@ package TextualRepresentation {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:d4f81f9512462339d824ecced521ffffcb6f645d3746d27d76d38c13f7c91b29") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/textual_representation.md") (qualified-name "TextualRepresentation"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/textual_representation.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/textual_representation.md") (path (name "TextualRepresentation") (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/textual_representation.md") (qualified-name "TextualRepresentation::C"))) (kind class-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/textual_representation.md") (qualified-name "TextualRepresentation::setX"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (expressionOperand (reference "language"))))
     (declaration (id (node (document "memory://snapshot/textual_representation.md") (qualified-name "TextualRepresentation::setX::c"))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "C") (direction in))))
     (declaration (id (node (document "memory://snapshot/textual_representation.md") (qualified-name "TextualRepresentation::setX::newX"))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Real") (direction in))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/textual_representation.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/textual_representation.md") (path (name "TextualRepresentation") (anonymous (kind import) (ordinal 0)))))) (kind membershipImport) (ordinal 0))
       (authored-target "ScalarValues::Real")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/textual_representation.md") (qualified-name "TextualRepresentation::setX"))) (kind expressionOperand) (ordinal 0))
@@ -103,7 +103,7 @@ package TextualRepresentation {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/textual_representation.md") (range (start 1 16) (end 1 34)) (probe (position 1 16))
-    (reference (id (source (node (document "memory://snapshot/textual_representation.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Real")
+    (reference (id (source (node (document "memory://snapshot/textual_representation.md") (path (name "TextualRepresentation") (anonymous (kind import) (ordinal 0)))))) (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Real")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/textual_representation.md") (range (start 12 5) (end 12 13)) (probe (position 12 5))

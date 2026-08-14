@@ -1193,7 +1193,7 @@ mod tests {
             "did not expect unsupported_action_definition_member, got: {sexpr}"
         );
         assert!(
-            sexpr.contains("(qualified-name \"P::A::::y\")"),
+            sexpr.contains("(path (name \"P\") (name \"A\") (anonymous (kind while) (ordinal 0)) (name \"y\"))"),
             "expected the nested `action y;` body member to be lowered, got: {sexpr}"
         );
     }
@@ -1230,8 +1230,11 @@ mod tests {
             "did not expect unsupported_action_definition_member, got: {sexpr}"
         );
         assert!(
-            sexpr.contains("(qualified-name \"P::A::::y\")")
-                && sexpr.contains("(qualified-name \"P::A::::z\")"),
+            sexpr.contains(
+                "(path (name \"P\") (name \"A\") (anonymous (kind if) (ordinal 0)) (name \"y\"))"
+            ) && sexpr.contains(
+                "(path (name \"P\") (name \"A\") (anonymous (kind if) (ordinal 0)) (name \"z\"))"
+            ),
             "expected both the then and else branch body members to be lowered, got: {sexpr}"
         );
     }
@@ -1782,5 +1785,133 @@ mod tests {
             !sexpr.contains("(feature-value "),
             "expected no feature-value block, got: {sexpr}"
         );
+    }
+
+    // --- Canonical element identity ---------------------------------------------------------
+
+    fn publication_for(sources: &[(&str, &str)]) -> PublishedResolution {
+        let request = BuildRequest::new(
+            sources
+                .iter()
+                .map(|(identity, source)| {
+                    SourceInput::new(*identity, source.to_string(), SourceKind::Workspace)
+                })
+                .collect(),
+            ConstructionSchedule::Sequential,
+            "contract-v1",
+        )
+        .unwrap();
+        build(request).unwrap()
+    }
+
+    fn target_symbol(
+        published: &PublishedResolution,
+        document: &str,
+        line: u32,
+        character: u32,
+    ) -> SymbolIdentity {
+        match published.target_at(document, TextPosition { line, character }) {
+            QueryOutcome::Resolved(target) => target.symbol,
+            other => panic!("expected a resolved navigation target, got: {other:?}"),
+        }
+    }
+
+    /// Anonymous ordinals are allocated per `(document, owner, kind)`, so an identity that named
+    /// only the kind and ordinal could not tell two same-kind anonymous declarations under
+    /// different owners apart. The identity spells out the owner chain for exactly this reason.
+    #[test]
+    fn anonymous_declarations_under_different_owners_get_distinct_identities() {
+        let sexpr = semantic_sexpr_for(
+            "package P { action def A { action x; if x { action y; } else { action z; } } action def B { action x; if x { action y; } else { action z; } } }",
+        );
+        assert!(
+            sexpr.contains(r#"(path (name "P") (name "A") (anonymous (kind if) (ordinal 0)))"#),
+            "expected the if-scope under A to carry its owner in its identity, got: {sexpr}"
+        );
+        assert!(
+            sexpr.contains(r#"(path (name "P") (name "B") (anonymous (kind if) (ordinal 0)))"#),
+            "expected the if-scope under B to carry its owner in its identity, got: {sexpr}"
+        );
+    }
+
+    /// A named declaration whose owner chain passes through an anonymous scope cannot be
+    /// identified by a qualified name alone -- the anonymous owner contributes no name segment --
+    /// so it renders the explicit path form instead.
+    #[test]
+    fn a_named_declaration_under_an_anonymous_owner_renders_an_explicit_path() {
+        let sexpr = semantic_sexpr_for(
+            "package P { action def A { action x; if x { action y; } else { action z; } } }",
+        );
+        assert!(
+            sexpr.contains(
+                r#"(path (name "P") (name "A") (anonymous (kind if) (ordinal 0)) (name "y"))"#
+            ),
+            "expected the branch member to render an explicit path, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains(r#"(qualified-name "P::A::::y")"#),
+            "expected no ambiguous empty-segment qualified name, got: {sexpr}"
+        );
+    }
+
+    /// The identity is structural, so editing an unrelated document cannot change it. A dense
+    /// storage ordinal would shift as soon as any earlier document gained a declaration.
+    #[test]
+    fn element_identity_survives_an_edit_to_an_unrelated_document() {
+        let before = publication_for(&[
+            ("memory://a.sysml", "package A { part def Wheel; }"),
+            ("memory://b.sysml", "package B { part def Engine; }"),
+        ]);
+        let after = publication_for(&[
+            (
+                "memory://a.sysml",
+                "package A { part def Wheel; part def Axle; part def Frame; }",
+            ),
+            ("memory://b.sysml", "package B { part def Engine; }"),
+        ]);
+
+        let engine_before = target_symbol(&before, "memory://b.sysml", 0, 21);
+        let engine_after = target_symbol(&after, "memory://b.sysml", 0, 21);
+        assert_eq!(
+            engine_before, engine_after,
+            "expected an unrelated document's edit to leave this element's identity unchanged"
+        );
+    }
+
+    /// Two identically named siblings share one structural identity. That is the source's own
+    /// ambiguity, so it is published as an ambiguous outcome rather than resolved to whichever
+    /// declaration happens to come first.
+    #[test]
+    fn duplicate_sibling_names_publish_an_ambiguous_identity_outcome() {
+        let published = publication_for(&[(
+            "memory://dup.sysml",
+            "package P { part def Failure; part def Failure; }",
+        )]);
+        let symbol = target_symbol(&published, "memory://dup.sysml", 0, 21);
+
+        match published.references(&symbol, true) {
+            QueryOutcome::Ambiguous(per_candidate) => assert_eq!(
+                per_candidate.len(),
+                2,
+                "expected one reference list per identically named sibling"
+            ),
+            other => panic!("expected an ambiguous references outcome, got: {other:?}"),
+        }
+
+        match published.prepare_rename(
+            "memory://dup.sysml",
+            TextPosition {
+                line: 0,
+                character: 21,
+            },
+            Some("Renamed"),
+        ) {
+            RenameOutcome::Ambiguous(candidates) => assert_eq!(
+                candidates.len(),
+                2,
+                "expected both identically named siblings reported as rename candidates"
+            ),
+            other => panic!("expected an ambiguous rename outcome, got: {other:?}"),
+        }
     }
 }

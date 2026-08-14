@@ -79,7 +79,7 @@ standard library package AnalysisTooling {
   (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:6595af55a2fee28ca39506996d1152e7ba71496668136e4b9cfbd9b695a840bf") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/analysis_tooling.md") (qualified-name "AnalysisTooling"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package contains definitions for metadata annotations related\n\t * to analysis tool integration.\n\t "))))
-    (declaration (id (node (document "memory://snapshot/analysis_tooling.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/analysis_tooling.md") (path (name "AnalysisTooling") (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/analysis_tooling.md") (qualified-name "AnalysisTooling::ToolExecution"))) (kind metadata-def) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t\t * ToolExecution metadata identifies an external analysis tool to be\n\t\t * used to implement the annotated action.\n\t\t "))))
     (declaration (id (node (document "memory://snapshot/analysis_tooling.md") (qualified-name "AnalysisTooling::ToolExecution::toolName"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "String"))))
     (declaration (id (node (document "memory://snapshot/analysis_tooling.md") (qualified-name "AnalysisTooling::ToolExecution::uri"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "String"))))
@@ -87,7 +87,7 @@ standard library package AnalysisTooling {
     (declaration (id (node (document "memory://snapshot/analysis_tooling.md") (qualified-name "AnalysisTooling::ToolVariable::name"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "String"))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/analysis_tooling.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/analysis_tooling.md") (path (name "AnalysisTooling") (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0))
       (authored-target "ScalarValues")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/analysis_tooling.md") (qualified-name "AnalysisTooling::ToolExecution::toolName"))) (kind featureTyping) (ordinal 0))
@@ -110,7 +110,7 @@ standard library package AnalysisTooling {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/analysis_tooling.md") (range (start 7 16) (end 7 31)) (probe (position 7 16))
-    (reference (id (source (node (document "memory://snapshot/analysis_tooling.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues")
+    (reference (id (source (node (document "memory://snapshot/analysis_tooling.md") (path (name "AnalysisTooling") (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/analysis_tooling.md") (range (start 16 23) (end 16 29)) (probe (position 16 23))

@@ -179,7 +179,7 @@ package '1c-Parts Tree Redefinition' {
   (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:11973dec81e9056ba9f34ecf61a7b72f25f4c8d866d054e6af20910a1ca20dc3") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (qualified-name "1c-Parts Tree Redefinition"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "SI::kg") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (path (name "1c-Parts Tree Redefinition") (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "SI::kg") (import (shape membership) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (qualified-name "1c-Parts Tree Redefinition::Definitions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (qualified-name "1c-Parts Tree Redefinition::Definitions::Axle"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (qualified-name "1c-Parts Tree Redefinition::Definitions::Axle::mass"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "ISQ::mass"))))
@@ -190,7 +190,7 @@ package '1c-Parts Tree Redefinition' {
     (declaration (id (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (qualified-name "1c-Parts Tree Redefinition::Definitions::Vehicle::mass"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "ISQ::mass"))))
     (declaration (id (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (qualified-name "1c-Parts Tree Redefinition::Definitions::Wheel"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (qualified-name "1c-Parts Tree Redefinition::Usages"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Definitions") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (path (name "1c-Parts Tree Redefinition") (name "Usages") (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Definitions") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (qualified-name "1c-Parts Tree Redefinition::Usages::vehicle1"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Vehicle"))))
     (declaration (id (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (qualified-name "1c-Parts Tree Redefinition::Usages::vehicle1::frontAxleAssembly"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "AxleAssembly"))))
     (declaration (id (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (qualified-name "1c-Parts Tree Redefinition::Usages::vehicle1::frontAxleAssembly::frontAxle"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Axle"))))
@@ -211,7 +211,7 @@ package '1c-Parts Tree Redefinition' {
     (declaration (id (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (qualified-name "1c-Parts Tree Redefinition::Usages::vehicle1_c1::rearAxleAssembly_c1::rearWheel_2"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "rearWheel"))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (path (name "1c-Parts Tree Redefinition") (anonymous (kind import) (ordinal 0)))))) (kind membershipImport) (ordinal 0))
       (authored-target "SI::kg")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (qualified-name "1c-Parts Tree Redefinition::Definitions::Axle::mass"))) (kind subsetting) (ordinal 0))
@@ -226,7 +226,7 @@ package '1c-Parts Tree Redefinition' {
     (reference (id (source (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (qualified-name "1c-Parts Tree Redefinition::Definitions::Vehicle::mass"))) (kind subsetting) (ordinal 0))
       (authored-target "ISQ::mass")
       (outcome (status unresolved)))
-    (reference (id (source (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (path (name "1c-Parts Tree Redefinition") (name "Usages") (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0))
       (authored-target "Definitions")
       (outcome (status resolved) (target (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (qualified-name "1c-Parts Tree Redefinition::Definitions")))))
     (reference (id (source (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (qualified-name "1c-Parts Tree Redefinition::Usages::vehicle1"))) (kind featureTyping) (ordinal 0))
@@ -311,7 +311,7 @@ package '1c-Parts Tree Redefinition' {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/1c_parts_tree_redefinition.md") (range (start 1 16) (end 1 22)) (probe (position 1 16))
-    (reference (id (source (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "SI::kg")
+    (reference (id (source (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (path (name "1c-Parts Tree Redefinition") (anonymous (kind import) (ordinal 0)))))) (kind membershipImport) (ordinal 0) (authored-target "SI::kg")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/1c_parts_tree_redefinition.md") (range (start 9 21) (end 9 30)) (probe (position 9 21))
@@ -331,7 +331,7 @@ package '1c-Parts Tree Redefinition' {
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/1c_parts_tree_redefinition.md") (range (start 18 17) (end 18 31)) (probe (position 18 17))
-    (reference (id (source (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "Definitions")
+    (reference (id (source (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (path (name "1c-Parts Tree Redefinition") (name "Usages") (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0) (authored-target "Definitions")
       (outcome (status resolved) (target (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (qualified-name "1c-Parts Tree Redefinition::Definitions")))))
   )
   (query (document "memory://snapshot/1c_parts_tree_redefinition.md") (range (start 20 17) (end 20 24)) (probe (position 20 17))

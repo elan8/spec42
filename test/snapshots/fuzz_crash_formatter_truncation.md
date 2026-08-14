@@ -87,14 +87,14 @@ package MassRollup2 {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:d01b79e670c8f3d078b774f56d534315ffd26e912cbd2c14601ae5e673801b1c") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "NumericalFunctions") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (path (name "MassRollup2") (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "NumericalFunctions") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::MassedThing"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::MassedThing::simpleMass"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "ISQ::mass"))))
     (declaration (id (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::MassedThing::totalMass"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind) (default true) (operator false)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "ISQ::mass")) (expressionOperand (reference "sLmpleMass"))))
     (declaration (id (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::composicomackagteThing"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MassedThing"))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (path (name "MassRollup2") (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0))
       (authored-target "NumericalFunctions")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::MassedThing::simpleMass"))) (kind subsetting) (ordinal 0))
@@ -122,7 +122,7 @@ package MassRollup2 {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (range (start 1 16) (end 1 37)) (probe (position 1 16))
-    (reference (id (source (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "NumericalFunctions")
+    (reference (id (source (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (path (name "MassRollup2") (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0) (authored-target "NumericalFunctions")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (range (start 4 26) (end 4 35)) (probe (position 4 26))

@@ -178,7 +178,7 @@ package 'Use Case Usage Example' {
   (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:978b14a368c7e7a64320e8cc6ffcfb059789f65349b6bb1baceb6c8cbaf78168") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/35_use_case_usage_example.md") (qualified-name "Use Case Usage Example"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/35_use_case_usage_example.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Use Case Definition Example") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/35_use_case_usage_example.md") (path (name "Use Case Usage Example") (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Use Case Definition Example") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/35_use_case_usage_example.md") (qualified-name "Use Case Usage Example::Fuel Station"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/35_use_case_usage_example.md") (qualified-name "Use Case Usage Example::add fuel"))) (kind use-case) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/35_use_case_usage_example.md") (qualified-name "Use Case Usage Example::add fuel::fuel station"))) (kind case-actor) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Fuel Station"))))
@@ -188,7 +188,7 @@ package 'Use Case Usage Example' {
     (declaration (id (node (document "memory://snapshot/35_use_case_usage_example.md") (qualified-name "Use Case Usage Example::provide transportation::vehicle"))) (kind subject) (membership (kind feature) (visibility default)))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/35_use_case_usage_example.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/35_use_case_usage_example.md") (path (name "Use Case Usage Example") (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0))
       (authored-target "Use Case Definition Example")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/35_use_case_usage_example.md") (qualified-name "Use Case Usage Example::add fuel::fuel station"))) (kind featureTyping) (ordinal 0))
@@ -255,7 +255,7 @@ package 'Use Case Usage Example' {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/35_use_case_usage_example.md") (range (start 2 16) (end 2 48)) (probe (position 2 16))
-    (reference (id (source (node (document "memory://snapshot/35_use_case_usage_example.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "Use Case Definition Example")
+    (reference (id (source (node (document "memory://snapshot/35_use_case_usage_example.md") (path (name "Use Case Usage Example") (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0) (authored-target "Use Case Definition Example")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/35_use_case_usage_example.md") (range (start 40 25) (end 40 39)) (probe (position 40 25))

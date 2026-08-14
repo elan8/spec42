@@ -56,7 +56,7 @@ package 'Items Example' {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:f9b280e7e1f643151513a7985884a425eea5f643b599a947a57892cba08a9e5c") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/08_items_example.md") (qualified-name "Items Example"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/08_items_example.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/08_items_example.md") (path (name "Items Example") (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/08_items_example.md") (qualified-name "Items Example::Fuel"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/08_items_example.md") (qualified-name "Items Example::Person"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/08_items_example.md") (qualified-name "Items Example::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -65,7 +65,7 @@ package 'Items Example' {
     (declaration (id (node (document "memory://snapshot/08_items_example.md") (qualified-name "Items Example::Vehicle::mass"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Real"))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/08_items_example.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/08_items_example.md") (path (name "Items Example") (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0))
       (authored-target "ScalarValues")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/08_items_example.md") (qualified-name "Items Example::Vehicle::fuelTank::fuel"))) (kind featureTyping) (ordinal 0))
@@ -86,7 +86,7 @@ package 'Items Example' {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/08_items_example.md") (range (start 1 16) (end 1 31)) (probe (position 1 16))
-    (reference (id (source (node (document "memory://snapshot/08_items_example.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues")
+    (reference (id (source (node (document "memory://snapshot/08_items_example.md") (path (name "Items Example") (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/08_items_example.md") (range (start 12 14) (end 12 18)) (probe (position 12 14))

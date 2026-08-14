@@ -280,8 +280,8 @@ package 'Analytical Constraints' {
   (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:38f93a877fba3054bdff73b329c39c14b3803a9f07cca4d081f02ea3d71c33a3") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/31_analytical_constraints.md") (qualified-name "Analytical Constraints"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/31_analytical_constraints.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ISQ") (import (shape namespace) (recursive false)))))
-    (declaration (id (node (document "memory://snapshot/31_analytical_constraints.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Calculation Definitions") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/31_analytical_constraints.md") (path (name "Analytical Constraints") (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ISQ") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/31_analytical_constraints.md") (path (name "Analytical Constraints") (anonymous (kind import) (ordinal 1)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Calculation Definitions") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/31_analytical_constraints.md") (qualified-name "Analytical Constraints::StraightLineDynamics"))) (kind action-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/31_analytical_constraints.md") (qualified-name "Analytical Constraints::StraightLineDynamics::a_out"))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction out)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "AccelerationValue") (direction out))))
     (declaration (id (node (document "memory://snapshot/31_analytical_constraints.md") (qualified-name "Analytical Constraints::StraightLineDynamics::delta_t"))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "TimeValue") (direction in))))
@@ -311,10 +311,10 @@ package 'Analytical Constraints' {
     (declaration (id (node (document "memory://snapshot/31_analytical_constraints.md") (qualified-name "Analytical Constraints::StraightLineDynamicsEquations::x_i"))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "LengthValue") (direction in))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/31_analytical_constraints.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/31_analytical_constraints.md") (path (name "Analytical Constraints") (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0))
       (authored-target "ISQ")
       (outcome (status unresolved)))
-    (reference (id (source (node (document "memory://snapshot/31_analytical_constraints.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/31_analytical_constraints.md") (path (name "Analytical Constraints") (anonymous (kind import) (ordinal 1)))))) (kind namespaceImport) (ordinal 0))
       (authored-target "Calculation Definitions")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/31_analytical_constraints.md") (qualified-name "Analytical Constraints::StraightLineDynamics::a_out"))) (kind featureTyping) (ordinal 0))
@@ -474,11 +474,11 @@ package 'Analytical Constraints' {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/31_analytical_constraints.md") (range (start 1 16) (end 1 22)) (probe (position 1 16))
-    (reference (id (source (node (document "memory://snapshot/31_analytical_constraints.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "ISQ")
+    (reference (id (source (node (document "memory://snapshot/31_analytical_constraints.md") (path (name "Analytical Constraints") (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0) (authored-target "ISQ")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/31_analytical_constraints.md") (range (start 2 16) (end 2 44)) (probe (position 2 16))
-    (reference (id (source (node (document "memory://snapshot/31_analytical_constraints.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0) (authored-target "Calculation Definitions")
+    (reference (id (source (node (document "memory://snapshot/31_analytical_constraints.md") (path (name "Analytical Constraints") (anonymous (kind import) (ordinal 1)))))) (kind namespaceImport) (ordinal 0) (authored-target "Calculation Definitions")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/31_analytical_constraints.md") (range (start 29 14) (end 29 31)) (probe (position 29 14))
