@@ -2140,6 +2140,29 @@ mod tests {
         visited
     }
 
+    /// How many reverse-index entries one references query visits for the declaration at `needle`.
+    fn references_cost(sources: &[(&str, &str)], document: &str, needle: &str) -> u64 {
+        let published = publication_for(sources);
+        let source = sources
+            .iter()
+            .find(|(identity, _)| *identity == document)
+            .expect("the probed document is in the workspace")
+            .1;
+        let position = position_of(source, needle);
+        let symbol = match published.target_at(document, position) {
+            QueryOutcome::Resolved(target) => target.symbol,
+            other => panic!("the probe must resolve to a target, got: {other:?}"),
+        };
+        let (outcome, visited) = crate::model::resolver::measure_visited_index_entries(|| {
+            published.references(&symbol, false)
+        });
+        assert!(
+            matches!(outcome, QueryOutcome::Resolved(_)),
+            "the references query must resolve, got: {outcome:?}"
+        );
+        visited
+    }
+
     /// The probed document, unchanged across every variant below.
     const PROBED: &str = "package P {\n  part def Wheel;\n  part w : Wheel;\n}";
 
@@ -2179,6 +2202,31 @@ mod tests {
         assert_eq!(
             small, large,
             "500 declarations in another document changed what one inspection reads"
+        );
+    }
+
+    /// A reverse-reference query visits only the selected target's CSR range, not unrelated
+    /// authored references elsewhere in the publication.
+    #[test]
+    fn references_cost_is_independent_of_unrelated_references() {
+        let small = references_cost(
+            &[("memory://i.sysml", PROBED)],
+            "memory://i.sysml",
+            "Wheel;",
+        );
+        let large_source = format!("package Other {{\n{}}}\n", padding(500));
+        let large = references_cost(
+            &[
+                ("memory://i.sysml", PROBED),
+                ("memory://other.sysml", &large_source),
+            ],
+            "memory://i.sysml",
+            "Wheel;",
+        );
+        assert_eq!(small, 1, "Wheel has exactly one authored reference");
+        assert_eq!(
+            small, large,
+            "500 unrelated references changed the selected target's query cost"
         );
     }
 

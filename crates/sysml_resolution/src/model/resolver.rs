@@ -645,6 +645,70 @@ struct NameIndex {
     candidates: Box<[DeclarationId]>,
 }
 
+/// Publication-owned reverse edges from a resolved target to its authored reference sites.
+///
+/// The declaration occurrence is deliberately not stored here: it has different provenance and
+/// remains an explicit `include_declaration` policy in the query API. Reference ids within each
+/// target range stay in authored canonical order because the CSR is filled in ascending id order.
+#[derive(Debug)]
+struct ReverseReferenceIndex {
+    ranges: Box<[(u32, u32)]>,
+    references: Box<[AuthoredReferenceId]>,
+}
+
+impl ReverseReferenceIndex {
+    fn build(declarations: usize, resolution: &ResolutionResults) -> Result<Self, ResolutionError> {
+        let mut counts = vec![0u32; declarations];
+        for outcome in resolution.outcomes.iter().copied() {
+            if let ResolutionStatus::Resolved(target) = outcome {
+                let count = counts
+                    .get_mut(target.index())
+                    .ok_or(ResolutionError::InvalidStorage)?;
+                *count = count.checked_add(1).ok_or(ResolutionError::Capacity)?;
+            }
+        }
+
+        let mut ranges = Vec::with_capacity(declarations);
+        let mut starts = Vec::with_capacity(declarations);
+        let mut end = 0u32;
+        for count in counts {
+            let start = end;
+            end = end.checked_add(count).ok_or(ResolutionError::Capacity)?;
+            ranges.push((start, end));
+            starts.push(start);
+        }
+        let reference_count = usize::try_from(end).map_err(|_| ResolutionError::Capacity)?;
+        let mut references = vec![AuthoredReferenceId(0); reference_count];
+        for (index, outcome) in resolution.outcomes.iter().copied().enumerate() {
+            let ResolutionStatus::Resolved(target) = outcome else {
+                continue;
+            };
+            let cursor = starts
+                .get_mut(target.index())
+                .ok_or(ResolutionError::InvalidStorage)?;
+            let slot = references
+                .get_mut(*cursor as usize)
+                .ok_or(ResolutionError::InvalidStorage)?;
+            *slot =
+                AuthoredReferenceId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+            *cursor = cursor.checked_add(1).ok_or(ResolutionError::Capacity)?;
+        }
+        Ok(Self {
+            ranges: ranges.into_boxed_slice(),
+            references: references.into_boxed_slice(),
+        })
+    }
+
+    fn references(&self, target: DeclarationId) -> &[AuthoredReferenceId] {
+        let Some(&(start, end)) = self.ranges.get(target.index()) else {
+            return &[];
+        };
+        self.references
+            .get(start as usize..end as usize)
+            .unwrap_or_default()
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum EffectiveVisibility {
     Public,
@@ -1046,6 +1110,7 @@ pub(crate) struct ResolvedSemanticModel {
     identities: IdentityIndex,
     documents: DocumentIndex,
     memberships: MembershipIndex,
+    reverse_references: ReverseReferenceIndex,
     facts: inspection::ElementFactIndex,
     resolution: ResolutionResults,
     evaluation: Box<[EvaluationFact]>,
@@ -1236,13 +1301,12 @@ impl ResolvedSemanticModel {
                 locations.push(target.location);
             }
         }
-        for (index, reference) in self.storage.references.iter().enumerate() {
-            let Ok(id) = AuthoredReferenceId::from_index(index) else {
+        let references = self.reverse_references.references(target);
+        record_visited_index_entries(references.len());
+        for id in references {
+            let Some(reference) = self.storage.references.get(id.index()) else {
                 return QueryOutcome::Incomplete;
             };
-            if self.resolution.outcome(id) != Some(ResolutionStatus::Resolved(target)) {
-                continue;
-            }
             let Some(source) = self.storage.declaration(reference.source) else {
                 return QueryOutcome::Incomplete;
             };
@@ -1798,6 +1862,8 @@ impl SemanticModelStorage {
         let has_evaluation = !evaluation.is_empty();
         let identities = IdentityIndex::build(&self)?;
         let documents = DocumentIndex::build(&self)?;
+        let reverse_references =
+            ReverseReferenceIndex::build(self.declarations.len(), &resolution)?;
         let facts = inspection::ElementFactIndex::build(&self, &resolution, &evaluation)?;
         Ok(ResolvedSemanticModel {
             storage: self,
@@ -1806,6 +1872,7 @@ impl SemanticModelStorage {
             identities,
             documents,
             memberships,
+            reverse_references,
             facts,
             resolution,
             evaluation,
