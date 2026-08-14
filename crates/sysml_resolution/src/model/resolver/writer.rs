@@ -1299,7 +1299,7 @@ mod tests {
         let evaluation = compute_evaluation(&storage, &resolution, EvaluationPolicy::Evaluate);
         let identities = IdentityIndex::build(&storage).unwrap();
         let documents = DocumentIndex::build(&storage).unwrap();
-        let facts = inspection::ElementFactIndex::build(&storage, &resolution).unwrap();
+        let facts = inspection::ElementFactIndex::build(&storage, &resolution, &evaluation).unwrap();
         let model = ResolvedSemanticModel {
             storage,
             direct_names,

@@ -9,7 +9,7 @@ use crate::inspection::{
     AnnotationForm, AuthoredValue, Documentation, ElementInspection, ElementInspectionAt,
     ElementModifier, ElementRelationship, FeatureDirection, MembershipFacts, MembershipKind,
     MultiplicityBound, MultiplicityFacts, PortionKind, RelationshipProvenance, RelationshipTarget,
-    SymbolEntry, ValueKind, Visibility, VisibilityProvenance,
+    ReferenceAt, SymbolEntry, ValueKind, Visibility, VisibilityProvenance,
 };
 
 /// Per-declaration ranges into the record tables, so a per-element question never scans them all.
@@ -18,35 +18,47 @@ use crate::inspection::{
 /// belonging to each declaration -- the same shape the sibling compiler's CSR edge index uses.
 #[derive(Debug, Default)]
 pub(super) struct ElementFactIndex {
+    /// Per-declaration ranges into `documentation_order`, not into the storage table directly:
+    /// the ranges are computed for the *ordered* view, so slicing anything else would rest on the
+    /// lowering happening to emit records already grouped by declaration.
     documentation: Box<[(u32, u32)]>,
+    documentation_order: Box<[u32]>,
     feature_values: Box<[(u32, u32)]>,
+    feature_value_order: Box<[u32]>,
     references: Box<[(u32, u32)]>,
     /// Reference ids ordered by source declaration, then by canonical reference order.
     reference_order: Box<[AuthoredReferenceId]>,
     /// Implied relationships ordered by source declaration.
     implied: Box<[(u32, u32)]>,
     implied_order: Box<[u32]>,
+    /// Each declaration's evaluation fact, as an index into the publication's evaluation table.
+    ///
+    /// Dense rather than a range, because a declaration has at most one evaluation outcome; the
+    /// alternative was a linear search of the evaluation table per inspected element, which made
+    /// inspecting one element cost the size of the model.
+    evaluation: Box<[Option<u32>]>,
 }
 
-/// Builds the contiguous per-declaration ranges of a table already grouped by declaration.
+/// Builds the contiguous per-declaration ranges of an ordered view of a record table.
+///
+/// `owners` must be the owning declaration of each entry **in the order the view will be sliced**;
+/// the returned ranges index that view, not the underlying table.
 fn ranges_by_declaration(
     declarations: usize,
     owners: impl Iterator<Item = DeclarationId>,
 ) -> Box<[(u32, u32)]> {
-    let mut ranges = vec![(0u32, 0u32); declarations];
     let mut counts = vec![0u32; declarations];
-    let mut ordered: Vec<DeclarationId> = owners.collect();
-    for owner in &ordered {
+    for owner in owners {
         if let Some(slot) = counts.get_mut(owner.index()) {
             *slot += 1;
         }
     }
+    let mut ranges = Vec::with_capacity(declarations);
     let mut start = 0u32;
-    for (index, count) in counts.iter().enumerate() {
-        ranges[index] = (start, start + count);
+    for count in counts {
+        ranges.push((start, start + count));
         start += count;
     }
-    ordered.clear();
     ranges.into_boxed_slice()
 }
 
@@ -54,12 +66,15 @@ impl ElementFactIndex {
     pub(super) fn build(
         storage: &SemanticModelStorage,
         resolution: &ResolutionResults,
+        evaluation: &[EvaluationFact],
     ) -> Result<Self, ResolutionError> {
         let declarations = storage.declarations.len();
 
-        // The record tables are pushed during lowering, which visits a declaration's own facts
-        // before descending, so they are already grouped by declaration. Sorting defensively
-        // keeps that an invariant of this index rather than of the lowering order.
+        // Each record table gets an explicit declaration-ordered view, and the ranges below index
+        // that view. Nothing here assumes the lowering emitted records already grouped by
+        // declaration -- it does today, but that would be an invariant of the producer rather than
+        // of this index, and slicing the raw table on ranges computed for a sorted order would be
+        // silently wrong the moment it stopped holding.
         let mut documentation_order: Vec<u32> = (0..storage.documentation.len() as u32).collect();
         documentation_order
             .sort_by_key(|index| storage.documentation[*index as usize].declaration.index());
@@ -83,6 +98,15 @@ impl ElementFactIndex {
                 .index()
         });
 
+        let mut evaluation_by_declaration = vec![None; declarations];
+        for (index, fact) in evaluation.iter().enumerate() {
+            if let Some(slot) = evaluation_by_declaration.get_mut(fact.declaration.index()) {
+                // A declaration publishes at most one evaluation outcome; keeping the first is
+                // deterministic if that ever stops holding.
+                slot.get_or_insert(index as u32);
+            }
+        }
+
         Ok(Self {
             documentation: ranges_by_declaration(
                 declarations,
@@ -90,12 +114,14 @@ impl ElementFactIndex {
                     .iter()
                     .map(|index| storage.documentation[*index as usize].declaration),
             ),
+            documentation_order: documentation_order.into_boxed_slice(),
             feature_values: ranges_by_declaration(
                 declarations,
                 feature_value_order
                     .iter()
                     .map(|index| storage.feature_values[*index as usize].declaration),
             ),
+            feature_value_order: feature_value_order.into_boxed_slice(),
             references: ranges_by_declaration(
                 declarations,
                 reference_order
@@ -110,6 +136,7 @@ impl ElementFactIndex {
                     .map(|index| resolution.implied_relationships[*index as usize].source),
             ),
             implied_order: implied_order.into_boxed_slice(),
+            evaluation: evaluation_by_declaration.into_boxed_slice(),
         })
     }
 }
@@ -120,8 +147,17 @@ fn slice_range<'a, T>(
     declaration: DeclarationId,
 ) -> &'a [T] {
     match ranges.get(declaration.index()) {
-        Some((start, end)) => &entries[*start as usize..*end as usize],
-        None => &[],
+        Some((start, end)) => {
+            let slice = &entries[*start as usize..*end as usize];
+            // The range lookup plus the entries the caller will read: this declaration's own
+            // facts, and never another's.
+            record_visited_index_entries(1 + slice.len());
+            slice
+        }
+        None => {
+            record_visited_index_entries(1);
+            &[]
+        }
     }
 }
 
@@ -165,8 +201,13 @@ impl ResolvedSemanticModel {
             .clone();
         let range = match declaration.name.and_then(|name| self.storage.symbol(name)) {
             Some(name) => {
-                identifier_range(&self.storage, declaration.document, &declaration.span, name)
-                    .ok()?
+                declaration_identifier_range(
+                    &self.storage,
+                    declaration.document,
+                    &declaration.span,
+                    name,
+                )
+                .ok()?
             }
             None => document_range(&self.storage, declaration.document, &declaration.span).ok()?,
         };
@@ -200,8 +241,9 @@ impl ResolvedSemanticModel {
     }
 
     fn documentation(&self, id: DeclarationId) -> Box<[Documentation]> {
-        slice_range(&self.storage.documentation, &self.facts.documentation, id)
+        slice_range(&self.facts.documentation_order, &self.facts.documentation, id)
             .iter()
+            .map(|index| &self.storage.documentation[*index as usize])
             .map(|record| Documentation {
                 form: match record.form {
                     super::AnnotationForm::Documentation => AnnotationForm::Documentation,
@@ -224,8 +266,9 @@ impl ResolvedSemanticModel {
     }
 
     fn authored_value(&self, id: DeclarationId) -> Option<AuthoredValue> {
-        slice_range(&self.storage.feature_values, &self.facts.feature_values, id)
+        slice_range(&self.facts.feature_value_order, &self.facts.feature_values, id)
             .first()
+            .map(|index| &self.storage.feature_values[*index as usize])
             .map(|record| AuthoredValue {
                 kind: match record.kind {
                     super::FeatureValueKind::Bind => ValueKind::Bind,
@@ -376,10 +419,18 @@ impl ResolvedSemanticModel {
         text
     }
 
+    /// The published evaluation state of one declaration.
+    ///
+    /// One indexed lookup, not a search of the evaluation table: an inspector renders many
+    /// elements, and a scan here would make each one cost the size of the model.
     fn evaluation_for(&self, id: DeclarationId) -> EvaluationState {
-        self.evaluation
-            .iter()
-            .find(|fact| fact.declaration == id)
+        record_visited_index_entries(2);
+        self.facts
+            .evaluation
+            .get(id.index())
+            .copied()
+            .flatten()
+            .and_then(|index| self.evaluation.get(index as usize))
             .map(|fact| fact.state.clone())
             .unwrap_or(EvaluationState::NotApplicable)
     }
@@ -460,21 +511,34 @@ impl ResolvedSemanticModel {
             return QueryOutcome::Unresolved;
         };
 
-        // Declaration spans nest, so the innermost containing declaration is the one whose span
-        // starts latest; scanning this document's spans keeps the question document-local.
         let containing = positions
             .spans
-            .iter()
-            .filter(|(range, _)| range_contains(*range, position))
-            .max_by(|left, right| left.0.start.cmp(&right.0.start))
-            .and_then(|(_, id)| self.inspection(*id));
+            .innermost_containing(position)
+            .and_then(|id| self.inspection(id));
 
+        // The reference's own outcome is carried through rather than filtered to the resolved
+        // case: "nothing here" and "here, but unresolved" are different answers.
         let referenced = leaf_ranges_containing(&positions.references, position)
-            .find_map(|reference_id| match self.resolution.outcome(reference_id) {
-                Some(ResolutionStatus::Resolved(target)) => Some(target),
-                _ => None,
-            })
-            .and_then(|target| self.inspection(target));
+            .next()
+            .map_or(ReferenceAt::None, |reference_id| {
+                match self.resolution.outcome(reference_id) {
+                    Some(ResolutionStatus::Resolved(target)) => self
+                        .inspection(target)
+                        .map_or(ReferenceAt::Unresolved, |inspection| {
+                            ReferenceAt::Resolved(Box::new(inspection))
+                        }),
+                    Some(ResolutionStatus::Ambiguous(candidates)) => ReferenceAt::Ambiguous(
+                        self.resolution
+                            .ambiguous_candidates(candidates)
+                            .iter()
+                            .filter_map(|candidate| self.inspection(*candidate))
+                            .collect(),
+                    ),
+                    Some(ResolutionStatus::Unsupported) => ReferenceAt::Unsupported,
+                    Some(ResolutionStatus::NonConverged) => ReferenceAt::Incomplete,
+                    Some(ResolutionStatus::Unresolved) | None => ReferenceAt::Unresolved,
+                }
+            });
 
         self.resolved_outcome(ElementInspectionAt {
             containing,

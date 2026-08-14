@@ -48,8 +48,88 @@ struct DocumentPositions {
     references: Box<[(TextRange, AuthoredReferenceId)]>,
     /// Declaration identifier ranges, ordered by start. Only named declarations appear.
     identifiers: Box<[(TextRange, DeclarationId)]>,
-    /// Every declaration's full span, ordered by start.
-    spans: Box<[(TextRange, DeclarationId)]>,
+    /// Every declaration's full span, as a containment tree.
+    spans: SpanTree,
+}
+
+/// Declaration spans arranged so containment can be answered without reading the whole document.
+///
+/// Declaration spans nest, which rules out the binary search [`leaf_ranges_containing`] uses: an
+/// enclosing package sorts before its members yet ends after all of them, so "does this span end
+/// before the position" is not monotone over the ordering and `partition_point` has no meaning.
+///
+/// Entries are ordered so that a declaration is immediately followed by its descendants, and each
+/// entry records the exclusive end of its own subtree. A containment query then descends the
+/// nesting, skipping every subtree that cannot contain the position in one step. What it visits is
+/// bounded by the declarations that *begin before the position at each enclosing level* -- not by
+/// the document's declaration count, which is what a filter over the flat table costs.
+#[derive(Debug, Default)]
+struct SpanTree {
+    entries: Box<[(TextRange, DeclarationId)]>,
+    subtree_end: Box<[u32]>,
+}
+
+impl SpanTree {
+    fn build(mut entries: Vec<(TextRange, DeclarationId)>) -> Self {
+        // Start ascending, then end *descending*, so an enclosing declaration precedes the members
+        // it shares a start with rather than sorting after them.
+        entries.sort_by(|left, right| {
+            left.0
+                .start
+                .cmp(&right.0.start)
+                .then_with(|| right.0.end.cmp(&left.0.end))
+        });
+        // Every entry still open when a later one begins is one of its ancestors, so a stack of
+        // open entries closes exactly those the new entry is not nested in.
+        let mut subtree_end = vec![0u32; entries.len()];
+        let mut open: Vec<usize> = Vec::new();
+        for (index, (range, _)) in entries.iter().enumerate() {
+            while open
+                .last()
+                .is_some_and(|ancestor| entries[*ancestor].0.end <= range.start)
+            {
+                let ancestor = open.pop().expect("the stack was just observed to be non-empty");
+                subtree_end[ancestor] = index as u32;
+            }
+            open.push(index);
+        }
+        for ancestor in open {
+            subtree_end[ancestor] = entries.len() as u32;
+        }
+        Self {
+            entries: entries.into_boxed_slice(),
+            subtree_end: subtree_end.into_boxed_slice(),
+        }
+    }
+
+    /// The innermost declaration whose span contains `position`.
+    fn innermost_containing(&self, position: TextPosition) -> Option<DeclarationId> {
+        let mut innermost = None;
+        let mut index = 0usize;
+        let mut level_end = self.entries.len();
+        while index < level_end {
+            let (range, id) = self.entries[index];
+            record_visited_index_entries(1);
+            if range.start > position {
+                // Siblings are ordered by start, so nothing further along this level, or inside
+                // it, can begin at or before the position.
+                break;
+            }
+            if range_contains(range, position) {
+                innermost = Some(id);
+                level_end = self.subtree_end[index] as usize;
+                index += 1;
+            } else {
+                index = self.subtree_end[index] as usize;
+            }
+        }
+        innermost
+    }
+
+    /// Every span, in source order.
+    fn iter(&self) -> impl Iterator<Item = &(TextRange, DeclarationId)> {
+        self.entries.iter()
+    }
 }
 
 /// Document lookup by identity, plus each document's position tables.
@@ -109,7 +189,7 @@ impl DocumentIndex {
                 continue;
             };
             if let Ok(range) =
-                identifier_range(storage, declaration.document, &declaration.span, name)
+                declaration_identifier_range(storage, declaration.document, &declaration.span, name)
             {
                 identifiers[declaration.document.index()].push((range, id));
             }
@@ -119,14 +199,13 @@ impl DocumentIndex {
             .map(|index| {
                 let mut document_references = std::mem::take(&mut references[index]);
                 let mut document_identifiers = std::mem::take(&mut identifiers[index]);
-                let mut document_spans = std::mem::take(&mut spans[index]);
+                let document_spans = std::mem::take(&mut spans[index]);
                 document_references.sort_by_key(|(range, _)| *range);
                 document_identifiers.sort_by_key(|(range, _)| *range);
-                document_spans.sort_by_key(|(range, _)| *range);
                 DocumentPositions {
                     references: document_references.into_boxed_slice(),
                     identifiers: document_identifiers.into_boxed_slice(),
-                    spans: document_spans.into_boxed_slice(),
+                    spans: SpanTree::build(document_spans),
                 }
             })
             .collect::<Vec<_>>()
@@ -153,6 +232,35 @@ impl DocumentIndex {
     }
 }
 
+#[cfg(test)]
+thread_local! {
+    static VISITED_INDEX_ENTRIES: std::cell::Cell<u64> = const { std::cell::Cell::new(0) };
+}
+
+/// Charge `entries` index entries to the running complexity measurement.
+///
+/// Compiled away outside tests. It exists because the inspection path's cost bound -- every lookup
+/// is a range slice or a descent, never a walk over the model -- is a property Rust cannot check
+/// and a passing query cannot demonstrate: a scan and an index return the same answer. The
+/// measurement is what makes a regression to a scan a test failure rather than a slowdown.
+#[inline]
+fn record_visited_index_entries(entries: usize) {
+    #[cfg(test)]
+    VISITED_INDEX_ENTRIES.with(|counter| {
+        counter.set(counter.get().saturating_add(entries as u64));
+    });
+    #[cfg(not(test))]
+    let _ = entries;
+}
+
+/// Runs `query` and reports how many index entries it visited.
+#[cfg(test)]
+pub(crate) fn measure_visited_index_entries<T>(query: impl FnOnce() -> T) -> (T, u64) {
+    VISITED_INDEX_ENTRIES.with(|counter| counter.set(0));
+    let value = query();
+    (value, VISITED_INDEX_ENTRIES.with(std::cell::Cell::get))
+}
+
 /// Every entry of a start-ordered leaf-range table whose range contains `position`.
 ///
 /// The ranges cannot nest, so a binary search to the first candidate and a short forward walk
@@ -164,6 +272,7 @@ fn leaf_ranges_containing<T: Copy>(
     let start = entries.partition_point(|(range, _)| range.end < position);
     entries[start..]
         .iter()
+        .inspect(|_| record_visited_index_entries(1))
         .take_while(move |(range, _)| range.start <= position)
         .filter(move |(range, _)| range_contains(*range, position))
         .map(|(_, value)| *value)
@@ -1010,7 +1119,7 @@ impl ResolvedSemanticModel {
                     .document(declaration.document)?
                     .identity
                     .clone(),
-                range: identifier_range(
+                range: declaration_identifier_range(
                     &self.storage,
                     declaration.document,
                     &declaration.span,
@@ -1447,6 +1556,65 @@ fn document_range(
     })
 }
 
+/// Where a *declaration* writes its own name.
+///
+/// Distinct from [`identifier_range`], which searches a reference span and takes the last
+/// word-boundary match because a qualified path names its target in the final segment. A
+/// declaration span covers the whole declaration including its body, so the same rule finds the
+/// last mention of the name anywhere inside -- for `part def Vehicle { part engine : Vehicle; }`
+/// it points at the body's reference rather than at the declared name.
+///
+/// The declared name is in the header, after the keywords and after an optional `<shortName>`, so
+/// the search is bounded to the text before the body opener and skips the short-name group. A
+/// declaration whose header is unrecoverable -- a parse recovery that lost its `{` or `;` -- falls
+/// back to the whole-span search rather than losing its location entirely.
+fn declaration_identifier_range(
+    storage: &SemanticModelStorage,
+    document: DocumentId,
+    span: &Span,
+    identifier: &str,
+) -> Result<TextRange, ResolutionError> {
+    let parsed = &storage
+        .document(document)
+        .ok_or(ResolutionError::InvalidStorage)?
+        .parsed;
+    let source = parsed
+        .source
+        .slice(span)
+        .ok_or(ResolutionError::InvalidStorage)?;
+    let header = source
+        .find(['{', ';'])
+        .map_or(source, |body| &source[..body]);
+    let relative = word_boundary_matches(header, identifier)
+        .find(|start| !inside_short_name(header, *start))
+        .or_else(|| word_boundary_matches(header, identifier).next())
+        .or_else(|| word_boundary_matches(source, identifier).last())
+        .ok_or(ResolutionError::InvalidStorage)?;
+    identifier_text_range(parsed, span, relative, identifier.len())
+}
+
+/// Whether `start` falls inside an unclosed `<`...`>` short-name group.
+fn inside_short_name(header: &str, start: usize) -> bool {
+    let before = &header[..start];
+    before
+        .rfind('<')
+        .is_some_and(|open| !before[open..].contains('>'))
+}
+
+/// Every occurrence of `identifier` in `text` that is not part of a longer identifier.
+fn word_boundary_matches<'a>(
+    text: &'a str,
+    identifier: &'a str,
+) -> impl Iterator<Item = usize> + 'a {
+    text.match_indices(identifier)
+        .filter(move |(start, _)| {
+            let before = text[..*start].chars().next_back();
+            let after = text[*start + identifier.len()..].chars().next();
+            !before.is_some_and(identifier_character) && !after.is_some_and(identifier_character)
+        })
+        .map(|(start, _)| start)
+}
+
 fn identifier_range(
     storage: &SemanticModelStorage,
     document: DocumentId,
@@ -1461,22 +1629,24 @@ fn identifier_range(
         .source
         .slice(span)
         .ok_or(ResolutionError::InvalidStorage)?;
-    let relative = source
-        .match_indices(identifier)
-        .filter(|(start, _)| {
-            let before = source[..*start].chars().next_back();
-            let after = source[*start + identifier.len()..].chars().next();
-            !before.is_some_and(identifier_character) && !after.is_some_and(identifier_character)
-        })
-        .map(|(start, _)| start)
+    let relative = word_boundary_matches(source, identifier)
         .last()
         .ok_or(ResolutionError::InvalidStorage)?;
+    identifier_text_range(parsed, span, relative, identifier.len())
+}
+
+fn identifier_text_range(
+    parsed: &ParsedDocument,
+    span: &Span,
+    relative: usize,
+    length: usize,
+) -> Result<TextRange, ResolutionError> {
     let start_offset = span
         .offset
         .checked_add(relative)
         .ok_or(ResolutionError::Capacity)?;
     let end_offset = start_offset
-        .checked_add(identifier.len())
+        .checked_add(length)
         .ok_or(ResolutionError::Capacity)?;
     let start = parsed
         .source
@@ -1626,7 +1796,7 @@ impl SemanticModelStorage {
         let has_evaluation = !evaluation.is_empty();
         let identities = IdentityIndex::build(&self)?;
         let documents = DocumentIndex::build(&self)?;
-        let facts = inspection::ElementFactIndex::build(&self, &resolution)?;
+        let facts = inspection::ElementFactIndex::build(&self, &resolution, &evaluation)?;
         Ok(ResolvedSemanticModel {
             storage: self,
             direct_names,

@@ -3,9 +3,14 @@
 use std::fmt;
 
 pub use sysml_resolution::{
-    ElementKind, MembershipRole, NavigationTarget, OccurrenceRole, PublicationCompleteness,
-    QueryOutcome, RenameOutcome, SourceLocation, StateSubactionKind, SymbolIdentity, TextPosition,
-    TextRange, VisibleMember,
+    AnnotationForm, AuthoredValue, Documentation, ElementInspection, ElementInspectionAt,
+    ElementKind, ElementModifier, ElementRelationship, EvaluatedScalar, EvaluationFailure,
+    EvaluationState, FeatureDirection, MembershipFacts, MembershipKind, MembershipRole,
+    MultiplicityBound, MultiplicityFacts, NavigationTarget, OccurrenceRole, PortionKind,
+    PublicationCompleteness, QueryOutcome, ReferenceAt, RelationshipProvenance, RelationshipTarget,
+    RenameOutcome, RequirementConstraintKind, SourceLocation, StateSubactionKind, SymbolEntry,
+    SymbolIdentity, TextPosition, TextRange, ValueKind, Visibility, VisibilityProvenance,
+    VisibleMember,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -155,6 +160,10 @@ impl PublishedModel {
     pub fn completion(&self) -> CompletionQueries<'_> {
         CompletionQueries { model: &self.inner }
     }
+
+    pub fn inspection(&self) -> InspectionQueries<'_> {
+        InspectionQueries { model: &self.inner }
+    }
 }
 
 pub struct PublicationQueries<'a> {
@@ -216,6 +225,36 @@ impl CompletionQueries<'_> {
         qualifier: Option<&str>,
     ) -> QueryOutcome<Box<[VisibleMember]>> {
         self.model.visible_members(document, position, qualifier)
+    }
+}
+
+/// Element inspection and document symbols.
+///
+/// The `PRODUCTION_CUTOVER.md` row this serves names `sysml_query` as the owner of the typed
+/// service, so the contract is reachable here rather than only from the owning crate that
+/// consumers are not permitted to depend on.
+pub struct InspectionQueries<'a> {
+    model: &'a sysml_resolution::PublishedResolution,
+}
+
+impl InspectionQueries<'_> {
+    /// Everything the publication knows about one element.
+    pub fn inspect(&self, symbol: &SymbolIdentity) -> QueryOutcome<ElementInspection> {
+        self.model.inspect(symbol)
+    }
+
+    /// The element whose declaration encloses `position`, and what a reference there points at.
+    pub fn inspect_at(
+        &self,
+        document: &str,
+        position: TextPosition,
+    ) -> QueryOutcome<ElementInspectionAt> {
+        self.model.inspect_at(document, position)
+    }
+
+    /// Every element declared in one document, in source order.
+    pub fn document_symbols(&self, document: &str) -> QueryOutcome<Box<[SymbolEntry]>> {
+        self.model.document_symbols(document)
     }
 }
 
@@ -284,10 +323,57 @@ impl DebugQueries<'_> {
                     probe.qualifier.as_deref(),
                 ),
             )?;
+            write_inspection_at_outcome(
+                output,
+                &self.model.inspect_at(&probe.document, probe.position),
+            )?;
             writeln!(output, "  )")?;
+        }
+        // Once per probed document rather than once per probe: the outline is a property of the
+        // document, and repeating it would make a fixture's probe count decide how much of the
+        // snapshot is outline.
+        let mut written = Vec::new();
+        for probe in probes {
+            if written.contains(&probe.document) {
+                continue;
+            }
+            written.push(probe.document.clone());
+            write_document_symbols(
+                output,
+                &probe.document,
+                &self.model.document_symbols(&probe.document),
+            )?;
         }
         write!(output, ")")
     }
+}
+
+fn write_document_symbols(
+    output: &mut dyn fmt::Write,
+    document: &str,
+    outcome: &QueryOutcome<Box<[SymbolEntry]>>,
+) -> fmt::Result {
+    writeln!(output, "  (document-symbols (document {document:?})")?;
+    match outcome {
+        QueryOutcome::Resolved(entries)
+        | QueryOutcome::Recovered(entries)
+        | QueryOutcome::UnsupportedWith(entries) => {
+            writeln!(output, "    (status {})", outcome_status(outcome))?;
+            for entry in entries.iter() {
+                write!(output, "    (symbol (kind {:?})", entry.kind.as_str())?;
+                if let Some(name) = &entry.name {
+                    write!(output, " (name {name:?})")?;
+                }
+                write!(output, " (qualified-name {:?}) ", entry.qualified_name)?;
+                write_location(output, &entry.location)?;
+                write!(output, " (declaration ")?;
+                write_range(output, entry.declaration_range)?;
+                writeln!(output, "))")?;
+            }
+        }
+        _ => writeln!(output, "    (status {})", outcome_status(outcome))?,
+    }
+    writeln!(output, "  )")
 }
 
 fn write_range(output: &mut dyn fmt::Write, range: TextRange) -> fmt::Result {
@@ -428,6 +514,280 @@ fn write_members_outcome(
         _ => write!(output, "(status unavailable)")?,
     }
     writeln!(output, ")")
+}
+
+fn write_inspection_at_outcome(
+    output: &mut dyn fmt::Write,
+    outcome: &QueryOutcome<ElementInspectionAt>,
+) -> fmt::Result {
+    writeln!(output, "    (inspection")?;
+    match outcome {
+        QueryOutcome::Resolved(at)
+        | QueryOutcome::Recovered(at)
+        | QueryOutcome::UnsupportedWith(at) => {
+            writeln!(output, "      (status {})", outcome_status(outcome))?;
+            match &at.containing {
+                Some(containing) => {
+                    writeln!(output, "      (containing")?;
+                    write_element(output, "        ", containing)?;
+                    writeln!(output, "      )")?;
+                }
+                None => writeln!(output, "      (containing (status none))")?,
+            }
+            write_reference_at(output, &at.referenced)?;
+        }
+        _ => writeln!(output, "      (status {})", outcome_status(outcome))?,
+    }
+    writeln!(output, "    )")
+}
+
+fn outcome_status<T>(outcome: &QueryOutcome<T>) -> &'static str {
+    match outcome {
+        QueryOutcome::Resolved(_) => "resolved",
+        QueryOutcome::Recovered(_) | QueryOutcome::Recovery => "recovery",
+        QueryOutcome::UnsupportedWith(_) | QueryOutcome::Unsupported => "unsupported",
+        QueryOutcome::Ambiguous(_) => "ambiguous",
+        QueryOutcome::Unresolved => "unresolved",
+        QueryOutcome::Incomplete => "incomplete",
+    }
+}
+
+fn write_reference_at(output: &mut dyn fmt::Write, referenced: &ReferenceAt) -> fmt::Result {
+    match referenced {
+        ReferenceAt::None => writeln!(output, "      (referenced (status none))"),
+        ReferenceAt::Unresolved => writeln!(output, "      (referenced (status unresolved))"),
+        ReferenceAt::Unsupported => writeln!(output, "      (referenced (status unsupported))"),
+        ReferenceAt::Incomplete => writeln!(output, "      (referenced (status incomplete))"),
+        ReferenceAt::Resolved(inspection) => {
+            writeln!(output, "      (referenced (status resolved)")?;
+            write_element(output, "        ", inspection)?;
+            writeln!(output, "      )")
+        }
+        ReferenceAt::Ambiguous(candidates) => {
+            writeln!(output, "      (referenced (status ambiguous)")?;
+            for candidate in candidates.iter() {
+                write_element(output, "        ", candidate)?;
+            }
+            writeln!(output, "      )")
+        }
+    }
+}
+
+/// One element's published facts.
+///
+/// Absent facts are omitted rather than rendered as an empty form, so a snapshot diff that gains a
+/// line is a fact that started being published, not a formatting change.
+fn write_element(
+    output: &mut dyn fmt::Write,
+    indent: &str,
+    inspection: &ElementInspection,
+) -> fmt::Result {
+    writeln!(output, "{indent}(element (kind {:?})", inspection.kind.as_str())?;
+    if let Some(role) = inspection.role {
+        writeln!(output, "{indent}  (role {:?})", role.as_str())?;
+    }
+    if let Some(name) = &inspection.name {
+        writeln!(output, "{indent}  (name {name:?})")?;
+    }
+    if let Some(short_name) = &inspection.short_name {
+        writeln!(output, "{indent}  (short-name {short_name:?})")?;
+    }
+    writeln!(
+        output,
+        "{indent}  (qualified-name {:?})",
+        inspection.qualified_name
+    )?;
+    write!(output, "{indent}  ")?;
+    write_location(output, &inspection.location)?;
+    writeln!(output)?;
+    write!(output, "{indent}  (declaration ")?;
+    write_range(output, inspection.declaration_range)?;
+    writeln!(output, ")")?;
+    let membership = inspection.membership;
+    writeln!(
+        output,
+        "{indent}  (membership (kind {}) (visibility {}) (provenance {}))",
+        membership_kind_name(membership.kind),
+        visibility_name(membership.visibility),
+        visibility_provenance_name(membership.provenance)
+    )?;
+    write_multiplicity(output, indent, inspection.multiplicity)?;
+    if !inspection.modifiers.is_empty() {
+        write!(output, "{indent}  (modifiers")?;
+        for modifier in inspection.modifiers.iter() {
+            write!(output, " {:?}", modifier.as_str())?;
+        }
+        writeln!(output, ")")?;
+    }
+    if let Some(portion) = inspection.portion_kind {
+        writeln!(output, "{indent}  (portion {})", portion_name(portion))?;
+    }
+    if let Some(direction) = inspection.direction {
+        writeln!(output, "{indent}  (direction {})", direction_name(direction))?;
+    }
+    if let Some(value) = inspection.value {
+        writeln!(
+            output,
+            "{indent}  (value (kind {}) (default {}) (operator {}))",
+            value_kind_name(value.kind),
+            value.is_default,
+            value.has_operator
+        )?;
+    }
+    if inspection.evaluation != EvaluationState::NotApplicable {
+        write!(output, "{indent}  (evaluation {}", inspection.evaluation)?;
+        if let Some(scalar) = inspection.evaluation.value() {
+            write!(output, " ")?;
+            write_scalar(output, scalar)?;
+        }
+        writeln!(output, ")")?;
+    }
+    for documentation in inspection.documentation.iter() {
+        write!(
+            output,
+            "{indent}  (documentation (form {})",
+            annotation_form_name(documentation.form)
+        )?;
+        if let Some(locale) = &documentation.locale {
+            write!(output, " (locale {locale:?})")?;
+        }
+        if let Some(language) = &documentation.language {
+            write!(output, " (language {language:?})")?;
+        }
+        writeln!(output, " (text {:?}))", documentation.text)?;
+    }
+    for relationship in inspection.relationships.iter() {
+        write_relationship(output, indent, relationship)?;
+    }
+    writeln!(output, "{indent})")
+}
+
+fn write_relationship(
+    output: &mut dyn fmt::Write,
+    indent: &str,
+    relationship: &ElementRelationship,
+) -> fmt::Result {
+    write!(
+        output,
+        "{indent}  (relationship (kind {:?}) (provenance {})",
+        relationship.kind,
+        match relationship.provenance {
+            RelationshipProvenance::Authored => "authored",
+            RelationshipProvenance::Implied => "implied",
+        }
+    )?;
+    if let Some(authored) = &relationship.authored {
+        write!(output, " (authored {authored:?})")?;
+    }
+    match &relationship.target {
+        RelationshipTarget::Resolved(_) => write!(output, " (target resolved)")?,
+        RelationshipTarget::Ambiguous(candidates) => {
+            write!(output, " (target ambiguous {})", candidates.len())?
+        }
+        RelationshipTarget::Unresolved => write!(output, " (target unresolved)")?,
+        RelationshipTarget::Unsupported => write!(output, " (target unsupported)")?,
+    }
+    writeln!(output, ")")
+}
+
+fn write_multiplicity(
+    output: &mut dyn fmt::Write,
+    indent: &str,
+    multiplicity: MultiplicityFacts,
+) -> fmt::Result {
+    match multiplicity {
+        // Absence is the common case, and printing it on every element would bury the declared
+        // ones. `[*]` still prints, because writing it is not the same as omitting it.
+        MultiplicityFacts::Absent => Ok(()),
+        MultiplicityFacts::Declared {
+            lower,
+            upper,
+            ordered,
+            nonunique,
+        } => {
+            write!(output, "{indent}  (multiplicity (lower ")?;
+            write_bound(output, lower)?;
+            write!(output, ") (upper ")?;
+            write_bound(output, upper)?;
+            writeln!(output, ") (ordered {ordered}) (nonunique {nonunique}))")
+        }
+    }
+}
+
+fn write_bound(output: &mut dyn fmt::Write, bound: MultiplicityBound) -> fmt::Result {
+    match bound {
+        MultiplicityBound::Unbounded => write!(output, "unbounded"),
+        MultiplicityBound::Literal(value) => write!(output, "{value}"),
+        MultiplicityBound::Expression => write!(output, "expression"),
+    }
+}
+
+fn write_scalar(output: &mut dyn fmt::Write, scalar: &EvaluatedScalar) -> fmt::Result {
+    match scalar {
+        EvaluatedScalar::Boolean(value) => write!(output, "{value}"),
+        EvaluatedScalar::Integer(value) => write!(output, "{value}"),
+        EvaluatedScalar::Real(value) => write!(output, "{value}"),
+        EvaluatedScalar::String(value) => write!(output, "{value:?}"),
+        EvaluatedScalar::Quantity { magnitude, unit } => {
+            write!(output, "(quantity ")?;
+            write_scalar(output, magnitude)?;
+            write!(output, " {unit:?})")
+        }
+    }
+}
+
+fn membership_kind_name(kind: MembershipKind) -> &'static str {
+    match kind {
+        MembershipKind::Owning => "owning",
+        MembershipKind::Feature => "feature",
+        MembershipKind::Import => "import",
+        MembershipKind::Alias => "alias",
+    }
+}
+
+fn visibility_name(visibility: Visibility) -> &'static str {
+    match visibility {
+        Visibility::Public => "public",
+        Visibility::Private => "private",
+        Visibility::Protected => "protected",
+    }
+}
+
+fn visibility_provenance_name(provenance: VisibilityProvenance) -> &'static str {
+    match provenance {
+        VisibilityProvenance::Authored => "authored",
+        VisibilityProvenance::Default => "default",
+    }
+}
+
+fn portion_name(portion: PortionKind) -> &'static str {
+    match portion {
+        PortionKind::Snapshot => "snapshot",
+        PortionKind::Timeslice => "timeslice",
+    }
+}
+
+fn direction_name(direction: FeatureDirection) -> &'static str {
+    match direction {
+        FeatureDirection::In => "in",
+        FeatureDirection::Out => "out",
+        FeatureDirection::InOut => "inout",
+    }
+}
+
+fn value_kind_name(kind: ValueKind) -> &'static str {
+    match kind {
+        ValueKind::Bind => "bind",
+        ValueKind::Assign => "assign",
+    }
+}
+
+fn annotation_form_name(form: AnnotationForm) -> &'static str {
+    match form {
+        AnnotationForm::Documentation => "doc",
+        AnnotationForm::Comment => "comment",
+        AnnotationForm::TextualRepresentation => "rep",
+    }
 }
 
 /// Storage and implementation models are not part of this facade.

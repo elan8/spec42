@@ -38,6 +38,42 @@ const FORBIDDEN_PUBLIC_TYPES: &[&str] = &[
     "DeclaredSemanticFacts",
 ];
 
+/// Forbidden names that the immutable publication also, independently, defines.
+///
+/// `sysml_model::semantic::publication::EvaluationState` is a crate-private storage struct;
+/// `sysml_resolution::EvaluationState` is the published evaluation contract. They are two distinct
+/// types that happen to share a spelling, and the identifier-based ban above cannot tell them
+/// apart. The exemption is keyed on the *root* of the use path, so the publication's type reaches
+/// the facade without the storage type's ban losing an identifier.
+const PUBLISHED_RESOLUTION_TYPES: &[&str] = &["EvaluationState"];
+
+/// The exemption must stay pinned to a real collision, not become a general escape hatch: if the
+/// mutable model's type is renamed or removed, the name should go back to being plainly forbidden.
+#[test]
+fn every_publication_exemption_names_a_real_collision() {
+    let storage = fs::read_to_string(
+        repository_root().join("crates/sysml_model/src/semantic/publication.rs"),
+    )
+    .expect("read publication storage");
+    let published =
+        fs::read_to_string(repository_root().join("crates/sysml_resolution/src/evaluation.rs"))
+            .expect("read published evaluation contract");
+    for name in PUBLISHED_RESOLUTION_TYPES {
+        assert!(
+            FORBIDDEN_PUBLIC_TYPES.contains(name),
+            "{name} is exempted from a ban it is not subject to"
+        );
+        assert!(
+            storage.contains(&format!("struct {name}")),
+            "{name} no longer collides with a mutable-model storage type; drop the exemption"
+        );
+        assert!(
+            published.contains(&format!("pub enum {name}")),
+            "{name} is not a published contract type; drop the exemption"
+        );
+    }
+}
+
 #[test]
 fn designated_consumers_use_the_query_facade_and_direct_model_dependencies_do_not_expand() {
     let root = repository_root();
@@ -437,7 +473,11 @@ impl<'ast> Visit<'ast> for PublicApiVisitor<'_> {
     fn visit_item_use(&mut self, item: &'ast syn::ItemUse) {
         let mut identifiers = BTreeSet::new();
         let has_glob = use_identifiers(&item.tree, &mut identifiers);
+        let from_publication = use_root(&item.tree) == Some("sysml_resolution".to_owned());
         for forbidden in FORBIDDEN_PUBLIC_TYPES {
+            if from_publication && PUBLISHED_RESOLUTION_TYPES.contains(forbidden) {
+                continue;
+            }
             if identifiers.contains(*forbidden) {
                 self.violations.push(format!(
                     "{}: use of {forbidden} can alias a forbidden implementation type",
@@ -501,6 +541,14 @@ fn use_identifiers(tree: &UseTree, output: &mut BTreeSet<String>) -> bool {
             has_glob
         }
         UseTree::Glob(_) => true,
+    }
+}
+
+/// The first segment of a use path, which names the crate the items come from.
+fn use_root(tree: &UseTree) -> Option<String> {
+    match tree {
+        UseTree::Path(path) => Some(path.ident.to_string()),
+        _ => None,
     }
 }
 

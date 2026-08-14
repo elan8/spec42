@@ -259,17 +259,37 @@ pub struct ElementInspection {
     pub relationships: Box<[ElementRelationship]>,
 }
 
+/// What a reference at a source position resolves to.
+///
+/// Not an `Option`: collapsing "no reference here" together with "a reference here did not
+/// resolve" would lose exactly the distinction an inspector exists to show, and would break this
+/// crate's rule that unresolved, ambiguous and unsupported outcomes stay explicit.
+#[derive(Debug, Clone, PartialEq)]
+pub enum ReferenceAt {
+    /// No authored reference covers the position.
+    None,
+    Resolved(Box<ElementInspection>),
+    /// The reference resolved to several candidates, retained in canonical order.
+    Ambiguous(Box<[ElementInspection]>),
+    /// A reference is here, and resolution found no target for it.
+    Unresolved,
+    /// A reference is here, and its form is outside the supported resolution slice.
+    Unsupported,
+    /// A reference is here, and the publication did not converge, so it has no settled answer.
+    Incomplete,
+}
+
 /// The two elements a position identifies.
 ///
-/// A feature inspector needs both: the element whose declaration encloses the cursor, and the
-/// element a reference under the cursor resolves to. They are usually different, and collapsing
-/// them would make the inspector show the wrong one half the time.
+/// A feature inspector needs both: the element whose declaration encloses the cursor, and what a
+/// reference under the cursor points at. They are usually different, and collapsing them would
+/// make the inspector show the wrong one half the time.
 #[derive(Debug, Clone, PartialEq)]
 pub struct ElementInspectionAt {
     /// The innermost element whose declaration contains the position.
     pub containing: Option<ElementInspection>,
-    /// The element a reference at the position resolves to.
-    pub referenced: Option<ElementInspection>,
+    /// What a reference at the position resolves to, with its own outcome.
+    pub referenced: ReferenceAt,
 }
 
 /// One entry of a document's symbol outline.

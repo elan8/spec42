@@ -20,7 +20,7 @@ pub use inspection::{
     AnnotationForm, AuthoredValue, Documentation, ElementInspection, ElementInspectionAt,
     ElementModifier, ElementRelationship, FeatureDirection, MembershipFacts, MembershipKind,
     MultiplicityBound, MultiplicityFacts, PortionKind, RelationshipProvenance, RelationshipTarget,
-    SymbolEntry, ValueKind, Visibility, VisibilityProvenance,
+    ReferenceAt, SymbolEntry, ValueKind, Visibility, VisibilityProvenance,
 };
 
 use model::resolver::ResolvedSemanticModel;
@@ -2073,10 +2073,108 @@ mod tests {
             Some("w"),
             "the cursor sits inside `w`'s declaration"
         );
+        match &at.referenced {
+            ReferenceAt::Resolved(referenced) => assert_eq!(
+                referenced.name.as_deref(),
+                Some("Wheel"),
+                "and points at a reference resolving to `Wheel`"
+            ),
+            other => panic!("expected a resolved reference at the position, got: {other:?}"),
+        }
+    }
+
+    fn position_of(source: &str, needle: &str) -> TextPosition {
+        let (line, character) = source
+            .lines()
+            .enumerate()
+            .find_map(|(line, text)| text.find(needle).map(|column| (line, column)))
+            .unwrap_or_else(|| panic!("{needle:?} does not occur in the fixture"));
+        TextPosition {
+            line: u32::try_from(line).expect("fixture line fits"),
+            character: u32::try_from(character).expect("fixture column fits"),
+        }
+    }
+
+    /// How many index entries one `inspect_at` visits against a given workspace.
+    fn inspect_at_cost(sources: &[(&str, &str)], document: &str, needle: &str) -> u64 {
+        let published = publication_for(sources);
+        let source = sources
+            .iter()
+            .find(|(identity, _)| *identity == document)
+            .expect("the probed document is in the workspace")
+            .1;
+        let position = position_of(source, needle);
+        let (outcome, visited) = crate::model::resolver::measure_visited_index_entries(|| {
+            published.inspect_at(document, position)
+        });
+        assert!(
+            matches!(outcome, QueryOutcome::Resolved(_)),
+            "the probe must land on a resolved inspection, got: {outcome:?}"
+        );
+        visited
+    }
+
+    /// The probed document, unchanged across every variant below.
+    const PROBED: &str = "package P {\n  part def Wheel;\n  part w : Wheel;\n}";
+
+    /// Declarations that are cheap to write and land in every published fact table -- a name, a
+    /// documentation record, a reference and an evaluated value -- so that a scan of any of them
+    /// shows up in the measurement.
+    fn padding(members: usize) -> String {
+        (0..members)
+            .map(|index| {
+                format!(
+                    "  part def Pad{index} {{ doc /* pad */ }}\n                       part padUse{index} : Pad{index};\n                       attribute padValue{index} = {index} + 1;\n"
+                )
+            })
+            .collect()
+    }
+
+    /// The contract the publication-time index exists to keep: what an inspection reads is this
+    /// declaration's own facts, so a workspace that grows elsewhere costs nothing here.
+    ///
+    /// A scan and an index return the same answer, so only the measurement separates them.
+    #[test]
+    fn inspection_cost_is_independent_of_the_rest_of_the_workspace() {
+        let small = inspect_at_cost(&[("memory://i.sysml", PROBED)], "memory://i.sysml", ": Wheel");
+        let large_source = format!("package Other {{\n{}}}\n", padding(500));
+        let large = inspect_at_cost(
+            &[
+                ("memory://i.sysml", PROBED),
+                ("memory://other.sysml", &large_source),
+            ],
+            "memory://i.sysml",
+            ": Wheel",
+        );
         assert_eq!(
-            at.referenced.as_ref().and_then(|r| r.name.as_deref()),
-            Some("Wheel"),
-            "and points at a reference resolving to `Wheel`"
+            small, large,
+            "500 declarations in another document changed what one inspection reads"
+        );
+    }
+
+    /// A preceding sibling that does not contain the position is skipped whole, not descended
+    /// into: the containment descent costs the nesting depth, not the document's size.
+    #[test]
+    fn inspection_cost_is_independent_of_preceding_sibling_subtrees() {
+        let thin = format!("package Before {{\n{}}}\n{PROBED}", padding(1));
+        let fat = format!("package Before {{\n{}}}\n{PROBED}", padding(500));
+        assert_eq!(
+            inspect_at_cost(&[("memory://i.sysml", &thin)], "memory://i.sysml", ": Wheel"),
+            inspect_at_cost(&[("memory://i.sysml", &fat)], "memory://i.sysml", ": Wheel"),
+            "499 extra members of an earlier package were visited rather than skipped"
+        );
+    }
+
+    /// Declarations that begin after the position end the descent rather than being filtered out
+    /// one by one.
+    #[test]
+    fn inspection_cost_is_independent_of_what_follows_the_position() {
+        let thin = format!("{PROBED}\npackage After {{\n{}}}\n", padding(1));
+        let fat = format!("{PROBED}\npackage After {{\n{}}}\n", padding(500));
+        assert_eq!(
+            inspect_at_cost(&[("memory://i.sysml", &thin)], "memory://i.sysml", ": Wheel"),
+            inspect_at_cost(&[("memory://i.sysml", &fat)], "memory://i.sysml", ": Wheel"),
+            "declarations beginning after the position were visited"
         );
     }
 
