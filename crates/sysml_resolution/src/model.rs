@@ -9,6 +9,7 @@ use std::{
     collections::{hash_map::RandomState, BTreeMap},
     hash::BuildHasher,
     sync::Arc,
+    time::{Duration, Instant},
 };
 
 use hashbrown::HashTable;
@@ -13063,12 +13064,19 @@ pub(crate) enum CoordinatorError {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct SemanticModelBuildCoordinator;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct BuildPhaseDurations {
+    pub(crate) parse: Duration,
+    pub(crate) lowering: Duration,
+    pub(crate) resolution: Duration,
+}
+
 impl SemanticModelBuildCoordinator {
-    pub(crate) fn build(
+    pub(crate) fn build_measured(
         mut sources: Vec<OwnedSourceRecord>,
         schedule: BuildSchedule,
         policy: EvaluationPolicy,
-    ) -> Result<resolver::ResolvedSemanticModel, CoordinatorError> {
+    ) -> Result<(resolver::ResolvedSemanticModel, BuildPhaseDurations), CoordinatorError> {
         sources.sort_unstable_by(|left, right| left.identity.cmp(&right.identity));
         if sources
             .windows(2)
@@ -13077,6 +13085,7 @@ impl SemanticModelBuildCoordinator {
             return Err(CoordinatorError::DuplicateSourceIdentity);
         }
 
+        let parse_started = Instant::now();
         let parsed = match schedule {
             BuildSchedule::Sequential => sources
                 .into_iter()
@@ -13090,7 +13099,9 @@ impl SemanticModelBuildCoordinator {
                     .collect::<Result<Vec<_>, _>>()?
             }
         };
+        let parse = parse_started.elapsed();
 
+        let lowering_started = Instant::now();
         let mut builder = SemanticModelBuilder::default();
         let mut documents = Vec::with_capacity(parsed.len());
         for (identity, parsed) in parsed {
@@ -13104,10 +13115,21 @@ impl SemanticModelBuildCoordinator {
                 .canonicalize_document(document)
                 .map_err(|_| CoordinatorError::ConstructionFailed)?;
         }
-        builder
-            .freeze()
+        let storage = builder.freeze();
+        let lowering = lowering_started.elapsed();
+        let resolution_started = Instant::now();
+        let model = storage
             .resolve(policy)
-            .map_err(|_| CoordinatorError::ConstructionFailed)
+            .map_err(|_| CoordinatorError::ConstructionFailed)?;
+        let resolution = resolution_started.elapsed();
+        Ok((
+            model,
+            BuildPhaseDurations {
+                parse,
+                lowering,
+                resolution,
+            },
+        ))
     }
 
     fn parse_source(

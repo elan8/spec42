@@ -21,6 +21,7 @@ members = [
   "crates/workspace_session",
   "tools/snapshot_tool",
   "tools/resolution_benchmark",
+  "tools/semantic_benchmark",
 ]
 
 [workspace.package]

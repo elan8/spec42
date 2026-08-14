@@ -3,14 +3,14 @@
 use std::fmt;
 
 pub use sysml_resolution::{
-    AnnotationForm, AuthoredValue, Documentation, ElementInspection, ElementInspectionAt,
-    ElementKind, ElementModifier, ElementRelationship, EvaluatedScalar, EvaluationFailure,
-    EvaluationState, FeatureDirection, MembershipFacts, MembershipKind, MembershipRole,
-    MultiplicityBound, MultiplicityFacts, NavigationTarget, OccurrenceRole, PortionKind,
-    PublicationCompleteness, QueryOutcome, ReferenceAt, RelationshipProvenance, RelationshipTarget,
-    RenameOutcome, RequirementConstraintKind, SourceLocation, StateSubactionKind, SymbolEntry,
-    SymbolIdentity, TextPosition, TextRange, ValueKind, Visibility, VisibilityProvenance,
-    VisibleMember,
+    AnnotationForm, AuthoredValue, BuildMeasurements, Documentation, ElementInspection,
+    ElementInspectionAt, ElementKind, ElementModifier, ElementRelationship, EvaluatedScalar,
+    EvaluationFailure, EvaluationState, FeatureDirection, MembershipFacts, MembershipKind,
+    MembershipRole, MultiplicityBound, MultiplicityFacts, NavigationTarget, OccurrenceRole,
+    PortionKind, PublicationCompleteness, QueryOutcome, ReferenceAt, RelationshipProvenance,
+    RelationshipTarget, RenameOutcome, RequirementConstraintKind, SourceLocation,
+    StateSubactionKind, SymbolEntry, SymbolIdentity, TextPosition, TextRange, ValueKind, Visibility,
+    VisibilityProvenance, VisibleMember,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -126,6 +126,15 @@ pub struct PublishedModel {
 pub fn build(request: BuildRequest) -> Result<PublishedModel, BuildError> {
     sysml_resolution::build(request.inner)
         .map(|inner| PublishedModel { inner })
+        .map_err(BuildError)
+}
+
+/// Builds one publication and returns timings measured at its semantic phase barriers.
+pub fn build_measured(
+    request: BuildRequest,
+) -> Result<(PublishedModel, BuildMeasurements), BuildError> {
+    sysml_resolution::build_measured(request.inner)
+        .map(|(inner, measurements)| (PublishedModel { inner }, measurements))
         .map_err(BuildError)
 }
 
@@ -807,11 +816,39 @@ pub struct RawStorageIsNotPublic;
 
 #[cfg(test)]
 mod tests {
-    use super::PublishedModel;
+    use super::{
+        build, build_measured, BuildRequest, ConstructionStrategy, PublishedModel, SourceDocument,
+        SourceKind,
+    };
 
     #[test]
     fn immutable_publication_can_be_shared_by_async_hosts() {
         fn requires_send_sync<T: Send + Sync>() {}
         requires_send_sync::<PublishedModel>();
+    }
+
+    #[test]
+    fn measured_and_unmeasured_builds_publish_the_same_semantics() {
+        fn request() -> BuildRequest {
+            BuildRequest::resolved(
+                vec![SourceDocument::from_memory_path(
+                    "measurement-parity",
+                    "model.sysml",
+                    "package P { part def Vehicle; part vehicle : Vehicle; }".into(),
+                    SourceKind::Workspace,
+                )
+                .unwrap()],
+                ConstructionStrategy::Sequential,
+            )
+            .unwrap()
+        }
+
+        let ordinary = build(request()).unwrap();
+        let (measured, _) = build_measured(request()).unwrap();
+        let mut ordinary_output = String::new();
+        let mut measured_output = String::new();
+        ordinary.debug().write_semantic_sexpr(&mut ordinary_output).unwrap();
+        measured.debug().write_semantic_sexpr(&mut measured_output).unwrap();
+        assert_eq!(ordinary_output, measured_output);
     }
 }
