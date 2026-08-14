@@ -65,12 +65,6 @@ package ViewTest {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 24 1) (end 24 17))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_view_definition_member")
         (source "semantic")
         (range (start 27 2) (end 31 2))
@@ -109,6 +103,7 @@ package ViewTest {
     (declaration (id (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::VP::c"))) (kind frame) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::c"))) (kind concern) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "C"))))
     (declaration (id (node (document "memory://snapshot/view_test.md") (anonymous (kind stakeholder) (ordinal 0))))) (kind stakeholder) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (stakeholderTarget (reference "s1"))))
+    (declaration (id (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::r"))) (kind rendering) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "R"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::C::s"))) (kind featureTyping) (ordinal 0))
@@ -120,10 +115,14 @@ package ViewTest {
     (reference (id (source (node (document "memory://snapshot/view_test.md") (anonymous (kind stakeholder) (ordinal 0))))) (kind stakeholderTarget) (ordinal 0))
       (authored-target "s1")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::r"))) (kind featureTyping) (ordinal 0))
+      (authored-target "R")
+      (outcome (status resolved) (target (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::R")))))
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::C::s"))) (target (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::S"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::C::s"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::c"))) (target (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::C"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::c"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::r"))) (target (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::R"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::r"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )
@@ -143,6 +142,10 @@ package ViewTest {
   (query (document "memory://snapshot/view_test.md") (range (start 15 14) (end 15 16)) (probe (position 15 14))
     (reference (id (source (node (document "memory://snapshot/view_test.md") (anonymous (kind stakeholder) (ordinal 0))))) (kind stakeholderTarget) (ordinal 0) (authored-target "s1")
       (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/view_test.md") (range (start 24 15) (end 24 16)) (probe (position 24 15))
+    (reference (id (source (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::r"))) (kind featureTyping) (ordinal 0) (authored-target "R")
+      (outcome (status resolved) (target (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::R")))))
   )
 )
 ~~~

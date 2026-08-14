@@ -100,18 +100,6 @@ package '11a-View-Viewpoint' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 41 2) (end 43 3))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 46 11) (end 46 41))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_view_definition_member")
         (source "semantic")
         (range (start 47 3) (end 47 54))
@@ -156,6 +144,8 @@ package '11a-View-Viewpoint' {
     (declaration (id (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::ViewModel::system breakdown"))) (kind concern) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/11a_view_viewpoint.md") (anonymous (kind stakeholder) (ordinal 0))))) (kind stakeholder) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "systems engineer"))))
     (declaration (id (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::ViewModel::system structure generation"))) (kind view) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (satisfyViewpoint (reference "system structure perspective"))))
+    (declaration (id (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::ViewModel::system structure perspective"))) (kind viewpoint) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::ViewModel::system structure perspective::system breakdown"))) (kind frame) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::ViewModel::systems engineer"))) (kind part) (membership (kind feature) (visibility default)))
   )
   (references
@@ -200,7 +190,7 @@ package '11a-View-Viewpoint' {
       (outcome (status resolved) (target (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::ViewModel::systems engineer")))))
     (reference (id (source (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::ViewModel::system structure generation"))) (kind satisfyViewpoint) (ordinal 0))
       (authored-target "system structure perspective")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::ViewModel::system structure perspective")))))
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle"))) (target (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::Vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle"))) (kind featureTyping) (ordinal 0)))
@@ -211,6 +201,7 @@ package '11a-View-Viewpoint' {
     (relationship (kind typing) (source (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::rearAxleAssembly::rearAxle"))) (target (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::Axle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::rearAxleAssembly::rearAxle"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::rearAxleAssembly::rearWheel"))) (target (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::Wheel"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::rearAxleAssembly::rearWheel"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/11a_view_viewpoint.md") (anonymous (kind stakeholder) (ordinal 0))))) (target (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::ViewModel::systems engineer"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/11a_view_viewpoint.md") (anonymous (kind stakeholder) (ordinal 0))))) (kind redefinition) (ordinal 0)))
+    (relationship (kind satisfyViewpoint) (source (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::ViewModel::system structure generation"))) (target (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::ViewModel::system structure perspective"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::ViewModel::system structure generation"))) (kind satisfyViewpoint) (ordinal 0)))
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::frontAxleAssembly::mass"))) (value (kind quantity) (magnitude (value (kind integer) (integer 150))) (unit "kg")))
@@ -276,7 +267,7 @@ package '11a-View-Viewpoint' {
   )
   (query (document "memory://snapshot/11a_view_viewpoint.md") (range (start 46 11) (end 46 41)) (probe (position 46 11))
     (reference (id (source (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::ViewModel::system structure generation"))) (kind satisfyViewpoint) (ordinal 0) (authored-target "system structure perspective")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::ViewModel::system structure perspective")))))
   )
 )
 ~~~

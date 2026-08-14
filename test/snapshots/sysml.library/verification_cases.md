@@ -230,12 +230,6 @@ standard library package VerificationCases {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 50 1) (end 55 2))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 76 27) (end 76 34))
@@ -274,6 +268,7 @@ standard library package VerificationCases {
     (declaration (id (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases::VerificationMethodKind::demo"))) (kind enum-literal) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases::VerificationMethodKind::inspect"))) (kind enum-literal) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases::VerificationMethodKind::test"))) (kind enum-literal) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases::verificationCases"))) (kind verification) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "VerificationCase"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/verification_cases.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
@@ -339,6 +334,9 @@ standard library package VerificationCases {
     (reference (id (source (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases::VerificationMethod::kind"))) (kind featureTyping) (ordinal 0))
       (authored-target "VerificationMethodKind")
       (outcome (status resolved) (target (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases::VerificationMethodKind")))))
+    (reference (id (source (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases::verificationCases"))) (kind featureTyping) (ordinal 0))
+      (authored-target "VerificationCase")
+      (outcome (status resolved) (target (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases::VerificationCase")))))
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases::PassIf::verdict"))) (target (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases::VerdictKind"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases::PassIf::verdict"))) (kind featureTyping) (ordinal 0)))
@@ -346,6 +344,7 @@ standard library package VerificationCases {
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases::PassIf::verdict"))) (target (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases::VerdictKind::pass"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases::PassIf::verdict"))) (kind expressionOperand) (ordinal 1)))
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases::PassIf::verdict"))) (target (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases::VerdictKind::fail"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases::PassIf::verdict"))) (kind expressionOperand) (ordinal 2)))
     (relationship (kind typing) (source (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases::VerificationMethod::kind"))) (target (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases::VerificationMethodKind"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases::VerificationMethod::kind"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases::verificationCases"))) (target (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases::VerificationCase"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases::verificationCases"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases::VerificationCase"))) (value (kind unresolved-operand)))
@@ -444,6 +443,10 @@ standard library package VerificationCases {
   (query (document "memory://snapshot/verification_cases.md") (range (start 86 19) (end 86 41)) (probe (position 86 19))
     (reference (id (source (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases::VerificationMethod::kind"))) (kind featureTyping) (ordinal 0) (authored-target "VerificationMethodKind")
       (outcome (status resolved) (target (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases::VerificationMethodKind")))))
+  )
+  (query (document "memory://snapshot/verification_cases.md") (range (start 50 43) (end 50 59)) (probe (position 50 43))
+    (reference (id (source (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases::verificationCases"))) (kind featureTyping) (ordinal 0) (authored-target "VerificationCase")
+      (outcome (status resolved) (target (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases::VerificationCase")))))
   )
 )
 ~~~

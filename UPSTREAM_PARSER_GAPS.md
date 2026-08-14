@@ -277,6 +277,14 @@ entry should carry enough detail to file/update an upstream issue against
   `unsupported_*_member` fallback wherever `PackageBodyElement::ViewpointUsage` etc. appear.
   Needs `subsets`/`redefines` fields added to `ViewpointUsage` mirroring `ViewUsage`, filed
   upstream against `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+  **Update (exhaustive `unsupported_package_member` audit, this pass):** the plain `name`/
+  `type_name`/body shape (no `subsets`/`redefines` clause) is now lowered
+  (`lower_viewpoint_usage`, `crates/sysml_resolution/src/model.rs`), wired at
+  `PackageBodyElement::ViewpointUsage`/`PartDefBodyElement::ViewpointUsage` -- resolving e.g.
+  `test/snapshots/sysml/training/42_viewpoint_example.md`'s and
+  `test/snapshots/sysml/validation/11a_view_viewpoint.md`'s `viewpoint 'system structure
+  perspective' { frame ...; require constraint { ... } }` end to end (`completeness complete`).
+  Only the `:>`/`:>>` header form described above remains genuinely blocked upstream.
 
 - Gap 27. `AllocationUsage` (`src/ast/behavior.rs`) has no `subsets`/`redefines` fields, and its
   `allocate ... to ...` ends are captured as raw `Option<Node<Expression>>` (`source`/`target`),
@@ -318,6 +326,26 @@ entry should carry enough detail to file/update an upstream issue against
   `subsets`/`redefines` fields and a typed from/to end shape (mirroring `FlowDef`'s `end`
   declarations or `ConnectionUsage`'s connector ends) added to `FlowUsage`, filed upstream
   against `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+  **Update (exhaustive `unsupported_package_member` audit, this pass):** also confirmed
+  `FlowUsage` has no `is_abstract` field either (unlike `RenderingUsage`/`CaseUsage`/etc., which
+  all do), so even the header-only `abstract flow msg of C;` (no `subsets`, `test/snapshots/kerml/
+  behaviors.md`) fails to parse into `FlowUsage` at all -- same missing-field gap class, one more
+  field. And the exact same two-part gap (no `subsets`/`redefines`, and for `UseCaseUsage`/
+  `VerificationCaseUsage` no multiplicity/`nonunique` either) generalizes to two more usage kinds
+  confirmed this pass: `UseCaseUsage`/`VerificationCaseUsage` (`src/ast/requirement.rs`) both have
+  only `name`/`type_name`/`is_abstract`/`body`/`membership` -- no `subsets`/`redefines`/
+  multiplicity/`nonunique` fields at all -- so the Systems Library's own base-feature declaration
+  idiom (`test/snapshots/sysml.library/use_cases.md`'s `use case useCases : UseCase[0..*]
+  nonunique :> cases { ... }`, `verification_cases.md`'s analogous `verificationCases`) still
+  fails to parse into either node. The plain `use case <name>[: <Type>] { ... }`/`verification
+  <name>[: <Type>] { ... }` header shape (no multiplicity/subsets) is unaffected and now lowered
+  (`lower_use_case_usage`/`lower_verification_case_usage`, `crates/sysml_resolution/src/model.rs`,
+  this pass) -- resolves e.g. `test/snapshots/sysml/validation/18_use_case.md`,
+  `9_verification_simplified.md`, `test/snapshots/sysml/training/34_verification_case_usage_example.md`,
+  `35_use_case_usage_example.md` end to end. Needs `subsets`/`redefines`/multiplicity/`nonunique`
+  fields added to `UseCaseUsage`/`VerificationCaseUsage` (mirroring `CaseUsage`/
+  `AnalysisCaseUsage`) and an `is_abstract` field added to `FlowUsage`, filed upstream against the
+  same `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
 
 - Gap 29. `RequireConstraint` (`src/ast/requirement.rs`), the `require`/`assume`-prefixed
   constraint member inside `requirement def`/`requirement usage` bodies (BNF form: `(require|
@@ -798,7 +826,7 @@ found; all 51 fixtures are genuine upstream parser gaps**, grouped into Gaps 15-
 - Gap 10. Bare forward-declared `classifier X;` collapsed to a raw-text fallback node. **Correction (re-verified while implementing `class def` lowering):** this specific struct (`ClassifierDecl`) is still a raw/opaque fallback (`{ keyword: String, text: String }`, no name/membership/specialization fields) in `0757de13` -- the earlier "resolved" note conflated it with the separate, now-genuinely-resolved `ClassDef` (gap #2). Re-opened and re-tracked as Gap 13 above.
 - Gap 11. `item <name> : <Type>;` nested in an attribute body was captured opaquely. Resolved upstream in 0757de13 -- confirmed via direct AST/parser inspection of the pinned checkout (typed fields/nodes/dispatch now present); wired into `sysml_resolution` lowering where applicable (see commits on `closing-the-gap`).
 - Gap 12. `#<keyword> def <Name> ...` ExtendedDefinition short form had no grammar production. Resolved upstream in 0757de13 -- confirmed via direct AST/parser inspection of the pinned checkout (typed fields/nodes/dispatch now present); wired into `sysml_resolution` lowering where applicable (see commits on `closing-the-gap`).
-- Gap 26. `RenderingUsage` had no `subsets`/`redefines` fields. Resolved upstream in cb026cd -- confirmed via direct AST inspection of the pinned checkout (`subsets: Option<Node<SubsettingRelationship>>`/`redefines: Option<Node<SubsettingRelationship>>` now present alongside `multiplicity`/`ordered`/`nonunique`/`value`).
+- Gap 26. `RenderingUsage` had no `subsets`/`redefines` fields. Resolved upstream in cb026cd -- confirmed via direct AST inspection of the pinned checkout (`subsets: Option<Node<SubsettingRelationship>>`/`redefines: Option<Node<SubsettingRelationship>>` now present alongside `multiplicity`/`ordered`/`nonunique`/`value`). **Update (exhaustive `unsupported_package_member` audit, this pass):** the parser-side fix landed but `sysml_resolution` was never updated to match -- `PackageBodyElement::RenderingUsage` was still unconditionally `push_unsupported`. Implemented `lower_rendering_usage` (mirroring `lower_view_usage`) plus a `RenderingUsageBody` walker recursing into nested `view`/`rendering` usage members; wired at `PackageBodyElement`/`PartDefBodyElement::RenderingUsage`. Resolves `test/snapshots/sysml.library/views.md`'s `renderings`/`asTextualNotation`/`asTreeDiagram`/`asInterconnectionDiagram`/`asElementTable` base-feature declarations end to end.
 - Gap 31. `InOutDecl` had no grammar support for the `nonunique`/`ordered` collection modifiers on a parameter declaration. Resolved upstream in cb026cd -- confirmed via direct AST inspection of the pinned checkout (`InOutDecl.ordered`/`InOutDecl.nonunique` fields now present, mirroring the fields already added to sibling usage kinds).
 
 - Gap 32. `KermlFeatureMember` (`src/ast/kerml_fallback.rs`) has no `crosses` field, so a
@@ -1079,3 +1107,64 @@ found; all 51 fixtures are genuine upstream parser gaps**, grouped into Gaps 15-
   upstream as one of the tracked issues against `feat/gh-119-arena-backed-references`
   (elan8/sysml-v2-parser#121) as of this writing -- filing is the next step before revisiting
   this fixture.
+
+- Gap 50. `MetadataKeywordUsage` (`src/ast/structure.rs`), the `#<name>` shorthand for a metadata
+  usage/annotation (BNF `PrefixMetadataAnnotation`/`MetadataUsage`'s `#`-sigil spelling), captures
+  its annotation-type tag as a bare `keyword: String` -- not a `QualifiedReferenceId` the way its
+  `@Name`-sigil sibling `MetadataAnnotation.reference` is (fully resolved by
+  `lower_metadata_annotation`, `crates/sysml_resolution/src/model.rs`). Found exhaustively
+  auditing `unsupported_package_member` (this pass, against `cb026cd`): the single largest root
+  cause of the 155-occurrence baseline for that diagnostic -- 87 of 155 (56%) trace here, spread
+  across `test/snapshots/kerml/a_2_atoms.md`, `a_2_modeling_instances.md`,
+  `a_3_2_without_connectors.md` through `a_3_8_changing_feature_values.md` (the OMG KerML Annex A
+  "atom" idiom, `#atom\n\tclassifier MyBike specializes Bicycle;` -- 60 of the 87), plus
+  `test/snapshots/sysml/examples/ahfcore_lib.md`/`ahfnorway_topics.md` (`#service port def ...`/
+  `#clouddd ...`), `test/snapshots/sysml/coverage_extended.md`/`examples/coverage_metadata.md`
+  (`#situation ...`/`#Classified part def ...`), `test/snapshots/sysml/examples/metadata_test.md`/
+  `requirement_metadata_example.md` (`#Security enum def ...`/`#goal requirement ...`), and
+  `test/snapshots/sysml/validation/14c_language_extensions.md`/`training/41_user_keyword_example.md`
+  (`#fmeaspec requirement ...`/`#causation connect ...`). Confirmed via direct parser-source
+  inspection (`src/parser/metadata_annotation.rs`): both productions that build this node --
+  `metadata_keyword_usage_inner` (the standalone `#<name>[: <Type>][about ...]{...}`/`;` form) and
+  `metadata_keyword_prefix` (the bare-tag-immediately-before-another-declaration form, e.g. `#atom`
+  followed by `classifier MyBike ...;` as two *separate* `PackageBodyElement`s -- confirmed the
+  parser does not retain any structural link between the tag and the element it annotates) -- both
+  parse `keyword` via the plain single-identifier `name` combinator
+  (`src/parser/metadata_annotation.rs:91,242`), never `qualified_reference`, so there is no
+  `QualifiedReferenceId` index for `sysml_resolution` to hand to `push_reference`/
+  `lower_typing_relationship` the way every other resolved reference in this crate requires. This
+  is not a newly-introduced gap in this pass -- `MetadataKeywordUsage` was already unconditionally
+  routed to `push_unsupported`/no-op at every one of its 9 pre-existing call sites across
+  `PartDefBodyElement`/`PartUsageBodyElement`/`AttributeBodyElement`/`ActionDefBodyElement`/
+  `ActionUsageBodyElement`/`StateDefBodyElement`/`RequirementDefBodyElement`/
+  `UseCaseDefBodyElement`/`PortDefBodyElement` before this pass, confirming this is a consistent,
+  deliberate prior scope boundary rather than an oversight this pass could mechanically close.
+  Also confirmed `lower_extended_definition`'s own doc comment (`#<keyword>+ 'def' <Name>`, Gap
+  12) independently documents "the `#`-prefix keyword tags... are out of scope" for exactly this
+  reason. Needs `MetadataKeywordUsage.keyword` changed to `QualifiedReferenceId` (mirroring
+  `MetadataAnnotation.reference`) in both parser productions, filed upstream against
+  `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+
+- Gap 51. The anonymous, header-less `allocate <source> to <target> { ... };` package/definition-
+  member statement (SysML's shorthand `AllocationUsage` spelling with no `allocation` keyword, no
+  declared name, and no `:` type -- OMG spec Annex A's own preferred style, e.g.
+  `test/snapshots/sysml/validation/12b_allocation.md`'s `allocate torqueGenerator to powerTrain {
+  allocate torqueGenerator.generateTorque to powerTrain.engine.generateTorque; }`,
+  `test/snapshots/sysml/training/38_allocation_usage_example.md`'s identical shape) has no
+  `PackageBodyElement`/`PartDefBodyElement`/`PartUsageBodyElement` variant reachable at all. Found
+  exhaustively auditing `unsupported_package_member` (this pass, against `cb026cd`): the typed
+  `ast::Allocate { source: Node<Expression>, target: Node<Expression>, body: ConnectBody }` node
+  this shape would parse into exists (`src/ast/behavior.rs`) and is already reachable from other
+  body-element enums (`PartUsageBodyElement::Allocate`, already lowered by `lower_allocate` in
+  `sysml_resolution`), but `PackageBodyElement`'s own alternative list has no `Allocate` arm and no
+  starter registered for it, so the bare package/definition-scoped spelling falls to whole-
+  statement recovery instead. `test/snapshots/sysml/validation/12b_allocation_1.md`'s named
+  variant (`allocation torqueGenAlloc : LogicalToPhysical allocate logical ::> torqueGenerator to
+  physical ::> powerTrain { ... }`) and `training/38_allocation_definition_example.md`'s
+  single-line form share the same root cause one level up: `AllocationUsage.source`/`target` are
+  raw `Option<Node<Expression>>`, not the typed `Allocate` node, so Gap 27's already-tracked
+  missing-typed-end-shape half of that gap covers those two, but the header-less bare-`allocate`
+  form is a distinct missing-variant gap, not a missing-field one. Needs an
+  `Allocate(Node<Allocate>)` variant added to `PackageBodyElement` (and ideally
+  `PartDefBodyElement`) with a starter/dispatch arm reusing the existing `allocate` production,
+  filed upstream against `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).

@@ -248,12 +248,6 @@ standard library package UseCases {
         (source "semantic")
         (range (start 41 41) (end 47 3))
       )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 50 1) (end 55 2))
-      )
     )
   )
 )
@@ -268,6 +262,7 @@ standard library package UseCases {
     (declaration (id (node (document "memory://snapshot/use_cases.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Cases::cases") (import (shape membership) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/use_cases.md") (qualified-name "UseCases::UseCase"))) (kind use-case-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Case")) (expressionOperand (reference "ref")) (expressionOperand (reference "use")) (expressionOperand (reference "case")) (expressionOperand (reference "self")) (expressionOperand (reference "ref")) (expressionOperand (reference "use")) (expressionOperand (reference "case")) (expressionOperand (reference "start")) (expressionOperand (reference "ref")) (expressionOperand (reference "use")) (expressionOperand (reference "case")) (expressionOperand (reference "done")) (expressionOperand (reference "abstract")) (expressionOperand (reference "use")) (expressionOperand (reference "case")) (expressionOperand (reference "subUseCases")) (expressionOperand (reference "abstract")) (expressionOperand (reference "ref")) (expressionOperand (reference "use")) (expressionOperand (reference "case")) (expressionOperand (reference "includedUseCases"))))
     (declaration (id (node (document "memory://snapshot/use_cases.md") (qualified-name "UseCases::UseCase::obj"))) (kind requirement) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/use_cases.md") (qualified-name "UseCases::useCases"))) (kind use-case) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "UseCase"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/use_cases.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
@@ -342,8 +337,12 @@ standard library package UseCases {
     (reference (id (source (node (document "memory://snapshot/use_cases.md") (qualified-name "UseCases::UseCase"))) (kind expressionOperand) (ordinal 20))
       (authored-target "includedUseCases")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/use_cases.md") (qualified-name "UseCases::useCases"))) (kind featureTyping) (ordinal 0))
+      (authored-target "UseCase")
+      (outcome (status resolved) (target (node (document "memory://snapshot/use_cases.md") (qualified-name "UseCases::UseCase")))))
   )
   (relationships
+    (relationship (kind typing) (source (node (document "memory://snapshot/use_cases.md") (qualified-name "UseCases::useCases"))) (target (node (document "memory://snapshot/use_cases.md") (qualified-name "UseCases::UseCase"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/use_cases.md") (qualified-name "UseCases::useCases"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/use_cases.md") (qualified-name "UseCases::UseCase"))) (value (kind unresolved-operand)))
@@ -468,6 +467,10 @@ standard library package UseCases {
   (query (document "memory://snapshot/use_cases.md") (range (start 41 24) (end 41 40)) (probe (position 41 24))
     (reference (id (source (node (document "memory://snapshot/use_cases.md") (qualified-name "UseCases::UseCase"))) (kind expressionOperand) (ordinal 20) (authored-target "includedUseCases")
       (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/use_cases.md") (range (start 50 21) (end 50 28)) (probe (position 50 21))
+    (reference (id (source (node (document "memory://snapshot/use_cases.md") (qualified-name "UseCases::useCases"))) (kind featureTyping) (ordinal 0) (authored-target "UseCase")
+      (outcome (status resolved) (target (node (document "memory://snapshot/use_cases.md") (qualified-name "UseCases::UseCase")))))
   )
 )
 ~~~

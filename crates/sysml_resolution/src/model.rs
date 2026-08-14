@@ -42,16 +42,18 @@ use sysml_v2_parser_next::{
         PortBodyElement, PortDef, PortDefBody, PortDefBodyElement, PortUsage as ParserPortUsage,
         PurposeMember, QualifiedIdentification, QualifiedReferenceId, RefBody, RefBodyElement,
         RefDecl, RelationshipBodyElement, RenderingDef, RenderingDefBody, RenderingDefBodyElement,
+        RenderingUsage as ParserRenderingUsage, RenderingUsageBody, RenderingUsageBodyElement,
         RequireConstraint, RequireConstraintBody, RequirementActorDecl, RequirementDef,
         RequirementDefBody, RequirementDefBodyElement, RequirementUsage as ParserRequirementUsage,
         ReturnDecl, RootElement, Satisfy, SatisfyViewMember, SendPayload, Span, StakeholderMember,
         StateDef, StateDefBody, StateDefBodyElement, StateUsage as ParserStateUsage, SubjectDecl,
         SubsettingKind, SubsettingRelationship, TerminateStmt, ThenAction, ThenStmt, ThenTarget,
         Transition, TransitionAccept, TransitionEffect, TypedParameterMember, UnaryOperator,
-        UseCaseDef, UseCaseDefBody, UseCaseDefBodyElement, VariantTypedUsage, VariantUsage,
-        VerificationCaseDef, VerifyRequirementMember, ViewBody, ViewBodyElement, ViewDef,
-        ViewDefBody, ViewDefBodyElement, ViewUsage as ParserViewUsage, ViewpointDef,
-        Visibility as ParserVisibility,
+        UseCaseDef, UseCaseDefBody, UseCaseDefBodyElement, UseCaseUsage as ParserUseCaseUsage,
+        VariantTypedUsage, VariantUsage, VerificationCaseDef,
+        VerificationCaseUsage as ParserVerificationCaseUsage, VerifyRequirementMember, ViewBody,
+        ViewBodyElement, ViewDef, ViewDefBody, ViewDefBodyElement, ViewUsage as ParserViewUsage,
+        ViewpointDef, ViewpointUsage as ParserViewpointUsage, Visibility as ParserVisibility,
     },
     ParseError, ParsedDocument,
 };
@@ -268,16 +270,20 @@ enum DeclarationKind {
     /// attribute usages and nested case structure, mirroring `CaseDefinition`/
     /// `AnalysisCaseDefinition` lowering. Verification-specific semantics are out of scope here;
     /// only ownership, specialization, and owned-member structure are lowered. `verification`
-    /// usage lowering is deferred (see UPSTREAM_PARSER_GAPS.md #5: `VerificationCaseUsage`
-    /// silently drops parsed `:>`/`:>>` clauses, unlike `VerificationCaseDef`, which has full
-    /// field parity).
+    /// usage lowering (`DeclarationKind::VerificationCaseUsage`): unlike `CaseUsage`/
+    /// `AnalysisCaseUsage`, `VerificationCaseUsage` still has no `subsets`/`redefines` field at
+    /// all (not just a stale "dropped" bug) -- only `name`/`type_name`/`is_abstract`/body are
+    /// lowered; a header-level `:>`/`:>>` clause still fails to parse into this node at all
+    /// (falls to raw-text recovery instead, per UPSTREAM_PARSER_GAPS.md's `AllocationUsage`/
+    /// `FlowUsage`/`ViewpointUsage` gap class).
     VerificationCaseDefinition,
     /// `use case def` (BNF UseCaseDefinition): a type whose owned members are attribute usages
     /// and nested case structure, mirroring `CaseDefinition`/`AnalysisCaseDefinition` lowering.
     /// Use-case-specific semantics (actor/include structure) are out of scope here; only
     /// ownership, specialization, and owned-member structure are lowered. `use case` usage
-    /// lowering is deferred (see UPSTREAM_PARSER_GAPS.md #5: `UseCaseUsage` silently drops parsed
-    /// `:>`/`:>>` clauses, unlike `UseCaseDef`, which has full field parity).
+    /// lowering (`DeclarationKind::UseCaseUsage`): like `VerificationCaseUsage`, `UseCaseUsage`
+    /// still has no `subsets`/`redefines`/multiplicity field at all -- only `name`/`type_name`/
+    /// `is_abstract`/body are lowered.
     UseCaseDefinition,
     /// `viewpoint def` (BNF ViewpointDefinition, Clause 8.2.2.27): a type whose owned members
     /// share `RequirementDefBody` with `RequirementDefinition`, mirroring `lower_requirement_def`
@@ -288,10 +294,11 @@ enum DeclarationKind {
     /// carries full parity with `RequirementDef`/`ConnectionDef`. Stakeholder/concern-binding
     /// semantics (the viewpoint-specific surface, e.g. `stakeholder`/`concern` clauses) are out
     /// of scope for this slice and fall through to `RequirementDefinitionMember` diagnostics
-    /// alongside the other unmodeled `RequirementDefBody` members. `viewpoint` usage lowering is
-    /// deferred: `ast::ViewpointUsage` has only `type_name` (bare `QualifiedReferenceId`), no
-    /// `subsets`/`redefines` fields at all -- the same gap class as `ViewUsage`
-    /// (UPSTREAM_PARSER_GAPS.md #8).
+    /// alongside the other unmodeled `RequirementDefBody` members. `viewpoint` usage lowering
+    /// (`DeclarationKind::ViewpointUsage`): `ast::ViewpointUsage` still has only `type_name` (bare
+    /// `QualifiedReferenceId`), no `subsets`/`redefines` fields at all (UPSTREAM_PARSER_GAPS.md
+    /// #25, still open) -- so only `name`/`type_name`/body are lowered; a header-level `:>` clause
+    /// still fails to parse into this node at all.
     ViewpointDefinition,
     /// `rendering def` (BNF RenderingDefinition, Clause 8.2.2.26): a type whose owned members
     /// share `RenderingDefBody`/`RenderingDefBodyElement` with `ViewDefBody`/`ViewDefBodyElement`
@@ -301,9 +308,10 @@ enum DeclarationKind {
     /// `RenderingDef`'s `specializes: Option<Node<TypingRelationship>>` field carries full parity
     /// with `ViewDef`/`ConnectionDef`. Render-specific body semantics (`filter`/`render` members)
     /// are out of scope for this slice and fall through to a dedicated
-    /// `RenderingDefinitionMember` diagnostic. `rendering` usage lowering is deferred:
-    /// `ast::RenderingUsage` has only `type_name` (bare `QualifiedReferenceId`), no
-    /// `subsets`/`redefines` fields at all -- the same gap class as `ViewUsage`.
+    /// `RenderingDefinitionMember` diagnostic. `rendering` usage lowering
+    /// (`DeclarationKind::RenderingUsage`): `ast::RenderingUsage` now carries full
+    /// `subsets`/`redefines`/`ordered`/`nonunique`/`value` field parity with `ViewUsage`
+    /// (UPSTREAM_PARSER_GAPS.md #26, resolved upstream in `cb026cd`) and is lowered the same way.
     RenderingDefinition,
     /// `allocation def` (BNF AllocationDefinition): a type whose owned members share
     /// `DefinitionBody`/`OccurrenceBodyElement` with `OccurrenceDefinition`, mirroring
@@ -339,6 +347,33 @@ enum DeclarationKind {
     /// relationship from. View-specific body members remain out of scope, sharing
     /// `UnsupportedFamily::ViewDefinitionMember` with the `def` form's body walker.
     ViewUsage,
+    /// A package/definition/usage-level `rendering` feature member (BNF RenderingUsage),
+    /// mirroring `lower_view_usage`: ownership, membership, a `:` typing target, and
+    /// `subsets`/`redefines` subsetting relationships (`ast::RenderingUsage` now carries full
+    /// field parity, UPSTREAM_PARSER_GAPS.md #26, resolved upstream in `cb026cd`). The body
+    /// (`RenderingUsageBody`) recurses into nested `view`/`rendering` usage members via
+    /// `lower_view_usage`/`lower_rendering_usage` themselves; anything else stays
+    /// `UnsupportedFamily::PackageMember`.
+    RenderingUsage,
+    /// A package/definition/usage-level `use case` feature member (BNF UseCaseUsage), mirroring
+    /// `lower_case_usage`: ownership, membership, a `:` typing target, and owned-member structure
+    /// via the shared `lower_case_family_def_body` walker. `ast::UseCaseUsage` has no
+    /// `subsets`/`redefines`/multiplicity field at all (unlike `CaseUsage`/`AnalysisCaseUsage`),
+    /// so only the plain `use case <name>[: <Type>] { ... }` header shape reaches this lowering;
+    /// a `[mult] nonunique :> <target>` header (the Systems Library's own base-feature
+    /// declaration idiom) still fails to parse into `UseCaseUsage` at all.
+    UseCaseUsage,
+    /// A package/definition/usage-level `verification` feature member (BNF
+    /// VerificationCaseUsage), mirroring `UseCaseUsage`'s lowering (shares the same field
+    /// shape/limitation: no `subsets`/`redefines`/multiplicity field on `ast::VerificationCaseUsage`).
+    VerificationCaseUsage,
+    /// A package/definition/usage-level `viewpoint` feature member (BNF ViewpointUsage),
+    /// mirroring `lower_viewpoint_def`: ownership, membership, an optional `:` typing target, and
+    /// owned-member structure via the shared `lower_requirement_shaped_body` walker
+    /// `viewpoint def`/`requirement def` use. `ast::ViewpointUsage` has no `subsets`/`redefines`
+    /// field at all (UPSTREAM_PARSER_GAPS.md #25, still open), so a header-level `:>` clause still
+    /// fails to parse into this node.
+    ViewpointUsage,
     /// A package/definition/usage-level `interface` feature member (BNF InterfaceUsage),
     /// mirroring `lower_interface_def`: ownership, membership, an optional `:` typing target,
     /// `subsets`/`redefines` subsetting relationships, and connector-end structure (`connect`/
@@ -2965,16 +3000,12 @@ impl SemanticModelBuilder {
                 self.lower_rendering_def(document, owner, node)?
             }
             PackageBodyElement::ViewUsage(node) => self.lower_view_usage(document, owner, node)?,
-            PackageBodyElement::ViewpointUsage(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
-            PackageBodyElement::RenderingUsage(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::ViewpointUsage(node) => {
+                self.lower_viewpoint_usage(document, owner, node)?
+            }
+            PackageBodyElement::RenderingUsage(node) => {
+                self.lower_rendering_usage(document, owner, node)?
+            }
             PackageBodyElement::ConnectionDef(node) => {
                 self.lower_connection_def(document, owner, node)?
             }
@@ -3013,16 +3044,12 @@ impl SemanticModelBuilder {
             PackageBodyElement::VerificationCaseDef(node) => {
                 self.lower_verification_case_def(document, owner, node)?
             }
-            PackageBodyElement::VerificationCaseUsage(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
-            PackageBodyElement::UseCaseUsage(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::VerificationCaseUsage(node) => {
+                self.lower_verification_case_usage(document, owner, node)?
+            }
+            PackageBodyElement::UseCaseUsage(node) => {
+                self.lower_use_case_usage(document, owner, node)?
+            }
             PackageBodyElement::FeatureDecl(node) => self.push_unsupported(
                 document,
                 UnsupportedFamily::PackageMember,
@@ -3394,6 +3421,15 @@ impl SemanticModelBuilder {
                     PartDefBodyElement::ViewUsage(view_usage) => {
                         self.lower_view_usage(document, Some(declaration), view_usage)?;
                     }
+                    PartDefBodyElement::RenderingUsage(node) => {
+                        self.lower_rendering_usage(document, Some(declaration), node)?;
+                    }
+                    PartDefBodyElement::UseCaseUsage(node) => {
+                        self.lower_use_case_usage(document, Some(declaration), node)?;
+                    }
+                    PartDefBodyElement::VerificationCaseUsage(node) => {
+                        self.lower_verification_case_usage(document, Some(declaration), node)?;
+                    }
                     PartDefBodyElement::ConstraintDef(constraint_def) => {
                         self.lower_constraint_def(document, Some(declaration), constraint_def)?;
                     }
@@ -3480,16 +3516,15 @@ impl SemanticModelBuilder {
                     PartDefBodyElement::Connect(node) => {
                         self.lower_bare_connect(document, declaration, node)?;
                     }
+                    PartDefBodyElement::ViewpointUsage(node) => {
+                        self.lower_viewpoint_usage(document, Some(declaration), node)?;
+                    }
                     PartDefBodyElement::Annotation(_)
                     | PartDefBodyElement::MetadataKeywordUsage(_)
                     | PartDefBodyElement::Other(_)
                     | PartDefBodyElement::FlowUsage(_)
                     | PartDefBodyElement::ExhibitState(_)
-                    | PartDefBodyElement::AllocationUsage(_)
-                    | PartDefBodyElement::ViewpointUsage(_)
-                    | PartDefBodyElement::RenderingUsage(_)
-                    | PartDefBodyElement::UseCaseUsage(_)
-                    | PartDefBodyElement::VerificationCaseUsage(_) => self.push_unsupported(
+                    | PartDefBodyElement::AllocationUsage(_) => self.push_unsupported(
                         document,
                         UnsupportedFamily::PartDefinitionMember,
                         element.span.clone(),
@@ -3697,13 +3732,17 @@ impl SemanticModelBuilder {
             PartUsageBodyElement::Connect(node) => {
                 self.lower_bare_connect(document, owner, node)?;
             }
+            PartUsageBodyElement::UseCaseUsage(node) => {
+                self.lower_use_case_usage(document, Some(owner), node)?;
+            }
+            PartUsageBodyElement::VerificationCaseUsage(node) => {
+                self.lower_verification_case_usage(document, Some(owner), node)?;
+            }
             PartUsageBodyElement::Annotation(_)
             | PartUsageBodyElement::FlowUsage(_)
             | PartUsageBodyElement::SuccessionUsage(_)
             | PartUsageBodyElement::MetadataKeywordUsage(_)
-            | PartUsageBodyElement::IncludeUseCase(_)
-            | PartUsageBodyElement::UseCaseUsage(_)
-            | PartUsageBodyElement::VerificationCaseUsage(_) => self.push_unsupported(
+            | PartUsageBodyElement::IncludeUseCase(_) => self.push_unsupported(
                 document,
                 UnsupportedFamily::PartUsageMember,
                 element.span.clone(),
@@ -7242,6 +7281,9 @@ impl SemanticModelBuilder {
                 self.lower_filter_expression(document, declaration, base)?;
                 self.push_meta_cast_target_reference(document, declaration, *metaclass)
             }
+            Expression::UnaryOp { op, operand } if is_unary_operator(op) => {
+                self.lower_filter_expression(document, declaration, operand)
+            }
             _ => {
                 self.push_unsupported(
                     document,
@@ -8414,6 +8456,60 @@ impl SemanticModelBuilder {
         )
     }
 
+    /// Lowers a package/definition/usage-level `viewpoint` feature member (BNF ViewpointUsage),
+    /// mirroring `lower_viewpoint_def`: ownership, membership, a `:` typing target, and owned
+    /// members via the same shared `lower_requirement_shaped_body` walker. `ast::ViewpointUsage`
+    /// has no `subsets`/`redefines` field at all (UPSTREAM_PARSER_GAPS.md #25, still open), so
+    /// only `name`/`type_name` are lowered as facts.
+    fn lower_viewpoint_usage(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<ParserViewpointUsage>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declared_name(&node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::ViewpointUsage,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::FeatureMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(type_name) = node.value.type_name {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(type_name)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span
+                .clone();
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::FeatureTyping,
+                document,
+                local: type_name,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
+        self.lower_requirement_shaped_body(
+            document,
+            declaration,
+            &node.value.body,
+            UnsupportedFamily::RequirementDefinitionMember,
+        )
+    }
+
     /// Lowers a package-level `concern` member (BNF ConcernUsage), dispatching on
     /// `is_definition` to either `concern def` (`DeclarationKind::ConcernDefinition`, Owning
     /// membership, mirroring `lower_viewpoint_def`'s owned-type shape) or a bare `concern` usage
@@ -8718,11 +8814,118 @@ impl SemanticModelBuilder {
         )
     }
 
+    /// Lowers a package/definition/usage-level `use case` feature member (BNF UseCaseUsage),
+    /// mirroring `lower_case_usage`. Unlike `CaseUsage`/`AnalysisCaseUsage`, `ast::UseCaseUsage`
+    /// has no `subsets`/`redefines`/multiplicity field at all (see
+    /// `DeclarationKind::UseCaseUsage`), so only `name`/`type_name` are lowered as facts; owned
+    /// members are walked through the shared `lower_case_family_def_body`.
+    fn lower_use_case_usage(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<ParserUseCaseUsage>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declared_name(&node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::UseCaseUsage,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::FeatureMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(type_name) = node.value.type_name {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(type_name)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span
+                .clone();
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::FeatureTyping,
+                document,
+                local: type_name,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
+        self.lower_case_family_def_body(
+            document,
+            declaration,
+            &node.value.body,
+            UnsupportedFamily::UseCaseDefinitionMember,
+        )
+    }
+
+    /// Lowers a package/definition/usage-level `verification` feature member (BNF
+    /// VerificationCaseUsage), mirroring `lower_use_case_usage` (shares the same field
+    /// shape/limitation: no `subsets`/`redefines`/multiplicity field on
+    /// `ast::VerificationCaseUsage`).
+    fn lower_verification_case_usage(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<ParserVerificationCaseUsage>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declared_name(&node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::VerificationCaseUsage,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::FeatureMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(type_name) = node.value.type_name {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(type_name)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span
+                .clone();
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::FeatureTyping,
+                document,
+                local: type_name,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
+        self.lower_case_family_def_body(
+            document,
+            declaration,
+            &node.value.body,
+            UnsupportedFamily::VerificationCaseDefinitionMember,
+        )
+    }
+
     /// Lowers a `verification def` (BNF VerificationCaseDefinition), mirroring `lower_case_def`.
     /// Verification-specific semantics are explicitly out of scope; unrecognized body elements
     /// fall through to `unsupported_verification_case_definition_member`. `verification` usage
-    /// lowering is deferred entirely (UPSTREAM_PARSER_GAPS.md #5): `VerificationCaseUsage`
-    /// silently drops parsed `:>`/`:>>` clauses, unlike `VerificationCaseDef`.
+    /// lowering (`DeclarationKind::VerificationCaseUsage`, `lower_verification_case_usage`): see
+    /// its own doc comment for the remaining `subsets`/`redefines`/multiplicity gap.
     fn lower_verification_case_def(
         &mut self,
         document: DocumentId,
@@ -9857,6 +10060,93 @@ impl SemanticModelBuilder {
                         UnsupportedFamily::ViewDefinitionMember,
                         element.span.clone(),
                     ),
+                }
+            }
+        }
+        Ok(())
+    }
+
+    /// Lowers a package/definition/usage-level `rendering` feature member (BNF RenderingUsage),
+    /// mirroring `lower_view_usage`: ownership, membership, a `:` typing target, and
+    /// `subsets`/`redefines` subsetting relationships. `ast::RenderingUsage` now carries full
+    /// field parity with `ViewUsage` (UPSTREAM_PARSER_GAPS.md #26, resolved upstream in
+    /// `cb026cd`) -- `is_abstract`/`multiplicity`/`ordered`/`nonunique`/`value` are not modeled as
+    /// distinct facts here (see `DeclarationKind::RenderingUsage`).
+    fn lower_rendering_usage(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<ParserRenderingUsage>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declared_name(&node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::RenderingUsage,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::FeatureMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(type_name) = node.value.type_name {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(type_name)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span
+                .clone();
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::FeatureTyping,
+                document,
+                local: type_name,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
+        if let Some(relationship) = &node.value.subsets {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.redefines {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        self.lower_rendering_usage_body(document, declaration, &node.value.body)
+    }
+
+    /// Body walker for `rendering` usage bodies (`RenderingUsageBody`/
+    /// `RenderingUsageBodyElement`). Nested `view`/`rendering` usage members recurse through
+    /// `lower_view_usage`/`lower_rendering_usage` themselves (the same shape a package-level
+    /// `view`/`rendering` member uses); anything else falls through to
+    /// `UnsupportedFamily::PackageMember`, matching the top-level dispatch this body's owner was
+    /// itself lowered from.
+    fn lower_rendering_usage_body(
+        &mut self,
+        document: DocumentId,
+        declaration: DeclarationId,
+        body: &RenderingUsageBody,
+    ) -> Result<(), ConstructionError> {
+        if let RenderingUsageBody::Brace { elements } = body {
+            for element in elements {
+                match &element.value {
+                    RenderingUsageBodyElement::Error(error) => {
+                        self.push_recovery(document, error.span.clone());
+                    }
+                    RenderingUsageBodyElement::Doc(_) => {}
+                    RenderingUsageBodyElement::ViewUsage(node) => {
+                        self.lower_view_usage(document, Some(declaration), node)?;
+                    }
+                    RenderingUsageBodyElement::Rendering(node) => {
+                        self.lower_rendering_usage(document, Some(declaration), node)?;
+                    }
                 }
             }
         }
@@ -13461,6 +13751,96 @@ mod tests {
     }
 
     #[test]
+    fn rendering_usage_typed_and_subsetting_resolve() {
+        // UPSTREAM_PARSER_GAPS.md #26 was resolved upstream in `cb026cd`: `RenderingUsage` now
+        // carries `subsets`/`redefines` fields (full parity with `ViewUsage`), so package-level
+        // `rendering` usage lowering (previously unconditionally `unsupported_package_member`) is
+        // no longer deferred.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \trendering def R;\n\
+             \trendering renderings : R;\n\
+             \trendering asTree : R :> renderings;\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::asTree\"))) (kind rendering)"),
+            "expected a rendering usage declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind typing) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::asTree\")))"
+            ) && output.contains(
+                "(target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::R\")))"
+            ),
+            "expected asTree's featureTyping of R to resolve, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind subsetting) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::asTree\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::renderings\")))"
+            ),
+            "expected asTree's subsetting of renderings to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn use_case_usage_and_verification_case_usage_at_package_scope_resolve() {
+        // `UseCaseUsage`/`VerificationCaseUsage` were previously unconditionally
+        // `unsupported_package_member` at package scope even for the plain `use case <name> :
+        // <Type> { ... }` header shape that needs no `subsets`/`redefines`/multiplicity field
+        // (still missing upstream, UPSTREAM_PARSER_GAPS.md's Gap 25/27/28 gap class).
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tuse case def UC;\n\
+             \tuse case uc : UC;\n\
+             \tverification def V;\n\
+             \tverification v : V;\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::uc\"))) (kind use-case)"),
+            "expected a use case usage declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::v\"))) (kind verification)"),
+            "expected a verification case usage declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind typing) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::uc\")))"
+            ) && output.contains(
+                "(target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::UC\")))"
+            ),
+            "expected uc's featureTyping of UC to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn viewpoint_usage_at_package_scope_resolves() {
+        // `ViewpointUsage` was previously unconditionally `unsupported_package_member`.
+        // `ast::ViewpointUsage` still has no `subsets`/`redefines` field (UPSTREAM_PARSER_GAPS.md
+        // #25, still open), so only the plain `viewpoint <name>[: <Type>]` header shape lowers.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tviewpoint def VP;\n\
+             \tviewpoint vp : VP;\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::vp\"))) (kind viewpoint)"),
+            "expected a viewpoint usage declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind typing) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::vp\")))"
+            ) && output.contains(
+                "(target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::VP\")))"
+            ),
+            "expected vp's featureTyping of VP to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
     fn interface_usage_declaration_typed_by_an_interface_def_resolves() {
         // UPSTREAM_PARSER_GAPS.md #6 was resolved upstream in `0757de13`: all three
         // `InterfaceUsage` variants now carry `subsets`/`redefines` fields. Nested in a `part def`
@@ -15207,6 +15587,38 @@ mod tests {
                 && output.contains("(status unresolved)"),
             "expected the filter's Safety::isMandatory operand reference to be resolved-attempted \
              and stay explicitly unresolved (not unsupported), got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn filter_with_not_unary_operator_resolves_its_operand() {
+        // `lower_filter_expression` previously had no `Expression::UnaryOp` arm at all (unlike
+        // `lower_calc_expression`/`lower_constraint_expression`, which both already recurse
+        // through `not`), so `not <operand>` inside a `filter` statement always fell to the
+        // blanket `unsupported_package_member` diagnostic even though the operand itself is an
+        // ordinary resolvable reference (`kerml/filtering.md`'s `filter (... and not
+        // Type::isAbstract) or ...`).
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tmetadata def Safety {\n\
+             \t\tattribute isMandatory : Boolean;\n\
+             \t}\n\
+             \tpackage 'Not Mandatory' {\n\
+             \t\tpublic import Demo::**;\n\
+             \t\tfilter not Safety::isMandatory;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            !output.contains("unsupported_package_member"),
+            "expected `not Safety::isMandatory` to no longer trip the blanket unsupported \
+             diagnostic, got:\n{output}"
+        );
+        assert!(
+            output.contains("(kind expressionOperand)")
+                && output.contains("(authored-target \"Safety::isMandatory\")"),
+            "expected the filter's `not`-wrapped operand reference to still be lowered and \
+             attempted, got:\n{output}"
         );
     }
 
