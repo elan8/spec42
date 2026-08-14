@@ -2163,6 +2163,30 @@ mod tests {
         visited
     }
 
+    /// How many cursor/span, name-range and effective-scope entries one completion query visits.
+    fn visible_members_cost(
+        sources: &[(&str, &str)],
+        document: &str,
+        needle: &str,
+        qualifier: Option<&str>,
+    ) -> u64 {
+        let published = publication_for(sources);
+        let source = sources
+            .iter()
+            .find(|(identity, _)| *identity == document)
+            .expect("the probed document is in the workspace")
+            .1;
+        let position = position_of(source, needle);
+        let (outcome, visited) = crate::model::resolver::measure_visited_index_entries(|| {
+            published.visible_members(document, position, qualifier)
+        });
+        assert!(
+            matches!(outcome, QueryOutcome::Resolved(_)),
+            "the visible-members query must resolve, got: {outcome:?}"
+        );
+        visited
+    }
+
     /// The probed document, unchanged across every variant below.
     const PROBED: &str = "package P {\n  part def Wheel;\n  part w : Wheel;\n}";
 
@@ -2228,6 +2252,56 @@ mod tests {
             small, large,
             "500 unrelated references changed the selected target's query cost"
         );
+    }
+
+    /// Cursor ownership and effective-scope enumeration are indexed: growing an unrelated
+    /// package changes neither the span-tree descent nor the selected scopes' member ranges.
+    #[test]
+    fn visible_members_cost_is_independent_of_unrelated_scope_contents() {
+        let thin_other = format!("package Other {{\n{}}}\n", padding(1));
+        let fat_other = format!("package Other {{\n{}}}\n", padding(500));
+        let cost = |other: &str, qualifier| {
+            visible_members_cost(
+                &[
+                    ("memory://i.sysml", PROBED),
+                    ("memory://other.sysml", other),
+                ],
+                "memory://i.sysml",
+                ": Wheel",
+                qualifier,
+            )
+        };
+        assert_eq!(
+            cost(&thin_other, None),
+            cost(&fat_other, None),
+            "499 unrelated members changed unqualified completion cost"
+        );
+        assert_eq!(
+            cost(&thin_other, Some("P")),
+            cost(&fat_other, Some("P")),
+            "499 unrelated members changed qualified completion cost"
+        );
+    }
+
+    /// A qualifier is resolved through lexical scope indexes. Two same-name candidates therefore
+    /// remain explicitly ambiguous instead of having their members silently merged by display
+    /// name.
+    #[test]
+    fn visible_members_keeps_ambiguous_qualifier_scopes_separate() {
+        let source = "package P { part def A; } package P { part def B; } package Use { part x; }";
+        let published = publication_for(&[("memory://i.sysml", source)]);
+        let outcome =
+            published.visible_members("memory://i.sysml", position_of(source, "part x"), Some("P"));
+        let QueryOutcome::Ambiguous(candidates) = outcome else {
+            panic!("expected ambiguous qualifier scopes, got: {outcome:?}");
+        };
+        assert_eq!(candidates.len(), 2);
+        let mut names = candidates
+            .iter()
+            .flat_map(|members| members.iter().map(|member| member.name.as_ref()))
+            .collect::<Vec<_>>();
+        names.sort_unstable();
+        assert_eq!(names, ["A", "B"]);
     }
 
     /// A preceding sibling that does not contain the position is skipped whole, not descended

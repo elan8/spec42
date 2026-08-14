@@ -709,6 +709,65 @@ impl ReverseReferenceIndex {
     }
 }
 
+/// Effective member enumeration for every lexical scope, including the root scope.
+///
+/// This is the persistent, frequently-enumerated scope-map family: owned, imported and inherited
+/// candidates are merged once at publication. Lookup by a particular name continues to use the
+/// canonical origin-specific indexes so shadowing and ambiguity retain their semantic meaning.
+#[derive(Debug)]
+struct EffectiveScopeIndex {
+    ranges: Box<[(u32, u32)]>,
+    members: Box<[DeclarationId]>,
+}
+
+impl EffectiveScopeIndex {
+    fn build(
+        declarations: usize,
+        direct: &NameIndex,
+        imported: &NameIndex,
+        inherited: &NameIndex,
+    ) -> Result<Self, ResolutionError> {
+        let mut ranges = Vec::with_capacity(declarations.saturating_add(1));
+        let mut members = Vec::new();
+        for slot in 0..=declarations {
+            let owner = if slot == 0 {
+                None
+            } else {
+                Some(DeclarationId::from_index(slot - 1).map_err(|_| ResolutionError::Capacity)?)
+            };
+            let mut scope_members = Vec::new();
+            for index in [direct, imported, inherited] {
+                for (_, candidates) in index.entries_for_owner(owner) {
+                    scope_members.extend_from_slice(candidates);
+                }
+            }
+            scope_members.sort_unstable();
+            scope_members.dedup();
+            let start = u32::try_from(members.len()).map_err(|_| ResolutionError::Capacity)?;
+            members.extend(scope_members);
+            let end = u32::try_from(members.len()).map_err(|_| ResolutionError::Capacity)?;
+            ranges.push((start, end));
+        }
+        Ok(Self {
+            ranges: ranges.into_boxed_slice(),
+            members: members.into_boxed_slice(),
+        })
+    }
+
+    fn members(&self, owner: Option<DeclarationId>) -> &[DeclarationId] {
+        let slot = owner.map_or(0usize, |owner| owner.index().saturating_add(1));
+        let Some(&(start, end)) = self.ranges.get(slot) else {
+            return &[];
+        };
+        let members = self
+            .members
+            .get(start as usize..end as usize)
+            .unwrap_or_default();
+        record_visited_index_entries(members.len());
+        members
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum EffectiveVisibility {
     Public,
@@ -839,9 +898,11 @@ impl NameIndex {
         let Ok(index) = self.keys.binary_search(&key) else {
             return &[];
         };
-        self.ranges[index]
+        let candidates = self.ranges[index]
             .slice(&self.candidates)
-            .unwrap_or_default()
+            .unwrap_or_default();
+        record_visited_index_entries(candidates.len());
+        candidates
     }
 
     fn entries_for_owner(
@@ -929,6 +990,7 @@ struct ImpliedRelationship {
 struct ResolutionResults {
     outcomes: Box<[ResolutionStatus]>,
     ambiguous_candidates: Box<[DeclarationId]>,
+    inherited_names: NameIndex,
     solver_status: SolverStatus,
     implied_relationships: Box<[ImpliedRelationship]>,
     #[cfg(test)]
@@ -1111,6 +1173,7 @@ pub(crate) struct ResolvedSemanticModel {
     documents: DocumentIndex,
     memberships: MembershipIndex,
     reverse_references: ReverseReferenceIndex,
+    effective_scopes: EffectiveScopeIndex,
     facts: inspection::ElementFactIndex,
     resolution: ResolutionResults,
     evaluation: Box<[EvaluationFact]>,
@@ -1424,44 +1487,35 @@ impl ResolvedSemanticModel {
         ) {
             return QueryOutcome::Incomplete;
         }
-        let Some(document_id) = self
-            .storage
-            .documents
-            .iter()
-            .position(|candidate| candidate.identity.as_ref() == document)
-            .and_then(|index| DocumentId::from_index(index).ok())
-        else {
+        let Some(document_id) = self.documents.document(&self.storage, document) else {
             return QueryOutcome::Unresolved;
         };
-        let owner = self
-            .storage
-            .declarations
-            .iter()
-            .enumerate()
-            .filter_map(|(index, declaration)| {
-                (declaration.document == document_id
-                    && document_range(&self.storage, document_id, &declaration.span)
-                        .ok()
-                        .is_some_and(|range| range_contains(range, position)))
-                .then(|| DeclarationId::from_index(index).ok())
-                .flatten()
-            })
-            .max_by_key(|id| declaration_depth(&self.storage, *id));
+        let Some(positions) = self.documents.positions(document_id) else {
+            return QueryOutcome::Unresolved;
+        };
+        let owner = positions.spans.innermost_containing(position);
         let mut ids = Vec::new();
-        let mut scopes = Vec::new();
         if let Some(qualifier) = qualifier {
-            scopes.extend(self.storage.declarations.iter().enumerate().filter_map(
-                |(index, declaration)| {
-                    (declaration.name.and_then(|name| self.storage.symbol(name)) == Some(qualifier))
-                        .then(|| DeclarationId::from_index(index).ok())
-                        .flatten()
-                        .map(Some)
-                },
-            ));
+            let scopes = match self.resolve_qualifier_scopes(owner, qualifier) {
+                Ok(scopes) if !scopes.is_empty() => scopes,
+                Ok(_) => return QueryOutcome::Unresolved,
+                Err(_) => return QueryOutcome::Incomplete,
+            };
+            if scopes.len() > 1 {
+                let candidates = scopes
+                    .into_iter()
+                    .map(|scope| {
+                        self.visible_member_records(self.effective_scopes.members(Some(scope)))
+                    })
+                    .collect::<Vec<_>>()
+                    .into_boxed_slice();
+                return QueryOutcome::Ambiguous(candidates);
+            }
+            ids.extend_from_slice(self.effective_scopes.members(Some(scopes[0])));
         } else {
             let mut scope = owner;
             loop {
-                scopes.push(scope);
+                ids.extend_from_slice(self.effective_scopes.members(scope));
                 let Some(current) = scope else {
                     break;
                 };
@@ -1471,17 +1525,71 @@ impl ResolvedSemanticModel {
                     .and_then(|declaration| declaration.owner);
             }
         }
-        for scope in scopes {
-            for (_, candidates) in self.direct_names.entries_for_owner(scope) {
-                ids.extend_from_slice(candidates);
-            }
-            for (_, candidates) in self.effective_imports.entries_for_owner(scope) {
-                ids.extend_from_slice(candidates);
-            }
-            if let Some(scope) = scope {
-                collect_inherited_members(self, scope, &mut ids);
-            }
+        let members = self.visible_member_records(&ids);
+        if recovered {
+            QueryOutcome::Recovered(members)
+        } else if unsupported {
+            QueryOutcome::UnsupportedWith(members)
+        } else {
+            QueryOutcome::Resolved(members)
         }
+    }
+
+    fn resolve_qualifier_scopes(
+        &self,
+        owner: Option<DeclarationId>,
+        qualifier: &str,
+    ) -> Result<Vec<DeclarationId>, ResolutionError> {
+        let Some(segments) = qualifier
+            .split("::")
+            .filter(|segment| !segment.is_empty())
+            .map(|segment| self.storage.symbols.find(segment))
+            .collect::<Option<Vec<_>>>()
+        else {
+            return Ok(Vec::new());
+        };
+        let Some(first) = segments.first().copied() else {
+            return Ok(Vec::new());
+        };
+        let mut candidates = Vec::new();
+        let mut work = ResolutionWork::default();
+        lookup_lexical_into(
+            &self.storage.declarations,
+            &ResolutionIndexes {
+                direct_names: &self.direct_names,
+                exported_names: &self.direct_names,
+                effective_imports: Some(&self.effective_imports),
+                exported_imports: Some(&self.effective_imports),
+                inherited_names: Some(&self.resolution.inherited_names),
+            },
+            owner,
+            first,
+            DeclarationDomain::Any,
+            &mut candidates,
+            &mut work,
+        )?;
+        let mut next = Vec::new();
+        for segment in &segments[1..] {
+            next.clear();
+            for candidate in candidates.iter().copied() {
+                let direct = self.direct_names.candidates(Some(candidate), *segment);
+                if direct.is_empty() {
+                    next.extend_from_slice(
+                        self.effective_imports.candidates(Some(candidate), *segment),
+                    );
+                } else {
+                    next.extend_from_slice(direct);
+                }
+            }
+            next.sort_unstable();
+            next.dedup();
+            std::mem::swap(&mut candidates, &mut next);
+        }
+        Ok(candidates)
+    }
+
+    fn visible_member_records(&self, ids: &[DeclarationId]) -> Box<[VisibleMember]> {
+        let mut ids = ids.to_vec();
         ids.sort_unstable();
         ids.dedup();
         let mut members = ids
@@ -1513,15 +1621,9 @@ impl ResolvedSemanticModel {
                 .then_with(|| a.declaring_document.cmp(&b.declaring_document))
                 .then_with(|| a.declaration_range.cmp(&b.declaration_range))
         });
-        let members = members.into_boxed_slice();
-        if recovered {
-            QueryOutcome::Recovered(members)
-        } else if unsupported {
-            QueryOutcome::UnsupportedWith(members)
-        } else {
-            QueryOutcome::Resolved(members)
-        }
+        members.into_boxed_slice()
     }
+
     fn diagnostic_records(&self) -> Result<Box<[DiagnosticRecord]>, ResolutionError> {
         let mut records = Vec::with_capacity(self.storage.references.len());
         for (index, reference) in self.storage.references.iter().enumerate() {
@@ -1767,18 +1869,6 @@ fn location_order(left: &SourceLocation, right: &SourceLocation) -> std::cmp::Or
         .then_with(|| left.role.cmp(&right.role))
 }
 
-fn declaration_depth(storage: &SemanticModelStorage, mut declaration: DeclarationId) -> usize {
-    let mut depth = 0usize;
-    while let Some(owner) = storage
-        .declaration(declaration)
-        .and_then(|value| value.owner)
-    {
-        depth = depth.saturating_add(1);
-        declaration = owner;
-    }
-    depth
-}
-
 fn declaration_qualified_name(
     storage: &SemanticModelStorage,
     mut declaration: DeclarationId,
@@ -1796,40 +1886,6 @@ fn declaration_qualified_name(
     }
     names.reverse();
     Some(names.join("::"))
-}
-
-fn collect_inherited_members(
-    model: &ResolvedSemanticModel,
-    owner: DeclarationId,
-    output: &mut Vec<DeclarationId>,
-) {
-    let mut owners = vec![owner];
-    let mut cursor = 0;
-    while let Some(current) = owners.get(cursor).copied() {
-        cursor += 1;
-        for (index, reference) in model.storage.references.iter().enumerate() {
-            if reference.source != current
-                || !matches!(
-                    reference.kind,
-                    ReferenceKind::Subclassification | ReferenceKind::FeatureTyping
-                )
-            {
-                continue;
-            }
-            let Ok(id) = AuthoredReferenceId::from_index(index) else {
-                continue;
-            };
-            let Some(ResolutionStatus::Resolved(target)) = model.resolution.outcome(id) else {
-                continue;
-            };
-            if !owners.contains(&target) {
-                owners.push(target);
-            }
-            for (_, candidates) in model.direct_names.entries_for_owner(Some(target)) {
-                output.extend_from_slice(candidates);
-            }
-        }
-    }
 }
 
 impl SemanticModelStorage {
@@ -1864,6 +1920,12 @@ impl SemanticModelStorage {
         let documents = DocumentIndex::build(&self)?;
         let reverse_references =
             ReverseReferenceIndex::build(self.declarations.len(), &resolution)?;
+        let effective_scopes = EffectiveScopeIndex::build(
+            self.declarations.len(),
+            &direct_names,
+            &effective_imports,
+            &resolution.inherited_names,
+        )?;
         let facts = inspection::ElementFactIndex::build(&self, &resolution, &evaluation)?;
         Ok(ResolvedSemanticModel {
             storage: self,
@@ -1873,6 +1935,7 @@ impl SemanticModelStorage {
             documents,
             memberships,
             reverse_references,
+            effective_scopes,
             facts,
             resolution,
             evaluation,
@@ -2211,6 +2274,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         SolverStatus::NonConverged
     };
 
+    let mut inherited_names = NameIndex::build(Vec::new())?;
     if converged {
         for index in subclass_slots.iter().copied() {
             work.downstream_evaluations = work
@@ -2361,7 +2425,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         // set, and a specialization cycle is detected explicitly rather than looped forever.
         let (ancestor_closures, cyclic_ancestry) =
             build_ancestor_closures(declarations, references, &outcomes)?;
-        let inherited_names = build_inherited_name_index(&direct_names, &ancestor_closures)?;
+        inherited_names = build_inherited_name_index(&direct_names, &ancestor_closures)?;
 
         for index in typing_slots.iter().copied() {
             work.downstream_evaluations = work
@@ -2435,7 +2499,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         // `inherited_names` above, which does not depend on FeatureTyping at all. Example: `need :
         // Need { attribute :>> status = ...; }` where `status` is owned by `ManagedRequirement`,
         // reached only via `Need -> UserRequirement -> ManagedRequirement`.
-        let inherited_names = extend_inherited_names_with_usage_typing(
+        inherited_names = extend_inherited_names_with_usage_typing(
             &direct_names,
             inherited_names,
             references,
@@ -2577,6 +2641,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         ResolutionResults {
             outcomes: outcomes.into_boxed_slice(),
             ambiguous_candidates: ambiguous_candidates.into_boxed_slice(),
+            inherited_names,
             solver_status,
             implied_relationships,
             #[cfg(test)]
