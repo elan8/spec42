@@ -192,8 +192,8 @@ fn load_corpus(root: &Path, filter: Option<&str>) -> Result<(usize, Vec<CorpusDo
         if filter.is_some_and(|filter| !relative.contains(filter)) {
             continue;
         }
-        let fixture = fs::read_to_string(&path)
-            .map_err(|error| format!("{}: {error}", path.display()))?;
+        let fixture =
+            fs::read_to_string(&path).map_err(|error| format!("{}: {error}", path.display()))?;
         let sources = parse_source_documents(&fixture, &relative)?;
         snapshot_count += 1;
         for (ordinal, source) in sources.into_iter().enumerate() {
@@ -207,7 +207,9 @@ fn load_corpus(root: &Path, filter: Option<&str>) -> Result<(usize, Vec<CorpusDo
 }
 
 fn collect_markdown(directory: &Path, paths: &mut Vec<PathBuf>) -> Result<(), String> {
-    for entry in fs::read_dir(directory).map_err(|error| format!("{}: {error}", directory.display()))? {
+    for entry in
+        fs::read_dir(directory).map_err(|error| format!("{}: {error}", directory.display()))?
+    {
         let path = entry.map_err(|error| error.to_string())?.path();
         if path.is_dir() {
             collect_markdown(&path, paths)?;

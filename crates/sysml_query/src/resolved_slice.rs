@@ -9,8 +9,8 @@ pub use sysml_resolution::{
     MembershipRole, MultiplicityBound, MultiplicityFacts, NavigationTarget, OccurrenceRole,
     PortionKind, PublicationCompleteness, QueryOutcome, ReferenceAt, RelationshipProvenance,
     RelationshipTarget, RenameOutcome, RequirementConstraintKind, SourceLocation,
-    StateSubactionKind, SymbolEntry, SymbolIdentity, TextPosition, TextRange, ValueKind, Visibility,
-    VisibilityProvenance, VisibleMember,
+    StateSubactionKind, SymbolEntry, SymbolIdentity, TextPosition, TextRange, ValueKind,
+    Visibility, VisibilityProvenance, VisibleMember,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -847,8 +847,14 @@ mod tests {
         let (measured, _) = build_measured(request()).unwrap();
         let mut ordinary_output = String::new();
         let mut measured_output = String::new();
-        ordinary.debug().write_semantic_sexpr(&mut ordinary_output).unwrap();
-        measured.debug().write_semantic_sexpr(&mut measured_output).unwrap();
+        ordinary
+            .debug()
+            .write_semantic_sexpr(&mut ordinary_output)
+            .unwrap();
+        measured
+            .debug()
+            .write_semantic_sexpr(&mut measured_output)
+            .unwrap();
         assert_eq!(ordinary_output, measured_output);
     }
 }
