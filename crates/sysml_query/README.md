@@ -10,6 +10,21 @@ candidates from the parser-owned immutable publication. Language-service and LSP
 these services without graph or textual-lookup fallbacks. Other cutover rows and some physical
 query-index representations remain transitional.
 
+`PublishedModel::types()` answers direct types, effective types with their origin, direct and
+transitive supertypes, direct subtypes, featuring types, and conformance. Conformance is an
+explicit `Conforms`/`DoesNotConform`/`Indeterminate` outcome rather than a boolean, so an
+unresolved or cyclic hierarchy cannot be reported as a type violation. `all_supertypes` is
+reflexive, matching the OMG Pilot's `allSupertypes`, and the specialization scope is a query
+parameter so one closure answers both the Pilot's all-subkinds reading and the narrower
+classifier-only one. The producers behind it are published at the barrier; the legacy graph's
+`specializes_transitively`/`feature_typing_conforms` and their consumers migrate with the
+diagnostics and views slices.
+
+Publications admit the whole configured library set. `LibraryStratum::build` parses and solves a
+library once so later publications reuse it, which is what makes admitting the standard library
+affordable on a rebuild-per-keystroke host; see `planning/RESOLUTION_LAYER_DESIGN.md` §5.5.1 for
+the conditions under which that reuse is discarded.
+
 The standalone snapshot pipeline now selects only the `immutable-resolution` facade feature. Its
 transitive dependency closure is `sysml_query -> sysml_resolution -> parser-next` and cannot reach
 `sysml_model` or `sysml_diagnostics`; unsupported syntax and recovery remain explicit incomplete
