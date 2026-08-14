@@ -478,3 +478,34 @@ found; all 51 fixtures are genuine upstream parser gaps**, grouped into Gaps 15-
   `sysml_resolution` (commit `422e2216`), not a parser gap.
 - Enum definitions (`enum def`, `EnumeratedValue`) — investigated, typed AST already exposes
   stable per-literal identity/spans. Fixed entirely in `sysml_resolution` (commit `99d5ea39`).
+
+- Gap 36. KerML `const` end-feature prefix (`const end [1] feature a;` / `const end feature
+  b;`, representative fixture: `test/snapshots/kerml/associations.md`, `assoc struct C { ... }`)
+  is not recognized as a keyword anywhere in the pinned `cb026cd` checkout: a repo-wide grep of
+  `src/parser/*.rs` and `src/ast/*.rs` for `"const"`/`is_const` finds no such keyword or flag
+  (only unrelated `const fn`/`Rust const` declarations and the distinct `constant`/`is_constant`
+  KerML `RefPrefix` keyword, which is a different token). `KermlFeatureMember`
+  (`src/ast/kerml_fallback.rs:274-329`) has a `is_end` flag and five other prefix-flag fields
+  (`is_member`/`is_derived`/`is_abstract`/`is_composite`/`is_portion`/`is_var`) but no `is_const`
+  -- so this is not a case of an existing flag the resolver merely fails to read (unlike
+  `abstract`, which is represented and simply left semantically inert for reference resolution).
+  Confirmed by dumping the typed AST directly (temporary `examples/dump_ast.rs` in
+  `crates/sysml_resolution`, removed after use) for `assoc struct C { const end [1] feature a;
+  const end feature b; }`: the parser does **not** attach `const` to the following `end`
+  member at all. Instead it mis-parses the bare word `const` as an independent package-body
+  member of kind `Expression(FeatureRef(QualifiedReferenceId(..)))` -- i.e. a bare
+  expression-statement referencing an identifier named `const` -- immediately followed by a
+  *separate* `KermlFeature(KermlFeatureMember { is_end: true/false, name: "a"/"b", ... })` member
+  for the `end ... feature ...;` remainder, with no relationship between the two nodes. This
+  is why `sysml_resolution`/the snapshot emits `unresolved_reference` pointing exactly at the
+  `const` token's span (columns 2-7 on both fixture lines) rather than any diagnostic on the
+  `end` member itself: the resolver is correctly reporting that a dangling `FeatureRef` to a
+  nonexistent element named `const` cannot be resolved. This is a structural parser gap (missing
+  grammar production / misrouted fallback), not a missing lowering in `sysml_resolution` -- there
+  is no field to read and no correct AST shape to attach a `const` semantic to. Needs a `const`
+  prefix keyword added to `KermlFeatureMember` (and/or wherever `KermlEndMember`'s owned feature
+  is parsed) in the upstream parser, mirroring how `is_abstract`/`is_var`/`is_derived` are
+  recognized, before `sysml_resolution` can represent or safely ignore it. Not yet filed
+  upstream as one of the tracked issues against `feat/gh-119-arena-backed-references`
+  (elan8/sysml-v2-parser#121) as of this writing -- filing is the next step before revisiting
+  this fixture.
