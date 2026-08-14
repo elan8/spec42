@@ -120,8 +120,8 @@ package 'Message Payload Example' {
     (declaration (id (node (document "memory://snapshot/27_message_payload_example.md") (qualified-name "Message Payload Example::SetSpeed"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/27_message_payload_example.md") (qualified-name "Message Payload Example::vehicle1"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "vehicle"))))
     (declaration (id (node (document "memory://snapshot/27_message_payload_example.md") (qualified-name "Message Payload Example::vehicle1::engineController"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "EngineController"))))
-    (declaration (id (node (document "memory://snapshot/27_message_payload_example.md") (qualified-name "Message Payload Example::vehicle1::engineController::fuelCommandForwarded"))) (kind occurrence) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/27_message_payload_example.md") (qualified-name "Message Payload Example::vehicle1::engineController::fuelCommandReceived"))) (kind occurrence) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/27_message_payload_example.md") (qualified-name "Message Payload Example::vehicle1::engineController::fuelCommandForwarded"))) (kind occurrence) (membership (kind feature) (visibility default)) (facts (modifiers event)))
+    (declaration (id (node (document "memory://snapshot/27_message_payload_example.md") (qualified-name "Message Payload Example::vehicle1::engineController::fuelCommandReceived"))) (kind occurrence) (membership (kind feature) (visibility default)) (facts (modifiers event)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/27_message_payload_example.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))

@@ -46,13 +46,13 @@ package DefaultValueTest {
   (declarations
     (declaration (id (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V"))) (kind part-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V::m"))) (kind attribute) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V::n"))) (kind attribute) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V::m"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind) (default true)))
+    (declaration (id (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V::n"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)))
     (declaration (id (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::W"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "V"))))
-    (declaration (id (node (document "memory://snapshot/default_value_test.md") (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "m")) (expressionOperand (reference "n"))))
+    (declaration (id (node (document "memory://snapshot/default_value_test.md") (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind) (default true)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "m")) (expressionOperand (reference "n"))))
     (declaration (id (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::v1"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "V"))))
-    (declaration (id (node (document "memory://snapshot/default_value_test.md") (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "m"))))
-    (declaration (id (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::v2"))) (kind part) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/default_value_test.md") (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "m"))))
+    (declaration (id (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::v2"))) (kind part) (membership (kind feature) (visibility default)) (feature-value (kind bind)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::W"))) (kind specialization) (ordinal 0))

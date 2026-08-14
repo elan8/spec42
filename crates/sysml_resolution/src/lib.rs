@@ -1559,9 +1559,10 @@ mod tests {
     /// unconditionally flagged unsupported rather than dispatched through the shared
     /// `lower_part_usage_body_element` -- confirmed against the Systems Library's `bind start =
     /// done { doc /* ... */ }` shape (`Systems Library/Actions.sysml`): a `doc` comment nested in a
-    /// bind body must be silently ignored, not reported.
+    /// bind body must be recognized and bound to the owning `bind` declaration, not reported as an
+    /// unsupported member.
     #[test]
-    fn bind_body_doc_comment_is_ignored() {
+    fn bind_body_doc_comment_is_recorded() {
         let sexpr = semantic_sexpr_for(
             r#"package P { action def Act { first start; then done; bind start = done { doc /* note */ } } }"#,
         );
@@ -1569,9 +1570,13 @@ mod tests {
             !sexpr.contains("unsupported_action_definition_member"),
             "did not expect unsupported_action_definition_member for a doc comment in a bind body, got: {sexpr}"
         );
+        assert!(
+            sexpr.contains(r#"(documentation (doc (text " note ")))"#),
+            "expected the bind body's doc comment recorded against the bind declaration, got: {sexpr}"
+        );
     }
 
-    /// Same as `bind_body_doc_comment_is_ignored`, but for real (non-`doc`) content: a nested
+    /// Same as `bind_body_doc_comment_is_recorded`, but for real (non-`doc`) content: a nested
     /// `part` usage inside a `bind ... { ... }` body must lower as its own `part` declaration
     /// through the shared `lower_part_usage_body_element`.
     #[test]
@@ -1586,6 +1591,196 @@ mod tests {
         assert!(
             !sexpr.contains("unsupported_action_definition_member"),
             "did not expect unsupported_action_definition_member, got: {sexpr}"
+        );
+    }
+
+    // --- Canonical declaration facts -------------------------------------------------------
+    //
+    // These cover the authored presentation-adjacent facts (multiplicity, collection and
+    // declaration modifiers, direction, short name, documentation, and the authored feature-value
+    // spelling) recorded at each `lower_*` site. Every fact below has exactly one typed parser
+    // field behind it; none is recovered by re-reading authored text.
+
+    #[test]
+    fn declared_multiplicity_bounds_are_recorded_as_literals() {
+        let sexpr = semantic_sexpr_for("package P { part def Wheel; part wheels : Wheel[0..4]; }");
+        assert!(
+            sexpr.contains("(multiplicity (lower 0) (upper 4))"),
+            "expected literal multiplicity bounds, got: {sexpr}"
+        );
+    }
+
+    #[test]
+    fn a_bare_bound_sets_both_multiplicity_bounds() {
+        let sexpr = semantic_sexpr_for("package P { part def Wheel; part wheels : Wheel[3]; }");
+        assert!(
+            sexpr.contains("(multiplicity (lower 3) (upper 3))"),
+            "expected `[3]` to set both bounds to 3, got: {sexpr}"
+        );
+    }
+
+    /// `[*]` writes neither bound and `[1..*]` writes only the lower one, so both render their
+    /// missing side as `unbounded` -- but a declaration with no `[...]` at all publishes no
+    /// multiplicity fact whatsoever, which is a different answer from `[*]`.
+    #[test]
+    fn unwritten_and_absent_multiplicity_bounds_stay_distinct() {
+        let unbounded = semantic_sexpr_for("package P { part def Wheel; part wheels : Wheel[*]; }");
+        assert!(
+            unbounded.contains("(multiplicity (lower unbounded) (upper unbounded))"),
+            "expected `[*]` to publish an unbounded multiplicity fact, got: {unbounded}"
+        );
+
+        let lower_only =
+            semantic_sexpr_for("package P { part def Wheel; part wheels : Wheel[1..*]; }");
+        assert!(
+            lower_only.contains("(multiplicity (lower 1) (upper unbounded))"),
+            "expected `[1..*]` to keep its authored lower bound, got: {lower_only}"
+        );
+
+        let absent = semantic_sexpr_for("package P { part def Wheel; part wheels : Wheel; }");
+        assert!(
+            !absent.contains("(multiplicity"),
+            "expected no multiplicity fact when none is authored, got: {absent}"
+        );
+    }
+
+    /// A bound the parser records as a non-literal `Expression` is published as an explicit
+    /// non-literal fact rather than folded, dropped, or re-read from source text.
+    #[test]
+    fn a_non_literal_multiplicity_bound_is_published_as_an_expression() {
+        let sexpr = semantic_sexpr_for(
+            "package P { part def Wheel; attribute n : Integer; part wheels : Wheel[1..n]; }",
+        );
+        assert!(
+            sexpr.contains("(multiplicity (lower 1) (upper expression))"),
+            "expected the non-literal upper bound published as `expression`, got: {sexpr}"
+        );
+    }
+
+    #[test]
+    fn collection_modifiers_are_recorded() {
+        let sexpr =
+            semantic_sexpr_for("package P { attribute seq : Integer[1..*] ordered nonunique; }");
+        assert!(
+            sexpr.contains("(modifiers ordered nonunique)"),
+            "expected both collection modifiers, got: {sexpr}"
+        );
+    }
+
+    #[test]
+    fn definition_prefix_modifiers_are_recorded() {
+        let abstract_def = semantic_sexpr_for("package P { abstract part def Vehicle; }");
+        assert!(
+            abstract_def.contains("(modifiers abstract)"),
+            "expected the abstract prefix recorded, got: {abstract_def}"
+        );
+
+        let variation_def = semantic_sexpr_for("package P { variation part def Engine; }");
+        assert!(
+            variation_def.contains("(modifiers variation)"),
+            "expected the variation prefix recorded, got: {variation_def}"
+        );
+    }
+
+    #[test]
+    fn parameter_direction_is_recorded_as_a_declaration_fact() {
+        let sexpr =
+            semantic_sexpr_for("package P { calc def C { in x : Integer; return : Integer; } }");
+        assert!(
+            sexpr.contains("(facts (direction in))"),
+            "expected the `in` direction recorded on the parameter declaration, got: {sexpr}"
+        );
+    }
+
+    #[test]
+    fn authored_short_names_are_recorded() {
+        let sexpr = semantic_sexpr_for("package <pkg> P { part def <w> Wheel; }");
+        assert!(
+            sexpr.contains(r#"(short-name "pkg")"#),
+            "expected the package short name recorded, got: {sexpr}"
+        );
+        assert!(
+            sexpr.contains(r#"(short-name "w")"#),
+            "expected the part def short name recorded, got: {sexpr}"
+        );
+    }
+
+    /// A `doc` body element annotates the declaration owning that body, and the recorded text is
+    /// the raw content between the comment delimiters -- the parser performs no leading-`*`
+    /// stripping or dedent, so neither does this fact.
+    #[test]
+    fn doc_comments_bind_to_the_declaration_owning_their_body() {
+        let sexpr = semantic_sexpr_for("package P { part def Wheel { doc /* a wheel */ } }");
+        assert!(
+            sexpr.contains(r#"(documentation (doc (text " a wheel ")))"#),
+            "expected the doc comment bound to the part def, got: {sexpr}"
+        );
+    }
+
+    #[test]
+    fn comment_and_rep_annotations_are_recorded_as_distinct_forms() {
+        let comment = semantic_sexpr_for(r#"package P { calc def C { comment /* note */ } }"#);
+        assert!(
+            comment.contains(r#"(comment (text " note "))"#),
+            "expected the comment annotation recorded, got: {comment}"
+        );
+
+        // The corpus-proven spelling is the bare `language "..." /* ... */` form inside an action
+        // def body; the `rep <name> language ...` spelling is not reachable in every scope.
+        let rep = semantic_sexpr_for(r#"package P { action def A { language "Alf" /* body */ } }"#);
+        assert!(
+            rep.contains(r#"(rep (language "Alf") (text " body "))"#),
+            "expected the textual representation recorded with its language, got: {rep}"
+        );
+    }
+
+    /// All five authored value spellings stay distinguishable: `=`, `:=`, `default =`,
+    /// `default :=`, and the operator-less bare `default`.
+    #[test]
+    fn authored_feature_value_spellings_stay_distinct() {
+        let bind = semantic_sexpr_for("package P { attribute mass : Integer = 10; }");
+        assert!(
+            bind.contains("(feature-value (kind bind))"),
+            "expected a plain `=` bind, got: {bind}"
+        );
+
+        let assign = semantic_sexpr_for("package P { attribute mass : Integer := 10; }");
+        assert!(
+            assign.contains("(feature-value (kind assign))"),
+            "expected a `:=` assign, got: {assign}"
+        );
+
+        let default_bind =
+            semantic_sexpr_for("package P { attribute mass : Integer default = 10; }");
+        assert!(
+            default_bind.contains("(feature-value (kind bind) (default true))"),
+            "expected a `default =` bind, got: {default_bind}"
+        );
+
+        let bare_default = semantic_sexpr_for("package P { attribute mass : Integer default 10; }");
+        assert!(
+            bare_default.contains("(feature-value (kind bind) (default true) (operator false))"),
+            "expected the operator-less bare `default` spelling, got: {bare_default}"
+        );
+    }
+
+    /// A declaration whose parser node carries none of these facts -- and every synthesized
+    /// anonymous scope the lowering mints, which has no authored declaration syntax at all --
+    /// publishes no fact block, so absence stays absence rather than a defaulted answer.
+    #[test]
+    fn a_declaration_with_no_authored_facts_publishes_no_fact_block() {
+        let sexpr = semantic_sexpr_for("package P { part def Wheel; }");
+        assert!(
+            !sexpr.contains("(facts "),
+            "expected no fact block for a plain package and part def, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("(documentation "),
+            "expected no documentation block, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("(feature-value "),
+            "expected no feature-value block, got: {sexpr}"
         );
     }
 }

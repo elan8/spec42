@@ -52,7 +52,7 @@ part def Camera {
     (declaration (id (node (document "memory://snapshot/camera.md") (anonymous (kind perform-action) (ordinal 0))))) (kind perform-action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/camera.md") (qualified-name "Camera::imagingSubsystem"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/camera.md") (anonymous (kind perform-action) (ordinal 0))))) (kind perform-action) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/camera.md") (qualified-name "Camera::takePicture"))) (kind perform-action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "PictureTaking::takePicture"))))
+    (declaration (id (node (document "memory://snapshot/camera.md") (qualified-name "Camera::takePicture"))) (kind perform-action) (membership (kind feature) (visibility default)) (facts (multiplicity (lower unbounded) (upper unbounded))) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "PictureTaking::takePicture"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/camera.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))

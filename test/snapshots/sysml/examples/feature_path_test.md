@@ -89,7 +89,7 @@ package Q {
   (declarations
     (declaration (id (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::A"))) (kind part-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::A::g"))) (kind part) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::A::g"))) (kind part) (membership (kind feature) (visibility default)) (feature-value (kind bind)))
     (declaration (id (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::B"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::B::a"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "A"))))
     (declaration (id (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::B::f"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "F"))))
@@ -108,7 +108,7 @@ package Q {
     (declaration (id (node (document "memory://snapshot/feature_path_test.md") (anonymous (kind bind) (ordinal 0))))) (kind bind) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (bindTarget (reference "E::e2")) (memberAccessOperand (reference "e1::x"))))
     (declaration (id (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::e1::x"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "E"))))
     (declaration (id (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::f"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "F"))))
-    (declaration (id (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::g"))) (kind part) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::g"))) (kind part) (membership (kind feature) (visibility default)) (feature-value (kind bind)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::B::a"))) (kind featureTyping) (ordinal 0))

@@ -89,7 +89,7 @@ package Camera {
     (declaration (id (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Camera"))))
     (declaration (id (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::autoFocus"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::imager"))) (kind part) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::photos"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Picture"))))
+    (declaration (id (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::photos"))) (kind part) (membership (kind feature) (visibility default)) (facts (multiplicity (lower unbounded) (upper unbounded))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Picture"))))
     (declaration (id (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::scene"))) (kind ref) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Scene"))))
   )
   (references

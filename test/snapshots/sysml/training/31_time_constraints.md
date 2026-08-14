@@ -160,7 +160,7 @@ package 'Time Constraints' {
     (declaration (id (node (document "memory://snapshot/31_time_constraints.md") (anonymous (kind transition) (ordinal 1))))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionTarget (reference "normal")) (transitionTrigger (reference "MaintenanceDone"))))
     (declaration (id (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::healthStates::maintenance"))) (kind state) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::healthStates::normal"))) (kind state) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::healthStates::vehicle"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Vehicle") (direction in))))
+    (declaration (id (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::healthStates::vehicle"))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Vehicle") (direction in))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/31_time_constraints.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
