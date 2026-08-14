@@ -47,7 +47,7 @@ describe("Multi-file VS Code Flows", () => {
         vscode.commands.executeCommand<vscode.Location[]>(
           "vscode.executeDefinitionProvider",
           useDoc.uri,
-          findPosition(useDoc, "Widget")
+          findPosition(useDoc, "Widget", 1)
         ),
       (value) => Array.isArray(value) && value.length > 0,
     );
@@ -69,7 +69,7 @@ describe("Multi-file VS Code Flows", () => {
         vscode.commands.executeCommand<vscode.Location[]>(
           "vscode.executeReferenceProvider",
           useDoc.uri,
-          findPosition(useDoc, "Widget")
+          findPosition(useDoc, "Widget", 1)
         ),
       (value) => Array.isArray(value) && value.length >= 2,
     );
@@ -96,7 +96,7 @@ describe("Multi-file VS Code Flows", () => {
         vscode.commands.executeCommand<vscode.WorkspaceEdit>(
           "vscode.executeDocumentRenameProvider",
           useDoc.uri,
-          findPosition(useDoc, "Widget"),
+          findPosition(useDoc, "Widget", 1),
           "RenamedWidget"
         ),
       (value) => Boolean(value),
