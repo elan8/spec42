@@ -8,8 +8,8 @@ use super::*;
 use crate::inspection::{
     AnnotationForm, AuthoredValue, Documentation, ElementInspection, ElementInspectionAt,
     ElementModifier, ElementRelationship, FeatureDirection, MembershipFacts, MembershipKind,
-    MultiplicityBound, MultiplicityFacts, PortionKind, RelationshipProvenance, RelationshipTarget,
-    ReferenceAt, SymbolEntry, ValueKind, Visibility, VisibilityProvenance,
+    MultiplicityBound, MultiplicityFacts, PortionKind, ReferenceAt, RelationshipProvenance,
+    RelationshipTarget, SymbolEntry, ValueKind, Visibility, VisibilityProvenance,
 };
 
 /// Per-declaration ranges into the record tables, so a per-element question never scans them all.
@@ -200,15 +200,13 @@ impl ResolvedSemanticModel {
             .identity
             .clone();
         let range = match declaration.name.and_then(|name| self.storage.symbol(name)) {
-            Some(name) => {
-                declaration_identifier_range(
-                    &self.storage,
-                    declaration.document,
-                    &declaration.span,
-                    name,
-                )
-                .ok()?
-            }
+            Some(name) => declaration_identifier_range(
+                &self.storage,
+                declaration.document,
+                &declaration.span,
+                name,
+            )
+            .ok()?,
             None => document_range(&self.storage, declaration.document, &declaration.span).ok()?,
         };
         Some(SourceLocation {
@@ -241,42 +239,50 @@ impl ResolvedSemanticModel {
     }
 
     fn documentation(&self, id: DeclarationId) -> Box<[Documentation]> {
-        slice_range(&self.facts.documentation_order, &self.facts.documentation, id)
-            .iter()
-            .map(|index| &self.storage.documentation[*index as usize])
-            .map(|record| Documentation {
-                form: match record.form {
-                    super::AnnotationForm::Documentation => AnnotationForm::Documentation,
-                    super::AnnotationForm::Comment => AnnotationForm::Comment,
-                    super::AnnotationForm::TextualRepresentation => {
-                        AnnotationForm::TextualRepresentation
-                    }
-                },
-                locale: record
-                    .locale
-                    .and_then(|id| self.storage.symbol(id))
-                    .map(Into::into),
-                language: record
-                    .language
-                    .and_then(|id| self.storage.symbol(id))
-                    .map(Into::into),
-                text: self.storage.symbol(record.text).unwrap_or_default().into(),
-            })
-            .collect()
+        slice_range(
+            &self.facts.documentation_order,
+            &self.facts.documentation,
+            id,
+        )
+        .iter()
+        .map(|index| &self.storage.documentation[*index as usize])
+        .map(|record| Documentation {
+            form: match record.form {
+                super::AnnotationForm::Documentation => AnnotationForm::Documentation,
+                super::AnnotationForm::Comment => AnnotationForm::Comment,
+                super::AnnotationForm::TextualRepresentation => {
+                    AnnotationForm::TextualRepresentation
+                }
+            },
+            locale: record
+                .locale
+                .and_then(|id| self.storage.symbol(id))
+                .map(Into::into),
+            language: record
+                .language
+                .and_then(|id| self.storage.symbol(id))
+                .map(Into::into),
+            text: self.storage.symbol(record.text).unwrap_or_default().into(),
+        })
+        .collect()
     }
 
     fn authored_value(&self, id: DeclarationId) -> Option<AuthoredValue> {
-        slice_range(&self.facts.feature_value_order, &self.facts.feature_values, id)
-            .first()
-            .map(|index| &self.storage.feature_values[*index as usize])
-            .map(|record| AuthoredValue {
-                kind: match record.kind {
-                    super::FeatureValueKind::Bind => ValueKind::Bind,
-                    super::FeatureValueKind::Assign => ValueKind::Assign,
-                },
-                is_default: record.is_default,
-                has_operator: record.has_operator,
-            })
+        slice_range(
+            &self.facts.feature_value_order,
+            &self.facts.feature_values,
+            id,
+        )
+        .first()
+        .map(|index| &self.storage.feature_values[*index as usize])
+        .map(|record| AuthoredValue {
+            kind: match record.kind {
+                super::FeatureValueKind::Bind => ValueKind::Bind,
+                super::FeatureValueKind::Assign => ValueKind::Assign,
+            },
+            is_default: record.is_default,
+            has_operator: record.has_operator,
+        })
     }
 
     fn multiplicity(&self, id: DeclarationId) -> MultiplicityFacts {
