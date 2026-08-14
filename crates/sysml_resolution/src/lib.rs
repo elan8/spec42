@@ -9,12 +9,19 @@ use source_identity::{ContentDigest, RootDigest, SourceManifest, SourceManifestE
 
 mod element_kind;
 mod evaluation;
+mod inspection;
 mod model;
 
 pub use element_kind::{
     ElementKind, MembershipRole, RequirementConstraintKind, StateSubactionKind,
 };
 pub use evaluation::{EvaluatedScalar, EvaluationFailure, EvaluationPolicy, EvaluationState};
+pub use inspection::{
+    AnnotationForm, AuthoredValue, Documentation, ElementInspection, ElementInspectionAt,
+    ElementModifier, ElementRelationship, FeatureDirection, MembershipFacts, MembershipKind,
+    MultiplicityBound, MultiplicityFacts, PortionKind, RelationshipProvenance, RelationshipTarget,
+    SymbolEntry, ValueKind, Visibility, VisibilityProvenance,
+};
 
 use model::resolver::ResolvedSemanticModel;
 use model::{BuildSchedule, CoordinatorError, OwnedSourceRecord, SemanticModelBuildCoordinator};
@@ -331,6 +338,29 @@ impl PublishedResolution {
         qualifier: Option<&str>,
     ) -> QueryOutcome<Box<[VisibleMember]>> {
         self.model.visible_members(document, position, qualifier)
+    }
+
+    /// Everything this publication knows about one element.
+    pub fn inspect(&self, symbol: &SymbolIdentity) -> QueryOutcome<ElementInspection> {
+        self.model.inspect(symbol)
+    }
+
+    /// The element whose declaration encloses `position`, and the element a reference there
+    /// resolves to.
+    ///
+    /// Both, because they are usually different: the cursor sits inside one element's declaration
+    /// while pointing at a reference to another, and an inspector needs to show each.
+    pub fn inspect_at(
+        &self,
+        document: &str,
+        position: TextPosition,
+    ) -> QueryOutcome<ElementInspectionAt> {
+        self.model.inspect_at(document, position)
+    }
+
+    /// Every element declared in one document, in source order.
+    pub fn document_symbols(&self, document: &str) -> QueryOutcome<Box<[SymbolEntry]>> {
+        self.model.document_symbols(document)
     }
 }
 
@@ -1938,6 +1968,157 @@ mod tests {
                 other => panic!("expected a resolved references outcome, got: {other:?}"),
             }
         }
+    }
+
+    // --- Element inspection -----------------------------------------------------------------
+
+    fn inspect_named(
+        published: &PublishedResolution,
+        document: &str,
+        line: u32,
+        character: u32,
+    ) -> ElementInspection {
+        let symbol = target_symbol(published, document, line, character);
+        match published.inspect(&symbol) {
+            QueryOutcome::Resolved(inspection) => inspection,
+            other => panic!("expected a resolved inspection, got: {other:?}"),
+        }
+    }
+
+    /// The facts an inspector needs arrive as one typed answer, each from its own producer --
+    /// no attribute map, and nothing recovered by re-reading source text.
+    #[test]
+    fn inspection_publishes_every_authored_fact_of_an_element() {
+        let published = publication_for(&[(
+            "memory://i.sysml",
+            "package P {\n  part def Wheel;\n  /* doc */\n  part def Car {\n    doc /* the car */\n    part wheels : Wheel[0..4] ordered;\n  }\n}",
+        )]);
+        let wheels = inspect_named(&published, "memory://i.sysml", 5, 9);
+
+        assert_eq!(wheels.kind, ElementKind::PartUsage);
+        assert_eq!(wheels.name.as_deref(), Some("wheels"));
+        assert_eq!(&*wheels.qualified_name, "P::Car::wheels");
+        assert_eq!(wheels.membership.kind, MembershipKind::Feature);
+        assert_eq!(
+            wheels.membership.provenance,
+            VisibilityProvenance::Default,
+            "no visibility keyword was written, so the default applies and says so"
+        );
+        assert_eq!(
+            wheels.multiplicity,
+            MultiplicityFacts::Declared {
+                lower: MultiplicityBound::Literal(0),
+                upper: MultiplicityBound::Literal(4),
+                ordered: true,
+                nonunique: false,
+            }
+        );
+        assert_eq!(&*wheels.modifiers, &[ElementModifier::Ordered]);
+        assert_eq!(wheels.evaluation, EvaluationState::NotApplicable);
+
+        let typing = wheels
+            .relationships
+            .iter()
+            .find(|relationship| relationship.kind == "featureTyping")
+            .expect("expected a featureTyping relationship");
+        assert_eq!(typing.authored.as_deref(), Some("Wheel"));
+        assert_eq!(typing.provenance, RelationshipProvenance::Authored);
+        assert!(matches!(typing.target, RelationshipTarget::Resolved(_)));
+
+        let car = inspect_named(&published, "memory://i.sysml", 3, 11);
+        assert_eq!(car.documentation.len(), 1, "expected the doc comment");
+        assert_eq!(&*car.documentation[0].text, " the car ");
+        assert_eq!(car.documentation[0].form, AnnotationForm::Documentation);
+    }
+
+    /// An unresolved reference keeps its own outcome instead of being dropped, so an inspector can
+    /// show what was written alongside the fact that it did not resolve.
+    #[test]
+    fn inspection_keeps_an_unresolved_reference_and_its_authored_text() {
+        let published = publication_for(&[(
+            "memory://i.sysml",
+            "package P {\n  part broken : NoSuchType;\n}",
+        )]);
+        let broken = inspect_named(&published, "memory://i.sysml", 1, 8);
+        let typing = broken
+            .relationships
+            .iter()
+            .find(|relationship| relationship.kind == "featureTyping")
+            .expect("expected the authored typing reference to survive");
+        assert_eq!(typing.authored.as_deref(), Some("NoSuchType"));
+        assert_eq!(typing.target, RelationshipTarget::Unresolved);
+    }
+
+    /// A position identifies two different elements, and an inspector needs both: the declaration
+    /// the cursor sits in, and what the reference under it points at.
+    #[test]
+    fn inspect_at_reports_the_containing_and_the_referenced_element() {
+        let published = publication_for(&[(
+            "memory://i.sysml",
+            "package P {\n  part def Wheel;\n  part w : Wheel;\n}",
+        )]);
+        let at = match published.inspect_at(
+            "memory://i.sysml",
+            TextPosition {
+                line: 2,
+                character: 12,
+            },
+        ) {
+            QueryOutcome::Resolved(at) => at,
+            other => panic!("expected a resolved inspection, got: {other:?}"),
+        };
+
+        assert_eq!(
+            at.containing.as_ref().and_then(|c| c.name.as_deref()),
+            Some("w"),
+            "the cursor sits inside `w`'s declaration"
+        );
+        assert_eq!(
+            at.referenced.as_ref().and_then(|r| r.name.as_deref()),
+            Some("Wheel"),
+            "and points at a reference resolving to `Wheel`"
+        );
+    }
+
+    /// The outline lists every declaration in the document, including anonymous ones, each with
+    /// the identity that addresses it.
+    #[test]
+    fn document_symbols_lists_every_declaration_with_its_identity() {
+        let published = publication_for(&[(
+            "memory://i.sysml",
+            "package P {\n  part def Wheel;\n  part w : Wheel;\n}",
+        )]);
+        let symbols = match published.document_symbols("memory://i.sysml") {
+            QueryOutcome::Resolved(symbols) => symbols,
+            other => panic!("expected resolved symbols, got: {other:?}"),
+        };
+        let names = symbols
+            .iter()
+            .filter_map(|entry| entry.name.as_deref())
+            .collect::<Vec<_>>();
+        assert_eq!(names, vec!["P", "Wheel", "w"]);
+
+        let wheel = symbols
+            .iter()
+            .find(|entry| entry.name.as_deref() == Some("Wheel"))
+            .expect("Wheel");
+        assert_eq!(wheel.kind, ElementKind::PartDefinition);
+        assert!(
+            matches!(
+                published.inspect(&wheel.identity),
+                QueryOutcome::Resolved(_)
+            ),
+            "an outline entry's identity must address the same element"
+        );
+    }
+
+    #[test]
+    fn inspecting_an_unknown_document_is_unresolved() {
+        let published = publication_for(&[("memory://i.sysml", "package P { }")]);
+        assert!(matches!(
+            published.document_symbols("memory://absent.sysml"),
+            QueryOutcome::Unresolved
+        ));
     }
 
     // --- Evaluation states ------------------------------------------------------------------
