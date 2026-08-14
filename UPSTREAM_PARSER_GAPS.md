@@ -342,15 +342,24 @@ entry should carry enough detail to file/update an upstream issue against
   This blocks the shorthand `require <name>;`/`require <name> { ... }`/`assume <name>;` reference
   form specifically (`has_constraint_keyword == false`); the `require constraint <name>? { ... }`
   form (`has_constraint_keyword == true`) is a genuine new nested-declaration site (like `subject`/
-  `perform action`) and not blocked by this gap, but is left unimplemented in this slice to keep
-  the change focused on the reference case the task targeted. Left routed through the existing
+  `perform action`) and not blocked by this gap. Left routed through the existing
   `unsupported_requirement_definition_member`/`unsupported_requirement_usage_member` fallback via
   `RequirementDefBodyElement::RequireConstraint`. Needs `name` changed to
   `Option<QualifiedReferenceId>` (or a new `Option<Node<QualifiedReferenceId>>` field alongside a
   separate declared-name string for the `has_constraint_keyword` case, since the field currently
   serves both a reference-target role and a declared-name role depending on
   `has_constraint_keyword`), filed upstream against `feat/gh-119-arena-backed-references`
-  (elan8/sysml-v2-parser#121).
+  (elan8/sysml-v2-parser#121). **Update:** the `has_constraint_keyword == true` form (`require
+  constraint { ... }`/`assume constraint <name> { ... }`) is now implemented
+  (`lower_require_constraint_member`, `crates/sysml_resolution/src/model.rs`) -- its body is the
+  exact same `ConstraintDefBody`-shaped `Vec<Node<ConstraintDefBodyElement>>` already walked for
+  `Constraint`/`AssertConstraintMember`, so no typed-AST change was needed for that half. The
+  `has_constraint_keyword == false` shorthand-reference gap described above remains open and
+  unimplemented, as does the closely-related discovery that `RequireConstraint` also has no `:
+  Type` typing or `:>>` redefinition field after the name at all (`assume constraint c1 : C;`,
+  `require constraint c1 :>> c;` -- both `test/snapshots/sysml/examples/requirement_test.md` --
+  fail to parse as `RequireConstraint` and fall to raw-text recovery instead, never reaching
+  `RequirementDefBodyElement::RequireConstraint` in the first place).
 
 - Gap 30. `ThenTarget` (`src/ast/behavior.rs`) has no `Send` variant: `then send <expr> to
   <target>;` (a `then`-prefixed send shorthand, e.g. `then send new S() to b;` in `Simple Tests/
@@ -442,7 +451,19 @@ entry should carry enough detail to file/update an upstream issue against
   carry dedicated `redefines`/`:>>` support). Needs `SubjectDecl` widened with a `redefines:
   Option<Node<SubsettingRelationship>>` field (mirroring `RefDecl`/other declaration kinds) and
   `subject_decl_inner` taught to parse `:>>` as an alternative to `:`, filed upstream against
-  `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+  `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121). **Update:** the same root
+  cause blocks two further real-fixture shapes found auditing `unsupported_requirement_definition_
+  member` -- the type-less redefinition-with-value form `subject :>> vehicle = vehicle_large;`/
+  `subject :>> mass = vehicle.mass;` (`test/snapshots/sysml/examples/evsample.md`,
+  `vehicle_requirement_derivation.md`: `type_name`'s `:`-prefixed `opt(...)` still consumes the
+  leading `:` of `:>>` and fails the same way with no type present either) and the `default`
+  keyword form `subject generateTorque default engine1.generateTorque;`
+  (`sys_ml_v2_spec_annex_a_simple_vehicle_model.md:907`, OMG spec Annex A), which
+  `subject_decl_inner` cannot parse at all -- after the name it only ever tries `:` (type), `[`
+  (multiplicity), or `=` (value); there is no `default`-keyword alternative to `=` the way e.g.
+  `RefDecl`'s value clause might support. Both stay routed through the existing
+  `unsupported_requirement_definition_member` fallback via `Other`/whole-statement recovery, same
+  as the `:>>` case above.
 
 - Gap 41. KerML's implicit self-reference identifier `that` (e.g. `test/snapshots/sysml/examples`'s
   `trig_functions.md`: `inv unitBound { -1.0 <= that & that <= 1.0 }` inside `datatype
@@ -469,6 +490,85 @@ entry should carry enough detail to file/update an upstream issue against
   variant) in the upstream parser before `sysml_resolution` can resolve it as a structural
   self-reference rather than an ordinary lexical lookup, filed upstream against
   `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+
+- Gap 42. `StateDefBodyElement`/`RequirementDefBodyElement` (`src/ast/behavior.rs`,
+  `src/ast/requirement.rs`) are closed enums covering only a small, hand-picked subset of the
+  member kinds a `state def`/`requirement def` body may legally contain -- unlike sibling body
+  enums (`PartDefBodyElement`, `ActionDefBodyElement`, `ConstraintDefBodyElement`, etc.), neither
+  has a variant for the general action/attribute/constraint/succession/`ref`/port/calc
+  usage-member zoo, nor for nested definitions of their own kind. Found exhaustively auditing
+  `unsupported_state_definition_member`/`unsupported_requirement_definition_member` across the
+  full corpus (this pass, against `cb026cd`): `StateDefBodyElement` (behavior.rs:828-853) has no
+  `Action`/`Attribute`/`Constraint`/`AssertConstraintMember`/`Succession` variant at all, so a
+  `state def`'s own members that use these (pervasive in the Systems Library's
+  `Systems Library/States.sysml`, e.g. `attribute :>> isTriggerDuring;`, `action :>> subactions :>
+  middle { ... }`, `succession stateSequencing first [0..1] exclusiveStates then [0..1]
+  exclusiveStates { ... }`, `assert constraint {notEmpty(exclusiveStates) implies ...}` --
+  `test/snapshots/sysml.library/states.md`) all fail to parse as any typed `StateDefBodyElement`
+  variant and fall to the raw-text `Other`/error-recovery fallback (this settles this task's first
+  investigation lead: bare `constraint`/`assert constraint` in a state body is *not* a
+  spec42-side dispatch gap the way `dad50e75`'s original `assert constraint` slice wired it into
+  other body enums -- there is no `Constraint`/`AssertConstraintMember` variant on
+  `StateDefBodyElement` to dispatch from). `RequirementDefBodyElement` (requirement.rs:53-86) is
+  similarly missing a `Ref`/`RefDecl` variant (`ref requirement :>> self: RequirementCheck;`,
+  `ref part actors : Part[0..*] { ... }` -- `test/snapshots/sysml.library/requirements.md`,
+  `views.md`), a parameter-member variant for `in ref`/`in calc` members
+  (`test/snapshots/sysml.library/trade_studies.md`), a `Port`/`Allocate` variant
+  (`sys_ml_v2_spec_annex_a_simple_vehicle_model.md:912,877`), a nested-`requirement def` variant
+  (only a `RequirementUsage` variant exists, not a def; `requirement_test.md:10`'s `requirement def
+  <'1'> A { ... }` nested inside another `requirement def` body), and support for a bare
+  `requirement;` member with no name/body at all (`requirement_test.md:9`). `FrameMember`
+  (requirement.rs:308-311, dispatched via `RequirementDefBodyElement::Frame`) has the same
+  narrowness one level down: its parser production (`frame_member`,
+  `src/parser/requirement.rs:466-476`) only ever parses `frame <name> <body>`, with no alternative
+  for the `frame concern <name> : <Type>;` sub-form (BNF `FrameConcernMember`,
+  `sys_ml_v2_spec_annex_a_simple_vehicle_model.md:1546`'s `frame concern vs:VehicleSafety;`) --
+  `name()` greedily consumes `concern` as the declared name, then the body parser fails on the
+  leftover ` vs:VehicleSafety;`, and the whole member falls to recovery. None of this is a mechanical
+  spec42-side dispatch gap in the `fbcb58bf`/this-pass mold (there is no already-typed node these
+  fall through to un-dispatched); each needs new upstream AST variants/parser productions before
+  `sysml_resolution` has anything to lower, filed upstream against
+  `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+
+- Gap 43. `EntryAction`/`DoAction`/`ExitAction` (`src/ast/behavior.rs:858-889`) support only two
+  shapes: a reference-path form (`entry action <path> ...;`, `action_reference:
+  Option<QualifiedReferenceId>`) or an empty/opaque `;`/`{ }` body -- there is no field for
+  declaring a *new* named, typed, or redefining nested action (`entry action <name> :>>
+  <target>;`, e.g. `test/snapshots/sysml.library/states.md`'s `entry action entryAction :>>
+  'entry';`/`do action doAction: Action :>> 'do';`/`exit action exitAction: Action :>> 'exit';`,
+  and `test/snapshots/sysml/examples/state_test.md`'s `do action b :>> c;`), nor for `assign`/
+  `send`/`accept` effect bodies written directly under `entry`/`do`/`exit` rather than inside a
+  `transition`'s own effect clause (e.g. `test/snapshots/sysml/examples/assignment_test.md`'s
+  `entry assign counter.count := 0;`/`do assign counter.count := counter.count + 1;`,
+  `test/snapshots/sysml/training/25_change_and_time_triggers.md`'s `entry assign
+  vehicle.maintenanceTime := ...;`). Verified against the pinned `cb026cd` checkout:
+  `state_behavior_action_target` (`src/parser/state.rs:145-168`), the shared header parser for
+  all three keywords, deliberately refuses to swallow `send`/`accept`/`assign` as a bare
+  reference-path target (returning `Err` so a sibling production can pick the statement up), but
+  no such sibling production exists for `entry`/`do`/`exit` -- unlike `Transition::effect`
+  (`TransitionEffect::{Send,Accept,Assign}`), which *does* have typed fields for exactly these
+  shapes. Left routed through `unsupported_state_definition_member` via `Other`/whole-statement
+  recovery for both sub-shapes. Needs `EntryAction`/`DoAction`/`ExitAction` widened with an
+  optional declared-name + redefinition-target pair (mirroring `RefDecl`) for the first shape, and
+  either a shared `TransitionEffect`-shaped field or dedicated `Assign`/`Send`/`Accept` variants
+  for the second, filed upstream against `feat/gh-119-arena-backed-references`
+  (elan8/sysml-v2-parser#121).
+
+- Gap 44. `VariantTypedUsage` (`src/ast/structure.rs:714-721`) has no `Requirement` kind: its
+  kind-keyword kit is `Part`/`Attribute`/`Item`/`Port`/`Perform` only, so the kind-keyword form
+  `variant requirement <name>;` (`test/snapshots/sysml/examples/variability_test.md:38`'s
+  `variant requirement r1;` inside `variation requirement r { ... }`) can never be typed as a
+  `VariantUsage.typed` value the way `variant part <name>;`/`variant attribute <name>;` etc. can.
+  Confirmed against the pinned `cb026cd` checkout: since `requirement` is not one of the five
+  recognized kind keywords, the statement cannot match either `VariantUsage`'s typed-kind branch
+  or its untyped bare-reference branch (`reference: Option<QualifiedReferenceId>`, which would
+  stop at the bare word `requirement` and leave ` r1;` dangling before the terminator), so it
+  fails to parse as `VariantUsage` at all and falls to `RequirementDefBodyElement`'s `Other`
+  fallback -- distinct from (and upstream of) `lower_variant_usage`'s deliberate scope boundary
+  added this pass, which only covers the already-parseable untyped `variant <path>;` form. Needs a
+  `Requirement(Box<Node<RequirementUsage>>)` variant added to `VariantTypedUsage`, mirroring the
+  existing five, filed upstream against `feat/gh-119-arena-backed-references`
+  (elan8/sysml-v2-parser#121).
 
 **Re-verification pass note (this pass, against `cb026cd`):** Gaps 15-24 were re-checked by
 grepping the current `cb026cd` checkout for the same starter tables/productions cited in each
