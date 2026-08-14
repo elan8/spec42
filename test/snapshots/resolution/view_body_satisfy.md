@@ -52,7 +52,12 @@ package ViewCoverage {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/view_body_satisfy.md") (qualified-name "ViewCoverage::ArchitectureView")))
+      (subtype (node (document "memory://snapshot/view_body_satisfy.md") (qualified-name "ViewCoverage::architecture")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/view_body_satisfy.md") (qualified-name "ViewCoverage::architecture")))
+      (type (node (document "memory://snapshot/view_body_satisfy.md") (qualified-name "ViewCoverage::ArchitectureView")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/view_body_satisfy.md") (qualified-name "ViewCoverage::ArchitectureView")) (source direct))
       (supertype (node (document "memory://snapshot/view_body_satisfy.md") (qualified-name "ViewCoverage::ArchitectureView")) (scopes any))
     )
 )

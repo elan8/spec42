@@ -47,7 +47,12 @@ package M {
 ~~~sexpr
 (types
     (declaration (id (node (document "memory://snapshot/case_subject_provenance.md") (qualified-name "M::A::s")))
+      (type (node (document "memory://snapshot/case_subject_provenance.md") (qualified-name "M::P")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/case_subject_provenance.md") (qualified-name "M::P")) (source direct))
       (supertype (node (document "memory://snapshot/case_subject_provenance.md") (qualified-name "M::P")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/case_subject_provenance.md") (qualified-name "M::P")))
+      (subtype (node (document "memory://snapshot/case_subject_provenance.md") (qualified-name "M::A::s")) (scopes any))
     )
 )
 ~~~

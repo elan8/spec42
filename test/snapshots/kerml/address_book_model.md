@@ -84,7 +84,12 @@ package AddressBookModel {
 ~~~sexpr
 (types
     (declaration (id (node (document "memory://snapshot/address_book_model.md") (qualified-name "AddressBookModel::AddressBook::entries")))
+      (type (node (document "memory://snapshot/address_book_model.md") (qualified-name "AddressBookModel::Entry")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/address_book_model.md") (qualified-name "AddressBookModel::Entry")) (source direct))
       (supertype (node (document "memory://snapshot/address_book_model.md") (qualified-name "AddressBookModel::Entry")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/address_book_model.md") (qualified-name "AddressBookModel::Entry")))
+      (subtype (node (document "memory://snapshot/address_book_model.md") (qualified-name "AddressBookModel::AddressBook::entries")) (scopes any))
     )
 )
 ~~~

@@ -193,9 +193,15 @@ package RequirementMetadataExample {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::Goal")))
+      (subtype (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goals")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goal::baseType"))) (cyclic true)
+      (subtype (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goal::baseType")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goals")))
+      (type (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::Goal")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::Goal")) (source direct))
       (supertype (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::Goal")) (scopes any))
     )
 )

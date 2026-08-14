@@ -171,7 +171,12 @@ package BehaviorCoverage {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::Action1")))
+      (subtype (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::s1")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::s1")))
+      (type (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::Action1")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::Action1")) (source direct))
       (supertype (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::Action1")) (scopes any))
     )
 )

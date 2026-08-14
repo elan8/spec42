@@ -402,6 +402,9 @@ standard library package TradeStudies {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/trade_studies.md") (qualified-name "TradeStudies::EvaluationFunction")))
+      (subtype (node (document "memory://snapshot/trade_studies.md") (qualified-name "TradeStudies::TradeStudy::evaluationFunction")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/trade_studies.md") (qualified-name "TradeStudies::MaximizeObjective")))
       (supertype (node (document "memory://snapshot/trade_studies.md") (qualified-name "TradeStudies::TradeStudyObjective")) (scopes any subclassification))
     )
@@ -409,10 +412,19 @@ standard library package TradeStudies {
       (supertype (node (document "memory://snapshot/trade_studies.md") (qualified-name "TradeStudies::TradeStudyObjective")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/trade_studies.md") (qualified-name "TradeStudies::TradeStudy::evaluationFunction")))
+      (type (node (document "memory://snapshot/trade_studies.md") (qualified-name "TradeStudies::EvaluationFunction")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/trade_studies.md") (qualified-name "TradeStudies::EvaluationFunction")) (source direct))
       (supertype (node (document "memory://snapshot/trade_studies.md") (qualified-name "TradeStudies::EvaluationFunction")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/trade_studies.md") (qualified-name "TradeStudies::TradeStudy::tradeStudyObjective")))
+      (type (node (document "memory://snapshot/trade_studies.md") (qualified-name "TradeStudies::TradeStudyObjective")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/trade_studies.md") (qualified-name "TradeStudies::TradeStudyObjective")) (source direct))
       (supertype (node (document "memory://snapshot/trade_studies.md") (qualified-name "TradeStudies::TradeStudyObjective")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/trade_studies.md") (qualified-name "TradeStudies::TradeStudyObjective")))
+      (subtype (node (document "memory://snapshot/trade_studies.md") (qualified-name "TradeStudies::MaximizeObjective")) (scopes any subclassification))
+      (subtype (node (document "memory://snapshot/trade_studies.md") (qualified-name "TradeStudies::MinimizeObjective")) (scopes any subclassification))
+      (subtype (node (document "memory://snapshot/trade_studies.md") (qualified-name "TradeStudies::TradeStudy::tradeStudyObjective")) (scopes any))
     )
 )
 ~~~

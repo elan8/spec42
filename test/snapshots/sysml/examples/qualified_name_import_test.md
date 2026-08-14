@@ -59,7 +59,12 @@ package QualifiedNameImportTest {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/qualified_name_import_test.md") (qualified-name "QualifiedNameImportTest::P1::A")))
+      (subtype (node (document "memory://snapshot/qualified_name_import_test.md") (qualified-name "QualifiedNameImportTest::P2::x")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/qualified_name_import_test.md") (qualified-name "QualifiedNameImportTest::P2::x")))
+      (type (node (document "memory://snapshot/qualified_name_import_test.md") (qualified-name "QualifiedNameImportTest::P1::A")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/qualified_name_import_test.md") (qualified-name "QualifiedNameImportTest::P1::A")) (source direct))
       (supertype (node (document "memory://snapshot/qualified_name_import_test.md") (qualified-name "QualifiedNameImportTest::P1::A")) (scopes any))
     )
 )

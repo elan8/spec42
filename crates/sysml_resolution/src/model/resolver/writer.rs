@@ -46,24 +46,27 @@ fn write_types(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fm
     writeln!(output, "(types")?;
     for index in canonical_declaration_indices(model) {
         let declaration = DeclarationId(index as u32);
-        let cyclic = model.specialization.is_cyclic(declaration);
-        let mut supertypes = model
-            .specialization
-            .scoped_ancestors(declaration)
-            .collect::<Vec<_>>();
-        if supertypes.is_empty() && !cyclic {
+        let cyclic = model.types.specialization().is_cyclic(declaration);
+        let supertypes = canonical_targets(
+            model,
+            model
+                .types
+                .specialization()
+                .scoped_ancestors(declaration)
+                .collect(),
+        );
+        let direct_types = canonical_targets(model, model.types.direct_types(declaration).to_vec());
+        let subtypes = canonical_targets(model, model.types.subtypes(declaration).to_vec());
+        let effective_types =
+            canonical_targets(model, model.types.effective_types(declaration).to_vec());
+        if !cyclic
+            && supertypes.is_empty()
+            && direct_types.is_empty()
+            && subtypes.is_empty()
+            && effective_types.is_empty()
+        {
             continue;
         }
-        supertypes.sort_by_key(|(ancestor, _)| {
-            (
-                model
-                    .storage
-                    .declaration(*ancestor)
-                    .map(|target| document_identity(model, target.document).to_string())
-                    .unwrap_or_else(|| "<invalid-document>".to_string()),
-                declaration_path_key(model, *ancestor),
-            )
-        });
         write!(output, "    (declaration (id ")?;
         write_node_identity(model, declaration, output)?;
         write!(output, ")")?;
@@ -71,24 +74,83 @@ fn write_types(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fm
             write!(output, " (cyclic true)")?;
         }
         writeln!(output)?;
+        for (target, provenance) in direct_types {
+            write!(output, "      (type ")?;
+            write_node_identity(model, target, output)?;
+            writeln!(output, " (provenance {}))", fact_provenance(provenance))?;
+        }
+        for (target, source) in effective_types {
+            write!(output, "      (effective-type ")?;
+            write_node_identity(model, target, output)?;
+            match source {
+                types::EffectiveTypeSource::Direct => write!(output, " (source direct)")?,
+                types::EffectiveTypeSource::Inherited(from) => {
+                    write!(output, " (source inherited) (from ")?;
+                    write_node_identity(model, from, output)?;
+                    write!(output, ")")?;
+                }
+            }
+            writeln!(output, ")")?;
+        }
         for (ancestor, scopes) in supertypes {
             write!(output, "      (supertype ")?;
             write_node_identity(model, ancestor, output)?;
-            write!(output, " (scopes")?;
-            for scope in scopes {
-                write!(output, " {}", specialization_scope(scope))?;
-            }
-            writeln!(output, "))")?;
+            write_scopes(output, scopes.into_iter())?;
+            writeln!(output, ")")?;
+        }
+        for (subtype, scopes) in subtypes {
+            write!(output, "      (subtype ")?;
+            write_node_identity(model, subtype, output)?;
+            write_scopes(output, types::scopes_of(scopes))?;
+            writeln!(output, ")")?;
         }
         writeln!(output, "    )")?;
     }
     write!(output, ")")
 }
 
+/// Orders target-carrying entries by document identity then declaration path, the same key every
+/// other owned projection sorts by, so rendering never exposes storage order.
+fn canonical_targets<T>(
+    model: &ResolvedSemanticModel,
+    mut entries: Vec<(DeclarationId, T)>,
+) -> Vec<(DeclarationId, T)> {
+    entries.sort_by_key(|(target, _)| {
+        (
+            model
+                .storage
+                .declaration(*target)
+                .map(|declaration| document_identity(model, declaration.document).to_string())
+                .unwrap_or_else(|| "<invalid-document>".to_string()),
+            declaration_path_key(model, *target),
+        )
+    });
+    entries
+}
+
+fn write_scopes(
+    output: &mut dyn fmt::Write,
+    scopes: impl Iterator<Item = types::SpecializationScope>,
+) -> fmt::Result {
+    write!(output, " (scopes")?;
+    for scope in scopes {
+        write!(output, " {}", specialization_scope(scope))?;
+    }
+    output.write_char(')')
+}
+
+fn fact_provenance(provenance: types::FactProvenance) -> &'static str {
+    match provenance {
+        types::FactProvenance::Authored => "authored",
+        types::FactProvenance::Implied => "implied",
+    }
+}
+
 fn specialization_scope(scope: types::SpecializationScope) -> &'static str {
     match scope {
         types::SpecializationScope::AnySpecialization => "any",
         types::SpecializationScope::Subclassification => "subclassification",
+        types::SpecializationScope::FeatureSpecialization => "feature",
     }
 }
 
@@ -1454,7 +1516,7 @@ mod tests {
         .unwrap();
         let facts =
             inspection::ElementFactIndex::build(&storage, &resolution, &evaluation).unwrap();
-        let specialization = types::SpecializationClosure::build(&storage, &resolution).unwrap();
+        let type_facts = types::TypeIndex::build(&storage, &resolution).unwrap();
         let model = ResolvedSemanticModel {
             storage,
             direct_names,
@@ -1465,7 +1527,7 @@ mod tests {
             reverse_references,
             effective_scopes,
             facts,
-            specialization,
+            types: type_facts,
             resolution,
             evaluation,
             metadata: PublicationMetadata {

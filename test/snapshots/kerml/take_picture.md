@@ -166,10 +166,20 @@ behavior TakePicture {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/take_picture.md") (qualified-name "TakePicture::Focus")))
+      (subtype (node (document "memory://snapshot/take_picture.md") (qualified-name "TakePicture::step1")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/take_picture.md") (qualified-name "TakePicture::Shoot")))
+      (subtype (node (document "memory://snapshot/take_picture.md") (qualified-name "TakePicture::step2")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/take_picture.md") (qualified-name "TakePicture::step1")))
+      (type (node (document "memory://snapshot/take_picture.md") (qualified-name "TakePicture::Focus")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/take_picture.md") (qualified-name "TakePicture::Focus")) (source direct))
       (supertype (node (document "memory://snapshot/take_picture.md") (qualified-name "TakePicture::Focus")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/take_picture.md") (qualified-name "TakePicture::step2")))
+      (type (node (document "memory://snapshot/take_picture.md") (qualified-name "TakePicture::Shoot")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/take_picture.md") (qualified-name "TakePicture::Shoot")) (source direct))
       (supertype (node (document "memory://snapshot/take_picture.md") (qualified-name "TakePicture::Shoot")) (scopes any))
     )
 )

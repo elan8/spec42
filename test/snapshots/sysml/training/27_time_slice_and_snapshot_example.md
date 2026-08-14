@@ -95,7 +95,12 @@ package 'Time Slice and Snapshot Example' {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Date")))
+      (subtype (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Vehicle::delivery::deliveryDate")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Vehicle::delivery::deliveryDate")))
+      (type (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Date")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Date")) (source direct))
       (supertype (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Date")) (scopes any))
     )
 )

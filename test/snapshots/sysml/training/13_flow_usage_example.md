@@ -99,7 +99,12 @@ package 'Flow Usage Example' {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/13_flow_usage_example.md") (qualified-name "Flow Usage Example::Vehicle")))
+      (subtype (node (document "memory://snapshot/13_flow_usage_example.md") (qualified-name "Flow Usage Example::vehicle")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/13_flow_usage_example.md") (qualified-name "Flow Usage Example::vehicle")))
+      (type (node (document "memory://snapshot/13_flow_usage_example.md") (qualified-name "Flow Usage Example::Vehicle")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/13_flow_usage_example.md") (qualified-name "Flow Usage Example::Vehicle")) (source direct))
       (supertype (node (document "memory://snapshot/13_flow_usage_example.md") (qualified-name "Flow Usage Example::Vehicle")) (scopes any))
     )
 )

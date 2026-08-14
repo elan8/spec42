@@ -280,12 +280,20 @@ package Filtering {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/filtering.md") (qualified-name "Filtering::DesignModel::System")))
+      (subtype (node (document "memory://snapshot/filtering.md") (qualified-name "Filtering::DesignModel::system")) (scopes any))
+      (subtype (node (document "memory://snapshot/filtering.md") (qualified-name "Filtering::Meta::Test")) (scopes any subclassification))
+    )
     (declaration (id (node (document "memory://snapshot/filtering.md") (qualified-name "Filtering::DesignModel::system")))
+      (type (node (document "memory://snapshot/filtering.md") (qualified-name "Filtering::DesignModel::System")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/filtering.md") (qualified-name "Filtering::DesignModel::System")) (source direct))
       (supertype (node (document "memory://snapshot/filtering.md") (qualified-name "Filtering::DesignModel::System")) (scopes any))
+      (subtype (node (document "memory://snapshot/filtering.md") (path (named (kind package) (name "Filtering")) (named (kind package) (name "Meta")) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/filtering.md") (path (named (kind package) (name "Filtering")) (named (kind package) (name "Meta")) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (effective-type (node (document "memory://snapshot/filtering.md") (qualified-name "Filtering::DesignModel::System")) (source inherited) (from (node (document "memory://snapshot/filtering.md") (qualified-name "Filtering::DesignModel::system"))))
       (supertype (node (document "memory://snapshot/filtering.md") (qualified-name "Filtering::DesignModel::System")) (scopes any))
-      (supertype (node (document "memory://snapshot/filtering.md") (qualified-name "Filtering::DesignModel::system")) (scopes any))
+      (supertype (node (document "memory://snapshot/filtering.md") (qualified-name "Filtering::DesignModel::system")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/filtering.md") (qualified-name "Filtering::Meta::Test")))
       (supertype (node (document "memory://snapshot/filtering.md") (qualified-name "Filtering::DesignModel::System")) (scopes any subclassification))

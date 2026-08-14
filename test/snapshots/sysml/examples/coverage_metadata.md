@@ -82,7 +82,12 @@ package Annotated {
 ~~~sexpr
 (types
     (declaration (id (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Annotated::m")))
+      (type (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Classified")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Classified")) (source direct))
       (supertype (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Classified")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Classified")))
+      (subtype (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Annotated::m")) (scopes any))
     )
 )
 ~~~

@@ -127,14 +127,19 @@ package RationaleMetadataExample {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engine")))
+      (subtype (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engine4cyl")) (scopes any feature))
+      (subtype (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engine6cyl")) (scopes any feature))
+      (subtype (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineTradeOffAnalysis::selectedEngine")) (scopes any feature))
+    )
     (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engine4cyl")))
-      (supertype (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engine")) (scopes any))
+      (supertype (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engine")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engine6cyl")))
-      (supertype (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engine")) (scopes any))
+      (supertype (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engine")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineTradeOffAnalysis::selectedEngine")))
-      (supertype (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engine")) (scopes any))
+      (supertype (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engine")) (scopes any feature))
     )
 )
 ~~~

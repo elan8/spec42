@@ -230,10 +230,18 @@ package Expressions {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/expressions.md") (qualified-name "Expressions::C")))
+      (subtype (node (document "memory://snapshot/expressions.md") (qualified-name "Expressions::obj1")) (scopes any))
+      (subtype (node (document "memory://snapshot/expressions.md") (qualified-name "Expressions::obj2")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/expressions.md") (qualified-name "Expressions::obj1")))
+      (type (node (document "memory://snapshot/expressions.md") (qualified-name "Expressions::C")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/expressions.md") (qualified-name "Expressions::C")) (source direct))
       (supertype (node (document "memory://snapshot/expressions.md") (qualified-name "Expressions::C")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/expressions.md") (qualified-name "Expressions::obj2")))
+      (type (node (document "memory://snapshot/expressions.md") (qualified-name "Expressions::C")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/expressions.md") (qualified-name "Expressions::C")) (source direct))
       (supertype (node (document "memory://snapshot/expressions.md") (qualified-name "Expressions::C")) (scopes any))
     )
 )

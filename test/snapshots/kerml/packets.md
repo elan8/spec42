@@ -120,11 +120,17 @@ package Packets {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Data Packet")))
+      (subtype (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Thermal Data Packet")) (scopes any subclassification))
+    )
     (declaration (id (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Thermal Data Packet")))
       (supertype (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Data Packet")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/packets.md") (qualified-name "Packets::packet data field::packet secondary header")))
-      (supertype (node (document "memory://snapshot/packets.md") (qualified-name "Packets::packet header")) (scopes any))
+      (supertype (node (document "memory://snapshot/packets.md") (qualified-name "Packets::packet header")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/packets.md") (qualified-name "Packets::packet header")))
+      (subtype (node (document "memory://snapshot/packets.md") (qualified-name "Packets::packet data field::packet secondary header")) (scopes any feature))
     )
 )
 ~~~

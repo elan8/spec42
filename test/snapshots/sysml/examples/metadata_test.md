@@ -156,9 +156,15 @@ package MetadataTest {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::ClassificationLevel")))
+      (subtype (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::Classified::classificationLevel")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::Classified::annotatedElement"))) (cyclic true)
+      (subtype (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::Classified::annotatedElement")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::Classified::classificationLevel")))
+      (type (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::ClassificationLevel")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::ClassificationLevel")) (source direct))
       (supertype (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::ClassificationLevel")) (scopes any))
     )
 )

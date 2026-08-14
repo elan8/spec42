@@ -56,8 +56,11 @@ package FeatureInheritance {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/feature_inheritance.md") (qualified-name "FeatureInheritance::s")))
+      (subtype (node (document "memory://snapshot/feature_inheritance.md") (qualified-name "FeatureInheritance::u")) (scopes any feature))
+    )
     (declaration (id (node (document "memory://snapshot/feature_inheritance.md") (qualified-name "FeatureInheritance::u")))
-      (supertype (node (document "memory://snapshot/feature_inheritance.md") (qualified-name "FeatureInheritance::s")) (scopes any))
+      (supertype (node (document "memory://snapshot/feature_inheritance.md") (qualified-name "FeatureInheritance::s")) (scopes any feature))
     )
 )
 ~~~

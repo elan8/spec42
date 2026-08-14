@@ -249,14 +249,19 @@ library package 'Semantic Metadata Example' {
 ~~~sexpr
 (types
     (declaration (id (node (document "memory://snapshot/41_semantic_metadata_example.md") (qualified-name "Semantic Metadata Example::causation::baseType"))) (cyclic true)
+      (subtype (node (document "memory://snapshot/41_semantic_metadata_example.md") (qualified-name "Semantic Metadata Example::causation::baseType")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/41_semantic_metadata_example.md") (qualified-name "Semantic Metadata Example::cause::baseType"))) (cyclic true)
+      (subtype (node (document "memory://snapshot/41_semantic_metadata_example.md") (qualified-name "Semantic Metadata Example::cause::baseType")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/41_semantic_metadata_example.md") (qualified-name "Semantic Metadata Example::failure::baseType"))) (cyclic true)
+      (subtype (node (document "memory://snapshot/41_semantic_metadata_example.md") (qualified-name "Semantic Metadata Example::failure::baseType")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/41_semantic_metadata_example.md") (qualified-name "Semantic Metadata Example::scenario::baseType"))) (cyclic true)
+      (subtype (node (document "memory://snapshot/41_semantic_metadata_example.md") (qualified-name "Semantic Metadata Example::scenario::baseType")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/41_semantic_metadata_example.md") (qualified-name "Semantic Metadata Example::situation::baseType"))) (cyclic true)
+      (subtype (node (document "memory://snapshot/41_semantic_metadata_example.md") (qualified-name "Semantic Metadata Example::situation::baseType")) (scopes any feature))
     )
 )
 ~~~

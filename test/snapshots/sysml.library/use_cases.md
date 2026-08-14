@@ -372,7 +372,12 @@ standard library package UseCases {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/use_cases.md") (qualified-name "UseCases::UseCase")))
+      (subtype (node (document "memory://snapshot/use_cases.md") (qualified-name "UseCases::useCases")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/use_cases.md") (qualified-name "UseCases::useCases")))
+      (type (node (document "memory://snapshot/use_cases.md") (qualified-name "UseCases::UseCase")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/use_cases.md") (qualified-name "UseCases::UseCase")) (source direct))
       (supertype (node (document "memory://snapshot/use_cases.md") (qualified-name "UseCases::UseCase")) (scopes any))
     )
 )

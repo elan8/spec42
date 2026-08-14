@@ -697,7 +697,12 @@ package CarWithShapeAndCSG {
 ~~~sexpr
 (types
     (declaration (id (node (document "memory://snapshot/car_with_shape_and_csg.md") (qualified-name "CarWithShapeAndCSG::Car::powerSource")))
+      (type (node (document "memory://snapshot/car_with_shape_and_csg.md") (qualified-name "CarWithShapeAndCSG::Engine")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/car_with_shape_and_csg.md") (qualified-name "CarWithShapeAndCSG::Engine")) (source direct))
       (supertype (node (document "memory://snapshot/car_with_shape_and_csg.md") (qualified-name "CarWithShapeAndCSG::Engine")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/car_with_shape_and_csg.md") (qualified-name "CarWithShapeAndCSG::Engine")))
+      (subtype (node (document "memory://snapshot/car_with_shape_and_csg.md") (qualified-name "CarWithShapeAndCSG::Car::powerSource")) (scopes any))
     )
 )
 ~~~

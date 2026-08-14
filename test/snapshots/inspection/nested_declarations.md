@@ -55,7 +55,12 @@ probe nested_declarations.md 2 24
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/nested_declarations.md") (qualified-name "Outer::Vehicle")))
+      (subtype (node (document "memory://snapshot/nested_declarations.md") (qualified-name "Outer::Vehicle::engine")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/nested_declarations.md") (qualified-name "Outer::Vehicle::engine")))
+      (type (node (document "memory://snapshot/nested_declarations.md") (qualified-name "Outer::Vehicle")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/nested_declarations.md") (qualified-name "Outer::Vehicle")) (source direct))
       (supertype (node (document "memory://snapshot/nested_declarations.md") (qualified-name "Outer::Vehicle")) (scopes any))
     )
 )

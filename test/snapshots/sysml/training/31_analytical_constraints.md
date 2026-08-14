@@ -474,7 +474,12 @@ package 'Analytical Constraints' {
 ~~~sexpr
 (types
     (declaration (id (node (document "memory://snapshot/31_analytical_constraints.md") (qualified-name "Analytical Constraints::StraightLineDynamics::dynamics")))
+      (type (node (document "memory://snapshot/31_analytical_constraints.md") (qualified-name "Analytical Constraints::StraightLineDynamicsEquations")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/31_analytical_constraints.md") (qualified-name "Analytical Constraints::StraightLineDynamicsEquations")) (source direct))
       (supertype (node (document "memory://snapshot/31_analytical_constraints.md") (qualified-name "Analytical Constraints::StraightLineDynamicsEquations")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/31_analytical_constraints.md") (qualified-name "Analytical Constraints::StraightLineDynamicsEquations")))
+      (subtype (node (document "memory://snapshot/31_analytical_constraints.md") (qualified-name "Analytical Constraints::StraightLineDynamics::dynamics")) (scopes any))
     )
 )
 ~~~

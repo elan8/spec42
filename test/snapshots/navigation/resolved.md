@@ -43,7 +43,12 @@ package P {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/resolved.md") (qualified-name "P::Engine")))
+      (subtype (node (document "memory://snapshot/resolved.md") (qualified-name "P::engine")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/resolved.md") (qualified-name "P::engine")))
+      (type (node (document "memory://snapshot/resolved.md") (qualified-name "P::Engine")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/resolved.md") (qualified-name "P::Engine")) (source direct))
       (supertype (node (document "memory://snapshot/resolved.md") (qualified-name "P::Engine")) (scopes any))
     )
 )

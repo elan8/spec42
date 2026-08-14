@@ -69,7 +69,12 @@ package 'Opaque Action Example' {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/22_opaque_action_example.md") (qualified-name "Opaque Action Example::Sensor")))
+      (subtype (node (document "memory://snapshot/22_opaque_action_example.md") (qualified-name "Opaque Action Example::UpdateSensors::sensors")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/22_opaque_action_example.md") (qualified-name "Opaque Action Example::UpdateSensors::sensors")))
+      (type (node (document "memory://snapshot/22_opaque_action_example.md") (qualified-name "Opaque Action Example::Sensor")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/22_opaque_action_example.md") (qualified-name "Opaque Action Example::Sensor")) (source direct))
       (supertype (node (document "memory://snapshot/22_opaque_action_example.md") (qualified-name "Opaque Action Example::Sensor")) (scopes any))
     )
 )

@@ -654,10 +654,20 @@ package '10d-Dynamics Analysis' {
 ~~~sexpr
 (types
     (declaration (id (node (document "memory://snapshot/10d_dynamics_analysis.md") (path (named (kind package) (name "10d-Dynamics Analysis")) (named (kind package) (name "AnalysisModel")) (named (kind analysis-def) (name "DynamicsAnalysis")) (anonymous (kind for-loop) (ordinal 0)) (named (kind perform-action) (name "dynamics")))))
+      (type (node (document "memory://snapshot/10d_dynamics_analysis.md") (qualified-name "10d-Dynamics Analysis::DynamicsModel::StraightLineDynamics")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/10d_dynamics_analysis.md") (qualified-name "10d-Dynamics Analysis::DynamicsModel::StraightLineDynamics")) (source direct))
       (supertype (node (document "memory://snapshot/10d_dynamics_analysis.md") (qualified-name "10d-Dynamics Analysis::DynamicsModel::StraightLineDynamics")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/10d_dynamics_analysis.md") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis::vehicle")))
+      (type (node (document "memory://snapshot/10d_dynamics_analysis.md") (qualified-name "10d-Dynamics Analysis::VehicleModel::Vehicle")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/10d_dynamics_analysis.md") (qualified-name "10d-Dynamics Analysis::VehicleModel::Vehicle")) (source direct))
       (supertype (node (document "memory://snapshot/10d_dynamics_analysis.md") (qualified-name "10d-Dynamics Analysis::VehicleModel::Vehicle")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/10d_dynamics_analysis.md") (qualified-name "10d-Dynamics Analysis::DynamicsModel::StraightLineDynamics")))
+      (subtype (node (document "memory://snapshot/10d_dynamics_analysis.md") (path (named (kind package) (name "10d-Dynamics Analysis")) (named (kind package) (name "AnalysisModel")) (named (kind analysis-def) (name "DynamicsAnalysis")) (anonymous (kind for-loop) (ordinal 0)) (named (kind perform-action) (name "dynamics")))) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/10d_dynamics_analysis.md") (qualified-name "10d-Dynamics Analysis::VehicleModel::Vehicle")))
+      (subtype (node (document "memory://snapshot/10d_dynamics_analysis.md") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis::vehicle")) (scopes any))
     )
 )
 ~~~

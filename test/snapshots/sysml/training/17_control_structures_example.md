@@ -127,7 +127,12 @@ package 'Control Structures Example' {
 ~~~sexpr
 (types
     (declaration (id (node (document "memory://snapshot/17_control_structures_example.md") (qualified-name "Control Structures Example::ChargeBattery::endCharging")))
+      (type (node (document "memory://snapshot/17_control_structures_example.md") (qualified-name "Control Structures Example::EndCharging")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/17_control_structures_example.md") (qualified-name "Control Structures Example::EndCharging")) (source direct))
       (supertype (node (document "memory://snapshot/17_control_structures_example.md") (qualified-name "Control Structures Example::EndCharging")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/17_control_structures_example.md") (qualified-name "Control Structures Example::EndCharging")))
+      (subtype (node (document "memory://snapshot/17_control_structures_example.md") (qualified-name "Control Structures Example::ChargeBattery::endCharging")) (scopes any))
     )
 )
 ~~~

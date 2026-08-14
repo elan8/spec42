@@ -86,7 +86,12 @@ package Client {
 ~~~sexpr
 (types
     (declaration (id (node (document "memory://snapshot/Middle.sysml") (qualified-name "Middle::local")))
+      (type (node (document "memory://snapshot/Source.sysml") (qualified-name "Source::Thing")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/Source.sysml") (qualified-name "Source::Thing")) (source direct))
       (supertype (node (document "memory://snapshot/Source.sysml") (qualified-name "Source::Thing")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/Source.sysml") (qualified-name "Source::Thing")))
+      (subtype (node (document "memory://snapshot/Middle.sysml") (qualified-name "Middle::local")) (scopes any))
     )
 )
 ~~~

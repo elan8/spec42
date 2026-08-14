@@ -23,16 +23,27 @@ pub(crate) enum SpecializationScope {
     /// `Subclassification` alone: generalization between classifiers, ignoring the feature-level
     /// subkinds and typing.
     Subclassification,
+    /// `Subsetting` and `Redefinition`: how one feature specializes another, ignoring typing.
+    ///
+    /// This is the chain an untyped feature inherits its type along, so it is the scope effective
+    /// typing walks. Following a `FeatureTyping` edge instead would cross from the feature to its
+    /// type and start collecting the type's own supertypes as if they were the feature's types.
+    FeatureSpecialization,
 }
 
 impl SpecializationScope {
     /// Every published scope, widest first, so rendered output has one fixed order.
-    pub(crate) const ALL: [Self; 2] = [Self::AnySpecialization, Self::Subclassification];
+    pub(crate) const ALL: [Self; 3] = [
+        Self::AnySpecialization,
+        Self::Subclassification,
+        Self::FeatureSpecialization,
+    ];
 
     fn bit(self) -> u8 {
         match self {
             Self::AnySpecialization => 1 << 0,
             Self::Subclassification => 1 << 1,
+            Self::FeatureSpecialization => 1 << 2,
         }
     }
 }
@@ -49,10 +60,89 @@ fn edge_scopes(kind: ReferenceKind) -> Option<u8> {
             SpecializationScope::AnySpecialization.bit()
                 | SpecializationScope::Subclassification.bit(),
         ),
-        ReferenceKind::Subsetting | ReferenceKind::Redefinition | ReferenceKind::FeatureTyping => {
-            Some(SpecializationScope::AnySpecialization.bit())
-        }
+        ReferenceKind::Subsetting | ReferenceKind::Redefinition => Some(
+            SpecializationScope::AnySpecialization.bit()
+                | SpecializationScope::FeatureSpecialization.bit(),
+        ),
+        ReferenceKind::FeatureTyping => Some(SpecializationScope::AnySpecialization.bit()),
         _ => None,
+    }
+}
+
+/// Whether a fact was authored or synthesized by the resolver.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub(crate) enum FactProvenance {
+    Authored,
+    Implied,
+}
+
+/// Where one of a feature's effective types came from.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub(crate) enum EffectiveTypeSource {
+    /// The feature carries this typing itself.
+    Direct,
+    /// The feature inherits this typing from a feature it subsets or redefines.
+    Inherited(DeclarationId),
+}
+
+/// Contiguous per-declaration rows over one shared entry table.
+///
+/// The same shape the element-fact index uses: a per-declaration question reads one slice instead
+/// of scanning a whole table.
+#[derive(Debug)]
+struct Rows<T> {
+    ranges: Box<[(u32, u32)]>,
+    entries: Box<[T]>,
+}
+
+impl<T> Default for Rows<T> {
+    fn default() -> Self {
+        Self {
+            ranges: Box::default(),
+            entries: Box::default(),
+        }
+    }
+}
+
+impl<T: Ord> Rows<T> {
+    /// Builds rows from `(owner, entry)` pairs. Entries are sorted and deduplicated within each
+    /// row, so output never depends on the order facts were discovered in.
+    fn build(count: usize, mut pairs: Vec<(DeclarationId, T)>) -> Result<Self, ResolutionError> {
+        pairs.sort();
+        pairs.dedup();
+        let mut ranges = Vec::with_capacity(count);
+        let mut entries = Vec::with_capacity(pairs.len());
+        let mut remaining = pairs.into_iter().peekable();
+        for index in 0..count {
+            let start = u32::try_from(entries.len()).map_err(|_| ResolutionError::Capacity)?;
+            while remaining
+                .peek()
+                .is_some_and(|(owner, _)| owner.index() == index)
+            {
+                let (_, entry) = remaining.next().ok_or(ResolutionError::InvalidStorage)?;
+                entries.push(entry);
+            }
+            let end = u32::try_from(entries.len()).map_err(|_| ResolutionError::Capacity)?;
+            ranges.push((start, end));
+        }
+        // A pair whose owner is outside the declaration domain would otherwise be dropped without
+        // a trace, leaving a fact that exists but can never be read.
+        if remaining.next().is_some() {
+            return Err(ResolutionError::InvalidStorage);
+        }
+        Ok(Self {
+            ranges: ranges.into_boxed_slice(),
+            entries: entries.into_boxed_slice(),
+        })
+    }
+
+    fn row(&self, declaration: DeclarationId) -> &[T] {
+        let Some(&(start, end)) = self.ranges.get(declaration.index()) else {
+            return &[];
+        };
+        self.entries
+            .get(start as usize..end as usize)
+            .unwrap_or_default()
     }
 }
 
@@ -145,15 +235,9 @@ impl SpecializationClosure {
         &self,
         declaration: DeclarationId,
     ) -> impl Iterator<Item = (DeclarationId, Vec<SpecializationScope>)> + '_ {
-        self.entries(declaration).iter().map(|(ancestor, scopes)| {
-            (
-                *ancestor,
-                SpecializationScope::ALL
-                    .into_iter()
-                    .filter(|scope| scopes & scope.bit() != 0)
-                    .collect(),
-            )
-        })
+        self.entries(declaration)
+            .iter()
+            .map(|(ancestor, scopes)| (*ancestor, scopes_of(*scopes).collect()))
     }
 
     /// Whether `declaration` reaches itself through specialization.
@@ -172,6 +256,134 @@ impl SpecializationClosure {
             .get(start as usize..end as usize)
             .unwrap_or_default()
     }
+}
+
+/// Every published type fact of one publication.
+#[derive(Debug, Default)]
+pub(crate) struct TypeIndex {
+    specialization: SpecializationClosure,
+    /// Resolved `FeatureTyping` targets per feature, with provenance.
+    direct_types: Rows<(DeclarationId, FactProvenance)>,
+    /// Direct specializers per declaration: the reverse of the direct specialization edges, tagged
+    /// with the scopes each edge belongs to.
+    ///
+    /// Reverse rather than derived on demand: without it, "what specializes this?" is a scan of
+    /// every reference in the model, which is the shape of query a publication is supposed to
+    /// index away.
+    subtypes: Rows<(DeclarationId, u8)>,
+    /// The types a feature has, directly or inherited along its subsetting/redefinition chain.
+    effective_types: Rows<(DeclarationId, EffectiveTypeSource)>,
+}
+
+impl TypeIndex {
+    pub(crate) fn build(
+        storage: &SemanticModelStorage,
+        resolution: &ResolutionResults,
+    ) -> Result<Self, ResolutionError> {
+        let count = storage.declarations.len();
+        let specialization = SpecializationClosure::build(storage, resolution)?;
+
+        let mut direct_types = Vec::new();
+        let mut subtypes = Vec::new();
+        let mut edge = |source: DeclarationId,
+                        target: DeclarationId,
+                        kind: ReferenceKind,
+                        provenance: FactProvenance| {
+            if let Some(scopes) = edge_scopes(kind) {
+                subtypes.push((target, (source, scopes)));
+            }
+            if kind == ReferenceKind::FeatureTyping {
+                direct_types.push((source, (target, provenance)));
+            }
+        };
+
+        for (index, reference) in storage.references.iter().enumerate() {
+            let id =
+                AuthoredReferenceId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+            if let Some(ResolutionStatus::Resolved(target)) = resolution.outcome(id) {
+                edge(
+                    reference.source,
+                    target,
+                    reference.kind,
+                    FactProvenance::Authored,
+                );
+            }
+        }
+        for relationship in resolution.implied_relationships.iter() {
+            edge(
+                relationship.source,
+                relationship.target,
+                relationship.kind,
+                FactProvenance::Implied,
+            );
+        }
+
+        let direct_types = Rows::build(count, direct_types)?;
+        let subtypes = Rows::build(count, subtypes)?;
+
+        // Effective typing walks the feature-specialization chain and collects what each feature
+        // on it is typed by. A feature that declares no typing of its own is not untyped: KerML
+        // gives it the typing of the feature it subsets or redefines, which is the rule the legacy
+        // conformance check depended on and could only express as "an untyped feature always
+        // conforms".
+        let mut effective = Vec::new();
+        for index in 0..count {
+            let declaration =
+                DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+            for (target, _) in direct_types.row(declaration) {
+                effective.push((declaration, (*target, EffectiveTypeSource::Direct)));
+            }
+            for (ancestor, scopes) in specialization.entries(declaration) {
+                if scopes & SpecializationScope::FeatureSpecialization.bit() == 0 {
+                    continue;
+                }
+                for (target, _) in direct_types.row(*ancestor) {
+                    effective.push((
+                        declaration,
+                        (*target, EffectiveTypeSource::Inherited(*ancestor)),
+                    ));
+                }
+            }
+        }
+        let effective_types = Rows::build(count, effective)?;
+
+        Ok(Self {
+            specialization,
+            direct_types,
+            subtypes,
+            effective_types,
+        })
+    }
+
+    pub(crate) fn specialization(&self) -> &SpecializationClosure {
+        &self.specialization
+    }
+
+    pub(crate) fn direct_types(
+        &self,
+        declaration: DeclarationId,
+    ) -> &[(DeclarationId, FactProvenance)] {
+        self.direct_types.row(declaration)
+    }
+
+    /// Declarations that directly specialize `declaration`, with the scopes of each edge.
+    pub(crate) fn subtypes(&self, declaration: DeclarationId) -> &[(DeclarationId, u8)] {
+        self.subtypes.row(declaration)
+    }
+
+    pub(crate) fn effective_types(
+        &self,
+        declaration: DeclarationId,
+    ) -> &[(DeclarationId, EffectiveTypeSource)] {
+        self.effective_types.row(declaration)
+    }
+}
+
+/// The scopes a tagged edge or path belongs to, in the fixed published order.
+pub(crate) fn scopes_of(bits: u8) -> impl Iterator<Item = SpecializationScope> {
+    SpecializationScope::ALL
+        .into_iter()
+        .filter(move |scope| bits & scope.bit() != 0)
 }
 
 /// Saturates the direct edges into their transitive closure.

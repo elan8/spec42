@@ -164,7 +164,12 @@ package 'Views Example' {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::Part Structure View")))
+      (subtype (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::vehicle structure view")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::vehicle structure view")))
+      (type (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::Part Structure View")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::Part Structure View")) (source direct))
       (supertype (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::Part Structure View")) (scopes any))
     )
 )

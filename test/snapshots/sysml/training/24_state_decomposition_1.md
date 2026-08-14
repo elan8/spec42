@@ -102,7 +102,12 @@ package 'State Decomposition-1' {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/24_state_decomposition_1.md") (qualified-name "State Decomposition-1::VehicleStates")))
+      (subtype (node (document "memory://snapshot/24_state_decomposition_1.md") (qualified-name "State Decomposition-1::vehicleStates")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/24_state_decomposition_1.md") (qualified-name "State Decomposition-1::vehicleStates")))
+      (type (node (document "memory://snapshot/24_state_decomposition_1.md") (qualified-name "State Decomposition-1::VehicleStates")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/24_state_decomposition_1.md") (qualified-name "State Decomposition-1::VehicleStates")) (source direct))
       (supertype (node (document "memory://snapshot/24_state_decomposition_1.md") (qualified-name "State Decomposition-1::VehicleStates")) (scopes any))
     )
 )

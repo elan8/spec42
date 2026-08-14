@@ -48,7 +48,12 @@ package IntersectCoverage {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/intersecting_relationship.md") (qualified-name "IntersectCoverage::Base")))
+      (subtype (node (document "memory://snapshot/intersecting_relationship.md") (qualified-name "IntersectCoverage::reading")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/intersecting_relationship.md") (qualified-name "IntersectCoverage::reading")))
+      (type (node (document "memory://snapshot/intersecting_relationship.md") (qualified-name "IntersectCoverage::Base")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/intersecting_relationship.md") (qualified-name "IntersectCoverage::Base")) (source direct))
       (supertype (node (document "memory://snapshot/intersecting_relationship.md") (qualified-name "IntersectCoverage::Base")) (scopes any))
     )
 )

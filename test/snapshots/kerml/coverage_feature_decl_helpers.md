@@ -79,13 +79,18 @@ package FeatureDeclCoverage {
 ~~~sexpr
 (types
     (declaration (id (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::b")))
-      (supertype (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::f")) (scopes any))
+      (supertype (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::f")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::e")))
-      (supertype (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::f")) (scopes any))
+      (supertype (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::f")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::f")))
+      (subtype (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::b")) (scopes any feature))
+      (subtype (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::e")) (scopes any feature))
+      (subtype (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::s")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::s")))
-      (supertype (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::f")) (scopes any))
+      (supertype (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::f")) (scopes any feature))
     )
 )
 ~~~

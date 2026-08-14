@@ -254,7 +254,12 @@ package 'Use Case Usage Example' {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/35_use_case_usage_example.md") (qualified-name "Use Case Usage Example::Fuel Station")))
+      (subtype (node (document "memory://snapshot/35_use_case_usage_example.md") (qualified-name "Use Case Usage Example::add fuel::fuel station")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/35_use_case_usage_example.md") (qualified-name "Use Case Usage Example::add fuel::fuel station")))
+      (type (node (document "memory://snapshot/35_use_case_usage_example.md") (qualified-name "Use Case Usage Example::Fuel Station")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/35_use_case_usage_example.md") (qualified-name "Use Case Usage Example::Fuel Station")) (source direct))
       (supertype (node (document "memory://snapshot/35_use_case_usage_example.md") (qualified-name "Use Case Usage Example::Fuel Station")) (scopes any))
     )
 )

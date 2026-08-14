@@ -796,10 +796,18 @@ standard library package OccurrenceFunctions {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/occurrence_functions.md") (qualified-name "OccurrenceFunctions::destroy")))
+      (subtype (node (document "memory://snapshot/occurrence_functions.md") (qualified-name "OccurrenceFunctions::removeOld::destroyStep")) (scopes any))
+      (subtype (node (document "memory://snapshot/occurrence_functions.md") (qualified-name "OccurrenceFunctions::removeOldAt::destroyStep")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/occurrence_functions.md") (qualified-name "OccurrenceFunctions::removeOld::destroyStep")))
+      (type (node (document "memory://snapshot/occurrence_functions.md") (qualified-name "OccurrenceFunctions::destroy")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/occurrence_functions.md") (qualified-name "OccurrenceFunctions::destroy")) (source direct))
       (supertype (node (document "memory://snapshot/occurrence_functions.md") (qualified-name "OccurrenceFunctions::destroy")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/occurrence_functions.md") (qualified-name "OccurrenceFunctions::removeOldAt::destroyStep")))
+      (type (node (document "memory://snapshot/occurrence_functions.md") (qualified-name "OccurrenceFunctions::destroy")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/occurrence_functions.md") (qualified-name "OccurrenceFunctions::destroy")) (source direct))
       (supertype (node (document "memory://snapshot/occurrence_functions.md") (qualified-name "OccurrenceFunctions::destroy")) (scopes any))
     )
 )

@@ -1132,7 +1132,7 @@ pub(crate) struct ResolvedSemanticModel {
     reverse_references: ReverseReferenceIndex,
     effective_scopes: EffectiveScopeIndex,
     facts: inspection::ElementFactIndex,
-    specialization: types::SpecializationClosure,
+    types: types::TypeIndex,
     resolution: ResolutionResults,
     evaluation: Box<[EvaluationFact]>,
     metadata: PublicationMetadata,
@@ -1889,11 +1889,11 @@ impl SemanticModelStorage {
             &resolution.inherited_names,
         )?;
         let facts = inspection::ElementFactIndex::build(&self, &resolution, &evaluation)?;
-        // A barrier product, not a solver family: the specialization closure is derived from
-        // settled outcomes and feeds nothing back into scope, imports or inheritance. The
-        // resolver's own ancestor closure for inherited names stays separate and unchanged --
-        // widening that one would silently change name resolution.
-        let specialization = types::SpecializationClosure::build(&self, &resolution)?;
+        // A barrier product, not a solver family: every type fact here is derived from settled
+        // outcomes and feeds nothing back into scope, imports or inheritance. The resolver's own
+        // ancestor closure for inherited names stays separate and unchanged -- widening that one
+        // would silently change name resolution.
+        let type_facts = types::TypeIndex::build(&self, &resolution)?;
         Ok(ResolvedSemanticModel {
             storage: self,
             direct_names,
@@ -1904,7 +1904,7 @@ impl SemanticModelStorage {
             reverse_references,
             effective_scopes,
             facts,
-            specialization,
+            types: type_facts,
             resolution,
             evaluation,
             metadata: PublicationMetadata {

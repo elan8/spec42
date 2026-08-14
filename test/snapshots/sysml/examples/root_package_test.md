@@ -68,12 +68,19 @@ package P3 {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/root_package_test.md") (qualified-name "P1::A")))
+      (subtype (node (document "memory://snapshot/root_package_test.md") (qualified-name "P2::a")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/root_package_test.md") (qualified-name "P2::a")))
+      (type (node (document "memory://snapshot/root_package_test.md") (qualified-name "P1::A")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/root_package_test.md") (qualified-name "P1::A")) (source direct))
       (supertype (node (document "memory://snapshot/root_package_test.md") (qualified-name "P1::A")) (scopes any))
+      (subtype (node (document "memory://snapshot/root_package_test.md") (qualified-name "P3::b")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/root_package_test.md") (qualified-name "P3::b")))
+      (effective-type (node (document "memory://snapshot/root_package_test.md") (qualified-name "P1::A")) (source inherited) (from (node (document "memory://snapshot/root_package_test.md") (qualified-name "P2::a"))))
       (supertype (node (document "memory://snapshot/root_package_test.md") (qualified-name "P1::A")) (scopes any))
-      (supertype (node (document "memory://snapshot/root_package_test.md") (qualified-name "P2::a")) (scopes any))
+      (supertype (node (document "memory://snapshot/root_package_test.md") (qualified-name "P2::a")) (scopes any feature))
     )
 )
 ~~~

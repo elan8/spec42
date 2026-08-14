@@ -186,10 +186,18 @@ standard library package Calculations {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations::Calculation")))
+      (subtype (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations::Calculation::self")) (scopes any))
+      (subtype (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations::Calculation::subcalculations")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations::Calculation::self")))
+      (type (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations::Calculation")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations::Calculation")) (source direct))
       (supertype (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations::Calculation")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations::Calculation::subcalculations")))
+      (type (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations::Calculation")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations::Calculation")) (source direct))
       (supertype (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations::Calculation")) (scopes any))
     )
 )

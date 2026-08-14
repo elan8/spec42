@@ -190,14 +190,25 @@ standard library package DerivationConnections {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::Derivation")))
+      (subtype (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::derivations")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/derivation_connections.md") (path (named (kind library-package) (name "DerivationConnections")) (named (kind connection-def) (name "Derivation")) (anonymous (kind ref) (ordinal 0)))))
-      (supertype (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::derivedRequirements")) (scopes any))
+      (supertype (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::derivedRequirements")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::Derivation::originalRequirement")))
-      (supertype (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::originalRequirements")) (scopes any))
+      (supertype (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::originalRequirements")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::derivations")))
+      (type (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::Derivation")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::Derivation")) (source direct))
       (supertype (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::Derivation")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::derivedRequirements")))
+      (subtype (node (document "memory://snapshot/derivation_connections.md") (path (named (kind library-package) (name "DerivationConnections")) (named (kind connection-def) (name "Derivation")) (anonymous (kind ref) (ordinal 0)))) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::originalRequirements")))
+      (subtype (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::Derivation::originalRequirement")) (scopes any feature))
     )
 )
 ~~~

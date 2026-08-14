@@ -172,10 +172,20 @@ package 'Individuals and Time Slices' {
 ~~~sexpr
 (types
     (declaration (id (node (document "memory://snapshot/28_individuals_and_time_slices.md") (path (named (kind package) (name "Individuals and Time Slices")) (anonymous (kind occurrence) (ordinal 0)) (named (kind occurrence) (name "aliceDriving")) (named (kind occurrence) (name "item")))))
+      (type (node (document "memory://snapshot/28_individuals_and_time_slices.md") (qualified-name "Individuals and Time Slices::Alice")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/28_individuals_and_time_slices.md") (qualified-name "Individuals and Time Slices::Alice")) (source direct))
       (supertype (node (document "memory://snapshot/28_individuals_and_time_slices.md") (qualified-name "Individuals and Time Slices::Alice")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/28_individuals_and_time_slices.md") (path (named (kind package) (name "Individuals and Time Slices")) (anonymous (kind occurrence) (ordinal 0)) (named (kind occurrence) (name "bobDriving")) (named (kind occurrence) (name "item")))))
+      (type (node (document "memory://snapshot/28_individuals_and_time_slices.md") (qualified-name "Individuals and Time Slices::Bob")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/28_individuals_and_time_slices.md") (qualified-name "Individuals and Time Slices::Bob")) (source direct))
       (supertype (node (document "memory://snapshot/28_individuals_and_time_slices.md") (qualified-name "Individuals and Time Slices::Bob")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/28_individuals_and_time_slices.md") (qualified-name "Individuals and Time Slices::Alice")))
+      (subtype (node (document "memory://snapshot/28_individuals_and_time_slices.md") (path (named (kind package) (name "Individuals and Time Slices")) (anonymous (kind occurrence) (ordinal 0)) (named (kind occurrence) (name "aliceDriving")) (named (kind occurrence) (name "item")))) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/28_individuals_and_time_slices.md") (qualified-name "Individuals and Time Slices::Bob")))
+      (subtype (node (document "memory://snapshot/28_individuals_and_time_slices.md") (path (named (kind package) (name "Individuals and Time Slices")) (anonymous (kind occurrence) (ordinal 0)) (named (kind occurrence) (name "bobDriving")) (named (kind occurrence) (name "item")))) (scopes any))
     )
 )
 ~~~

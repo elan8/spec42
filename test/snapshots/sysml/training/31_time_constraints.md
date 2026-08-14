@@ -227,7 +227,12 @@ package 'Time Constraints' {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::Vehicle")))
+      (subtype (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::healthStates::vehicle")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::healthStates::vehicle")))
+      (type (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::Vehicle")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::Vehicle")) (source direct))
       (supertype (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::Vehicle")) (scopes any))
     )
 )

@@ -154,10 +154,20 @@ package 'Variation Usages' {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::Transmission")))
+      (subtype (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::vehicleFamily::transmission")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::Vehicle")))
+      (subtype (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::vehicleFamily")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::vehicleFamily")))
+      (type (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::Vehicle")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::Vehicle")) (source direct))
       (supertype (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::Vehicle")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::vehicleFamily::transmission")))
+      (type (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::Transmission")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::Transmission")) (source direct))
       (supertype (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::Transmission")) (scopes any))
     )
 )

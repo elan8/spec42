@@ -69,10 +69,18 @@ probe editor_queries.md 10 17 rename=Base
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/editor_queries.md") (qualified-name "Types::Base")))
+      (subtype (node (document "memory://snapshot/editor_queries.md") (qualified-name "Use::Child")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/editor_queries.md") (qualified-name "Types::Other")))
+      (subtype (node (document "memory://snapshot/editor_queries.md") (qualified-name "Use::Child::x")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/editor_queries.md") (qualified-name "Use::Child")))
       (supertype (node (document "memory://snapshot/editor_queries.md") (qualified-name "Types::Base")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/editor_queries.md") (qualified-name "Use::Child::x")))
+      (type (node (document "memory://snapshot/editor_queries.md") (qualified-name "Types::Other")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/editor_queries.md") (qualified-name "Types::Other")) (source direct))
       (supertype (node (document "memory://snapshot/editor_queries.md") (qualified-name "Types::Other")) (scopes any))
     )
 )

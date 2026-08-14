@@ -53,7 +53,12 @@ package C {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/lexical_inner_shadow.md") (qualified-name "C::T")))
+      (subtype (node (document "memory://snapshot/lexical_inner_shadow.md") (qualified-name "C::p")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/lexical_inner_shadow.md") (qualified-name "C::p")))
+      (type (node (document "memory://snapshot/lexical_inner_shadow.md") (qualified-name "C::T")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/lexical_inner_shadow.md") (qualified-name "C::T")) (source direct))
       (supertype (node (document "memory://snapshot/lexical_inner_shadow.md") (qualified-name "C::T")) (scopes any))
     )
 )

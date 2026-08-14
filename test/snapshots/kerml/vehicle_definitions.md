@@ -121,11 +121,21 @@ package VehicleDefinitions {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/vehicle_definitions.md") (qualified-name "VehicleDefinitions::AxleMountIF")))
+      (subtype (node (document "memory://snapshot/vehicle_definitions.md") (qualified-name "VehicleDefinitions::Mounting::axleMount")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/vehicle_definitions.md") (qualified-name "VehicleDefinitions::Mounting::axleMount")))
+      (type (node (document "memory://snapshot/vehicle_definitions.md") (qualified-name "VehicleDefinitions::AxleMountIF")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/vehicle_definitions.md") (qualified-name "VehicleDefinitions::AxleMountIF")) (source direct))
       (supertype (node (document "memory://snapshot/vehicle_definitions.md") (qualified-name "VehicleDefinitions::AxleMountIF")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/vehicle_definitions.md") (qualified-name "VehicleDefinitions::Mounting::hub")))
+      (type (node (document "memory://snapshot/vehicle_definitions.md") (qualified-name "VehicleDefinitions::WheelHubIF")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/vehicle_definitions.md") (qualified-name "VehicleDefinitions::WheelHubIF")) (source direct))
       (supertype (node (document "memory://snapshot/vehicle_definitions.md") (qualified-name "VehicleDefinitions::WheelHubIF")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/vehicle_definitions.md") (qualified-name "VehicleDefinitions::WheelHubIF")))
+      (subtype (node (document "memory://snapshot/vehicle_definitions.md") (qualified-name "VehicleDefinitions::Mounting::hub")) (scopes any))
     )
 )
 ~~~

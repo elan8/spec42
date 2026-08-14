@@ -85,7 +85,12 @@ package 'Items Example' {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/08_items_example.md") (qualified-name "Items Example::Fuel")))
+      (subtype (node (document "memory://snapshot/08_items_example.md") (qualified-name "Items Example::Vehicle::fuelTank::fuel")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/08_items_example.md") (qualified-name "Items Example::Vehicle::fuelTank::fuel")))
+      (type (node (document "memory://snapshot/08_items_example.md") (qualified-name "Items Example::Fuel")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/08_items_example.md") (qualified-name "Items Example::Fuel")) (source direct))
       (supertype (node (document "memory://snapshot/08_items_example.md") (qualified-name "Items Example::Fuel")) (scopes any))
     )
 )

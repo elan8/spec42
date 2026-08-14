@@ -158,14 +158,25 @@ package Associations {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/associations.md") (qualified-name "Associations::A")))
+      (subtype (node (document "memory://snapshot/associations.md") (qualified-name "Associations::B")) (scopes any subclassification))
+    )
     (declaration (id (node (document "memory://snapshot/associations.md") (qualified-name "Associations::A::y_cross::y")))
+      (type (node (document "memory://snapshot/associations.md") (qualified-name "Associations::Y")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/associations.md") (qualified-name "Associations::Y")) (source direct))
       (supertype (node (document "memory://snapshot/associations.md") (qualified-name "Associations::Y")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/associations.md") (qualified-name "Associations::B")))
       (supertype (node (document "memory://snapshot/associations.md") (qualified-name "Associations::A")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/associations.md") (qualified-name "Associations::XY::y")))
+      (type (node (document "memory://snapshot/associations.md") (qualified-name "Associations::Y")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/associations.md") (qualified-name "Associations::Y")) (source direct))
       (supertype (node (document "memory://snapshot/associations.md") (qualified-name "Associations::Y")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/associations.md") (qualified-name "Associations::Y")))
+      (subtype (node (document "memory://snapshot/associations.md") (qualified-name "Associations::A::y_cross::y")) (scopes any))
+      (subtype (node (document "memory://snapshot/associations.md") (qualified-name "Associations::XY::y")) (scopes any))
     )
 )
 ~~~

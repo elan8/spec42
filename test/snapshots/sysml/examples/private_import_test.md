@@ -108,10 +108,20 @@ package PrivateImportTest {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::P1::A")))
+      (subtype (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::x")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::P3::B")))
+      (subtype (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::z")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::x")))
+      (type (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::P1::A")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::P1::A")) (source direct))
       (supertype (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::P1::A")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::z")))
+      (type (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::P3::B")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::P3::B")) (source direct))
       (supertype (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::P3::B")) (scopes any))
     )
 )

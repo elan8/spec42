@@ -289,9 +289,15 @@ standard library package ModelingMetadata {
 ~~~sexpr
 (types
     (declaration (id (node (document "memory://snapshot/modeling_metadata.md") (qualified-name "ModelingMetadata::Refinement::annotatedElement"))) (cyclic true)
+      (subtype (node (document "memory://snapshot/modeling_metadata.md") (qualified-name "ModelingMetadata::Refinement::annotatedElement")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/modeling_metadata.md") (qualified-name "ModelingMetadata::StatusInfo::status")))
+      (type (node (document "memory://snapshot/modeling_metadata.md") (qualified-name "ModelingMetadata::StatusKind")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/modeling_metadata.md") (qualified-name "ModelingMetadata::StatusKind")) (source direct))
       (supertype (node (document "memory://snapshot/modeling_metadata.md") (qualified-name "ModelingMetadata::StatusKind")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/modeling_metadata.md") (qualified-name "ModelingMetadata::StatusKind")))
+      (subtype (node (document "memory://snapshot/modeling_metadata.md") (qualified-name "ModelingMetadata::StatusInfo::status")) (scopes any))
     )
 )
 ~~~

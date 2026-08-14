@@ -317,10 +317,18 @@ package AHFNorwaySequences {
 ~~~sexpr
 (types
     (declaration (id (node (document "memory://snapshot/ahfsequences.md") (qualified-name "AHFNorwaySequences::AHFN_LocalCloudDD_Seqs::APIS_transfer_lifetime::forw1")))
+      (type (node (document "memory://snapshot/ahfsequences.md") (qualified-name "AHFNorwaySequences::AHFN_LocalCloudDD_Seqs::MQTTforwarding")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/ahfsequences.md") (qualified-name "AHFNorwaySequences::AHFN_LocalCloudDD_Seqs::MQTTforwarding")) (source direct))
       (supertype (node (document "memory://snapshot/ahfsequences.md") (qualified-name "AHFNorwaySequences::AHFN_LocalCloudDD_Seqs::MQTTforwarding")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/ahfsequences.md") (qualified-name "AHFNorwaySequences::AHFN_LocalCloudDD_Seqs::APIS_transfer_lifetime::forw2")))
+      (type (node (document "memory://snapshot/ahfsequences.md") (qualified-name "AHFNorwaySequences::AHFN_LocalCloudDD_Seqs::MQTTforwarding")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/ahfsequences.md") (qualified-name "AHFNorwaySequences::AHFN_LocalCloudDD_Seqs::MQTTforwarding")) (source direct))
       (supertype (node (document "memory://snapshot/ahfsequences.md") (qualified-name "AHFNorwaySequences::AHFN_LocalCloudDD_Seqs::MQTTforwarding")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/ahfsequences.md") (qualified-name "AHFNorwaySequences::AHFN_LocalCloudDD_Seqs::MQTTforwarding")))
+      (subtype (node (document "memory://snapshot/ahfsequences.md") (qualified-name "AHFNorwaySequences::AHFN_LocalCloudDD_Seqs::APIS_transfer_lifetime::forw1")) (scopes any))
+      (subtype (node (document "memory://snapshot/ahfsequences.md") (qualified-name "AHFNorwaySequences::AHFN_LocalCloudDD_Seqs::APIS_transfer_lifetime::forw2")) (scopes any))
     )
 )
 ~~~

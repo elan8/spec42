@@ -177,6 +177,9 @@ package Imports {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/imports.md") (qualified-name "Imports::P::A")))
+      (subtype (node (document "memory://snapshot/imports.md") (qualified-name "Imports::S::X")) (scopes any subclassification))
+    )
     (declaration (id (node (document "memory://snapshot/imports.md") (qualified-name "Imports::S::X")))
       (supertype (node (document "memory://snapshot/imports.md") (qualified-name "Imports::P::A")) (scopes any subclassification))
     )

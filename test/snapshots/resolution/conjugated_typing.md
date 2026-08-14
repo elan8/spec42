@@ -52,10 +52,20 @@ package ConjugatedTypingCoverage {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/conjugated_typing.md") (qualified-name "ConjugatedTypingCoverage::InputPort")))
+      (subtype (node (document "memory://snapshot/conjugated_typing.md") (qualified-name "ConjugatedTypingCoverage::source")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/conjugated_typing.md") (qualified-name "ConjugatedTypingCoverage::OutputPort")))
+      (subtype (node (document "memory://snapshot/conjugated_typing.md") (qualified-name "ConjugatedTypingCoverage::target")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/conjugated_typing.md") (qualified-name "ConjugatedTypingCoverage::source")))
+      (type (node (document "memory://snapshot/conjugated_typing.md") (qualified-name "ConjugatedTypingCoverage::InputPort")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/conjugated_typing.md") (qualified-name "ConjugatedTypingCoverage::InputPort")) (source direct))
       (supertype (node (document "memory://snapshot/conjugated_typing.md") (qualified-name "ConjugatedTypingCoverage::InputPort")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/conjugated_typing.md") (qualified-name "ConjugatedTypingCoverage::target")))
+      (type (node (document "memory://snapshot/conjugated_typing.md") (qualified-name "ConjugatedTypingCoverage::OutputPort")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/conjugated_typing.md") (qualified-name "ConjugatedTypingCoverage::OutputPort")) (source direct))
       (supertype (node (document "memory://snapshot/conjugated_typing.md") (qualified-name "ConjugatedTypingCoverage::OutputPort")) (scopes any))
     )
 )

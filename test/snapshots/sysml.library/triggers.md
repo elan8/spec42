@@ -606,10 +606,18 @@ standard library package Triggers {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/triggers.md") (qualified-name "Triggers::TimeSignal")))
+      (subtype (node (document "memory://snapshot/triggers.md") (qualified-name "Triggers::TriggerAfter::signal")) (scopes any))
+      (subtype (node (document "memory://snapshot/triggers.md") (qualified-name "Triggers::TriggerAt::timeSignal")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/triggers.md") (qualified-name "Triggers::TriggerAfter::signal")))
+      (type (node (document "memory://snapshot/triggers.md") (qualified-name "Triggers::TimeSignal")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/triggers.md") (qualified-name "Triggers::TimeSignal")) (source direct))
       (supertype (node (document "memory://snapshot/triggers.md") (qualified-name "Triggers::TimeSignal")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/triggers.md") (qualified-name "Triggers::TriggerAt::timeSignal")))
+      (type (node (document "memory://snapshot/triggers.md") (qualified-name "Triggers::TimeSignal")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/triggers.md") (qualified-name "Triggers::TimeSignal")) (source direct))
       (supertype (node (document "memory://snapshot/triggers.md") (qualified-name "Triggers::TimeSignal")) (scopes any))
     )
 )

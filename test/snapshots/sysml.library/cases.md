@@ -302,7 +302,12 @@ standard library package Cases {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case")))
+      (subtype (node (document "memory://snapshot/cases.md") (qualified-name "Cases::cases")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/cases.md") (qualified-name "Cases::cases")))
+      (type (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case")) (source direct))
       (supertype (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case")) (scopes any))
     )
 )

@@ -132,6 +132,9 @@ package 'Enumeration Definitions-2' {
     (declaration (id (node (document "memory://snapshot/06_enumeration_definitions_2.md") (qualified-name "Enumeration Definitions-2::ClassificationKind")))
       (supertype (node (document "memory://snapshot/06_enumeration_definitions_2.md") (qualified-name "Enumeration Definitions-2::ClassificationLevel")) (scopes any subclassification))
     )
+    (declaration (id (node (document "memory://snapshot/06_enumeration_definitions_2.md") (qualified-name "Enumeration Definitions-2::ClassificationLevel")))
+      (subtype (node (document "memory://snapshot/06_enumeration_definitions_2.md") (qualified-name "Enumeration Definitions-2::ClassificationKind")) (scopes any subclassification))
+    )
 )
 ~~~
 # NAVIGATION

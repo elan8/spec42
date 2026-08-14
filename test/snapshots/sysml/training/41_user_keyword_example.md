@@ -191,7 +191,12 @@ package 'User Keyword Example' {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/41_user_keyword_example.md") (qualified-name "User Keyword Example::Device")))
+      (subtype (node (document "memory://snapshot/41_user_keyword_example.md") (qualified-name "User Keyword Example::DeviceFailure::device")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/41_user_keyword_example.md") (qualified-name "User Keyword Example::DeviceFailure::device")))
+      (type (node (document "memory://snapshot/41_user_keyword_example.md") (qualified-name "User Keyword Example::Device")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/41_user_keyword_example.md") (qualified-name "User Keyword Example::Device")) (source direct))
       (supertype (node (document "memory://snapshot/41_user_keyword_example.md") (qualified-name "User Keyword Example::Device")) (scopes any))
     )
 )

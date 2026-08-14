@@ -78,7 +78,12 @@ package DocTests {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Vehicle")))
+      (subtype (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::vehicle")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::vehicle")))
+      (type (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Vehicle")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Vehicle")) (source direct))
       (supertype (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Vehicle")) (scopes any))
     )
 )

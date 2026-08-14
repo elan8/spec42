@@ -281,14 +281,19 @@ standard library package RequirementDerivation {
 ~~~sexpr
 (types
     (declaration (id (node (document "memory://snapshot/requirement_derivation.md") (qualified-name "RequirementDerivation::DerivationMetadata::baseType"))) (cyclic true)
+      (subtype (node (document "memory://snapshot/requirement_derivation.md") (qualified-name "RequirementDerivation::DerivationMetadata::baseType")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/requirement_derivation.md") (qualified-name "RequirementDerivation::DerivedRequirementMetadata::annotatedElement"))) (cyclic true)
+      (subtype (node (document "memory://snapshot/requirement_derivation.md") (qualified-name "RequirementDerivation::DerivedRequirementMetadata::annotatedElement")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/requirement_derivation.md") (qualified-name "RequirementDerivation::DerivedRequirementMetadata::baseType"))) (cyclic true)
+      (subtype (node (document "memory://snapshot/requirement_derivation.md") (qualified-name "RequirementDerivation::DerivedRequirementMetadata::baseType")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/requirement_derivation.md") (qualified-name "RequirementDerivation::OriginalRequirementMetadata::annotatedElement"))) (cyclic true)
+      (subtype (node (document "memory://snapshot/requirement_derivation.md") (qualified-name "RequirementDerivation::OriginalRequirementMetadata::annotatedElement")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/requirement_derivation.md") (qualified-name "RequirementDerivation::OriginalRequirementMetadata::baseType"))) (cyclic true)
+      (subtype (node (document "memory://snapshot/requirement_derivation.md") (qualified-name "RequirementDerivation::OriginalRequirementMetadata::baseType")) (scopes any feature))
     )
 )
 ~~~

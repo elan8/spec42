@@ -171,12 +171,16 @@ standard library package ParametersOfInterestMetadata {
 ~~~sexpr
 (types
     (declaration (id (node (document "memory://snapshot/parameters_of_interest_metadata.md") (qualified-name "ParametersOfInterestMetadata::MeasureOfEffectiveness::annotatedElement"))) (cyclic true)
+      (subtype (node (document "memory://snapshot/parameters_of_interest_metadata.md") (qualified-name "ParametersOfInterestMetadata::MeasureOfEffectiveness::annotatedElement")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/parameters_of_interest_metadata.md") (qualified-name "ParametersOfInterestMetadata::MeasureOfEffectiveness::baseType"))) (cyclic true)
+      (subtype (node (document "memory://snapshot/parameters_of_interest_metadata.md") (qualified-name "ParametersOfInterestMetadata::MeasureOfEffectiveness::baseType")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/parameters_of_interest_metadata.md") (qualified-name "ParametersOfInterestMetadata::MeasureOfPerformance::annotatedElement"))) (cyclic true)
+      (subtype (node (document "memory://snapshot/parameters_of_interest_metadata.md") (qualified-name "ParametersOfInterestMetadata::MeasureOfPerformance::annotatedElement")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/parameters_of_interest_metadata.md") (qualified-name "ParametersOfInterestMetadata::MeasureOfPerformance::baseType"))) (cyclic true)
+      (subtype (node (document "memory://snapshot/parameters_of_interest_metadata.md") (qualified-name "ParametersOfInterestMetadata::MeasureOfPerformance::baseType")) (scopes any feature))
     )
 )
 ~~~

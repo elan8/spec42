@@ -202,16 +202,25 @@ package '7a-Variant Configuration - General Concept' {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::Vehicle")))
+      (subtype (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::anyVehicleConfig")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::VehicleConfigB")))
+      (effective-type (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::Vehicle")) (source inherited) (from (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::anyVehicleConfig"))))
       (supertype (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::Vehicle")) (scopes any))
-      (supertype (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::anyVehicleConfig")) (scopes any))
+      (supertype (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::anyVehicleConfig")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::anyVehicleConfig")))
+      (type (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::Vehicle")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::Vehicle")) (source direct))
       (supertype (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::Vehicle")) (scopes any))
+      (subtype (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::VehicleConfigB")) (scopes any feature))
+      (subtype (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::vehicleConfigA")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::vehicleConfigA")))
+      (effective-type (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::Vehicle")) (source inherited) (from (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::anyVehicleConfig"))))
       (supertype (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::Vehicle")) (scopes any))
-      (supertype (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::anyVehicleConfig")) (scopes any))
+      (supertype (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::anyVehicleConfig")) (scopes any feature))
     )
 )
 ~~~

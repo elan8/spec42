@@ -126,12 +126,18 @@ package Behaviors {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::A")))
+      (subtype (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::B")) (scopes any subclassification))
+    )
     (declaration (id (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::A::b")))
+      (type (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::B")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::B")) (source direct))
       (supertype (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::A")) (scopes any))
       (supertype (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::B")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::B")))
       (supertype (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::A")) (scopes any subclassification))
+      (subtype (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::A::b")) (scopes any))
     )
 )
 ~~~

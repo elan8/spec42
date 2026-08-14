@@ -124,7 +124,12 @@ package TextualRepresentationTest {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/textual_representation_test.md") (qualified-name "TextualRepresentationTest::C")))
+      (subtype (node (document "memory://snapshot/textual_representation_test.md") (qualified-name "TextualRepresentationTest::setX::c")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/textual_representation_test.md") (qualified-name "TextualRepresentationTest::setX::c")))
+      (type (node (document "memory://snapshot/textual_representation_test.md") (qualified-name "TextualRepresentationTest::C")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/textual_representation_test.md") (qualified-name "TextualRepresentationTest::C")) (source direct))
       (supertype (node (document "memory://snapshot/textual_representation_test.md") (qualified-name "TextualRepresentationTest::C")) (scopes any))
     )
 )

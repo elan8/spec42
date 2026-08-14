@@ -147,7 +147,12 @@ package 'Message Payload Example' {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/27_message_payload_example.md") (qualified-name "Message Payload Example::EngineController")))
+      (subtype (node (document "memory://snapshot/27_message_payload_example.md") (qualified-name "Message Payload Example::vehicle1::engineController")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/27_message_payload_example.md") (qualified-name "Message Payload Example::vehicle1::engineController")))
+      (type (node (document "memory://snapshot/27_message_payload_example.md") (qualified-name "Message Payload Example::EngineController")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/27_message_payload_example.md") (qualified-name "Message Payload Example::EngineController")) (source direct))
       (supertype (node (document "memory://snapshot/27_message_payload_example.md") (qualified-name "Message Payload Example::EngineController")) (scopes any))
     )
 )

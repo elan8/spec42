@@ -116,7 +116,12 @@ package Camera {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::Camera")))
+      (subtype (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera")))
+      (type (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::Camera")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::Camera")) (source direct))
       (supertype (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::Camera")) (scopes any))
     )
 )

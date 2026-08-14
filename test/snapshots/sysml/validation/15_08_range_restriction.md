@@ -123,9 +123,17 @@ package '15_08-Range Restriction' {
 ~~~sexpr
 (types
     (declaration (id (node (document "memory://snapshot/15_08_range_restriction.md") (qualified-name "15_08-Range Restriction::HeadLightsTiltKnob::headLightsTile")))
+      (type (node (document "memory://snapshot/15_08_range_restriction.md") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/15_08_range_restriction.md") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue")) (source direct))
       (supertype (node (document "memory://snapshot/15_08_range_restriction.md") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue")) (scopes any))
     )
+    (declaration (id (node (document "memory://snapshot/15_08_range_restriction.md") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue")))
+      (subtype (node (document "memory://snapshot/15_08_range_restriction.md") (qualified-name "15_08-Range Restriction::HeadLightsTiltKnob::headLightsTile")) (scopes any))
+      (subtype (node (document "memory://snapshot/15_08_range_restriction.md") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue::angle")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/15_08_range_restriction.md") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue::angle")))
+      (type (node (document "memory://snapshot/15_08_range_restriction.md") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/15_08_range_restriction.md") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue")) (source direct))
       (supertype (node (document "memory://snapshot/15_08_range_restriction.md") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue")) (scopes any))
     )
 )

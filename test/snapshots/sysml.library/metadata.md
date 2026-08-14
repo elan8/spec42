@@ -135,7 +135,12 @@ doc
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/metadata.md") (qualified-name "Metadata::MetadataItem")))
+      (subtype (node (document "memory://snapshot/metadata.md") (qualified-name "Metadata::metadataItems")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/metadata.md") (qualified-name "Metadata::metadataItems")))
+      (type (node (document "memory://snapshot/metadata.md") (qualified-name "Metadata::MetadataItem")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/metadata.md") (qualified-name "Metadata::MetadataItem")) (source direct))
       (supertype (node (document "memory://snapshot/metadata.md") (qualified-name "Metadata::MetadataItem")) (scopes any))
     )
 )

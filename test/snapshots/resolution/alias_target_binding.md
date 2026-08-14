@@ -50,7 +50,17 @@ package AliasCoverage {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/alias_target_binding.md") (qualified-name "AliasCoverage::Device")))
+      (subtype (node (document "memory://snapshot/alias_target_binding.md") (qualified-name "AliasCoverage::device")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/alias_target_binding.md") (qualified-name "AliasCoverage::DeviceAlias")))
+      (subtype (node (document "memory://snapshot/alias_target_binding.md") (qualified-name "AliasCoverage::device")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/alias_target_binding.md") (qualified-name "AliasCoverage::device")))
+      (type (node (document "memory://snapshot/alias_target_binding.md") (qualified-name "AliasCoverage::Device")) (provenance implied))
+      (type (node (document "memory://snapshot/alias_target_binding.md") (qualified-name "AliasCoverage::DeviceAlias")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/alias_target_binding.md") (qualified-name "AliasCoverage::Device")) (source direct))
+      (effective-type (node (document "memory://snapshot/alias_target_binding.md") (qualified-name "AliasCoverage::DeviceAlias")) (source direct))
       (supertype (node (document "memory://snapshot/alias_target_binding.md") (qualified-name "AliasCoverage::Device")) (scopes any))
       (supertype (node (document "memory://snapshot/alias_target_binding.md") (qualified-name "AliasCoverage::DeviceAlias")) (scopes any))
     )

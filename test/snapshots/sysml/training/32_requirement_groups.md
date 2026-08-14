@@ -158,7 +158,12 @@ package 'Requirement Groups' {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/32_requirement_groups.md") (qualified-name "Requirement Groups::Engine")))
+      (subtype (node (document "memory://snapshot/32_requirement_groups.md") (qualified-name "Requirement Groups::engineSpecification::engine")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/32_requirement_groups.md") (qualified-name "Requirement Groups::engineSpecification::engine")))
+      (type (node (document "memory://snapshot/32_requirement_groups.md") (qualified-name "Requirement Groups::Engine")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/32_requirement_groups.md") (qualified-name "Requirement Groups::Engine")) (source direct))
       (supertype (node (document "memory://snapshot/32_requirement_groups.md") (qualified-name "Requirement Groups::Engine")) (scopes any))
     )
 )

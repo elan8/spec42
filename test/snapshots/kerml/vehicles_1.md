@@ -240,7 +240,12 @@ package Vehicles_1 {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/vehicles_1.md") (qualified-name "Vehicles_1::Vehicle")))
+      (subtype (node (document "memory://snapshot/vehicles_1.md") (qualified-name "Vehicles_1::v")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/vehicles_1.md") (qualified-name "Vehicles_1::v")))
+      (type (node (document "memory://snapshot/vehicles_1.md") (qualified-name "Vehicles_1::Vehicle")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/vehicles_1.md") (qualified-name "Vehicles_1::Vehicle")) (source direct))
       (supertype (node (document "memory://snapshot/vehicles_1.md") (qualified-name "Vehicles_1::Vehicle")) (scopes any))
     )
 )

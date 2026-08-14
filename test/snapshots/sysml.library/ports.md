@@ -163,9 +163,17 @@ standard library package Ports {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/ports.md") (qualified-name "Ports::Port")))
+      (subtype (node (document "memory://snapshot/ports.md") (qualified-name "Ports::Port::subports")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/ports.md") (qualified-name "Ports::Port::subports")))
+      (type (node (document "memory://snapshot/ports.md") (qualified-name "Ports::Port")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/ports.md") (qualified-name "Ports::Port")) (source direct))
       (supertype (node (document "memory://snapshot/ports.md") (qualified-name "Ports::Port")) (scopes any))
-      (supertype (node (document "memory://snapshot/ports.md") (qualified-name "Ports::ports")) (scopes any))
+      (supertype (node (document "memory://snapshot/ports.md") (qualified-name "Ports::ports")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/ports.md") (qualified-name "Ports::ports")))
+      (subtype (node (document "memory://snapshot/ports.md") (qualified-name "Ports::Port::subports")) (scopes any feature))
     )
 )
 ~~~

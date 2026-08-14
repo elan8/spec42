@@ -246,10 +246,20 @@ package 'Change and Time Triggers' {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/25_change_and_time_triggers.md") (qualified-name "Change and Time Triggers::Vehicle")))
+      (subtype (node (document "memory://snapshot/25_change_and_time_triggers.md") (qualified-name "Change and Time Triggers::healthStates::vehicle")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/25_change_and_time_triggers.md") (qualified-name "Change and Time Triggers::VehicleController")))
+      (subtype (node (document "memory://snapshot/25_change_and_time_triggers.md") (qualified-name "Change and Time Triggers::healthStates::controller")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/25_change_and_time_triggers.md") (qualified-name "Change and Time Triggers::healthStates::controller")))
+      (type (node (document "memory://snapshot/25_change_and_time_triggers.md") (qualified-name "Change and Time Triggers::VehicleController")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/25_change_and_time_triggers.md") (qualified-name "Change and Time Triggers::VehicleController")) (source direct))
       (supertype (node (document "memory://snapshot/25_change_and_time_triggers.md") (qualified-name "Change and Time Triggers::VehicleController")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/25_change_and_time_triggers.md") (qualified-name "Change and Time Triggers::healthStates::vehicle")))
+      (type (node (document "memory://snapshot/25_change_and_time_triggers.md") (qualified-name "Change and Time Triggers::Vehicle")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/25_change_and_time_triggers.md") (qualified-name "Change and Time Triggers::Vehicle")) (source direct))
       (supertype (node (document "memory://snapshot/25_change_and_time_triggers.md") (qualified-name "Change and Time Triggers::Vehicle")) (scopes any))
     )
 )

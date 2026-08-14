@@ -74,7 +74,12 @@ probe unresolved_reference.md 5 25
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/unresolved_reference.md") (qualified-name "Broken::Known")))
+      (subtype (node (document "memory://snapshot/unresolved_reference.md") (qualified-name "Broken::known")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/unresolved_reference.md") (qualified-name "Broken::known")))
+      (type (node (document "memory://snapshot/unresolved_reference.md") (qualified-name "Broken::Known")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/unresolved_reference.md") (qualified-name "Broken::Known")) (source direct))
       (supertype (node (document "memory://snapshot/unresolved_reference.md") (qualified-name "Broken::Known")) (scopes any))
     )
 )

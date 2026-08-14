@@ -88,12 +88,18 @@ package ImportTest {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/import_test.md") (qualified-name "ImportTest::Pkg1::P12")))
+      (subtype (node (document "memory://snapshot/import_test.md") (qualified-name "ImportTest::Pkg2::Pkg21::Pkg211::P211")) (scopes any subclassification))
+    )
     (declaration (id (node (document "memory://snapshot/import_test.md") (qualified-name "ImportTest::Pkg1::p11")))
+      (type (node (document "memory://snapshot/import_test.md") (qualified-name "ImportTest::Pkg2::Pkg21::Pkg211::P211")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/import_test.md") (qualified-name "ImportTest::Pkg2::Pkg21::Pkg211::P211")) (source direct))
       (supertype (node (document "memory://snapshot/import_test.md") (qualified-name "ImportTest::Pkg1::P12")) (scopes any))
       (supertype (node (document "memory://snapshot/import_test.md") (qualified-name "ImportTest::Pkg2::Pkg21::Pkg211::P211")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/import_test.md") (qualified-name "ImportTest::Pkg2::Pkg21::Pkg211::P211")))
       (supertype (node (document "memory://snapshot/import_test.md") (qualified-name "ImportTest::Pkg1::P12")) (scopes any subclassification))
+      (subtype (node (document "memory://snapshot/import_test.md") (qualified-name "ImportTest::Pkg1::p11")) (scopes any))
     )
 )
 ~~~

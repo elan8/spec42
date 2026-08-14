@@ -71,7 +71,12 @@ package Usage {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/Definitions.sysml") (qualified-name "Definitions::Vehicle")))
+      (subtype (node (document "memory://snapshot/Usage.sysml") (qualified-name "Usage::v")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/Usage.sysml") (qualified-name "Usage::v")))
+      (type (node (document "memory://snapshot/Definitions.sysml") (qualified-name "Definitions::Vehicle")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/Definitions.sysml") (qualified-name "Definitions::Vehicle")) (source direct))
       (supertype (node (document "memory://snapshot/Definitions.sysml") (qualified-name "Definitions::Vehicle")) (scopes any))
     )
 )

@@ -92,7 +92,12 @@ package MassRollup_2 {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/mass_rollup_2.md") (qualified-name "MassRollup_2::MassedThing")))
+      (subtype (node (document "memory://snapshot/mass_rollup_2.md") (qualified-name "MassRollup_2::massedThings")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/mass_rollup_2.md") (qualified-name "MassRollup_2::massedThings")))
+      (type (node (document "memory://snapshot/mass_rollup_2.md") (qualified-name "MassRollup_2::MassedThing")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/mass_rollup_2.md") (qualified-name "MassRollup_2::MassedThing")) (source direct))
       (supertype (node (document "memory://snapshot/mass_rollup_2.md") (qualified-name "MassRollup_2::MassedThing")) (scopes any))
     )
 )

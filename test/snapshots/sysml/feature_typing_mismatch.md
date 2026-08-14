@@ -40,7 +40,12 @@ part p : Foo;
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/feature_typing_mismatch.md") (qualified-name "Foo")))
+      (subtype (node (document "memory://snapshot/feature_typing_mismatch.md") (qualified-name "p")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/feature_typing_mismatch.md") (qualified-name "p")))
+      (type (node (document "memory://snapshot/feature_typing_mismatch.md") (qualified-name "Foo")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/feature_typing_mismatch.md") (qualified-name "Foo")) (source direct))
       (supertype (node (document "memory://snapshot/feature_typing_mismatch.md") (qualified-name "Foo")) (scopes any))
     )
 )

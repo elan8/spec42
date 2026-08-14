@@ -214,10 +214,18 @@ package 'Calculation Usages-2' {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/30_calculation_usages_2.md") (qualified-name "Calculation Usages-2::DynamicState")))
+      (subtype (node (document "memory://snapshot/30_calculation_usages_2.md") (qualified-name "Calculation Usages-2::VehicleDynamics::updateState::currState")) (scopes any))
+      (subtype (node (document "memory://snapshot/30_calculation_usages_2.md") (qualified-name "Calculation Usages-2::VehicleDynamics::updateState::newState")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/30_calculation_usages_2.md") (qualified-name "Calculation Usages-2::VehicleDynamics::updateState::currState")))
+      (type (node (document "memory://snapshot/30_calculation_usages_2.md") (qualified-name "Calculation Usages-2::DynamicState")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/30_calculation_usages_2.md") (qualified-name "Calculation Usages-2::DynamicState")) (source direct))
       (supertype (node (document "memory://snapshot/30_calculation_usages_2.md") (qualified-name "Calculation Usages-2::DynamicState")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/30_calculation_usages_2.md") (qualified-name "Calculation Usages-2::VehicleDynamics::updateState::newState")))
+      (type (node (document "memory://snapshot/30_calculation_usages_2.md") (qualified-name "Calculation Usages-2::DynamicState")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/30_calculation_usages_2.md") (qualified-name "Calculation Usages-2::DynamicState")) (source direct))
       (supertype (node (document "memory://snapshot/30_calculation_usages_2.md") (qualified-name "Calculation Usages-2::DynamicState")) (scopes any))
     )
 )

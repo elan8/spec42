@@ -133,12 +133,21 @@ package AliasTest {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/alias_test.md") (qualified-name "AliasTest::P1")))
+      (subtype (node (document "memory://snapshot/alias_test.md") (qualified-name "AliasTest::p1")) (scopes any))
+      (subtype (node (document "memory://snapshot/alias_test.md") (qualified-name "AliasTest::p2")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/alias_test.md") (qualified-name "AliasTest::p1")))
+      (type (node (document "memory://snapshot/alias_test.md") (qualified-name "AliasTest::P1")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/alias_test.md") (qualified-name "AliasTest::P1")) (source direct))
       (supertype (node (document "memory://snapshot/alias_test.md") (qualified-name "AliasTest::P1")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/alias_test.md") (qualified-name "AliasTest::p1::po1"))) (cyclic true)
+      (subtype (node (document "memory://snapshot/alias_test.md") (qualified-name "AliasTest::p1::po1")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/alias_test.md") (qualified-name "AliasTest::p2")))
+      (type (node (document "memory://snapshot/alias_test.md") (qualified-name "AliasTest::P1")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/alias_test.md") (qualified-name "AliasTest::P1")) (source direct))
       (supertype (node (document "memory://snapshot/alias_test.md") (qualified-name "AliasTest::P1")) (scopes any))
     )
 )

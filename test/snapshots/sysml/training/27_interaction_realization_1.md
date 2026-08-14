@@ -320,10 +320,16 @@ package 'Interaction Realization-1' {
 ~~~sexpr
 (types
     (declaration (id (node (document "memory://snapshot/27_interaction_realization_1.md") (qualified-name "Interaction Realization-1::cruiseControlInteraction_a::driver")))
-      (supertype (node (document "memory://snapshot/27_interaction_realization_1.md") (qualified-name "Interaction Realization-1::driver_a")) (scopes any))
+      (supertype (node (document "memory://snapshot/27_interaction_realization_1.md") (qualified-name "Interaction Realization-1::driver_a")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/27_interaction_realization_1.md") (qualified-name "Interaction Realization-1::cruiseControlInteraction_a::vehicle")))
-      (supertype (node (document "memory://snapshot/27_interaction_realization_1.md") (qualified-name "Interaction Realization-1::vehicle_a")) (scopes any))
+      (supertype (node (document "memory://snapshot/27_interaction_realization_1.md") (qualified-name "Interaction Realization-1::vehicle_a")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/27_interaction_realization_1.md") (qualified-name "Interaction Realization-1::driver_a")))
+      (subtype (node (document "memory://snapshot/27_interaction_realization_1.md") (qualified-name "Interaction Realization-1::cruiseControlInteraction_a::driver")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/27_interaction_realization_1.md") (qualified-name "Interaction Realization-1::vehicle_a")))
+      (subtype (node (document "memory://snapshot/27_interaction_realization_1.md") (qualified-name "Interaction Realization-1::cruiseControlInteraction_a::vehicle")) (scopes any feature))
     )
 )
 ~~~

@@ -259,12 +259,19 @@ package '11b-Safety and Security Feaure Views' {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::ViewDefinitions::SafetyFeatureView")))
+      (subtype (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::Views::vehicleSafetyFeatureView")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::Views::vehicleMandatorySafetyFeatureView")))
+      (effective-type (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::ViewDefinitions::SafetyFeatureView")) (source inherited) (from (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::Views::vehicleSafetyFeatureView"))))
       (supertype (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::ViewDefinitions::SafetyFeatureView")) (scopes any))
-      (supertype (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::Views::vehicleSafetyFeatureView")) (scopes any))
+      (supertype (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::Views::vehicleSafetyFeatureView")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::Views::vehicleSafetyFeatureView")))
+      (type (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::ViewDefinitions::SafetyFeatureView")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::ViewDefinitions::SafetyFeatureView")) (source direct))
       (supertype (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::ViewDefinitions::SafetyFeatureView")) (scopes any))
+      (subtype (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::Views::vehicleMandatorySafetyFeatureView")) (scopes any feature))
     )
 )
 ~~~

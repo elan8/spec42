@@ -174,10 +174,18 @@ standard library package ImageMetadata {
 ~~~sexpr
 (types
     (declaration (id (node (document "memory://snapshot/image_metadata.md") (qualified-name "ImageMetadata::Icon::fullImage")))
+      (type (node (document "memory://snapshot/image_metadata.md") (qualified-name "ImageMetadata::Image")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/image_metadata.md") (qualified-name "ImageMetadata::Image")) (source direct))
       (supertype (node (document "memory://snapshot/image_metadata.md") (qualified-name "ImageMetadata::Image")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/image_metadata.md") (qualified-name "ImageMetadata::Icon::smallImage")))
+      (type (node (document "memory://snapshot/image_metadata.md") (qualified-name "ImageMetadata::Image")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/image_metadata.md") (qualified-name "ImageMetadata::Image")) (source direct))
       (supertype (node (document "memory://snapshot/image_metadata.md") (qualified-name "ImageMetadata::Image")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/image_metadata.md") (qualified-name "ImageMetadata::Image")))
+      (subtype (node (document "memory://snapshot/image_metadata.md") (qualified-name "ImageMetadata::Icon::fullImage")) (scopes any))
+      (subtype (node (document "memory://snapshot/image_metadata.md") (qualified-name "ImageMetadata::Icon::smallImage")) (scopes any))
     )
 )
 ~~~

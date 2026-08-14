@@ -127,7 +127,12 @@ package VerificationMetadataExample {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/verification_metadata_example.md") (qualified-name "VerificationMetadataExample::MassTest")))
+      (subtype (node (document "memory://snapshot/verification_metadata_example.md") (qualified-name "VerificationMetadataExample::massTests")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/verification_metadata_example.md") (qualified-name "VerificationMetadataExample::massTests")))
+      (type (node (document "memory://snapshot/verification_metadata_example.md") (qualified-name "VerificationMetadataExample::MassTest")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/verification_metadata_example.md") (qualified-name "VerificationMetadataExample::MassTest")) (source direct))
       (supertype (node (document "memory://snapshot/verification_metadata_example.md") (qualified-name "VerificationMetadataExample::MassTest")) (scopes any))
     )
 )

@@ -121,7 +121,12 @@ package MassRollup2 {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::MassedThing")))
+      (subtype (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::composicomackagteThing")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::composicomackagteThing")))
+      (type (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::MassedThing")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::MassedThing")) (source direct))
       (supertype (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::MassedThing")) (scopes any))
     )
 )

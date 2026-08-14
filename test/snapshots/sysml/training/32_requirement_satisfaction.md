@@ -163,7 +163,10 @@ package 'Requirement Satisfaction' {
 ~~~sexpr
 (types
     (declaration (id (node (document "memory://snapshot/32_requirement_satisfaction.md") (qualified-name "Requirement Satisfaction::Vehicle c1 Design Context::vehicle_design")))
-      (supertype (node (document "memory://snapshot/32_requirement_satisfaction.md") (qualified-name "Requirement Satisfaction::vehicle_c1")) (scopes any))
+      (supertype (node (document "memory://snapshot/32_requirement_satisfaction.md") (qualified-name "Requirement Satisfaction::vehicle_c1")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/32_requirement_satisfaction.md") (qualified-name "Requirement Satisfaction::vehicle_c1")))
+      (subtype (node (document "memory://snapshot/32_requirement_satisfaction.md") (qualified-name "Requirement Satisfaction::Vehicle c1 Design Context::vehicle_design")) (scopes any feature))
     )
 )
 ~~~

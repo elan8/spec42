@@ -85,10 +85,20 @@ package 'Terminate Actions Example-2' {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::Processor")))
+      (subtype (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::terminateProcessing::processor")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::Processor::workflowProcess")))
+      (type (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::WorkflowProcess")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::WorkflowProcess")) (source direct))
       (supertype (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::WorkflowProcess")) (scopes any))
     )
+    (declaration (id (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::WorkflowProcess")))
+      (subtype (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::Processor::workflowProcess")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::terminateProcessing::processor")))
+      (type (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::Processor")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::Processor")) (source direct))
       (supertype (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::Processor")) (scopes any))
     )
 )

@@ -60,11 +60,17 @@ package P {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Base")))
+      (subtype (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Child")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Base::mass")))
+      (subtype (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Child::mass")) (scopes any feature))
+    )
     (declaration (id (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Child")))
       (supertype (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Base")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Child::mass")))
-      (supertype (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Base::mass")) (scopes any))
+      (supertype (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Base::mass")) (scopes any feature))
     )
 )
 ~~~

@@ -348,10 +348,20 @@ standard library package ISQ {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/isq.md") (qualified-name "ISQ::TemperatureDifferenceUnit")))
+      (subtype (node (document "memory://snapshot/isq.md") (path (named (kind library-package) (name "ISQ")) (named (kind attribute-def) (name "TemperatureDifferenceValue")) (anonymous (kind attribute) (ordinal 1)))) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/isq.md") (qualified-name "ISQ::TemperatureDifferenceValue")))
+      (subtype (node (document "memory://snapshot/isq.md") (qualified-name "ISQ::temperatureDifference")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/isq.md") (path (named (kind library-package) (name "ISQ")) (named (kind attribute-def) (name "TemperatureDifferenceValue")) (anonymous (kind attribute) (ordinal 1)))))
+      (type (node (document "memory://snapshot/isq.md") (qualified-name "ISQ::TemperatureDifferenceUnit")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/isq.md") (qualified-name "ISQ::TemperatureDifferenceUnit")) (source direct))
       (supertype (node (document "memory://snapshot/isq.md") (qualified-name "ISQ::TemperatureDifferenceUnit")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/isq.md") (qualified-name "ISQ::temperatureDifference")))
+      (type (node (document "memory://snapshot/isq.md") (qualified-name "ISQ::TemperatureDifferenceValue")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/isq.md") (qualified-name "ISQ::TemperatureDifferenceValue")) (source direct))
       (supertype (node (document "memory://snapshot/isq.md") (qualified-name "ISQ::TemperatureDifferenceValue")) (scopes any))
     )
 )

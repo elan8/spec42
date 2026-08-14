@@ -295,8 +295,11 @@ package StateTest {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/state_test.md") (qualified-name "StateTest::s4")))
+      (subtype (node (document "memory://snapshot/state_test.md") (qualified-name "StateTest::s5")) (scopes any feature))
+    )
     (declaration (id (node (document "memory://snapshot/state_test.md") (qualified-name "StateTest::s5")))
-      (supertype (node (document "memory://snapshot/state_test.md") (qualified-name "StateTest::s4")) (scopes any))
+      (supertype (node (document "memory://snapshot/state_test.md") (qualified-name "StateTest::s4")) (scopes any feature))
     )
 )
 ~~~

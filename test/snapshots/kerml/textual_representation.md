@@ -102,7 +102,12 @@ package TextualRepresentation {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/textual_representation.md") (qualified-name "TextualRepresentation::C")))
+      (subtype (node (document "memory://snapshot/textual_representation.md") (qualified-name "TextualRepresentation::setX::c")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/textual_representation.md") (qualified-name "TextualRepresentation::setX::c")))
+      (type (node (document "memory://snapshot/textual_representation.md") (qualified-name "TextualRepresentation::C")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/textual_representation.md") (qualified-name "TextualRepresentation::C")) (source direct))
       (supertype (node (document "memory://snapshot/textual_representation.md") (qualified-name "TextualRepresentation::C")) (scopes any))
     )
 )

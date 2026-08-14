@@ -64,7 +64,17 @@ package AliasImport {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Definitions::Car")))
+      (subtype (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Usages::vehicle")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Definitions::Vehicle")))
+      (subtype (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Usages::vehicle")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Usages::vehicle")))
+      (type (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Definitions::Car")) (provenance authored))
+      (type (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Definitions::Vehicle")) (provenance implied))
+      (effective-type (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Definitions::Car")) (source direct))
+      (effective-type (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Definitions::Vehicle")) (source direct))
       (supertype (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Definitions::Car")) (scopes any))
       (supertype (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Definitions::Vehicle")) (scopes any))
     )

@@ -147,10 +147,20 @@ package 'Flow Interface Example' {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/13_flow_interface_example.md") (qualified-name "Flow Interface Example::FuelInterface")))
+      (subtype (node (document "memory://snapshot/13_flow_interface_example.md") (path (named (kind package) (name "Flow Interface Example")) (named (kind part) (name "vehicle")) (anonymous (kind interface) (ordinal 0)))) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/13_flow_interface_example.md") (qualified-name "Flow Interface Example::Vehicle")))
+      (subtype (node (document "memory://snapshot/13_flow_interface_example.md") (qualified-name "Flow Interface Example::vehicle")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/13_flow_interface_example.md") (qualified-name "Flow Interface Example::vehicle")))
+      (type (node (document "memory://snapshot/13_flow_interface_example.md") (qualified-name "Flow Interface Example::Vehicle")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/13_flow_interface_example.md") (qualified-name "Flow Interface Example::Vehicle")) (source direct))
       (supertype (node (document "memory://snapshot/13_flow_interface_example.md") (qualified-name "Flow Interface Example::Vehicle")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/13_flow_interface_example.md") (path (named (kind package) (name "Flow Interface Example")) (named (kind part) (name "vehicle")) (anonymous (kind interface) (ordinal 0)))))
+      (type (node (document "memory://snapshot/13_flow_interface_example.md") (qualified-name "Flow Interface Example::FuelInterface")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/13_flow_interface_example.md") (qualified-name "Flow Interface Example::FuelInterface")) (source direct))
       (supertype (node (document "memory://snapshot/13_flow_interface_example.md") (qualified-name "Flow Interface Example::FuelInterface")) (scopes any))
     )
 )
