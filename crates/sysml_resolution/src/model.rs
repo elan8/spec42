@@ -1511,7 +1511,10 @@ fn fold_logical(op: BinaryOperator, left: EvaluatedValue, right: EvaluatedValue)
         }
         (EvaluatedValue::Boolean(left), EvaluatedValue::Boolean(right)) => {
             EvaluatedValue::Boolean(match op {
-                BinaryOperator::And => left && right,
+                // `BitAnd` is KerML's single-`&` spelling of boolean conjunction in a constraint/
+                // invariant boolean expression (see `is_logical_operator`'s doc comment) -- not a
+                // bitwise operator here, so it folds identically to `And`.
+                BinaryOperator::And | BinaryOperator::BitAnd => left && right,
                 BinaryOperator::Or => left || right,
                 // `Xor`/`Implies` share `And`/`Or`'s Boolean/Boolean truth-table shape exactly --
                 // no new failure state, just a different two-operand boolean combination.
@@ -1885,15 +1888,27 @@ fn is_comparison_operator(op: &BinaryOperator) -> bool {
     )
 }
 
-/// Whether a `BinaryOperator` is one of the four boolean-combination operators
+/// Whether a `BinaryOperator` is one of the boolean-combination operators
 /// `classify_constraint_node`/`lower_constraint_expression`'s logical `BinaryOp` shape supports:
-/// `and`, `or`, `xor`, `implies`. `xor`/`implies` share `and`/`or`'s exact Boolean/Boolean
-/// two-operand truth-table shape (`fold_logical`), so widening this predicate is the whole of their
-/// support -- no new `EvalNode` variant or failure state needed.
+/// `and`, `or`, `xor`, `implies`, and KerML's single-ampersand `&` spelling of conjunction
+/// (`BinaryOperator::BitAnd`, `BinaryOperator::from_token("&")`). Per the KerML textual notation
+/// (§8.2.7 invariants), `&` is the ordinary boolean-and connective in a constraint/invariant
+/// boolean expression -- e.g. `sysml.library/trig_functions.md`'s `-1.0 <= that & that <= 1.0` and
+/// `sysml.library/state_performances.md`'s `accT == accableT & incomingTransferSort(...)` -- not a
+/// bitwise/set operator; the parser's own `BinaryOperator::from_token` has no distinct "boolean and"
+/// token for `&`, only the shared `BitAnd` classification, so this predicate (and `fold_logical`,
+/// which treats it identically to `And`) is where that context-dependent meaning is recovered.
+/// `xor`/`implies` share `and`/`or`'s exact Boolean/Boolean two-operand truth-table shape
+/// (`fold_logical`), so widening this predicate is the whole of their support -- no new `EvalNode`
+/// variant or failure state needed.
 fn is_logical_operator(op: &BinaryOperator) -> bool {
     matches!(
         op,
-        BinaryOperator::And | BinaryOperator::Or | BinaryOperator::Xor | BinaryOperator::Implies
+        BinaryOperator::And
+            | BinaryOperator::Or
+            | BinaryOperator::Xor
+            | BinaryOperator::Implies
+            | BinaryOperator::BitAnd
     )
 }
 
@@ -12034,6 +12049,28 @@ mod tests {
             ),
             "expected `(mass1 + mass2) < massLimit and isActive` to fold to Boolean(true) \
              (2 + 3 = 5 < 10, and isActive is true), got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn constraint_ampersand_folds_as_logical_and() {
+        // KerML's single-`&` conjunction spelling (`BinaryOperator::BitAnd`, see
+        // `is_logical_operator`'s doc comment) combines two comparisons exactly like `and`, e.g.
+        // `sysml.library/trig_functions.md`'s `-1.0 <= that & that <= 1.0` shape.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tattribute mass1 = 2;\n\
+             \tattribute massLimit = 10;\n\
+             \tconstraint def C { (mass1 < massLimit) & (massLimit > 0) }\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::C\"))) (value (kind boolean) (boolean true)))"
+            ),
+            "expected `(mass1 < massLimit) & (massLimit > 0)` to fold to Boolean(true) via the same \
+             `fold_logical` path as `and`, got:\n{output}"
         );
     }
 
