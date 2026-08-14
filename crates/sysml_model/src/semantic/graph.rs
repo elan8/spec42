@@ -16,10 +16,10 @@ use crate::semantic::model::{
     DeclaredExpressionRelationship, DeclaredFeatureValueKind, DeclaredMembershipFacts,
     DerivedRelationshipResolution, EffectiveFeatureOwnership, EffectiveMembershipVisibility,
     EffectiveSemanticFacts, ElementKind, EvaluationPublicationState, ExpressionEvaluationQuery,
-    ExpressionResultId, ExpressionResultRole, FeatureOwnershipProvenance, ImpliedFeatureOwnership,
-    ImpliedFeatureValueBinding, ImpliedMultiplicity, ImpliedRelationshipRule,
-    MembershipVisibilityProvenance, NodeEvaluationFacts, NodeId, RelationshipKind,
-    RelationshipProvenance, SemanticEdge, SemanticNode, VisibilityKind,
+    ExpressionResultId, ExpressionResultRole, FeatureOwnershipProvenance, FlowStatementDetail,
+    ImpliedFeatureOwnership, ImpliedFeatureValueBinding, ImpliedMultiplicity,
+    ImpliedRelationshipRule, MembershipVisibilityProvenance, NodeEvaluationFacts, NodeId,
+    RelationshipKind, RelationshipProvenance, SemanticEdge, SemanticNode, VisibilityKind,
 };
 use crate::semantic::publication::SemanticPublication;
 
@@ -746,6 +746,9 @@ pub struct PendingExpressionRelationship {
     pub is_interface_usage: bool,
     #[serde(default)]
     pub interface_type: Option<String>,
+    /// Authored flow metadata retained until endpoint typing makes the edge resolvable.
+    #[serde(default)]
+    pub flow: Option<FlowStatementDetail>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

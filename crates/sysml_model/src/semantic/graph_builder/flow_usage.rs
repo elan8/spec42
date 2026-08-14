@@ -13,7 +13,8 @@ use crate::semantic::model::{
     RelationshipKind, SemanticEdge,
 };
 use crate::semantic::relationships::{
-    add_semantic_edge_once, add_typing_edge_if_exists, resolve_type_target_in_workspace,
+    add_pending_expression_relationship_with_metadata, add_semantic_edge_once,
+    add_typing_edge_if_exists, resolve_type_target_in_workspace, ExpressionRelationshipMetadata,
 };
 
 use super::definition_body;
@@ -196,16 +197,6 @@ fn add_flow_edge_if_both_exist(
     if from_str.is_empty() || to_str.is_empty() {
         return;
     }
-    let Some(src) =
-        expressions::resolve_expression_endpoint_legacy(g, uri, container_prefix, &from_str)
-    else {
-        return;
-    };
-    let Some(tgt) =
-        expressions::resolve_expression_endpoint_legacy(g, uri, container_prefix, &to_str)
-    else {
-        return;
-    };
     // `of Payload` names a type, not a feature path, so it resolves through the same
     // workspace type-target lookup `add_typing_edge_if_exists` uses rather than the
     // feature-path resolver used for `from`/`to` above. This slot carries the resolved node's
@@ -226,9 +217,37 @@ fn add_flow_edge_if_both_exist(
             .payload
             .as_ref()
             .map(|payload| payload_feature_debug_string(&payload.value)),
-        source_expression: Some(from_str),
-        target_expression: Some(to_str),
+        source_expression: Some(from_str.clone()),
+        target_expression: Some(to_str.clone()),
         payload_type_id,
+    };
+    let Some(src) =
+        expressions::resolve_expression_endpoint_legacy(g, uri, container_prefix, &from_str)
+    else {
+        add_pending_expression_relationship_with_metadata(
+            g,
+            uri,
+            container_prefix,
+            &from_str,
+            &to_str,
+            detail.range,
+            ExpressionRelationshipMetadata::flow(relationship_kind_for_flow(flow.kind), detail),
+        );
+        return;
+    };
+    let Some(tgt) =
+        expressions::resolve_expression_endpoint_legacy(g, uri, container_prefix, &to_str)
+    else {
+        add_pending_expression_relationship_with_metadata(
+            g,
+            uri,
+            container_prefix,
+            &from_str,
+            &to_str,
+            detail.range,
+            ExpressionRelationshipMetadata::flow(relationship_kind_for_flow(flow.kind), detail),
+        );
+        return;
     };
     add_semantic_edge_once(
         g,

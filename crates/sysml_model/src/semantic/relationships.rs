@@ -21,7 +21,8 @@ pub use crate::semantic::kinds::{
 };
 use crate::semantic::model::{
     ConnectStatementDetail, ConstructionOwner, DeclaredRelationshipTarget, ElementKind,
-    ImpliedRelationshipRule, NodeId, RelationshipKind, SemanticEdge, SemanticNode,
+    FlowStatementDetail, ImpliedRelationshipRule, NodeId, RelationshipKind, SemanticEdge,
+    SemanticNode,
 };
 use crate::semantic::reference_resolution::{
     resolve_expression_endpoint_strict, resolve_inherited_member_via_type, ResolveResult,
@@ -37,6 +38,7 @@ pub(crate) struct ExpressionRelationshipMetadata {
     pub kind: RelationshipKind,
     pub is_interface_usage: bool,
     pub interface_type: Option<String>,
+    pub flow: Option<FlowStatementDetail>,
 }
 
 impl ExpressionRelationshipMetadata {
@@ -45,6 +47,7 @@ impl ExpressionRelationshipMetadata {
             kind,
             is_interface_usage: false,
             interface_type: None,
+            flow: None,
         }
     }
 
@@ -53,6 +56,16 @@ impl ExpressionRelationshipMetadata {
             kind: RelationshipKind::Connection,
             is_interface_usage: true,
             interface_type,
+            flow: None,
+        }
+    }
+
+    pub fn flow(kind: RelationshipKind, detail: FlowStatementDetail) -> Self {
+        Self {
+            kind,
+            is_interface_usage: false,
+            interface_type: None,
+            flow: Some(detail),
         }
     }
 }

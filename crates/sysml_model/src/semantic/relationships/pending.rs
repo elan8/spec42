@@ -37,6 +37,7 @@ pub(crate) fn add_pending_expression_relationship_with_metadata(
             && pending.container_prefix.as_deref() == container_prefix
             && pending.is_interface_usage == metadata.is_interface_usage
             && pending.interface_type == metadata.interface_type
+            && pending.flow == metadata.flow
     });
     if duplicate {
         return;
@@ -51,6 +52,7 @@ pub(crate) fn add_pending_expression_relationship_with_metadata(
             source_range,
             is_interface_usage: metadata.is_interface_usage,
             interface_type: metadata.interface_type,
+            flow: metadata.flow,
         });
 }
 
@@ -216,7 +218,18 @@ fn resolve_pending_expression_relationships_for_uri(g: &mut SemanticGraph, uri: 
                 continue;
             }
         };
-        if matches!(
+        if let Some(detail) = pending_edge.flow {
+            add_semantic_edge_once(
+                g,
+                &source_id,
+                &target_id,
+                SemanticEdge::flow_with_detail(
+                    pending_edge.kind,
+                    detail,
+                    ConstructionOwner::PendingResolution,
+                ),
+            );
+        } else if matches!(
             pending_edge.kind,
             RelationshipKind::Connection | RelationshipKind::Bind
         ) {
