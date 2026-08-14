@@ -33,10 +33,6 @@ describe("Multi-file VS Code Flows", () => {
     await waitForWorkspaceIndexReady(2);
   });
 
-  afterEach(async () => {
-    await closeAllEditorsForTests();
-  });
-
   after(async () => {
     await closeAllEditorsForTests();
   });
