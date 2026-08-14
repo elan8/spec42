@@ -47,7 +47,7 @@ describe("Multi-file VS Code Flows", () => {
         vscode.commands.executeCommand<vscode.Location[]>(
           "vscode.executeDefinitionProvider",
           useDoc.uri,
-          findPosition(useDoc, "Widget", 1)
+          findPosition(useDoc, "Spec42SmokeWidget")
         ),
       (value) => Array.isArray(value) && value.length > 0,
     );
@@ -69,7 +69,7 @@ describe("Multi-file VS Code Flows", () => {
         vscode.commands.executeCommand<vscode.Location[]>(
           "vscode.executeReferenceProvider",
           useDoc.uri,
-          findPosition(useDoc, "Widget", 1)
+          findPosition(useDoc, "Spec42SmokeWidget")
         ),
       (value) => Array.isArray(value) && value.length >= 2,
     );
@@ -97,8 +97,8 @@ describe("Multi-file VS Code Flows", () => {
           return await vscode.commands.executeCommand<vscode.WorkspaceEdit>(
             "vscode.executeDocumentRenameProvider",
             useDoc.uri,
-            findPosition(useDoc, "Widget", 1),
-            "RenamedWidget"
+            findPosition(useDoc, "Spec42SmokeWidget"),
+            "RenamedSmokeWidget"
           );
         } catch (error) {
           if (error instanceof Error && error.message === "The element can't be renamed.") {
@@ -124,7 +124,7 @@ describe("Multi-file VS Code Flows", () => {
     );
     for (const [, edits] of entries) {
       assert.ok(
-        edits.some((edit) => edit.newText === "RenamedWidget"),
+        edits.some((edit) => edit.newText === "RenamedSmokeWidget"),
         "Expected rename edits to use the requested new symbol name"
       );
     }
