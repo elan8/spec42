@@ -130,6 +130,26 @@ package IssueMetadataExample {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::EngineToTransmissionInterface::p1")))
+      (supertype (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::DrivePwrPort")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::EngineToTransmissionInterface::p2")))
+      (supertype (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::ClutchPort")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::engine::drivePwrPort")))
+      (supertype (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::DrivePwrPort")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::engineToTransmissionInterface")))
+      (supertype (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::EngineToTransmissionInterface")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::transmission::clutchPort")))
+      (supertype (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::DrivePwrPort")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

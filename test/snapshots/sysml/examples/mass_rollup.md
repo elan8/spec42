@@ -166,6 +166,30 @@ package MassRollup {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/mass_rollup.md") (qualified-name "MassRollup::compositeThing")))
+      (supertype (node (document "memory://snapshot/mass_rollup.md") (qualified-name "MassRollup::MassedThing")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/mass_rollup.md") (path (named (kind package) (name "MassRollup")) (named (kind part) (name "compositeThing")) (anonymous (kind attribute) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/mass_rollup.md") (qualified-name "MassRollup::MassedThing::totalMass")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/mass_rollup.md") (qualified-name "MassRollup::compositeThing::subcomponents")))
+      (supertype (node (document "memory://snapshot/mass_rollup.md") (qualified-name "MassRollup::MassedThing")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/mass_rollup.md") (qualified-name "MassRollup::filteredMassThing")))
+      (supertype (node (document "memory://snapshot/mass_rollup.md") (qualified-name "MassRollup::MassedThing")) (scopes any))
+      (supertype (node (document "memory://snapshot/mass_rollup.md") (qualified-name "MassRollup::compositeThing")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/mass_rollup.md") (qualified-name "MassRollup::simpleThing")))
+      (supertype (node (document "memory://snapshot/mass_rollup.md") (qualified-name "MassRollup::MassedThing")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/mass_rollup.md") (path (named (kind package) (name "MassRollup")) (named (kind part) (name "simpleThing")) (anonymous (kind attribute) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/mass_rollup.md") (qualified-name "MassRollup::MassedThing::totalMass")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

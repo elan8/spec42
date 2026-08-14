@@ -158,6 +158,17 @@ package Scoping {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/scoping.md") (qualified-name "Scoping::P1::P2::P3::B")))
+      (supertype (node (document "memory://snapshot/scoping.md") (qualified-name "Scoping::P1::P2::A")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/scoping.md") (qualified-name "Scoping::P1::P4::C")))
+      (supertype (node (document "memory://snapshot/scoping.md") (qualified-name "Scoping::P1::Objects::Object")) (scopes any subclassification))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

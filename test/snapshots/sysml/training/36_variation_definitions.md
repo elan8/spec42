@@ -152,6 +152,34 @@ package 'Variation Definitions' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/36_variation_definitions.md") (qualified-name "Variation Definitions::4cylEngine")))
+      (supertype (node (document "memory://snapshot/36_variation_definitions.md") (qualified-name "Variation Definitions::Engine")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/36_variation_definitions.md") (path (named (kind package) (name "Variation Definitions")) (named (kind part) (name "4cylEngine")) (anonymous (kind part) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/36_variation_definitions.md") (qualified-name "Variation Definitions::Cylinder")) (scopes any))
+      (supertype (node (document "memory://snapshot/36_variation_definitions.md") (qualified-name "Variation Definitions::Engine::cylinder")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/36_variation_definitions.md") (qualified-name "Variation Definitions::6cylEngine")))
+      (supertype (node (document "memory://snapshot/36_variation_definitions.md") (qualified-name "Variation Definitions::Engine")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/36_variation_definitions.md") (path (named (kind package) (name "Variation Definitions")) (named (kind part) (name "6cylEngine")) (anonymous (kind part) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/36_variation_definitions.md") (qualified-name "Variation Definitions::Cylinder")) (scopes any))
+      (supertype (node (document "memory://snapshot/36_variation_definitions.md") (qualified-name "Variation Definitions::Engine::cylinder")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/36_variation_definitions.md") (qualified-name "Variation Definitions::Cylinder::diameter")))
+      (supertype (node (document "memory://snapshot/36_variation_definitions.md") (qualified-name "Variation Definitions::Diameter")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/36_variation_definitions.md") (qualified-name "Variation Definitions::Engine::cylinder")))
+      (supertype (node (document "memory://snapshot/36_variation_definitions.md") (qualified-name "Variation Definitions::Cylinder")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/36_variation_definitions.md") (qualified-name "Variation Definitions::EngineChoices")))
+      (supertype (node (document "memory://snapshot/36_variation_definitions.md") (qualified-name "Variation Definitions::Engine")) (scopes any subclassification))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

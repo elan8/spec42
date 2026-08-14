@@ -126,6 +126,11 @@ package 'Packet Usage' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -60,6 +60,11 @@ package 'Documentation Example' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

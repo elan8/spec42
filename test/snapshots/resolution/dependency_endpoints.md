@@ -47,6 +47,11 @@ package DependencyCoverage {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

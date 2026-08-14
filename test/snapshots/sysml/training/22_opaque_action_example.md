@@ -66,6 +66,14 @@ package 'Opaque Action Example' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/22_opaque_action_example.md") (qualified-name "Opaque Action Example::UpdateSensors::sensors")))
+      (supertype (node (document "memory://snapshot/22_opaque_action_example.md") (qualified-name "Opaque Action Example::Sensor")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -212,6 +212,11 @@ action def ControlNodeTest {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

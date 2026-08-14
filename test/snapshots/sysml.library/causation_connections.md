@@ -225,6 +225,25 @@ standard library package CausationConnections {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::Causation")))
+      (supertype (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::Multicausation")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::Multicausation::causes"))) (cyclic true)
+    )
+    (declaration (id (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::Multicausation::effects"))) (cyclic true)
+    )
+    (declaration (id (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::causations")))
+      (supertype (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::Multicausation")) (scopes any))
+      (supertype (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::multicausations")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::multicausations")))
+      (supertype (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::Multicausation")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

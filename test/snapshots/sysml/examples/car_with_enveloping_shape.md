@@ -111,6 +111,11 @@ package CarWithEnvelopingShape {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

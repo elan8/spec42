@@ -80,6 +80,26 @@ package 'Port Conjugation Example' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example::Engine::engineFuelPort")))
+      (supertype (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example::FuelPort")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example::FuelPort::fuelReturn")))
+      (supertype (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example::Fuel")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example::FuelPort::fuelSupply")))
+      (supertype (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example::Fuel")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example::FuelPort::temperature")))
+      (supertype (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example::Temp")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example::FuelTank::fuelTankPort")))
+      (supertype (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example::FuelPort")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

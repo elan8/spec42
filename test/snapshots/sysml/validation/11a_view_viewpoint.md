@@ -210,6 +210,35 @@ package '11a-View-Viewpoint' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle")))
+      (supertype (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::Vehicle")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::frontAxleAssembly")))
+      (supertype (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::AxleAssembly")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::frontAxleAssembly::frontAxle")))
+      (supertype (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::Axle")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::frontAxleAssembly::frontWheel")))
+      (supertype (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::Wheel")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::rearAxleAssembly")))
+      (supertype (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::AxleAssembly")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::rearAxleAssembly::rearAxle")))
+      (supertype (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::Axle")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::rearAxleAssembly::rearWheel")))
+      (supertype (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::Wheel")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/11a_view_viewpoint.md") (path (named (kind package) (name "11a-View-Viewpoint")) (named (kind package) (name "ViewModel")) (named (kind concern) (name "system breakdown")) (anonymous (kind stakeholder) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::ViewModel::systems engineer")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

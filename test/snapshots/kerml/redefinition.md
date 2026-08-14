@@ -94,6 +94,21 @@ package Redefinition {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/redefinition.md") (qualified-name "Redefinition::B")))
+      (supertype (node (document "memory://snapshot/redefinition.md") (qualified-name "Redefinition::A")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/redefinition.md") (path (named (kind package) (name "Redefinition")) (named (kind kerml-classifier) (name "B")) (anonymous (kind kerml-feature) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/redefinition.md") (qualified-name "Redefinition::A::f")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/redefinition.md") (qualified-name "Redefinition::C")))
+      (supertype (node (document "memory://snapshot/redefinition.md") (qualified-name "Redefinition::A")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/redefinition.md") (qualified-name "Redefinition::B")) (scopes any subclassification))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

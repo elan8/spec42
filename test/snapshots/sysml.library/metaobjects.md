@@ -199,6 +199,23 @@ standard library package Metaobjects {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/metaobjects.md") (path (named (kind library-package) (name "Metaobjects")) (named (kind kerml-metaclass) (name "Metaobject")) (anonymous (kind kerml-feature) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/metaobjects.md") (qualified-name "Metaobjects::Metaobject")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/metaobjects.md") (qualified-name "Metaobjects::SemanticMetadata")))
+      (supertype (node (document "memory://snapshot/metaobjects.md") (qualified-name "Metaobjects::Metaobject")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/metaobjects.md") (path (named (kind library-package) (name "Metaobjects")) (named (kind kerml-metaclass) (name "SemanticMetadata")) (anonymous (kind kerml-feature) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/metaobjects.md") (qualified-name "Metaobjects::Metaobject::annotatedElement")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/metaobjects.md") (qualified-name "Metaobjects::metaobjects")))
+      (supertype (node (document "memory://snapshot/metaobjects.md") (qualified-name "Metaobjects::Metaobject")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

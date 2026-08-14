@@ -1222,6 +1222,23 @@ standard library package SequenceFunctions {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/sequence_functions.md") (path (named (kind library-package) (name "SequenceFunctions")) (named (kind kerml-behavior) (name "add")) (anonymous (kind kerml-feature) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/sequence_functions.md") (qualified-name "SequenceFunctions::add")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/sequence_functions.md") (path (named (kind library-package) (name "SequenceFunctions")) (named (kind kerml-behavior) (name "addAt")) (anonymous (kind kerml-feature) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/sequence_functions.md") (qualified-name "SequenceFunctions::addAt")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/sequence_functions.md") (path (named (kind library-package) (name "SequenceFunctions")) (named (kind kerml-behavior) (name "remove")) (anonymous (kind kerml-feature) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/sequence_functions.md") (qualified-name "SequenceFunctions::remove")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/sequence_functions.md") (path (named (kind library-package) (name "SequenceFunctions")) (named (kind kerml-behavior) (name "removeAt")) (anonymous (kind kerml-feature) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/sequence_functions.md") (qualified-name "SequenceFunctions::removeAt")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

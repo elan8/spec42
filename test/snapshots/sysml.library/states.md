@@ -435,6 +435,29 @@ standard library package States {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/states.md") (qualified-name "States::StateAction::done")))
+      (supertype (node (document "memory://snapshot/states.md") (qualified-name "States::StateAction")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/states.md") (qualified-name "States::StateAction::exclusiveStates")))
+      (supertype (node (document "memory://snapshot/states.md") (qualified-name "States::StateAction")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/states.md") (qualified-name "States::StateAction::self")))
+      (supertype (node (document "memory://snapshot/states.md") (qualified-name "States::StateAction")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/states.md") (qualified-name "States::StateAction::start")))
+      (supertype (node (document "memory://snapshot/states.md") (qualified-name "States::StateAction")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/states.md") (qualified-name "States::StateTransitionAction::transitionLinkSource")))
+      (supertype (node (document "memory://snapshot/states.md") (qualified-name "States::StateAction")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/states.md") (qualified-name "States::stateActions")))
+      (supertype (node (document "memory://snapshot/states.md") (qualified-name "States::StateAction")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -95,6 +95,26 @@ package 'Event Occurrence Example' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/27_event_occurrence_example.md") (qualified-name "Event Occurrence Example::driver")))
+      (supertype (node (document "memory://snapshot/27_event_occurrence_example.md") (qualified-name "Event Occurrence Example::Driver")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/27_event_occurrence_example.md") (qualified-name "Event Occurrence Example::vehicle")))
+      (supertype (node (document "memory://snapshot/27_event_occurrence_example.md") (qualified-name "Event Occurrence Example::Vehicle")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/27_event_occurrence_example.md") (qualified-name "Event Occurrence Example::vehicle::cruiseController")))
+      (supertype (node (document "memory://snapshot/27_event_occurrence_example.md") (qualified-name "Event Occurrence Example::CruiseController")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/27_event_occurrence_example.md") (qualified-name "Event Occurrence Example::vehicle::engine")))
+      (supertype (node (document "memory://snapshot/27_event_occurrence_example.md") (qualified-name "Event Occurrence Example::Engine")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/27_event_occurrence_example.md") (qualified-name "Event Occurrence Example::vehicle::speedometer")))
+      (supertype (node (document "memory://snapshot/27_event_occurrence_example.md") (qualified-name "Event Occurrence Example::Speedometer")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

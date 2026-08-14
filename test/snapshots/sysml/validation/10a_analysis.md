@@ -314,6 +314,26 @@ package '10a-Analysis' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleAnalysisModel::AnalysisPlan::massAnalysisCase")))
+      (supertype (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisCase")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleAnalysisModel::AnalysisPlan::vehicle")))
+      (supertype (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleDesignModel::Vehicle")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisCase::objective")))
+      (supertype (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisObjective")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisCase::vehicle")))
+      (supertype (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleDesignModel::Vehicle")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleAnalysisModel::massAnalysisContext::analysisPlan")))
+      (supertype (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleAnalysisModel::AnalysisPlan")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

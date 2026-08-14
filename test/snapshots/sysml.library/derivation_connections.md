@@ -187,6 +187,20 @@ standard library package DerivationConnections {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/derivation_connections.md") (path (named (kind library-package) (name "DerivationConnections")) (named (kind connection-def) (name "Derivation")) (anonymous (kind ref) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::derivedRequirements")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::Derivation::originalRequirement")))
+      (supertype (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::originalRequirements")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::derivations")))
+      (supertype (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::Derivation")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

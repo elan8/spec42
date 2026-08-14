@@ -117,6 +117,35 @@ package 'Action Shorthand Example' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Focus::image")))
+      (supertype (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Image")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Focus::scene")))
+      (supertype (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Scene")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Shoot::image")))
+      (supertype (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Image")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Shoot::picture")))
+      (supertype (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Picture")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::TakePicture::focus")))
+      (supertype (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Focus")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::TakePicture::picture")))
+      (supertype (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Picture")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::TakePicture::scene")))
+      (supertype (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Scene")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::TakePicture::shoot")))
+      (supertype (node (document "memory://snapshot/14_action_shorthand_example.md") (qualified-name "Action Shorthand Example::Shoot")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

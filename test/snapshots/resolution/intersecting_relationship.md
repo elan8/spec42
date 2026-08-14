@@ -45,6 +45,14 @@ package IntersectCoverage {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/intersecting_relationship.md") (qualified-name "IntersectCoverage::reading")))
+      (supertype (node (document "memory://snapshot/intersecting_relationship.md") (qualified-name "IntersectCoverage::Base")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

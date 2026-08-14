@@ -971,6 +971,45 @@ standard library package SpatialItems {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::CurrentDisplacementOf::spatialItem")))
+      (supertype (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::CurrentPositionOf::enclosingItem")))
+      (supertype (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::DisplacementOf::spatialItem")))
+      (supertype (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::PositionOf::enclosingItem")))
+      (supertype (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem::componentItems")))
+      (supertype (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/spatial_items.md") (path (named (kind library-package) (name "SpatialItems")) (named (kind item-def) (name "SpatialItem")) (named (kind item) (name "componentItems")) (anonymous (kind attribute) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem::coordinateFrame")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem::componentParts")))
+      (supertype (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem")) (scopes any))
+      (supertype (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem::componentItems")) (scopes any))
+      (supertype (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem::subSpatialItems")) (scopes any))
+      (supertype (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem::subSpatialParts")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/spatial_items.md") (path (named (kind library-package) (name "SpatialItems")) (named (kind item-def) (name "SpatialItem")) (named (kind attribute) (name "componentUnion")) (anonymous (kind item) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem::subSpatialItems")))
+      (supertype (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem::subSpatialParts")))
+      (supertype (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem")) (scopes any))
+      (supertype (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem::subSpatialItems")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -224,6 +224,14 @@ package 'Time Constraints' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::healthStates::vehicle")))
+      (supertype (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::Vehicle")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

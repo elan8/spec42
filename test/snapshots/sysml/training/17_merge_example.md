@@ -183,6 +183,41 @@ package 'Merge Example' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/17_merge_example.md") (qualified-name "Merge Example::Display::picture")))
+      (supertype (node (document "memory://snapshot/17_merge_example.md") (qualified-name "Merge Example::Picture")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/17_merge_example.md") (qualified-name "Merge Example::Focus::image")))
+      (supertype (node (document "memory://snapshot/17_merge_example.md") (qualified-name "Merge Example::Image")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/17_merge_example.md") (qualified-name "Merge Example::Focus::scene")))
+      (supertype (node (document "memory://snapshot/17_merge_example.md") (qualified-name "Merge Example::Scene")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/17_merge_example.md") (qualified-name "Merge Example::Shoot::image")))
+      (supertype (node (document "memory://snapshot/17_merge_example.md") (qualified-name "Merge Example::Image")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/17_merge_example.md") (qualified-name "Merge Example::Shoot::picture")))
+      (supertype (node (document "memory://snapshot/17_merge_example.md") (qualified-name "Merge Example::Picture")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/17_merge_example.md") (qualified-name "Merge Example::takePicture")))
+      (supertype (node (document "memory://snapshot/17_merge_example.md") (qualified-name "Merge Example::TakePicture")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/17_merge_example.md") (qualified-name "Merge Example::takePicture::display")))
+      (supertype (node (document "memory://snapshot/17_merge_example.md") (qualified-name "Merge Example::Display")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/17_merge_example.md") (qualified-name "Merge Example::takePicture::focus")))
+      (supertype (node (document "memory://snapshot/17_merge_example.md") (qualified-name "Merge Example::Focus")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/17_merge_example.md") (qualified-name "Merge Example::takePicture::shoot")))
+      (supertype (node (document "memory://snapshot/17_merge_example.md") (qualified-name "Merge Example::Shoot")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/17_merge_example.md") (qualified-name "Merge Example::takePicture::trigger::scene")))
+      (supertype (node (document "memory://snapshot/17_merge_example.md") (qualified-name "Merge Example::Scene")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

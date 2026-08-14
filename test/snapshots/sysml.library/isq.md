@@ -345,6 +345,17 @@ standard library package ISQ {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/isq.md") (path (named (kind library-package) (name "ISQ")) (named (kind attribute-def) (name "TemperatureDifferenceValue")) (anonymous (kind attribute) (ordinal 1))))))
+      (supertype (node (document "memory://snapshot/isq.md") (qualified-name "ISQ::TemperatureDifferenceUnit")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/isq.md") (qualified-name "ISQ::temperatureDifference")))
+      (supertype (node (document "memory://snapshot/isq.md") (qualified-name "ISQ::TemperatureDifferenceValue")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -128,6 +128,37 @@ package 'Allocation Definition Example' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/38_allocation_definition_example.md") (qualified-name "Allocation Definition Example::LogicalModel::TorqueGenerator")))
+      (supertype (node (document "memory://snapshot/38_allocation_definition_example.md") (qualified-name "Allocation Definition Example::LogicalModel::LogicalElement")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/38_allocation_definition_example.md") (qualified-name "Allocation Definition Example::LogicalModel::providePower")))
+      (supertype (node (document "memory://snapshot/38_allocation_definition_example.md") (qualified-name "Allocation Definition Example::LogicalModel::ProvidePower")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/38_allocation_definition_example.md") (qualified-name "Allocation Definition Example::LogicalModel::providePower::generateTorque")))
+      (supertype (node (document "memory://snapshot/38_allocation_definition_example.md") (qualified-name "Allocation Definition Example::LogicalModel::GenerateTorque")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/38_allocation_definition_example.md") (qualified-name "Allocation Definition Example::LogicalModel::torqueGenerator")))
+      (supertype (node (document "memory://snapshot/38_allocation_definition_example.md") (qualified-name "Allocation Definition Example::LogicalModel::LogicalElement")) (scopes any))
+      (supertype (node (document "memory://snapshot/38_allocation_definition_example.md") (qualified-name "Allocation Definition Example::LogicalModel::TorqueGenerator")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/38_allocation_definition_example.md") (qualified-name "Allocation Definition Example::PhysicalModel::LogicalToPhysical::logical")))
+      (supertype (node (document "memory://snapshot/38_allocation_definition_example.md") (qualified-name "Allocation Definition Example::LogicalModel::LogicalElement")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/38_allocation_definition_example.md") (qualified-name "Allocation Definition Example::PhysicalModel::LogicalToPhysical::physical")))
+      (supertype (node (document "memory://snapshot/38_allocation_definition_example.md") (qualified-name "Allocation Definition Example::PhysicalModel::PhysicalElement")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/38_allocation_definition_example.md") (qualified-name "Allocation Definition Example::PhysicalModel::PowerTrain")))
+      (supertype (node (document "memory://snapshot/38_allocation_definition_example.md") (qualified-name "Allocation Definition Example::PhysicalModel::PhysicalElement")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/38_allocation_definition_example.md") (qualified-name "Allocation Definition Example::PhysicalModel::powerTrain")))
+      (supertype (node (document "memory://snapshot/38_allocation_definition_example.md") (qualified-name "Allocation Definition Example::PhysicalModel::PhysicalElement")) (scopes any))
+      (supertype (node (document "memory://snapshot/38_allocation_definition_example.md") (qualified-name "Allocation Definition Example::PhysicalModel::PowerTrain")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

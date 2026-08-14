@@ -137,6 +137,26 @@ package TradeStudyTest {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/trade_study_test.md") (qualified-name "TradeStudyTest::engine1")))
+      (supertype (node (document "memory://snapshot/trade_study_test.md") (qualified-name "TradeStudyTest::Engine")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/trade_study_test.md") (qualified-name "TradeStudyTest::engine2")))
+      (supertype (node (document "memory://snapshot/trade_study_test.md") (qualified-name "TradeStudyTest::Engine")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/trade_study_test.md") (path (named (kind package) (name "TradeStudyTest")) (named (kind analysis) (name "engineTradeStudy")) (anonymous (kind subject) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/trade_study_test.md") (qualified-name "TradeStudyTest::Engine")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/trade_study_test.md") (path (named (kind package) (name "TradeStudyTest")) (named (kind analysis) (name "engineTradeStudy")) (anonymous (kind parameter) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/trade_study_test.md") (qualified-name "TradeStudyTest::Engine")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/trade_study_test.md") (path (named (kind package) (name "TradeStudyTest")) (named (kind analysis) (name "engineTradeStudy")) (anonymous (kind calc) (ordinal 0)) (anonymous (kind part) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/trade_study_test.md") (qualified-name "TradeStudyTest::Engine")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

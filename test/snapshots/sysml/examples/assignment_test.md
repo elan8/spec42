@@ -270,6 +270,20 @@ package AssignmentTest {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/assignment_test.md") (path (named (kind package) (name "AssignmentTest")) (named (kind calc-def) (name "Increment")) (anonymous (kind parameter) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::Counter")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::Increment::c")))
+      (supertype (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::Counter")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::a::counting")))
+      (supertype (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::Counting")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

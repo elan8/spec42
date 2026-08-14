@@ -115,6 +115,47 @@ package 'Redefinition Example' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/05_redefinition_example.md") (qualified-name "Redefinition Example::BigEngine")))
+      (supertype (node (document "memory://snapshot/05_redefinition_example.md") (qualified-name "Redefinition Example::Engine")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/05_redefinition_example.md") (path (named (kind package) (name "Redefinition Example")) (named (kind part-def) (name "BigEngine")) (anonymous (kind part) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/05_redefinition_example.md") (qualified-name "Redefinition Example::Cylinder")) (scopes any))
+      (supertype (node (document "memory://snapshot/05_redefinition_example.md") (qualified-name "Redefinition Example::Engine::cyl")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/05_redefinition_example.md") (qualified-name "Redefinition Example::BigVehicle")))
+      (supertype (node (document "memory://snapshot/05_redefinition_example.md") (qualified-name "Redefinition Example::Vehicle")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/05_redefinition_example.md") (qualified-name "Redefinition Example::BigVehicle::bigEng")))
+      (supertype (node (document "memory://snapshot/05_redefinition_example.md") (qualified-name "Redefinition Example::BigEngine")) (scopes any))
+      (supertype (node (document "memory://snapshot/05_redefinition_example.md") (qualified-name "Redefinition Example::Engine")) (scopes any))
+      (supertype (node (document "memory://snapshot/05_redefinition_example.md") (qualified-name "Redefinition Example::Vehicle::eng")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/05_redefinition_example.md") (qualified-name "Redefinition Example::Engine::cyl")))
+      (supertype (node (document "memory://snapshot/05_redefinition_example.md") (qualified-name "Redefinition Example::Cylinder")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/05_redefinition_example.md") (qualified-name "Redefinition Example::SmallEngine")))
+      (supertype (node (document "memory://snapshot/05_redefinition_example.md") (qualified-name "Redefinition Example::Engine")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/05_redefinition_example.md") (path (named (kind package) (name "Redefinition Example")) (named (kind part-def) (name "SmallEngine")) (anonymous (kind part) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/05_redefinition_example.md") (qualified-name "Redefinition Example::Cylinder")) (scopes any))
+      (supertype (node (document "memory://snapshot/05_redefinition_example.md") (qualified-name "Redefinition Example::Engine::cyl")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/05_redefinition_example.md") (qualified-name "Redefinition Example::SmallVehicle")))
+      (supertype (node (document "memory://snapshot/05_redefinition_example.md") (qualified-name "Redefinition Example::Vehicle")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/05_redefinition_example.md") (qualified-name "Redefinition Example::SmallVehicle::smallEng")))
+      (supertype (node (document "memory://snapshot/05_redefinition_example.md") (qualified-name "Redefinition Example::Engine")) (scopes any))
+      (supertype (node (document "memory://snapshot/05_redefinition_example.md") (qualified-name "Redefinition Example::SmallEngine")) (scopes any))
+      (supertype (node (document "memory://snapshot/05_redefinition_example.md") (qualified-name "Redefinition Example::Vehicle::eng")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/05_redefinition_example.md") (qualified-name "Redefinition Example::Vehicle::eng")))
+      (supertype (node (document "memory://snapshot/05_redefinition_example.md") (qualified-name "Redefinition Example::Engine")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -81,6 +81,28 @@ package 'Generalization Example' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/03_generalization_example.md") (qualified-name "Generalization Example::HumanDrivenPoweredVehicle")))
+      (supertype (node (document "memory://snapshot/03_generalization_example.md") (qualified-name "Generalization Example::HumanDrivenVehicle")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/03_generalization_example.md") (qualified-name "Generalization Example::PoweredVehicle")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/03_generalization_example.md") (qualified-name "Generalization Example::Vehicle")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/03_generalization_example.md") (qualified-name "Generalization Example::HumanDrivenVehicle")))
+      (supertype (node (document "memory://snapshot/03_generalization_example.md") (qualified-name "Generalization Example::Vehicle")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/03_generalization_example.md") (qualified-name "Generalization Example::HumanDrivenVehicle::driver")))
+      (supertype (node (document "memory://snapshot/03_generalization_example.md") (qualified-name "Generalization Example::Person")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/03_generalization_example.md") (qualified-name "Generalization Example::PoweredVehicle")))
+      (supertype (node (document "memory://snapshot/03_generalization_example.md") (qualified-name "Generalization Example::Vehicle")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/03_generalization_example.md") (qualified-name "Generalization Example::PoweredVehicle::eng")))
+      (supertype (node (document "memory://snapshot/03_generalization_example.md") (qualified-name "Generalization Example::Engine")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

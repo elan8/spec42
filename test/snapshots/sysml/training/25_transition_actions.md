@@ -182,6 +182,23 @@ package 'Transition Actions' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::performSelfTest::vehicle")))
+      (supertype (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::Vehicle")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::vehicleStates")))
+      (supertype (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::VehicleStates")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::vehicleStates::controller")))
+      (supertype (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::VehicleController")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::vehicleStates::operatingVehicle")))
+      (supertype (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::Vehicle")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

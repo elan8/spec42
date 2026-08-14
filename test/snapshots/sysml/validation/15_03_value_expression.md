@@ -188,6 +188,20 @@ package '15_03-Value Expression' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/15_03_value_expression.md") (qualified-name "15_03-Value Expression::Vehicle_1::leftFrontWheel")))
+      (supertype (node (document "memory://snapshot/15_03_value_expression.md") (qualified-name "15_03-Value Expression::Wheel")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/15_03_value_expression.md") (qualified-name "15_03-Value Expression::Vehicle_1::rightFrontWheel")))
+      (supertype (node (document "memory://snapshot/15_03_value_expression.md") (qualified-name "15_03-Value Expression::Wheel")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/15_03_value_expression.md") (qualified-name "15_03-Value Expression::Wheel::tire")))
+      (supertype (node (document "memory://snapshot/15_03_value_expression.md") (qualified-name "15_03-Value Expression::Tire")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

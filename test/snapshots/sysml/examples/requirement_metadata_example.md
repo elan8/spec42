@@ -190,6 +190,16 @@ package RequirementMetadataExample {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goal::baseType"))) (cyclic true)
+    )
+    (declaration (id (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goals")))
+      (supertype (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::Goal")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

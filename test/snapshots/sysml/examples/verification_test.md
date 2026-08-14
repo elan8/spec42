@@ -167,6 +167,26 @@ package VerificationTest {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase::v")))
+      (supertype (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::V")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationPlan::v")))
+      (supertype (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::V")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::r")))
+      (supertype (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::R")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::verificationContext::verificationPlan")))
+      (supertype (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationPlan")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::vv")))
+      (supertype (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::V")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

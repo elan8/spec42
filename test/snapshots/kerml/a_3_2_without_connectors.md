@@ -165,6 +165,18 @@ package WithoutConnectorsExecution {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/a_3_2_without_connectors.md") (qualified-name "WithoutConnectorsExecution::MyBike")))
+      (supertype (node (document "memory://snapshot/a_3_2_without_connectors.md") (qualified-name "WithoutConnectorsModelToBeExecuted::Bicycle")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/a_3_2_without_connectors.md") (path (named (kind package) (name "WithoutConnectorsExecution")) (named (kind kerml-classifier) (name "MyBike")) (anonymous (kind kerml-feature) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/a_3_2_without_connectors.md") (qualified-name "WithoutConnectorsExecution::MyWheel")) (scopes any))
+      (supertype (node (document "memory://snapshot/a_3_2_without_connectors.md") (qualified-name "WithoutConnectorsModelToBeExecuted::Bicycle::rollsOn")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

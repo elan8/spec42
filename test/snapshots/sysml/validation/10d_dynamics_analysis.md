@@ -650,6 +650,17 @@ package '10d-Dynamics Analysis' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/10d_dynamics_analysis.md") (path (named (kind package) (name "10d-Dynamics Analysis")) (named (kind package) (name "AnalysisModel")) (named (kind analysis-def) (name "DynamicsAnalysis")) (anonymous (kind for-loop) (ordinal 0)) (named (kind perform-action) (name "dynamics"))))))
+      (supertype (node (document "memory://snapshot/10d_dynamics_analysis.md") (qualified-name "10d-Dynamics Analysis::DynamicsModel::StraightLineDynamics")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/10d_dynamics_analysis.md") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis::vehicle")))
+      (supertype (node (document "memory://snapshot/10d_dynamics_analysis.md") (qualified-name "10d-Dynamics Analysis::VehicleModel::Vehicle")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

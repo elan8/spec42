@@ -224,6 +224,26 @@ package 'Fork Join Example' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/17_fork_join_example.md") (qualified-name "Fork Join Example::Brake::braking")))
+      (supertype (node (document "memory://snapshot/17_fork_join_example.md") (qualified-name "Fork Join Example::Braking")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/17_fork_join_example.md") (qualified-name "Fork Join Example::Brake::monitorBrakePedal")))
+      (supertype (node (document "memory://snapshot/17_fork_join_example.md") (qualified-name "Fork Join Example::MonitorBrakePedal")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/17_fork_join_example.md") (qualified-name "Fork Join Example::Brake::monitorTraction")))
+      (supertype (node (document "memory://snapshot/17_fork_join_example.md") (qualified-name "Fork Join Example::MonitorTraction")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/17_fork_join_example.md") (qualified-name "Fork Join Example::Braking::brakePressure")))
+      (supertype (node (document "memory://snapshot/17_fork_join_example.md") (qualified-name "Fork Join Example::BrakePressure")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/17_fork_join_example.md") (qualified-name "Fork Join Example::MonitorBrakePedal::pressure")))
+      (supertype (node (document "memory://snapshot/17_fork_join_example.md") (qualified-name "Fork Join Example::BrakePressure")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

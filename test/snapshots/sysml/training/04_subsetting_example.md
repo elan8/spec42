@@ -94,6 +94,38 @@ package 'Subsetting Example' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/04_subsetting_example.md") (qualified-name "Subsetting Example::Engine")))
+      (supertype (node (document "memory://snapshot/04_subsetting_example.md") (qualified-name "Subsetting Example::VehiclePart")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/04_subsetting_example.md") (qualified-name "Subsetting Example::Transmission")))
+      (supertype (node (document "memory://snapshot/04_subsetting_example.md") (qualified-name "Subsetting Example::VehiclePart")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/04_subsetting_example.md") (qualified-name "Subsetting Example::Vehicle::eng")))
+      (supertype (node (document "memory://snapshot/04_subsetting_example.md") (qualified-name "Subsetting Example::Engine")) (scopes any))
+      (supertype (node (document "memory://snapshot/04_subsetting_example.md") (qualified-name "Subsetting Example::Vehicle::parts")) (scopes any))
+      (supertype (node (document "memory://snapshot/04_subsetting_example.md") (qualified-name "Subsetting Example::VehiclePart")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/04_subsetting_example.md") (qualified-name "Subsetting Example::Vehicle::parts")))
+      (supertype (node (document "memory://snapshot/04_subsetting_example.md") (qualified-name "Subsetting Example::VehiclePart")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/04_subsetting_example.md") (qualified-name "Subsetting Example::Vehicle::trans")))
+      (supertype (node (document "memory://snapshot/04_subsetting_example.md") (qualified-name "Subsetting Example::Transmission")) (scopes any))
+      (supertype (node (document "memory://snapshot/04_subsetting_example.md") (qualified-name "Subsetting Example::Vehicle::parts")) (scopes any))
+      (supertype (node (document "memory://snapshot/04_subsetting_example.md") (qualified-name "Subsetting Example::VehiclePart")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/04_subsetting_example.md") (qualified-name "Subsetting Example::Vehicle::wheels")))
+      (supertype (node (document "memory://snapshot/04_subsetting_example.md") (qualified-name "Subsetting Example::Vehicle::parts")) (scopes any))
+      (supertype (node (document "memory://snapshot/04_subsetting_example.md") (qualified-name "Subsetting Example::VehiclePart")) (scopes any))
+      (supertype (node (document "memory://snapshot/04_subsetting_example.md") (qualified-name "Subsetting Example::Wheel")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/04_subsetting_example.md") (qualified-name "Subsetting Example::Wheel")))
+      (supertype (node (document "memory://snapshot/04_subsetting_example.md") (qualified-name "Subsetting Example::VehiclePart")) (scopes any subclassification))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

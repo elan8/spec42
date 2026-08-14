@@ -299,6 +299,14 @@ standard library package Cases {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/cases.md") (qualified-name "Cases::cases")))
+      (supertype (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

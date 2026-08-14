@@ -82,6 +82,21 @@ package 'Enumeration Definitions-1' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/06_enumeration_definitions_1.md") (qualified-name "Enumeration Definitions-1::TrafficLight::currentColor")))
+      (supertype (node (document "memory://snapshot/06_enumeration_definitions_1.md") (qualified-name "Enumeration Definitions-1::TrafficLightColor")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/06_enumeration_definitions_1.md") (qualified-name "Enumeration Definitions-1::TrafficLightGo")))
+      (supertype (node (document "memory://snapshot/06_enumeration_definitions_1.md") (qualified-name "Enumeration Definitions-1::TrafficLight")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/06_enumeration_definitions_1.md") (path (named (kind package) (name "Enumeration Definitions-1")) (named (kind part-def) (name "TrafficLightGo")) (anonymous (kind attribute) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/06_enumeration_definitions_1.md") (qualified-name "Enumeration Definitions-1::TrafficLight::currentColor")) (scopes any))
+      (supertype (node (document "memory://snapshot/06_enumeration_definitions_1.md") (qualified-name "Enumeration Definitions-1::TrafficLightColor")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

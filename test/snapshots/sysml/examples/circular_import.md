@@ -109,6 +109,29 @@ package CircularImport {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/circular_import.md") (qualified-name "CircularImport::Test1::x")))
+      (supertype (node (document "memory://snapshot/circular_import.md") (qualified-name "CircularImport::P1::A")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/circular_import.md") (qualified-name "CircularImport::Test1::y")))
+      (supertype (node (document "memory://snapshot/circular_import.md") (qualified-name "CircularImport::P2::B")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/circular_import.md") (qualified-name "CircularImport::Test2::x")))
+      (supertype (node (document "memory://snapshot/circular_import.md") (qualified-name "CircularImport::P1::A")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/circular_import.md") (qualified-name "CircularImport::Test2::y")))
+      (supertype (node (document "memory://snapshot/circular_import.md") (qualified-name "CircularImport::P2::B")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/circular_import.md") (qualified-name "CircularImport::x")))
+      (supertype (node (document "memory://snapshot/circular_import.md") (qualified-name "CircularImport::P1::A")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/circular_import.md") (qualified-name "CircularImport::y")))
+      (supertype (node (document "memory://snapshot/circular_import.md") (qualified-name "CircularImport::P2::B")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

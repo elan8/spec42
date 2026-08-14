@@ -532,6 +532,32 @@ package ServerSequenceOutsideRealization_2 {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/server_sequence_outside_realization_2.md") (qualified-name "ServerSequenceOutsideRealization_2::Configuration::consumer_2::subscriptionPort")))
+      (supertype (node (document "memory://snapshot/server_sequence_outside_realization_2.md") (qualified-name "ServerSequenceOutsideRealization_2::Configuration::SubscriptionPort")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/server_sequence_outside_realization_2.md") (qualified-name "ServerSequenceOutsideRealization_2::Configuration::producer_2::publicationPort")))
+      (supertype (node (document "memory://snapshot/server_sequence_outside_realization_2.md") (qualified-name "ServerSequenceOutsideRealization_2::Configuration::PublicationPort")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/server_sequence_outside_realization_2.md") (qualified-name "ServerSequenceOutsideRealization_2::Configuration::server_2::publicationPort")))
+      (supertype (node (document "memory://snapshot/server_sequence_outside_realization_2.md") (qualified-name "ServerSequenceOutsideRealization_2::Configuration::PublicationPort")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/server_sequence_outside_realization_2.md") (qualified-name "ServerSequenceOutsideRealization_2::Configuration::server_2::subscriptionPort")))
+      (supertype (node (document "memory://snapshot/server_sequence_outside_realization_2.md") (qualified-name "ServerSequenceOutsideRealization_2::Configuration::SubscriptionPort")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/server_sequence_outside_realization_2.md") (qualified-name "ServerSequenceOutsideRealization_2::realization_2::consumer")))
+      (supertype (node (document "memory://snapshot/server_sequence_outside_realization_2.md") (qualified-name "ServerSequenceOutsideRealization_2::Configuration::consumer_2")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/server_sequence_outside_realization_2.md") (qualified-name "ServerSequenceOutsideRealization_2::realization_2::producer")))
+      (supertype (node (document "memory://snapshot/server_sequence_outside_realization_2.md") (qualified-name "ServerSequenceOutsideRealization_2::Configuration::producer_2")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/server_sequence_outside_realization_2.md") (qualified-name "ServerSequenceOutsideRealization_2::realization_2::server")))
+      (supertype (node (document "memory://snapshot/server_sequence_outside_realization_2.md") (qualified-name "ServerSequenceOutsideRealization_2::Configuration::server_2")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

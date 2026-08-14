@@ -214,6 +214,20 @@ package 'Constraints Example-1' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Vehicle::engine")))
+      (supertype (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Engine")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Vehicle::massConstraint")))
+      (supertype (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::MassConstraint")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Vehicle::transmission")))
+      (supertype (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Engine")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

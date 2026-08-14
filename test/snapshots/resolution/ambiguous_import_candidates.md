@@ -73,6 +73,11 @@ probe ambiguous_import_candidates.md 5 18
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

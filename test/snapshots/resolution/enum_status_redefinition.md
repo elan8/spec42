@@ -76,6 +76,30 @@ package Demo {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::ManagedRequirement::status")))
+      (supertype (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::RequirementStatusKind")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::Need")))
+      (supertype (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::ManagedRequirement")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::UserRequirement")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::UserRequirement")))
+      (supertype (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::ManagedRequirement")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::need")))
+      (supertype (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::ManagedRequirement")) (scopes any))
+      (supertype (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::Need")) (scopes any))
+      (supertype (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::UserRequirement")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/enum_status_redefinition.md") (path (named (kind package) (name "Demo")) (named (kind requirement) (name "need")) (anonymous (kind attribute) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::ManagedRequirement::status")) (scopes any))
+      (supertype (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::RequirementStatusKind")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

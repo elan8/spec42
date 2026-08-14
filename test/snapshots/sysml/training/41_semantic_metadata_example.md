@@ -245,6 +245,21 @@ library package 'Semantic Metadata Example' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/41_semantic_metadata_example.md") (qualified-name "Semantic Metadata Example::causation::baseType"))) (cyclic true)
+    )
+    (declaration (id (node (document "memory://snapshot/41_semantic_metadata_example.md") (qualified-name "Semantic Metadata Example::cause::baseType"))) (cyclic true)
+    )
+    (declaration (id (node (document "memory://snapshot/41_semantic_metadata_example.md") (qualified-name "Semantic Metadata Example::failure::baseType"))) (cyclic true)
+    )
+    (declaration (id (node (document "memory://snapshot/41_semantic_metadata_example.md") (qualified-name "Semantic Metadata Example::scenario::baseType"))) (cyclic true)
+    )
+    (declaration (id (node (document "memory://snapshot/41_semantic_metadata_example.md") (qualified-name "Semantic Metadata Example::situation::baseType"))) (cyclic true)
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

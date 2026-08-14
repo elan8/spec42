@@ -114,6 +114,17 @@ package ClassifierCoverage {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/coverage_classifiers.md") (qualified-name "ClassifierCoverage::C")))
+      (supertype (node (document "memory://snapshot/coverage_classifiers.md") (qualified-name "ClassifierCoverage::Entity")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/coverage_classifiers.md") (qualified-name "ClassifierCoverage::S")))
+      (supertype (node (document "memory://snapshot/coverage_classifiers.md") (qualified-name "ClassifierCoverage::Vector")) (scopes any subclassification))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

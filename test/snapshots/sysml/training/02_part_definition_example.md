@@ -109,6 +109,20 @@ package 'Part Definition Example' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/02_part_definition_example.md") (qualified-name "Part Definition Example::Vehicle::driver")))
+      (supertype (node (document "memory://snapshot/02_part_definition_example.md") (qualified-name "Part Definition Example::Person")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/02_part_definition_example.md") (qualified-name "Part Definition Example::Vehicle::eng")))
+      (supertype (node (document "memory://snapshot/02_part_definition_example.md") (qualified-name "Part Definition Example::Engine")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/02_part_definition_example.md") (qualified-name "Part Definition Example::Vehicle::status")))
+      (supertype (node (document "memory://snapshot/02_part_definition_example.md") (qualified-name "Part Definition Example::VehicleStatus")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

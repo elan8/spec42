@@ -43,6 +43,14 @@ package M {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/case_subject_provenance.md") (qualified-name "M::A::s")))
+      (supertype (node (document "memory://snapshot/case_subject_provenance.md") (qualified-name "M::P")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -68,6 +68,14 @@ package Usage {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/Usage.sysml") (qualified-name "Usage::v")))
+      (supertype (node (document "memory://snapshot/Definitions.sysml") (qualified-name "Definitions::Vehicle")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

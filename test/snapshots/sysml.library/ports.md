@@ -160,6 +160,15 @@ standard library package Ports {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/ports.md") (qualified-name "Ports::Port::subports")))
+      (supertype (node (document "memory://snapshot/ports.md") (qualified-name "Ports::Port")) (scopes any))
+      (supertype (node (document "memory://snapshot/ports.md") (qualified-name "Ports::ports")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

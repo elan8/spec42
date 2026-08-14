@@ -357,6 +357,20 @@ standard library package VerificationCases {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases::PassIf::verdict")))
+      (supertype (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases::VerdictKind")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases::VerificationMethod::kind")))
+      (supertype (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases::VerificationMethodKind")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases::verificationCases")))
+      (supertype (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases::VerificationCase")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

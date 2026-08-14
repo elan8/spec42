@@ -196,6 +196,11 @@ package 'Analysis Case Usage Example' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

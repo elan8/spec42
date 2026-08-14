@@ -85,6 +85,18 @@ package ImportTest {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/import_test.md") (qualified-name "ImportTest::Pkg1::p11")))
+      (supertype (node (document "memory://snapshot/import_test.md") (qualified-name "ImportTest::Pkg1::P12")) (scopes any))
+      (supertype (node (document "memory://snapshot/import_test.md") (qualified-name "ImportTest::Pkg2::Pkg21::Pkg211::P211")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/import_test.md") (qualified-name "ImportTest::Pkg2::Pkg21::Pkg211::P211")))
+      (supertype (node (document "memory://snapshot/import_test.md") (qualified-name "ImportTest::Pkg1::P12")) (scopes any subclassification))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

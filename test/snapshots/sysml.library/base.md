@@ -186,6 +186,41 @@ standard library package Base {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything::self")))
+      (supertype (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/base.md") (qualified-name "Base::things")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/base.md") (qualified-name "Base::DataValue")))
+      (supertype (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/base.md") (qualified-name "Base::DataValue::self")))
+      (supertype (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything::self")) (scopes any))
+      (supertype (node (document "memory://snapshot/base.md") (qualified-name "Base::DataValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/base.md") (qualified-name "Base::things")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/base.md") (qualified-name "Base::dataValues")))
+      (supertype (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/base.md") (qualified-name "Base::DataValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/base.md") (qualified-name "Base::things")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/base.md") (qualified-name "Base::naturals")))
+      (supertype (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/base.md") (qualified-name "Base::DataValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/base.md") (qualified-name "Base::dataValues")) (scopes any))
+      (supertype (node (document "memory://snapshot/base.md") (qualified-name "Base::things")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/base.md") (qualified-name "Base::things")))
+      (supertype (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/base.md") (qualified-name "Base::things::that")))
+      (supertype (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

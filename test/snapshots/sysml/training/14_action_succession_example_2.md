@@ -128,6 +128,35 @@ package 'Action Definition Example' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/14_action_succession_example_2.md") (qualified-name "Action Definition Example::Focus::image")))
+      (supertype (node (document "memory://snapshot/14_action_succession_example_2.md") (qualified-name "Action Definition Example::Image")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/14_action_succession_example_2.md") (qualified-name "Action Definition Example::Focus::scene")))
+      (supertype (node (document "memory://snapshot/14_action_succession_example_2.md") (qualified-name "Action Definition Example::Scene")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/14_action_succession_example_2.md") (qualified-name "Action Definition Example::Shoot::image")))
+      (supertype (node (document "memory://snapshot/14_action_succession_example_2.md") (qualified-name "Action Definition Example::Image")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/14_action_succession_example_2.md") (qualified-name "Action Definition Example::Shoot::picture")))
+      (supertype (node (document "memory://snapshot/14_action_succession_example_2.md") (qualified-name "Action Definition Example::Picture")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/14_action_succession_example_2.md") (qualified-name "Action Definition Example::TakePicture::focus")))
+      (supertype (node (document "memory://snapshot/14_action_succession_example_2.md") (qualified-name "Action Definition Example::Focus")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/14_action_succession_example_2.md") (qualified-name "Action Definition Example::TakePicture::picture")))
+      (supertype (node (document "memory://snapshot/14_action_succession_example_2.md") (qualified-name "Action Definition Example::Picture")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/14_action_succession_example_2.md") (qualified-name "Action Definition Example::TakePicture::scene")))
+      (supertype (node (document "memory://snapshot/14_action_succession_example_2.md") (qualified-name "Action Definition Example::Scene")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/14_action_succession_example_2.md") (qualified-name "Action Definition Example::TakePicture::shoot")))
+      (supertype (node (document "memory://snapshot/14_action_succession_example_2.md") (qualified-name "Action Definition Example::Shoot")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

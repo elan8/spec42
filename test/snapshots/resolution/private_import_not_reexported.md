@@ -82,6 +82,14 @@ package Client {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/Middle.sysml") (qualified-name "Middle::local")))
+      (supertype (node (document "memory://snapshot/Source.sysml") (qualified-name "Source::Thing")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

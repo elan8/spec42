@@ -565,6 +565,27 @@ package VehicleUsages {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly::frontWheel")))
+      (supertype (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::narrowRimWheel")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly::rearWheel")))
+      (supertype (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::wideRimWheel")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C2")))
+      (supertype (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C1")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C2::rearAxleAssembly")))
+      (supertype (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C3")))
+      (supertype (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C1")) (scopes any))
+      (supertype (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C2")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

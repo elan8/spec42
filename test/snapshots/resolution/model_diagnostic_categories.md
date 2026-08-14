@@ -101,6 +101,23 @@ package Demo {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::architecture")))
+      (supertype (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::ArchitectureView")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::controller")))
+      (supertype (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::Controller")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::process")))
+      (supertype (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::Process")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::sensor")))
+      (supertype (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::Sensor")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

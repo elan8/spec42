@@ -105,6 +105,11 @@ package 'Individuals and Snapshots Example' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

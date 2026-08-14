@@ -167,6 +167,19 @@ standard library package ParametersOfInterestMetadata {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/parameters_of_interest_metadata.md") (qualified-name "ParametersOfInterestMetadata::MeasureOfEffectiveness::annotatedElement"))) (cyclic true)
+    )
+    (declaration (id (node (document "memory://snapshot/parameters_of_interest_metadata.md") (qualified-name "ParametersOfInterestMetadata::MeasureOfEffectiveness::baseType"))) (cyclic true)
+    )
+    (declaration (id (node (document "memory://snapshot/parameters_of_interest_metadata.md") (qualified-name "ParametersOfInterestMetadata::MeasureOfPerformance::annotatedElement"))) (cyclic true)
+    )
+    (declaration (id (node (document "memory://snapshot/parameters_of_interest_metadata.md") (qualified-name "ParametersOfInterestMetadata::MeasureOfPerformance::baseType"))) (cyclic true)
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

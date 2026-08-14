@@ -236,6 +236,32 @@ package VehicleMasses {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/vehicles.md") (qualified-name "VehicleMasses::c")))
+      (supertype (node (document "memory://snapshot/vehicles.md") (qualified-name "VehicleMasses::CarPart")) (scopes any))
+      (supertype (node (document "memory://snapshot/vehicles.md") (qualified-name "VehicleMasses::car")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/vehicles.md") (qualified-name "VehicleMasses::car")))
+      (supertype (node (document "memory://snapshot/vehicles.md") (qualified-name "VehicleMasses::CarPart")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/vehicles.md") (qualified-name "VehicleMasses::car::carParts")))
+      (supertype (node (document "memory://snapshot/vehicles.md") (qualified-name "VehicleMasses::CarPart")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/vehicles.md") (qualified-name "VehicleMasses::car::engine")))
+      (supertype (node (document "memory://snapshot/vehicles.md") (qualified-name "VehicleMasses::CarPart")) (scopes any))
+      (supertype (node (document "memory://snapshot/vehicles.md") (qualified-name "VehicleMasses::car::carParts")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/vehicles.md") (qualified-name "VehicleMasses::car::transmission")))
+      (supertype (node (document "memory://snapshot/vehicles.md") (qualified-name "VehicleMasses::CarPart")) (scopes any))
+      (supertype (node (document "memory://snapshot/vehicles.md") (qualified-name "VehicleMasses::car::carParts")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/vehicles.md") (qualified-name "VehicleMasses::car::vin")))
+      (supertype (node (document "memory://snapshot/vehicles.md") (qualified-name "VehicleMasses::CarPart::serialNumber")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

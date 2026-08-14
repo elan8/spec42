@@ -80,6 +80,14 @@ package AddressBookModel {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/address_book_model.md") (qualified-name "AddressBookModel::AddressBook::entries")))
+      (supertype (node (document "memory://snapshot/address_book_model.md") (qualified-name "AddressBookModel::Entry")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

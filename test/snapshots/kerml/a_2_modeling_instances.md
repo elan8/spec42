@@ -170,6 +170,34 @@ package ModelingInstancesWithAtoms {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/a_2_modeling_instances.md") (qualified-name "ModelingInstances::MyBike")))
+      (supertype (node (document "memory://snapshot/a_2_modeling_instances.md") (qualified-name "ModelingInstances::Bicycle")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/a_2_modeling_instances.md") (qualified-name "ModelingInstances::YourBike")))
+      (supertype (node (document "memory://snapshot/a_2_modeling_instances.md") (qualified-name "ModelingInstances::Bicycle")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/a_2_modeling_instances.md") (qualified-name "ModelingInstancesWithAtoms::Garage::stores")))
+      (supertype (node (document "memory://snapshot/a_2_modeling_instances.md") (qualified-name "ModelingInstancesWithAtoms::Bicycle")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/a_2_modeling_instances.md") (qualified-name "ModelingInstancesWithAtoms::MyBike")))
+      (supertype (node (document "memory://snapshot/a_2_modeling_instances.md") (qualified-name "ModelingInstancesWithAtoms::Bicycle")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/a_2_modeling_instances.md") (qualified-name "ModelingInstancesWithAtoms::OurGarage")))
+      (supertype (node (document "memory://snapshot/a_2_modeling_instances.md") (qualified-name "ModelingInstancesWithAtoms::Garage")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/a_2_modeling_instances.md") (path (named (kind package) (name "ModelingInstancesWithAtoms")) (named (kind kerml-classifier) (name "OurGarage")) (anonymous (kind kerml-feature) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/a_2_modeling_instances.md") (qualified-name "ModelingInstancesWithAtoms::Bicycle")) (scopes any))
+      (supertype (node (document "memory://snapshot/a_2_modeling_instances.md") (qualified-name "ModelingInstancesWithAtoms::Garage::stores")) (scopes any))
+      (supertype (node (document "memory://snapshot/a_2_modeling_instances.md") (qualified-name "ModelingInstancesWithAtoms::OurBicycle")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/a_2_modeling_instances.md") (qualified-name "ModelingInstancesWithAtoms::YourBike")))
+      (supertype (node (document "memory://snapshot/a_2_modeling_instances.md") (qualified-name "ModelingInstancesWithAtoms::Bicycle")) (scopes any subclassification))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

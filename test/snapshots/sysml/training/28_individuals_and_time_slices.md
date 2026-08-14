@@ -168,6 +168,17 @@ package 'Individuals and Time Slices' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/28_individuals_and_time_slices.md") (path (named (kind package) (name "Individuals and Time Slices")) (anonymous (kind occurrence) (ordinal 0)) (named (kind occurrence) (name "aliceDriving")) (named (kind occurrence) (name "item"))))))
+      (supertype (node (document "memory://snapshot/28_individuals_and_time_slices.md") (qualified-name "Individuals and Time Slices::Alice")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/28_individuals_and_time_slices.md") (path (named (kind package) (name "Individuals and Time Slices")) (anonymous (kind occurrence) (ordinal 0)) (named (kind occurrence) (name "bobDriving")) (named (kind occurrence) (name "item"))))))
+      (supertype (node (document "memory://snapshot/28_individuals_and_time_slices.md") (qualified-name "Individuals and Time Slices::Bob")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

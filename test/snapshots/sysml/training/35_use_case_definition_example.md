@@ -122,6 +122,41 @@ package 'Use Case Definition Example' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Enter Vehicle::driver")))
+      (supertype (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Person")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Enter Vehicle::passengers")))
+      (supertype (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Person")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Enter Vehicle::vehicle")))
+      (supertype (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Vehicle")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Exit Vehicle::driver")))
+      (supertype (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Person")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Exit Vehicle::passengers")))
+      (supertype (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Person")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Exit Vehicle::vehicle")))
+      (supertype (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Vehicle")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Provide Transportation::driver")))
+      (supertype (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Person")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Provide Transportation::environment")))
+      (supertype (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Environment")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Provide Transportation::passengers")))
+      (supertype (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Person")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Provide Transportation::vehicle")))
+      (supertype (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Vehicle")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

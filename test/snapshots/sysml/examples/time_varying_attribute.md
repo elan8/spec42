@@ -238,6 +238,23 @@ package TimeVaryingAttribute {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/time_varying_attribute.md") (path (named (kind package) (name "TimeVaryingAttribute")) (named (kind part-def) (name "Transport2")) (anonymous (kind occurrence) (ordinal 0)) (anonymous (kind occurrence) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/time_varying_attribute.md") (qualified-name "TimeVaryingAttribute::Transport2::elapseTime")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/time_varying_attribute.md") (path (named (kind package) (name "TimeVaryingAttribute")) (named (kind part-def) (name "Transport2")) (anonymous (kind occurrence) (ordinal 0)) (anonymous (kind occurrence) (ordinal 1)) (anonymous (kind attribute) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/time_varying_attribute.md") (qualified-name "TimeVaryingAttribute::Transport2::elapseTime")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/time_varying_attribute.md") (qualified-name "TimeVaryingAttribute::Transport2::pwrCmd")))
+      (supertype (node (document "memory://snapshot/time_varying_attribute.md") (qualified-name "TimeVaryingAttribute::PwrCmd")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/time_varying_attribute.md") (path (named (kind package) (name "TimeVaryingAttribute")) (named (kind part-def) (name "Transport2")) (named (kind occurrence) (name "transportPeriod")) (anonymous (kind occurrence) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/time_varying_attribute.md") (qualified-name "TimeVaryingAttribute::Transport2::elapseTime")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

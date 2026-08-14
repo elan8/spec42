@@ -231,6 +231,38 @@ package Classes {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/classes.md") (qualified-name "Classes::B::a")))
+      (supertype (node (document "memory://snapshot/classes.md") (qualified-name "Classes::A")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/classes.md") (qualified-name "Classes::B::a1")))
+      (supertype (node (document "memory://snapshot/classes.md") (qualified-name "Classes::A")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/classes.md") (qualified-name "Classes::B::a::aa")))
+      (supertype (node (document "memory://snapshot/classes.md") (qualified-name "Classes::A")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/classes.md") (qualified-name "Classes::B::x::a")))
+      (supertype (node (document "memory://snapshot/classes.md") (qualified-name "Classes::A")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/classes.md") (qualified-name "Classes::B::x::a::q")))
+      (supertype (node (document "memory://snapshot/classes.md") (qualified-name "Classes::A")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/classes.md") (qualified-name "Classes::B::x::q")))
+      (supertype (node (document "memory://snapshot/classes.md") (qualified-name "Classes::A")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/classes.md") (qualified-name "Classes::C::c")))
+      (supertype (node (document "memory://snapshot/classes.md") (qualified-name "Classes::C")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/classes.md") (qualified-name "Classes::C::c::cc")))
+      (supertype (node (document "memory://snapshot/classes.md") (qualified-name "Classes::C")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/classes.md") (qualified-name "Classes::f")))
+      (supertype (node (document "memory://snapshot/classes.md") (qualified-name "Classes::A")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

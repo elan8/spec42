@@ -606,6 +606,17 @@ standard library package TransitionPerformances {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/transition_performances.md") (qualified-name "TransitionPerformances::NonStateTransitionPerformance")))
+      (supertype (node (document "memory://snapshot/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::guardConstraint")))
+      (supertype (node (document "memory://snapshot/transition_performances.md") (qualified-name "TransitionPerformances::TPCGuardConstraint")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

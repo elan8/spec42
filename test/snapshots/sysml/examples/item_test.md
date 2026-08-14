@@ -96,6 +96,33 @@ package ItemTest {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::A::b")))
+      (supertype (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::B")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::A::c")))
+      (supertype (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::C")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::B::a")))
+      (supertype (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::A")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::C::y")))
+      (supertype (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::A")) (scopes any))
+      (supertype (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::B")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::P::a1")))
+      (supertype (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::A")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::P::a2")))
+      (supertype (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::A")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::f")))
+      (supertype (node (document "memory://snapshot/item_test.md") (qualified-name "ItemTest::A")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

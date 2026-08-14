@@ -132,6 +132,14 @@ doc
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/metadata.md") (qualified-name "Metadata::metadataItems")))
+      (supertype (node (document "memory://snapshot/metadata.md") (qualified-name "Metadata::MetadataItem")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

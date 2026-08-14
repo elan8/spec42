@@ -152,6 +152,31 @@ package JohnIndividualExample {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::Country::presidentOfCountry")))
+      (supertype (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::Person")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::John")))
+      (supertype (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::Person")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::Person::asPresident")))
+      (supertype (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::Person")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::UnitedStates")))
+      (supertype (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::Country")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::UnitedStates::presidentOfUS")))
+      (supertype (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::Country::presidentOfCountry")) (scopes any))
+      (supertype (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::Person")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::UnitedStatesWithJohnAsPresident")))
+      (supertype (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::Country")) (scopes any))
+      (supertype (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::UnitedStates")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

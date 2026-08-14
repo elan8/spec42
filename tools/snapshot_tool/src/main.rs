@@ -305,6 +305,8 @@ fn regenerate_snapshot(
         .ok_or_else(|| format!("{}: missing SOURCE/SMG section", path.display()))?;
     let fixture = replace_or_insert_section(&fixture, "DIAGNOSTICS", &sequential.diagnostics)
         .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?;
+    let fixture = replace_or_insert_section(&fixture, "TYPES", &sequential.types)
+        .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?;
     let fixture = replace_or_insert_section(&fixture, "NAVIGATION", &sequential.navigation)
         .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?;
     let fixture = if probes.is_empty() {
@@ -318,6 +320,7 @@ fn regenerate_snapshot(
 
 struct OwnedSections {
     smg: String,
+    types: String,
     diagnostics: String,
     navigation: String,
     editor_queries: String,
@@ -344,6 +347,11 @@ fn render_owned_sections(
     // completeness, evaluation state, and all owned facts; diagnostics includes canonical order.
     let smg = render_semantic_model(&model)?;
     let diagnostics = render_diagnostics(&model, documents, source_documents)?;
+    let mut types = String::new();
+    model
+        .debug()
+        .write_types_sexpr(&mut types)
+        .map_err(|error| format!("type rendering failed: {error}"))?;
     let mut navigation = String::new();
     model
         .debug()
@@ -356,6 +364,7 @@ fn render_owned_sections(
         .map_err(|error| format!("editor-query rendering failed: {error}"))?;
     Ok(OwnedSections {
         smg,
+        types,
         diagnostics,
         navigation,
         editor_queries,
@@ -376,6 +385,12 @@ fn ensure_strategy_parity(
     if sequential.diagnostics != parallel.diagnostics {
         return Err(format!(
             "{}: sequential and parallel diagnostics outputs differ",
+            path.display()
+        ));
+    }
+    if sequential.types != parallel.types {
+        return Err(format!(
+            "{}: sequential and parallel type outputs differ",
             path.display()
         ));
     }
@@ -577,6 +592,7 @@ const SECTION_ORDER: &[&str] = &[
     "EDITOR QUERIES",
     "DIAGNOSTICS",
     "SMG",
+    "TYPES",
     "NAVIGATION",
     "EDITOR RESULTS",
 ];
@@ -694,6 +710,7 @@ mod tests {
     fn owned_sections(smg: &str) -> OwnedSections {
         OwnedSections {
             smg: smg.to_string(),
+            types: "same".to_string(),
             diagnostics: "same".to_string(),
             navigation: "same".to_string(),
             editor_queries: "same".to_string(),

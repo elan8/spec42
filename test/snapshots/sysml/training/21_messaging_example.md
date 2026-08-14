@@ -132,6 +132,35 @@ package 'Messaging Example' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::Focus::image")))
+      (supertype (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::Image")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::Focus::scene")))
+      (supertype (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::Scene")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::Shoot::image")))
+      (supertype (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::Image")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::Shoot::picture")))
+      (supertype (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::Picture")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::Show::picture")))
+      (supertype (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::Picture")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::takePicture")))
+      (supertype (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::TakePicture")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::takePicture::focus")))
+      (supertype (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::Focus")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::takePicture::shoot")))
+      (supertype (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::Shoot")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

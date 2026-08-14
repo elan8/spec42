@@ -112,6 +112,31 @@ package 'Parts Example-1' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/07_parts_example_1.md") (qualified-name "Parts Example-1::Engine::cyl")))
+      (supertype (node (document "memory://snapshot/07_parts_example_1.md") (qualified-name "Parts Example-1::Cylinder")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/07_parts_example_1.md") (qualified-name "Parts Example-1::Vehicle::eng")))
+      (supertype (node (document "memory://snapshot/07_parts_example_1.md") (qualified-name "Parts Example-1::Engine")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/07_parts_example_1.md") (qualified-name "Parts Example-1::bigVehicle")))
+      (supertype (node (document "memory://snapshot/07_parts_example_1.md") (qualified-name "Parts Example-1::Vehicle")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/07_parts_example_1.md") (path (named (kind package) (name "Parts Example-1")) (named (kind part) (name "bigVehicle")) (anonymous (kind part) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/07_parts_example_1.md") (qualified-name "Parts Example-1::Engine")) (scopes any))
+      (supertype (node (document "memory://snapshot/07_parts_example_1.md") (qualified-name "Parts Example-1::Vehicle::eng")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/07_parts_example_1.md") (qualified-name "Parts Example-1::smallVehicle")))
+      (supertype (node (document "memory://snapshot/07_parts_example_1.md") (qualified-name "Parts Example-1::Vehicle")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/07_parts_example_1.md") (path (named (kind package) (name "Parts Example-1")) (named (kind part) (name "smallVehicle")) (anonymous (kind part) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/07_parts_example_1.md") (qualified-name "Parts Example-1::Engine")) (scopes any))
+      (supertype (node (document "memory://snapshot/07_parts_example_1.md") (qualified-name "Parts Example-1::Vehicle::eng")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -78,6 +78,23 @@ part def System {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/coverage_connectors.md") (qualified-name "System::a")))
+      (supertype (node (document "memory://snapshot/coverage_connectors.md") (qualified-name "A")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/coverage_connectors.md") (qualified-name "System::b")))
+      (supertype (node (document "memory://snapshot/coverage_connectors.md") (qualified-name "B")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/coverage_connectors.md") (qualified-name "System::engine")))
+      (supertype (node (document "memory://snapshot/coverage_connectors.md") (qualified-name "A")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/coverage_connectors.md") (qualified-name "System::myA")))
+      (supertype (node (document "memory://snapshot/coverage_connectors.md") (qualified-name "A")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

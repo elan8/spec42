@@ -85,6 +85,23 @@ package DefaultValueTest {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::W")))
+      (supertype (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/default_value_test.md") (path (named (kind package) (name "DefaultValueTest")) (named (kind part-def) (name "W")) (anonymous (kind attribute) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V::m")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::v1")))
+      (supertype (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/default_value_test.md") (path (named (kind package) (name "DefaultValueTest")) (named (kind part) (name "v1")) (anonymous (kind attribute) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V::m")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

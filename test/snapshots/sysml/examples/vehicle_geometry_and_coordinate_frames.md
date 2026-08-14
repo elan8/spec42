@@ -994,6 +994,32 @@ package VehicleGeometryAndCoordinateFrames {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel::lugBolts")))
+      (supertype (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (qualified-name "VehicleGeometryAndCoordinateFrames::LugBolt")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (qualified-name "VehicleGeometryAndCoordinateFrames::vehicle")))
+      (supertype (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (qualified-name "VehicleGeometryAndCoordinateFrames::Vehicle")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (qualified-name "VehicleGeometryAndCoordinateFrames::vehicle::chassis")))
+      (supertype (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (qualified-name "VehicleGeometryAndCoordinateFrames::Chassis")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (qualified-name "VehicleGeometryAndCoordinateFrames::vehicle::leftFrontWheel")))
+      (supertype (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (qualified-name "VehicleGeometryAndCoordinateFrames::vehicle::leftRearWheel")))
+      (supertype (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (qualified-name "VehicleGeometryAndCoordinateFrames::vehicle::rightFrontWheel")))
+      (supertype (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (qualified-name "VehicleGeometryAndCoordinateFrames::vehicle::rightRearWheel")))
+      (supertype (node (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

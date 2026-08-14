@@ -413,6 +413,17 @@ package 'Interaction Realization-2' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/27_interaction_realization_2.md") (qualified-name "Interaction Realization-2::cruiseControlInteraction_b::driver")))
+      (supertype (node (document "memory://snapshot/27_interaction_realization_2.md") (qualified-name "Interaction Realization-2::driver_b")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/27_interaction_realization_2.md") (qualified-name "Interaction Realization-2::cruiseControlInteraction_b::vehicle")))
+      (supertype (node (document "memory://snapshot/27_interaction_realization_2.md") (qualified-name "Interaction Realization-2::vehicle_b")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

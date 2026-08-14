@@ -144,6 +144,25 @@ package Inheritance {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::B")))
+      (supertype (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::A")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::w")))
+      (supertype (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::A")) (scopes any))
+      (supertype (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::y")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::y")))
+      (supertype (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::A")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::yy")))
+      (supertype (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::A")) (scopes any))
+      (supertype (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::y")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

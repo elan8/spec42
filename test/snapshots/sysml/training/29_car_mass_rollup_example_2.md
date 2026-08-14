@@ -219,6 +219,32 @@ package 'Car Mass Rollup 1' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/29_car_mass_rollup_example_2.md") (qualified-name "Car Mass Rollup 1::c")))
+      (supertype (node (document "memory://snapshot/29_car_mass_rollup_example_2.md") (qualified-name "Car Mass Rollup 1::CarPart")) (scopes any))
+      (supertype (node (document "memory://snapshot/29_car_mass_rollup_example_2.md") (qualified-name "Car Mass Rollup 1::car")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/29_car_mass_rollup_example_2.md") (qualified-name "Car Mass Rollup 1::car")))
+      (supertype (node (document "memory://snapshot/29_car_mass_rollup_example_2.md") (qualified-name "Car Mass Rollup 1::CarPart")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/29_car_mass_rollup_example_2.md") (qualified-name "Car Mass Rollup 1::car::carParts")))
+      (supertype (node (document "memory://snapshot/29_car_mass_rollup_example_2.md") (qualified-name "Car Mass Rollup 1::CarPart")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/29_car_mass_rollup_example_2.md") (qualified-name "Car Mass Rollup 1::car::engine")))
+      (supertype (node (document "memory://snapshot/29_car_mass_rollup_example_2.md") (qualified-name "Car Mass Rollup 1::CarPart")) (scopes any))
+      (supertype (node (document "memory://snapshot/29_car_mass_rollup_example_2.md") (qualified-name "Car Mass Rollup 1::car::carParts")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/29_car_mass_rollup_example_2.md") (qualified-name "Car Mass Rollup 1::car::transmission")))
+      (supertype (node (document "memory://snapshot/29_car_mass_rollup_example_2.md") (qualified-name "Car Mass Rollup 1::CarPart")) (scopes any))
+      (supertype (node (document "memory://snapshot/29_car_mass_rollup_example_2.md") (qualified-name "Car Mass Rollup 1::car::carParts")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/29_car_mass_rollup_example_2.md") (qualified-name "Car Mass Rollup 1::car::vin")))
+      (supertype (node (document "memory://snapshot/29_car_mass_rollup_example_2.md") (qualified-name "Car Mass Rollup 1::CarPart::serialNumber")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

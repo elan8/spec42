@@ -117,6 +117,17 @@ package Packets {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Thermal Data Packet")))
+      (supertype (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Data Packet")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/packets.md") (qualified-name "Packets::packet data field::packet secondary header")))
+      (supertype (node (document "memory://snapshot/packets.md") (qualified-name "Packets::packet header")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

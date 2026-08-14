@@ -174,6 +174,14 @@ package Imports {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/imports.md") (qualified-name "Imports::S::X")))
+      (supertype (node (document "memory://snapshot/imports.md") (qualified-name "Imports::P::A")) (scopes any subclassification))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -123,6 +123,14 @@ package 'Control Structures Example' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/17_control_structures_example.md") (qualified-name "Control Structures Example::ChargeBattery::endCharging")))
+      (supertype (node (document "memory://snapshot/17_control_structures_example.md") (qualified-name "Control Structures Example::EndCharging")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

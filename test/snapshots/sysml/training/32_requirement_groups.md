@@ -155,6 +155,14 @@ package 'Requirement Groups' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/32_requirement_groups.md") (qualified-name "Requirement Groups::engineSpecification::engine")))
+      (supertype (node (document "memory://snapshot/32_requirement_groups.md") (qualified-name "Requirement Groups::Engine")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

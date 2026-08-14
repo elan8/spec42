@@ -235,6 +235,11 @@ package '13b-Safety and Security Features Element Group-1' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

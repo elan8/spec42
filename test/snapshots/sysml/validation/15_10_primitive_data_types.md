@@ -270,6 +270,24 @@ package '15.10-Primitive Data Types' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::ConditionLevel::associatedColor")))
+      (supertype (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::ConditionColor")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::DiameterChoice")))
+      (supertype (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::Diameter")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::SeverityEnum")))
+      (supertype (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::ConditionLevel")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::aperatureDiameter")))
+      (supertype (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::Diameter")) (scopes any))
+      (supertype (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::DiameterChoice")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

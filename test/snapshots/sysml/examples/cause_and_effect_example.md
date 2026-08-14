@@ -283,6 +283,35 @@ package CauseAndEffectExample {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample::MultiCauseEffect::cause1")))
+      (supertype (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample::Causer1")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample::MultiCauseEffect::cause2")))
+      (supertype (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample::Causer2")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample::MultiCauseEffect::effect1")))
+      (supertype (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample::Effected1")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample::MultiCauseEffect::effect2")))
+      (supertype (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample::Effected2")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample::causer1")))
+      (supertype (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample::Causer1")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample::causer2")))
+      (supertype (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample::Causer2")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample::effected1")))
+      (supertype (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample::Effected1")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample::effected2")))
+      (supertype (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample::Effected2")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

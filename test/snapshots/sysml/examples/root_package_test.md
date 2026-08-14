@@ -65,6 +65,18 @@ package P3 {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/root_package_test.md") (qualified-name "P2::a")))
+      (supertype (node (document "memory://snapshot/root_package_test.md") (qualified-name "P1::A")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/root_package_test.md") (qualified-name "P3::b")))
+      (supertype (node (document "memory://snapshot/root_package_test.md") (qualified-name "P1::A")) (scopes any))
+      (supertype (node (document "memory://snapshot/root_package_test.md") (qualified-name "P2::a")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

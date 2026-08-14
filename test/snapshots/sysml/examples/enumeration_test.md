@@ -167,6 +167,25 @@ package EnumerationTest {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::ColorKind")))
+      (supertype (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::Color")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::SizeChoice")))
+      (supertype (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::Size")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::color")))
+      (supertype (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::Color")) (scopes any))
+      (supertype (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::ColorKind")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::color2")))
+      (supertype (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::Color")) (scopes any))
+      (supertype (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::ColorKind")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

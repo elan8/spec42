@@ -124,6 +124,27 @@ package '15_02-Basic Value Properties' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/15_02_basic_value_properties.md") (qualified-name "15_02-Basic Value Properties::Tire::hubDiameter")))
+      (supertype (node (document "memory://snapshot/15_02_basic_value_properties.md") (qualified-name "15_02-Basic Value Properties::LengthValue")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/15_02_basic_value_properties.md") (qualified-name "15_02-Basic Value Properties::frenchTire")))
+      (supertype (node (document "memory://snapshot/15_02_basic_value_properties.md") (qualified-name "15_02-Basic Value Properties::Tire")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/15_02_basic_value_properties.md") (path (named (kind package) (name "15_02-Basic Value Properties")) (named (kind part) (name "frenchTire")) (anonymous (kind attribute) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/15_02_basic_value_properties.md") (qualified-name "15_02-Basic Value Properties::Tire::manufacturer")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/15_02_basic_value_properties.md") (path (named (kind package) (name "15_02-Basic Value Properties")) (named (kind part) (name "frenchTire")) (anonymous (kind attribute) (ordinal 1))))))
+      (supertype (node (document "memory://snapshot/15_02_basic_value_properties.md") (qualified-name "15_02-Basic Value Properties::LengthValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/15_02_basic_value_properties.md") (qualified-name "15_02-Basic Value Properties::Tire::hubDiameter")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/15_02_basic_value_properties.md") (path (named (kind package) (name "15_02-Basic Value Properties")) (named (kind part) (name "frenchTire")) (anonymous (kind attribute) (ordinal 2))))))
+      (supertype (node (document "memory://snapshot/15_02_basic_value_properties.md") (qualified-name "15_02-Basic Value Properties::Tire::width")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

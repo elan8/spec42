@@ -568,6 +568,24 @@ package 'Turbojet Stage Analysis' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/turbojet_stage_analysis.md") (qualified-name "Turbojet Stage Analysis::Low-Pressure Compressor Analysis::Analysis Context::Inlet Gas::Solve for Pressure1")))
+      (supertype (node (document "memory://snapshot/turbojet_stage_analysis.md") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Ideal Gas Law")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/turbojet_stage_analysis.md") (qualified-name "Turbojet Stage Analysis::Low-Pressure Compressor Analysis::Analysis Context::Inlet Gas::Solve for Pressure2")))
+      (supertype (node (document "memory://snapshot/turbojet_stage_analysis.md") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Ideal Gas Law")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/turbojet_stage_analysis.md") (qualified-name "Turbojet Stage Analysis::Thermodynamics Structure::Adiabatic Process")))
+      (supertype (node (document "memory://snapshot/turbojet_stage_analysis.md") (qualified-name "Turbojet Stage Analysis::Thermodynamics Structure::Thermodynamic Process")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/turbojet_stage_analysis.md") (qualified-name "Turbojet Stage Analysis::Thermodynamics Structure::Reversible Adiabatic Process")))
+      (supertype (node (document "memory://snapshot/turbojet_stage_analysis.md") (qualified-name "Turbojet Stage Analysis::Thermodynamics Structure::Adiabatic Process")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/turbojet_stage_analysis.md") (qualified-name "Turbojet Stage Analysis::Thermodynamics Structure::Thermodynamic Process")) (scopes any subclassification))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

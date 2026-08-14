@@ -145,6 +145,14 @@ package VehicleTanks {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/vehicle_tanks.md") (qualified-name "VehicleTanks::Vehicle1")))
+      (supertype (node (document "memory://snapshot/vehicle_tanks.md") (qualified-name "VehicleTanks::Vehicle")) (scopes any subclassification))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

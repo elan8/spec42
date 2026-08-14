@@ -233,6 +233,29 @@ package UseCaseTest {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::UseSystem::system")))
+      (supertype (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::System")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::UseSystem::user")))
+      (supertype (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::User")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::system")))
+      (supertype (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::System")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::system::uc1")))
+      (supertype (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::UC1")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::u")))
+      (supertype (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::UseSystem")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::user")))
+      (supertype (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::User")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

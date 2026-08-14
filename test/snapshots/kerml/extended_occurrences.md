@@ -224,6 +224,45 @@ package ExtendedOccurrences {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/extended_occurrences.md") (qualified-name "ExtendedOccurrences::ExtendedObject")))
+      (supertype (node (document "memory://snapshot/extended_occurrences.md") (qualified-name "ExtendedOccurrences::ExtendedOccurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/extended_occurrences.md") (qualified-name "ExtendedOccurrences::Life")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/extended_occurrences.md") (qualified-name "ExtendedOccurrences::Timeslice")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/extended_occurrences.md") (qualified-name "ExtendedOccurrences::ExtendedObject::self")))
+      (supertype (node (document "memory://snapshot/extended_occurrences.md") (qualified-name "ExtendedOccurrences::ExtendedObject")) (scopes any))
+      (supertype (node (document "memory://snapshot/extended_occurrences.md") (qualified-name "ExtendedOccurrences::ExtendedOccurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/extended_occurrences.md") (qualified-name "ExtendedOccurrences::Life")) (scopes any))
+      (supertype (node (document "memory://snapshot/extended_occurrences.md") (qualified-name "ExtendedOccurrences::Timeslice")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/extended_occurrences.md") (qualified-name "ExtendedOccurrences::ExtendedOccurrence")))
+      (supertype (node (document "memory://snapshot/extended_occurrences.md") (qualified-name "ExtendedOccurrences::Life")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/extended_occurrences.md") (qualified-name "ExtendedOccurrences::Timeslice")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/extended_occurrences.md") (path (named (kind package) (name "ExtendedOccurrences")) (named (kind class-def) (name "ExtendedOccurrence")) (anonymous (kind attribute) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/extended_occurrences.md") (qualified-name "ExtendedOccurrences::Timeslice")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/extended_occurrences.md") (qualified-name "ExtendedOccurrences::Life")))
+      (supertype (node (document "memory://snapshot/extended_occurrences.md") (qualified-name "ExtendedOccurrences::Timeslice")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/extended_occurrences.md") (qualified-name "ExtendedOccurrences::Moment")))
+      (supertype (node (document "memory://snapshot/extended_occurrences.md") (qualified-name "ExtendedOccurrences::Interval")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/extended_occurrences.md") (qualified-name "ExtendedOccurrences::Snapshot")))
+      (supertype (node (document "memory://snapshot/extended_occurrences.md") (qualified-name "ExtendedOccurrences::Timeslice")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/extended_occurrences.md") (path (named (kind package) (name "ExtendedOccurrences")) (named (kind class-def) (name "Snapshot")) (anonymous (kind attribute) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/extended_occurrences.md") (qualified-name "ExtendedOccurrences::Snapshot")) (scopes any))
+      (supertype (node (document "memory://snapshot/extended_occurrences.md") (qualified-name "ExtendedOccurrences::Timeslice")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/extended_occurrences.md") (path (named (kind package) (name "ExtendedOccurrences")) (named (kind class-def) (name "Timeslice")) (anonymous (kind attribute) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/extended_occurrences.md") (qualified-name "ExtendedOccurrences::Timeslice")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

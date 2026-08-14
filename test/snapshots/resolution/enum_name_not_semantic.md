@@ -64,6 +64,21 @@ package Demo {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::Base::value")))
+      (supertype (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::StatusNamedType")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::Derived")))
+      (supertype (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::Base")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::host")))
+      (supertype (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::Base")) (scopes any))
+      (supertype (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::Derived")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

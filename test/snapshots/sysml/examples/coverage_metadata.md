@@ -78,6 +78,14 @@ package Annotated {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Annotated::m")))
+      (supertype (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Classified")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -102,6 +102,35 @@ package 'Port Example' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/10_port_example.md") (qualified-name "Port Example::Engine::engineFuelPort")))
+      (supertype (node (document "memory://snapshot/10_port_example.md") (qualified-name "Port Example::FuelInPort")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/10_port_example.md") (qualified-name "Port Example::FuelInPort::fuelReturn")))
+      (supertype (node (document "memory://snapshot/10_port_example.md") (qualified-name "Port Example::Fuel")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/10_port_example.md") (qualified-name "Port Example::FuelInPort::fuelSupply")))
+      (supertype (node (document "memory://snapshot/10_port_example.md") (qualified-name "Port Example::Fuel")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/10_port_example.md") (qualified-name "Port Example::FuelInPort::temperature")))
+      (supertype (node (document "memory://snapshot/10_port_example.md") (qualified-name "Port Example::Temp")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/10_port_example.md") (qualified-name "Port Example::FuelOutPort::fuelReturn")))
+      (supertype (node (document "memory://snapshot/10_port_example.md") (qualified-name "Port Example::Fuel")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/10_port_example.md") (qualified-name "Port Example::FuelOutPort::fuelSupply")))
+      (supertype (node (document "memory://snapshot/10_port_example.md") (qualified-name "Port Example::Fuel")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/10_port_example.md") (qualified-name "Port Example::FuelOutPort::temperature")))
+      (supertype (node (document "memory://snapshot/10_port_example.md") (qualified-name "Port Example::Temp")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/10_port_example.md") (qualified-name "Port Example::FuelTankAssembly::fuelTankPort")))
+      (supertype (node (document "memory://snapshot/10_port_example.md") (qualified-name "Port Example::FuelOutPort")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

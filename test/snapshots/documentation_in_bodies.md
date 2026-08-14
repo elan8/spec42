@@ -75,6 +75,14 @@ package DocTests {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::vehicle")))
+      (supertype (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Vehicle")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -880,6 +880,26 @@ package Dynamics {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/dynamics.md") (qualified-name "Dynamics::dyn1")))
+      (supertype (node (document "memory://snapshot/dynamics.md") (qualified-name "Dynamics::StraightLineVehicleDynamics")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/dynamics.md") (path (named (kind package) (name "Dynamics")) (named (kind action) (name "dyn1")) (anonymous (kind parameter) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/dynamics.md") (qualified-name "Dynamics::StraightLineVehicleDynamics::a_out")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/dynamics.md") (path (named (kind package) (name "Dynamics")) (named (kind action) (name "dyn1")) (anonymous (kind parameter) (ordinal 1))))))
+      (supertype (node (document "memory://snapshot/dynamics.md") (qualified-name "Dynamics::StraightLineVehicleDynamics::v_out")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/dynamics.md") (path (named (kind package) (name "Dynamics")) (named (kind action) (name "dyn1")) (anonymous (kind parameter) (ordinal 2))))))
+      (supertype (node (document "memory://snapshot/dynamics.md") (qualified-name "Dynamics::StraightLineVehicleDynamics::x_out")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/dynamics.md") (qualified-name "Dynamics::dyn2")))
+      (supertype (node (document "memory://snapshot/dynamics.md") (qualified-name "Dynamics::StraightLineVehicleDynamics")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

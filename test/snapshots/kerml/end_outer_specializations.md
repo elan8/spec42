@@ -221,6 +221,11 @@ assoc JustOutsideOf specializes OutsideOf {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

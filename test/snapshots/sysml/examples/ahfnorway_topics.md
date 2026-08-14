@@ -403,6 +403,29 @@ package AHFNorway {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/ahfnorway_topics.md") (qualified-name "AHFNorway::APIS_DD")))
+      (supertype (node (document "memory://snapshot/ahfnorway_topics.md") (qualified-name "AHFNorway::APISService")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/ahfnorway_topics.md") (qualified-name "AHFNorway::APIS_DD::APIS_HTTP::cll")))
+      (supertype (node (document "memory://snapshot/ahfnorway_topics.md") (qualified-name "AHFNorway::CallGiveItems")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/ahfnorway_topics.md") (qualified-name "AHFNorway::APIS_DD::APIS_HTTP::retrn")))
+      (supertype (node (document "memory://snapshot/ahfnorway_topics.md") (qualified-name "AHFNorway::ResultGiveItems")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/ahfnorway_topics.md") (qualified-name "AHFNorway::APIS_DD::APIS_MQTT::pub")))
+      (supertype (node (document "memory://snapshot/ahfnorway_topics.md") (qualified-name "AHFNorway::Publish")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/ahfnorway_topics.md") (qualified-name "AHFNorway::APIS_DD::APIS_MQTT::retall")))
+      (supertype (node (document "memory://snapshot/ahfnorway_topics.md") (qualified-name "AHFNorway::Return_AllItems")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/ahfnorway_topics.md") (qualified-name "AHFNorway::APIS_DD::APIS_MQTT::subscr")))
+      (supertype (node (document "memory://snapshot/ahfnorway_topics.md") (qualified-name "AHFNorway::Subscribe")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

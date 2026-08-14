@@ -205,6 +205,31 @@ standard library package VectorValues {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/vector_values.md") (qualified-name "VectorValues::CartesianThreeVectorValue")))
+      (supertype (node (document "memory://snapshot/vector_values.md") (qualified-name "VectorValues::CartesianVectorValue")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/vector_values.md") (qualified-name "VectorValues::NumericalVectorValue")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/vector_values.md") (qualified-name "VectorValues::ThreeVectorValue")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/vector_values.md") (qualified-name "VectorValues::VectorValue")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/vector_values.md") (qualified-name "VectorValues::CartesianVectorValue")))
+      (supertype (node (document "memory://snapshot/vector_values.md") (qualified-name "VectorValues::NumericalVectorValue")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/vector_values.md") (qualified-name "VectorValues::VectorValue")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/vector_values.md") (qualified-name "VectorValues::NumericalVectorValue")))
+      (supertype (node (document "memory://snapshot/vector_values.md") (qualified-name "VectorValues::VectorValue")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/vector_values.md") (qualified-name "VectorValues::ThreeVectorValue")))
+      (supertype (node (document "memory://snapshot/vector_values.md") (qualified-name "VectorValues::NumericalVectorValue")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/vector_values.md") (qualified-name "VectorValues::VectorValue")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/vector_values.md") (path (named (kind library-package) (name "VectorValues")) (named (kind kerml-datatype) (name "ThreeVectorValue")) (anonymous (kind kerml-feature) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/vector_values.md") (qualified-name "VectorValues::NumericalVectorValue::dimension")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

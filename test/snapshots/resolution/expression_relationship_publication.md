@@ -43,6 +43,11 @@ package M { part def System { part a; part b; connect a to b; } }
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

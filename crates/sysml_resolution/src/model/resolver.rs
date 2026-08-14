@@ -16,6 +16,7 @@ use crate::{
 };
 
 mod inspection;
+mod types;
 pub(crate) mod writer;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -1131,6 +1132,7 @@ pub(crate) struct ResolvedSemanticModel {
     reverse_references: ReverseReferenceIndex,
     effective_scopes: EffectiveScopeIndex,
     facts: inspection::ElementFactIndex,
+    specialization: types::SpecializationClosure,
     resolution: ResolutionResults,
     evaluation: Box<[EvaluationFact]>,
     metadata: PublicationMetadata,
@@ -1654,6 +1656,10 @@ impl ResolvedSemanticModel {
     ) -> std::fmt::Result {
         writer::write_diagnostics(self, output)
     }
+
+    pub(crate) fn write_types_sexpr(&self, output: &mut dyn std::fmt::Write) -> std::fmt::Result {
+        writer::write_types_only(self, output)
+    }
 }
 
 fn document_range(
@@ -1883,6 +1889,11 @@ impl SemanticModelStorage {
             &resolution.inherited_names,
         )?;
         let facts = inspection::ElementFactIndex::build(&self, &resolution, &evaluation)?;
+        // A barrier product, not a solver family: the specialization closure is derived from
+        // settled outcomes and feeds nothing back into scope, imports or inheritance. The
+        // resolver's own ancestor closure for inherited names stays separate and unchanged --
+        // widening that one would silently change name resolution.
+        let specialization = types::SpecializationClosure::build(&self, &resolution)?;
         Ok(ResolvedSemanticModel {
             storage: self,
             direct_names,
@@ -1893,6 +1904,7 @@ impl SemanticModelStorage {
             reverse_references,
             effective_scopes,
             facts,
+            specialization,
             resolution,
             evaluation,
             metadata: PublicationMetadata {

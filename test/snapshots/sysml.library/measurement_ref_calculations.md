@@ -380,6 +380,11 @@ standard library package MeasurementRefCalculations {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

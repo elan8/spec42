@@ -200,6 +200,38 @@ package '3c-Function-based Behavior-structure mod-1' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::TrailerHitch::coupler")))
+      (supertype (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::TrailerCoupler")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::TrailerHitch::hitch")))
+      (supertype (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::HitchBall")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::vehicle-trailer system::trailer")))
+      (supertype (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::Trailer")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::vehicle-trailer system::trailer::trailerFrame")))
+      (supertype (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::TrailerFrame")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::vehicle-trailer system::trailer::trailerFrame::coupler")))
+      (supertype (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::TrailerCoupler")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::vehicle-trailer system::trailerHitch")))
+      (supertype (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::TrailerHitch")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::vehicle-trailer system::vehicle")))
+      (supertype (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::Vehicle")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::vehicle-trailer system::vehicle::vehicleFrame")))
+      (supertype (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::VehicleFrame")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::vehicle-trailer system::vehicle::vehicleFrame::hitch")))
+      (supertype (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::HitchBall")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

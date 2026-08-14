@@ -220,6 +220,20 @@ package 'Constraint Assertions-2' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/31_constraint_assertions_2.md") (qualified-name "Constraint Assertions-2::Vehicle::engine")))
+      (supertype (node (document "memory://snapshot/31_constraint_assertions_2.md") (qualified-name "Constraint Assertions-2::Engine")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/31_constraint_assertions_2.md") (qualified-name "Constraint Assertions-2::Vehicle::transmission")))
+      (supertype (node (document "memory://snapshot/31_constraint_assertions_2.md") (qualified-name "Constraint Assertions-2::Engine")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/31_constraint_assertions_2.md") (qualified-name "Constraint Assertions-2::massConstraint")))
+      (supertype (node (document "memory://snapshot/31_constraint_assertions_2.md") (qualified-name "Constraint Assertions-2::MassConstraint")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

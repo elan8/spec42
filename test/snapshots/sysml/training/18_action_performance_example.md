@@ -87,6 +87,20 @@ package 'Action Performance Example' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/18_action_performance_example.md") (qualified-name "Action Performance Example::camera")))
+      (supertype (node (document "memory://snapshot/18_action_performance_example.md") (qualified-name "Action Performance Example::Camera")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/18_action_performance_example.md") (qualified-name "Action Performance Example::camera::f")))
+      (supertype (node (document "memory://snapshot/18_action_performance_example.md") (qualified-name "Action Performance Example::AutoFocus")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/18_action_performance_example.md") (qualified-name "Action Performance Example::camera::i")))
+      (supertype (node (document "memory://snapshot/18_action_performance_example.md") (qualified-name "Action Performance Example::Imager")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

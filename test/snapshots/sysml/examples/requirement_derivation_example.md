@@ -142,6 +142,29 @@ package RequirementDerivationExample {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/requirement_derivation_example.md") (qualified-name "RequirementDerivationExample::Req1_Derivation::r1")))
+      (supertype (node (document "memory://snapshot/requirement_derivation_example.md") (qualified-name "RequirementDerivationExample::Req1")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/requirement_derivation_example.md") (qualified-name "RequirementDerivationExample::Req1_Derivation::r1_1")))
+      (supertype (node (document "memory://snapshot/requirement_derivation_example.md") (qualified-name "RequirementDerivationExample::Req1_1")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/requirement_derivation_example.md") (qualified-name "RequirementDerivationExample::Req1_Derivation::r1_2")))
+      (supertype (node (document "memory://snapshot/requirement_derivation_example.md") (qualified-name "RequirementDerivationExample::Req1_2")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/requirement_derivation_example.md") (qualified-name "RequirementDerivationExample::system")))
+      (supertype (node (document "memory://snapshot/requirement_derivation_example.md") (qualified-name "RequirementDerivationExample::System")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/requirement_derivation_example.md") (qualified-name "RequirementDerivationExample::system::sub1")))
+      (supertype (node (document "memory://snapshot/requirement_derivation_example.md") (qualified-name "RequirementDerivationExample::Subsystem1")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/requirement_derivation_example.md") (qualified-name "RequirementDerivationExample::system::sub2")))
+      (supertype (node (document "memory://snapshot/requirement_derivation_example.md") (qualified-name "RequirementDerivationExample::Subsystem2")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

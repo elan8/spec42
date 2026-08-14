@@ -73,6 +73,26 @@ package Circular {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/circular.md") (qualified-name "Circular::a")))
+      (supertype (node (document "memory://snapshot/circular.md") (qualified-name "Circular::A")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/circular.md") (qualified-name "Circular::x"))) (cyclic true)
+      (supertype (node (document "memory://snapshot/circular.md") (qualified-name "Circular::y")) (scopes any))
+      (supertype (node (document "memory://snapshot/circular.md") (qualified-name "Circular::z")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/circular.md") (qualified-name "Circular::y"))) (cyclic true)
+      (supertype (node (document "memory://snapshot/circular.md") (qualified-name "Circular::x")) (scopes any))
+      (supertype (node (document "memory://snapshot/circular.md") (qualified-name "Circular::z")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/circular.md") (qualified-name "Circular::z"))) (cyclic true)
+      (supertype (node (document "memory://snapshot/circular.md") (qualified-name "Circular::x")) (scopes any))
+      (supertype (node (document "memory://snapshot/circular.md") (qualified-name "Circular::y")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

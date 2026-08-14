@@ -127,6 +127,28 @@ package 'Parts Example-2' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/07_parts_example_2.md") (qualified-name "Parts Example-2::bigVehicle")))
+      (supertype (node (document "memory://snapshot/07_parts_example_2.md") (qualified-name "Parts Example-2::Vehicle")) (scopes any))
+      (supertype (node (document "memory://snapshot/07_parts_example_2.md") (qualified-name "Parts Example-2::vehicle")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/07_parts_example_2.md") (qualified-name "Parts Example-2::smallVehicle")))
+      (supertype (node (document "memory://snapshot/07_parts_example_2.md") (qualified-name "Parts Example-2::Vehicle")) (scopes any))
+      (supertype (node (document "memory://snapshot/07_parts_example_2.md") (qualified-name "Parts Example-2::vehicle")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/07_parts_example_2.md") (qualified-name "Parts Example-2::vehicle")))
+      (supertype (node (document "memory://snapshot/07_parts_example_2.md") (qualified-name "Parts Example-2::Vehicle")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/07_parts_example_2.md") (qualified-name "Parts Example-2::vehicle::eng")))
+      (supertype (node (document "memory://snapshot/07_parts_example_2.md") (qualified-name "Parts Example-2::Engine")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/07_parts_example_2.md") (qualified-name "Parts Example-2::vehicle::eng::cyl")))
+      (supertype (node (document "memory://snapshot/07_parts_example_2.md") (qualified-name "Parts Example-2::Cylinder")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

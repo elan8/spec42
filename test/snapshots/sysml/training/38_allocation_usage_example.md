@@ -108,6 +108,26 @@ package 'Allocation Usage Example' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/38_allocation_usage_example.md") (qualified-name "Allocation Usage Example::LogicalModel::providePower")))
+      (supertype (node (document "memory://snapshot/38_allocation_usage_example.md") (qualified-name "Allocation Usage Example::LogicalModel::ProvidePower")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/38_allocation_usage_example.md") (qualified-name "Allocation Usage Example::LogicalModel::providePower::generateTorque")))
+      (supertype (node (document "memory://snapshot/38_allocation_usage_example.md") (qualified-name "Allocation Usage Example::LogicalModel::GenerateTorque")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/38_allocation_usage_example.md") (qualified-name "Allocation Usage Example::LogicalModel::torqueGenerator")))
+      (supertype (node (document "memory://snapshot/38_allocation_usage_example.md") (qualified-name "Allocation Usage Example::LogicalModel::TorqueGenerator")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/38_allocation_usage_example.md") (qualified-name "Allocation Usage Example::PhysicalModel::powerTrain")))
+      (supertype (node (document "memory://snapshot/38_allocation_usage_example.md") (qualified-name "Allocation Usage Example::PhysicalModel::PowerTrain")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/38_allocation_usage_example.md") (qualified-name "Allocation Usage Example::PhysicalModel::powerTrain::engine")))
+      (supertype (node (document "memory://snapshot/38_allocation_usage_example.md") (qualified-name "Allocation Usage Example::PhysicalModel::Engine")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

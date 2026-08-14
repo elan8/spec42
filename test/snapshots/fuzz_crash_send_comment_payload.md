@@ -53,6 +53,11 @@ in send// nd port for HTT3prin  pq  for y  // nd port for HTT3prin items { }
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

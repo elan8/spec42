@@ -151,6 +151,11 @@ package ServerSequenceModelOutside {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

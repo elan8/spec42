@@ -147,6 +147,32 @@ package '1d-Parts Tree with Reference' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailer1")))
+      (supertype (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (qualified-name "1d-Parts Tree with Reference::Definitions::Trailer")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailer1::trailerCoupler")))
+      (supertype (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (qualified-name "1d-Parts Tree with Reference::Definitions::TrailerCoupler")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailerHitch")))
+      (supertype (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (qualified-name "1d-Parts Tree with Reference::Definitions::TrailerHitch")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailerHitch::hitchBall")))
+      (supertype (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (qualified-name "1d-Parts Tree with Reference::Definitions::HitchBall")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailerHitch::trailerCoupler")))
+      (supertype (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (qualified-name "1d-Parts Tree with Reference::Definitions::TrailerCoupler")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::vehicle1_c1")))
+      (supertype (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (qualified-name "1d-Parts Tree with Reference::Definitions::Vehicle")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::vehicle1_c1::hitchBall")))
+      (supertype (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (qualified-name "1d-Parts Tree with Reference::Definitions::HitchBall")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

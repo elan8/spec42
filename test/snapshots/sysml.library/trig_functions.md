@@ -348,6 +348,23 @@ standard library package TrigFunctions {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/trig_functions.md") (qualified-name "TrigFunctions::arccos::x")))
+      (supertype (node (document "memory://snapshot/trig_functions.md") (qualified-name "TrigFunctions::UnitBoundedReal")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/trig_functions.md") (qualified-name "TrigFunctions::arcsin::x")))
+      (supertype (node (document "memory://snapshot/trig_functions.md") (qualified-name "TrigFunctions::UnitBoundedReal")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/trig_functions.md") (path (named (kind library-package) (name "TrigFunctions")) (named (kind kerml-function) (name "cos")) (anonymous (kind parameter) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/trig_functions.md") (qualified-name "TrigFunctions::UnitBoundedReal")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/trig_functions.md") (path (named (kind library-package) (name "TrigFunctions")) (named (kind kerml-function) (name "sin")) (anonymous (kind parameter) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/trig_functions.md") (qualified-name "TrigFunctions::UnitBoundedReal")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

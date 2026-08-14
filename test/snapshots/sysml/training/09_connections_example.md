@@ -183,6 +183,47 @@ package 'Connections Example' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::PressureSeat::bead")))
+      (supertype (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::TireBead")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::PressureSeat::mountingRim")))
+      (supertype (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::TireMountingRim")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::wheelHubAssembly")))
+      (supertype (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::WheelHubAssembly")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::wheelHubAssembly::hub")))
+      (supertype (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::Hub")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::wheelHubAssembly::hub::h")))
+      (supertype (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::LugBoltThreadableHole")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::wheelHubAssembly::lugBoltJoints")))
+      (supertype (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::LugBoltJoint")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::wheelHubAssembly::wheel")))
+      (supertype (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::WheelAssembly")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::wheelHubAssembly::wheel::t")))
+      (supertype (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::Tire")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::wheelHubAssembly::wheel::t::bead")))
+      (supertype (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::TireBead")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::wheelHubAssembly::wheel::w")))
+      (supertype (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::Wheel")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::wheelHubAssembly::wheel::w::mountingHoles")))
+      (supertype (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::LugBoltMountingHole")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::wheelHubAssembly::wheel::w::rim")))
+      (supertype (node (document "memory://snapshot/09_connections_example.md") (qualified-name "Connections Example::TireMountingRim")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

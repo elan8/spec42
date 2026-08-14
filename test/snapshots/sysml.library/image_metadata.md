@@ -170,6 +170,17 @@ standard library package ImageMetadata {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/image_metadata.md") (qualified-name "ImageMetadata::Icon::fullImage")))
+      (supertype (node (document "memory://snapshot/image_metadata.md") (qualified-name "ImageMetadata::Image")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/image_metadata.md") (qualified-name "ImageMetadata::Icon::smallImage")))
+      (supertype (node (document "memory://snapshot/image_metadata.md") (qualified-name "ImageMetadata::Image")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

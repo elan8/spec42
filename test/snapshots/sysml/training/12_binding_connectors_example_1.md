@@ -169,6 +169,20 @@ package 'Binding Connectors Example-1' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/12_binding_connectors_example_1.md") (qualified-name "Binding Connectors Example-1::vehicle")))
+      (supertype (node (document "memory://snapshot/12_binding_connectors_example_1.md") (qualified-name "Binding Connectors Example-1::Vehicle")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/12_binding_connectors_example_1.md") (qualified-name "Binding Connectors Example-1::vehicle::tank::pump")))
+      (supertype (node (document "memory://snapshot/12_binding_connectors_example_1.md") (qualified-name "Binding Connectors Example-1::FuelPump")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/12_binding_connectors_example_1.md") (qualified-name "Binding Connectors Example-1::vehicle::tank::tank")))
+      (supertype (node (document "memory://snapshot/12_binding_connectors_example_1.md") (qualified-name "Binding Connectors Example-1::FuelTank")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -82,6 +82,14 @@ package 'Items Example' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/08_items_example.md") (qualified-name "Items Example::Vehicle::fuelTank::fuel")))
+      (supertype (node (document "memory://snapshot/08_items_example.md") (qualified-name "Items Example::Fuel")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

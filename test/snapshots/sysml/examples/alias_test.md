@@ -130,6 +130,19 @@ package AliasTest {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/alias_test.md") (qualified-name "AliasTest::p1")))
+      (supertype (node (document "memory://snapshot/alias_test.md") (qualified-name "AliasTest::P1")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/alias_test.md") (qualified-name "AliasTest::p1::po1"))) (cyclic true)
+    )
+    (declaration (id (node (document "memory://snapshot/alias_test.md") (qualified-name "AliasTest::p2")))
+      (supertype (node (document "memory://snapshot/alias_test.md") (qualified-name "AliasTest::P1")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

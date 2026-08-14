@@ -299,6 +299,26 @@ package MetadataTest {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::SS::cc")))
+      (supertype (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::CC")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::Classified::classificationLevel")))
+      (supertype (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::ClassificationLevel")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::conf")))
+      (supertype (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::ClassificationLevel")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::secret")))
+      (supertype (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::ClassificationLevel")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::uncl")))
+      (supertype (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::ClassificationLevel")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

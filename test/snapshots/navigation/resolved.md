@@ -40,6 +40,14 @@ package P {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/resolved.md") (qualified-name "P::engine")))
+      (supertype (node (document "memory://snapshot/resolved.md") (qualified-name "P::Engine")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -399,6 +399,23 @@ standard library package TradeStudies {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/trade_studies.md") (qualified-name "TradeStudies::MaximizeObjective")))
+      (supertype (node (document "memory://snapshot/trade_studies.md") (qualified-name "TradeStudies::TradeStudyObjective")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/trade_studies.md") (qualified-name "TradeStudies::MinimizeObjective")))
+      (supertype (node (document "memory://snapshot/trade_studies.md") (qualified-name "TradeStudies::TradeStudyObjective")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/trade_studies.md") (qualified-name "TradeStudies::TradeStudy::evaluationFunction")))
+      (supertype (node (document "memory://snapshot/trade_studies.md") (qualified-name "TradeStudies::EvaluationFunction")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/trade_studies.md") (qualified-name "TradeStudies::TradeStudy::tradeStudyObjective")))
+      (supertype (node (document "memory://snapshot/trade_studies.md") (qualified-name "TradeStudies::TradeStudyObjective")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

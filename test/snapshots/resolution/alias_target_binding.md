@@ -47,6 +47,15 @@ package AliasCoverage {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/alias_target_binding.md") (qualified-name "AliasCoverage::device")))
+      (supertype (node (document "memory://snapshot/alias_target_binding.md") (qualified-name "AliasCoverage::Device")) (scopes any))
+      (supertype (node (document "memory://snapshot/alias_target_binding.md") (qualified-name "AliasCoverage::DeviceAlias")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

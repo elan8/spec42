@@ -194,6 +194,32 @@ package Packets {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/packets.md") (path (named (kind package) (name "Packets")) (named (kind part-def) (name "Data Packet")) (anonymous (kind attribute) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/packets.md") (qualified-name "Packets::packet data field")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Data Packet::packet primary header")))
+      (supertype (node (document "memory://snapshot/packets.md") (qualified-name "Packets::packet header")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Thermal Data Packet")))
+      (supertype (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Data Packet")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Thermal Data Packet::packet data field")))
+      (supertype (node (document "memory://snapshot/packets.md") (qualified-name "Packets::packet data field")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Thermal Data Packet::packet data field::packet secondary header")))
+      (supertype (node (document "memory://snapshot/packets.md") (qualified-name "Packets::packet header")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/packets.md") (qualified-name "Packets::Thermal Data Packet::packet data field::user data field")))
+      (supertype (node (document "memory://snapshot/packets.md") (qualified-name "Packets::packet data field::user data field")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/packets.md") (qualified-name "Packets::packet data field::packet secondary header")))
+      (supertype (node (document "memory://snapshot/packets.md") (qualified-name "Packets::packet header")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

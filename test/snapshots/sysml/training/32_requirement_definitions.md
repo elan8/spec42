@@ -196,6 +196,26 @@ package 'Requirement Definitions' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/32_requirement_definitions.md") (qualified-name "Requirement Definitions::DrivePowerInterface::clutchPort")))
+      (supertype (node (document "memory://snapshot/32_requirement_definitions.md") (qualified-name "Requirement Definitions::ClutchPort")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/32_requirement_definitions.md") (qualified-name "Requirement Definitions::TorqueGeneration::generateTorque")))
+      (supertype (node (document "memory://snapshot/32_requirement_definitions.md") (qualified-name "Requirement Definitions::GenerateTorque")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/32_requirement_definitions.md") (qualified-name "Requirement Definitions::VehicleMassLimitationRequirement")))
+      (supertype (node (document "memory://snapshot/32_requirement_definitions.md") (qualified-name "Requirement Definitions::MassLimitationRequirement")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/32_requirement_definitions.md") (path (named (kind package) (name "Requirement Definitions")) (named (kind requirement-def) (name "VehicleMassLimitationRequirement")) (anonymous (kind attribute) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/32_requirement_definitions.md") (qualified-name "Requirement Definitions::MassLimitationRequirement::massActual")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/32_requirement_definitions.md") (qualified-name "Requirement Definitions::VehicleMassLimitationRequirement::vehicle")))
+      (supertype (node (document "memory://snapshot/32_requirement_definitions.md") (qualified-name "Requirement Definitions::Vehicle")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

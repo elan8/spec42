@@ -105,6 +105,24 @@ probe element_facts.md 24 32
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/element_facts.md") (qualified-name "Facts::Chassis::spare")))
+      (supertype (node (document "memory://snapshot/element_facts.md") (qualified-name "Facts::Wheel")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/element_facts.md") (qualified-name "Facts::Chassis::wheels")))
+      (supertype (node (document "memory://snapshot/element_facts.md") (qualified-name "Facts::Wheel")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/element_facts.md") (qualified-name "Facts::Trailer")))
+      (supertype (node (document "memory://snapshot/element_facts.md") (qualified-name "Facts::Chassis")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/element_facts.md") (qualified-name "Facts::Trailer::wheels")))
+      (supertype (node (document "memory://snapshot/element_facts.md") (qualified-name "Facts::Chassis::wheels")) (scopes any))
+      (supertype (node (document "memory://snapshot/element_facts.md") (qualified-name "Facts::Wheel")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

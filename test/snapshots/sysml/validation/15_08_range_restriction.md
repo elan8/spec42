@@ -119,6 +119,17 @@ package '15_08-Range Restriction' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/15_08_range_restriction.md") (qualified-name "15_08-Range Restriction::HeadLightsTiltKnob::headLightsTile")))
+      (supertype (node (document "memory://snapshot/15_08_range_restriction.md") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/15_08_range_restriction.md") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue::angle")))
+      (supertype (node (document "memory://snapshot/15_08_range_restriction.md") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

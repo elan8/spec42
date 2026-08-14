@@ -435,6 +435,30 @@ package VehicleIndividuals {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/vehicle_individuals.md") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2")))
+      (supertype (node (document "memory://snapshot/vehicle_individuals.md") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1")) (scopes any))
+      (supertype (node (document "memory://snapshot/vehicle_individuals.md") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/vehicle_individuals.md") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0::axleAssembly1_t0")))
+      (supertype (node (document "memory://snapshot/vehicle_individuals.md") (qualified-name "VehicleIndividuals::IndividualDefinitions::AxleAssembly1")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/vehicle_individuals.md") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0::axleAssembly1_t0::leftFrontWheel_t0")))
+      (supertype (node (document "memory://snapshot/vehicle_individuals.md") (qualified-name "VehicleIndividuals::IndividualDefinitions::Wheel1")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/vehicle_individuals.md") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1::axleAssembly1_t1")))
+      (supertype (node (document "memory://snapshot/vehicle_individuals.md") (qualified-name "VehicleIndividuals::IndividualDefinitions::AxleAssembly1")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/vehicle_individuals.md") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1::axleAssembly1_t1::rightFrontWheel_t1")))
+      (supertype (node (document "memory://snapshot/vehicle_individuals.md") (qualified-name "VehicleIndividuals::IndividualDefinitions::Wheel1")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/vehicle_individuals.md") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1")))
+      (supertype (node (document "memory://snapshot/vehicle_individuals.md") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

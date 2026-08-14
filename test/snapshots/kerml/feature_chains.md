@@ -174,6 +174,26 @@ package FeatureChains {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::B::a")))
+      (supertype (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::A")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::B::f")))
+      (supertype (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::F")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::F::a")))
+      (supertype (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::A")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::b")))
+      (supertype (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::B")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::f")))
+      (supertype (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::F")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

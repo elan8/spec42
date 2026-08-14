@@ -159,6 +159,14 @@ package 'Requirement Satisfaction' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/32_requirement_satisfaction.md") (qualified-name "Requirement Satisfaction::Vehicle c1 Design Context::vehicle_design")))
+      (supertype (node (document "memory://snapshot/32_requirement_satisfaction.md") (qualified-name "Requirement Satisfaction::vehicle_c1")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

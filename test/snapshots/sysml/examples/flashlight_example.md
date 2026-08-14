@@ -248,6 +248,38 @@ package 'Flashlight Example' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::LightPort::light")))
+      (supertype (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::Light")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::OnOffCmdPort::onOffCmd")))
+      (supertype (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::OnOffCmd")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::context::flashlight::lightPort")))
+      (supertype (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::LightPort")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::context::flashlight::onOffCmdPort")))
+      (supertype (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::OnOffCmdPort")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::context::reflectingSource::lightPort")))
+      (supertype (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::LightPort")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::context::user::onOffCmdPort")))
+      (supertype (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::OnOffCmdPort")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::illuminateRegion::produceDirectedLight::light")))
+      (supertype (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::Light")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::illuminateRegion::reflectLight::light")))
+      (supertype (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::Light")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::illuminateRegion::sendOnOffCmd::onOffCmd")))
+      (supertype (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::OnOffCmd")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -1019,6 +1019,45 @@ standard library package StatePerformances {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StatePerformance::acceptable::thatSP")))
+      (supertype (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StatePerformance::accepted")))
+      (supertype (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StatePerformance::acceptable")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/state_performances.md") (path (named (kind library-package) (name "StatePerformances")) (named (kind kerml-behavior) (name "StatePerformance")) (named (kind kerml-function) (name "allSubstatePerformances")) (anonymous (kind parameter) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StatePerformance::allSubstatePerformances::substatePerformances")))
+      (supertype (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StatePerformance::deferrable")))
+      (supertype (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StatePerformance::acceptable")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StatePerformance::do")))
+      (supertype (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StatePerformance::middle")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StatePerformance::nonDoMiddle")))
+      (supertype (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StatePerformance::middle")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance::transitionLinkSource")))
+      (supertype (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/state_performances.md") (path (named (kind library-package) (name "StatePerformances")) (named (kind kerml-behavior) (name "StateTransitionPerformance")) (named (kind parameter) (name "transitionLinkSource")) (anonymous (kind kerml-feature) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StatePerformance::acceptable")) (scopes any))
+      (supertype (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StatePerformance::accepted")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/state_performances.md") (path (named (kind library-package) (name "StatePerformances")) (named (kind kerml-behavior) (name "StateTransitionPerformance")) (named (kind parameter) (name "transitionLinkSource")) (anonymous (kind kerml-feature) (ordinal 1))))))
+      (supertype (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StatePerformance::acceptable")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance::trigger")))
+      (supertype (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance::acceptable")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

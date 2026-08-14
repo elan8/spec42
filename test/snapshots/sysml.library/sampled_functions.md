@@ -548,6 +548,35 @@ standard library package SampledFunctions {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::Domain::fn")))
+      (supertype (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::SampledFunction")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::Interpolate::fn")))
+      (supertype (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::SampledFunction")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::Range::fn")))
+      (supertype (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::SampledFunction")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::SampledFunction::samples")))
+      (supertype (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::SamplePair")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::interpolateLinear")))
+      (supertype (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::Interpolate")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::interpolateLinear::Linear::lowerSample")))
+      (supertype (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::SamplePair")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::interpolateLinear::Linear::upperSample")))
+      (supertype (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::SamplePair")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::interpolateLinear::fn")))
+      (supertype (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::SampledFunction")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

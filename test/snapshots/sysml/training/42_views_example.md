@@ -161,6 +161,14 @@ package 'Views Example' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::vehicle structure view")))
+      (supertype (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::Part Structure View")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -48,6 +48,14 @@ package C {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/qualified_innermost_namespace.md") (qualified-name "C::p")))
+      (supertype (node (document "memory://snapshot/qualified_innermost_namespace.md") (qualified-name "C::A::T")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

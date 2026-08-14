@@ -179,6 +179,17 @@ standard library package StandardViewDefinitions {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::ActionFlowView")))
+      (supertype (node (document "memory://snapshot/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::InterconnectionView")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::StateTransitionView")))
+      (supertype (node (document "memory://snapshot/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::InterconnectionView")) (scopes any subclassification))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

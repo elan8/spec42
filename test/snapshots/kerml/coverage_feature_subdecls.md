@@ -74,6 +74,11 @@ package FeatureSubDeclCoverage {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

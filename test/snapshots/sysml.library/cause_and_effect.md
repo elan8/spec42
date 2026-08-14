@@ -404,6 +404,29 @@ standard library package CauseAndEffect {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/cause_and_effect.md") (qualified-name "CauseAndEffect::CausationSemanticMetadadata")))
+      (supertype (node (document "memory://snapshot/cause_and_effect.md") (qualified-name "CauseAndEffect::CausationMetadata")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/cause_and_effect.md") (qualified-name "CauseAndEffect::CausationSemanticMetadadata::baseType"))) (cyclic true)
+    )
+    (declaration (id (node (document "memory://snapshot/cause_and_effect.md") (qualified-name "CauseAndEffect::CauseMetadata::annotatedElement"))) (cyclic true)
+    )
+    (declaration (id (node (document "memory://snapshot/cause_and_effect.md") (qualified-name "CauseAndEffect::CauseMetadata::baseType"))) (cyclic true)
+    )
+    (declaration (id (node (document "memory://snapshot/cause_and_effect.md") (qualified-name "CauseAndEffect::EffectMetadata::annotatedElement"))) (cyclic true)
+    )
+    (declaration (id (node (document "memory://snapshot/cause_and_effect.md") (qualified-name "CauseAndEffect::EffectMetadata::baseType"))) (cyclic true)
+    )
+    (declaration (id (node (document "memory://snapshot/cause_and_effect.md") (qualified-name "CauseAndEffect::MulticausationSemanticMetadata")))
+      (supertype (node (document "memory://snapshot/cause_and_effect.md") (qualified-name "CauseAndEffect::CausationMetadata")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/cause_and_effect.md") (qualified-name "CauseAndEffect::MulticausationSemanticMetadata::baseType"))) (cyclic true)
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

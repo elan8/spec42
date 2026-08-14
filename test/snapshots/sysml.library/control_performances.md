@@ -616,6 +616,41 @@ standard library package ControlPerformances {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfElsePerformance")))
+      (supertype (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfPerformance")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (path (named (kind library-package) (name "ControlPerformances")) (named (kind kerml-behavior) (name "IfElsePerformance")) (anonymous (kind parameter) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfPerformance::ifTest")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenElsePerformance")))
+      (supertype (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfPerformance")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenPerformance")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (path (named (kind library-package) (name "ControlPerformances")) (named (kind kerml-behavior) (name "IfThenElsePerformance")) (anonymous (kind parameter) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfPerformance::ifTest")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (path (named (kind library-package) (name "ControlPerformances")) (named (kind kerml-behavior) (name "IfThenElsePerformance")) (anonymous (kind parameter) (ordinal 1))))))
+      (supertype (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenPerformance::thenClause")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenPerformance")))
+      (supertype (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfPerformance")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (path (named (kind library-package) (name "ControlPerformances")) (named (kind kerml-behavior) (name "IfThenPerformance")) (anonymous (kind parameter) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfPerformance::ifTest")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::untilDecision")))
+      (supertype (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfElsePerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfPerformance")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::whileDecision")))
+      (supertype (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfPerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenPerformance")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

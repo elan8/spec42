@@ -292,6 +292,14 @@ package StateTest {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/state_test.md") (qualified-name "StateTest::s5")))
+      (supertype (node (document "memory://snapshot/state_test.md") (qualified-name "StateTest::s4")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

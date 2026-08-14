@@ -105,6 +105,17 @@ package PrivateImportTest {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::x")))
+      (supertype (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::P1::A")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::z")))
+      (supertype (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::P3::B")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

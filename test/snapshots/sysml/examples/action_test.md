@@ -333,6 +333,20 @@ package ActionTest {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a")))
+      (supertype (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::A")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a2::s")))
+      (supertype (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::S")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::b::a")))
+      (supertype (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::A")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

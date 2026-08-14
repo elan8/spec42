@@ -141,6 +141,11 @@ package '17b-Sequence-Modeling' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

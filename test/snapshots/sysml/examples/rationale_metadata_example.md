@@ -124,6 +124,20 @@ package RationaleMetadataExample {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engine4cyl")))
+      (supertype (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engine")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engine6cyl")))
+      (supertype (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engine")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineTradeOffAnalysis::selectedEngine")))
+      (supertype (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engine")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

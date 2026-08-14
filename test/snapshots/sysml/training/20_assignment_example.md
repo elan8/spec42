@@ -371,6 +371,14 @@ package 'For Loop Example' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/20_assignment_example.md") (path (named (kind package) (name "For Loop Example")) (named (kind action-def) (name "ComputeMotion")) (anonymous (kind for-loop) (ordinal 0)) (named (kind perform-action) (name "dynamics"))))))
+      (supertype (node (document "memory://snapshot/20_assignment_example.md") (qualified-name "For Loop Example::StraightLineDynamics")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

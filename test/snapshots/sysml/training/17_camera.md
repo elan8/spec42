@@ -113,6 +113,14 @@ package Camera {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera")))
+      (supertype (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::Camera")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -144,6 +144,17 @@ package 'Flow Interface Example' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/13_flow_interface_example.md") (qualified-name "Flow Interface Example::vehicle")))
+      (supertype (node (document "memory://snapshot/13_flow_interface_example.md") (qualified-name "Flow Interface Example::Vehicle")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/13_flow_interface_example.md") (path (named (kind package) (name "Flow Interface Example")) (named (kind part) (name "vehicle")) (anonymous (kind interface) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/13_flow_interface_example.md") (qualified-name "Flow Interface Example::FuelInterface")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

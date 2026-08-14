@@ -188,6 +188,14 @@ package 'User Keyword Example' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/41_user_keyword_example.md") (qualified-name "User Keyword Example::DeviceFailure::device")))
+      (supertype (node (document "memory://snapshot/41_user_keyword_example.md") (qualified-name "User Keyword Example::Device")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

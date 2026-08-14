@@ -296,6 +296,35 @@ package '7a1-Variant Configuration - General Concept-a' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/7a1_variant_configuration_general_concept_a.md") (path (named (kind package) (name "7a1-Variant Configuration - General Concept-a")) (named (kind part-def) (name "SubsystemA")) (anonymous (kind part) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/7a1_variant_configuration_general_concept_a.md") (qualified-name "7a1-Variant Configuration - General Concept-a::part3")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/7a1_variant_configuration_general_concept_a.md") (path (named (kind package) (name "7a1-Variant Configuration - General Concept-a")) (named (kind part-def) (name "SubsystemB")) (anonymous (kind part) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/7a1_variant_configuration_general_concept_a.md") (qualified-name "7a1-Variant Configuration - General Concept-a::part5")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/7a1_variant_configuration_general_concept_a.md") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB")))
+      (supertype (node (document "memory://snapshot/7a1_variant_configuration_general_concept_a.md") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/7a1_variant_configuration_general_concept_a.md") (path (named (kind package) (name "7a1-Variant Configuration - General Concept-a")) (named (kind part) (name "VehicleConfigB")) (anonymous (kind part) (ordinal 1)) (anonymous (kind part) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/7a1_variant_configuration_general_concept_a.md") (qualified-name "7a1-Variant Configuration - General Concept-a::part5")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/7a1_variant_configuration_general_concept_a.md") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA")))
+      (supertype (node (document "memory://snapshot/7a1_variant_configuration_general_concept_a.md") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/7a1_variant_configuration_general_concept_a.md") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB")))
+      (supertype (node (document "memory://snapshot/7a1_variant_configuration_general_concept_a.md") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/7a1_variant_configuration_general_concept_a.md") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA")))
+      (supertype (node (document "memory://snapshot/7a1_variant_configuration_general_concept_a.md") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/7a1_variant_configuration_general_concept_a.md") (path (named (kind package) (name "7a1-Variant Configuration - General Concept-a")) (named (kind part) (name "vehicleConfigA")) (anonymous (kind part) (ordinal 1)) (anonymous (kind part) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/7a1_variant_configuration_general_concept_a.md") (qualified-name "7a1-Variant Configuration - General Concept-a::part5")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

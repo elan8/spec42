@@ -151,6 +151,23 @@ package 'State Actions' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::VehicleStates::operatingVehicle")))
+      (supertype (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::Vehicle")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::performSelfTest::vehicle")))
+      (supertype (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::Vehicle")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::vehicleStates")))
+      (supertype (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::VehicleStates")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::vehicleStates::operatingVehicle")))
+      (supertype (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::Vehicle")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

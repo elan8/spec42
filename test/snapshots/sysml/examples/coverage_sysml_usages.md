@@ -166,6 +166,29 @@ part def Vehicle {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle::color")))
+      (supertype (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Color")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle::out1")))
+      (supertype (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "DataPort")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle::payload")))
+      (supertype (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Widget")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle::person1")))
+      (supertype (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Sensor")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle::r1")))
+      (supertype (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Sensor")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Vehicle::refPart")))
+      (supertype (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Engine")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

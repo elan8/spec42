@@ -277,6 +277,21 @@ standard library package RequirementDerivation {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/requirement_derivation.md") (qualified-name "RequirementDerivation::DerivationMetadata::baseType"))) (cyclic true)
+    )
+    (declaration (id (node (document "memory://snapshot/requirement_derivation.md") (qualified-name "RequirementDerivation::DerivedRequirementMetadata::annotatedElement"))) (cyclic true)
+    )
+    (declaration (id (node (document "memory://snapshot/requirement_derivation.md") (qualified-name "RequirementDerivation::DerivedRequirementMetadata::baseType"))) (cyclic true)
+    )
+    (declaration (id (node (document "memory://snapshot/requirement_derivation.md") (qualified-name "RequirementDerivation::OriginalRequirementMetadata::annotatedElement"))) (cyclic true)
+    )
+    (declaration (id (node (document "memory://snapshot/requirement_derivation.md") (qualified-name "RequirementDerivation::OriginalRequirementMetadata::baseType"))) (cyclic true)
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

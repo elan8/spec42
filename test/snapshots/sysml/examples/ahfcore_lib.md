@@ -173,6 +173,17 @@ library package AHFCoreLib {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/ahfcore_lib.md") (qualified-name "AHFCoreLib::AuthorisationDD")))
+      (supertype (node (document "memory://snapshot/ahfcore_lib.md") (qualified-name "AHFCoreLib::Authorisation")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/ahfcore_lib.md") (qualified-name "AHFCoreLib::ServiceDiscoveryDD")))
+      (supertype (node (document "memory://snapshot/ahfcore_lib.md") (qualified-name "AHFCoreLib::ServiceDiscovery")) (scopes any subclassification))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -99,6 +99,14 @@ package TextualRepresentation {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/textual_representation.md") (qualified-name "TextualRepresentation::setX::c")))
+      (supertype (node (document "memory://snapshot/textual_representation.md") (qualified-name "TextualRepresentation::C")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -127,6 +127,26 @@ part def Outer {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::e")))
+      (supertype (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::InnerEnum")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::it1")))
+      (supertype (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::InnerItem")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::p1")))
+      (supertype (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::InnerPart")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::pt1")))
+      (supertype (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::InnerPort")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::r1")))
+      (supertype (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::InnerPart")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

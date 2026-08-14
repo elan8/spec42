@@ -470,6 +470,14 @@ package 'Analytical Constraints' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/31_analytical_constraints.md") (qualified-name "Analytical Constraints::StraightLineDynamics::dynamics")))
+      (supertype (node (document "memory://snapshot/31_analytical_constraints.md") (qualified-name "Analytical Constraints::StraightLineDynamicsEquations")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

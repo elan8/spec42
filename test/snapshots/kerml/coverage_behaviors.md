@@ -168,6 +168,14 @@ package BehaviorCoverage {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::s1")))
+      (supertype (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::Action1")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

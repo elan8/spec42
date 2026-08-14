@@ -166,6 +166,27 @@ package VariabilityTest {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::Q")))
+      (supertype (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::P")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::V")))
+      (supertype (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::P")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::q")))
+      (supertype (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::P")) (scopes any))
+      (supertype (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::Q")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::v")))
+      (supertype (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::P")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::y")))
+      (supertype (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::P")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

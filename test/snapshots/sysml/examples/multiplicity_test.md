@@ -92,6 +92,20 @@ package MultiplicityTest {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::A::x")))
+      (supertype (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::A")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::b")))
+      (supertype (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::P")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::c")))
+      (supertype (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::P")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

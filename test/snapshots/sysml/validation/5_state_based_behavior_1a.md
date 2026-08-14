@@ -666,6 +666,45 @@ package '5-State-based Behavior-1a' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/5_state_based_behavior_1a.md") (qualified-name "5-State-based Behavior-1a::Definitions::VehicleA::provide power")))
+      (supertype (node (document "memory://snapshot/5_state_based_behavior_1a.md") (qualified-name "5-State-based Behavior-1a::Definitions::Provide Power")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/5_state_based_behavior_1a.md") (qualified-name "5-State-based Behavior-1a::Usages::apply parking brake")))
+      (supertype (node (document "memory://snapshot/5_state_based_behavior_1a.md") (qualified-name "5-State-based Behavior-1a::Definitions::Apply Parking Brake")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/5_state_based_behavior_1a.md") (qualified-name "5-State-based Behavior-1a::Usages::controller states")))
+      (supertype (node (document "memory://snapshot/5_state_based_behavior_1a.md") (qualified-name "5-State-based Behavior-1a::Definitions::Controller States")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/5_state_based_behavior_1a.md") (qualified-name "5-State-based Behavior-1a::Usages::perform self test")))
+      (supertype (node (document "memory://snapshot/5_state_based_behavior_1a.md") (qualified-name "5-State-based Behavior-1a::Definitions::Perform Self Test")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/5_state_based_behavior_1a.md") (qualified-name "5-State-based Behavior-1a::Usages::provide power")))
+      (supertype (node (document "memory://snapshot/5_state_based_behavior_1a.md") (qualified-name "5-State-based Behavior-1a::Definitions::Provide Power")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/5_state_based_behavior_1a.md") (qualified-name "5-State-based Behavior-1a::Usages::sense temperature")))
+      (supertype (node (document "memory://snapshot/5_state_based_behavior_1a.md") (qualified-name "5-State-based Behavior-1a::Definitions::Sense Temperature")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/5_state_based_behavior_1a.md") (qualified-name "5-State-based Behavior-1a::Usages::vehicle states")))
+      (supertype (node (document "memory://snapshot/5_state_based_behavior_1a.md") (qualified-name "5-State-based Behavior-1a::Definitions::Vehicle States")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/5_state_based_behavior_1a.md") (qualified-name "5-State-based Behavior-1a::Usages::vehicle1_c1")))
+      (supertype (node (document "memory://snapshot/5_state_based_behavior_1a.md") (qualified-name "5-State-based Behavior-1a::Definitions::VehicleA")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/5_state_based_behavior_1a.md") (path (named (kind package) (name "5-State-based Behavior-1a")) (named (kind package) (name "Usages")) (named (kind part) (name "vehicle1_c1")) (anonymous (kind perform-action) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/5_state_based_behavior_1a.md") (qualified-name "5-State-based Behavior-1a::Definitions::Provide Power")) (scopes any))
+      (supertype (node (document "memory://snapshot/5_state_based_behavior_1a.md") (qualified-name "5-State-based Behavior-1a::Definitions::VehicleA::provide power")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/5_state_based_behavior_1a.md") (qualified-name "5-State-based Behavior-1a::Usages::vehicle1_c1::fuelCmdPort::fuelCmd")))
+      (supertype (node (document "memory://snapshot/5_state_based_behavior_1a.md") (qualified-name "5-State-based Behavior-1a::Definitions::FuelCmd")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/5_state_based_behavior_1a.md") (qualified-name "5-State-based Behavior-1a::Usages::vehicle1_c1::vehicleController")))
+      (supertype (node (document "memory://snapshot/5_state_based_behavior_1a.md") (qualified-name "5-State-based Behavior-1a::Definitions::VehicleController")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

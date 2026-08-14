@@ -199,6 +199,45 @@ package '12b-Allocation-1' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/12b_allocation_1.md") (qualified-name "12b-Allocation-1::LogicalModel::TorqueGenerator")))
+      (supertype (node (document "memory://snapshot/12b_allocation_1.md") (qualified-name "12b-Allocation-1::LogicalModel::LogicalElement")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/12b_allocation_1.md") (qualified-name "12b-Allocation-1::LogicalModel::TorqueGenerator::generateTorque")))
+      (supertype (node (document "memory://snapshot/12b_allocation_1.md") (qualified-name "12b-Allocation-1::LogicalModel::GenerateTorque")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/12b_allocation_1.md") (qualified-name "12b-Allocation-1::LogicalModel::providePower::generateTorque")))
+      (supertype (node (document "memory://snapshot/12b_allocation_1.md") (qualified-name "12b-Allocation-1::LogicalModel::GenerateTorque")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/12b_allocation_1.md") (qualified-name "12b-Allocation-1::LogicalModel::torqueGenerator")))
+      (supertype (node (document "memory://snapshot/12b_allocation_1.md") (qualified-name "12b-Allocation-1::LogicalModel::LogicalElement")) (scopes any))
+      (supertype (node (document "memory://snapshot/12b_allocation_1.md") (qualified-name "12b-Allocation-1::LogicalModel::TorqueGenerator")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/12b_allocation_1.md") (path (named (kind package) (name "12b-Allocation-1")) (named (kind package) (name "LogicalModel")) (named (kind part) (name "torqueGenerator")) (anonymous (kind perform-action) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/12b_allocation_1.md") (qualified-name "12b-Allocation-1::LogicalModel::GenerateTorque")) (scopes any))
+      (supertype (node (document "memory://snapshot/12b_allocation_1.md") (qualified-name "12b-Allocation-1::LogicalModel::TorqueGenerator::generateTorque")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/12b_allocation_1.md") (qualified-name "12b-Allocation-1::LogicalToPhysical::logical")))
+      (supertype (node (document "memory://snapshot/12b_allocation_1.md") (qualified-name "12b-Allocation-1::LogicalModel::LogicalElement")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/12b_allocation_1.md") (qualified-name "12b-Allocation-1::LogicalToPhysical::physical")))
+      (supertype (node (document "memory://snapshot/12b_allocation_1.md") (qualified-name "12b-Allocation-1::PhysicalModel::PhysicalElement")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/12b_allocation_1.md") (qualified-name "12b-Allocation-1::PhysicalModel::PowerTrain")))
+      (supertype (node (document "memory://snapshot/12b_allocation_1.md") (qualified-name "12b-Allocation-1::PhysicalModel::PhysicalElement")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/12b_allocation_1.md") (qualified-name "12b-Allocation-1::PhysicalModel::powerTrain")))
+      (supertype (node (document "memory://snapshot/12b_allocation_1.md") (qualified-name "12b-Allocation-1::PhysicalModel::PhysicalElement")) (scopes any))
+      (supertype (node (document "memory://snapshot/12b_allocation_1.md") (qualified-name "12b-Allocation-1::PhysicalModel::PowerTrain")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/12b_allocation_1.md") (qualified-name "12b-Allocation-1::RequirementModel::torqueGeneration::generator")))
+      (supertype (node (document "memory://snapshot/12b_allocation_1.md") (qualified-name "12b-Allocation-1::LogicalModel::LogicalElement")) (scopes any))
+      (supertype (node (document "memory://snapshot/12b_allocation_1.md") (qualified-name "12b-Allocation-1::LogicalModel::TorqueGenerator")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

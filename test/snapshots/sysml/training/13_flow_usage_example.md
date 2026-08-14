@@ -96,6 +96,14 @@ package 'Flow Usage Example' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/13_flow_usage_example.md") (qualified-name "Flow Usage Example::vehicle")))
+      (supertype (node (document "memory://snapshot/13_flow_usage_example.md") (qualified-name "Flow Usage Example::Vehicle")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

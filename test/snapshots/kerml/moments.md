@@ -281,6 +281,30 @@ package Moments {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/moments.md") (qualified-name "Moments::Moment")))
+      (supertype (node (document "memory://snapshot/moments.md") (qualified-name "Moments::InstantOccurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/moments.md") (qualified-name "Moments::Period")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/moments.md") (path (named (kind package) (name "Moments")) (named (kind class-def) (name "Moment")) (anonymous (kind attribute) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/moments.md") (qualified-name "Moments::Eternity")) (scopes any))
+      (supertype (node (document "memory://snapshot/moments.md") (qualified-name "Moments::UniversalEternity")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/moments.md") (path (named (kind package) (name "Moments")) (named (kind class-def) (name "Period")) (anonymous (kind attribute) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/moments.md") (qualified-name "Moments::Eternity")) (scopes any))
+      (supertype (node (document "memory://snapshot/moments.md") (qualified-name "Moments::UniversalEternity")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/moments.md") (qualified-name "Moments::UniversalEternity")))
+      (supertype (node (document "memory://snapshot/moments.md") (qualified-name "Moments::Eternity")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/moments.md") (qualified-name "Moments::universalEternity")))
+      (supertype (node (document "memory://snapshot/moments.md") (qualified-name "Moments::Eternity")) (scopes any))
+      (supertype (node (document "memory://snapshot/moments.md") (qualified-name "Moments::UniversalEternity")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -364,6 +364,22 @@ package TimeVaryingFeaturesEnhanced {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/time_varying_features_enhanced.md") (path (named (kind package) (name "TimeVaryingFeaturesEnhanced")) (named (kind kerml-structure) (name "Car1")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/time_varying_features_enhanced.md") (qualified-name "TimeVaryingFeaturesEnhanced::Car1::driver")) (scopes any))
+      (supertype (node (document "memory://snapshot/time_varying_features_enhanced.md") (qualified-name "TimeVaryingFeaturesEnhanced::Person")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/time_varying_features_enhanced.md") (path (named (kind package) (name "TimeVaryingFeaturesEnhanced")) (named (kind kerml-structure) (name "Car1")) (named (kind kerml-feature) (name "driven")) (anonymous (kind kerml-feature) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/time_varying_features_enhanced.md") (qualified-name "TimeVaryingFeaturesEnhanced::Car1::driver")) (scopes any))
+      (supertype (node (document "memory://snapshot/time_varying_features_enhanced.md") (qualified-name "TimeVaryingFeaturesEnhanced::Person")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/time_varying_features_enhanced.md") (qualified-name "TimeVaryingFeaturesEnhanced::Car1::driver")))
+      (supertype (node (document "memory://snapshot/time_varying_features_enhanced.md") (qualified-name "TimeVaryingFeaturesEnhanced::Person")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

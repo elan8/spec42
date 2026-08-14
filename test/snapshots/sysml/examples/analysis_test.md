@@ -117,6 +117,29 @@ package AnalysisTest {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::AnalysisCase::obj")))
+      (supertype (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::AnalysisObjective")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::AnalysisCase::v")))
+      (supertype (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::V")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::AnalysisPlan::analysisCase")))
+      (supertype (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::AnalysisCase")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::AnalysisPlan::v")))
+      (supertype (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::V")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::analysisContext::analysisPlan")))
+      (supertype (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::AnalysisPlan")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::vv")))
+      (supertype (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::V")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -250,6 +250,29 @@ package '15_05-Unification of Expression and Constraint Definition' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (qualified-name "15_05-Unification of Expression and Constraint Definition::DiscBrakeConstraint::wheelAssy")))
+      (supertype (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (qualified-name "15_05-Unification of Expression and Constraint Definition::WheelAssy")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (qualified-name "15_05-Unification of Expression and Constraint Definition::DiscBrakeFitConstraint_Alt::discBrakeAssy")))
+      (supertype (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (qualified-name "15_05-Unification of Expression and Constraint Definition::DiscBrakeAssy")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (qualified-name "15_05-Unification of Expression and Constraint Definition::Vehicle_2::discBrakeConstraint")))
+      (supertype (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (qualified-name "15_05-Unification of Expression and Constraint Definition::DiscBrakeConstraint")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (qualified-name "15_05-Unification of Expression and Constraint Definition::Vehicle_2::wheelAssy")))
+      (supertype (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (qualified-name "15_05-Unification of Expression and Constraint Definition::WheelAssy")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (qualified-name "15_05-Unification of Expression and Constraint Definition::WheelAssy::discBrakeAssy")))
+      (supertype (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (qualified-name "15_05-Unification of Expression and Constraint Definition::DiscBrakeAssy")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (qualified-name "15_05-Unification of Expression and Constraint Definition::WheelAssy::discBrakeFitConstraint_Alt")))
+      (supertype (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (qualified-name "15_05-Unification of Expression and Constraint Definition::DiscBrakeFitConstraint_Alt")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

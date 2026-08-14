@@ -50,6 +50,14 @@ package C {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/lexical_inner_shadow.md") (qualified-name "C::p")))
+      (supertype (node (document "memory://snapshot/lexical_inner_shadow.md") (qualified-name "C::T")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

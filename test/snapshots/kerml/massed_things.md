@@ -79,6 +79,17 @@ package MassedThings {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/massed_things.md") (path (named (kind package) (name "MassedThings")) (named (kind kerml-association) (name "MassedThingAssembly")) (anonymous (kind kerml-end) (ordinal 0)) (named (kind kerml-feature) (name "assembly"))))))
+      (supertype (node (document "memory://snapshot/massed_things.md") (qualified-name "MassedThings::MassedThing")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/massed_things.md") (path (named (kind package) (name "MassedThings")) (named (kind kerml-association) (name "MassedThingAssembly")) (anonymous (kind kerml-end) (ordinal 1)) (named (kind kerml-feature) (name "parts"))))))
+      (supertype (node (document "memory://snapshot/massed_things.md") (qualified-name "MassedThings::MassedThing")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

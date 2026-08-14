@@ -129,6 +129,17 @@ package 'Interface Example' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/11_interface_example.md") (qualified-name "Interface Example::vehicle")))
+      (supertype (node (document "memory://snapshot/11_interface_example.md") (qualified-name "Interface Example::Vehicle")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/11_interface_example.md") (path (named (kind package) (name "Interface Example")) (named (kind part) (name "vehicle")) (anonymous (kind interface) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/11_interface_example.md") (qualified-name "Interface Example::FuelInterface")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

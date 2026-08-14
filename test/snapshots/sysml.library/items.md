@@ -749,6 +749,48 @@ standard library package Items {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/items.md") (path (named (kind library-package) (name "Items")) (named (kind item-def) (name "Item")) (named (kind item) (name "boundingShapes")) (anonymous (kind item) (ordinal 1)) (named (kind ref) (name "edge"))))))
+      (supertype (node (document "memory://snapshot/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::self")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/items.md") (path (named (kind library-package) (name "Items")) (named (kind item-def) (name "Item")) (named (kind item) (name "boundingShapes")) (anonymous (kind item) (ordinal 0)) (named (kind ref) (name "face"))))))
+      (supertype (node (document "memory://snapshot/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::self")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::boundingShapes::boundingShape")))
+      (supertype (node (document "memory://snapshot/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::self")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::done")))
+      (supertype (node (document "memory://snapshot/items.md") (qualified-name "Items::Item")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::envelopingShapes")))
+      (supertype (node (document "memory://snapshot/items.md") (qualified-name "Items::Item")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::self")))
+      (supertype (node (document "memory://snapshot/items.md") (qualified-name "Items::Item")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::shape")))
+      (supertype (node (document "memory://snapshot/items.md") (qualified-name "Items::Item")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::start")))
+      (supertype (node (document "memory://snapshot/items.md") (qualified-name "Items::Item")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::subitems")))
+      (supertype (node (document "memory://snapshot/items.md") (qualified-name "Items::Item")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::subparts")))
+      (supertype (node (document "memory://snapshot/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::subitems")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/items.md") (qualified-name "Items::items")))
+      (supertype (node (document "memory://snapshot/items.md") (qualified-name "Items::Item")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

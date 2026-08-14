@@ -350,6 +350,44 @@ package OneToOneConnectorsExecution {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (qualified-name "OneToOneConnectorsExecution::MyBike")))
+      (supertype (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (qualified-name "OneToOneConnectorsModelToBeExecuted::Bicycle")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (path (named (kind package) (name "OneToOneConnectorsExecution")) (named (kind kerml-classifier) (name "MyBike")) (anonymous (kind kerml-feature) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (qualified-name "OneToOneConnectorsModelToBeExecuted::Bicycle::rollsOn")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (path (named (kind package) (name "OneToOneConnectorsExecution")) (named (kind kerml-classifier) (name "MyBike")) (anonymous (kind kerml-feature) (ordinal 1))))))
+      (supertype (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (qualified-name "OneToOneConnectorsExecution::MyBikeFork")) (scopes any))
+      (supertype (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (qualified-name "OneToOneConnectorsModelToBeExecuted::Bicycle::holdsWheel")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (qualified-name "OneToOneConnectorsExecution::MyBikeWheel1_Fork1_BWF_Link")))
+      (supertype (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (qualified-name "OneToOneConnectorsModelToBeExecuted::BikeWheelFixed")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (path (named (kind package) (name "OneToOneConnectorsExecution")) (named (kind kerml-association) (name "MyBikeWheel1_Fork1_BWF_Link")) (anonymous (kind kerml-feature) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (qualified-name "OneToOneConnectorsModelToBeExecuted::BikeWheelFixed::wheel")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (path (named (kind package) (name "OneToOneConnectorsExecution")) (named (kind kerml-association) (name "MyBikeWheel1_Fork1_BWF_Link")) (anonymous (kind kerml-feature) (ordinal 1))))))
+      (supertype (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (qualified-name "OneToOneConnectorsExecution::MyBikeFork1")) (scopes any))
+      (supertype (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (qualified-name "OneToOneConnectorsModelToBeExecuted::BikeWheelFixed::fixedTo")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (qualified-name "OneToOneConnectorsExecution::MyBikeWheel2_Fork2_BWF_Link")))
+      (supertype (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (qualified-name "OneToOneConnectorsModelToBeExecuted::BikeWheelFixed")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (path (named (kind package) (name "OneToOneConnectorsExecution")) (named (kind kerml-association) (name "MyBikeWheel2_Fork2_BWF_Link")) (anonymous (kind kerml-feature) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (qualified-name "OneToOneConnectorsModelToBeExecuted::BikeWheelFixed::wheel")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (path (named (kind package) (name "OneToOneConnectorsExecution")) (named (kind kerml-association) (name "MyBikeWheel2_Fork2_BWF_Link")) (anonymous (kind kerml-feature) (ordinal 1))))))
+      (supertype (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (qualified-name "OneToOneConnectorsExecution::MyBikeFork2")) (scopes any))
+      (supertype (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (qualified-name "OneToOneConnectorsModelToBeExecuted::BikeWheelFixed::fixedTo")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (qualified-name "OneToOneConnectorsModelToBeExecuted::Bicycle::fixWheel")))
+      (supertype (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (qualified-name "OneToOneConnectorsModelToBeExecuted::BikeWheelFixed")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

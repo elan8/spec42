@@ -693,6 +693,14 @@ package CarWithShapeAndCSG {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/car_with_shape_and_csg.md") (qualified-name "CarWithShapeAndCSG::Car::powerSource")))
+      (supertype (node (document "memory://snapshot/car_with_shape_and_csg.md") (qualified-name "CarWithShapeAndCSG::Engine")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

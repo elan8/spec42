@@ -1564,6 +1564,23 @@ package HSUVDynamics {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/hsuvdynamics.md") (qualified-name "HSUVDynamics::StraightLineVehicleDynamics::acc")))
+      (supertype (node (document "memory://snapshot/hsuvdynamics.md") (qualified-name "HSUVDynamics::AccelerationEquation")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/hsuvdynamics.md") (qualified-name "HSUVDynamics::StraightLineVehicleDynamics::pos")))
+      (supertype (node (document "memory://snapshot/hsuvdynamics.md") (qualified-name "HSUVDynamics::PositionEquation")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/hsuvdynamics.md") (qualified-name "HSUVDynamics::StraightLineVehicleDynamics::pwr")))
+      (supertype (node (document "memory://snapshot/hsuvdynamics.md") (qualified-name "HSUVDynamics::PowerEquation")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/hsuvdynamics.md") (qualified-name "HSUVDynamics::StraightLineVehicleDynamics::vel")))
+      (supertype (node (document "memory://snapshot/hsuvdynamics.md") (qualified-name "HSUVDynamics::VelocityEquation")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

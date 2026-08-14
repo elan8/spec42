@@ -1703,6 +1703,38 @@ package SimpleQuadcopter {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/simple_quadcopter.md") (qualified-name "SimpleQuadcopter::quadCopter::camera")))
+      (supertype (node (document "memory://snapshot/simple_quadcopter.md") (qualified-name "SimpleQuadcopter::Camera")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/simple_quadcopter.md") (qualified-name "SimpleQuadcopter::quadCopter::propellerMotorAssy1")))
+      (supertype (node (document "memory://snapshot/simple_quadcopter.md") (qualified-name "SimpleQuadcopter::PropellerMotorAssy")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/simple_quadcopter.md") (qualified-name "SimpleQuadcopter::quadCopter::propellerMotorAssy2")))
+      (supertype (node (document "memory://snapshot/simple_quadcopter.md") (qualified-name "SimpleQuadcopter::PropellerMotorAssy")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/simple_quadcopter.md") (qualified-name "SimpleQuadcopter::quadCopter::propellerMotorAssy3")))
+      (supertype (node (document "memory://snapshot/simple_quadcopter.md") (qualified-name "SimpleQuadcopter::PropellerMotorAssy")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/simple_quadcopter.md") (qualified-name "SimpleQuadcopter::quadCopter::propellerMotorAssy4")))
+      (supertype (node (document "memory://snapshot/simple_quadcopter.md") (qualified-name "SimpleQuadcopter::PropellerMotorAssy")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/simple_quadcopter.md") (qualified-name "SimpleQuadcopter::quadCopter::strut1")))
+      (supertype (node (document "memory://snapshot/simple_quadcopter.md") (qualified-name "SimpleQuadcopter::Strut")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/simple_quadcopter.md") (qualified-name "SimpleQuadcopter::quadCopter::strut2")))
+      (supertype (node (document "memory://snapshot/simple_quadcopter.md") (qualified-name "SimpleQuadcopter::Strut")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/simple_quadcopter.md") (qualified-name "SimpleQuadcopter::quadCopter::strut3")))
+      (supertype (node (document "memory://snapshot/simple_quadcopter.md") (qualified-name "SimpleQuadcopter::Strut")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/simple_quadcopter.md") (qualified-name "SimpleQuadcopter::quadCopter::strut4")))
+      (supertype (node (document "memory://snapshot/simple_quadcopter.md") (qualified-name "SimpleQuadcopter::Strut")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -479,6 +479,29 @@ standard library package Flows {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/flows.md") (qualified-name "Flows::Flow")))
+      (supertype (node (document "memory://snapshot/flows.md") (qualified-name "Flows::Message")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/flows.md") (qualified-name "Flows::MessageAction")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/flows.md") (qualified-name "Flows::Message")))
+      (supertype (node (document "memory://snapshot/flows.md") (qualified-name "Flows::MessageAction")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/flows.md") (qualified-name "Flows::SuccessionFlow")))
+      (supertype (node (document "memory://snapshot/flows.md") (qualified-name "Flows::Flow")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/flows.md") (qualified-name "Flows::Message")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/flows.md") (qualified-name "Flows::MessageAction")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/flows.md") (qualified-name "Flows::SuccessionFlow::source")))
+      (supertype (node (document "memory://snapshot/flows.md") (qualified-name "Flows::Flow::source")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/flows.md") (qualified-name "Flows::SuccessionFlow::target")))
+      (supertype (node (document "memory://snapshot/flows.md") (qualified-name "Flows::Flow::target")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -347,6 +347,44 @@ package OneToUnrestrictedConnectorsExecution {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBike")))
+      (supertype (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (path (named (kind package) (name "OneToUnrestrictedConnectorsExecution")) (named (kind kerml-classifier) (name "MyBike")) (anonymous (kind kerml-feature) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket")) (scopes any))
+      (supertype (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle::carrier")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (path (named (kind package) (name "OneToUnrestrictedConnectorsExecution")) (named (kind kerml-classifier) (name "MyBike")) (anonymous (kind kerml-feature) (ordinal 1))))))
+      (supertype (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle::holdsWheel")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket1_Fork1_BBF_Link")))
+      (supertype (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (path (named (kind package) (name "OneToUnrestrictedConnectorsExecution")) (named (kind kerml-association) (name "MyBikeBasket1_Fork1_BBF_Link")) (anonymous (kind kerml-feature) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket1")) (scopes any))
+      (supertype (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed::basket")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (path (named (kind package) (name "OneToUnrestrictedConnectorsExecution")) (named (kind kerml-association) (name "MyBikeBasket1_Fork1_BBF_Link")) (anonymous (kind kerml-feature) (ordinal 1))))))
+      (supertype (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed::fixedTo")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket2_Fork1_BBF_Link")))
+      (supertype (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (path (named (kind package) (name "OneToUnrestrictedConnectorsExecution")) (named (kind kerml-association) (name "MyBikeBasket2_Fork1_BBF_Link")) (anonymous (kind kerml-feature) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket2")) (scopes any))
+      (supertype (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed::basket")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (path (named (kind package) (name "OneToUnrestrictedConnectorsExecution")) (named (kind kerml-association) (name "MyBikeBasket2_Fork1_BBF_Link")) (anonymous (kind kerml-feature) (ordinal 1))))))
+      (supertype (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed::fixedTo")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle::carrierFixed")))
+      (supertype (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

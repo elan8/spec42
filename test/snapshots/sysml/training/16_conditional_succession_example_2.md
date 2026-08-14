@@ -144,6 +144,38 @@ package 'Conditional Succession Example-2' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/16_conditional_succession_example_2.md") (qualified-name "Conditional Succession Example-2::Focus::image")))
+      (supertype (node (document "memory://snapshot/16_conditional_succession_example_2.md") (qualified-name "Conditional Succession Example-2::Image")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/16_conditional_succession_example_2.md") (qualified-name "Conditional Succession Example-2::Focus::scene")))
+      (supertype (node (document "memory://snapshot/16_conditional_succession_example_2.md") (qualified-name "Conditional Succession Example-2::Scene")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/16_conditional_succession_example_2.md") (qualified-name "Conditional Succession Example-2::Shoot::image")))
+      (supertype (node (document "memory://snapshot/16_conditional_succession_example_2.md") (qualified-name "Conditional Succession Example-2::Image")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/16_conditional_succession_example_2.md") (qualified-name "Conditional Succession Example-2::Shoot::picture")))
+      (supertype (node (document "memory://snapshot/16_conditional_succession_example_2.md") (qualified-name "Conditional Succession Example-2::Picture")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/16_conditional_succession_example_2.md") (qualified-name "Conditional Succession Example-2::TakePicture::picture")))
+      (supertype (node (document "memory://snapshot/16_conditional_succession_example_2.md") (qualified-name "Conditional Succession Example-2::Picture")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/16_conditional_succession_example_2.md") (qualified-name "Conditional Succession Example-2::TakePicture::scene")))
+      (supertype (node (document "memory://snapshot/16_conditional_succession_example_2.md") (qualified-name "Conditional Succession Example-2::Scene")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/16_conditional_succession_example_2.md") (qualified-name "Conditional Succession Example-2::takePicture")))
+      (supertype (node (document "memory://snapshot/16_conditional_succession_example_2.md") (qualified-name "Conditional Succession Example-2::TakePicture")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/16_conditional_succession_example_2.md") (qualified-name "Conditional Succession Example-2::takePicture::focus")))
+      (supertype (node (document "memory://snapshot/16_conditional_succession_example_2.md") (qualified-name "Conditional Succession Example-2::Focus")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/16_conditional_succession_example_2.md") (qualified-name "Conditional Succession Example-2::takePicture::shoot")))
+      (supertype (node (document "memory://snapshot/16_conditional_succession_example_2.md") (qualified-name "Conditional Succession Example-2::Shoot")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

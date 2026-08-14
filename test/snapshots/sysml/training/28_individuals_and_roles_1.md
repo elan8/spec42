@@ -99,6 +99,23 @@ package 'Individuals and Roles' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/28_individuals_and_roles_1.md") (qualified-name "Individuals and Roles::Vehicle_1::leftFrontWheel")))
+      (supertype (node (document "memory://snapshot/28_individuals_and_roles_1.md") (qualified-name "Individuals and Roles::Wheel")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/28_individuals_and_roles_1.md") (qualified-name "Individuals and Roles::Vehicle_1::rightFrontWheel")))
+      (supertype (node (document "memory://snapshot/28_individuals_and_roles_1.md") (qualified-name "Individuals and Roles::Wheel")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/28_individuals_and_roles_1.md") (qualified-name "Individuals and Roles::Wheel_1")))
+      (supertype (node (document "memory://snapshot/28_individuals_and_roles_1.md") (qualified-name "Individuals and Roles::Wheel")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/28_individuals_and_roles_1.md") (qualified-name "Individuals and Roles::vehicle_1")))
+      (supertype (node (document "memory://snapshot/28_individuals_and_roles_1.md") (qualified-name "Individuals and Roles::Vehicle_1")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

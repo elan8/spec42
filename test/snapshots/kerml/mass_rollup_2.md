@@ -89,6 +89,14 @@ package MassRollup_2 {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/mass_rollup_2.md") (qualified-name "MassRollup_2::massedThings")))
+      (supertype (node (document "memory://snapshot/mass_rollup_2.md") (qualified-name "MassRollup_2::MassedThing")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -369,6 +369,14 @@ standard library package UseCases {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/use_cases.md") (qualified-name "UseCases::useCases")))
+      (supertype (node (document "memory://snapshot/use_cases.md") (qualified-name "UseCases::UseCase")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

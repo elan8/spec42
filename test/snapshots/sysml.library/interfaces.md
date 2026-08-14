@@ -403,6 +403,20 @@ standard library package Interfaces {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::BinaryInterface")))
+      (supertype (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::Interface")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::binaryInterfaces")))
+      (supertype (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::interfaces")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::excludingOnce::value")))
+      (supertype (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::excludingOnce::seq")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

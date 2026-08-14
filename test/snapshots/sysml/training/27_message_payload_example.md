@@ -144,6 +144,14 @@ package 'Message Payload Example' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/27_message_payload_example.md") (qualified-name "Message Payload Example::vehicle1::engineController")))
+      (supertype (node (document "memory://snapshot/27_message_payload_example.md") (qualified-name "Message Payload Example::EngineController")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

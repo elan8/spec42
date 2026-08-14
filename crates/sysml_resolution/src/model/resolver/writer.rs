@@ -29,6 +29,69 @@ pub(super) fn write_navigation_only(
     write_navigation(model, output)
 }
 
+pub(super) fn write_types_only(
+    model: &ResolvedSemanticModel,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    write_types(model, output)
+}
+
+/// Renders the settled specialization closure of each projected declaration.
+///
+/// A declaration with no transitive supertype and no cycle contributes nothing, so this section
+/// stays proportional to the type structure a fixture actually authors rather than to its
+/// declaration count. Each supertype carries the scopes whose paths reach it, which is what makes
+/// one closure answer both the Pilot's all-subkinds reading and the narrower classifier-only one.
+fn write_types(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fmt::Result {
+    writeln!(output, "(types")?;
+    for index in canonical_declaration_indices(model) {
+        let declaration = DeclarationId(index as u32);
+        let cyclic = model.specialization.is_cyclic(declaration);
+        let mut supertypes = model
+            .specialization
+            .scoped_ancestors(declaration)
+            .collect::<Vec<_>>();
+        if supertypes.is_empty() && !cyclic {
+            continue;
+        }
+        supertypes.sort_by_key(|(ancestor, _)| {
+            (
+                model
+                    .storage
+                    .declaration(*ancestor)
+                    .map(|target| document_identity(model, target.document).to_string())
+                    .unwrap_or_else(|| "<invalid-document>".to_string()),
+                declaration_path_key(model, *ancestor),
+            )
+        });
+        write!(output, "    (declaration (id ")?;
+        write_node_identity(model, declaration, output)?;
+        write!(output, ")")?;
+        if cyclic {
+            write!(output, " (cyclic true)")?;
+        }
+        writeln!(output)?;
+        for (ancestor, scopes) in supertypes {
+            write!(output, "      (supertype ")?;
+            write_node_identity(model, ancestor, output)?;
+            write!(output, " (scopes")?;
+            for scope in scopes {
+                write!(output, " {}", specialization_scope(scope))?;
+            }
+            writeln!(output, "))")?;
+        }
+        writeln!(output, "    )")?;
+    }
+    write!(output, ")")
+}
+
+fn specialization_scope(scope: types::SpecializationScope) -> &'static str {
+    match scope {
+        types::SpecializationScope::AnySpecialization => "any",
+        types::SpecializationScope::Subclassification => "subclassification",
+    }
+}
+
 pub(super) fn write_diagnostics(
     model: &ResolvedSemanticModel,
     output: &mut dyn fmt::Write,
@@ -1382,6 +1445,7 @@ mod tests {
         .unwrap();
         let facts =
             inspection::ElementFactIndex::build(&storage, &resolution, &evaluation).unwrap();
+        let specialization = types::SpecializationClosure::build(&storage, &resolution).unwrap();
         let model = ResolvedSemanticModel {
             storage,
             direct_names,
@@ -1392,6 +1456,7 @@ mod tests {
             reverse_references,
             effective_scopes,
             facts,
+            specialization,
             resolution,
             evaluation,
             metadata: PublicationMetadata {

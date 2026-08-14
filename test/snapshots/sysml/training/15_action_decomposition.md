@@ -125,6 +125,38 @@ package 'Action Decomposition' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::Focus::image")))
+      (supertype (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::Image")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::Focus::scene")))
+      (supertype (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::Scene")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::Shoot::image")))
+      (supertype (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::Image")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::Shoot::picture")))
+      (supertype (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::Picture")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::TakePicture::picture")))
+      (supertype (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::Picture")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::TakePicture::scene")))
+      (supertype (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::Scene")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::takePicture")))
+      (supertype (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::TakePicture")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::takePicture::focus")))
+      (supertype (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::Focus")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::takePicture::shoot")))
+      (supertype (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::Shoot")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

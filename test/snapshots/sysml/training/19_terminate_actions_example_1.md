@@ -137,6 +137,11 @@ package 'Terminate Actions Example-1' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

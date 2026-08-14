@@ -256,6 +256,18 @@ package '11b-Safety and Security Feaure Views' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::Views::vehicleMandatorySafetyFeatureView")))
+      (supertype (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::ViewDefinitions::SafetyFeatureView")) (scopes any))
+      (supertype (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::Views::vehicleSafetyFeatureView")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::Views::vehicleSafetyFeatureView")))
+      (supertype (node (document "memory://snapshot/11b_safety_and_security_feature_views.md") (qualified-name "11b-Safety and Security Feaure Views::ViewDefinitions::SafetyFeatureView")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

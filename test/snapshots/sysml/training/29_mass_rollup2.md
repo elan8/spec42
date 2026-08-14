@@ -145,6 +145,24 @@ package MassRollup2 {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::compositeThing")))
+      (supertype (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::MassedThing")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/29_mass_rollup2.md") (path (named (kind package) (name "MassRollup2")) (named (kind part) (name "compositeThing")) (anonymous (kind attribute) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::MassedThing::totalMass")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::compositeThing::subcomponents")))
+      (supertype (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::MassedThing")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::filteredMassThing")))
+      (supertype (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::MassedThing")) (scopes any))
+      (supertype (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::compositeThing")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

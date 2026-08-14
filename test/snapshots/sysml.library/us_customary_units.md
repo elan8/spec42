@@ -10009,6 +10009,11 @@ standard library package <USCU> USCustomaryUnits {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

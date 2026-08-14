@@ -155,6 +155,32 @@ package AllocationTest {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest::Logical_to_Physical")))
+      (supertype (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest::A")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest::Logical_to_Physical::logical")))
+      (supertype (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest::Logical")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest::Logical_to_Physical::physical")))
+      (supertype (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest::Physical")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest::l")))
+      (supertype (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest::Logical")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/allocation_test.md") (path (named (kind package) (name "AllocationTest")) (named (kind part) (name "l")) (anonymous (kind part) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest::Logical::component")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest::p")))
+      (supertype (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest::Physical")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/allocation_test.md") (path (named (kind package) (name "AllocationTest")) (named (kind part) (name "p")) (anonymous (kind part) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest::Physical::assembly")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

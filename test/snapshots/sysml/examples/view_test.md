@@ -128,6 +128,20 @@ package ViewTest {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::C::s")))
+      (supertype (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::S")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::c")))
+      (supertype (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::C")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::r")))
+      (supertype (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::R")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

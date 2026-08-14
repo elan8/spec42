@@ -108,6 +108,14 @@ package 'State Decomposition-1' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/24_state_decomposition_2.md") (qualified-name "State Decomposition-1::vehicleStates")))
+      (supertype (node (document "memory://snapshot/24_state_decomposition_2.md") (qualified-name "State Decomposition-1::VehicleStates")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

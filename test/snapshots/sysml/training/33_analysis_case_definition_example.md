@@ -395,6 +395,29 @@ package 'Analysis Case Definition Example' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/33_analysis_case_definition_example.md") (qualified-name "Analysis Case Definition Example::FuelEconomyAnalysis::fuelEconomyResult")))
+      (supertype (node (document "memory://snapshot/33_analysis_case_definition_example.md") (qualified-name "Analysis Case Definition Example::DistancePerVolumeValue")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/33_analysis_case_definition_example.md") (qualified-name "Analysis Case Definition Example::FuelEconomyAnalysis::scenario")))
+      (supertype (node (document "memory://snapshot/33_analysis_case_definition_example.md") (qualified-name "Analysis Case Definition Example::WayPoint")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/33_analysis_case_definition_example.md") (qualified-name "Analysis Case Definition Example::FuelEconomyAnalysis::solveForFuelConsumption::fuelEconomy")))
+      (supertype (node (document "memory://snapshot/33_analysis_case_definition_example.md") (qualified-name "Analysis Case Definition Example::DistancePerVolumeValue")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/33_analysis_case_definition_example.md") (qualified-name "Analysis Case Definition Example::FuelEconomyAnalysis::vehicle")))
+      (supertype (node (document "memory://snapshot/33_analysis_case_definition_example.md") (qualified-name "Analysis Case Definition Example::Vehicle")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/33_analysis_case_definition_example.md") (qualified-name "Analysis Case Definition Example::Vehicle::fuelEconomy_city")))
+      (supertype (node (document "memory://snapshot/33_analysis_case_definition_example.md") (qualified-name "Analysis Case Definition Example::DistancePerVolumeValue")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/33_analysis_case_definition_example.md") (qualified-name "Analysis Case Definition Example::Vehicle::fuelEconomy_highway")))
+      (supertype (node (document "memory://snapshot/33_analysis_case_definition_example.md") (qualified-name "Analysis Case Definition Example::DistancePerVolumeValue")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

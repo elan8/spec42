@@ -206,6 +206,27 @@ package CalculationExample {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::Vehicle")))
+      (supertype (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::VehiclePart")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::ms")))
+      (supertype (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::MassSum")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::vehicle")))
+      (supertype (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::Vehicle")) (scopes any))
+      (supertype (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::VehiclePart")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::vehicle::eng")))
+      (supertype (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::VehiclePart")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::vehicle::trans")))
+      (supertype (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::VehiclePart")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

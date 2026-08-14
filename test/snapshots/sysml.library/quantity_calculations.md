@@ -1170,6 +1170,11 @@ standard library package QuantityCalculations {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

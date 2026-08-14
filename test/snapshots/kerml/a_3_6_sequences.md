@@ -396,6 +396,41 @@ package SequencesExecution {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/a_3_6_sequences.md") (path (named (kind package) (name "SequencesExecution")) (named (kind kerml-association) (name "MyDry_Before_Ship_Link")) (anonymous (kind kerml-feature) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/a_3_6_sequences.md") (qualified-name "SequencesExecution::MyDry")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/a_3_6_sequences.md") (path (named (kind package) (name "SequencesExecution")) (named (kind kerml-association) (name "MyDry_Before_Ship_Link")) (anonymous (kind kerml-feature) (ordinal 1))))))
+      (supertype (node (document "memory://snapshot/a_3_6_sequences.md") (qualified-name "SequencesExecution::MyShip")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/a_3_6_sequences.md") (qualified-name "SequencesExecution::MyManufacture")))
+      (supertype (node (document "memory://snapshot/a_3_6_sequences.md") (qualified-name "SequencesModelToBeExecuted::Manufacture")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/a_3_6_sequences.md") (path (named (kind package) (name "SequencesExecution")) (named (kind kerml-behavior) (name "MyManufacture")) (anonymous (kind kerml-feature) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/a_3_6_sequences.md") (qualified-name "SequencesExecution::MyManufactureStepsPDS")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/a_3_6_sequences.md") (path (named (kind package) (name "SequencesExecution")) (named (kind kerml-behavior) (name "MyManufacture")) (anonymous (kind kerml-step) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/a_3_6_sequences.md") (qualified-name "SequencesExecution::MyPaint")) (scopes any))
+      (supertype (node (document "memory://snapshot/a_3_6_sequences.md") (qualified-name "SequencesModelToBeExecuted::Manufacture::paint")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/a_3_6_sequences.md") (path (named (kind package) (name "SequencesExecution")) (named (kind kerml-behavior) (name "MyManufacture")) (anonymous (kind kerml-step) (ordinal 1))))))
+      (supertype (node (document "memory://snapshot/a_3_6_sequences.md") (qualified-name "SequencesExecution::MyDry")) (scopes any))
+      (supertype (node (document "memory://snapshot/a_3_6_sequences.md") (qualified-name "SequencesModelToBeExecuted::Manufacture::dry")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/a_3_6_sequences.md") (path (named (kind package) (name "SequencesExecution")) (named (kind kerml-behavior) (name "MyManufacture")) (anonymous (kind kerml-step) (ordinal 2))))))
+      (supertype (node (document "memory://snapshot/a_3_6_sequences.md") (qualified-name "SequencesExecution::MyShip")) (scopes any))
+      (supertype (node (document "memory://snapshot/a_3_6_sequences.md") (qualified-name "SequencesModelToBeExecuted::Manufacture::ship")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/a_3_6_sequences.md") (path (named (kind package) (name "SequencesExecution")) (named (kind kerml-association) (name "MyPaint_Before_Dry_Link")) (anonymous (kind kerml-feature) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/a_3_6_sequences.md") (qualified-name "SequencesExecution::MyPaint")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/a_3_6_sequences.md") (path (named (kind package) (name "SequencesExecution")) (named (kind kerml-association) (name "MyPaint_Before_Dry_Link")) (anonymous (kind kerml-feature) (ordinal 1))))))
+      (supertype (node (document "memory://snapshot/a_3_6_sequences.md") (qualified-name "SequencesExecution::MyDry")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

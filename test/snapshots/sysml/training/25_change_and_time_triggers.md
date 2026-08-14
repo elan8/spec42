@@ -243,6 +243,17 @@ package 'Change and Time Triggers' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/25_change_and_time_triggers.md") (qualified-name "Change and Time Triggers::healthStates::controller")))
+      (supertype (node (document "memory://snapshot/25_change_and_time_triggers.md") (qualified-name "Change and Time Triggers::VehicleController")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/25_change_and_time_triggers.md") (qualified-name "Change and Time Triggers::healthStates::vehicle")))
+      (supertype (node (document "memory://snapshot/25_change_and_time_triggers.md") (qualified-name "Change and Time Triggers::Vehicle")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

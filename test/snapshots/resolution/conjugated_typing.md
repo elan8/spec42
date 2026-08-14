@@ -49,6 +49,17 @@ package ConjugatedTypingCoverage {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/conjugated_typing.md") (qualified-name "ConjugatedTypingCoverage::source")))
+      (supertype (node (document "memory://snapshot/conjugated_typing.md") (qualified-name "ConjugatedTypingCoverage::InputPort")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/conjugated_typing.md") (qualified-name "ConjugatedTypingCoverage::target")))
+      (supertype (node (document "memory://snapshot/conjugated_typing.md") (qualified-name "ConjugatedTypingCoverage::OutputPort")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

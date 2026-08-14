@@ -66,6 +66,17 @@ probe editor_queries.md 10 17 rename=Base
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/editor_queries.md") (qualified-name "Use::Child")))
+      (supertype (node (document "memory://snapshot/editor_queries.md") (qualified-name "Types::Base")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/editor_queries.md") (qualified-name "Use::Child::x")))
+      (supertype (node (document "memory://snapshot/editor_queries.md") (qualified-name "Types::Other")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

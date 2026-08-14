@@ -96,6 +96,11 @@ package '15_07-System of Units and Scales' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

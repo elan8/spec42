@@ -176,6 +176,30 @@ package '15_12-Compound Value Type' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/15_12_compound_value_type.md") (qualified-name "15_12-Compound Value Type::TireInfo::hubDiameter")))
+      (supertype (node (document "memory://snapshot/15_12_compound_value_type.md") (qualified-name "15_12-Compound Value Type::LengthValue")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/15_12_compound_value_type.md") (qualified-name "15_12-Compound Value Type::TireInfo::placement")))
+      (supertype (node (document "memory://snapshot/15_12_compound_value_type.md") (qualified-name "15_12-Compound Value Type::PositionVector")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/15_12_compound_value_type.md") (qualified-name "15_12-Compound Value Type::frenchTireInfo")))
+      (supertype (node (document "memory://snapshot/15_12_compound_value_type.md") (qualified-name "15_12-Compound Value Type::TireInfo")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/15_12_compound_value_type.md") (path (named (kind package) (name "15_12-Compound Value Type")) (named (kind attribute-def) (name "frenchTireInfo")) (anonymous (kind attribute) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/15_12_compound_value_type.md") (qualified-name "15_12-Compound Value Type::TireInfo::manufacturer")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/15_12_compound_value_type.md") (path (named (kind package) (name "15_12-Compound Value Type")) (named (kind attribute-def) (name "frenchTireInfo")) (anonymous (kind attribute) (ordinal 1))))))
+      (supertype (node (document "memory://snapshot/15_12_compound_value_type.md") (qualified-name "15_12-Compound Value Type::LengthValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/15_12_compound_value_type.md") (qualified-name "15_12-Compound Value Type::TireInfo::hubDiameter")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/15_12_compound_value_type.md") (path (named (kind package) (name "15_12-Compound Value Type")) (named (kind attribute-def) (name "frenchTireInfo")) (anonymous (kind attribute) (ordinal 2))))))
+      (supertype (node (document "memory://snapshot/15_12_compound_value_type.md") (qualified-name "15_12-Compound Value Type::TireInfo::width")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

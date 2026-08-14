@@ -407,6 +407,45 @@ package TimeVaryingCarDriver {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/time_varying_car_driver.md") (path (named (kind package) (name "TimeVaryingCarDriver")) (named (kind kerml-structure) (name "Car0")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/time_varying_car_driver.md") (qualified-name "TimeVaryingCarDriver::Car0::driver")) (scopes any))
+      (supertype (node (document "memory://snapshot/time_varying_car_driver.md") (qualified-name "TimeVaryingCarDriver::Person0")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/time_varying_car_driver.md") (qualified-name "TimeVaryingCarDriver::Car0::driver")))
+      (supertype (node (document "memory://snapshot/time_varying_car_driver.md") (qualified-name "TimeVaryingCarDriver::Person0")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/time_varying_car_driver.md") (qualified-name "TimeVaryingCarDriver::Car0::engine")))
+      (supertype (node (document "memory://snapshot/time_varying_car_driver.md") (qualified-name "TimeVaryingCarDriver::Car0::carParts")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/time_varying_car_driver.md") (path (named (kind package) (name "TimeVaryingCarDriver")) (named (kind kerml-structure) (name "Car0")) (named (kind kerml-feature) (name "operated")) (anonymous (kind kerml-feature) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/time_varying_car_driver.md") (qualified-name "TimeVaryingCarDriver::Car0::driver")) (scopes any))
+      (supertype (node (document "memory://snapshot/time_varying_car_driver.md") (qualified-name "TimeVaryingCarDriver::Person0")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/time_varying_car_driver.md") (qualified-name "TimeVaryingCarDriver::Car0::transmission")))
+      (supertype (node (document "memory://snapshot/time_varying_car_driver.md") (qualified-name "TimeVaryingCarDriver::Car0::carParts")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/time_varying_car_driver.md") (path (named (kind package) (name "TimeVaryingCarDriver")) (named (kind kerml-structure) (name "Car1")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/time_varying_car_driver.md") (qualified-name "TimeVaryingCarDriver::Car1::driver")) (scopes any))
+      (supertype (node (document "memory://snapshot/time_varying_car_driver.md") (qualified-name "TimeVaryingCarDriver::Person1")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/time_varying_car_driver.md") (qualified-name "TimeVaryingCarDriver::Car1::driver")))
+      (supertype (node (document "memory://snapshot/time_varying_car_driver.md") (qualified-name "TimeVaryingCarDriver::Person1")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/time_varying_car_driver.md") (qualified-name "TimeVaryingCarDriver::Car1::engine")))
+      (supertype (node (document "memory://snapshot/time_varying_car_driver.md") (qualified-name "TimeVaryingCarDriver::Car1::carParts")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/time_varying_car_driver.md") (path (named (kind package) (name "TimeVaryingCarDriver")) (named (kind kerml-structure) (name "Car1")) (named (kind kerml-feature) (name "operated")) (anonymous (kind kerml-feature) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/time_varying_car_driver.md") (qualified-name "TimeVaryingCarDriver::Car1::driver")) (scopes any))
+      (supertype (node (document "memory://snapshot/time_varying_car_driver.md") (qualified-name "TimeVaryingCarDriver::Person1")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/time_varying_car_driver.md") (qualified-name "TimeVaryingCarDriver::Car1::transmission")))
+      (supertype (node (document "memory://snapshot/time_varying_car_driver.md") (qualified-name "TimeVaryingCarDriver::Car1::carParts")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

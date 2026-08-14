@@ -793,6 +793,17 @@ standard library package OccurrenceFunctions {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/occurrence_functions.md") (qualified-name "OccurrenceFunctions::removeOld::destroyStep")))
+      (supertype (node (document "memory://snapshot/occurrence_functions.md") (qualified-name "OccurrenceFunctions::destroy")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/occurrence_functions.md") (qualified-name "OccurrenceFunctions::removeOldAt::destroyStep")))
+      (supertype (node (document "memory://snapshot/occurrence_functions.md") (qualified-name "OccurrenceFunctions::destroy")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

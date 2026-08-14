@@ -277,6 +277,20 @@ package '15_11-Variable Length Collection Types' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/15_11_variable_length_collection_types.md") (path (named (kind package) (name "15_11-Variable Length Collection Types")) (named (kind attribute-def) (name "Bag<SparePart>")) (anonymous (kind ref) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/15_11_variable_length_collection_types.md") (qualified-name "15_11-Variable Length Collection Types::SparePart")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/15_11_variable_length_collection_types.md") (path (named (kind package) (name "15_11-Variable Length Collection Types")) (named (kind attribute-def) (name "List<Set<Person>>")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind ref) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/15_11_variable_length_collection_types.md") (qualified-name "15_11-Variable Length Collection Types::Person")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/15_11_variable_length_collection_types.md") (path (named (kind package) (name "15_11-Variable Length Collection Types")) (named (kind attribute-def) (name "OrderedSet<Person>")) (anonymous (kind ref) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/15_11_variable_length_collection_types.md") (qualified-name "15_11-Variable Length Collection Types::Person")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

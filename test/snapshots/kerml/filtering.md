@@ -277,6 +277,21 @@ package Filtering {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/filtering.md") (qualified-name "Filtering::DesignModel::system")))
+      (supertype (node (document "memory://snapshot/filtering.md") (qualified-name "Filtering::DesignModel::System")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/filtering.md") (path (named (kind package) (name "Filtering")) (named (kind package) (name "Meta")) (anonymous (kind kerml-feature) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/filtering.md") (qualified-name "Filtering::DesignModel::System")) (scopes any))
+      (supertype (node (document "memory://snapshot/filtering.md") (qualified-name "Filtering::DesignModel::system")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/filtering.md") (qualified-name "Filtering::Meta::Test")))
+      (supertype (node (document "memory://snapshot/filtering.md") (qualified-name "Filtering::DesignModel::System")) (scopes any subclassification))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

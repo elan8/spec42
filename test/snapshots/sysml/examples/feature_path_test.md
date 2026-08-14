@@ -171,6 +171,29 @@ package Q {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::B::a")))
+      (supertype (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::A")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::B::f")))
+      (supertype (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::F")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::C::b")))
+      (supertype (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::B")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::F::a")))
+      (supertype (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::A")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::e1::x")))
+      (supertype (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::E")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::f")))
+      (supertype (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::F")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

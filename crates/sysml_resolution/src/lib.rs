@@ -414,6 +414,10 @@ impl DebugQueries<'_> {
     pub fn write_navigation_sexpr(&self, output: &mut dyn fmt::Write) -> fmt::Result {
         self.model.write_navigation_sexpr(output)
     }
+
+    pub fn write_types_sexpr(&self, output: &mut dyn fmt::Write) -> fmt::Result {
+        self.model.write_types_sexpr(output)
+    }
 }
 
 fn source_role(kind: SourceKind) -> SourceRole {

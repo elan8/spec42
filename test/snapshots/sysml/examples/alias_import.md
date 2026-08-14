@@ -61,6 +61,15 @@ package AliasImport {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Usages::vehicle")))
+      (supertype (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Definitions::Car")) (scopes any))
+      (supertype (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Definitions::Vehicle")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

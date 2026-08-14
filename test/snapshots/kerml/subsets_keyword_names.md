@@ -71,6 +71,11 @@ feature f2 subsets do, step;
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

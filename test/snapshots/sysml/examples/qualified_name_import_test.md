@@ -56,6 +56,14 @@ package QualifiedNameImportTest {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/qualified_name_import_test.md") (qualified-name "QualifiedNameImportTest::P2::x")))
+      (supertype (node (document "memory://snapshot/qualified_name_import_test.md") (qualified-name "QualifiedNameImportTest::P1::A")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

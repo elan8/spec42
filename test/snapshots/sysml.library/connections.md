@@ -356,6 +356,17 @@ standard library package Connections {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/connections.md") (qualified-name "Connections::BinaryConnection")))
+      (supertype (node (document "memory://snapshot/connections.md") (qualified-name "Connections::Connection")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/connections.md") (qualified-name "Connections::binaryConnections")))
+      (supertype (node (document "memory://snapshot/connections.md") (qualified-name "Connections::connections")) (scopes any subclassification))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -215,6 +215,25 @@ package 'Verification Case Usage Example' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/34_verification_case_usage_example.md") (qualified-name "Verification Case Usage Example::TestSystem")))
+      (supertype (node (document "memory://snapshot/34_verification_case_usage_example.md") (qualified-name "Verification Case Usage Example::MassVerificationSystem")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/34_verification_case_usage_example.md") (qualified-name "Verification Case Usage Example::massVerificationSystem")))
+      (supertype (node (document "memory://snapshot/34_verification_case_usage_example.md") (qualified-name "Verification Case Usage Example::MassVerificationSystem")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/34_verification_case_usage_example.md") (qualified-name "Verification Case Usage Example::massVerificationSystem::scale")))
+      (supertype (node (document "memory://snapshot/34_verification_case_usage_example.md") (qualified-name "Verification Case Usage Example::Scale")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/34_verification_case_usage_example.md") (qualified-name "Verification Case Usage Example::testSystem")))
+      (supertype (node (document "memory://snapshot/34_verification_case_usage_example.md") (qualified-name "Verification Case Usage Example::MassVerificationSystem")) (scopes any))
+      (supertype (node (document "memory://snapshot/34_verification_case_usage_example.md") (qualified-name "Verification Case Usage Example::TestSystem")) (scopes any))
+      (supertype (node (document "memory://snapshot/34_verification_case_usage_example.md") (qualified-name "Verification Case Usage Example::massVerificationSystem")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

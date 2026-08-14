@@ -168,6 +168,29 @@ package '15_04-Logical Expressions' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/15_04_logical_expressions.md") (qualified-name "15_04-Logical Expressions::4CylEngine")))
+      (supertype (node (document "memory://snapshot/15_04_logical_expressions.md") (qualified-name "15_04-Logical Expressions::Engine")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/15_04_logical_expressions.md") (qualified-name "15_04-Logical Expressions::6CylEngine")))
+      (supertype (node (document "memory://snapshot/15_04_logical_expressions.md") (qualified-name "15_04-Logical Expressions::Engine")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/15_04_logical_expressions.md") (qualified-name "15_04-Logical Expressions::AutomaticTransmission")))
+      (supertype (node (document "memory://snapshot/15_04_logical_expressions.md") (qualified-name "15_04-Logical Expressions::Transmission")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/15_04_logical_expressions.md") (qualified-name "15_04-Logical Expressions::ManualTransmission")))
+      (supertype (node (document "memory://snapshot/15_04_logical_expressions.md") (qualified-name "15_04-Logical Expressions::Transmission")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/15_04_logical_expressions.md") (qualified-name "15_04-Logical Expressions::Vehicle::engine")))
+      (supertype (node (document "memory://snapshot/15_04_logical_expressions.md") (qualified-name "15_04-Logical Expressions::Engine")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/15_04_logical_expressions.md") (qualified-name "15_04-Logical Expressions::Vehicle::transmission")))
+      (supertype (node (document "memory://snapshot/15_04_logical_expressions.md") (qualified-name "15_04-Logical Expressions::Transmission")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

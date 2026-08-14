@@ -523,6 +523,35 @@ package '5-State-based Behavior-2' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Usages::apply parking brake")))
+      (supertype (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Definitions::Apply Parking Brake")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Usages::controller states")))
+      (supertype (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Definitions::Controller States")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Usages::perform self test")))
+      (supertype (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Definitions::Perform Self Test")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Usages::sense temperature")))
+      (supertype (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Definitions::Sense Temperature")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Usages::vehicle states")))
+      (supertype (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Definitions::Vehicle States")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1")))
+      (supertype (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/5_state_based_behavior_2.md") (path (named (kind package) (name "5-State-based Behavior-2")) (named (kind package) (name "Usages")) (named (kind part) (name "vehicle1_c1")) (anonymous (kind perform-action) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA::provide power")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::vehicleController")))
+      (supertype (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Definitions::VehicleController")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

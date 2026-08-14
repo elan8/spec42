@@ -168,6 +168,20 @@ standard library package AnalysisCases {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/analysis_cases.md") (qualified-name "AnalysisCases::AnalysisCase::self")))
+      (supertype (node (document "memory://snapshot/analysis_cases.md") (qualified-name "AnalysisCases::AnalysisCase")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/analysis_cases.md") (qualified-name "AnalysisCases::AnalysisCase::subAnalysisCases")))
+      (supertype (node (document "memory://snapshot/analysis_cases.md") (qualified-name "AnalysisCases::AnalysisCase")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/analysis_cases.md") (qualified-name "AnalysisCases::analysisCases")))
+      (supertype (node (document "memory://snapshot/analysis_cases.md") (qualified-name "AnalysisCases::AnalysisCase")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

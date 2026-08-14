@@ -79,6 +79,23 @@ package PictureTaking {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/picture_taking.md") (qualified-name "PictureTaking::Focus::xrsl")))
+      (supertype (node (document "memory://snapshot/picture_taking.md") (qualified-name "PictureTaking::Exposure")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/picture_taking.md") (qualified-name "PictureTaking::Shoot::xsf")))
+      (supertype (node (document "memory://snapshot/picture_taking.md") (qualified-name "PictureTaking::Exposure")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/picture_taking.md") (qualified-name "PictureTaking::takePicture::focus")))
+      (supertype (node (document "memory://snapshot/picture_taking.md") (qualified-name "PictureTaking::Focus")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/picture_taking.md") (qualified-name "PictureTaking::takePicture::shoot")))
+      (supertype (node (document "memory://snapshot/picture_taking.md") (qualified-name "PictureTaking::Shoot")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

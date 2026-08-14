@@ -71,6 +71,14 @@ probe unresolved_reference.md 5 25
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/unresolved_reference.md") (qualified-name "Broken::known")))
+      (supertype (node (document "memory://snapshot/unresolved_reference.md") (qualified-name "Broken::Known")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

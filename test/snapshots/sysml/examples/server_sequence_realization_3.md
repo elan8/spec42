@@ -726,6 +726,44 @@ package ServerSequenceRealization_3 {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationInterface::source")))
+      (supertype (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationPort")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationInterface::target")))
+      (supertype (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationPort")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionInterface::source")))
+      (supertype (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionInterface::target")))
+      (supertype (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::subscriptionPort")))
+      (supertype (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3::publicationPort")))
+      (supertype (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationPort")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::publicationPort")))
+      (supertype (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationPort")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::subscriptionPort")))
+      (supertype (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionPort")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::realization_2::consumer")))
+      (supertype (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::realization_2::producer")))
+      (supertype (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::realization_2::server")))
+      (supertype (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::server_3")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

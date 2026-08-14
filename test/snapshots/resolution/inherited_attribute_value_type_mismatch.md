@@ -68,6 +68,26 @@ package Demo {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::ManagedRequirement::status")))
+      (supertype (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::RequirementStatusKind")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::Need")))
+      (supertype (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::ManagedRequirement")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::UserRequirement")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::UserRequirement")))
+      (supertype (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::ManagedRequirement")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::need")))
+      (supertype (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::ManagedRequirement")) (scopes any))
+      (supertype (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::Need")) (scopes any))
+      (supertype (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::UserRequirement")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

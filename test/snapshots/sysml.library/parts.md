@@ -414,6 +414,29 @@ doc
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/parts.md") (qualified-name "Parts::Part::done")))
+      (supertype (node (document "memory://snapshot/parts.md") (qualified-name "Parts::Part")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/parts.md") (qualified-name "Parts::Part::exhibitedStates")))
+      (supertype (node (document "memory://snapshot/parts.md") (qualified-name "Parts::Part::performedActions")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/parts.md") (qualified-name "Parts::Part::ownedStates")))
+      (supertype (node (document "memory://snapshot/parts.md") (qualified-name "Parts::Part::ownedActions")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/parts.md") (qualified-name "Parts::Part::self")))
+      (supertype (node (document "memory://snapshot/parts.md") (qualified-name "Parts::Part")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/parts.md") (qualified-name "Parts::Part::start")))
+      (supertype (node (document "memory://snapshot/parts.md") (qualified-name "Parts::Part")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/parts.md") (qualified-name "Parts::parts")))
+      (supertype (node (document "memory://snapshot/parts.md") (qualified-name "Parts::Part")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

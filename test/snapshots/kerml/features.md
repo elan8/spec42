@@ -345,6 +345,27 @@ package Features {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/features.md") (qualified-name "Features::Vehicle")))
+      (supertype (node (document "memory://snapshot/features.md") (qualified-name "Features::RegisteredAsset")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/features.md") (qualified-name "Features::Vehicle::v")))
+      (supertype (node (document "memory://snapshot/features.md") (qualified-name "Features::RegisteredAsset")) (scopes any))
+      (supertype (node (document "memory://snapshot/features.md") (qualified-name "Features::Vehicle")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/features.md") (qualified-name "Features::child")))
+      (supertype (node (document "memory://snapshot/features.md") (qualified-name "Features::person")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/features.md") (qualified-name "Features::mother")))
+      (supertype (node (document "memory://snapshot/features.md") (qualified-name "Features::parent")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/features.md") (qualified-name "Features::x")))
+      (supertype (node (document "memory://snapshot/features.md") (qualified-name "Features::g")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

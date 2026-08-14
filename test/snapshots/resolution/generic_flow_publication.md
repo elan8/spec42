@@ -43,6 +43,11 @@ package P { action def ExecuteMission { action validateRoute; action startMissio
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

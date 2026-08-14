@@ -126,6 +126,14 @@ package 'Enumeration Definitions-2' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/06_enumeration_definitions_2.md") (qualified-name "Enumeration Definitions-2::ClassificationKind")))
+      (supertype (node (document "memory://snapshot/06_enumeration_definitions_2.md") (qualified-name "Enumeration Definitions-2::ClassificationLevel")) (scopes any subclassification))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

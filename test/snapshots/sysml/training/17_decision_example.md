@@ -216,6 +216,20 @@ package 'Decision Example' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/17_decision_example.md") (qualified-name "Decision Example::ChargeBattery::addCharge")))
+      (supertype (node (document "memory://snapshot/17_decision_example.md") (qualified-name "Decision Example::AddCharge")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/17_decision_example.md") (qualified-name "Decision Example::ChargeBattery::endCharging")))
+      (supertype (node (document "memory://snapshot/17_decision_example.md") (qualified-name "Decision Example::EndCharging")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/17_decision_example.md") (qualified-name "Decision Example::ChargeBattery::monitor")))
+      (supertype (node (document "memory://snapshot/17_decision_example.md") (qualified-name "Decision Example::MonitorBattery")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

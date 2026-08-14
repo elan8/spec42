@@ -66,6 +66,25 @@ package Diamond {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Diamond")))
+      (supertype (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Base")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Left")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Right")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Diamond::p")))
+      (supertype (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Base::Member")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Left")))
+      (supertype (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Base")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Right")))
+      (supertype (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Base")) (scopes any subclassification))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

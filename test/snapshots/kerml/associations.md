@@ -155,6 +155,20 @@ package Associations {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/associations.md") (qualified-name "Associations::A::y_cross::y")))
+      (supertype (node (document "memory://snapshot/associations.md") (qualified-name "Associations::Y")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/associations.md") (qualified-name "Associations::B")))
+      (supertype (node (document "memory://snapshot/associations.md") (qualified-name "Associations::A")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/associations.md") (qualified-name "Associations::XY::y")))
+      (supertype (node (document "memory://snapshot/associations.md") (qualified-name "Associations::Y")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

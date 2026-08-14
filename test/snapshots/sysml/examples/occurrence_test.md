@@ -117,6 +117,26 @@ package OccurrenceTest {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Occ::occ2")))
+      (supertype (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Occ")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::ind")))
+      (supertype (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Ind")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::occ")))
+      (supertype (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Occ")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::occ::o1")))
+      (supertype (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Occ")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::occ::o2")))
+      (supertype (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Occ")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

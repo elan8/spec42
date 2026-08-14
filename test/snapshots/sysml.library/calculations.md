@@ -183,6 +183,17 @@ standard library package Calculations {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations::Calculation::self")))
+      (supertype (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations::Calculation")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations::Calculation::subcalculations")))
+      (supertype (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations::Calculation")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -141,6 +141,46 @@ package ProductSelection_UnownedEnds_SysML {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::info1")))
+      (supertype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::SelectionInfo")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::myCart")))
+      (supertype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer::products")))
+      (supertype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::Product")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::Product::inCart")))
+      (supertype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection::cart")))
+      (supertype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection::info")))
+      (supertype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::SelectionInfo")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection::selectedProduct")))
+      (supertype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::Product")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart::selectedProducts")))
+      (supertype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::Product")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection")))
+      (supertype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection::cart")))
+      (supertype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection::cart")) (scopes any))
+      (supertype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection::selectedProduct")))
+      (supertype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::Product")) (scopes any))
+      (supertype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection::selectedProduct")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

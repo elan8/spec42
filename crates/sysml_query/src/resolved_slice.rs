@@ -292,6 +292,10 @@ impl DebugQueries<'_> {
         self.model.debug().write_navigation_sexpr(output)
     }
 
+    pub fn write_types_sexpr(&self, output: &mut dyn fmt::Write) -> fmt::Result {
+        self.model.debug().write_types_sexpr(output)
+    }
+
     pub fn write_editor_queries_sexpr(
         &self,
         probes: &[EditorProbe],

@@ -227,6 +227,17 @@ package Expressions {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/expressions.md") (qualified-name "Expressions::obj1")))
+      (supertype (node (document "memory://snapshot/expressions.md") (qualified-name "Expressions::C")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/expressions.md") (qualified-name "Expressions::obj2")))
+      (supertype (node (document "memory://snapshot/expressions.md") (qualified-name "Expressions::C")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

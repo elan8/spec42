@@ -152,6 +152,20 @@ package RequirementTest {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::c")))
+      (supertype (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::C")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::q::r")))
+      (supertype (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::R")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::r1")))
+      (supertype (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::R1")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

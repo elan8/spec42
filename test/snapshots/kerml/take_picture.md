@@ -163,6 +163,17 @@ behavior TakePicture {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/take_picture.md") (qualified-name "TakePicture::step1")))
+      (supertype (node (document "memory://snapshot/take_picture.md") (qualified-name "TakePicture::Focus")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/take_picture.md") (qualified-name "TakePicture::step2")))
+      (supertype (node (document "memory://snapshot/take_picture.md") (qualified-name "TakePicture::Shoot")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

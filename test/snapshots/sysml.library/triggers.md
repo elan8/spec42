@@ -603,6 +603,17 @@ standard library package Triggers {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/triggers.md") (qualified-name "Triggers::TriggerAfter::signal")))
+      (supertype (node (document "memory://snapshot/triggers.md") (qualified-name "Triggers::TimeSignal")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/triggers.md") (qualified-name "Triggers::TriggerAt::timeSignal")))
+      (supertype (node (document "memory://snapshot/triggers.md") (qualified-name "Triggers::TimeSignal")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

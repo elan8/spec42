@@ -218,6 +218,35 @@ standard library package RiskMetadata {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/risk_metadata.md") (qualified-name "RiskMetadata::LevelEnum")))
+      (supertype (node (document "memory://snapshot/risk_metadata.md") (qualified-name "RiskMetadata::Level")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/risk_metadata.md") (qualified-name "RiskMetadata::Risk::costRisk")))
+      (supertype (node (document "memory://snapshot/risk_metadata.md") (qualified-name "RiskMetadata::RiskLevel")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/risk_metadata.md") (qualified-name "RiskMetadata::Risk::scheduleRisk")))
+      (supertype (node (document "memory://snapshot/risk_metadata.md") (qualified-name "RiskMetadata::RiskLevel")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/risk_metadata.md") (qualified-name "RiskMetadata::Risk::technicalRisk")))
+      (supertype (node (document "memory://snapshot/risk_metadata.md") (qualified-name "RiskMetadata::RiskLevel")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/risk_metadata.md") (qualified-name "RiskMetadata::Risk::totalRisk")))
+      (supertype (node (document "memory://snapshot/risk_metadata.md") (qualified-name "RiskMetadata::RiskLevel")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/risk_metadata.md") (qualified-name "RiskMetadata::RiskLevel::impact")))
+      (supertype (node (document "memory://snapshot/risk_metadata.md") (qualified-name "RiskMetadata::Level")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/risk_metadata.md") (qualified-name "RiskMetadata::RiskLevel::probability")))
+      (supertype (node (document "memory://snapshot/risk_metadata.md") (qualified-name "RiskMetadata::Level")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/risk_metadata.md") (qualified-name "RiskMetadata::RiskLevelEnum")))
+      (supertype (node (document "memory://snapshot/risk_metadata.md") (qualified-name "RiskMetadata::RiskLevel")) (scopes any subclassification))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

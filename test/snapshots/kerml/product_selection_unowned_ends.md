@@ -195,6 +195,39 @@ package ProductSelection_UnownedEnds {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::ProductSelection::cart")))
+      (supertype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::ShoppingCart")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::ProductSelection::info")))
+      (supertype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::SelectionInfo")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::ProductSelection::selectedProduct")))
+      (supertype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::Product")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::SingleProductSelection")))
+      (supertype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::ProductSelection")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::SingleProductSelection1")))
+      (supertype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::ProductSelection")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::SingleProductSelection1::cart"))) (cyclic true)
+      (supertype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::ShoppingCart")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::SingleProductSelection1::selectedProduct"))) (cyclic true)
+      (supertype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::Product")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (path (named (kind package) (name "ProductSelection_UnownedEnds")) (named (kind kerml-association) (name "SingleProductSelection")) (anonymous (kind kerml-end) (ordinal 0)) (named (kind kerml-feature) (name "selectedProduct"))))))
+      (supertype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::Product")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::SingleProductSelection::cart")))
+      (supertype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::ProductSelection::cart")) (scopes any))
+      (supertype (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::ShoppingCart")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

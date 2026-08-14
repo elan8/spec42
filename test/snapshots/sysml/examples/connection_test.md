@@ -235,6 +235,26 @@ package ConnectionTest {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/connection_test.md") (path (named (kind package) (name "ConnectionTest")) (anonymous (kind connection) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::C")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::A::b")))
+      (supertype (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::B")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::AB::b")))
+      (supertype (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::B")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::P::p1")))
+      (supertype (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::p")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::bus")))
+      (supertype (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::C")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

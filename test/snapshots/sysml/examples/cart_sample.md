@@ -332,6 +332,20 @@ package CartSample {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/cart_sample.md") (path (named (kind package) (name "CartSample")) (named (kind part-def) (name "Cart")) (named (kind attribute-def) (name "CartStateDerivative")) (anonymous (kind ref) (ordinal 0))))))
+      (supertype (node (document "memory://snapshot/cart_sample.md") (qualified-name "CartSample::Cart::CartState")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/cart_sample.md") (qualified-name "CartSample::context::cart")))
+      (supertype (node (document "memory://snapshot/cart_sample.md") (qualified-name "CartSample::Cart")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/cart_sample.md") (qualified-name "CartSample::context::pusher")))
+      (supertype (node (document "memory://snapshot/cart_sample.md") (qualified-name "CartSample::Pusher")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

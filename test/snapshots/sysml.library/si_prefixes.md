@@ -1292,6 +1292,11 @@ standard library package SIPrefixes {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

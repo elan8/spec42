@@ -129,6 +129,20 @@ package ParameterTest {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::A::y")))
+      (supertype (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::A")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::F::p")))
+      (supertype (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::A")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::a")))
+      (supertype (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::A")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

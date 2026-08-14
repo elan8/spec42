@@ -37,6 +37,14 @@ part p : Foo;
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/feature_typing_mismatch.md") (qualified-name "p")))
+      (supertype (node (document "memory://snapshot/feature_typing_mismatch.md") (qualified-name "Foo")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

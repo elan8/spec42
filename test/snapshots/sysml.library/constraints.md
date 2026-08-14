@@ -190,6 +190,25 @@ standard library package Constraints {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/constraints.md") (qualified-name "Constraints::ConstraintCheck::self")))
+      (supertype (node (document "memory://snapshot/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/constraints.md") (qualified-name "Constraints::assertedConstraintChecks")))
+      (supertype (node (document "memory://snapshot/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/constraints.md") (qualified-name "Constraints::constraintChecks")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/constraints.md") (qualified-name "Constraints::constraintChecks")))
+      (supertype (node (document "memory://snapshot/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/constraints.md") (qualified-name "Constraints::negatedConstraintChecks")))
+      (supertype (node (document "memory://snapshot/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any))
+      (supertype (node (document "memory://snapshot/constraints.md") (qualified-name "Constraints::constraintChecks")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

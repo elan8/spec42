@@ -276,6 +276,29 @@ package JohnIndividualExample {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::John")))
+      (supertype (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::Person")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::JohnAsPresident")))
+      (supertype (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::John")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::Person")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::President")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::President")))
+      (supertype (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::Person")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::UnitedStates")))
+      (supertype (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::Country")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::UnitedStatesWithJohnAsPresident")))
+      (supertype (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::Country")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::UnitedStates")) (scopes any subclassification))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

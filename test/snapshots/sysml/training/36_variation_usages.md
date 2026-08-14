@@ -151,6 +151,17 @@ package 'Variation Usages' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::vehicleFamily")))
+      (supertype (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::Vehicle")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::vehicleFamily::transmission")))
+      (supertype (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::Transmission")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
