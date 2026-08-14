@@ -1,4 +1,4 @@
-//! Unified semantic cache foundation (`UNIFY_CACHE_PLAN.md` §5.1, §6.1, §7, §8, §9).
+//! Unified semantic cache foundation (`planning/UNIFY_CACHE_PLAN.md` §5.1, §6.1, §7, §8, §9).
 //!
 //! This module provides the storage substrate for the unified cache: typed BLAKE3 identities,
 //! the on-disk object store with its envelope format and lock-free atomic publication, capacity

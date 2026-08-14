@@ -46,7 +46,7 @@ fn expression_text_from_span(uri: &Url, span: &sysml_v2_parser::Span, fallback: 
 /// `attributes["analysisParams"]`/`["parameters"]` and a kind tag into `["analysisKind"]`; an
 /// exhaustive repository grep found no reader for any of those three keys (only this file ever
 /// wrote them), so per the B9 "no reader" rule they were deleted outright rather than migrated to
-/// a typed fact -- see `UNIFY_CACHE_PROGRESS.md` chunk E.
+/// a typed fact -- see `planning/UNIFY_CACHE_PROGRESS.md` B9.
 fn extract_constraint_metadata(uri: &Url, body: &ConstraintDefBody) -> Option<String> {
     let mut expression: Option<String> = None;
     if let ConstraintDefBody::Brace { elements } = body {
@@ -104,7 +104,7 @@ fn strip_calc_return_expression(text: &str) -> String {
 /// `["parameters"]`, a `return` declaration into `["analysisReturn"]`, and a kind tag into
 /// `["analysisKind"]`; an exhaustive repository grep found no reader for any of those four keys
 /// (only this file ever wrote them), so per the B9 "no reader" rule they were deleted outright
-/// rather than migrated to a typed fact -- see `UNIFY_CACHE_PROGRESS.md` chunk E.
+/// rather than migrated to a typed fact -- see `planning/UNIFY_CACHE_PROGRESS.md` B9.
 fn extract_calc_metadata(uri: &Url, body: &CalcDefBody) -> Option<String> {
     let mut expression: Option<String> = None;
     if let CalcDefBody::Brace { elements } = body {

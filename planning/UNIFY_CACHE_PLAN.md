@@ -111,7 +111,7 @@ unified together.
 - Shared cache configuration, storage, concurrency, telemetry, pruning, and CLI management.
 - Migration of repository-owned source provenance from SHA-256 strings to typed BLAKE3 digests.
 - The semantic-graph publication and round-trip prerequisites in
-  `ROUNDTRIP_SEMGRAPH_PREREQS.md`.
+  `planning/ROUNDTRIP_SEMGRAPH_PREREQS.md`.
 
 ### 3.2 Out of scope
 
@@ -665,7 +665,7 @@ or source guardrail test that prevents new production calls from bypassing it.
 - Cache-disabled tests execute the same owning code and differ only in reuse metrics.
 
 The semantic graph tests required before enabling graph entries are specified separately in
-`ROUNDTRIP_SEMGRAPH_PREREQS.md`.
+`planning/ROUNDTRIP_SEMGRAPH_PREREQS.md`.
 
 ### 11.3 Performance
 
@@ -686,17 +686,14 @@ performance results do not waive a correctness gate.
 
 This is one user-visible migration, implemented internally in dependency order:
 
-1. Complete the semantic graph round-trip prerequisites and parity suite, including removal of the
-   untyped semantic-node attribute bag and migration of every consumer to canonical typed facts.
-2. Add typed BLAKE3 identities, exact source snapshots, and breaking metadata v2.
-3. Add the lock-free sharded store, canonical postcard/zstd format, atomic publication,
-   filesystem-scan capacity policy, and management API.
-4. Add parse, library-index, closure, library-graph, and workspace-graph artifacts.
-5. Add `SemanticBuildService` and route every production surface through it.
-6. Add CLI management and observability.
-7. Remove legacy cache modules, integrations, SHA-based repository metadata, and the graph-specific
+1. Complete the remaining semantic graph round-trip prerequisites in
+   [ROUNDTRIP_SEMGRAPH_PREREQS.md](ROUNDTRIP_SEMGRAPH_PREREQS.md).
+2. Add library-graph and workspace-graph artifacts.
+3. Add `SemanticBuildService` and route every production surface through it.
+4. Add CLI management and observability.
+5. Remove legacy cache modules, integrations, SHA-based repository metadata, and the graph-specific
    legacy command.
-8. Run focused tests, workspace-wide tests, cold/warm parity, corruption drills, concurrency tests,
+6. Run focused tests, workspace-wide tests, cold/warm parity, corruption drills, concurrency tests,
    and performance benchmarks before enabling the cache by default.
 
 Do not ship a mode that keeps the legacy and unified caches alive together. If the complete cutover

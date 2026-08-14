@@ -2796,7 +2796,10 @@ mod tests {
             configuration: SemanticConfiguration::default(),
         })
         .expect("recovery model");
-        assert_eq!(model.completeness(), SemanticModelCompleteness::EditorRecovery);
+        assert_eq!(
+            model.completeness(),
+            SemanticModelCompleteness::EditorRecovery
+        );
     }
 
     #[test]
@@ -3286,8 +3289,8 @@ mod tests {
     }
 }
 
-// --- The graph's own publication contract (`ROUNDTRIP_SEMGRAPH_PREREQS.md` B4;
-// `UNIFY_CACHE_PLAN.md` §4.3). ---
+// --- The graph's own publication contract (the `SemanticPublication` contract;
+// `planning/UNIFY_CACHE_PLAN.md` §4.3). ---
 //
 // A decoded or in-memory [`SemanticGraph`] must be able to prove, without inspecting attributes
 // or guessing from shape: which exact source root produced it, whether parsing used strict
@@ -3307,7 +3310,7 @@ mod tests {
 
 /// Repository-owned semantic algorithm contract version.
 ///
-/// Deliberately not `CARGO_PKG_VERSION` (`UNIFY_CACHE_PLAN.md` §6.1): the crate version changes
+/// Deliberately not `CARGO_PKG_VERSION` (`planning/UNIFY_CACHE_PLAN.md` §6.1): the crate version changes
 /// for reasons unrelated to the semantic construction algorithm (docs, unrelated modules,
 /// dependency bumps), while this constant changes only when parsing, linking, effective-fact
 /// construction, pending resolution, or evaluation semantics change in a way that could make a
@@ -3355,7 +3358,7 @@ pub enum SemanticPhase {
 /// This is orthogonal to [`SemanticPhase`]: a `SettledEvaluated` graph can still be
 /// `EditorRecovery` (parsed with recovered syntax errors but linked/evaluated to completion), and
 /// pending unresolved/ambiguous *semantic* relationships never make a build `Partial` — see the
-/// module-level warning in `ROUNDTRIP_SEMGRAPH_PREREQS.md` §4/B4 and `UNIFY_CACHE_PLAN.md` §4.3:
+/// module-level warning and `planning/UNIFY_CACHE_PLAN.md` §4.3:
 /// an explicit unresolved or ambiguous outcome is itself a complete, correctly settled fact.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -3385,7 +3388,7 @@ pub enum SemanticCompleteness {
 }
 
 /// The graph's own publication identity, phase, and completeness — `SemanticPublication` from
-/// `UNIFY_CACHE_PLAN.md` §4.3 and the required resolution for `ROUNDTRIP_SEMGRAPH_PREREQS.md` B4.
+/// `planning/UNIFY_CACHE_PLAN.md` §4.3 and the required resolution for the `SemanticPublication` contract.
 ///
 /// Every [`SemanticGraph`](crate::semantic::graph::SemanticGraph) carries one. It answers, without
 /// inspecting graph content: which exact source root produced this graph
@@ -3469,7 +3472,7 @@ impl SemanticPublication {
     /// This is the only way `phase` ever changes after construction, and it can only move
     /// forward: regression is structurally impossible to express here rather than merely
     /// discouraged, satisfying `AGENTS.md`'s "Publish coherent model states atomically" and
-    /// `ROUNDTRIP_SEMGRAPH_PREREQS.md` B4's "phase transitions explicit and monotonic". Taking the
+    /// the `SemanticPublication` contract's "phase transitions explicit and monotonic". Taking the
     /// max (rather than asserting `phase >= self.phase`) is deliberate, not merely lenient: a
     /// pipeline barrier function such as `finalize_and_evaluate_frontier` unconditionally
     /// advances to `StructurallyLinked` before deciding whether to evaluate, and is itself a valid
@@ -3482,7 +3485,7 @@ impl SemanticPublication {
     }
 
     /// The single typed predicate for whether this publication may be accepted into persistent
-    /// graph storage (`ROUNDTRIP_SEMGRAPH_PREREQS.md` B4, `UNIFY_CACHE_PLAN.md` §4.3: "Only a
+    /// graph storage (the `SemanticPublication` contract, `planning/UNIFY_CACHE_PLAN.md` §4.3: "Only a
     /// complete settled/evaluated publication is eligible for a persistent semantic-graph
     /// entry.").
     ///

@@ -11,7 +11,7 @@ use crate::semantic::kinds::is_port_like_str as is_port_like;
 /// Projects [`crate::semantic::model::DeclaredExpressionText`] and the analysis-case-level
 /// `objectiveBoundTo`/`analysisExpression` facts onto a boundary DTO's legacy `attributes` JSON
 /// map, at the transport boundary only (see `AGENTS.md` "Boundary DTO modules remain explicitly
-/// allowed"). `SemanticNode` itself no longer carries these as JSON (`UNIFY_CACHE_PROGRESS.md`
+/// allowed"). `SemanticNode` itself no longer carries these as JSON (`planning/UNIFY_CACHE_PROGRESS.md`
 /// chunk E); this keeps presentation consumers that read the projected DTO's `attributes` (e.g.
 /// `general_view_fold::detail_value_text`, `lsp_server`'s hover/symbol projections) unchanged.
 pub fn project_expression_text_attributes(
@@ -50,7 +50,7 @@ pub fn project_expression_text_attributes(
 /// Projects [`crate::semantic::model::SourceTextFacts`] onto a boundary DTO's legacy `attributes`
 /// JSON map, at the transport boundary only (see `AGENTS.md` "Boundary DTO modules remain
 /// explicitly allowed"). `SemanticNode` itself no longer carries `doc`/`text`/`language`/`keyword`
-/// as JSON (`UNIFY_CACHE_PROGRESS.md` chunk D/G); this keeps presentation consumers that read the
+/// as JSON (`planning/UNIFY_CACHE_PROGRESS.md` B9); this keeps presentation consumers that read the
 /// projected DTO's `attributes` map (e.g. `general_view_fold`, `lsp_server`'s symbol projections)
 /// unchanged. `keyword` here is the hover-only spelling; the separate semantic
 /// `DeclaredSemanticFacts::modeled_keyword` fact is never projected through this map.
@@ -80,7 +80,7 @@ pub fn project_source_text_attributes(
 /// [`crate::semantic::model::DeclaredRelationshipFacts::redefinition`]/`subsetting` onto a
 /// boundary DTO's legacy `attributes` JSON map, at the transport boundary only (see `AGENTS.md`
 /// "Boundary DTO modules remain explicitly allowed"). `general_view_fold` reads these through the
-/// projected DTO rather than `SemanticNode.attributes` (`UNIFY_CACHE_PROGRESS.md` chunk G); the
+/// projected DTO rather than `SemanticNode.attributes` (`planning/UNIFY_CACHE_PROGRESS.md` B9); the
 /// other relationship-target keys in the same family (`referencesFeature`, `crossesFeature`,
 /// `specializes`) have no attribute-map reader left and are not projected here.
 pub fn project_relationship_target_attributes(
@@ -100,7 +100,7 @@ pub fn project_relationship_target_attributes(
 /// allowed"). `SemanticNode` itself no longer carries `attributeType`/`dataType`/`type`/`partType`/
 /// `portType`/`refType`/`parameterType` as JSON: every one of those was a pure duplicate of the
 /// first authored [`crate::semantic::model::DeclaredRelationshipFacts::typing`] target
-/// (`UNIFY_CACHE_PROGRESS.md` B9 chunk-G-remaining) -- populating all of the legacy key names with
+/// (`planning/UNIFY_CACHE_PROGRESS.md` B9) -- populating all of the legacy key names with
 /// that single value preserves every existing per-element-kind DTO reader
 /// (`general_view_fold::detail_type_name`, `lsp_server`'s symbol projections) unchanged.
 /// `payloadType`/`acceptType` are genuinely separate facts

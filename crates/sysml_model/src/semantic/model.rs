@@ -20,7 +20,7 @@ fn deserialize_url<'de, D: Deserializer<'de>>(d: D) -> Result<Url, D::Error> {
 /// Combines document URI and qualified name for workspace-wide uniqueness.
 ///
 /// `Ord`/`PartialOrd` implement the canonical `NodeId` order from
-/// `ROUNDTRIP_SEMGRAPH_PREREQS.md` §6: normalized URI string, then qualified name. This is the
+/// `planning/ROUNDTRIP_SEMGRAPH_PREREQS.md` §6: normalized URI string, then qualified name. This is the
 /// one ordering-policy owner for `NodeId`; any lookup vector or candidate list that must not
 /// depend on insertion/merge order sorts through this `Ord` impl rather than defining its own
 /// comparator (see `semantic::graph::sort_node_ids_canonically`).
@@ -852,7 +852,7 @@ impl SemanticEdge {
 /// uses to rebuild `cross_document_edges_by_source_uri`. Whole, parallel, merge-from-base,
 /// incremental, and decoded builds must all tag edges with the *same* owner for equivalent
 /// input, or the rebuilt index (and therefore later removal/refresh) will diverge by
-/// construction path -- see `ROUNDTRIP_SEMGRAPH_PREREQS.md` B1.
+/// construction path -- see the edge-construction ownership contract.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub enum ConstructionOwner {
@@ -916,7 +916,7 @@ pub enum ImpliedRelationshipRule {
     /// entailment is universal to every `Redefinition`, not only this shorthand -- widening this
     /// rule to publish an implied `Subsetting` edge for *every* redefinition is legitimate future
     /// work, but is a separate, deliberately sequenced change: it would move a large number of
-    /// corpus golden fixtures. See `UNIFY_CACHE_PROGRESS.md` chunk G.
+    /// corpus golden fixtures. See `planning/UNIFY_CACHE_PROGRESS.md` B9.
     MetadataRedefinitionEntailsSubsetting,
 }
 
@@ -1199,21 +1199,21 @@ pub struct DeclaredSemanticFacts {
     /// Analysis/verification-case level facts: rendered case expression, aggregated
     /// require/assert constraints, and objective-to-result binding. See
     /// [`DeclaredAnalysisCaseFacts`]. Replaces `attributes["analysisExpression"]`,
-    /// `["analysisConstraints"]`, `["objectiveBoundTo"]` (`UNIFY_CACHE_PROGRESS.md` chunk E).
+    /// `["analysisConstraints"]`, `["objectiveBoundTo"]` (`planning/UNIFY_CACHE_PROGRESS.md` B9).
     #[serde(default)]
     pub analysis_case: Option<DeclaredAnalysisCaseFacts>,
     /// The recognized KerML metaclass role for a raw `KermlSemanticDecl`/`KermlFeatureDecl`
     /// library declaration node, when its opaque BNF-tagged text names a known metaclass.
     /// Drives genuine semantic classification (`is_kerml_metadata_supertype`, the
     /// `SemanticMetadata` parent check) rather than presentation (was
-    /// `attributes["metaclassRole"]`, `UNIFY_CACHE_PROGRESS.md` chunk F).
+    /// `attributes["metaclassRole"]`, `planning/UNIFY_CACHE_PROGRESS.md` B9).
     #[serde(default)]
     pub metaclass_role: Option<KermlMetaclassRole>,
     /// An interface/connection end's declared type name (`end name : Type;`), kept separate from
     /// `relationships.typing` so that generic unresolved-typing diagnostics do not walk it: ends
     /// resolve leniently as either a type or a feature reference, and already have their own
     /// `interface_end_invalid`-family diagnostics (was `attributes["endType"]`,
-    /// `UNIFY_CACHE_PROGRESS.md` chunk F).
+    /// `planning/UNIFY_CACHE_PROGRESS.md` B9).
     #[serde(default)]
     pub interface_end_type: Option<String>,
     /// Declared keyword spelling used only for semantic-classification decisions: user-defined
@@ -1222,7 +1222,7 @@ pub struct DeclaredSemanticFacts {
     /// `sysml_diagnostics::checks::view_metadata_conformance`). Deliberately distinct from
     /// `SourceTextFacts::keyword`, which covers only the unrelated hover/doc-comment spelling of
     /// an opaque member / action body decl (was `attributes["keyword"]` for this use,
-    /// `UNIFY_CACHE_PROGRESS.md` chunk F).
+    /// `planning/UNIFY_CACHE_PROGRESS.md` B9).
     #[serde(default)]
     pub modeled_keyword: Option<String>,
     /// Authored payload-typing display text for an action/transition `accept`/`send` clause
@@ -1230,8 +1230,8 @@ pub struct DeclaredSemanticFacts {
     /// it there would send it through the over-broad workspace-wide
     /// `link_workspace_relationships_pass`, which resolves references without the KerML
     /// namespace-containment/visibility scoping the specification requires -- a semantic defect
-    /// tracked in `RESOLUTION_LAYER_INVESTIGATION.md` ("type-reference resolution ignores KerML
-    /// scoping"), not specific to payload clauses. Migrate into `relationships.typing` once that
+    /// tracked in `planning/RESOLUTION_LAYER_DESIGN.md`, not specific to payload clauses. Migrate
+    /// into `relationships.typing` once that
     /// defect is fixed. Distinct from a named flow's own payload feature typing, which already
     /// resolves through an ordinary `Typing` edge (was `attributes["payloadType"]` for
     /// accept/send clauses only; the named-flow-payload use of the same key was a pure duplicate
@@ -1251,7 +1251,7 @@ impl DeclaredRelationshipFacts {
     /// The first authored typing target's display text, if any. Several element kinds
     /// (`part`/`port`/`ref`/`in out parameter`) used to duplicate this into a `*Type` attribute
     /// map entry alongside the real `Typing` edge/declared fact; this accessor is their single
-    /// replacement (`UNIFY_CACHE_PROGRESS.md` B9 chunk-G-remaining `partType`/`portType`/
+    /// replacement (`planning/UNIFY_CACHE_PROGRESS.md` B9 `partType`/`portType`/
     /// `refType`/`parameterType` rewiring).
     pub fn typing_display(&self) -> Option<&str> {
         self.typing
@@ -1537,7 +1537,7 @@ pub struct DeclaredRelationshipFacts {
     pub subject: Vec<DeclaredRelationshipTarget>,
     /// Authored but unresolved-edge reference targets: a `Stakeholder`/`Purpose` declaration's
     /// bare target name when no typed clause is authored alongside it (was
-    /// `attributes["refTarget"]`, `UNIFY_CACHE_PROGRESS.md` chunk F). These never publish a
+    /// `attributes["refTarget"]`, `planning/UNIFY_CACHE_PROGRESS.md` B9). These never publish a
     /// graph edge; consumers resolve the name against the workspace directly. Distinct from
     /// `reference`, which holds authored `RelationshipKind::Reference` targets that publish
     /// edges on linking.
@@ -2305,7 +2305,7 @@ impl Drop for DeclaredExpression {
 /// classifier-decl user-defined-keyword detection and metadata-keyword-usage matching in
 /// `sysml_diagnostics::checks::view_metadata_conformance` -- reads a distinct producer/consumer
 /// pair on the untyped `attributes` map and is out of scope here; see
-/// `UNIFY_CACHE_PROGRESS.md` chunk F.
+/// `planning/UNIFY_CACHE_PROGRESS.md` B9.
 #[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq, Eq)]
 pub struct SourceTextFacts {
     /// Documentation comment text (`doc` member of a `TextualRepresentation`/annotation, or the
@@ -2333,7 +2333,7 @@ pub struct SourceTextFacts {
 /// rendered text rather than a structured tree (boolean-literal detection, unit-bracket
 /// parsing, `::`-qualification checks, LHS/RHS assignment-target text). Replaces
 /// `attributes["value"]`, `["defaultValue"]`, `["lhs"]`, `["rhs"]`, `["condition"]`,
-/// `["isThen"]` (`UNIFY_CACHE_PROGRESS.md` chunk E).
+/// `["isThen"]` (`planning/UNIFY_CACHE_PROGRESS.md` B9).
 ///
 /// Where a producer also has a parsed expression AST available, the structured tree is (and
 /// remains) recorded separately as [`DeclaredSemanticFacts::feature_value`] or

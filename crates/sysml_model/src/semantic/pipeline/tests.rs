@@ -871,7 +871,7 @@ fn benchmark_frontier_relink_vs_full_relink_on_cross_referenced_fixture() {
 
 // --- B1: cross-document edge ownership regression suite ---
 //
-// `ROUNDTRIP_SEMGRAPH_PREREQS.md` B1: `cross_document_edges_by_source_uri` must be an
+// the edge-construction ownership contract: `cross_document_edges_by_source_uri` must be an
 // accurate record of which Typing/Specializes/Subject edges the workspace cross-document
 // linking pass owns, *no matter which construction path produced the graph* -- a normal
 // whole-graph `build_and_link_graph`, `build_and_link_graph_parallel`, a decoded (serde
@@ -1165,7 +1165,7 @@ fn whole_parallel_and_incremental_builds_agree_on_cross_document_edge_ownership(
 
 // --- B4: `SemanticPublication` phase/completeness/storage-eligibility ---
 //
-// Covers `ROUNDTRIP_SEMGRAPH_PREREQS.md` B4's required tests: phase monotonicity, completeness
+// Covers the `SemanticPublication` contract's required tests: phase monotonicity, completeness
 // distinctions, the unresolved/ambiguous-does-not-mean-incomplete rule, root-digest agreement
 // with the built sources, and whole/parallel/incremental agreement on phase/completeness/root
 // digest.
@@ -1400,7 +1400,7 @@ mod publication_tests {
 
 // --- B3: source role and lookup precedence ---
 //
-// `ROUNDTRIP_SEMGRAPH_PREREQS.md` B3/§6: `node_ids_by_qualified_name` and `nodes_by_uri` vector
+// the canonical source-ordering contract/§6: `node_ids_by_qualified_name` and `nodes_by_uri` vector
 // order must be a function of canonical `NodeId` order alone, never of document/merge insertion
 // order. These tests build the same source set in forward and reverse document order and assert
 // the lookup vectors (and therefore any first-match consumer) are identical, plus cover the

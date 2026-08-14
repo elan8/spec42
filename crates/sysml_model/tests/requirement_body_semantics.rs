@@ -319,7 +319,7 @@ fn requirement_require_constraint_stays_on_analysis_constraints_attr() {
     let _ = uri;
 }
 
-/// Regression for `UNIFY_CACHE_PROGRESS.md` chunk E: a require constraint's aggregated typed
+/// Regression for `planning/UNIFY_CACHE_PROGRESS.md` B9: a require constraint's aggregated typed
 /// `DeclaredAnalysisConstraint` fact -- not a JSON `analysisConstraints` attribute -- drives the
 /// `requirement_constraint_invalid_membership` diagnostic, for both a firing (missing parameter
 /// type) and non-firing (fully typed parameter) case, with a stable code/severity/range.

@@ -44,11 +44,10 @@ fn source_role_for(kind: SysmlDocumentSourceKind) -> SourceRole {
 ///
 /// Entries are pushed as workspace (non-root-scoped) entries regardless of source kind: the
 /// pipeline layer building this manifest does not know configured library-root precedence
-/// (`ROUNDTRIP_SEMGRAPH_PREREQS.md` B3's job, owned by the workspace layer that supplies library
+/// (the canonical source-ordering contract's job, owned by the workspace layer that supplies library
 /// roots). The digest is still real, deterministic, and sensitive to every admitted source byte
-/// and role, satisfying B4's requirement that the root digest changes when a source byte changes
-/// or a source is reclassified -- B3's root-slot precedence remains a separate, additive
-/// refinement layered on top by the owning caller.
+/// and role, so the root digest changes when a source byte changes or is reclassified. Root-slot
+/// precedence remains a separate refinement supplied by the owning caller.
 fn manifest_entry_for(document: &SysmlDocument) -> SourceManifestEntry {
     let content_digest = document
         .content_digest
@@ -65,7 +64,7 @@ fn manifest_entry_for(document: &SysmlDocument) -> SourceManifestEntry {
 }
 
 /// Computes the [`RootDigest`] that identifies exactly `documents`' content, roles, and URIs
-/// (`ROUNDTRIP_SEMGRAPH_PREREQS.md` B4: "which exact source root produced it").
+/// (the `SemanticPublication` contract: "which exact source root produced it").
 fn root_digest_for(documents: &[SysmlDocument]) -> RootDigest {
     let mut builder = SourceManifestBuilder::new();
     for document in documents {

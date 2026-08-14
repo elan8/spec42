@@ -20,7 +20,7 @@ use crate::semantic::model::{
 };
 use crate::semantic::publication::{
     ImportConformanceOutcome, ReferenceKind, ResolutionOutcome, ResolutionProvenance,
-    ResolvedRelationship, SemanticModelCompleteness, SemanticModel, SemanticModelPhase,
+    ResolvedRelationship, SemanticModel, SemanticModelCompleteness, SemanticModelPhase,
 };
 
 const FORMAT_ROOT: &str = "semantic-graph";

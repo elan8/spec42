@@ -135,14 +135,14 @@ pub(crate) fn record_declared_relationship_target(
 /// Prefers a direct qualified-name hit, then inherited-member resolution via the owner.
 ///
 /// `g.node_ids_by_qualified_name` entries are maintained in canonical `NodeId` order
-/// (`ROUNDTRIP_SEMGRAPH_PREREQS.md` §6, `semantic::graph::insert_canonical`), so `.find()` below
+/// (`planning/ROUNDTRIP_SEMGRAPH_PREREQS.md` §6, `semantic::graph::insert_canonical`), so `.find()` below
 /// always picks the same candidate for the same qualified-name bucket regardless of document
 /// merge order or build parallelism -- it is no longer an accidental insertion-order pick. This
 /// function's signature (`Option<NodeId>`, no ambiguous variant) predates that guarantee and
 /// still cannot *report* a genuine multi-candidate qualified-name collision as ambiguous the way
 /// [`crate::semantic::reference_resolution::ResolveResult`] does elsewhere; it silently takes the
 /// canonically-first non-source candidate. That residual gap is unchanged by B3 and is called out
-/// in `ROUNDTRIP_SEMGRAPH_PREREQS.md` follow-up notes rather than fixed here, since typing it
+/// in `planning/ROUNDTRIP_SEMGRAPH_PREREQS.md` follow-up notes rather than fixed here, since typing it
 /// properly would require `Subsetting`/`Redefinition`/`ReferenceSubsetting`/`CrossSubsetting`
 /// edges to carry an ambiguous-target outcome, which is an edge-model change outside B3's scope.
 fn resolve_subsetting_family_target(

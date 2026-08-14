@@ -1,5 +1,5 @@
 //! Round-trip and cross-cutting correctness tests for the plan step 4 cache artifacts
-//! (`UNIFY_CACHE_PLAN.md` §6.2, §6.3, §6.4, §11.1): `ParseOutcome`, `LibraryIndex`, and
+//! (`planning/UNIFY_CACHE_PLAN.md` §6.2, §6.3, §6.4, §11.1): `ParseOutcome`, `LibraryIndex`, and
 //! `LibraryClosure`. Every test uses an isolated temporary cache root.
 
 use tempfile::TempDir;
