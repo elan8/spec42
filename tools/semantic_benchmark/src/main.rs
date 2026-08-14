@@ -29,6 +29,18 @@ struct Cli {
     /// Emit pretty JSON to this path instead of stdout.
     #[arg(long)]
     output: Option<PathBuf>,
+    /// Admit the checked-in standard-library corpus alongside the selected workspace documents.
+    ///
+    /// The selection then measures what a real editor build costs: a small workspace resolved
+    /// against the whole library, rather than the workspace alone.
+    #[arg(long, value_enum, default_value_t = Libraries::None)]
+    libraries: Libraries,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]
+enum Libraries {
+    None,
+    Standard,
 }
 
 #[derive(Debug, Clone, Copy, ValueEnum)]
@@ -51,6 +63,8 @@ struct CorpusFacts {
     snapshots: usize,
     documents: usize,
     source_bytes: usize,
+    library_documents: usize,
+    library_source_bytes: usize,
 }
 
 #[derive(Debug, Serialize)]
@@ -102,15 +116,24 @@ fn main() -> Result<(), String> {
     if documents.is_empty() {
         return Err("snapshot selection contains no SOURCE documents".into());
     }
+    let library_documents = match cli.libraries {
+        Libraries::None => Vec::new(),
+        Libraries::Standard => load_corpus(&root.join(STANDARD_LIBRARY_DIRECTORY), None)?.1,
+    };
     let facts = CorpusFacts {
         snapshots: snapshot_count,
         documents: documents.len(),
         source_bytes: documents.iter().map(|document| document.text.len()).sum(),
+        library_documents: library_documents.len(),
+        library_source_bytes: library_documents
+            .iter()
+            .map(|document| document.text.len())
+            .sum(),
     };
     let mut samples = Vec::with_capacity(cli.iterations);
     for _ in 0..cli.iterations {
         let request_started = Instant::now();
-        let sources = documents
+        let mut sources = documents
             .iter()
             .map(|document| {
                 SourceDocument::from_memory_path(
@@ -122,6 +145,17 @@ fn main() -> Result<(), String> {
                 .map_err(|error| format!("{}: {error}", document.identity))
             })
             .collect::<Result<Vec<_>, _>>()?;
+        for document in &library_documents {
+            sources.push(
+                SourceDocument::from_memory_path(
+                    "semantic-benchmark",
+                    &format!("{STANDARD_LIBRARY_DIRECTORY}/{}", document.identity),
+                    document.text.clone(),
+                    SourceKind::StandardLibrary,
+                )
+                .map_err(|error| format!("{}: {error}", document.identity))?,
+            );
+        }
         let strategy = match cli.schedule {
             Schedule::Sequential => ConstructionStrategy::Sequential,
             Schedule::Parallel => ConstructionStrategy::Parallel,
@@ -180,6 +214,9 @@ fn main() -> Result<(), String> {
     }
     Ok(())
 }
+
+/// Where the checked-in standard-library corpus lives, relative to the snapshot root.
+const STANDARD_LIBRARY_DIRECTORY: &str = "sysml.library";
 
 fn load_corpus(root: &Path, filter: Option<&str>) -> Result<(usize, Vec<CorpusDocument>), String> {
     let mut paths = Vec::new();
