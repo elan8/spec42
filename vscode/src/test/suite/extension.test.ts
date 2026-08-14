@@ -324,32 +324,6 @@ describe("Extension Test Suite", () => {
     );
   });
 
-  it("Go to definition from usage to definition", async () => {
-    const workspaceRoot = getTestWorkspaceFolder().uri.fsPath;
-    const defPath = path.resolve(workspaceRoot, "..", "multi-file", "def.sysml");
-    const usePath = path.resolve(workspaceRoot, "..", "multi-file", "use.sysml");
-    const defDoc = await vscode.workspace.openTextDocument(defPath);
-    await waitForLanguageServerReady(defDoc);
-    const useDoc = await vscode.workspace.openTextDocument(usePath);
-    await vscode.window.showTextDocument(useDoc);
-    await waitForLanguageServerReady(useDoc);
-    const locations = await waitFor(
-      "definition provider response",
-      () =>
-        vscode.commands.executeCommand<vscode.Location[]>(
-          "vscode.executeDefinitionProvider",
-          useDoc.uri,
-          findPosition(useDoc, "Widget")
-        ),
-      (value) => Array.isArray(value) && value.length > 0
-    );
-    assert.strictEqual(
-      path.basename(locations[0].uri.fsPath),
-      "def.sysml",
-      "Definition should resolve to def.sysml"
-    );
-  });
-
   it("Hierarchy commands execute for SysML and KerML editors", async function () {
     this.timeout(20000);
     const sysmlDoc = await vscode.workspace.openTextDocument(getFixturePath(FIXTURE_FILE));

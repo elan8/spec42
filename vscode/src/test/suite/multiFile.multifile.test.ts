@@ -39,6 +39,27 @@ describe("Multi-file VS Code Flows", () => {
     await closeAllEditorsForTests();
   });
 
+  it("goes from a usage to its cross-file definition", async () => {
+    const useDoc = await vscode.workspace.openTextDocument(getFixturePath("use.sysml"));
+    await vscode.window.showTextDocument(useDoc);
+
+    const locations = await waitFor(
+      "cross-file definition",
+      () =>
+        vscode.commands.executeCommand<vscode.Location[]>(
+          "vscode.executeDefinitionProvider",
+          useDoc.uri,
+          findPosition(useDoc, "Widget")
+        ),
+      (value) => Array.isArray(value) && value.length > 0,
+    );
+
+    assert.ok(
+      locations.some((location) => location.uri.fsPath.endsWith("def.sysml")),
+      `Expected definition in def.sysml, got ${locations.map((location) => location.uri.fsPath).join(", ")}`
+    );
+  });
+
   it("finds references across files", async function () {
     this.timeout(20000);
     const useDoc = await vscode.workspace.openTextDocument(getFixturePath("use.sysml"));
