@@ -444,6 +444,32 @@ entry should carry enough detail to file/update an upstream issue against
   `subject_decl_inner` taught to parse `:>>` as an alternative to `:`, filed upstream against
   `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
 
+- Gap 41. KerML's implicit self-reference identifier `that` (e.g. `test/snapshots/sysml/examples`'s
+  `trig_functions.md`: `inv unitBound { -1.0 <= that & that <= 1.0 }` inside `datatype
+  UnitBoundedReal :> Real { ... }`, 111 fixtures overall) has no lexically-distinguished status
+  in the pinned `cb026cd` parser checkout. Checked the exact question that determines whether
+  `sysml_resolution` may recognize it: `src/parser/lex.rs:407-536`'s `SYSML_RESERVED_KEYWORDS`
+  table (the parser's own reserved-word list, used to tell a genuine language keyword apart from
+  an arbitrary identifier for diagnostics) does **not** contain `"that"` -- it lexes as a plain,
+  user-choosable identifier flowing through the ordinary `Expression::FeatureRef` lexical-lookup
+  path, structurally indistinguishable from a real feature named `that`. This confirms and
+  extends the finding already noted in passing in commit `50b93050`. Per this task's own
+  explicit instruction, matching the literal string `"that"` in `sysml_resolution` under these
+  conditions would be exactly the "reconstruct semantics from spelling" anti-pattern the codebase
+  has consistently avoided (see e.g. the `enum_name_not_semantic` guard: string values must never
+  be confused with identifiers by spelling) -- so implementing KerML `that` self-reference
+  resolution was correctly **not attempted** in this pass, rather than shipped as a
+  string-matching workaround. Context-threading the enclosing declaration through
+  `classify_constraint_expression`/`classify_calc_expression`/`lower_constraint_expression`/
+  `lower_calc_expression` (and their `_node`/eval-tree counterparts) is still worth doing on its
+  own architectural merits (many constraint/calc call sites would benefit from knowing their
+  owning declaration for other reasons), but it does not unblock `that` specifically without a
+  parser-side change. Needs `"that"` added to `SYSML_RESERVED_KEYWORDS` (or an equivalent
+  lexically-distinguishing AST marker on `FeatureRef`/a dedicated `Expression::ImplicitThat`
+  variant) in the upstream parser before `sysml_resolution` can resolve it as a structural
+  self-reference rather than an ordinary lexical lookup, filed upstream against
+  `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+
 **Re-verification pass note (this pass, against `cb026cd`):** Gaps 15-24 were re-checked by
 grepping the current `cb026cd` checkout for the same starter tables/productions cited in each
 entry's original write-up; every one of the 10 gaps (15, 16, 17, 18, 19, 20, 21, 22, 23, 24) is
