@@ -15,6 +15,7 @@ use crate::{
     RenameOutcome, SourceLocation, SymbolIdentity, TextPosition, TextRange, VisibleMember,
 };
 
+mod inspection;
 pub(crate) mod writer;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -27,6 +28,254 @@ pub(super) enum ResolutionError {
 struct NameKey {
     owner: Option<DeclarationId>,
     name: SymbolId,
+}
+
+/// Position-addressable lookup tables for one document, built once at the publication barrier.
+///
+/// Before this existed, `target_at` scanned every authored reference and every declaration in the
+/// whole model on every call, which the design doc's complexity contract forbids: a
+/// source-position question must not cost the size of the workspace.
+///
+/// Reference spans and declaration *identifier* spans are leaf token ranges that cannot nest, so
+/// both are binary-searchable. A declaration's *full* span does nest -- a package contains a part
+/// contains an attribute -- so the containing-element lookup scans this document's declarations
+/// and keeps the innermost match. That is document-local rather than model-wide, which is the
+/// property that matters here; a genuine interval tree would only help a single very large
+/// document.
+#[derive(Debug, Default)]
+struct DocumentPositions {
+    /// Authored reference ranges, ordered by start.
+    references: Box<[(TextRange, AuthoredReferenceId)]>,
+    /// Declaration identifier ranges, ordered by start. Only named declarations appear.
+    identifiers: Box<[(TextRange, DeclarationId)]>,
+    /// Every declaration's full span, as a containment tree.
+    spans: SpanTree,
+}
+
+/// Declaration spans arranged so containment can be answered without reading the whole document.
+///
+/// Declaration spans nest, which rules out the binary search [`leaf_ranges_containing`] uses: an
+/// enclosing package sorts before its members yet ends after all of them, so "does this span end
+/// before the position" is not monotone over the ordering and `partition_point` has no meaning.
+///
+/// Entries are ordered so that a declaration is immediately followed by its descendants, and each
+/// entry records the exclusive end of its own subtree. A containment query then descends the
+/// nesting, skipping every subtree that cannot contain the position in one step. What it visits is
+/// bounded by the declarations that *begin before the position at each enclosing level* -- not by
+/// the document's declaration count, which is what a filter over the flat table costs.
+#[derive(Debug, Default)]
+struct SpanTree {
+    entries: Box<[(TextRange, DeclarationId)]>,
+    subtree_end: Box<[u32]>,
+}
+
+impl SpanTree {
+    fn build(mut entries: Vec<(TextRange, DeclarationId)>) -> Self {
+        // Start ascending, then end *descending*, so an enclosing declaration precedes the members
+        // it shares a start with rather than sorting after them.
+        entries.sort_by(|left, right| {
+            left.0
+                .start
+                .cmp(&right.0.start)
+                .then_with(|| right.0.end.cmp(&left.0.end))
+        });
+        // Every entry still open when a later one begins is one of its ancestors, so a stack of
+        // open entries closes exactly those the new entry is not nested in.
+        let mut subtree_end = vec![0u32; entries.len()];
+        let mut open: Vec<usize> = Vec::new();
+        for (index, (range, _)) in entries.iter().enumerate() {
+            while open
+                .last()
+                .is_some_and(|ancestor| entries[*ancestor].0.end <= range.start)
+            {
+                let ancestor = open.pop().expect("the stack was just observed to be non-empty");
+                subtree_end[ancestor] = index as u32;
+            }
+            open.push(index);
+        }
+        for ancestor in open {
+            subtree_end[ancestor] = entries.len() as u32;
+        }
+        Self {
+            entries: entries.into_boxed_slice(),
+            subtree_end: subtree_end.into_boxed_slice(),
+        }
+    }
+
+    /// The innermost declaration whose span contains `position`.
+    fn innermost_containing(&self, position: TextPosition) -> Option<DeclarationId> {
+        let mut innermost = None;
+        let mut index = 0usize;
+        let mut level_end = self.entries.len();
+        while index < level_end {
+            let (range, id) = self.entries[index];
+            record_visited_index_entries(1);
+            if range.start > position {
+                // Siblings are ordered by start, so nothing further along this level, or inside
+                // it, can begin at or before the position.
+                break;
+            }
+            if range_contains(range, position) {
+                innermost = Some(id);
+                level_end = self.subtree_end[index] as usize;
+                index += 1;
+            } else {
+                index = self.subtree_end[index] as usize;
+            }
+        }
+        innermost
+    }
+
+    /// Every span, in source order.
+    fn iter(&self) -> impl Iterator<Item = &(TextRange, DeclarationId)> {
+        self.entries.iter()
+    }
+}
+
+/// Document lookup by identity, plus each document's position tables.
+#[derive(Debug)]
+struct DocumentIndex {
+    by_identity: HashTable<DocumentId>,
+    hash_builder: RandomState,
+    positions: Box<[DocumentPositions]>,
+}
+
+impl DocumentIndex {
+    fn build(storage: &SemanticModelStorage) -> Result<Self, ResolutionError> {
+        let hash_builder = RandomState::default();
+        let mut by_identity: HashTable<DocumentId> = HashTable::new();
+        for index in 0..storage.documents.len() {
+            let id = DocumentId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+            let identity = storage.documents[index].identity.as_ref();
+            let hash = hash_builder.hash_one(identity);
+            let rehash = |candidate: &DocumentId| {
+                hash_builder.hash_one(storage.documents[candidate.index()].identity.as_ref())
+            };
+            by_identity
+                .try_reserve(1, rehash)
+                .map_err(|_| ResolutionError::Capacity)?;
+            by_identity.insert_unique(hash, id, rehash);
+        }
+
+        let mut references: Vec<Vec<(TextRange, AuthoredReferenceId)>> =
+            vec![Vec::new(); storage.documents.len()];
+        for (index, reference) in storage.references.iter().enumerate() {
+            let Some(source) = storage.declaration(reference.source) else {
+                continue;
+            };
+            let Ok(id) = AuthoredReferenceId::from_index(index) else {
+                continue;
+            };
+            // A reference whose span cannot be mapped is skipped rather than failing the build:
+            // it simply cannot answer a position query, and the authored fact itself is unaffected.
+            if let Ok(range) = document_range(storage, source.document, &reference.span) {
+                references[source.document.index()].push((range, id));
+            }
+        }
+
+        let mut identifiers: Vec<Vec<(TextRange, DeclarationId)>> =
+            vec![Vec::new(); storage.documents.len()];
+        let mut spans: Vec<Vec<(TextRange, DeclarationId)>> =
+            vec![Vec::new(); storage.documents.len()];
+        for index in 0..storage.declarations.len() {
+            let Ok(id) = DeclarationId::from_index(index) else {
+                continue;
+            };
+            let declaration = &storage.declarations[index];
+            if let Ok(range) = document_range(storage, declaration.document, &declaration.span) {
+                spans[declaration.document.index()].push((range, id));
+            }
+            let Some(name) = declaration.name.and_then(|name| storage.symbol(name)) else {
+                continue;
+            };
+            if let Ok(range) =
+                declaration_identifier_range(storage, declaration.document, &declaration.span, name)
+            {
+                identifiers[declaration.document.index()].push((range, id));
+            }
+        }
+
+        let positions = (0..storage.documents.len())
+            .map(|index| {
+                let mut document_references = std::mem::take(&mut references[index]);
+                let mut document_identifiers = std::mem::take(&mut identifiers[index]);
+                let document_spans = std::mem::take(&mut spans[index]);
+                document_references.sort_by_key(|(range, _)| *range);
+                document_identifiers.sort_by_key(|(range, _)| *range);
+                DocumentPositions {
+                    references: document_references.into_boxed_slice(),
+                    identifiers: document_identifiers.into_boxed_slice(),
+                    spans: SpanTree::build(document_spans),
+                }
+            })
+            .collect::<Vec<_>>()
+            .into_boxed_slice();
+
+        Ok(Self {
+            by_identity,
+            hash_builder,
+            positions,
+        })
+    }
+
+    fn document(&self, storage: &SemanticModelStorage, identity: &str) -> Option<DocumentId> {
+        let hash = self.hash_builder.hash_one(identity);
+        self.by_identity
+            .find(hash, |candidate| {
+                storage.documents[candidate.index()].identity.as_ref() == identity
+            })
+            .copied()
+    }
+
+    fn positions(&self, document: DocumentId) -> Option<&DocumentPositions> {
+        self.positions.get(document.index())
+    }
+}
+
+#[cfg(test)]
+thread_local! {
+    static VISITED_INDEX_ENTRIES: std::cell::Cell<u64> = const { std::cell::Cell::new(0) };
+}
+
+/// Charge `entries` index entries to the running complexity measurement.
+///
+/// Compiled away outside tests. It exists because the inspection path's cost bound -- every lookup
+/// is a range slice or a descent, never a walk over the model -- is a property Rust cannot check
+/// and a passing query cannot demonstrate: a scan and an index return the same answer. The
+/// measurement is what makes a regression to a scan a test failure rather than a slowdown.
+#[inline]
+fn record_visited_index_entries(entries: usize) {
+    #[cfg(test)]
+    VISITED_INDEX_ENTRIES.with(|counter| {
+        counter.set(counter.get().saturating_add(entries as u64));
+    });
+    #[cfg(not(test))]
+    let _ = entries;
+}
+
+/// Runs `query` and reports how many index entries it visited.
+#[cfg(test)]
+pub(crate) fn measure_visited_index_entries<T>(query: impl FnOnce() -> T) -> (T, u64) {
+    VISITED_INDEX_ENTRIES.with(|counter| counter.set(0));
+    let value = query();
+    (value, VISITED_INDEX_ENTRIES.with(std::cell::Cell::get))
+}
+
+/// Every entry of a start-ordered leaf-range table whose range contains `position`.
+///
+/// The ranges cannot nest, so a binary search to the first candidate and a short forward walk
+/// visits only entries that actually start at or before the position and are still open.
+fn leaf_ranges_containing<T: Copy>(
+    entries: &[(TextRange, T)],
+    position: TextPosition,
+) -> impl Iterator<Item = T> + '_ {
+    let start = entries.partition_point(|(range, _)| range.end < position);
+    entries[start..]
+        .iter()
+        .inspect(|_| record_visited_index_entries(1))
+        .take_while(move |(range, _)| range.start <= position)
+        .filter(move |(range, _)| range_contains(*range, position))
+        .map(|(_, value)| *value)
 }
 
 /// Version tag on the canonical structural identity encoding.
@@ -404,6 +653,10 @@ enum EffectiveVisibility {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 struct EffectiveMembership {
     visibility: EffectiveVisibility,
+    /// The authored membership kind, retained so inspection need not rescan the record table.
+    kind: MembershipKind,
+    /// Whether the visibility above was written or defaulted.
+    authored: bool,
 }
 
 /// Dense, declaration-aligned membership facts used by resolution. Authored `Default` is settled
@@ -454,7 +707,11 @@ impl MembershipIndex {
                     Some(_) => EffectiveVisibility::Private,
                 },
             };
-            *slot = Some(EffectiveMembership { visibility });
+            *slot = Some(EffectiveMembership {
+                visibility,
+                kind: membership.kind,
+                authored: membership.visibility != Visibility::Default,
+            });
         }
         let by_declaration = by_declaration
             .into_iter()
@@ -785,6 +1042,9 @@ pub(crate) struct ResolvedSemanticModel {
     direct_names: NameIndex,
     effective_imports: NameIndex,
     identities: IdentityIndex,
+    documents: DocumentIndex,
+    memberships: MembershipIndex,
+    facts: inspection::ElementFactIndex,
     resolution: ResolutionResults,
     evaluation: Box<[EvaluationFact]>,
     metadata: PublicationMetadata,
@@ -859,7 +1119,7 @@ impl ResolvedSemanticModel {
                     .document(declaration.document)?
                     .identity
                     .clone(),
-                range: identifier_range(
+                range: declaration_identifier_range(
                     &self.storage,
                     declaration.document,
                     &declaration.span,
@@ -876,32 +1136,14 @@ impl ResolvedSemanticModel {
         document: &str,
         position: TextPosition,
     ) -> QueryOutcome<NavigationTarget> {
-        let Some(document_id) = self
-            .storage
-            .documents
-            .iter()
-            .position(|candidate| candidate.identity.as_ref() == document)
-            .and_then(|index| DocumentId::from_index(index).ok())
-        else {
+        let Some(document_id) = self.documents.document(&self.storage, document) else {
+            return QueryOutcome::Unresolved;
+        };
+        let Some(positions) = self.documents.positions(document_id) else {
             return QueryOutcome::Unresolved;
         };
         let mut reference_matches = Vec::new();
-        for (index, reference) in self.storage.references.iter().enumerate() {
-            let Some(source) = self.storage.declaration(reference.source) else {
-                continue;
-            };
-            if source.document != document_id {
-                continue;
-            }
-            let Ok(range) = document_range(&self.storage, document_id, &reference.span) else {
-                continue;
-            };
-            if !range_contains(range, position) {
-                continue;
-            }
-            let Ok(reference_id) = AuthoredReferenceId::from_index(index) else {
-                return QueryOutcome::Incomplete;
-            };
+        for reference_id in leaf_ranges_containing(&positions.references, position) {
             match self.resolution.outcome(reference_id) {
                 Some(ResolutionStatus::Resolved(target)) => {
                     if let Some(target) = self.declaration_target(target) {
@@ -932,20 +1174,8 @@ impl ResolvedSemanticModel {
         if reference_matches.len() > 1 {
             return QueryOutcome::Ambiguous(reference_matches.into_boxed_slice());
         }
-        let mut declarations = self
-            .storage
-            .declarations
-            .iter()
-            .enumerate()
-            .filter_map(|(index, declaration)| {
-                (declaration.document == document_id)
-                    .then(|| {
-                        let id = DeclarationId::from_index(index).ok()?;
-                        let target = self.declaration_target(id)?;
-                        range_contains(target.location.range, position).then_some(target)
-                    })
-                    .flatten()
-            })
+        let mut declarations = leaf_ranges_containing(&positions.identifiers, position)
+            .filter_map(|id| self.declaration_target(id))
             .collect::<Vec<_>>();
         declarations.sort_by(target_order);
         match declarations.len() {
@@ -1326,6 +1556,65 @@ fn document_range(
     })
 }
 
+/// Where a *declaration* writes its own name.
+///
+/// Distinct from [`identifier_range`], which searches a reference span and takes the last
+/// word-boundary match because a qualified path names its target in the final segment. A
+/// declaration span covers the whole declaration including its body, so the same rule finds the
+/// last mention of the name anywhere inside -- for `part def Vehicle { part engine : Vehicle; }`
+/// it points at the body's reference rather than at the declared name.
+///
+/// The declared name is in the header, after the keywords and after an optional `<shortName>`, so
+/// the search is bounded to the text before the body opener and skips the short-name group. A
+/// declaration whose header is unrecoverable -- a parse recovery that lost its `{` or `;` -- falls
+/// back to the whole-span search rather than losing its location entirely.
+fn declaration_identifier_range(
+    storage: &SemanticModelStorage,
+    document: DocumentId,
+    span: &Span,
+    identifier: &str,
+) -> Result<TextRange, ResolutionError> {
+    let parsed = &storage
+        .document(document)
+        .ok_or(ResolutionError::InvalidStorage)?
+        .parsed;
+    let source = parsed
+        .source
+        .slice(span)
+        .ok_or(ResolutionError::InvalidStorage)?;
+    let header = source
+        .find(['{', ';'])
+        .map_or(source, |body| &source[..body]);
+    let relative = word_boundary_matches(header, identifier)
+        .find(|start| !inside_short_name(header, *start))
+        .or_else(|| word_boundary_matches(header, identifier).next())
+        .or_else(|| word_boundary_matches(source, identifier).last())
+        .ok_or(ResolutionError::InvalidStorage)?;
+    identifier_text_range(parsed, span, relative, identifier.len())
+}
+
+/// Whether `start` falls inside an unclosed `<`...`>` short-name group.
+fn inside_short_name(header: &str, start: usize) -> bool {
+    let before = &header[..start];
+    before
+        .rfind('<')
+        .is_some_and(|open| !before[open..].contains('>'))
+}
+
+/// Every occurrence of `identifier` in `text` that is not part of a longer identifier.
+fn word_boundary_matches<'a>(
+    text: &'a str,
+    identifier: &'a str,
+) -> impl Iterator<Item = usize> + 'a {
+    text.match_indices(identifier)
+        .filter(move |(start, _)| {
+            let before = text[..*start].chars().next_back();
+            let after = text[*start + identifier.len()..].chars().next();
+            !before.is_some_and(identifier_character) && !after.is_some_and(identifier_character)
+        })
+        .map(|(start, _)| start)
+}
+
 fn identifier_range(
     storage: &SemanticModelStorage,
     document: DocumentId,
@@ -1340,22 +1629,24 @@ fn identifier_range(
         .source
         .slice(span)
         .ok_or(ResolutionError::InvalidStorage)?;
-    let relative = source
-        .match_indices(identifier)
-        .filter(|(start, _)| {
-            let before = source[..*start].chars().next_back();
-            let after = source[*start + identifier.len()..].chars().next();
-            !before.is_some_and(identifier_character) && !after.is_some_and(identifier_character)
-        })
-        .map(|(start, _)| start)
+    let relative = word_boundary_matches(source, identifier)
         .last()
         .ok_or(ResolutionError::InvalidStorage)?;
+    identifier_text_range(parsed, span, relative, identifier.len())
+}
+
+fn identifier_text_range(
+    parsed: &ParsedDocument,
+    span: &Span,
+    relative: usize,
+    length: usize,
+) -> Result<TextRange, ResolutionError> {
     let start_offset = span
         .offset
         .checked_add(relative)
         .ok_or(ResolutionError::Capacity)?;
     let end_offset = start_offset
-        .checked_add(identifier.len())
+        .checked_add(length)
         .ok_or(ResolutionError::Capacity)?;
     let start = parsed
         .source
@@ -1486,7 +1777,7 @@ impl SemanticModelStorage {
             .any(|document| !document.parse_errors.is_empty())
             || !self.recovery.is_empty();
         let has_unsupported = !self.unsupported.is_empty();
-        let (direct_names, effective_imports, resolution) = resolve_dense(
+        let (direct_names, effective_imports, memberships, resolution) = resolve_dense(
             &self.declarations,
             &self.memberships,
             &self.paths,
@@ -1504,11 +1795,16 @@ impl SemanticModelStorage {
         let evaluation = compute_evaluation(&self, &resolution, policy);
         let has_evaluation = !evaluation.is_empty();
         let identities = IdentityIndex::build(&self)?;
+        let documents = DocumentIndex::build(&self)?;
+        let facts = inspection::ElementFactIndex::build(&self, &resolution, &evaluation)?;
         Ok(ResolvedSemanticModel {
             storage: self,
             direct_names,
             effective_imports,
             identities,
+            documents,
+            memberships,
+            facts,
             resolution,
             evaluation,
             metadata: PublicationMetadata {
@@ -1550,7 +1846,7 @@ fn resolve_dense<R: ResolutionReferenceFact>(
     memberships: &[MembershipRecord],
     paths: &SymbolPathArena,
     references: &[R],
-) -> Result<(NameIndex, NameIndex, ResolutionResults), ResolutionError> {
+) -> Result<(NameIndex, NameIndex, MembershipIndex, ResolutionResults), ResolutionError> {
     let supported_import_count = references
         .iter()
         .filter(|reference| supported_import_domain(*reference).is_some())
@@ -1573,7 +1869,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     paths: &SymbolPathArena,
     references: &[R],
     pass_limit: usize,
-) -> Result<(NameIndex, NameIndex, ResolutionResults), ResolutionError> {
+) -> Result<(NameIndex, NameIndex, MembershipIndex, ResolutionResults), ResolutionError> {
     let membership_records = memberships;
     let memberships = MembershipIndex::build(declarations, memberships)?;
     let direct_names = build_direct_name_index(declarations, None)?;
@@ -2208,6 +2504,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     Ok((
         direct_names,
         effective_imports,
+        memberships,
         ResolutionResults {
             outcomes: outcomes.into_boxed_slice(),
             ambiguous_candidates: ambiguous_candidates.into_boxed_slice(),
@@ -3359,7 +3656,9 @@ mod tests {
         }
     }
 
-    fn resolve_fixture(fixture: &ResolverFixture) -> (NameIndex, NameIndex, ResolutionResults) {
+    fn resolve_fixture(
+        fixture: &ResolverFixture,
+    ) -> (NameIndex, NameIndex, MembershipIndex, ResolutionResults) {
         resolve_dense(
             &fixture.declarations,
             &fixture.memberships,
@@ -3774,7 +4073,7 @@ mod tests {
     #[test]
     fn same_name_direct_parent_feature_synthesizes_implied_redefinition() {
         let fixture = redefinition_fixture();
-        let (_, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.implied_relationships.as_ref(),
@@ -3797,7 +4096,7 @@ mod tests {
             false,
         ));
         fixture.references = references.into_boxed_slice();
-        let (_, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, resolution) = resolve_fixture(&fixture);
         assert!(resolution.implied_relationships.is_empty());
     }
 
@@ -3822,7 +4121,7 @@ mod tests {
             span: Span::dummy(),
         });
         fixture.memberships = memberships.into_boxed_slice();
-        let (_, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, resolution) = resolve_fixture(&fixture);
         assert!(resolution.implied_relationships.is_empty());
     }
 
@@ -3930,7 +4229,7 @@ mod tests {
             false,
         ));
         fixture.references = references.into_boxed_slice();
-        let (_, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(redefinition_index)),
@@ -3955,7 +4254,7 @@ mod tests {
             false,
         ));
         fixture.references = references.into_boxed_slice();
-        let (_, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(subsetting_index)),
@@ -4094,7 +4393,7 @@ mod tests {
             references: references.into_boxed_slice(),
         };
 
-        let (_, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(redefinition_index)),
@@ -4193,7 +4492,7 @@ mod tests {
             references: references.into_boxed_slice(),
         };
 
-        let (_, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
@@ -4257,7 +4556,7 @@ mod tests {
     #[test]
     fn port_def_specialization_resolves_through_the_ancestor_fixed_point() {
         let fixture = port_def_specialization_fixture(false);
-        let (_, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
@@ -4317,7 +4616,7 @@ mod tests {
     #[test]
     fn occurrence_def_specialization_resolves_through_the_ancestor_fixed_point() {
         let fixture = occurrence_def_specialization_fixture();
-        let (_, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
@@ -4377,7 +4676,7 @@ mod tests {
     #[test]
     fn analysis_case_def_specialization_resolves_through_the_ancestor_fixed_point() {
         let fixture = analysis_case_def_specialization_fixture();
-        let (_, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
@@ -4428,7 +4727,7 @@ mod tests {
     #[test]
     fn case_def_specialization_resolves_through_the_ancestor_fixed_point() {
         let fixture = case_family_def_specialization_fixture(DeclarationKind::CaseDefinition);
-        let (_, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
@@ -4440,7 +4739,7 @@ mod tests {
     fn verification_case_def_specialization_resolves_through_the_ancestor_fixed_point() {
         let fixture =
             case_family_def_specialization_fixture(DeclarationKind::VerificationCaseDefinition);
-        let (_, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
@@ -4451,7 +4750,7 @@ mod tests {
     #[test]
     fn use_case_def_specialization_resolves_through_the_ancestor_fixed_point() {
         let fixture = case_family_def_specialization_fixture(DeclarationKind::UseCaseDefinition);
-        let (_, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
@@ -4466,7 +4765,7 @@ mod tests {
         // declaration itself, which the resolved outcome still names correctly.
         let fixture = port_def_specialization_fixture(true);
         assert!(fixture.references[0].flags.conjugated);
-        let (_, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
@@ -4535,7 +4834,7 @@ mod tests {
     #[test]
     fn item_def_specialization_resolves_through_the_ancestor_fixed_point() {
         let fixture = item_def_specialization_fixture();
-        let (_, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
@@ -4596,7 +4895,7 @@ mod tests {
     #[test]
     fn class_def_specialization_resolves_through_the_ancestor_fixed_point() {
         let fixture = class_def_specialization_fixture();
-        let (_, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
@@ -4657,7 +4956,7 @@ mod tests {
     #[test]
     fn action_def_specialization_resolves_through_the_ancestor_fixed_point() {
         let fixture = action_def_specialization_fixture();
-        let (_, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
@@ -4718,7 +5017,7 @@ mod tests {
     #[test]
     fn state_def_specialization_resolves_through_the_ancestor_fixed_point() {
         let fixture = state_def_specialization_fixture();
-        let (_, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
@@ -4779,7 +5078,7 @@ mod tests {
     #[test]
     fn metadata_def_specialization_resolves_through_the_ancestor_fixed_point() {
         let fixture = metadata_def_specialization_fixture();
-        let (_, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
@@ -4842,7 +5141,7 @@ mod tests {
     #[test]
     fn metadata_annotation_on_part_usage_resolves_to_metadata_def() {
         let fixture = metadata_annotation_fixture("Safety");
-        let (_, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
@@ -4853,7 +5152,7 @@ mod tests {
     #[test]
     fn metadata_annotation_with_unresolvable_target_stays_unresolved() {
         let fixture = metadata_annotation_fixture("NoSuchMetadata");
-        let (_, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
@@ -4914,7 +5213,7 @@ mod tests {
     #[test]
     fn connection_def_specialization_resolves_through_the_ancestor_fixed_point() {
         let fixture = connection_def_specialization_fixture();
-        let (_, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
@@ -4971,7 +5270,7 @@ mod tests {
     #[test]
     fn interface_def_specialization_resolves_through_the_ancestor_fixed_point() {
         let fixture = interface_def_specialization_fixture();
-        let (_, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
@@ -5033,7 +5332,7 @@ mod tests {
     #[test]
     fn connector_end_reference_resolves_to_its_target() {
         let fixture = connector_end_reference_fixture();
-        let (_, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
@@ -5044,7 +5343,7 @@ mod tests {
     #[test]
     fn namespace_import_populates_index_used_by_feature_typing() {
         let fixture = cross_file_fixture(false);
-        let (direct_names, effective_imports, resolution) = resolve_fixture(&fixture);
+        let (direct_names, effective_imports, _memberships, resolution) = resolve_fixture(&fixture);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
             Some(ResolutionStatus::Resolved(DeclarationId(0)))
@@ -5110,7 +5409,7 @@ mod tests {
     fn namespace_import_excludes_explicitly_private_members() {
         let mut fixture = cross_file_fixture(false);
         fixture.memberships[1].visibility = Visibility::Private;
-        let (_, effective_imports, resolution) = resolve_fixture(&fixture);
+        let (_, effective_imports, _memberships, resolution) = resolve_fixture(&fixture);
 
         assert!(effective_imports
             .candidates(Some(DeclarationId(2)), SymbolId(2))
@@ -5124,7 +5423,7 @@ mod tests {
     #[test]
     fn duplicate_imported_type_is_canonically_ambiguous() {
         let fixture = cross_file_fixture(true);
-        let (_, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, resolution) = resolve_fixture(&fixture);
         let Some(ResolutionStatus::Ambiguous(range)) = resolution.outcome(AuthoredReferenceId(1))
         else {
             panic!("feature typing must retain ambiguity");
@@ -5138,7 +5437,7 @@ mod tests {
     #[test]
     fn transitive_namespace_imports_converge_without_reference_scans() {
         let fixture = transitive_import_fixture();
-        let (_, effective_imports, resolution) = resolve_fixture(&fixture);
+        let (_, effective_imports, _memberships, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(resolution.work.passes, 4);
         assert_eq!(resolution.work.import_evaluations, 12);
@@ -5158,7 +5457,7 @@ mod tests {
     #[test]
     fn an_import_target_can_become_visible_through_an_earlier_import() {
         let fixture = imported_target_fixture();
-        let (_, effective_imports, resolution) = resolve_fixture(&fixture);
+        let (_, effective_imports, _memberships, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(1)),
@@ -5177,7 +5476,7 @@ mod tests {
     #[test]
     fn cyclic_namespace_imports_reach_a_finite_canonical_closure() {
         let fixture = cyclic_import_fixture();
-        let (_, effective_imports, resolution) = resolve_fixture(&fixture);
+        let (_, effective_imports, _memberships, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(resolution.work.passes, 3);
         assert_eq!(
@@ -5193,7 +5492,7 @@ mod tests {
     #[test]
     fn later_qualified_segments_use_the_effective_import_index() {
         let fixture = qualified_import_target_fixture();
-        let (_, effective_imports, resolution) = resolve_fixture(&fixture);
+        let (_, effective_imports, _memberships, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(1)),
@@ -5212,7 +5511,7 @@ mod tests {
     #[test]
     fn exhausted_bound_is_a_typed_non_converged_publication_state() {
         let fixture = cross_file_fixture(false);
-        let (_, _, resolution) = resolve_dense_with_limit(
+        let (_, _, _memberships, resolution) = resolve_dense_with_limit(
             &fixture.declarations,
             &fixture.memberships,
             &fixture.paths,
@@ -5236,7 +5535,7 @@ mod tests {
     fn missing_and_filtered_references_remain_explicit() {
         let mut fixture = cross_file_fixture(false);
         fixture.references[0].kind = ReferenceKind::FilterImport;
-        let (_, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
             Some(ResolutionStatus::Unsupported)
@@ -5342,7 +5641,7 @@ mod tests {
     #[test]
     fn diamond_inherited_member_lookup_dedups_to_a_single_target() {
         let fixture = diamond_fixture("p", "Member");
-        let (_, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         // Member is owned only by Base (id 2), reached via both Left -> Base and Right -> Base;
         // the diamond must dedup to exactly one Resolved outcome rather than an Ambiguous one.
@@ -5364,7 +5663,7 @@ mod tests {
         references.remove(3);
         references.remove(1);
         fixture.references = references.into_boxed_slice();
-        let (_, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(2)),
@@ -5462,7 +5761,7 @@ mod tests {
     #[test]
     fn diamond_with_conflicting_ancestor_members_publishes_an_explicit_ambiguous_outcome() {
         let fixture = diamond_conflict_fixture();
-        let (_, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         match resolution.outcome(AuthoredReferenceId(2)) {
             Some(ResolutionStatus::Ambiguous(range)) => {
@@ -5539,7 +5838,7 @@ mod tests {
     #[test]
     fn cyclic_specialization_yields_a_typed_non_converged_typing_outcome_not_a_loop() {
         let fixture = cyclic_specialization_fixture();
-        let (_, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, resolution) = resolve_fixture(&fixture);
         // The import/typing fixed point above this family still converges; only the
         // ancestor-closure-dependent FeatureTyping outcome for the cyclically-specialized owner
         // is explicitly NonConverged, rather than the solver looping forever or silently guessing
@@ -5615,7 +5914,7 @@ mod tests {
     #[test]
     fn alias_binding_resolves_through_the_shared_lexical_lookup_fixed_point() {
         let fixture = alias_binding_fixture();
-        let (_, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         // DeviceAlias's own authored `AliasBinding` reference resolves to Device (id 1), using
         // the same fixed point as every other authored reference kind rather than a separate
@@ -5629,7 +5928,7 @@ mod tests {
     #[test]
     fn typing_through_an_alias_resolves_transitively_to_the_ultimate_target() {
         let fixture = alias_binding_fixture();
-        let (_, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         // `device : DeviceAlias`'s own FeatureTyping outcome targets the alias declaration (id 2)
         // itself -- the alias's own authored fact is never weakened or bypassed.
@@ -5704,7 +6003,7 @@ mod tests {
         // test would time out (rather than merely fail an assertion) if alias cycle detection
         // ever degenerated into an unbounded chase.
         let fixture = cyclic_alias_binding_fixture();
-        let (_, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
@@ -5797,7 +6096,7 @@ mod tests {
         // planning/RESOLUTION_LAYER_DESIGN.md section 11.1 it must shadow the imported, domain-compatible
         // A::T rather than being silently discarded in favor of the import or left Unresolved.
         let fixture = local_shadow_fixture(false);
-        let (_, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(1)),
@@ -5821,7 +6120,7 @@ mod tests {
         let mut references = fixture.references.into_vec();
         references[1].source = DeclarationId(4);
         fixture.references = references.into_boxed_slice();
-        let (_, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(1)),
@@ -5836,7 +6135,7 @@ mod tests {
         // chain to C, find C::T there, and shadow A::T at that outer tier before ever consulting
         // imports.
         let fixture = local_shadow_fixture(true);
-        let (_, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(1)),

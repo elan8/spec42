@@ -565,21 +565,39 @@ mod tests {
         );
     }
 
+    fn owned_sections(smg: &str) -> OwnedSections {
+        OwnedSections {
+            smg: smg.to_string(),
+            diagnostics: "same".to_string(),
+            navigation: "same".to_string(),
+            editor_queries: "same".to_string(),
+        }
+    }
+
     #[test]
     fn parity_mismatch_is_reported_before_owned_output_is_selected() {
-        let sequential = OwnedSections {
-            smg: "sequential".to_string(),
-            diagnostics: "same".to_string(),
-            navigation: "same".to_string(),
-        };
-        let parallel = OwnedSections {
-            smg: "parallel".to_string(),
-            diagnostics: "same".to_string(),
-            navigation: "same".to_string(),
-        };
-        let error = ensure_strategy_parity(Path::new("fixture.md"), &sequential, &parallel)
-            .expect_err("mismatched owned output must fail parity");
+        let error = ensure_strategy_parity(
+            Path::new("fixture.md"),
+            &owned_sections("sequential"),
+            &owned_sections("parallel"),
+        )
+        .expect_err("mismatched owned output must fail parity");
         assert!(error.contains("semantic-model outputs differ"));
+    }
+
+    /// Every owned section is compared, not only the first: the editor-query section carries the
+    /// inspection output, which is the one most likely to depend on construction order.
+    #[test]
+    fn parity_covers_every_owned_section() {
+        let mut parallel = owned_sections("same");
+        parallel.editor_queries = "different".to_string();
+        let error = ensure_strategy_parity(
+            Path::new("fixture.md"),
+            &owned_sections("same"),
+            &parallel,
+        )
+        .expect_err("a differing editor-query section must fail parity");
+        assert!(error.contains("editor-query outputs differ"));
     }
 
     #[test]

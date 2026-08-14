@@ -915,7 +915,7 @@ enum Visibility {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-enum ReferenceKind {
+pub(crate) enum ReferenceKind {
     NamespaceImport,
     MembershipImport,
     FilterImport,

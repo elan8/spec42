@@ -1147,7 +1147,7 @@ fn visibility(value: Visibility) -> &'static str {
     }
 }
 
-fn reference_kind(kind: ReferenceKind) -> &'static str {
+pub(crate) fn reference_kind(kind: ReferenceKind) -> &'static str {
     match kind {
         ReferenceKind::NamespaceImport => "namespaceImport",
         ReferenceKind::MembershipImport => "membershipImport",
@@ -1289,7 +1289,7 @@ mod tests {
             paths: SymbolPathArenaBuilder::default().freeze(),
             evaluation_facts: Box::new([]),
         };
-        let (direct_names, effective_imports, resolution) = resolve_dense(
+        let (direct_names, effective_imports, memberships, resolution) = resolve_dense(
             &storage.declarations,
             &storage.memberships,
             &storage.paths,
@@ -1298,11 +1298,16 @@ mod tests {
         .unwrap();
         let evaluation = compute_evaluation(&storage, &resolution, EvaluationPolicy::Evaluate);
         let identities = IdentityIndex::build(&storage).unwrap();
+        let documents = DocumentIndex::build(&storage).unwrap();
+        let facts = inspection::ElementFactIndex::build(&storage, &resolution, &evaluation).unwrap();
         let model = ResolvedSemanticModel {
             storage,
             direct_names,
             effective_imports,
             identities,
+            documents,
+            memberships,
+            facts,
             resolution,
             evaluation,
             metadata: PublicationMetadata {
