@@ -7245,11 +7245,16 @@ impl SemanticModelBuilder {
     /// Lowers one `Satisfy` operand (`source`/`target`), mirroring `lower_transition_end`: its
     /// path expression is a structured `Expression`, so a simple/qualified name
     /// (`Expression::FeatureRef`) resolves as an authored reference of `kind` through the shared
-    /// `DeclarationDomain::Any` lexical lookup. Also supports `Expression::Invocation`/
-    /// `Expression::Constructor` (reference resolution only, via `lower_invocation_callee`/
-    /// `ReferenceKind::InvocationCallee`, recursing arguments back into this same function with
-    /// `kind` unchanged). Any other expression shape falls through to an explicit `family`
-    /// unsupported diagnostic.
+    /// `DeclarationDomain::Any` lexical lookup. A dotted feature-chain path
+    /// (`Expression::MemberAccess`/`Expression::FeatureChainRef`, e.g. `f.a`) resolves as a
+    /// `ReferenceKind::MemberAccessOperand` reference instead, through the same
+    /// `flatten_member_access_chain`/`push_member_access_reference` path `lower_connector_end`
+    /// uses -- this is also `Bind`'s (`lower_bind`) operand path, since it shares this helper, so
+    /// `bind f.a = a.g;` resolves both dotted operands the same way `connect f.a to a.g;` does.
+    /// Also supports `Expression::Invocation`/`Expression::Constructor` (reference resolution
+    /// only, via `lower_invocation_callee`/`ReferenceKind::InvocationCallee`, recursing arguments
+    /// back into this same function with `kind` unchanged). Any other expression shape falls
+    /// through to an explicit `family` unsupported diagnostic.
     fn lower_satisfy_operand(
         &mut self,
         document: DocumentId,
@@ -7277,7 +7282,7 @@ impl SemanticModelBuilder {
                     import: None,
                 })?;
             }
-            Expression::MemberAccess { .. } => {
+            Expression::MemberAccess { .. } | Expression::FeatureChainRef(_) => {
                 if let Some(chain) = flatten_member_access_chain(node) {
                     self.push_member_access_reference(owner, document, &chain, node.span.clone())?;
                 } else {
@@ -14592,6 +14597,77 @@ mod tests {
             output.contains("(kind bindSource)")
                 && output.contains("(authored-target \"a\")\n      (outcome (status resolved)"),
             "expected the bind source to still resolve independently, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn bind_statement_with_dotted_feature_chain_operands_resolves_both_ends() {
+        // Regression test: `lower_satisfy_operand` (shared by `lower_bind`, `lower_satisfy`,
+        // `lower_allocate`, etc.) only matched `Expression::MemberAccess` in its dotted-chain arm,
+        // not `Expression::FeatureChainRef` -- the shape the parser actually produces for a
+        // dotted path like `f.a`/`a.g` (see `flatten_member_access_chain`, which has always
+        // handled both). `lower_connector_end` (used by `connect`) already matched both variants,
+        // so `connect f.a to a.g;` resolved while the very next line, `bind f.a = a.g;`, fell
+        // through to an unsupported diagnostic on both operands -- exactly the shape from
+        // `test/snapshots/sysml/examples/feature_path_test.md`. Fixed by adding
+        // `Expression::FeatureChainRef(_)` to `lower_satisfy_operand`'s dotted-chain match arm,
+        // mirroring `lower_connector_end`.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpart def F { part a : A; }\n\
+             \tpart def A { part g : F; }\n\
+             \tpart def B {\n\
+             \t\tpart f : F;\n\
+             \t\tpart a : A;\n\
+             \t}\n\
+             \tpart b : B {\n\
+             \t\tbind f.a = a.g;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(kind bind)"),
+            "expected an owned bind declaration, got:\n{output}"
+        );
+        assert!(
+            output.matches("(kind memberAccessOperand)").count() >= 2,
+            "expected both dotted bind operands to lower as memberAccessOperand references, \
+             got:\n{output}"
+        );
+        assert!(
+            !output.contains("(status unresolved)") && !output.contains("unsupported"),
+            "expected both dotted bind operands (f.a, a.g) to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn connect_statement_with_dotted_feature_chain_operands_resolves_both_ends() {
+        // Companion regression to the `bind` test above: `connect a.b to c.d;` with dotted
+        // endpoints already resolved correctly (via `lower_connector_end`, which has always
+        // matched both `Expression::MemberAccess` and `Expression::FeatureChainRef`) -- this
+        // pins that behavior down explicitly so a future refactor of the shared
+        // `flatten_member_access_chain`/`push_member_access_reference` path can't silently
+        // regress the `connect` side while fixing/touching the `bind` side.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpart def A { part d : A; }\n\
+             \tpart def B {\n\
+             \t\tpart a : A;\n\
+             \t\tpart c : A;\n\
+             \t}\n\
+             \tpart b : B {\n\
+             \t\tconnect a.d to c.d;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.matches("(kind memberAccessOperand)").count() >= 2,
+            "expected both dotted connect endpoints to lower as memberAccessOperand \
+             references, got:\n{output}"
+        );
+        assert!(
+            !output.contains("(status unresolved)") && !output.contains("unsupported"),
+            "expected both dotted connect endpoints (a.d, c.d) to resolve, got:\n{output}"
         );
     }
 

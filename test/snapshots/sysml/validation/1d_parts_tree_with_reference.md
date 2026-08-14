@@ -64,13 +64,13 @@ package '1d-Parts Tree with Reference' {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_part_usage_member")
+        (code "unresolved_reference")
         (source "semantic")
         (range (start 26 8) (end 26 29))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_part_usage_member")
+        (code "unresolved_reference")
         (source "semantic")
         (range (start 26 32) (end 26 54))
       )
@@ -81,7 +81,7 @@ package '1d-Parts Tree with Reference' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:0f8762df4050efb46434e714370d6b42149f7ac35d5cad124ec1173c2d8c42b3") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:0f8762df4050efb46434e714370d6b42149f7ac35d5cad124ec1173c2d8c42b3") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (qualified-name "1d-Parts Tree with Reference"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (qualified-name "1d-Parts Tree with Reference::Definitions"))) (kind package) (membership (kind owning) (visibility default)))
@@ -93,7 +93,7 @@ package '1d-Parts Tree with Reference' {
     (declaration (id (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (qualified-name "1d-Parts Tree with Reference::Usages"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Definitions") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system"))) (kind part) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (anonymous (kind bind) (ordinal 0))))) (kind bind) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (anonymous (kind bind) (ordinal 0))))) (kind bind) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "vehicle1_c1::hitchBall")) (memberAccessOperand (reference "trailerHitch::hitchBall"))))
     (declaration (id (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailer1"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Trailer"))))
     (declaration (id (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailer1::trailerCoupler"))) (kind ref) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "TrailerCoupler"))))
     (declaration (id (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailerHitch"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "TrailerHitch"))))
@@ -106,6 +106,12 @@ package '1d-Parts Tree with Reference' {
     (reference (id (source (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
       (authored-target "Definitions")
       (outcome (status resolved) (target (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (qualified-name "1d-Parts Tree with Reference::Definitions")))))
+    (reference (id (source (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (anonymous (kind bind) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0))
+      (authored-target "vehicle1_c1::hitchBall")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (anonymous (kind bind) (ordinal 0))))) (kind memberAccessOperand) (ordinal 1))
+      (authored-target "trailerHitch::hitchBall")
+      (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailer1"))) (kind featureTyping) (ordinal 0))
       (authored-target "Trailer")
       (outcome (status resolved) (target (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (qualified-name "1d-Parts Tree with Reference::Definitions::Trailer")))))
@@ -147,6 +153,14 @@ package '1d-Parts Tree with Reference' {
   (query (document "memory://snapshot/1d_parts_tree_with_reference.md") (range (start 11 17) (end 11 31)) (probe (position 11 17))
     (reference (id (source (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "Definitions")
       (outcome (status resolved) (target (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (qualified-name "1d-Parts Tree with Reference::Definitions")))))
+  )
+  (query (document "memory://snapshot/1d_parts_tree_with_reference.md") (range (start 26 8) (end 26 29)) (probe (position 26 8))
+    (reference (id (source (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (anonymous (kind bind) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0) (authored-target "vehicle1_c1::hitchBall")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/1d_parts_tree_with_reference.md") (range (start 26 32) (end 26 54)) (probe (position 26 32))
+    (reference (id (source (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (anonymous (kind bind) (ordinal 0))))) (kind memberAccessOperand) (ordinal 1) (authored-target "trailerHitch::hitchBall")
+      (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/1d_parts_tree_with_reference.md") (range (start 38 18) (end 38 25)) (probe (position 38 18))
     (reference (id (source (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailer1"))) (kind featureTyping) (ordinal 0) (authored-target "Trailer")
