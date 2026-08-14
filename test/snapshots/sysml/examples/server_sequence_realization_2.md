@@ -153,12 +153,6 @@ package ServerSequenceRealization_2 {
         (severity warning)
         (code "unsupported_state_definition_member")
         (source "semantic")
-        (range (start 29 4) (end 29 10))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_state_definition_member")
-        (source "semantic")
         (range (start 32 4) (end 35 29))
       )
       (diagnostic

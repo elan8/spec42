@@ -65,12 +65,6 @@ package 'Transition Actions' {
         (severity warning)
         (code "unsupported_state_definition_member")
         (source "semantic")
-        (range (start 21 2) (end 21 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_state_definition_member")
-        (source "semantic")
         (range (start 28 2) (end 31 11))
       )
       (diagnostic

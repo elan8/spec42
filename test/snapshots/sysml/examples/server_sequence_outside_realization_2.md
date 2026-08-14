@@ -172,12 +172,6 @@ package ServerSequenceOutsideRealization_2 {
         (severity warning)
         (code "unsupported_state_definition_member")
         (source "semantic")
-        (range (start 34 4) (end 34 10))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_state_definition_member")
-        (source "semantic")
         (range (start 37 4) (end 40 29))
       )
       (diagnostic

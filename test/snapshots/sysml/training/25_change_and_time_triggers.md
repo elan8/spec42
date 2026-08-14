@@ -106,12 +106,6 @@ package 'Change and Time Triggers' {
         (severity warning)
         (code "unsupported_state_definition_member")
         (source "semantic")
-        (range (start 22 2) (end 22 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_state_definition_member")
-        (source "semantic")
         (range (start 28 2) (end 30 17))
       )
       (diagnostic

@@ -65,12 +65,6 @@ package 'Local Clock Example' {
         (severity warning)
         (code "unsupported_state_definition_member")
         (source "semantic")
-        (range (start 14 3) (end 14 9))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_state_definition_member")
-        (source "semantic")
         (range (start 21 3) (end 22 20))
       )
       (diagnostic

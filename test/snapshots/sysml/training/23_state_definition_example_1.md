@@ -43,12 +43,6 @@ package 'State Definition Example-1' {
 (fixture-diagnostics
   (document "memory://snapshot/23_state_definition_example_1.md"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unsupported_state_definition_member")
-        (source "semantic")
-        (range (start 7 2) (end 7 8))
-      )
     )
   )
 )
@@ -56,7 +50,7 @@ package 'State Definition Example-1' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:7ef4b1b27e3d08e6bb597e627a083862f3384e9d57fd6f80f08f4268493160c4") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:7ef4b1b27e3d08e6bb597e627a083862f3384e9d57fd6f80f08f4268493160c4") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/23_state_definition_example_1.md") (qualified-name "State Definition Example-1"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/23_state_definition_example_1.md") (qualified-name "State Definition Example-1::VehicleOffSignal"))) (kind attribute-def) (membership (kind owning) (visibility default)))

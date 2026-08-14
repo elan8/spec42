@@ -22,12 +22,6 @@ package P {
         (severity warning)
         (code "unsupported_state_definition_member")
         (source "semantic")
-        (range (start 2 8) (end 2 14))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_state_definition_member")
-        (source "semantic")
         (range (start 4 8) (end 5 4))
       )
     )

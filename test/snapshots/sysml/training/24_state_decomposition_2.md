@@ -43,12 +43,6 @@ package 'State Decomposition-1' {
 (fixture-diagnostics
   (document "memory://snapshot/24_state_decomposition_2.md"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unsupported_state_definition_member")
-        (source "semantic")
-        (range (start 11 3) (end 11 9))
-      )
     )
   )
 )
@@ -56,7 +50,7 @@ package 'State Decomposition-1' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:3bf71b9cad0732f9b7c83cfcfe1d2d4e82f6ace6cbb5dc29aaed59652b207b73") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:3bf71b9cad0732f9b7c83cfcfe1d2d4e82f6ace6cbb5dc29aaed59652b207b73") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/24_state_decomposition_2.md") (qualified-name "State Decomposition-1"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/24_state_decomposition_2.md") (qualified-name "State Decomposition-1::VehicleOffSignal"))) (kind attribute-def) (membership (kind owning) (visibility default)))

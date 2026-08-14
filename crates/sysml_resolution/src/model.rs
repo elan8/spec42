@@ -26,7 +26,7 @@ use sysml_v2_parser_next::{
         ConstraintUsage as ParserConstraintUsage, DefaultReferenceUsage, DefinitionBody,
         DefinitionBodyElement, DefinitionPrefix, Dependency, DoAction, EndDecl, EndIdentity,
         EntryAction, EnumDef, EnumerationBody, EnumerationUsage as ParserEnumerationUsage,
-        ExitAction, Expression, ExtendedDefinition, FeatureValue, FirstMergeBody,
+        ExitAction, Expression, ExtendedDefinition, FeatureValue, FinalState, FirstMergeBody,
         FirstMergeBodyElement, FirstStmt, FlowDef, FlowUsage, ForLoop, FrameMember, IfStmt, Import,
         ImportShape, InOut, InOutDecl, IncludeUseCase, InterfaceDef, InterfaceDefBody,
         InterfaceDefBodyElement, InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement,
@@ -41,12 +41,12 @@ use sysml_v2_parser_next::{
         PortDef, PortDefBody, PortDefBodyElement, PortUsage as ParserPortUsage, PurposeMember,
         QualifiedIdentification, QualifiedReferenceId, RefBody, RefBodyElement, RefDecl,
         RelationshipBodyElement, RenderingDef, RenderingDefBody, RenderingDefBodyElement,
-        RequirementActorDecl, RequirementDef, RequirementDefBody, RequirementDefBodyElement,
-        RequirementUsage as ParserRequirementUsage, ReturnDecl, RootElement, Satisfy,
-        SatisfyViewMember, SendPayload, Span, StakeholderMember, StateDef, StateDefBody,
-        StateDefBodyElement, StateUsage as ParserStateUsage, SubjectDecl, SubsettingKind,
-        SubsettingRelationship, TerminateStmt, ThenAction, ThenStmt, ThenTarget, Transition,
-        TransitionAccept, TransitionEffect, UnaryOperator, UseCaseDef, UseCaseDefBody,
+        RequireConstraint, RequireConstraintBody, RequirementActorDecl, RequirementDef,
+        RequirementDefBody, RequirementDefBodyElement, RequirementUsage as ParserRequirementUsage,
+        ReturnDecl, RootElement, Satisfy, SatisfyViewMember, SendPayload, Span, StakeholderMember,
+        StateDef, StateDefBody, StateDefBodyElement, StateUsage as ParserStateUsage, SubjectDecl,
+        SubsettingKind, SubsettingRelationship, TerminateStmt, ThenAction, ThenStmt, ThenTarget,
+        Transition, TransitionAccept, TransitionEffect, UnaryOperator, UseCaseDef, UseCaseDefBody,
         UseCaseDefBodyElement, VariantUsage, VerificationCaseDef, VerifyRequirementMember,
         ViewBody, ViewBodyElement, ViewDef, ViewDefBody, ViewDefBodyElement,
         ViewUsage as ParserViewUsage, ViewpointDef, Visibility as ParserVisibility,
@@ -417,6 +417,14 @@ enum DeclarationKind {
     /// <target>;` body element (BNF `ThenStmt.state_reference`), owned by the enclosing state
     /// declaration, mirroring `EntryActionBinding`'s nested-declaration shape.
     InitialState,
+    /// A named final pseudo-state declared by a state def/usage's `final <name>;`/`final state
+    /// <name>;` body element (BNF `FinalState`, `ast::FinalState`), owned by the enclosing state
+    /// declaration. Unlike `InitialState` (which references an existing sibling state), `final
+    /// <name>;` *declares* a brand-new nested state feature -- there is no separate reference to
+    /// resolve, so this mirrors `lower_state_usage`'s plain named-declaration shape rather than
+    /// `EntryActionBinding`'s reference-binding shape. `FinalState.state_name` is a plain `String`
+    /// (not a structured typing/reference), so no other relationship is lowered.
+    FinalState,
     /// A directed `in`/`out`/`inout` parameter declaration (BNF `InOutDecl`, `ast::InOutDecl`)
     /// found in a `calc def`/`constraint def`/`action def` body, e.g. `in partMasses :
     /// MassValue[0..*];`. Mirrors `ItemUsage`/`MetadataUsage` lowering: ownership, membership,
@@ -1835,6 +1843,17 @@ fn fold_eval_node_pending(
             Some(fold_unary(op, operand))
         }
     }
+}
+
+/// True when a state def/usage's `entry`/`do`/`exit` action body (BNF `StateDefBody`, shared by
+/// `EntryAction`/`DoAction`/`ExitAction.body`) carries actual owned members, as opposed to a bare
+/// `;` terminator or an empty `{ }` -- both of which are legal no-op markers with nothing to
+/// represent when the action also has no bound `action_reference` (see
+/// `lower_state_entry_action`'s doc comment). Used to distinguish that genuinely-empty case from
+/// an inline `entry { <members> }` anonymous action body, which does carry content this typed AST
+/// shape has no field for and so stays an explicit unsupported diagnostic.
+fn state_action_body_has_content(body: &StateDefBody) -> bool {
+    matches!(body, StateDefBody::Brace { elements } if !elements.is_empty())
 }
 
 /// Classifies a constraint-body expression exactly along `lower_constraint_expression`'s
@@ -6782,10 +6801,13 @@ impl SemanticModelBuilder {
     }
 
     /// Lowers the `StateDefBody` shared by `state def` and by a `state` usage's own owned
-    /// members (BNF `StateDefBodyElement`): the only recognized owned member is a nested state
-    /// usage; everything else -- entry/do/exit action bindings, `then`/`final` state markers,
-    /// `ref` bindings, transitions -- falls through to `unsupported_state_definition_member`.
-    /// This is the genuinely out-of-scope state-machine surface for this slice.
+    /// members (BNF `StateDefBodyElement`): nested state/requirement usages, entry/do/exit action
+    /// bindings, `then`/`final` state markers, `ref` bindings, and transitions are all lowered.
+    /// `StateDefBodyElement` is a closed enum with no variant for the general
+    /// action/attribute/constraint/succession usage-member zoo other definition bodies support
+    /// (see UPSTREAM_PARSER_GAPS.md #42), so those fall through to
+    /// `unsupported_state_definition_member` via `Other`/parse-recovery, not through a dedicated
+    /// arm here.
     fn lower_state_def_body(
         &mut self,
         document: DocumentId,
@@ -6836,10 +6858,12 @@ impl SemanticModelBuilder {
                 StateDefBodyElement::Ref(node) => {
                     self.lower_ref_decl(document, Some(owner), node)?;
                 }
+                StateDefBodyElement::FinalState(node) => {
+                    self.lower_final_state(document, owner, node)?;
+                }
                 StateDefBodyElement::Annotation(_)
                 | StateDefBodyElement::MetadataKeywordUsage(_)
-                | StateDefBodyElement::Other(_)
-                | StateDefBodyElement::FinalState(_) => self.push_unsupported(
+                | StateDefBodyElement::Other(_) => self.push_unsupported(
                     document,
                     UnsupportedFamily::StateDefinitionMember,
                     element.span.clone(),
@@ -6856,9 +6880,12 @@ impl SemanticModelBuilder {
     /// declared), not the state's enclosing scope. `EntryAction.action_reference` is already a
     /// structured `QualifiedReferenceId` (not a flattened string), so it resolves through the
     /// same shared lexical lookup as `AliasBinding`/`Succession`. A plain `entry` with no bound
-    /// action (`action_reference: None`, e.g. a bare `entry;` or an inline `entry { ... }` body)
-    /// has no reference to lower and falls through to the existing unsupported diagnostic; its
-    /// own body content stays out of scope either way.
+    /// action (`action_reference: None`) has no reference to lower: a bare `entry;`/empty `entry
+    /// { }` (no owned members) is a legal no-op marker with genuinely nothing to represent, so it
+    /// is silently recognized rather than reported (pervasive in the training/validation corpus,
+    /// e.g. `24_state_actions.md`'s `entry; then off;`); an inline `entry { <members> }` body with
+    /// actual owned content has no representation in this typed AST shape (no field carries it)
+    /// and stays an explicit unsupported diagnostic.
     fn lower_state_entry_action(
         &mut self,
         document: DocumentId,
@@ -6866,11 +6893,13 @@ impl SemanticModelBuilder {
         node: &Node<EntryAction>,
     ) -> Result<(), ConstructionError> {
         let Some(target) = node.value.action_reference else {
-            self.push_unsupported(
-                document,
-                UnsupportedFamily::StateDefinitionMember,
-                node.span.clone(),
-            );
+            if state_action_body_has_content(&node.value.body) {
+                self.push_unsupported(
+                    document,
+                    UnsupportedFamily::StateDefinitionMember,
+                    node.span.clone(),
+                );
+            }
             return Ok(());
         };
         let declaration = self.push_typed_declaration(
@@ -6903,11 +6932,13 @@ impl SemanticModelBuilder {
         node: &Node<DoAction>,
     ) -> Result<(), ConstructionError> {
         let Some(target) = node.value.action_reference else {
-            self.push_unsupported(
-                document,
-                UnsupportedFamily::StateDefinitionMember,
-                node.span.clone(),
-            );
+            if state_action_body_has_content(&node.value.body) {
+                self.push_unsupported(
+                    document,
+                    UnsupportedFamily::StateDefinitionMember,
+                    node.span.clone(),
+                );
+            }
             return Ok(());
         };
         let declaration = self.push_typed_declaration(
@@ -6940,11 +6971,13 @@ impl SemanticModelBuilder {
         node: &Node<ExitAction>,
     ) -> Result<(), ConstructionError> {
         let Some(target) = node.value.action_reference else {
-            self.push_unsupported(
-                document,
-                UnsupportedFamily::StateDefinitionMember,
-                node.span.clone(),
-            );
+            if state_action_body_has_content(&node.value.body) {
+                self.push_unsupported(
+                    document,
+                    UnsupportedFamily::StateDefinitionMember,
+                    node.span.clone(),
+                );
+            }
             return Ok(());
         };
         let declaration = self.push_typed_declaration(
@@ -6999,6 +7032,36 @@ impl SemanticModelBuilder {
             ReferenceKind::InitialState,
             node.value.state_reference,
         )
+    }
+
+    /// Lowers a state def/usage's `final <name>;`/`final state <name>;` body element (BNF
+    /// `FinalState`) as a named `DeclarationKind::FinalState` feature owned by the enclosing state
+    /// `owner` declaration, mirroring `lower_state_usage`'s plain named-declaration shape.
+    /// `FinalState.state_name` is always a non-empty declared name per the grammar (`final` is
+    /// always followed by a mandatory `name`), so this declares a genuine new nested state rather
+    /// than referencing an existing one -- unlike `lower_state_then_stmt`'s `InitialState`, there
+    /// is no target reference to resolve.
+    fn lower_final_state(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        node: &Node<FinalState>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declared_name(&node.value.state_name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::FinalState,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span.clone(),
+        )?;
+        Ok(())
     }
 
     /// Shared helper for `lower_state_entry_action`/`lower_state_do_action`/
@@ -7793,10 +7856,12 @@ impl SemanticModelBuilder {
                 RequirementDefBodyElement::VariantUsage(node) => {
                     self.lower_variant_usage(document, owner, unsupported, node)?;
                 }
+                RequirementDefBodyElement::RequireConstraint(node) => {
+                    self.lower_require_constraint_member(document, owner, unsupported, node)?;
+                }
                 RequirementDefBodyElement::Other(_)
                 | RequirementDefBodyElement::Annotation(_)
-                | RequirementDefBodyElement::MetadataKeywordUsage(_)
-                | RequirementDefBodyElement::RequireConstraint(_) => {
+                | RequirementDefBodyElement::MetadataKeywordUsage(_) => {
                     self.push_unsupported(document, unsupported, element.span.clone())
                 }
             }
@@ -9485,6 +9550,67 @@ impl SemanticModelBuilder {
             })?;
         }
         self.lower_constraint_def_body(document, declaration, &node.value.body)
+    }
+
+    /// Lowers a requirement/objective/case-family-def-body `require`/`assume` constraint member
+    /// (BNF `RequireConstraint`, `ast::RequireConstraint`): the `require constraint { ... }` /
+    /// `assume constraint <name> { ... }` shape (`has_constraint_keyword == true`) declares an
+    /// anonymous or named nested `ConstraintUsage` feature, structurally identical to
+    /// `AssertConstraintMember`'s constraint-keyword form (`lower_assert_constraint_member`) minus
+    /// the `is_negated`/shorthand-`target`/`type_name` operands `AssertConstraintMember` has and
+    /// `RequireConstraint` does not. `RequireConstraintBody` is the exact same
+    /// Semicolon/Brace{elements: Vec<Node<ConstraintDefBodyElement>>} shape as `ConstraintDefBody`
+    /// (just a differently-named parser enum), so it is converted losslessly and dispatched
+    /// through the existing `lower_constraint_def_body` walker unchanged.
+    ///
+    /// Deferred (falls through to `family`'s unsupported diagnostic): the `require <name>;` /
+    /// `require <name> { ... }` shorthand (`has_constraint_keyword == false`), which references an
+    /// *existing* constraint by name rather than declaring one -- `RequireConstraint.name` is a
+    /// plain `String` in both roles (declared name vs. reference target), not a
+    /// `QualifiedReferenceId`, so the reference-shorthand role cannot participate in the shared
+    /// lexical-lookup reference machinery every other reference in this crate goes through (see
+    /// UPSTREAM_PARSER_GAPS.md #44). Likewise `require constraint <name> : <Type>;` / `require
+    /// constraint <name> :>> <target>;` (a `:`/`:>>` clause after the name) fails to parse as
+    /// `RequireConstraint` at all upstream (no field for either), so those never reach this
+    /// function in the first place.
+    fn lower_require_constraint_member(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        family: UnsupportedFamily,
+        node: &Node<RequireConstraint>,
+    ) -> Result<(), ConstructionError> {
+        if !node.value.has_constraint_keyword {
+            self.push_unsupported(document, family, node.span.clone());
+            return Ok(());
+        }
+        let name = node
+            .value
+            .name
+            .as_deref()
+            .filter(|name| !name.is_empty())
+            .map(|name| self.intern_name(name))
+            .transpose()?;
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::ConstraintUsage,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span.clone(),
+        )?;
+        let body = match &node.value.body {
+            RequireConstraintBody::Semicolon => ConstraintDefBody::Semicolon,
+            RequireConstraintBody::Brace { elements } => ConstraintDefBody::Brace {
+                elements: elements.clone(),
+            },
+        };
+        self.lower_constraint_def_body(document, declaration, &body)
     }
 
     /// Lowers a `calc def` (BNF CalculationDefinition), mirroring `lower_action_def`: ownership,

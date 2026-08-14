@@ -18,12 +18,6 @@ state def S {
   (document "memory://snapshot/fuzz_transition_first_closecurly.md"
     (diagnostics
       (diagnostic
-        (severity warning)
-        (code "unsupported_state_definition_member")
-        (source "semantic")
-        (range (start 2 4) (end 2 10))
-      )
-      (diagnostic
         (severity error)
         (code "missing_semicolon")
         (source "parser")

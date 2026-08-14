@@ -840,6 +840,7 @@ fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::DoActionBinding => "do-action-binding",
         DeclarationKind::ExitActionBinding => "exit-action-binding",
         DeclarationKind::InitialState => "initial-state",
+        DeclarationKind::FinalState => "final-state",
         DeclarationKind::ParameterUsage => "parameter",
         DeclarationKind::SubjectUsage => "subject",
         DeclarationKind::PerformActionUsage => "perform-action",

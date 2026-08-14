@@ -112,12 +112,6 @@ package 'Time Constraints' {
         (severity warning)
         (code "unsupported_state_definition_member")
         (source "semantic")
-        (range (start 20 2) (end 20 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_state_definition_member")
-        (source "semantic")
         (range (start 27 3) (end 28 3))
       )
       (diagnostic

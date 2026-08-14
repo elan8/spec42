@@ -185,12 +185,6 @@ package '5-State-based Behavior-2' {
         (severity warning)
         (code "unsupported_state_definition_member")
         (source "semantic")
-        (range (start 42 4) (end 42 10))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_state_definition_member")
-        (source "semantic")
         (range (start 49 4) (end 52 19))
       )
       (diagnostic
@@ -204,12 +198,6 @@ package '5-State-based Behavior-2' {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 60 8) (end 60 23))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_state_definition_member")
-        (source "semantic")
-        (range (start 68 4) (end 68 10))
       )
       (diagnostic
         (severity warning)
@@ -228,12 +216,6 @@ package '5-State-based Behavior-2' {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 78 43) (end 78 59))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_state_definition_member")
-        (source "semantic")
-        (range (start 94 4) (end 94 10))
       )
       (diagnostic
         (severity warning)

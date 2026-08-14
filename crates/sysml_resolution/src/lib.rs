@@ -258,6 +258,31 @@ mod tests {
         output
     }
 
+    /// Like `semantic_sexpr_for`, but renders the per-document diagnostics sexpr (which carries
+    /// the actual `unsupported_*_definition_member` diagnostic codes) instead of the semantic
+    /// model sexpr (which only carries the coarser `(completeness unsupported-syntax)` summary
+    /// flag) -- needed for tests asserting a *specific* diagnostic code is present, not merely
+    /// that publication completeness is degraded.
+    fn diagnostics_sexpr_for(source: &str) -> String {
+        let request = BuildRequest::new(
+            vec![SourceInput::new(
+                "memory://test.sysml",
+                source.to_string(),
+                SourceKind::Workspace,
+            )],
+            ConstructionSchedule::Sequential,
+            "contract-v1",
+        )
+        .unwrap();
+        let published = build(request).unwrap();
+        let mut output = String::new();
+        published
+            .debug()
+            .write_diagnostics_sexpr(&mut output)
+            .unwrap();
+        output
+    }
+
     /// A nested `part` usage inside an `attribute def` body (BNF `AttributeBodyElement::PartUsage`,
     /// shared with `item def`/`item` usage bodies per the OMG `14c-Language Extensions.sysml`
     /// FMEA library example) must lower as its own `part` declaration, not fall through to
@@ -771,6 +796,87 @@ mod tests {
         assert!(
             !sexpr.contains("unsupported_requirement_definition_member"),
             "did not expect unsupported_requirement_definition_member, got: {sexpr}"
+        );
+    }
+
+    /// `RequirementDefBodyElement::RequireConstraint` (`require constraint { ... }`/`assume
+    /// constraint <name> { ... }`) was unconditionally unsupported even though its body is the
+    /// exact same `ConstraintDefBody`-shaped `elements` list `lower_constraint_def_body` already
+    /// walks for `Constraint`/`AssertConstraintMember`. Wires the anonymous and named forms into
+    /// the requirement-shaped body walker (`lower_require_constraint_member`), covering both
+    /// `require`/`assume` spellings.
+    #[test]
+    fn require_and_assume_constraint_members_resolve() {
+        let sexpr = semantic_sexpr_for(
+            "package P { attribute massActual; attribute massReqd; requirement def R { require constraint { massActual <= massReqd } assume constraint fuelOk { massActual >= 0 } } }",
+        );
+        assert!(
+            sexpr.matches("(kind constraint)").count() >= 2,
+            "expected two constraint declarations (anonymous `require` + named `assume fuelOk`), got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("unsupported_requirement_definition_member"),
+            "did not expect unsupported_requirement_definition_member, got: {sexpr}"
+        );
+    }
+
+    /// A bare `require;`-less-constraint shorthand (`has_constraint_keyword == false`, e.g.
+    /// `require someExistingConstraint;`) references an existing constraint by a plain `String`
+    /// name rather than declaring one -- the typed AST gives no `QualifiedReferenceId` to resolve
+    /// through the shared lexical-lookup machinery (UPSTREAM_PARSER_GAPS.md #44), so it must stay
+    /// an explicit unsupported diagnostic rather than being silently dropped or guessed at.
+    #[test]
+    fn require_shorthand_reference_without_constraint_keyword_stays_unsupported() {
+        let sexpr =
+            diagnostics_sexpr_for("package P { constraint c; requirement def R { require c; } }");
+        assert!(
+            sexpr.contains("unsupported_requirement_definition_member"),
+            "expected the constraint-keyword-less `require c;` shorthand to remain unsupported, got: {sexpr}"
+        );
+    }
+
+    /// A state def/usage body's bare `entry;`/`do;`/`exit;` (no `action` reference, no body
+    /// content) is a legal no-op marker -- pervasive in the training/validation corpus (e.g.
+    /// `entry; then off;`) -- and must not be reported as `unsupported_state_definition_member`
+    /// merely because it has no bound action reference to lower.
+    #[test]
+    fn bare_entry_do_exit_with_no_reference_or_body_is_not_unsupported() {
+        let sexpr = semantic_sexpr_for(
+            "package P { state def S { state off; entry; do; exit; then off; } }",
+        );
+        assert!(
+            !sexpr.contains("unsupported_state_definition_member"),
+            "did not expect unsupported_state_definition_member for bare entry/do/exit, got: {sexpr}"
+        );
+    }
+
+    /// An inline `entry { <members> }` anonymous action body (non-empty brace, no `action`
+    /// reference) genuinely has no representation in the `EntryAction` typed AST and must stay an
+    /// explicit unsupported diagnostic, distinguishing it from the empty/semicolon no-op case
+    /// above.
+    #[test]
+    fn entry_with_inline_body_content_and_no_reference_stays_unsupported() {
+        let sexpr = diagnostics_sexpr_for("package P { state def S { entry { state inner; } } }");
+        assert!(
+            sexpr.contains("unsupported_state_definition_member"),
+            "expected an inline non-empty entry body with no reference to remain unsupported, got: {sexpr}"
+        );
+    }
+
+    /// A state def/usage body's `final <name>;` body element (BNF `FinalState`) declares a new
+    /// named final pseudo-state, distinct from `then <target>;`'s reference-to-an-existing-state
+    /// shape. Must lower as its own `DeclarationKind::FinalState` feature, not fall through to
+    /// `unsupported_state_definition_member`.
+    #[test]
+    fn final_state_declares_named_pseudo_state() {
+        let sexpr = semantic_sexpr_for("package P { state def S { final done; } }");
+        assert!(
+            sexpr.contains("(kind final-state)"),
+            "expected a final-state declaration, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("unsupported_state_definition_member"),
+            "did not expect unsupported_state_definition_member, got: {sexpr}"
         );
     }
 

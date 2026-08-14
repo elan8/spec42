@@ -93,12 +93,6 @@ package StateTest {
         (severity warning)
         (code "unsupported_state_definition_member")
         (source "semantic")
-        (range (start 12 2) (end 12 8))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_state_definition_member")
-        (source "semantic")
         (range (start 15 3) (end 17 11))
       )
       (diagnostic
