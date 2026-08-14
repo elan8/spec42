@@ -156,11 +156,11 @@ action def DecisionTest {
     (relationship (kind thenTarget) (source (node (document "memory://snapshot/decision_test.md") (path (named (kind action-def) (name "DecisionTest")) (anonymous (kind if) (ordinal 3)) (anonymous (kind then-continuation) (ordinal 0)))))) (target (node (document "memory://snapshot/decision_test.md") (qualified-name "DecisionTest::A2"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/decision_test.md") (path (named (kind action-def) (name "DecisionTest")) (anonymous (kind if) (ordinal 3)) (anonymous (kind then-continuation) (ordinal 0)))))) (kind thenTarget) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/decision_test.md") (path (named (kind action-def) (name "DecisionTest")) (anonymous (kind if) (ordinal 0)))))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/decision_test.md") (path (named (kind action-def) (name "DecisionTest")) (anonymous (kind if) (ordinal 1)))))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/decision_test.md") (path (named (kind action-def) (name "DecisionTest")) (anonymous (kind if) (ordinal 2)))))) (value (kind boolean) (boolean true)))
-    (evaluated (declaration (node (document "memory://snapshot/decision_test.md") (path (named (kind action-def) (name "DecisionTest")) (anonymous (kind if) (ordinal 3)))))) (value (kind boolean) (boolean false)))
-    (evaluated (declaration (node (document "memory://snapshot/decision_test.md") (path (named (kind action-def) (name "DecisionTest")) (anonymous (kind if) (ordinal 4)))))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/decision_test.md") (path (named (kind action-def) (name "DecisionTest")) (anonymous (kind if) (ordinal 0)))))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/decision_test.md") (path (named (kind action-def) (name "DecisionTest")) (anonymous (kind if) (ordinal 1)))))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/decision_test.md") (path (named (kind action-def) (name "DecisionTest")) (anonymous (kind if) (ordinal 2)))))) (state literal) (value (kind boolean) (boolean true)))
+    (evaluated (declaration (node (document "memory://snapshot/decision_test.md") (path (named (kind action-def) (name "DecisionTest")) (anonymous (kind if) (ordinal 3)))))) (state literal) (value (kind boolean) (boolean false)))
+    (evaluated (declaration (node (document "memory://snapshot/decision_test.md") (path (named (kind action-def) (name "DecisionTest")) (anonymous (kind if) (ordinal 4)))))) (state unresolved-operand))
   )
 )
 ~~~

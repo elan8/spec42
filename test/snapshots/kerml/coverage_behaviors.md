@@ -161,10 +161,10 @@ package BehaviorCoverage {
     (relationship (kind typing) (source (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::s1"))) (target (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::Action1"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::s1"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::E"))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::I"))) (value (kind boolean) (boolean true)))
-    (evaluated (declaration (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::P"))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::b"))) (value (kind boolean) (boolean true)))
+    (evaluated (declaration (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::E"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::I"))) (state literal) (value (kind boolean) (boolean true)))
+    (evaluated (declaration (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::P"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::b"))) (state literal) (value (kind boolean) (boolean true)))
   )
 )
 ~~~

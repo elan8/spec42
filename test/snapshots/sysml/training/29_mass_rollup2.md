@@ -141,7 +141,7 @@ package MassRollup2 {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::filteredMassThing"))) (target (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::compositeThing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::filteredMassThing"))) (kind subsetting) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::MassedThing::totalMass"))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::MassedThing::totalMass"))) (state non-constant))
   )
 )
 ~~~

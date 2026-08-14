@@ -71,7 +71,7 @@ package FeatureDeclCoverage {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::s"))) (target (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::f"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::s"))) (kind subsetting) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::s2"))) (value (kind integer) (integer 42)))
+    (evaluated (declaration (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::s2"))) (state literal) (value (kind integer) (integer 42)))
   )
 )
 ~~~

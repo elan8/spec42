@@ -216,7 +216,7 @@ package 'Constraint Assertions-2' {
     (relationship (kind typing) (source (node (document "memory://snapshot/31_constraint_assertions_2.md") (qualified-name "Constraint Assertions-2::massConstraint"))) (target (node (document "memory://snapshot/31_constraint_assertions_2.md") (qualified-name "Constraint Assertions-2::MassConstraint"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/31_constraint_assertions_2.md") (qualified-name "Constraint Assertions-2::massConstraint"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/31_constraint_assertions_2.md") (qualified-name "Constraint Assertions-2::massConstraint"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/31_constraint_assertions_2.md") (qualified-name "Constraint Assertions-2::massConstraint"))) (state unresolved-operand))
   )
 )
 ~~~

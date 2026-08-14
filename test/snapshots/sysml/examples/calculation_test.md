@@ -202,7 +202,7 @@ package CalculationExample {
     (relationship (kind typing) (source (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::vehicle::trans"))) (target (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::VehiclePart"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::vehicle::trans"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::MassSum::totalMass"))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::MassSum::totalMass"))) (state non-constant))
   )
 )
 ~~~

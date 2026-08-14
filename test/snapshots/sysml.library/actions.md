@@ -1825,11 +1825,11 @@ standard library package Actions {
     (relationship (kind redefinition) (source (node (document "memory://snapshot/actions.md") (qualified-name "Actions::WhileLoopAction::body"))) (target (node (document "memory://snapshot/actions.md") (qualified-name "Actions::LoopAction::body"))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "ForLoopAction")) (anonymous (kind assign) (ordinal 0)))))) (value (kind integer) (integer 1)))
-    (evaluated (declaration (node (document "memory://snapshot/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "ForLoopAction")) (anonymous (kind while) (ordinal 0)))))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "ForLoopAction")) (anonymous (kind while) (ordinal 0)) (anonymous (kind assign) (ordinal 1)))))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/actions.md") (qualified-name "Actions::TerminateAction::terminateOccurrence::occ"))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/actions.md") (qualified-name "Actions::assignmentActions::target"))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "ForLoopAction")) (anonymous (kind assign) (ordinal 0)))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "ForLoopAction")) (anonymous (kind while) (ordinal 0)))))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "ForLoopAction")) (anonymous (kind while) (ordinal 0)) (anonymous (kind assign) (ordinal 1)))))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/actions.md") (qualified-name "Actions::TerminateAction::terminateOccurrence::occ"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/actions.md") (qualified-name "Actions::assignmentActions::target"))) (state non-constant))
   )
 )
 ~~~

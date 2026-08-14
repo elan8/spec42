@@ -164,7 +164,7 @@ standard library package AnalysisCases {
     (relationship (kind typing) (source (node (document "memory://snapshot/analysis_cases.md") (qualified-name "AnalysisCases::analysisCases"))) (target (node (document "memory://snapshot/analysis_cases.md") (qualified-name "AnalysisCases::AnalysisCase"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/analysis_cases.md") (qualified-name "AnalysisCases::analysisCases"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/analysis_cases.md") (qualified-name "AnalysisCases::AnalysisCase"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/analysis_cases.md") (qualified-name "AnalysisCases::AnalysisCase"))) (state unresolved-operand))
   )
 )
 ~~~

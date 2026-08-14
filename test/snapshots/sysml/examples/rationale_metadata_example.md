@@ -119,8 +119,8 @@ package RationaleMetadataExample {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineTradeOffAnalysis::selectedEngine"))) (target (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engine"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineTradeOffAnalysis::selectedEngine"))) (kind subsetting) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineSelectionRationale::explanation"))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineSelectionRationale::text"))) (value (kind string) (value "This rationale for selecting the engine4cyl refers to the engineTradeOffAnalysis.")))
+    (evaluated (declaration (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineSelectionRationale::explanation"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineSelectionRationale::text"))) (state literal) (value (kind string) (value "This rationale for selecting the engine4cyl refers to the engineTradeOffAnalysis.")))
   )
 )
 ~~~

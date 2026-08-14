@@ -979,11 +979,11 @@ standard library package RealFunctions {
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/real_functions.md") (path (named (kind library-package) (name "RealFunctions")) (named (kind kerml-function) (name "sum")) (anonymous (kind parameter) (ordinal 0)))))) (target (node (document "memory://snapshot/real_functions.md") (qualified-name "RealFunctions::sum::collection"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/real_functions.md") (path (named (kind library-package) (name "RealFunctions")) (named (kind kerml-function) (name "sum")) (anonymous (kind parameter) (ordinal 0)))))) (kind expressionOperand) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/real_functions.md") (path (named (kind library-package) (name "RealFunctions")) (named (kind kerml-function) (name "arg")) (anonymous (kind parameter) (ordinal 0)))))) (value (kind real) (real 0)))
-    (evaluated (declaration (node (document "memory://snapshot/real_functions.md") (path (named (kind library-package) (name "RealFunctions")) (named (kind kerml-function) (name "im")) (anonymous (kind parameter) (ordinal 0)))))) (value (kind real) (real 0)))
-    (evaluated (declaration (node (document "memory://snapshot/real_functions.md") (path (named (kind library-package) (name "RealFunctions")) (named (kind kerml-function) (name "product")) (anonymous (kind parameter) (ordinal 0)))))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/real_functions.md") (path (named (kind library-package) (name "RealFunctions")) (named (kind kerml-function) (name "re")) (anonymous (kind parameter) (ordinal 0)))))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/real_functions.md") (path (named (kind library-package) (name "RealFunctions")) (named (kind kerml-function) (name "sum")) (anonymous (kind parameter) (ordinal 0)))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/real_functions.md") (path (named (kind library-package) (name "RealFunctions")) (named (kind kerml-function) (name "arg")) (anonymous (kind parameter) (ordinal 0)))))) (state literal) (value (kind real) (real 0)))
+    (evaluated (declaration (node (document "memory://snapshot/real_functions.md") (path (named (kind library-package) (name "RealFunctions")) (named (kind kerml-function) (name "im")) (anonymous (kind parameter) (ordinal 0)))))) (state literal) (value (kind real) (real 0)))
+    (evaluated (declaration (node (document "memory://snapshot/real_functions.md") (path (named (kind library-package) (name "RealFunctions")) (named (kind kerml-function) (name "product")) (anonymous (kind parameter) (ordinal 0)))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/real_functions.md") (path (named (kind library-package) (name "RealFunctions")) (named (kind kerml-function) (name "re")) (anonymous (kind parameter) (ordinal 0)))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/real_functions.md") (path (named (kind library-package) (name "RealFunctions")) (named (kind kerml-function) (name "sum")) (anonymous (kind parameter) (ordinal 0)))))) (state non-constant))
   )
 )
 ~~~

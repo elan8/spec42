@@ -192,7 +192,7 @@ package 'Requirement Definitions' {
     (relationship (kind typing) (source (node (document "memory://snapshot/32_requirement_definitions.md") (qualified-name "Requirement Definitions::VehicleMassLimitationRequirement::vehicle"))) (target (node (document "memory://snapshot/32_requirement_definitions.md") (qualified-name "Requirement Definitions::Vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/32_requirement_definitions.md") (qualified-name "Requirement Definitions::VehicleMassLimitationRequirement::vehicle"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/32_requirement_definitions.md") (path (named (kind package) (name "Requirement Definitions")) (named (kind requirement-def) (name "MassLimitationRequirement")) (anonymous (kind require-constraint) (ordinal 0)))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/32_requirement_definitions.md") (path (named (kind package) (name "Requirement Definitions")) (named (kind requirement-def) (name "MassLimitationRequirement")) (anonymous (kind require-constraint) (ordinal 0)))))) (state non-constant))
   )
 )
 ~~~

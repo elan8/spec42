@@ -341,10 +341,10 @@ standard library package TrigFunctions {
     (relationship (kind invocationCallee) (source (node (document "memory://snapshot/trig_functions.md") (path (named (kind library-package) (name "TrigFunctions")) (named (kind kerml-function) (name "tan")) (anonymous (kind parameter) (ordinal 0)))))) (target (node (document "memory://snapshot/trig_functions.md") (qualified-name "TrigFunctions::cos"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/trig_functions.md") (path (named (kind library-package) (name "TrigFunctions")) (named (kind kerml-function) (name "tan")) (anonymous (kind parameter) (ordinal 0)))))) (kind invocationCallee) (ordinal 1)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/trig_functions.md") (path (named (kind library-package) (name "TrigFunctions")) (named (kind kerml-function) (name "cot")) (anonymous (kind parameter) (ordinal 0)))))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/trig_functions.md") (path (named (kind library-package) (name "TrigFunctions")) (named (kind kerml-function) (name "deg")) (anonymous (kind parameter) (ordinal 0)))))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/trig_functions.md") (path (named (kind library-package) (name "TrigFunctions")) (named (kind kerml-function) (name "rad")) (anonymous (kind parameter) (ordinal 0)))))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/trig_functions.md") (path (named (kind library-package) (name "TrigFunctions")) (named (kind kerml-function) (name "tan")) (anonymous (kind parameter) (ordinal 0)))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/trig_functions.md") (path (named (kind library-package) (name "TrigFunctions")) (named (kind kerml-function) (name "cot")) (anonymous (kind parameter) (ordinal 0)))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/trig_functions.md") (path (named (kind library-package) (name "TrigFunctions")) (named (kind kerml-function) (name "deg")) (anonymous (kind parameter) (ordinal 0)))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/trig_functions.md") (path (named (kind library-package) (name "TrigFunctions")) (named (kind kerml-function) (name "rad")) (anonymous (kind parameter) (ordinal 0)))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/trig_functions.md") (path (named (kind library-package) (name "TrigFunctions")) (named (kind kerml-function) (name "tan")) (anonymous (kind parameter) (ordinal 0)))))) (state non-constant))
   )
 )
 ~~~

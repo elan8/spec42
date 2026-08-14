@@ -185,9 +185,9 @@ package ExternalShapeRefExample {
   (relationships
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/external_shape_ref_example.md") (path (named (kind package) (name "ExternalShapeRefExample")) (named (kind part) (name "myBatteryUnit")) (named (kind item) (name "envelopingBoxBatteryUnit")) (anonymous (kind attribute) (ordinal 0)))))) (value (kind quantity) (magnitude (value (kind integer) (integer 140))) (unit "mm")))
-    (evaluated (declaration (node (document "memory://snapshot/external_shape_ref_example.md") (path (named (kind package) (name "ExternalShapeRefExample")) (named (kind part) (name "myBatteryUnit")) (named (kind item) (name "envelopingBoxBatteryUnit")) (anonymous (kind attribute) (ordinal 1)))))) (value (kind quantity) (magnitude (value (kind integer) (integer 148))) (unit "mm")))
-    (evaluated (declaration (node (document "memory://snapshot/external_shape_ref_example.md") (path (named (kind package) (name "ExternalShapeRefExample")) (named (kind part) (name "myBatteryUnit")) (named (kind item) (name "envelopingBoxBatteryUnit")) (anonymous (kind attribute) (ordinal 2)))))) (value (kind quantity) (magnitude (value (kind integer) (integer 90))) (unit "mm")))
+    (evaluated (declaration (node (document "memory://snapshot/external_shape_ref_example.md") (path (named (kind package) (name "ExternalShapeRefExample")) (named (kind part) (name "myBatteryUnit")) (named (kind item) (name "envelopingBoxBatteryUnit")) (anonymous (kind attribute) (ordinal 0)))))) (state literal) (value (kind quantity) (magnitude (value (kind integer) (integer 140))) (unit "mm")))
+    (evaluated (declaration (node (document "memory://snapshot/external_shape_ref_example.md") (path (named (kind package) (name "ExternalShapeRefExample")) (named (kind part) (name "myBatteryUnit")) (named (kind item) (name "envelopingBoxBatteryUnit")) (anonymous (kind attribute) (ordinal 1)))))) (state literal) (value (kind quantity) (magnitude (value (kind integer) (integer 148))) (unit "mm")))
+    (evaluated (declaration (node (document "memory://snapshot/external_shape_ref_example.md") (path (named (kind package) (name "ExternalShapeRefExample")) (named (kind part) (name "myBatteryUnit")) (named (kind item) (name "envelopingBoxBatteryUnit")) (anonymous (kind attribute) (ordinal 2)))))) (state literal) (value (kind quantity) (magnitude (value (kind integer) (integer 90))) (unit "mm")))
   )
 )
 ~~~

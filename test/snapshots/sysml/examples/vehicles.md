@@ -230,9 +230,9 @@ package VehicleMasses {
     (relationship (kind redefinition) (source (node (document "memory://snapshot/vehicles.md") (qualified-name "VehicleMasses::car::vin"))) (target (node (document "memory://snapshot/vehicles.md") (qualified-name "VehicleMasses::CarPart::serialNumber"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicles.md") (qualified-name "VehicleMasses::car::vin"))) (kind redefinition) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/vehicles.md") (path (named (kind package) (name "VehicleMasses")) (named (kind part) (name "c")) (anonymous (kind attribute) (ordinal 0)))))) (value (kind quantity) (magnitude (value (kind integer) (integer 1000))) (unit "kg")))
-    (evaluated (declaration (node (document "memory://snapshot/vehicles.md") (path (named (kind package) (name "VehicleMasses")) (named (kind part) (name "c")) (anonymous (kind part) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)))))) (value (kind quantity) (magnitude (value (kind integer) (integer 100))) (unit "kg")))
-    (evaluated (declaration (node (document "memory://snapshot/vehicles.md") (path (named (kind package) (name "VehicleMasses")) (named (kind part) (name "c")) (anonymous (kind part) (ordinal 1)) (anonymous (kind attribute) (ordinal 0)))))) (value (kind quantity) (magnitude (value (kind integer) (integer 50))) (unit "kg")))
+    (evaluated (declaration (node (document "memory://snapshot/vehicles.md") (path (named (kind package) (name "VehicleMasses")) (named (kind part) (name "c")) (anonymous (kind attribute) (ordinal 0)))))) (state literal) (value (kind quantity) (magnitude (value (kind integer) (integer 1000))) (unit "kg")))
+    (evaluated (declaration (node (document "memory://snapshot/vehicles.md") (path (named (kind package) (name "VehicleMasses")) (named (kind part) (name "c")) (anonymous (kind part) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)))))) (state literal) (value (kind quantity) (magnitude (value (kind integer) (integer 100))) (unit "kg")))
+    (evaluated (declaration (node (document "memory://snapshot/vehicles.md") (path (named (kind package) (name "VehicleMasses")) (named (kind part) (name "c")) (anonymous (kind part) (ordinal 1)) (anonymous (kind attribute) (ordinal 0)))))) (state literal) (value (kind quantity) (magnitude (value (kind integer) (integer 50))) (unit "kg")))
   )
 )
 ~~~

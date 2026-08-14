@@ -170,7 +170,7 @@ package Connectors {
   (relationships
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A::connector"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A::connector"))) (state unresolved-operand))
   )
 )
 ~~~

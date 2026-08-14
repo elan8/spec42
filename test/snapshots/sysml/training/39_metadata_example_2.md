@@ -117,8 +117,8 @@ package 'Metadata Example-2' {
   (relationships
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/39_metadata_example_2.md") (qualified-name "Metadata Example-2::computeDynamics::ToolExecution::toolName"))) (value (kind string) (value "ModelCenter")))
-    (evaluated (declaration (node (document "memory://snapshot/39_metadata_example_2.md") (qualified-name "Metadata Example-2::computeDynamics::ToolExecution::uri"))) (value (kind string) (value "aserv://localhost/Vehicle/Equation1")))
+    (evaluated (declaration (node (document "memory://snapshot/39_metadata_example_2.md") (qualified-name "Metadata Example-2::computeDynamics::ToolExecution::toolName"))) (state literal) (value (kind string) (value "ModelCenter")))
+    (evaluated (declaration (node (document "memory://snapshot/39_metadata_example_2.md") (qualified-name "Metadata Example-2::computeDynamics::ToolExecution::uri"))) (state literal) (value (kind string) (value "aserv://localhost/Vehicle/Equation1")))
   )
 )
 ~~~

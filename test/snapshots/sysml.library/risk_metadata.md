@@ -214,7 +214,7 @@ standard library package RiskMetadata {
     (relationship (kind specialization) (source (node (document "memory://snapshot/risk_metadata.md") (qualified-name "RiskMetadata::RiskLevelEnum"))) (target (node (document "memory://snapshot/risk_metadata.md") (qualified-name "RiskMetadata::RiskLevel"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/risk_metadata.md") (qualified-name "RiskMetadata::RiskLevelEnum"))) (kind specialization) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/risk_metadata.md") (path (named (kind library-package) (name "RiskMetadata")) (named (kind attribute-def) (name "Level")) (anonymous (kind assert-constraint) (ordinal 0)))))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/risk_metadata.md") (path (named (kind library-package) (name "RiskMetadata")) (named (kind attribute-def) (name "Level")) (anonymous (kind assert-constraint) (ordinal 0)))))) (state unresolved-operand))
   )
 )
 ~~~

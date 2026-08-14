@@ -12,6 +12,8 @@ use std::{
 };
 
 use hashbrown::HashTable;
+
+use crate::evaluation::EvaluationPolicy;
 use sysml_v2_parser_next::{
     ast::{
         ActionDef, ActionDefBody, ActionDefBodyElement, ActionUsage as ParserActionUsage,
@@ -1476,7 +1478,12 @@ enum EvalNode {
 /// not recognize) publish no evaluation fact at all.
 #[derive(Debug, Clone, PartialEq)]
 enum ExpressionEvalShape {
+    /// The authored expression is itself a literal value -- nothing was folded.
     Literal(EvaluatedValue),
+    /// A tree with no operand leaf, folded at construction (`2 + 3`). Kept apart from `Literal`
+    /// because the published contract distinguishes a value that was *written* from one that was
+    /// *computed*, and only the root node tells them apart.
+    ConstantFolded(EvaluatedValue),
     HasOperand(EvalNode),
     Unsupported,
 }
@@ -2009,7 +2016,11 @@ fn classify_constraint_expression(node: &Expression) -> ExpressionEvalShape {
             let value = fold_eval_node(&tree, &mut |_| {
                 unreachable!("eval_node_is_pure_literal guarantees no Operand leaf is folded")
             });
-            ExpressionEvalShape::Literal(value)
+            if matches!(tree, EvalNode::Literal(_)) {
+                ExpressionEvalShape::Literal(value)
+            } else {
+                ExpressionEvalShape::ConstantFolded(value)
+            }
         }
         Some(tree) => ExpressionEvalShape::HasOperand(tree),
     }
@@ -2027,7 +2038,11 @@ fn classify_calc_expression(node: &Expression) -> ExpressionEvalShape {
             let value = fold_eval_node(&tree, &mut |_| {
                 unreachable!("eval_node_is_pure_literal guarantees no Operand leaf is folded")
             });
-            ExpressionEvalShape::Literal(value)
+            if matches!(tree, EvalNode::Literal(_)) {
+                ExpressionEvalShape::Literal(value)
+            } else {
+                ExpressionEvalShape::ConstantFolded(value)
+            }
         }
         Some(tree) => ExpressionEvalShape::HasOperand(tree),
     }
@@ -13052,6 +13067,7 @@ impl SemanticModelBuildCoordinator {
     pub(crate) fn build(
         mut sources: Vec<OwnedSourceRecord>,
         schedule: BuildSchedule,
+        policy: EvaluationPolicy,
     ) -> Result<resolver::ResolvedSemanticModel, CoordinatorError> {
         sources.sort_unstable_by(|left, right| left.identity.cmp(&right.identity));
         if sources
@@ -13090,7 +13106,7 @@ impl SemanticModelBuildCoordinator {
         }
         builder
             .freeze()
-            .resolve()
+            .resolve(policy)
             .map_err(|_| CoordinatorError::ConstructionFailed)
     }
 
@@ -13105,6 +13121,7 @@ impl SemanticModelBuildCoordinator {
 }
 
 mod element_kind;
+mod evaluation;
 pub(crate) mod resolver;
 
 #[cfg(test)]
@@ -13909,7 +13926,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::C\"))) (value (kind boolean) (boolean true)))"
+                 (qualified-name \"Demo::C\"))) (state evaluated) (value (kind boolean) (boolean true)))"
             ),
             "expected `1 < 2` to fold to a published Boolean(true) evaluation fact, got:\n{output}"
         );
@@ -13929,7 +13946,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::C\"))) (value (kind boolean) (boolean false)))"
+                 (qualified-name \"Demo::C\"))) (state evaluated) (value (kind boolean) (boolean false)))"
             ),
             "expected `2 < 1` to fold to a published Boolean(false) evaluation fact, got:\n{output}"
         );
@@ -13945,7 +13962,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::mass\"))) (value (kind quantity) (magnitude (value \
+                 (qualified-name \"Demo::mass\"))) (state literal) (value (kind quantity) (magnitude (value \
                  (kind integer) (integer 0))) (unit \"kg\")))"
             ),
             "expected `attribute mass = 0[kg];` to fold its magnitude to Integer(0) while carrying \
@@ -13983,7 +14000,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::value\"))) (value (kind string) (value \"approved\")))"
+                 (qualified-name \"Demo::value\"))) (state literal) (value (kind string) (value \"approved\")))"
             ),
             "expected `attribute value = \"approved\";` to fold to a published \
              EvaluatedValue::String(\"approved\") evaluation fact, got:\n{output}"
@@ -14000,7 +14017,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::C\"))) (value (kind boolean) (boolean true)))"
+                 (qualified-name \"Demo::C\"))) (state evaluated) (value (kind boolean) (boolean true)))"
             ),
             "expected `\"a\" == \"a\"` to fold to a published Boolean(true) evaluation fact, \
              got:\n{output}"
@@ -14017,7 +14034,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::C\"))) (value (kind boolean) (boolean false)))"
+                 (qualified-name \"Demo::C\"))) (state evaluated) (value (kind boolean) (boolean false)))"
             ),
             "expected `\"a\" == \"b\"` to fold to a published Boolean(false) evaluation fact, \
              got:\n{output}"
@@ -14037,7 +14054,7 @@ mod tests {
              }\n",
         );
         assert!(
-            output.contains("(value (kind boolean) (boolean true)))"),
+            output.contains("(state evaluated) (value (kind boolean) (boolean true)))"),
             "expected `assert constraint {{ 1 < 2 }}` to fold to a published Boolean(true) \
              evaluation fact, got:\n{output}"
         );
@@ -14102,7 +14119,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::C\"))) (value (kind non-constant)))"
+                 (qualified-name \"Demo::C\"))) (state non-constant))"
             ),
             "expected a resolved but non-literal operand `x` to publish NonConstant rather than \
              a fabricated boolean, got:\n{output}"
@@ -14154,7 +14171,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::C\"))) (value (kind non-constant)))"
+                 (qualified-name \"Demo::C\"))) (state non-constant))"
             ),
             "expected `x->excludes(y)` to publish NonConstant, matching `Invocation`'s own \
              evaluation shape, got:\n{output}"
@@ -14171,7 +14188,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::C\"))) (value (kind unresolved-operand)))"
+                 (qualified-name \"Demo::C\"))) (state unresolved-operand))"
             ),
             "expected an undeclared operand `x` to publish UnresolvedOperand rather than a \
              fabricated boolean, got:\n{output}"
@@ -14210,7 +14227,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::Calc\"))) (value (kind integer) (integer 5)))"
+                 (qualified-name \"Demo::Calc\"))) (state evaluated) (value (kind integer) (integer 5)))"
             ),
             "expected `2 + 3` to fold to a published Integer(5) evaluation fact, got:\n{output}"
         );
@@ -14226,7 +14243,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::Calc\"))) (value (kind real) (real 6"
+                 (qualified-name \"Demo::Calc\"))) (state evaluated) (value (kind real) (real 6"
             ),
             "expected `2.0 * 3` to fold to a promoted Real(6.0) evaluation fact, got:\n{output}"
         );
@@ -14242,7 +14259,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::Calc\"))) (value (kind division-by-zero)))"
+                 (qualified-name \"Demo::Calc\"))) (state division-by-zero))"
             ),
             "expected `10 / 0` to publish a typed DivisionByZero outcome rather than panicking, \
              got:\n{output}"
@@ -14259,7 +14276,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::Calc\"))) (value (kind division-by-zero)))"
+                 (qualified-name \"Demo::Calc\"))) (state division-by-zero))"
             ),
             "expected `10.0 / 0.0` to publish a typed DivisionByZero outcome rather than a \
              fabricated infinity, got:\n{output}"
@@ -14280,7 +14297,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::Calc\"))) (value (kind integer) (integer 20)))"
+                 (qualified-name \"Demo::Calc\"))) (state evaluated) (value (kind integer) (integer 20)))"
             ),
             "expected `length * width` to propagate both attributes' literal defaults and fold to \
              Integer(20), got:\n{output}"
@@ -14299,7 +14316,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::Calc\"))) (value (kind integer) (integer 8)))"
+                 (qualified-name \"Demo::Calc\"))) (state evaluated) (value (kind integer) (integer 8)))"
             ),
             "expected `2 ** 3` to fold to Integer(8), got:\n{output}"
         );
@@ -14317,7 +14334,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::Calc\"))) (value (kind real) (real 8"
+                 (qualified-name \"Demo::Calc\"))) (state evaluated) (value (kind real) (real 8"
             ),
             "expected `2.0 ^ 3` to fold to a promoted Real(8.0), got:\n{output}"
         );
@@ -14335,7 +14352,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::Calc\"))) (value (kind real) (real 0.5)))"
+                 (qualified-name \"Demo::Calc\"))) (state evaluated) (value (kind real) (real 0.5)))"
             ),
             "expected `2 ^ -1` to fold to Real(0.5) via the Real-promotion path, got:\n{output}"
         );
@@ -14351,7 +14368,7 @@ mod tests {
              }\n",
         );
         assert!(
-            output.contains("(value (kind non-constant))"),
+            output.contains("(state non-constant)"),
             "expected an overflowing `**` to publish a NonConstant evaluation fact, \
              got:\n{output}"
         );
@@ -14370,7 +14387,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::C\"))) (value (kind boolean) (boolean true)))"
+                 (qualified-name \"Demo::C\"))) (state evaluated) (value (kind boolean) (boolean true)))"
             ),
             "expected `(1 + 2) > 0` (arithmetic mixed with comparison) to fold to a published \
              Boolean(true) evaluation fact, got:\n{output}"
@@ -14400,7 +14417,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::C\"))) (value (kind non-constant)))"
+                 (qualified-name \"Demo::C\"))) (state non-constant))"
             ),
             "expected `(a + b) < c` with no constant-valued operands to publish NonConstant \
              rather than a fabricated boolean, got:\n{output}"
@@ -14420,7 +14437,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::C\"))) (value (kind boolean) (boolean true)))"
+                 (qualified-name \"Demo::C\"))) (state evaluated) (value (kind boolean) (boolean true)))"
             ),
             "expected `(mass1 + mass2) > massLimit` to constant-propagate through all three \
              attribute defaults and fold to Boolean(true) (2 + 3 = 5 > 4), got:\n{output}"
@@ -14445,7 +14462,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::C\"))) (value (kind boolean) (boolean true)))"
+                 (qualified-name \"Demo::C\"))) (state evaluated) (value (kind boolean) (boolean true)))"
             ),
             "expected `(mass1 + mass2) < massLimit and isActive` to fold to Boolean(true) \
              (2 + 3 = 5 < 10, and isActive is true), got:\n{output}"
@@ -14467,7 +14484,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::C\"))) (value (kind boolean) (boolean true)))"
+                 (qualified-name \"Demo::C\"))) (state evaluated) (value (kind boolean) (boolean true)))"
             ),
             "expected `(mass1 < massLimit) & (massLimit > 0)` to fold to Boolean(true) via the same \
              `fold_logical` path as `and`, got:\n{output}"
@@ -14486,7 +14503,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::Calc\"))) (value (kind integer) (integer -5)))"
+                 (qualified-name \"Demo::Calc\"))) (state evaluated) (value (kind integer) (integer -5)))"
             ),
             "expected `-5` to fold to Integer(-5), got:\n{output}"
         );
@@ -14503,7 +14520,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::C\"))) (value (kind boolean) (boolean false)))"
+                 (qualified-name \"Demo::C\"))) (state evaluated) (value (kind boolean) (boolean false)))"
             ),
             "expected `not true` to fold to Boolean(false), got:\n{output}"
         );
@@ -14522,7 +14539,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::Calc\"))) (value (kind integer) (integer -5)))"
+                 (qualified-name \"Demo::Calc\"))) (state evaluated) (value (kind integer) (integer -5)))"
             ),
             "expected `-mass` (mass = 5) to resolve the operand reference and fold to \
              Integer(-5), got:\n{output}"
@@ -14544,7 +14561,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::C\"))) (value (kind boolean) (boolean true)))"
+                 (qualified-name \"Demo::C\"))) (state evaluated) (value (kind boolean) (boolean true)))"
             ),
             "expected `mass1 < massLimit xor isActive` (true xor false) to fold to \
              Boolean(true), got:\n{output}"
@@ -14565,7 +14582,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::C\"))) (value (kind boolean) (boolean true)))"
+                 (qualified-name \"Demo::C\"))) (state evaluated) (value (kind boolean) (boolean true)))"
             ),
             "expected `mass1 < massLimit implies isActive` (false implies false) to fold to \
              Boolean(true), got:\n{output}"
@@ -14584,7 +14601,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::C\"))) (value (kind boolean) (boolean true)))"
+                 (qualified-name \"Demo::C\"))) (state evaluated) (value (kind boolean) (boolean true)))"
             ),
             "expected plain comparison-only `1 < 2` to still fold to Boolean(true), got:\n{output}"
         );
@@ -14602,7 +14619,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::Calc\"))) (value (kind integer) (integer 5)))"
+                 (qualified-name \"Demo::Calc\"))) (state evaluated) (value (kind integer) (integer 5)))"
             ),
             "expected plain arithmetic-only `2 + 3` calc body to still fold to Integer(5), \
              got:\n{output}"
@@ -14623,7 +14640,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (path (named (kind package) (name \"Demo\")) (named (kind calc-def) (name \"Calc\")) (anonymous (kind parameter) (ordinal 0)))))) (value (kind integer) (integer 5)))"
+                 (path (named (kind package) (name \"Demo\")) (named (kind calc-def) (name \"Calc\")) (anonymous (kind parameter) (ordinal 0)))))) (state evaluated) (value (kind integer) (integer 5)))"
             ),
             "expected `return : Type = 2 + 3;` to fold to a published Integer(5) evaluation fact \
              on the anonymous return declaration, got:\n{output}"
@@ -14648,7 +14665,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::Calc::result\"))) (value (kind integer) (integer 20)))"
+                 (qualified-name \"Demo::Calc::result\"))) (state evaluated) (value (kind integer) (integer 20)))"
             ),
             "expected `return result : Type = 4 * 5;` to fold to a published Integer(20) \
              evaluation fact on the named return declaration, got:\n{output}"
@@ -14665,7 +14682,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::mass\"))) (value (kind integer) (integer 5)))"
+                 (qualified-name \"Demo::mass\"))) (state literal) (value (kind integer) (integer 5)))"
             ),
             "expected a literal attribute default value to publish its own Integer(5) evaluation \
              fact, got:\n{output}"
@@ -14688,7 +14705,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::area\"))) (value (kind integer) (integer 20)))"
+                 (qualified-name \"Demo::area\"))) (state evaluated) (value (kind integer) (integer 20)))"
             ),
             "expected `attribute area = length * width;` to resolve both operands and fold to \
              Integer(20), got:\n{output}"
@@ -14788,7 +14805,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (path (named (kind package) (name \"Demo\")) (named (kind part-def) (name \"Vehicle\")) (named (kind part) (name \"seatBelt\")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name \"isMandatory\")))))) (value (kind \
+                 (path (named (kind package) (name \"Demo\")) (named (kind part-def) (name \"Vehicle\")) (named (kind part) (name \"seatBelt\")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name \"isMandatory\")))))) (state literal) (value (kind \
                  boolean) (boolean true)))"
             ),
             "expected `isMandatory = true;` inside `@Safety{{...}}` to publish its own \
@@ -14829,7 +14846,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::mass\"))) (value (kind non-constant)))"
+                 (qualified-name \"Demo::mass\"))) (state non-constant))"
             ),
             "expected `attribute mass = other;` (operand with no evaluation fact of its own) to \
              stay explicitly NonConstant, got:\n{output}"
@@ -14847,7 +14864,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::C\"))) (value (kind boolean) (boolean true)))"
+                 (qualified-name \"Demo::C\"))) (state evaluated) (value (kind boolean) (boolean true)))"
             ),
             "expected `mass > 3` to propagate through `attribute mass = 5;`'s own evaluated \
              constant and fold to Boolean(true), got:\n{output}"
@@ -14868,7 +14885,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::A\"))) (value (kind boolean) (boolean true)))"
+                 (qualified-name \"Demo::A\"))) (state evaluated) (value (kind boolean) (boolean true)))"
             ),
             "expected `A` to propagate `B`'s evaluated Boolean(true) and fold to Boolean(true), \
              got:\n{output}"
@@ -14890,14 +14907,14 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::A\"))) (value (kind non-converged)))"
+                 (qualified-name \"Demo::A\"))) (state cyclic))"
             ),
             "expected cyclic constraint A to publish NonConverged, got:\n{output}"
         );
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::B\"))) (value (kind non-converged)))"
+                 (qualified-name \"Demo::B\"))) (state cyclic))"
             ),
             "expected cyclic constraint B to publish NonConverged, got:\n{output}"
         );
@@ -14916,7 +14933,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::C\"))) (value (kind non-constant)))"
+                 (qualified-name \"Demo::C\"))) (state non-constant))"
             ),
             "expected an operand with no evaluated value at all to keep the expression \
              NonConstant, got:\n{output}"
@@ -17994,7 +18011,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::tuple\"))) (value (kind non-constant)))"
+                 (qualified-name \"Demo::tuple\"))) (state non-constant))"
             ),
             "expected an all-literal tuple to publish NonConstant rather than a fabricated \
              composite value, got:\n{output}"
@@ -18032,7 +18049,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::check\"))) (value (kind non-constant)))"
+                 (qualified-name \"Demo::check\"))) (state non-constant))"
             ),
             "expected `a istype T` to publish NonConstant (no runtime type info available), \
              got:\n{output}"
@@ -18067,7 +18084,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::check\"))) (value (kind non-constant)))"
+                 (qualified-name \"Demo::check\"))) (state non-constant))"
             ),
             "expected `a hastype T` to publish NonConstant (no runtime type info available), \
              got:\n{output}"
@@ -18134,7 +18151,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (qualified-name \"Demo::check\"))) (value (kind non-constant)))"
+                 (qualified-name \"Demo::check\"))) (state non-constant))"
             ),
             "expected `a meta Meta::Classifier` to publish NonConstant (denotes a metaclass \
              relationship, not a computable scalar value), got:\n{output}"

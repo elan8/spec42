@@ -1163,10 +1163,10 @@ standard library package QuantityCalculations {
     (relationship (kind invocationCallee) (source (node (document "memory://snapshot/quantity_calculations.md") (path (named (kind library-package) (name "QuantityCalculations")) (named (kind calc-def) (name "sum")) (anonymous (kind assert-constraint) (ordinal 0)))))) (target (node (document "memory://snapshot/quantity_calculations.md") (qualified-name "QuantityCalculations::isZero"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/quantity_calculations.md") (path (named (kind library-package) (name "QuantityCalculations")) (named (kind calc-def) (name "sum")) (anonymous (kind assert-constraint) (ordinal 0)))))) (kind invocationCallee) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/quantity_calculations.md") (path (named (kind library-package) (name "QuantityCalculations")) (named (kind calc-def) (name "product")) (anonymous (kind assert-constraint) (ordinal 0)))))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/quantity_calculations.md") (path (named (kind library-package) (name "QuantityCalculations")) (named (kind calc-def) (name "product")) (anonymous (kind parameter) (ordinal 0)))))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/quantity_calculations.md") (path (named (kind library-package) (name "QuantityCalculations")) (named (kind calc-def) (name "sum")) (anonymous (kind assert-constraint) (ordinal 0)))))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/quantity_calculations.md") (path (named (kind library-package) (name "QuantityCalculations")) (named (kind calc-def) (name "sum")) (anonymous (kind parameter) (ordinal 0)))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/quantity_calculations.md") (path (named (kind library-package) (name "QuantityCalculations")) (named (kind calc-def) (name "product")) (anonymous (kind assert-constraint) (ordinal 0)))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/quantity_calculations.md") (path (named (kind library-package) (name "QuantityCalculations")) (named (kind calc-def) (name "product")) (anonymous (kind parameter) (ordinal 0)))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/quantity_calculations.md") (path (named (kind library-package) (name "QuantityCalculations")) (named (kind calc-def) (name "sum")) (anonymous (kind assert-constraint) (ordinal 0)))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/quantity_calculations.md") (path (named (kind library-package) (name "QuantityCalculations")) (named (kind calc-def) (name "sum")) (anonymous (kind parameter) (ordinal 0)))))) (state non-constant))
   )
 )
 ~~~

@@ -324,12 +324,12 @@ package 'Calculation Definitions' {
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/30_calculation_definitions.md") (path (named (kind package) (name "Calculation Definitions")) (named (kind calc-def) (name "Velocity")) (anonymous (kind parameter) (ordinal 0)))))) (target (node (document "memory://snapshot/30_calculation_definitions.md") (qualified-name "Calculation Definitions::Velocity::dt"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/30_calculation_definitions.md") (path (named (kind package) (name "Calculation Definitions")) (named (kind calc-def) (name "Velocity")) (anonymous (kind parameter) (ordinal 0)))))) (kind expressionOperand) (ordinal 2)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/30_calculation_definitions.md") (path (named (kind package) (name "Calculation Definitions")) (named (kind calc-def) (name "Acceleration")) (anonymous (kind parameter) (ordinal 0)))))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/30_calculation_definitions.md") (path (named (kind package) (name "Calculation Definitions")) (named (kind calc-def) (name "Position")) (anonymous (kind parameter) (ordinal 0)))))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/30_calculation_definitions.md") (path (named (kind package) (name "Calculation Definitions")) (named (kind calc-def) (name "Power")) (anonymous (kind parameter) (ordinal 0)))))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/30_calculation_definitions.md") (qualified-name "Calculation Definitions::Power::drag"))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/30_calculation_definitions.md") (qualified-name "Calculation Definitions::Power::friction"))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/30_calculation_definitions.md") (path (named (kind package) (name "Calculation Definitions")) (named (kind calc-def) (name "Velocity")) (anonymous (kind parameter) (ordinal 0)))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/30_calculation_definitions.md") (path (named (kind package) (name "Calculation Definitions")) (named (kind calc-def) (name "Acceleration")) (anonymous (kind parameter) (ordinal 0)))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/30_calculation_definitions.md") (path (named (kind package) (name "Calculation Definitions")) (named (kind calc-def) (name "Position")) (anonymous (kind parameter) (ordinal 0)))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/30_calculation_definitions.md") (path (named (kind package) (name "Calculation Definitions")) (named (kind calc-def) (name "Power")) (anonymous (kind parameter) (ordinal 0)))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/30_calculation_definitions.md") (qualified-name "Calculation Definitions::Power::drag"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/30_calculation_definitions.md") (qualified-name "Calculation Definitions::Power::friction"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/30_calculation_definitions.md") (path (named (kind package) (name "Calculation Definitions")) (named (kind calc-def) (name "Velocity")) (anonymous (kind parameter) (ordinal 0)))))) (state non-constant))
   )
 )
 ~~~

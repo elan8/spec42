@@ -161,8 +161,8 @@ package 'Requirement Usages' {
   (relationships
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/32_requirement_usages.md") (path (named (kind package) (name "Requirement Usages")) (named (kind requirement) (name "emptyVehicleMassLimit")) (anonymous (kind attribute) (ordinal 0)))))) (value (kind quantity) (magnitude (value (kind integer) (integer 1500))) (unit "kg")))
-    (evaluated (declaration (node (document "memory://snapshot/32_requirement_usages.md") (path (named (kind package) (name "Requirement Usages")) (named (kind requirement) (name "fullVehicleMassLimit")) (anonymous (kind attribute) (ordinal 0)))))) (value (kind quantity) (magnitude (value (kind integer) (integer 2000))) (unit "kg")))
+    (evaluated (declaration (node (document "memory://snapshot/32_requirement_usages.md") (path (named (kind package) (name "Requirement Usages")) (named (kind requirement) (name "emptyVehicleMassLimit")) (anonymous (kind attribute) (ordinal 0)))))) (state literal) (value (kind quantity) (magnitude (value (kind integer) (integer 1500))) (unit "kg")))
+    (evaluated (declaration (node (document "memory://snapshot/32_requirement_usages.md") (path (named (kind package) (name "Requirement Usages")) (named (kind requirement) (name "fullVehicleMassLimit")) (anonymous (kind attribute) (ordinal 0)))))) (state literal) (value (kind quantity) (magnitude (value (kind integer) (integer 2000))) (unit "kg")))
   )
 )
 ~~~

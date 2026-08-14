@@ -1048,11 +1048,11 @@ standard library package SpatialFrames {
     (relationship (kind redefinition) (source (node (document "memory://snapshot/spatial_frames.md") (qualified-name "SpatialFrames::CartesianPositionOf::time"))) (target (node (document "memory://snapshot/spatial_frames.md") (qualified-name "SpatialFrames::PositionOf::time"))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/spatial_frames.md") (qualified-name "SpatialFrames::CurrentDisplacementOf::frame"))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/spatial_frames.md") (qualified-name "SpatialFrames::CurrentPositionOf::frame"))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/spatial_frames.md") (qualified-name "SpatialFrames::DisplacementOf::displacementVector"))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/spatial_frames.md") (qualified-name "SpatialFrames::DisplacementOf::frame"))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/spatial_frames.md") (qualified-name "SpatialFrames::PositionOf::frame"))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/spatial_frames.md") (qualified-name "SpatialFrames::CurrentDisplacementOf::frame"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/spatial_frames.md") (qualified-name "SpatialFrames::CurrentPositionOf::frame"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/spatial_frames.md") (qualified-name "SpatialFrames::DisplacementOf::displacementVector"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/spatial_frames.md") (qualified-name "SpatialFrames::DisplacementOf::frame"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/spatial_frames.md") (qualified-name "SpatialFrames::PositionOf::frame"))) (state non-constant))
   )
 )
 ~~~

@@ -163,7 +163,7 @@ package EnumerationTest {
     (relationship (kind typing) (source (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::color2"))) (target (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::ColorKind"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::color2"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::color2"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::color2"))) (state unresolved-operand))
   )
 )
 ~~~

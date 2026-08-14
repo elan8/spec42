@@ -8,11 +8,13 @@ use std::fmt;
 use source_identity::{ContentDigest, RootDigest, SourceManifest, SourceManifestEntry, SourceRole};
 
 mod element_kind;
+mod evaluation;
 mod model;
 
 pub use element_kind::{
     ElementKind, MembershipRole, RequirementConstraintKind, StateSubactionKind,
 };
+pub use evaluation::{EvaluatedScalar, EvaluationFailure, EvaluationPolicy, EvaluationState};
 
 use model::resolver::ResolvedSemanticModel;
 use model::{BuildSchedule, CoordinatorError, OwnedSourceRecord, SemanticModelBuildCoordinator};
@@ -157,6 +159,7 @@ impl PublicationIdentity {
 pub struct BuildRequest {
     sources: Vec<SourceInput>,
     schedule: ConstructionSchedule,
+    policy: EvaluationPolicy,
     identity: PublicationIdentity,
 }
 
@@ -190,11 +193,22 @@ impl BuildRequest {
         Ok(Self {
             sources,
             schedule,
+            policy: EvaluationPolicy::default(),
             identity: PublicationIdentity {
                 source_digest,
                 semantic_contract_version,
             },
         })
+    }
+
+    /// Sets whether this build evaluates constant expressions.
+    ///
+    /// Skipping publishes a coherent resolved model whose elements report
+    /// [`EvaluationState::NotRun`], which is a different answer from an element having no
+    /// expression or having one that could not be folded.
+    pub fn with_evaluation_policy(mut self, policy: EvaluationPolicy) -> Self {
+        self.policy = policy;
+        self
     }
 
     pub fn identity(&self) -> &PublicationIdentity {
@@ -257,11 +271,12 @@ pub fn build(request: BuildRequest) -> Result<PublishedResolution, BuildFailure>
             content: source.content,
         })
         .collect();
-    let model =
-        SemanticModelBuildCoordinator::build(sources, schedule).map_err(|error| match error {
+    let model = SemanticModelBuildCoordinator::build(sources, schedule, request.policy).map_err(
+        |error| match error {
             CoordinatorError::DuplicateSourceIdentity => BuildFailure::DuplicateSourceIdentity,
             CoordinatorError::ConstructionFailed => BuildFailure::ConstructionFailed,
-        })?;
+        },
+    )?;
     Ok(PublishedResolution {
         identity: request.identity,
         model,
@@ -1923,6 +1938,99 @@ mod tests {
                 other => panic!("expected a resolved references outcome, got: {other:?}"),
             }
         }
+    }
+
+    // --- Evaluation states ------------------------------------------------------------------
+
+    /// `EvaluationPolicy::Skip` publishes a coherent resolved model in which every element that
+    /// has an expression says so explicitly, rather than an empty table a consumer cannot tell
+    /// from "there was nothing to evaluate".
+    #[test]
+    fn skipping_evaluation_publishes_not_run_rather_than_nothing() {
+        let source = "package P { attribute mass : Integer = 5; }";
+
+        let evaluated = semantic_sexpr_for(source);
+        assert!(
+            evaluated.contains("(state literal) (value (kind integer) (integer 5))"),
+            "expected the default policy to evaluate, got: {evaluated}"
+        );
+
+        let request = BuildRequest::new(
+            vec![SourceInput::new(
+                "memory://test.sysml",
+                source.to_string(),
+                SourceKind::Workspace,
+            )],
+            ConstructionSchedule::Sequential,
+            "contract-v1",
+        )
+        .unwrap()
+        .with_evaluation_policy(EvaluationPolicy::Skip);
+        let published = build(request).unwrap();
+        let mut skipped = String::new();
+        published
+            .debug()
+            .write_semantic_sexpr(&mut skipped)
+            .unwrap();
+
+        assert!(
+            skipped.contains("(state not-run)"),
+            "expected a declared not-run state, got: {skipped}"
+        );
+        assert!(
+            !skipped.contains("(value (kind"),
+            "a skipped build must publish no value, got: {skipped}"
+        );
+    }
+
+    /// A value that was *written* and one that was *computed* are both constants, but only the
+    /// expression's shape tells them apart, and a consumer showing "declared" versus "computed"
+    /// needs the distinction.
+    #[test]
+    fn a_written_literal_and_a_computed_constant_report_different_states() {
+        let written = semantic_sexpr_for("package P { attribute mass : Integer = 5; }");
+        assert!(
+            written.contains("(state literal) (value (kind integer) (integer 5))"),
+            "expected a written literal, got: {written}"
+        );
+
+        let computed = semantic_sexpr_for("package P { attribute mass : Integer = 2 + 3; }");
+        assert!(
+            computed.contains("(state evaluated) (value (kind integer) (integer 5))"),
+            "expected a computed constant, got: {computed}"
+        );
+    }
+
+    /// A value that depends on itself is a property of the model, published as its own state --
+    /// never a fabricated value, an infinite loop, or a panic.
+    #[test]
+    fn a_self_referential_value_reports_the_cyclic_state() {
+        let sexpr = semantic_sexpr_for(
+            "package P { constraint def C { a } attribute a : Integer = b; attribute b : Integer = a; }",
+        );
+        assert!(
+            sexpr.contains("(state cyclic)"),
+            "expected a cyclic evaluation state for the mutually dependent values, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("(state cyclic) (value"),
+            "a cyclic state must carry no value, got: {sexpr}"
+        );
+    }
+
+    /// A failure is not a value: the rendered fact names the failure and stops, so a consumer
+    /// cannot mistake it for a value of some fallback kind.
+    #[test]
+    fn a_division_by_zero_reports_a_failure_and_no_value() {
+        let sexpr = semantic_sexpr_for("package P { calc def C { return : Integer = 1 / 0; } }");
+        assert!(
+            sexpr.contains("(state division-by-zero)"),
+            "expected a division-by-zero failure state, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("(state division-by-zero) (value"),
+            "a failure must carry no value, got: {sexpr}"
+        );
     }
 
     /// A name shared by siblings of *different* kinds needs no occurrence ordinal -- the kind on

@@ -179,7 +179,7 @@ standard library package Calculations {
     (relationship (kind typing) (source (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations::Calculation::subcalculations"))) (target (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations::Calculation"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations::Calculation::subcalculations"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations::Calculation"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations::Calculation"))) (state unresolved-operand))
   )
 )
 ~~~

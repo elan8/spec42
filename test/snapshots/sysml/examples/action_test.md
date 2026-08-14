@@ -327,9 +327,9 @@ package ActionTest {
     (relationship (kind terminateTarget) (source (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::c::c1"))) (target (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::c::c1"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::c::c1"))) (kind terminateTarget) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/action_test.md") (path (named (kind package) (name "ActionTest")) (named (kind action) (name "a1")) (anonymous (kind if) (ordinal 0)))))) (value (kind boolean) (boolean true)))
-    (evaluated (declaration (node (document "memory://snapshot/action_test.md") (path (named (kind package) (name "ActionTest")) (named (kind action) (name "a2")) (named (kind action) (name "snd")) (anonymous (kind parameter) (ordinal 0)))))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a::b::y"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/action_test.md") (path (named (kind package) (name "ActionTest")) (named (kind action) (name "a1")) (anonymous (kind if) (ordinal 0)))))) (state literal) (value (kind boolean) (boolean true)))
+    (evaluated (declaration (node (document "memory://snapshot/action_test.md") (path (named (kind package) (name "ActionTest")) (named (kind action) (name "a2")) (named (kind action) (name "snd")) (anonymous (kind parameter) (ordinal 0)))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a::b::y"))) (state unresolved-operand))
   )
 )
 ~~~

@@ -819,8 +819,8 @@ standard library package NumericalFunctions {
     (relationship (kind invocationCallee) (source (node (document "memory://snapshot/numerical_functions.md") (path (named (kind library-package) (name "NumericalFunctions")) (named (kind kerml-function) (name "sum0")) (anonymous (kind kerml-invariant) (ordinal 0)))))) (target (node (document "memory://snapshot/numerical_functions.md") (qualified-name "NumericalFunctions::isZero"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/numerical_functions.md") (path (named (kind library-package) (name "NumericalFunctions")) (named (kind kerml-function) (name "sum0")) (anonymous (kind kerml-invariant) (ordinal 0)))))) (kind invocationCallee) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/numerical_functions.md") (path (named (kind library-package) (name "NumericalFunctions")) (named (kind kerml-function) (name "product1")) (anonymous (kind kerml-invariant) (ordinal 0)))))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/numerical_functions.md") (path (named (kind library-package) (name "NumericalFunctions")) (named (kind kerml-function) (name "sum0")) (anonymous (kind kerml-invariant) (ordinal 0)))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/numerical_functions.md") (path (named (kind library-package) (name "NumericalFunctions")) (named (kind kerml-function) (name "product1")) (anonymous (kind kerml-invariant) (ordinal 0)))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/numerical_functions.md") (path (named (kind library-package) (name "NumericalFunctions")) (named (kind kerml-function) (name "sum0")) (anonymous (kind kerml-invariant) (ordinal 0)))))) (state non-constant))
   )
 )
 ~~~

@@ -983,11 +983,11 @@ standard library package Performances {
     (relationship (kind bindTarget) (source (node (document "memory://snapshot/performances.md") (path (named (kind library-package) (name "Performances")) (named (kind kerml-expression) (name "trueEvaluations")) (anonymous (kind kerml-binding) (ordinal 0)))))) (target (node (document "memory://snapshot/performances.md") (qualified-name "Performances::trueEvaluations::trueValue"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/performances.md") (path (named (kind library-package) (name "Performances")) (named (kind kerml-expression) (name "trueEvaluations")) (anonymous (kind kerml-binding) (ordinal 0)))))) (kind bindTarget) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/performances.md") (path (named (kind library-package) (name "Performances")) (named (kind kerml-behavior) (name "Performance")) (anonymous (kind kerml-feature) (ordinal 0)))))) (value (kind boolean) (boolean true)))
-    (evaluated (declaration (node (document "memory://snapshot/performances.md") (path (named (kind library-package) (name "Performances")) (named (kind kerml-behavior) (name "Performance")) (anonymous (kind kerml-feature) (ordinal 1)))))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/performances.md") (qualified-name "Performances::Performance::thisPerformance"))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/performances.md") (qualified-name "Performances::falseEvaluations::falseValue"))) (value (kind boolean) (boolean false)))
-    (evaluated (declaration (node (document "memory://snapshot/performances.md") (qualified-name "Performances::trueEvaluations::trueValue"))) (value (kind boolean) (boolean true)))
+    (evaluated (declaration (node (document "memory://snapshot/performances.md") (path (named (kind library-package) (name "Performances")) (named (kind kerml-behavior) (name "Performance")) (anonymous (kind kerml-feature) (ordinal 0)))))) (state literal) (value (kind boolean) (boolean true)))
+    (evaluated (declaration (node (document "memory://snapshot/performances.md") (path (named (kind library-package) (name "Performances")) (named (kind kerml-behavior) (name "Performance")) (anonymous (kind kerml-feature) (ordinal 1)))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/performances.md") (qualified-name "Performances::Performance::thisPerformance"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/performances.md") (qualified-name "Performances::falseEvaluations::falseValue"))) (state literal) (value (kind boolean) (boolean false)))
+    (evaluated (declaration (node (document "memory://snapshot/performances.md") (qualified-name "Performances::trueEvaluations::trueValue"))) (state literal) (value (kind boolean) (boolean true)))
   )
 )
 ~~~

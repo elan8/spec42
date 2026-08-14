@@ -126,7 +126,7 @@ package FuncSpec {
   (relationships
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/function_specialization.md") (qualified-name "FuncSpec::I"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/function_specialization.md") (qualified-name "FuncSpec::I"))) (state unresolved-operand))
   )
 )
 ~~~

@@ -593,8 +593,8 @@ standard library package Requirements {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/requirements.md") (qualified-name "Requirements::satisfiedRequirementChecks"))) (target (node (document "memory://snapshot/requirements.md") (qualified-name "Requirements::requirementChecks"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/requirements.md") (qualified-name "Requirements::satisfiedRequirementChecks"))) (kind subsetting) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck"))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck"))) (state unresolved-operand))
   )
 )
 ~~~

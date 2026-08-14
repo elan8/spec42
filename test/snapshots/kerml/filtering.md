@@ -268,12 +268,12 @@ package Filtering {
     (relationship (kind specialization) (source (node (document "memory://snapshot/filtering.md") (qualified-name "Filtering::Meta::Test"))) (target (node (document "memory://snapshot/filtering.md") (qualified-name "Filtering::DesignModel::System"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/filtering.md") (qualified-name "Filtering::Meta::Test"))) (kind specialization) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/filtering.md") (qualified-name "Filtering::Annotations::ApprovalAnnotation"))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/filtering.md") (qualified-name "Filtering::Annotations::ApprovalAnnotation"))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/filtering.md") (qualified-name "Filtering::Annotations::ApprovalAnnotation"))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/filtering.md") (path (named (kind package) (name "Filtering")) (named (kind package) (name "DesignModel")) (named (kind kerml-structure) (name "System")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "approved")))))) (value (kind boolean) (boolean true)))
-    (evaluated (declaration (node (document "memory://snapshot/filtering.md") (path (named (kind package) (name "Filtering")) (named (kind package) (name "DesignModel")) (named (kind kerml-structure) (name "System")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "approver")))))) (value (kind string) (value "John Smith")))
-    (evaluated (declaration (node (document "memory://snapshot/filtering.md") (path (named (kind package) (name "Filtering")) (named (kind package) (name "DesignModel")) (named (kind kerml-structure) (name "System")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "level")))))) (value (kind integer) (integer 2)))
+    (evaluated (declaration (node (document "memory://snapshot/filtering.md") (qualified-name "Filtering::Annotations::ApprovalAnnotation"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/filtering.md") (qualified-name "Filtering::Annotations::ApprovalAnnotation"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/filtering.md") (qualified-name "Filtering::Annotations::ApprovalAnnotation"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/filtering.md") (path (named (kind package) (name "Filtering")) (named (kind package) (name "DesignModel")) (named (kind kerml-structure) (name "System")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "approved")))))) (state literal) (value (kind boolean) (boolean true)))
+    (evaluated (declaration (node (document "memory://snapshot/filtering.md") (path (named (kind package) (name "Filtering")) (named (kind package) (name "DesignModel")) (named (kind kerml-structure) (name "System")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "approver")))))) (state literal) (value (kind string) (value "John Smith")))
+    (evaluated (declaration (node (document "memory://snapshot/filtering.md") (path (named (kind package) (name "Filtering")) (named (kind package) (name "DesignModel")) (named (kind kerml-structure) (name "System")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "level")))))) (state literal) (value (kind integer) (integer 2)))
   )
 )
 ~~~

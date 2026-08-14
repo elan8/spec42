@@ -272,12 +272,12 @@ package Moments {
     (relationship (kind typing) (source (node (document "memory://snapshot/moments.md") (qualified-name "Moments::universalEternity"))) (target (node (document "memory://snapshot/moments.md") (qualified-name "Moments::UniversalEternity"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/moments.md") (qualified-name "Moments::universalEternity"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/moments.md") (qualified-name "Moments::InstantOccurrence"))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/moments.md") (qualified-name "Moments::InstantOccurrence"))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/moments.md") (qualified-name "Moments::UniversalEternity"))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/moments.md") (qualified-name "Moments::UniversalEternity"))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/moments.md") (qualified-name "Moments::UniversalEternity"))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/moments.md") (qualified-name "Moments::UniversalEternity"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/moments.md") (qualified-name "Moments::InstantOccurrence"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/moments.md") (qualified-name "Moments::InstantOccurrence"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/moments.md") (qualified-name "Moments::UniversalEternity"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/moments.md") (qualified-name "Moments::UniversalEternity"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/moments.md") (qualified-name "Moments::UniversalEternity"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/moments.md") (qualified-name "Moments::UniversalEternity"))) (state unresolved-operand))
   )
 )
 ~~~

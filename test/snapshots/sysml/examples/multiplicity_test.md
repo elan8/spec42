@@ -88,7 +88,7 @@ package MultiplicityTest {
     (relationship (kind typing) (source (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::c"))) (target (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::P"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::c"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::n"))) (value (kind integer) (integer 5)))
+    (evaluated (declaration (node (document "memory://snapshot/multiplicity_test.md") (qualified-name "MultiplicityTest::n"))) (state literal) (value (kind integer) (integer 5)))
   )
 )
 ~~~

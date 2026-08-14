@@ -720,9 +720,9 @@ package ServerSequenceRealization_3 {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::realization_2::server"))) (target (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::server_3"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::realization_2::server"))) (kind subsetting) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::consumerBehavior::subscribe::request"))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3::producerBehavior::publish::request"))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::serverBehavior::delivering::response"))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::consumerBehavior::subscribe::request"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3::producerBehavior::publish::request"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::serverBehavior::delivering::response"))) (state non-constant))
   )
 )
 ~~~

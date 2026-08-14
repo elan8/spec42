@@ -276,7 +276,7 @@ package 'Derivation Constraints' {
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/31_derivation_constraints.md") (path (named (kind package) (name "Derivation Constraints")) (named (kind part) (name "vehicle1")) (anonymous (kind assert-constraint) (ordinal 0)))))) (target (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::vehicle1::totalMass"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/31_derivation_constraints.md") (path (named (kind package) (name "Derivation Constraints")) (named (kind part) (name "vehicle1")) (anonymous (kind assert-constraint) (ordinal 0)))))) (kind expressionOperand) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::Dynamics"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::Dynamics"))) (state unresolved-operand))
   )
 )
 ~~~

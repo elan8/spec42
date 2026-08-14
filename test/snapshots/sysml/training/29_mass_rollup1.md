@@ -133,7 +133,7 @@ package MassRollup1 {
     (relationship (kind redefinition) (source (node (document "memory://snapshot/29_mass_rollup1.md") (path (named (kind package) (name "MassRollup1")) (named (kind part) (name "simpleThing")) (anonymous (kind attribute) (ordinal 0)))))) (target (node (document "memory://snapshot/29_mass_rollup1.md") (qualified-name "MassRollup1::MassedThing::totalMass"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/29_mass_rollup1.md") (path (named (kind package) (name "MassRollup1")) (named (kind part) (name "simpleThing")) (anonymous (kind attribute) (ordinal 0)))))) (kind redefinition) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/29_mass_rollup1.md") (path (named (kind package) (name "MassRollup1")) (named (kind part) (name "simpleThing")) (anonymous (kind attribute) (ordinal 0)))))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/29_mass_rollup1.md") (path (named (kind package) (name "MassRollup1")) (named (kind part) (name "simpleThing")) (anonymous (kind attribute) (ordinal 0)))))) (state unresolved-operand))
   )
 )
 ~~~

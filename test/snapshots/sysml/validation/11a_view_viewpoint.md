@@ -204,9 +204,9 @@ package '11a-View-Viewpoint' {
     (relationship (kind satisfyViewpoint) (source (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::ViewModel::system structure generation"))) (target (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::ViewModel::system structure perspective"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::ViewModel::system structure generation"))) (kind satisfyViewpoint) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::frontAxleAssembly::mass"))) (value (kind quantity) (magnitude (value (kind integer) (integer 150))) (unit "kg")))
-    (evaluated (declaration (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::mass"))) (value (kind quantity) (magnitude (value (kind integer) (integer 2500))) (unit "SI::kg")))
-    (evaluated (declaration (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::rearAxleAssembly::mass"))) (value (kind quantity) (magnitude (value (kind integer) (integer 250))) (unit "kg")))
+    (evaluated (declaration (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::frontAxleAssembly::mass"))) (state literal) (value (kind quantity) (magnitude (value (kind integer) (integer 150))) (unit "kg")))
+    (evaluated (declaration (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::mass"))) (state literal) (value (kind quantity) (magnitude (value (kind integer) (integer 2500))) (unit "SI::kg")))
+    (evaluated (declaration (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::rearAxleAssembly::mass"))) (state literal) (value (kind quantity) (magnitude (value (kind integer) (integer 250))) (unit "kg")))
   )
 )
 ~~~

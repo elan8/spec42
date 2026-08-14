@@ -123,9 +123,9 @@ package RiskMetadataExample {
   (relationships
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "scheduleRisk")))))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "technicalRisk")))))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "totalRisk")))))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "scheduleRisk")))))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "technicalRisk")))))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "totalRisk")))))) (state unresolved-operand))
   )
 )
 ~~~

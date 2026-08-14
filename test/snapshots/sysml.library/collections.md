@@ -412,7 +412,7 @@ standard library package Collections {
     (relationship (kind redefinition) (source (node (document "memory://snapshot/collections.md") (qualified-name "Collections::UniqueCollection::elements"))) (target (node (document "memory://snapshot/collections.md") (qualified-name "Collections::Collection::elements"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/collections.md") (qualified-name "Collections::UniqueCollection::elements"))) (kind redefinition) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/collections.md") (qualified-name "Collections::Array::rank"))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/collections.md") (qualified-name "Collections::Array::rank"))) (state non-constant))
   )
 )
 ~~~

@@ -966,8 +966,8 @@ standard library package RationalFunctions {
     (relationship (kind invocationCallee) (source (node (document "memory://snapshot/rational_functions.md") (path (named (kind library-package) (name "RationalFunctions")) (named (kind kerml-function) (name "sum")) (anonymous (kind parameter) (ordinal 0)))))) (target (node (document "memory://snapshot/rational_functions.md") (qualified-name "RationalFunctions::rat"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/rational_functions.md") (path (named (kind library-package) (name "RationalFunctions")) (named (kind kerml-function) (name "sum")) (anonymous (kind parameter) (ordinal 0)))))) (kind invocationCallee) (ordinal 1)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/rational_functions.md") (path (named (kind library-package) (name "RationalFunctions")) (named (kind kerml-function) (name "product")) (anonymous (kind parameter) (ordinal 0)))))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/rational_functions.md") (path (named (kind library-package) (name "RationalFunctions")) (named (kind kerml-function) (name "sum")) (anonymous (kind parameter) (ordinal 0)))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/rational_functions.md") (path (named (kind library-package) (name "RationalFunctions")) (named (kind kerml-function) (name "product")) (anonymous (kind parameter) (ordinal 0)))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/rational_functions.md") (path (named (kind library-package) (name "RationalFunctions")) (named (kind kerml-function) (name "sum")) (anonymous (kind parameter) (ordinal 0)))))) (state non-constant))
   )
 )
 ~~~

@@ -601,8 +601,8 @@ package '7b-Variant Configurations' {
     (relationship (kind specialization) (source (node (document "memory://snapshot/7b_variant_configurations.md") (qualified-name "7b-Variant Configurations::VariantDefinitions::WideRimWheel"))) (target (node (document "memory://snapshot/7b_variant_configurations.md") (qualified-name "7b-Variant Configurations::DesignModel::Wheel"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/7b_variant_configurations.md") (qualified-name "7b-Variant Configurations::VariantDefinitions::WideRimWheel"))) (kind specialization) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/7b_variant_configurations.md") (path (named (kind package) (name "7b-Variant Configurations")) (named (kind package) (name "VariabilityModel")) (named (kind part) (name "anyVehicleConfig")) (anonymous (kind part) (ordinal 0)) (named (kind assert-constraint) (name "engine-wheel selection constraint")))))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/7b_variant_configurations.md") (qualified-name "7b-Variant Configurations::VariabilityModel::anyVehicleConfig::engine-transmission selection constraint"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/7b_variant_configurations.md") (path (named (kind package) (name "7b-Variant Configurations")) (named (kind package) (name "VariabilityModel")) (named (kind part) (name "anyVehicleConfig")) (anonymous (kind part) (ordinal 0)) (named (kind assert-constraint) (name "engine-wheel selection constraint")))))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/7b_variant_configurations.md") (qualified-name "7b-Variant Configurations::VariabilityModel::anyVehicleConfig::engine-transmission selection constraint"))) (state unresolved-operand))
   )
 )
 ~~~

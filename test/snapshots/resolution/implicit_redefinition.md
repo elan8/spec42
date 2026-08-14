@@ -53,7 +53,7 @@ package P {
     (relationship (kind redefinition) (source (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Child::mass"))) (target (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Base::mass"))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Child::mass"))) (value (kind integer) (integer 1200)))
+    (evaluated (declaration (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Child::mass"))) (state literal) (value (kind integer) (integer 1200)))
   )
 )
 ~~~

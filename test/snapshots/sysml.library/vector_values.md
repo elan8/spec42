@@ -201,7 +201,7 @@ standard library package VectorValues {
     (relationship (kind redefinition) (source (node (document "memory://snapshot/vector_values.md") (path (named (kind library-package) (name "VectorValues")) (named (kind kerml-datatype) (name "ThreeVectorValue")) (anonymous (kind kerml-feature) (ordinal 0)))))) (target (node (document "memory://snapshot/vector_values.md") (qualified-name "VectorValues::NumericalVectorValue::dimension"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vector_values.md") (path (named (kind library-package) (name "VectorValues")) (named (kind kerml-datatype) (name "ThreeVectorValue")) (anonymous (kind kerml-feature) (ordinal 0)))))) (kind redefinition) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/vector_values.md") (path (named (kind library-package) (name "VectorValues")) (named (kind kerml-datatype) (name "ThreeVectorValue")) (anonymous (kind kerml-feature) (ordinal 0)))))) (value (kind integer) (integer 3)))
+    (evaluated (declaration (node (document "memory://snapshot/vector_values.md") (path (named (kind library-package) (name "VectorValues")) (named (kind kerml-datatype) (name "ThreeVectorValue")) (anonymous (kind kerml-feature) (ordinal 0)))))) (state literal) (value (kind integer) (integer 3)))
   )
 )
 ~~~

@@ -187,8 +187,8 @@ package AnalysisAnnotation {
   (relationships
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/analysis_annotation.md") (qualified-name "AnalysisAnnotation::ComputeDynamics::ToolExecution::toolName"))) (value (kind string) (value "ModelCenter")))
-    (evaluated (declaration (node (document "memory://snapshot/analysis_annotation.md") (qualified-name "AnalysisAnnotation::ComputeDynamics::ToolExecution::uri"))) (value (kind string) (value "aserv://localhost/Vehicle/Equation1")))
+    (evaluated (declaration (node (document "memory://snapshot/analysis_annotation.md") (qualified-name "AnalysisAnnotation::ComputeDynamics::ToolExecution::toolName"))) (state literal) (value (kind string) (value "ModelCenter")))
+    (evaluated (declaration (node (document "memory://snapshot/analysis_annotation.md") (qualified-name "AnalysisAnnotation::ComputeDynamics::ToolExecution::uri"))) (state literal) (value (kind string) (value "aserv://localhost/Vehicle/Equation1")))
   )
 )
 ~~~

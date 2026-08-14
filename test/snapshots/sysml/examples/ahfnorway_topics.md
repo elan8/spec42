@@ -397,9 +397,9 @@ package AHFNorway {
     (relationship (kind typing) (direction in) (source (node (document "memory://snapshot/ahfnorway_topics.md") (qualified-name "AHFNorway::APIS_DD::APIS_MQTT::subscr"))) (target (node (document "memory://snapshot/ahfnorway_topics.md") (qualified-name "AHFNorway::Subscribe"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/ahfnorway_topics.md") (qualified-name "AHFNorway::APIS_DD::APIS_MQTT::subscr"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/ahfnorway_topics.md") (path (named (kind package) (name "AHFNorway")) (named (kind extended-definition) (name "APISService")) (anonymous (kind attribute) (ordinal 0)))))) (value (kind string) (value "APISPullService")))
-    (evaluated (declaration (node (document "memory://snapshot/ahfnorway_topics.md") (path (named (kind package) (name "AHFNorway")) (named (kind extended-definition) (name "APISService")) (anonymous (kind attribute) (ordinal 1)))))) (value (kind string) (value "{JSON}")))
-    (evaluated (declaration (node (document "memory://snapshot/ahfnorway_topics.md") (path (named (kind package) (name "AHFNorway")) (named (kind extended-definition) (name "APISService")) (anonymous (kind attribute) (ordinal 2)))))) (value (kind string) (value "pull")))
+    (evaluated (declaration (node (document "memory://snapshot/ahfnorway_topics.md") (path (named (kind package) (name "AHFNorway")) (named (kind extended-definition) (name "APISService")) (anonymous (kind attribute) (ordinal 0)))))) (state literal) (value (kind string) (value "APISPullService")))
+    (evaluated (declaration (node (document "memory://snapshot/ahfnorway_topics.md") (path (named (kind package) (name "AHFNorway")) (named (kind extended-definition) (name "APISService")) (anonymous (kind attribute) (ordinal 1)))))) (state literal) (value (kind string) (value "{JSON}")))
+    (evaluated (declaration (node (document "memory://snapshot/ahfnorway_topics.md") (path (named (kind package) (name "AHFNorway")) (named (kind extended-definition) (name "APISService")) (anonymous (kind attribute) (ordinal 2)))))) (state literal) (value (kind string) (value "pull")))
   )
 )
 ~~~

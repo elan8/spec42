@@ -67,10 +67,10 @@ package FeatureSubDeclCoverage {
   (relationships
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/coverage_feature_subdecls.md") (qualified-name "FeatureSubDeclCoverage::c"))) (value (kind integer) (integer 42)))
-    (evaluated (declaration (node (document "memory://snapshot/coverage_feature_subdecls.md") (qualified-name "FeatureSubDeclCoverage::d"))) (value (kind integer) (integer 99)))
-    (evaluated (declaration (node (document "memory://snapshot/coverage_feature_subdecls.md") (qualified-name "FeatureSubDeclCoverage::e"))) (value (kind integer) (integer 0)))
-    (evaluated (declaration (node (document "memory://snapshot/coverage_feature_subdecls.md") (qualified-name "FeatureSubDeclCoverage::f"))) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/coverage_feature_subdecls.md") (qualified-name "FeatureSubDeclCoverage::c"))) (state literal) (value (kind integer) (integer 42)))
+    (evaluated (declaration (node (document "memory://snapshot/coverage_feature_subdecls.md") (qualified-name "FeatureSubDeclCoverage::d"))) (state literal) (value (kind integer) (integer 99)))
+    (evaluated (declaration (node (document "memory://snapshot/coverage_feature_subdecls.md") (qualified-name "FeatureSubDeclCoverage::e"))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/coverage_feature_subdecls.md") (qualified-name "FeatureSubDeclCoverage::f"))) (state literal) (value (kind integer) (integer 1)))
   )
 )
 ~~~

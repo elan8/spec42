@@ -86,7 +86,7 @@ package Atoms {
   (relationships
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms::AtomMetadata::baseType"))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms::AtomMetadata::baseType"))) (state non-constant))
   )
 )
 ~~~

@@ -560,8 +560,8 @@ package VehicleUsages {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C3"))) (target (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C2"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C3"))) (kind subsetting) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/vehicle_usages.md") (path (named (kind package) (name "VehicleUsages")) (named (kind part) (name "vehicle_C1")) (named (kind part) (name "frontAxleAssembly")) (named (kind part) (name "frontWheel")) (anonymous (kind part) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)))))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/vehicle_usages.md") (path (named (kind package) (name "VehicleUsages")) (named (kind part) (name "vehicle_C1")) (named (kind part) (name "rearAxleAssembly")) (named (kind part) (name "rearWheel")) (anonymous (kind part) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)))))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/vehicle_usages.md") (path (named (kind package) (name "VehicleUsages")) (named (kind part) (name "vehicle_C1")) (named (kind part) (name "frontAxleAssembly")) (named (kind part) (name "frontWheel")) (anonymous (kind part) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)))))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/vehicle_usages.md") (path (named (kind package) (name "VehicleUsages")) (named (kind part) (name "vehicle_C1")) (named (kind part) (name "rearAxleAssembly")) (named (kind part) (name "rearWheel")) (anonymous (kind part) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)))))) (state unresolved-operand))
   )
 )
 ~~~

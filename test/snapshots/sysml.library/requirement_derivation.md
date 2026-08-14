@@ -271,9 +271,9 @@ standard library package RequirementDerivation {
     (relationship (kind redefinition) (source (node (document "memory://snapshot/requirement_derivation.md") (qualified-name "RequirementDerivation::OriginalRequirementMetadata::baseType"))) (target (node (document "memory://snapshot/requirement_derivation.md") (qualified-name "RequirementDerivation::OriginalRequirementMetadata::baseType"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/requirement_derivation.md") (qualified-name "RequirementDerivation::OriginalRequirementMetadata::baseType"))) (kind redefinition) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/requirement_derivation.md") (qualified-name "RequirementDerivation::DerivationMetadata::baseType"))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/requirement_derivation.md") (qualified-name "RequirementDerivation::DerivedRequirementMetadata::baseType"))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/requirement_derivation.md") (qualified-name "RequirementDerivation::OriginalRequirementMetadata::baseType"))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/requirement_derivation.md") (qualified-name "RequirementDerivation::DerivationMetadata::baseType"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/requirement_derivation.md") (qualified-name "RequirementDerivation::DerivedRequirementMetadata::baseType"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/requirement_derivation.md") (qualified-name "RequirementDerivation::OriginalRequirementMetadata::baseType"))) (state non-constant))
   )
 )
 ~~~

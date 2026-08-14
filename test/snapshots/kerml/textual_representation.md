@@ -94,8 +94,8 @@ package TextualRepresentation {
     (relationship (kind typing) (direction in) (source (node (document "memory://snapshot/textual_representation.md") (qualified-name "TextualRepresentation::setX::c"))) (target (node (document "memory://snapshot/textual_representation.md") (qualified-name "TextualRepresentation::C"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/textual_representation.md") (qualified-name "TextualRepresentation::setX::c"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/textual_representation.md") (qualified-name "TextualRepresentation::setX"))) (value (kind string) (value "alf")))
-    (evaluated (declaration (node (document "memory://snapshot/textual_representation.md") (qualified-name "TextualRepresentation::setX"))) (value (kind string) (value "alf")))
+    (evaluated (declaration (node (document "memory://snapshot/textual_representation.md") (qualified-name "TextualRepresentation::setX"))) (state evaluated) (value (kind string) (value "alf")))
+    (evaluated (declaration (node (document "memory://snapshot/textual_representation.md") (qualified-name "TextualRepresentation::setX"))) (state literal) (value (kind string) (value "alf")))
   )
 )
 ~~~

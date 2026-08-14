@@ -302,8 +302,8 @@ package '1c-Parts Tree Redefinition' {
     (relationship (kind redefinition) (source (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (qualified-name "1c-Parts Tree Redefinition::Usages::vehicle1_c1::mass"))) (target (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (qualified-name "1c-Parts Tree Redefinition::Usages::vehicle1::mass"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (qualified-name "1c-Parts Tree Redefinition::Usages::vehicle1_c1::mass"))) (kind redefinition) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (qualified-name "1c-Parts Tree Redefinition::Usages::vehicle1::mass"))) (value (kind quantity) (magnitude (value (kind integer) (integer 1750))) (unit "kg")))
-    (evaluated (declaration (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (qualified-name "1c-Parts Tree Redefinition::Usages::vehicle1_c1::mass"))) (value (kind quantity) (magnitude (value (kind integer) (integer 2000))) (unit "kg")))
+    (evaluated (declaration (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (qualified-name "1c-Parts Tree Redefinition::Usages::vehicle1::mass"))) (state literal) (value (kind quantity) (magnitude (value (kind integer) (integer 1750))) (unit "kg")))
+    (evaluated (declaration (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (qualified-name "1c-Parts Tree Redefinition::Usages::vehicle1_c1::mass"))) (state literal) (value (kind quantity) (magnitude (value (kind integer) (integer 2000))) (unit "kg")))
   )
 )
 ~~~

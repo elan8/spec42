@@ -660,12 +660,12 @@ package MassConstraintExample {
     (relationship (kind typing) (source (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::mc"))) (target (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::MassConstraint4"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::mc"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::MassConstraint3"))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::MassLimit"))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::Vehicle3::massConstraint::totalMass"))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::Vehicle5::ml::mass"))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::Vehicle5::ml::maxMass"))) (value (kind quantity) (magnitude (value (kind integer) (integer 2500))) (unit "kg")))
-    (evaluated (declaration (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::mc"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::MassConstraint3"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::MassLimit"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::Vehicle3::massConstraint::totalMass"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::Vehicle5::ml::mass"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::Vehicle5::ml::maxMass"))) (state literal) (value (kind quantity) (magnitude (value (kind integer) (integer 2500))) (unit "kg")))
+    (evaluated (declaration (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::mc"))) (state unresolved-operand))
   )
 )
 ~~~

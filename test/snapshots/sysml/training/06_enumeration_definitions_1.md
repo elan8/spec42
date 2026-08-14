@@ -78,7 +78,7 @@ package 'Enumeration Definitions-1' {
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/06_enumeration_definitions_1.md") (path (named (kind package) (name "Enumeration Definitions-1")) (named (kind part-def) (name "TrafficLightGo")) (anonymous (kind attribute) (ordinal 0)))))) (target (node (document "memory://snapshot/06_enumeration_definitions_1.md") (qualified-name "Enumeration Definitions-1::TrafficLightColor::green"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/06_enumeration_definitions_1.md") (path (named (kind package) (name "Enumeration Definitions-1")) (named (kind part-def) (name "TrafficLightGo")) (anonymous (kind attribute) (ordinal 0)))))) (kind expressionOperand) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/06_enumeration_definitions_1.md") (path (named (kind package) (name "Enumeration Definitions-1")) (named (kind part-def) (name "TrafficLightGo")) (anonymous (kind attribute) (ordinal 0)))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/06_enumeration_definitions_1.md") (path (named (kind package) (name "Enumeration Definitions-1")) (named (kind part-def) (name "TrafficLightGo")) (anonymous (kind attribute) (ordinal 0)))))) (state non-constant))
   )
 )
 ~~~

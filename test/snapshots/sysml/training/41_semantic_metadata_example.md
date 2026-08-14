@@ -237,11 +237,11 @@ library package 'Semantic Metadata Example' {
     (relationship (kind redefinition) (source (node (document "memory://snapshot/41_semantic_metadata_example.md") (qualified-name "Semantic Metadata Example::situation::baseType"))) (target (node (document "memory://snapshot/41_semantic_metadata_example.md") (qualified-name "Semantic Metadata Example::situation::baseType"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/41_semantic_metadata_example.md") (qualified-name "Semantic Metadata Example::situation::baseType"))) (kind redefinition) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/41_semantic_metadata_example.md") (qualified-name "Semantic Metadata Example::causation::baseType"))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/41_semantic_metadata_example.md") (qualified-name "Semantic Metadata Example::cause::baseType"))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/41_semantic_metadata_example.md") (qualified-name "Semantic Metadata Example::failure::baseType"))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/41_semantic_metadata_example.md") (qualified-name "Semantic Metadata Example::scenario::baseType"))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/41_semantic_metadata_example.md") (qualified-name "Semantic Metadata Example::situation::baseType"))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/41_semantic_metadata_example.md") (qualified-name "Semantic Metadata Example::causation::baseType"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/41_semantic_metadata_example.md") (qualified-name "Semantic Metadata Example::cause::baseType"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/41_semantic_metadata_example.md") (qualified-name "Semantic Metadata Example::failure::baseType"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/41_semantic_metadata_example.md") (qualified-name "Semantic Metadata Example::scenario::baseType"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/41_semantic_metadata_example.md") (qualified-name "Semantic Metadata Example::situation::baseType"))) (state non-constant))
   )
 )
 ~~~

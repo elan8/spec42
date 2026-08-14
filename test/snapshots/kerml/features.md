@@ -340,8 +340,8 @@ package Features {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/features.md") (qualified-name "Features::x"))) (target (node (document "memory://snapshot/features.md") (qualified-name "Features::g"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/features.md") (qualified-name "Features::x"))) (kind subsetting) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/features.md") (qualified-name "Features::Vehicle::vin"))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/features.md") (qualified-name "Features::Vehicle::x"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/features.md") (qualified-name "Features::Vehicle::vin"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/features.md") (qualified-name "Features::Vehicle::x"))) (state unresolved-operand))
   )
 )
 ~~~

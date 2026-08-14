@@ -211,9 +211,9 @@ package Vehicles_2 {
     (relationship (kind typing) (source (node (document "memory://snapshot/vehicles_2.md") (qualified-name "Vehicles_2::vehicle::transmission"))) (target (node (document "memory://snapshot/vehicles_2.md") (qualified-name "Vehicles_2::CarPart"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicles_2.md") (qualified-name "Vehicles_2::vehicle::transmission"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/vehicles_2.md") (qualified-name "Vehicles_2::v::engine::m"))) (value (kind integer) (integer 100)))
-    (evaluated (declaration (node (document "memory://snapshot/vehicles_2.md") (qualified-name "Vehicles_2::v::m"))) (value (kind integer) (integer 1000)))
-    (evaluated (declaration (node (document "memory://snapshot/vehicles_2.md") (qualified-name "Vehicles_2::v::transmission::m"))) (value (kind integer) (integer 50)))
+    (evaluated (declaration (node (document "memory://snapshot/vehicles_2.md") (qualified-name "Vehicles_2::v::engine::m"))) (state literal) (value (kind integer) (integer 100)))
+    (evaluated (declaration (node (document "memory://snapshot/vehicles_2.md") (qualified-name "Vehicles_2::v::m"))) (state literal) (value (kind integer) (integer 1000)))
+    (evaluated (declaration (node (document "memory://snapshot/vehicles_2.md") (qualified-name "Vehicles_2::v::transmission::m"))) (state literal) (value (kind integer) (integer 50)))
   )
 )
 ~~~
