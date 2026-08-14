@@ -3122,6 +3122,24 @@ impl DeclarationDomain {
                     | DeclarationKind::ConcernDefinition
                     | DeclarationKind::CalcDefinition
                     | DeclarationKind::ClassDefinition
+                    // The KerML type metaclasses. Every one of these is a `Type` in the
+                    // metamodel, so each is a legitimate FeatureTyping/Subclassification target;
+                    // without them no reference into the KerML kernel libraries can resolve, and
+                    // `attribute mass : ScalarValues::Real` fails against a `datatype` that is
+                    // right there in the admitted standard library. `KermlMultiplicity` is
+                    // deliberately absent: `Multiplicity <: Feature`, and this domain admits
+                    // definition-like types only, exactly as it already excludes SysML usages.
+                    | DeclarationKind::KermlClassifier
+                    | DeclarationKind::KermlClass
+                    | DeclarationKind::KermlStructure
+                    | DeclarationKind::KermlAssociation
+                    | DeclarationKind::KermlAssociationStructure
+                    | DeclarationKind::KermlDataType
+                    | DeclarationKind::KermlMetaclass
+                    | DeclarationKind::KermlBehavior
+                    | DeclarationKind::KermlFunction
+                    | DeclarationKind::KermlPredicate
+                    | DeclarationKind::KermlInteraction
                     | DeclarationKind::Alias
             ),
         }

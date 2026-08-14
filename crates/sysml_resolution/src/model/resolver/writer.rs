@@ -301,7 +301,46 @@ fn write_metadata(
     write_quoted(output, &source_digest.to_string())?;
     write!(output, ") (contract-version ")?;
     write_quoted(output, semantic_contract_version)?;
-    writeln!(output, "))")
+    write!(output, ")")?;
+    write_admitted_sources(model, output)?;
+    writeln!(output, ")")
+}
+
+/// Reports the non-workspace sources this publication admitted.
+///
+/// Emitted only when the publication admitted one, so a workspace-only build renders exactly as it
+/// did before libraries could be admitted. Without it, admission would be visible only through an
+/// opaque source digest, and a projection scoped to workspace documents would look identical
+/// whether or not a library took part in resolution.
+fn write_admitted_sources(
+    model: &ResolvedSemanticModel,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    let mut standard_library = 0usize;
+    let mut library = 0usize;
+    let mut external = 0usize;
+    for document in model.storage.documents.iter() {
+        match document.role {
+            SourceRole::Workspace => {}
+            SourceRole::StandardLibrary => standard_library += 1,
+            SourceRole::Library => library += 1,
+            SourceRole::External => external += 1,
+        }
+    }
+    if standard_library == 0 && library == 0 && external == 0 {
+        return Ok(());
+    }
+    output.write_str(" (admitted")?;
+    if standard_library > 0 {
+        write!(output, " (standard-library {standard_library})")?;
+    }
+    if library > 0 {
+        write!(output, " (library {library})")?;
+    }
+    if external > 0 {
+        write!(output, " (external {external})")?;
+    }
+    output.write_char(')')
 }
 
 fn write_declarations(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fmt::Result {
@@ -558,8 +597,12 @@ fn write_relationships(model: &ResolvedSemanticModel, output: &mut dyn fmt::Writ
             reference.ordinal,
         )?;
     }
-    let mut implied: Vec<&ImpliedRelationship> =
-        model.resolution.implied_relationships.iter().collect();
+    let mut implied: Vec<&ImpliedRelationship> = model
+        .resolution
+        .implied_relationships
+        .iter()
+        .filter(|relationship| is_projected_declaration(model, relationship.source))
+        .collect();
     implied.sort_by_key(|relationship| {
         (
             declaration_path_key(model, relationship.source),
@@ -624,7 +667,9 @@ fn write_evaluated_value(value: &EvaluatedValue, output: &mut dyn fmt::Write) ->
 }
 
 fn canonical_evaluation_indices(model: &ResolvedSemanticModel) -> Vec<usize> {
-    let mut indices = (0..model.evaluation.len()).collect::<Vec<_>>();
+    let mut indices = (0..model.evaluation.len())
+        .filter(|index| is_projected_declaration(model, model.evaluation[*index].declaration))
+        .collect::<Vec<_>>();
     indices.sort_by(|left, right| {
         let left_fact = &model.evaluation[*left];
         let right_fact = &model.evaluation[*right];
@@ -916,8 +961,31 @@ fn write_escaped(output: &mut dyn fmt::Write, value: &str) -> fmt::Result {
     Ok(())
 }
 
+/// Whether one document's facts belong in an owner-defined projection.
+///
+/// Projections report the authored workspace. A library is admitted so that workspace references
+/// resolve against it, not so that every publication renders the whole standard library; a
+/// consumer that wants library content projected admits it as a workspace source, exactly as the
+/// library snapshot corpus does. This is a rendering scope, never an admission or resolution
+/// filter -- library declarations, references and outcomes are all still fully published.
+fn is_projected_document(model: &ResolvedSemanticModel, document: DocumentId) -> bool {
+    model
+        .storage
+        .document(document)
+        .is_some_and(|document| document.role == SourceRole::Workspace)
+}
+
+fn is_projected_declaration(model: &ResolvedSemanticModel, declaration: DeclarationId) -> bool {
+    model
+        .storage
+        .declaration(declaration)
+        .is_some_and(|declaration| is_projected_document(model, declaration.document))
+}
+
 fn canonical_document_indices(model: &ResolvedSemanticModel) -> Vec<usize> {
-    let mut indices = (0..model.storage.documents.len()).collect::<Vec<_>>();
+    let mut indices = (0..model.storage.documents.len())
+        .filter(|index| is_projected_document(model, DocumentId(*index as u32)))
+        .collect::<Vec<_>>();
     indices.sort_by(|left, right| {
         model.storage.documents[*left]
             .identity
@@ -928,7 +996,9 @@ fn canonical_document_indices(model: &ResolvedSemanticModel) -> Vec<usize> {
 }
 
 fn canonical_declaration_indices(model: &ResolvedSemanticModel) -> Vec<usize> {
-    let mut indices = (0..model.storage.declarations.len()).collect::<Vec<_>>();
+    let mut indices = (0..model.storage.declarations.len())
+        .filter(|index| is_projected_declaration(model, DeclarationId(*index as u32)))
+        .collect::<Vec<_>>();
     indices.sort_by(|left, right| {
         let left_declaration = &model.storage.declarations[*left];
         let right_declaration = &model.storage.declarations[*right];
@@ -944,7 +1014,9 @@ fn canonical_declaration_indices(model: &ResolvedSemanticModel) -> Vec<usize> {
 }
 
 fn canonical_reference_indices(model: &ResolvedSemanticModel) -> Vec<usize> {
-    let mut indices = (0..model.storage.references.len()).collect::<Vec<_>>();
+    let mut indices = (0..model.storage.references.len())
+        .filter(|index| is_projected_declaration(model, model.storage.references[*index].source))
+        .collect::<Vec<_>>();
     indices.sort_by(|left, right| {
         let left_reference = &model.storage.references[*left];
         let right_reference = &model.storage.references[*right];

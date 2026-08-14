@@ -15,6 +15,7 @@ use std::{
 use hashbrown::HashTable;
 
 use crate::evaluation::EvaluationPolicy;
+use source_identity::SourceRole;
 use sysml_v2_parser_next::{
     ast::{
         ActionDef, ActionDefBody, ActionDefBodyElement, ActionUsage as ParserActionUsage,
@@ -2577,6 +2578,11 @@ struct RecoveryRecord {
 #[derive(Debug)]
 struct CanonicalDocument {
     identity: Box<str>,
+    /// The role this source plays in the build, carried through from the admitted
+    /// [`OwnedSourceRecord`]. Library sources participate in one semantic system with workspace
+    /// sources, so this is never an admission filter; it is what lets owner-defined projections
+    /// report the authored workspace without also reporting the whole standard library.
+    role: SourceRole,
     parsed: Arc<ParsedDocument>,
     parse_errors: Box<[ParseError]>,
 }
@@ -2691,6 +2697,7 @@ impl SemanticModelBuilder {
     fn admit_document(
         &mut self,
         identity: impl Into<Box<str>>,
+        role: SourceRole,
         parsed: Arc<ParsedDocument>,
         parse_errors: Vec<ParseError>,
     ) -> Result<DocumentId, ConstructionError> {
@@ -2718,6 +2725,7 @@ impl SemanticModelBuilder {
             .map_err(|_| ConstructionError::Capacity)?;
         self.documents.push(CanonicalDocument {
             identity,
+            role,
             parsed,
             parse_errors: parse_errors.into_boxed_slice(),
         });
@@ -13046,6 +13054,7 @@ impl SymbolTableBuilder {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct OwnedSourceRecord {
     pub(crate) identity: Box<str>,
+    pub(crate) role: SourceRole,
     pub(crate) content: String,
 }
 
@@ -13077,11 +13086,21 @@ impl SemanticModelBuildCoordinator {
         schedule: BuildSchedule,
         policy: EvaluationPolicy,
     ) -> Result<(resolver::ResolvedSemanticModel, BuildPhaseDurations), CoordinatorError> {
-        sources.sort_unstable_by(|left, right| left.identity.cmp(&right.identity));
-        if sources
-            .windows(2)
-            .any(|pair| pair[0].identity == pair[1].identity)
-        {
+        // Library sources are ordered ahead of workspace sources so that the dense declaration
+        // domain assigns them a contiguous prefix. Rendered output is sorted independently by
+        // document identity, so this affects storage order only. Duplicate detection therefore
+        // compares identities across the whole set, not within one role.
+        sources.sort_unstable_by(|left, right| {
+            source_admission_rank(left.role)
+                .cmp(&source_admission_rank(right.role))
+                .then_with(|| left.identity.cmp(&right.identity))
+        });
+        let mut identities = sources
+            .iter()
+            .map(|source| source.identity.as_ref())
+            .collect::<Vec<_>>();
+        identities.sort_unstable();
+        if identities.windows(2).any(|pair| pair[0] == pair[1]) {
             return Err(CoordinatorError::DuplicateSourceIdentity);
         }
 
@@ -13104,9 +13123,9 @@ impl SemanticModelBuildCoordinator {
         let lowering_started = Instant::now();
         let mut builder = SemanticModelBuilder::default();
         let mut documents = Vec::with_capacity(parsed.len());
-        for (identity, parsed) in parsed {
+        for (identity, role, parsed) in parsed {
             let document = builder
-                .admit_document(identity, Arc::new(parsed.document), parsed.errors)
+                .admit_document(identity, role, Arc::new(parsed.document), parsed.errors)
                 .map_err(|_| CoordinatorError::DuplicateSourceIdentity)?;
             documents.push(document);
         }
@@ -13134,11 +13153,26 @@ impl SemanticModelBuildCoordinator {
 
     fn parse_source(
         source: OwnedSourceRecord,
-    ) -> Result<(Box<str>, sysml_v2_parser_next::ParseResult), CoordinatorError> {
+    ) -> Result<(Box<str>, SourceRole, sysml_v2_parser_next::ParseResult), CoordinatorError> {
         Ok((
             source.identity,
+            source.role,
             sysml_v2_parser_next::parse_for_editor_owned(source.content),
         ))
+    }
+}
+
+/// Storage order for admitted sources: every library role precedes workspace sources.
+///
+/// This is a construction-order policy, not a semantic one. It exists so a library-only build and
+/// a workspace-plus-library build assign the same declaration ids to the same library
+/// declarations, which is the precondition for reusing a solved library stratum.
+fn source_admission_rank(role: SourceRole) -> u8 {
+    match role {
+        SourceRole::StandardLibrary => 0,
+        SourceRole::Library => 1,
+        SourceRole::External => 2,
+        SourceRole::Workspace => 3,
     }
 }
 
@@ -13166,7 +13200,7 @@ mod tests {
         let mut builder = SemanticModelBuilder::default();
         let parsed = empty_document();
         let document = builder
-            .admit_document("model", parsed.clone(), Vec::new())
+            .admit_document("model", SourceRole::Workspace, parsed.clone(), Vec::new())
             .unwrap();
         let first_name = builder.intern_name("Vehicle").unwrap();
         let second_name = builder.intern_name("Vehicle").unwrap();
@@ -13228,14 +13262,19 @@ mod tests {
         let mut builder = SemanticModelBuilder::default();
         for index in 0..256 {
             builder
-                .admit_document(format!("model-{index}"), parsed.clone(), Vec::new())
+                .admit_document(
+                    format!("model-{index}"),
+                    SourceRole::Workspace,
+                    parsed.clone(),
+                    Vec::new(),
+                )
                 .unwrap();
         }
         let before = builder.documents.len();
 
         assert_eq!(
             builder
-                .admit_document("model-0", parsed, Vec::new())
+                .admit_document("model-0", SourceRole::Workspace, parsed, Vec::new())
                 .unwrap_err(),
             ConstructionError::DuplicateDocumentIdentity
         );
@@ -13246,7 +13285,9 @@ mod tests {
     fn anonymous_ordinals_are_owner_local_and_ignore_named_declarations() {
         let parsed = empty_document();
         let mut builder = SemanticModelBuilder::default();
-        let document = builder.admit_document("model", parsed, Vec::new()).unwrap();
+        let document = builder
+            .admit_document("model", SourceRole::Workspace, parsed, Vec::new())
+            .unwrap();
         let owner_name = builder.intern_name("Owner").unwrap();
         let owner = builder
             .push_typed_declaration(

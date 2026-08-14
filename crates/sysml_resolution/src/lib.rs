@@ -295,6 +295,7 @@ pub fn build_measured(
         .into_iter()
         .map(|source| OwnedSourceRecord {
             identity: source.identity,
+            role: source_role(source.kind),
             content: source.content,
         })
         .collect();
