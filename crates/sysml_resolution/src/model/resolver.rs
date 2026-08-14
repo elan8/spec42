@@ -699,7 +699,7 @@ impl MembershipIndex {
 
 impl NameIndex {
     fn build(mut entries: Vec<(NameKey, DeclarationId)>) -> Result<Self, ResolutionError> {
-        entries.sort_unstable();
+        entries.sort_unstable_by_key(name_entry_sort_key);
         entries.dedup();
 
         let mut keys = Vec::new();
@@ -758,6 +758,16 @@ impl NameIndex {
                     .map(|candidates| (key.name, candidates))
             })
     }
+}
+
+/// The tuple's canonical `Ord` encoded as one integer comparison.
+///
+/// `None` sorts before every owner and `Some(u32::MAX)` still fits because the owner occupies 33
+/// bits above the two complete 32-bit name/candidate fields. The encoding is injective, so this is
+/// purely a cheaper sorting representation rather than a hash or a competing identity policy.
+fn name_entry_sort_key((key, candidate): &(NameKey, DeclarationId)) -> u128 {
+    let owner = key.owner.map_or(0, |owner| u128::from(owner.0) + 1);
+    (owner << 64) | (u128::from(key.name.0) << 32) | u128::from(candidate.0)
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -6131,5 +6141,51 @@ mod tests {
             index.candidates(None, SymbolId(0)),
             &[DeclarationId(1), DeclarationId(2)]
         );
+    }
+
+    #[test]
+    fn packed_name_entry_order_matches_the_canonical_tuple_order() {
+        let entries = vec![
+            (
+                NameKey {
+                    owner: Some(DeclarationId(u32::MAX)),
+                    name: SymbolId(u32::MAX),
+                },
+                DeclarationId(u32::MAX),
+            ),
+            (
+                NameKey {
+                    owner: Some(DeclarationId(0)),
+                    name: SymbolId(u32::MAX),
+                },
+                DeclarationId(0),
+            ),
+            (
+                NameKey {
+                    owner: None,
+                    name: SymbolId(u32::MAX),
+                },
+                DeclarationId(u32::MAX),
+            ),
+            (
+                NameKey {
+                    owner: Some(DeclarationId(0)),
+                    name: SymbolId(0),
+                },
+                DeclarationId(u32::MAX),
+            ),
+            (
+                NameKey {
+                    owner: None,
+                    name: SymbolId(0),
+                },
+                DeclarationId(0),
+            ),
+        ];
+        let mut canonical = entries.clone();
+        canonical.sort_unstable();
+        let mut packed = entries;
+        packed.sort_unstable_by_key(name_entry_sort_key);
+        assert_eq!(packed, canonical);
     }
 }
