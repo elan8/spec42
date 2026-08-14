@@ -429,6 +429,39 @@ entry should carry enough detail to file/update an upstream issue against
   RefDecl>)` or similar) added to `UseCaseDefBodyElement` with a parser production for the full
   `ref use case <name> : <Type> [:>> <target>];` form, or `ref_redefinition` widened to also
   accept the named/typed spelling, filed upstream against `feat/gh-119-arena-backed-references`
+  (elan8/sysml-v2-parser#121). **Update (exhaustive `unsupported_use_case_definition_member`/
+  `unsupported_analysis_case_definition_member` audit, this pass):** since `UseCaseDefBody`/
+  `UseCaseDefBodyElement` is the one shared body shape reused by `use case def`/`analysis def`/
+  `case def`/`verification def` alike (`lower_case_family_def_body` in `sysml_resolution`), the same
+  root cause generalizes to three further shapes, all confirmed via a direct
+  `sysml_v2_parser_next::parse_for_editor_owned` probe (temporary `crates/sysml_resolution/examples/
+  dump_case_ast.rs`, removed after use) showing each fragments into a bare `Expression(FeatureRef(..))`
+  per leading token exactly like the `ref use case` case above: (a) the plain, non-`ref`-prefixed
+  nested usage spelling with an explicit type/specialization clause, e.g. `use_cases.md`'s `abstract
+  use case subUseCases : UseCase[0..*] :> useCases, subcases { ... }` and `abstract ref use case
+  includedUseCases : UseCase[0..*] :> useCases, enclosedPerformances { ... }` -- confirming
+  `UseCaseDefBodyElement` has no plain `UseCaseUsage`/`AnalysisCaseUsage`-shaped variant for a nested
+  `use case` usage at all (only `AnalysisCaseUsage` exists; there is no sibling `UseCaseUsage(Node<
+  UseCaseUsage>)` arm, even though the parser's own `use_case_usage` function, `src/parser/
+  usecase.rs:673-679`, exists and is used elsewhere); (b) the identical `ref <kind> <name> : <Type>
+  :>> <target>;` shape for the `analysis` keyword sibling of `use case`, e.g. `analysis_cases.md`'s
+  `ref analysis self : AnalysisCase :>> Case::self;`, which fragments the same way (`ref` alone
+  becomes a bare `Expression(FeatureRef("ref"))`, `analysis self : AnalysisCase :>> Case::self;`
+  separately becomes a working `AnalysisCaseUsage`); and (c) the named+typed `include use case
+  <name> : <Type> [mult];` form (`use_case_test.md`'s `include use case uc1 : UC1;`/`include use case
+  uc2 { ... }`, `sys_ml_v2_spec_annex_a_simple_vehicle_model.md`'s `include use case
+  getInVehicle_a:>getInVehicle [1..5];`) -- a structurally distinct AST node from (a)/(b):
+  `IncludeUseCase`'s own parser production, `include_use_case_inner` (`src/parser/usecase.rs:64-81`),
+  only ever parses `include <target QualifiedReferenceId> [mult] <body>` (a *reference* to an
+  existing use case), never the full nested-usage-declaration spelling with its own `use case`
+  keyword, name, and type -- so `qualified_reference` greedily (and wrongly) consumes just the
+  literal identifier `use` as `target`, then fails to find a body/terminator after `case uc1 : UC1;`
+  remains, and the whole statement falls to the same per-token recovery. All three need either new
+  `UseCaseDefBodyElement` variants (a plain `UseCaseUsage` arm for (a), reusing the existing
+  `AnalysisCaseUsage`-style dispatch shape; a `RefAnalysisUsage`/generalized `Ref<Kind>Usage` arm for
+  (b); and either a name/type-carrying variant on `IncludeUseCase` itself or a new
+  `IncludeUseCaseUsage`-shaped node for (c)) or widened parser productions accepting the fuller
+  spellings, filed upstream against the same `feat/gh-119-arena-backed-references`
   (elan8/sysml-v2-parser#121).
 
 - Gap 35. `SubjectDecl` (`src/ast/requirement.rs:118-123`) has no `redefines` field and its parser
@@ -463,7 +496,34 @@ entry should carry enough detail to file/update an upstream issue against
   (multiplicity), or `=` (value); there is no `default`-keyword alternative to `=` the way e.g.
   `RefDecl`'s value clause might support. Both stay routed through the existing
   `unsupported_requirement_definition_member` fallback via `Other`/whole-statement recovery, same
-  as the `:>>` case above.
+  as the `:>>` case above. **Update (exhaustive `unsupported_use_case_definition_member`/
+  `unsupported_analysis_case_definition_member` audit, this pass):** `SubjectDecl` is equally
+  missing a `subsets: Option<Node<SubsettingRelationship>>` field -- the plain `:>` spelling (not
+  just `:>>` redefines) is blocked by the exact same `type_name`-consumes-the-leading-`:`-of-`:>`
+  mechanism, confirmed against four further fixtures: `use_cases.md`'s/`analysis_cases.md`'s
+  `subject subj :>> Case::subj;` (the already-documented `:>>` case, now also confirmed present in
+  the case-family bodies this audit covers, not just requirement bodies), `analysis_individual_
+  example.md`'s `subject vehicle : Vehicle_1 :> vehicle_c1 { ... }` (a `:` type *and* a trailing `:>`
+  subsets clause together -- `type_name` successfully parses `: Vehicle_1`, but the following `multiplicity`/
+  `value` alternatives don't match `:>` either, so the whole statement still fails at the final `;`/
+  brace check with `:> vehicle_c1 { ... }` unconsumed), `rationale_metadata_example.md`'s `subject
+  alternatives :> engine [2] = (engine4cyl, engine6cyl);`, and `sys_ml_v2_spec_annex_a_simple_
+  vehicle_model.md`'s `subject vehicleAlternatives[2]:>vehicle_b;`. `evsample.md`'s `subject :>>
+  vehicle :> vehicle_large;`/`subject :>> vehicle :> vehicle_compact;` combine both missing fields in
+  one statement (a type-less `:>>` redefinition target immediately followed by a `:>` subsets
+  clause). Because `subject_decl_inner` fails outright rather than partially matching, a statement
+  blocked this way loses its *entire* nested body to the same whole-statement recovery, not just its
+  own header -- confirmed via `analysis_individual_example.md`'s `subject vehicle : Vehicle_1 :>
+  vehicle_c1 { individual action :>> fuelConsumption : FuelEconomyAnalysis_1 { ... } }`: the nested
+  `individual action ...` member (itself a fully well-formed, otherwise-lowerable `ActionUsage`
+  member with an `is_individual`/`:>>` redefinition combination `sysml_resolution` already handles
+  elsewhere) still surfaces as its own separate `unsupported_analysis_case_definition_member`
+  diagnostic purely because the raw-text body-recovery mechanism re-segments the failed subject's
+  braced content per-statement rather than swallowing it as one opaque blob -- not a distinct gap in
+  its own right, just this same root cause's blast radius. Needs `SubjectDecl` widened with a
+  `subsets: Option<Node<SubsettingRelationship>>` field alongside the already-requested `redefines`
+  one, filed upstream against the same `feat/gh-119-arena-backed-references`
+  (elan8/sysml-v2-parser#121).
 
 - Gap 41. KerML's implicit self-reference identifier `that` (e.g. `test/snapshots/sysml/examples`'s
   `trig_functions.md`: `inv unitBound { -1.0 <= that & that <= 1.0 }` inside `datatype
@@ -569,6 +629,57 @@ entry should carry enough detail to file/update an upstream issue against
   `Requirement(Box<Node<RequirementUsage>>)` variant added to `VariantTypedUsage`, mirroring the
   existing five, filed upstream against `feat/gh-119-arena-backed-references`
   (elan8/sysml-v2-parser#121).
+
+- Gap 45. `UseCaseDefBodyElement` (`src/ast/requirement.rs:604-646`) has no `InOutDecl` variant, so
+  the bare `in <name> = <value>;`/`out <name> [:> <Type>] = <value>;` parameter-declaration
+  shorthand (no `attribute` keyword) that sibling body enums already support
+  (`ConstraintDefBodyElement::InOutDecl`, `CalcDefBodyElement::InOutDecl`, both already lowered by
+  `sysml_resolution`'s `lower_parameter_declaration`) is unrecognized inside `use case`/`analysis`/
+  `case`/`verification` bodies. Found exhaustively auditing `unsupported_use_case_definition_member`/
+  `unsupported_analysis_case_definition_member` across the full corpus (this pass, against
+  `cb026cd`): `in_out_decl` (`src/parser/action.rs:334-364`) already parses the `attribute`-keyword-
+  optional shorthand fine on its own -- confirmed via a direct `sysml_v2_parser_next::
+  parse_for_editor_owned` probe (temporary `crates/sysml_resolution/examples/dump_case_ast.rs`,
+  removed after use) -- but `use_case_def_body_element`'s alternative list (`src/parser/
+  usecase.rs:520-602`) never calls it, so a directed parameter member such as
+  `test/snapshots/sysml/training/33_analysis_case_usage_example.md`'s `in scenario = cityScenario;`
+  (nested inside a `analysis <name> : <Type> { ... }` usage body) or
+  `test/snapshots/sysml/examples/evsample.md`'s `out voltage :> ISQ::electricPotential =
+  vehicle.battery.batteryBehavior.output.voltage;`/`out voltage = vehicle.battery.batteryBehavior.
+  output.voltage;` (directly inside an `analysis def`'s own body) falls straight through to the
+  opaque `Other`/whole-statement-recovery fallback. This is the same missing-variant pattern Gap 42
+  catalogued for `StateDefBodyElement`/`RequirementDefBodyElement` -- there is no `sysml_resolution`-
+  side fix available; `lower_parameter_declaration` already exists and would lower this construct
+  immediately if the typed AST offered it. Needs an `InOutDecl(Node<InOutDecl>)` variant added to
+  `UseCaseDefBodyElement` with `use_case_def_body_element` taught to dispatch to `in_out_decl`
+  (mirroring `ConstraintDefBodyElement`/`CalcDefBodyElement`'s existing wiring), filed upstream
+  against `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+
+- Gap 46. Bare `actor <name>;`/`actor <name> [multiplicity];` (no `: Type` at all) has no grammar
+  production reachable from `UseCaseDefBodyElement`. Found exhaustively auditing
+  `unsupported_use_case_definition_member` across the full corpus (this pass, against `cb026cd`):
+  `use_case_def_body_element`'s own `actor_usage` production (`actor_usage_inner`, `src/parser/
+  usecase.rs:680-716`) requires a mandatory `:` type clause (`type_name` is not `opt(...)`-wrapped,
+  unlike the rest of the production's optional fields) -- confirmed by direct inspection, there is
+  no anonymous-type branch. A second, thinner struct genuinely shaped for the untyped form already
+  exists (`ActorDecl { identification: Identification }`, `src/ast/requirement.rs:448-451`, parsed
+  by a same-named but distinct `actor_decl` function, `src/parser/usecase.rs:430-446`), but it is
+  wired only into `PackageBodyElement::Actor` at *top-level package scope*
+  (`try_package_body_dispatch!(..., ActorUsage, actor_decl, PackageBodyElement::Actor)`,
+  `src/parser/package.rs:1930-1936`) -- `use_case_def_body_element`'s alternative list never calls
+  it, and `UseCaseDefBodyElement` has no `ActorDecl`-shaped variant at all. Confirmed via a direct
+  `sysml_v2_parser_next::parse_for_editor_owned` probe (temporary `crates/sysml_resolution/examples/
+  dump_case_ast.rs`, removed after use): `use case def U { actor environment; }` lowers the whole
+  `actor environment;` statement to `UseCaseDefBodyElement::Other`. Blocks OMG spec Annex A's
+  `test/snapshots/sysml/examples/sys_ml_v2_spec_annex_a_simple_vehicle_model.md` (`actor
+  environment;`/`actor road;`/`actor driver;`/`actor passenger [0..4];`/`actor driver [0..1];`/
+  `actor passenger [0..1];`, 8 occurrences across two nested use-case usages). (Separately,
+  `sysml_resolution` doesn't lower `PackageBodyElement::Actor` either -- an existing, pre-existing,
+  unrelated scope gap at package scope, not part of this task's two target diagnostic families, left
+  untouched.) Needs either `ActorUsage.type_name` widened to `Option<QualifiedReferenceId>` (mirroring
+  `SubjectDecl`'s already-optional type) or a new `UseCaseDefBodyElement::ActorDecl(Node<ActorDecl>)`
+  variant wired to the existing `actor_decl` production, filed upstream against
+  `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
 
 **Re-verification pass note (this pass, against `cb026cd`):** Gaps 15-24 were re-checked by
 grepping the current `cb026cd` checkout for the same starter tables/productions cited in each

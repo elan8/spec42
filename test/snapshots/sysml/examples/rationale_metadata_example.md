@@ -65,12 +65,6 @@ package RationaleMetadataExample {
         (source "semantic")
         (range (start 17 8) (end 17 70))
       )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_analysis_case_definition_member")
-        (source "semantic")
-        (range (start 21 8) (end 21 40))
-      )
     )
   )
 )
@@ -90,6 +84,7 @@ package RationaleMetadataExample {
     (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineSelectionRationale::explanation"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "engineTradeOffAnalysis"))))
     (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineSelectionRationale::text"))) (kind attribute) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineTradeOffAnalysis"))) (kind analysis) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "TradeStudy"))))
+    (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineTradeOffAnalysis::selectedEngine"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "engine"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/rationale_metadata_example.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0))
@@ -113,11 +108,15 @@ package RationaleMetadataExample {
     (reference (id (source (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineTradeOffAnalysis"))) (kind featureTyping) (ordinal 0))
       (authored-target "TradeStudy")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineTradeOffAnalysis::selectedEngine"))) (kind subsetting) (ordinal 0))
+      (authored-target "engine")
+      (outcome (status resolved) (target (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engine")))))
   )
   (relationships
     (relationship (kind subsetting) (source (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engine4cyl"))) (target (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engine"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engine4cyl"))) (kind subsetting) (ordinal 0)))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engine6cyl"))) (target (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engine"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engine6cyl"))) (kind subsetting) (ordinal 0)))
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineSelectionRationale::explanation"))) (target (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineTradeOffAnalysis"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineSelectionRationale::explanation"))) (kind expressionOperand) (ordinal 0)))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineTradeOffAnalysis::selectedEngine"))) (target (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engine"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineTradeOffAnalysis::selectedEngine"))) (kind subsetting) (ordinal 0)))
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineSelectionRationale::explanation"))) (value (kind non-constant)))
@@ -155,6 +154,10 @@ package RationaleMetadataExample {
   (query (document "memory://snapshot/rationale_metadata_example.md") (range (start 16 36) (end 16 46)) (probe (position 16 36))
     (reference (id (source (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineTradeOffAnalysis"))) (kind featureTyping) (ordinal 0) (authored-target "TradeStudy")
       (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/rationale_metadata_example.md") (range (start 21 33) (end 21 39)) (probe (position 21 33))
+    (reference (id (source (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineTradeOffAnalysis::selectedEngine"))) (kind subsetting) (ordinal 0) (authored-target "engine")
+      (outcome (status resolved) (target (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engine")))))
   )
 )
 ~~~

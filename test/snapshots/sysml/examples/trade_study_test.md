@@ -52,9 +52,9 @@ package TradeStudyTest {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_analysis_case_definition_member")
+        (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 10 2) (end 10 32))
+        (range (start 10 14) (end 10 31))
       )
       (diagnostic
         (severity warning)
@@ -68,12 +68,6 @@ package TradeStudyTest {
         (source "semantic")
         (range (start 14 12) (end 14 16))
       )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_analysis_case_definition_member")
-        (source "semantic")
-        (range (start 17 2) (end 17 23))
-      )
     )
   )
 )
@@ -81,7 +75,7 @@ package TradeStudyTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:82c06e70b44911029f1518c344a173cc8672463f13c53c24742fd23c580d2859") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:82c06e70b44911029f1518c344a173cc8672463f13c53c24742fd23c580d2859") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/trade_study_test.md") (qualified-name "TradeStudyTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/trade_study_test.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false)))))
@@ -92,8 +86,10 @@ package TradeStudyTest {
     (declaration (id (node (document "memory://snapshot/trade_study_test.md") (qualified-name "TradeStudyTest::engineTradeStudy"))) (kind analysis) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "TradeStudy"))))
     (declaration (id (node (document "memory://snapshot/trade_study_test.md") (anonymous (kind subject) (ordinal 0))))) (kind subject) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Engine"))))
     (declaration (id (node (document "memory://snapshot/trade_study_test.md") (anonymous (kind calc) (ordinal 0))))) (kind calc) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "evaluationFunction"))))
+    (declaration (id (node (document "memory://snapshot/trade_study_test.md") (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Engine"))))
     (declaration (id (node (document "memory://snapshot/trade_study_test.md") (anonymous (kind part) (ordinal 0))))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Engine"))))
     (declaration (id (node (document "memory://snapshot/trade_study_test.md") (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Real"))))
+    (declaration (id (node (document "memory://snapshot/trade_study_test.md") (qualified-name "TradeStudyTest::engineTradeStudy::objective"))) (kind requirement) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MaximizeObjective"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/trade_study_test.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0))
@@ -114,6 +110,9 @@ package TradeStudyTest {
     (reference (id (source (node (document "memory://snapshot/trade_study_test.md") (anonymous (kind subject) (ordinal 0))))) (kind featureTyping) (ordinal 0))
       (authored-target "Engine")
       (outcome (status resolved) (target (node (document "memory://snapshot/trade_study_test.md") (qualified-name "TradeStudyTest::Engine")))))
+    (reference (id (source (node (document "memory://snapshot/trade_study_test.md") (anonymous (kind parameter) (ordinal 0))))) (kind featureTyping) (ordinal 0))
+      (authored-target "Engine")
+      (outcome (status resolved) (target (node (document "memory://snapshot/trade_study_test.md") (qualified-name "TradeStudyTest::Engine")))))
     (reference (id (source (node (document "memory://snapshot/trade_study_test.md") (anonymous (kind calc) (ordinal 0))))) (kind redefinition) (ordinal 0))
       (authored-target "evaluationFunction")
       (outcome (status unresolved)))
@@ -123,11 +122,15 @@ package TradeStudyTest {
     (reference (id (source (node (document "memory://snapshot/trade_study_test.md") (anonymous (kind parameter) (ordinal 0))))) (kind featureTyping) (ordinal 0))
       (authored-target "Real")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/trade_study_test.md") (qualified-name "TradeStudyTest::engineTradeStudy::objective"))) (kind featureTyping) (ordinal 0))
+      (authored-target "MaximizeObjective")
+      (outcome (status unresolved)))
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/trade_study_test.md") (qualified-name "TradeStudyTest::engine1"))) (target (node (document "memory://snapshot/trade_study_test.md") (qualified-name "TradeStudyTest::Engine"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/trade_study_test.md") (qualified-name "TradeStudyTest::engine1"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/trade_study_test.md") (qualified-name "TradeStudyTest::engine2"))) (target (node (document "memory://snapshot/trade_study_test.md") (qualified-name "TradeStudyTest::Engine"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/trade_study_test.md") (qualified-name "TradeStudyTest::engine2"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/trade_study_test.md") (anonymous (kind subject) (ordinal 0))))) (target (node (document "memory://snapshot/trade_study_test.md") (qualified-name "TradeStudyTest::Engine"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/trade_study_test.md") (anonymous (kind subject) (ordinal 0))))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/trade_study_test.md") (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/trade_study_test.md") (qualified-name "TradeStudyTest::Engine"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/trade_study_test.md") (anonymous (kind parameter) (ordinal 0))))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/trade_study_test.md") (anonymous (kind part) (ordinal 0))))) (target (node (document "memory://snapshot/trade_study_test.md") (qualified-name "TradeStudyTest::Engine"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/trade_study_test.md") (anonymous (kind part) (ordinal 0))))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
@@ -161,6 +164,10 @@ package TradeStudyTest {
     (reference (id (source (node (document "memory://snapshot/trade_study_test.md") (anonymous (kind subject) (ordinal 0))))) (kind featureTyping) (ordinal 0) (authored-target "Engine")
       (outcome (status resolved) (target (node (document "memory://snapshot/trade_study_test.md") (qualified-name "TradeStudyTest::Engine")))))
   )
+  (query (document "memory://snapshot/trade_study_test.md") (range (start 17 16) (end 17 22)) (probe (position 17 16))
+    (reference (id (source (node (document "memory://snapshot/trade_study_test.md") (anonymous (kind parameter) (ordinal 0))))) (kind featureTyping) (ordinal 0) (authored-target "Engine")
+      (outcome (status resolved) (target (node (document "memory://snapshot/trade_study_test.md") (qualified-name "TradeStudyTest::Engine")))))
+  )
   (query (document "memory://snapshot/trade_study_test.md") (range (start 12 11) (end 12 29)) (probe (position 12 11))
     (reference (id (source (node (document "memory://snapshot/trade_study_test.md") (anonymous (kind calc) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "evaluationFunction")
       (outcome (status unresolved)))
@@ -171,6 +178,10 @@ package TradeStudyTest {
   )
   (query (document "memory://snapshot/trade_study_test.md") (range (start 14 12) (end 14 16)) (probe (position 14 12))
     (reference (id (source (node (document "memory://snapshot/trade_study_test.md") (anonymous (kind parameter) (ordinal 0))))) (kind featureTyping) (ordinal 0) (authored-target "Real")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/trade_study_test.md") (range (start 10 14) (end 10 31)) (probe (position 10 14))
+    (reference (id (source (node (document "memory://snapshot/trade_study_test.md") (qualified-name "TradeStudyTest::engineTradeStudy::objective"))) (kind featureTyping) (ordinal 0) (authored-target "MaximizeObjective")
       (outcome (status unresolved)))
   )
 )

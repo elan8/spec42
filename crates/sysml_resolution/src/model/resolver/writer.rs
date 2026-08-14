@@ -857,6 +857,7 @@ fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::Flow => "flow",
         DeclarationKind::StakeholderUsage => "stakeholder",
         DeclarationKind::RequirementActor => "requirement-actor",
+        DeclarationKind::CaseActor => "case-actor",
         DeclarationKind::Frame => "frame",
         DeclarationKind::VerifyRequirement => "verify-requirement",
         DeclarationKind::KermlClassifier => "kerml-classifier",

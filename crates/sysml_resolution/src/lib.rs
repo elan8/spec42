@@ -1133,4 +1133,134 @@ mod tests {
             "expected the for-loop range `items` to resolve to its sibling action, got: {sexpr}"
         );
     }
+
+    /// `UseCaseDefBodyElement::ActorUsage` (`actor <name> : <Type>;`) was unconditionally
+    /// unsupported despite being a fully typed node (name, mandatory `type_name`, membership).
+    /// Wires it into the shared case-family body walker (`lower_actor_usage`), mirroring
+    /// `lower_requirement_actor_decl`'s shape.
+    #[test]
+    fn case_family_actor_usage_resolves() {
+        let sexpr = semantic_sexpr_for(
+            "package P { part def Person; use case def U { actor driver : Person; } }",
+        );
+        assert!(
+            sexpr.contains("(kind case-actor)"),
+            "expected a case-actor declaration for `driver`, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("unsupported_use_case_definition_member"),
+            "did not expect unsupported_use_case_definition_member, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("(status unresolved)"),
+            "expected `driver`'s `Person` type to resolve, got: {sexpr}"
+        );
+    }
+
+    /// `UseCaseDefBodyElement::Objective` (`objective { ... }`/`objective <name> : <Type> { ... }`)
+    /// wraps a fully typed `RequirementUsage` (`Objective::requirement`) but was unconditionally
+    /// unsupported. Wires it through the existing `lower_requirement_usage` pipeline, the same as
+    /// every other requirement-usage site.
+    #[test]
+    fn case_family_objective_lowers_as_requirement_usage() {
+        let sexpr =
+            semantic_sexpr_for("package P { analysis def A { objective obj { doc /* g */ } } }");
+        assert!(
+            sexpr.contains("(kind requirement)"),
+            "expected the objective's wrapped RequirementUsage to lower as a requirement, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("unsupported_analysis_case_definition_member"),
+            "did not expect unsupported_analysis_case_definition_member, got: {sexpr}"
+        );
+    }
+
+    /// `UseCaseDefBodyElement::CaseReturnDecl` (`return [part|attribute]? [:>>]? <name>?
+    /// [:|:>] <Type> [= expr];`) is a fully typed node (declared name, redefinition target, typed
+    /// or subsetting type reference, bound value) but was unconditionally unsupported. Wires it
+    /// (`lower_case_return_decl`), mirroring `lower_parameter_declaration`'s shape: a `:>>`
+    /// redefinition target lowers as an authored `Redefinition` reference, and a `:`-typed name
+    /// lowers as a `FeatureTyping` reference.
+    #[test]
+    fn case_return_decl_resolves_redefinition_and_type() {
+        let sexpr = semantic_sexpr_for(
+            "package P { part def Engine; part def selectedAlternative; analysis def A { return part :>> selectedAlternative : Engine; } }",
+        );
+        assert!(
+            sexpr.contains("(kind redefinition)"),
+            "expected a redefinition relationship for the `:>>` target, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("unsupported_analysis_case_definition_member"),
+            "did not expect unsupported_analysis_case_definition_member, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("(status unresolved)"),
+            "expected both the redefinition target and the `Engine` type to resolve, got: {sexpr}"
+        );
+    }
+
+    /// A bare `return <name> = <expr>;` (no type, no `part`/`attribute` keyword, no `:>>`) is the
+    /// anonymous-declared-name shape of `CaseReturnDecl`; its value expression should be lowered
+    /// through the same `classify_calc_expression`/`lower_calc_expression` pipeline `lower_return_
+    /// decl` (a calc's own `return`) uses.
+    #[test]
+    fn case_return_decl_value_expression_resolves() {
+        let sexpr = semantic_sexpr_for(
+            "package P { analysis def A { attribute source; return computed = source; } }",
+        );
+        assert!(
+            sexpr.contains("(kind parameter)"),
+            "expected an anonymous parameter declaration for the bare return, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("unsupported_analysis_case_definition_member"),
+            "did not expect unsupported_analysis_case_definition_member, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("(status unresolved)"),
+            "expected `source` to resolve as the return value's operand, got: {sexpr}"
+        );
+    }
+
+    /// `UseCaseDefBodyElement::Expression` (a bare result expression directly in an analysis/case
+    /// body, e.g. `vehicle.mass`) mirrors `CalcDefBodyElement::Expression`'s identical shape: it is
+    /// the enclosing declaration's own evaluated result, not a new nested declaration.
+    #[test]
+    fn case_family_bare_expression_resolves_as_own_result() {
+        let sexpr = semantic_sexpr_for(
+            "package P { part def Vehicle { attribute mass; } analysis def A { in vehicle : Vehicle; vehicle.mass } }",
+        );
+        assert!(
+            sexpr.contains("(kind memberAccessOperand)"),
+            "expected a memberAccessOperand reference for `vehicle.mass`, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("unsupported_analysis_case_definition_member"),
+            "did not expect unsupported_analysis_case_definition_member, got: {sexpr}"
+        );
+    }
+
+    /// `UseCaseDefBodyElement::Assign`/`ForLoop`/`ThenAction`/`FlowUsage` all already had working
+    /// `lower_*` functions shared with `ActionDefBodyElement`/`ActionUsageBodyElement`, but were
+    /// never dispatched from the case-family body walker. Wires all four through the same shared
+    /// functions.
+    #[test]
+    fn case_family_shares_action_body_statement_wiring() {
+        let sexpr = semantic_sexpr_for(
+            "package P { analysis def A { attribute x; for i in 1 { assign x := i; } } }",
+        );
+        assert!(
+            sexpr.contains("(kind for-loop)"),
+            "expected a for-loop declaration inside the analysis def body, got: {sexpr}"
+        );
+        assert!(
+            sexpr.contains("(kind assign)"),
+            "expected an assign declaration nested inside the for-loop body, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("unsupported_analysis_case_definition_member"),
+            "did not expect unsupported_analysis_case_definition_member, got: {sexpr}"
+        );
+    }
 }

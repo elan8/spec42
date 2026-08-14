@@ -15,25 +15,26 @@ use hashbrown::HashTable;
 use sysml_v2_parser_next::{
     ast::{
         ActionDef, ActionDefBody, ActionDefBodyElement, ActionUsage as ParserActionUsage,
-        ActionUsageBody, ActionUsageBodyElement, AliasBody, AliasDef, Allocate, AllocationDef,
-        AnalysisCaseDef, AnalysisCaseUsage as ParserAnalysisCaseUsage, AssertConstraintMember,
-        AssignStmt, AttributeBody, AttributeBodyElement, AttributeDef, AttributeUsage,
-        BinaryOperator, Bind, BindingConnectorUsage, CalcDef, CalcDefBody, CalcDefBodyElement,
-        CalcUsage as ParserCalcUsage, CaseDef, CaseUsage as ParserCaseUsage, ClassDef,
-        ConcernUsage as ParserConcernUsage, ConnectStmt, ConnectionDef, ConnectionDefBody,
-        ConnectionDefBodyElement, ConnectionEnd, ConnectionUsageMember as ParserConnectionUsage,
-        ConstraintDef, ConstraintDefBody, ConstraintDefBodyElement,
-        ConstraintUsage as ParserConstraintUsage, DefaultReferenceUsage, DefinitionBody,
-        DefinitionBodyElement, DefinitionPrefix, Dependency, DoAction, EndDecl, EndIdentity,
-        EntryAction, EnumDef, EnumerationBody, EnumerationUsage as ParserEnumerationUsage,
-        ExitAction, Expression, ExtendedDefinition, FeatureValue, FinalState, FirstMergeBody,
-        FirstMergeBodyElement, FirstStmt, FlowDef, FlowUsage, ForLoop, FrameMember, IfStmt, Import,
-        ImportShape, InOut, InOutDecl, IncludeUseCase, InterfaceDef, InterfaceDefBody,
-        InterfaceDefBodyElement, InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement,
-        ItemDef, ItemUsage as ParserItemUsage, KermlBindingMember, KermlClassifierDecl,
-        KermlConnectorEnd, KermlConnectorMember, KermlEndMember, KermlFeatureMember,
-        KermlInvariantMember, LibraryPackage, Membership, MembershipKind as ParserMembershipKind,
-        MetadataAnnotation, MetadataDef, MetadataUsage as ParserMetadataUsage, NamespaceDecl, Node,
+        ActionUsageBody, ActionUsageBodyElement, ActorUsage, AliasBody, AliasDef, Allocate,
+        AllocationDef, AnalysisCaseDef, AnalysisCaseUsage as ParserAnalysisCaseUsage,
+        AssertConstraintMember, AssignStmt, AttributeBody, AttributeBodyElement, AttributeDef,
+        AttributeUsage, BinaryOperator, Bind, BindingConnectorUsage, CalcDef, CalcDefBody,
+        CalcDefBodyElement, CalcUsage as ParserCalcUsage, CaseDef, CaseReturnDecl,
+        CaseUsage as ParserCaseUsage, ClassDef, ConcernUsage as ParserConcernUsage, ConnectStmt,
+        ConnectionDef, ConnectionDefBody, ConnectionDefBodyElement, ConnectionEnd,
+        ConnectionUsageMember as ParserConnectionUsage, ConstraintDef, ConstraintDefBody,
+        ConstraintDefBodyElement, ConstraintUsage as ParserConstraintUsage, DefaultReferenceUsage,
+        DefinitionBody, DefinitionBodyElement, DefinitionPrefix, Dependency, DoAction, EndDecl,
+        EndIdentity, EntryAction, EnumDef, EnumerationBody,
+        EnumerationUsage as ParserEnumerationUsage, ExitAction, Expression, ExtendedDefinition,
+        FeatureValue, FinalState, FirstMergeBody, FirstMergeBodyElement, FirstStmt, FlowDef,
+        FlowUsage, ForLoop, FrameMember, IfStmt, Import, ImportShape, InOut, InOutDecl,
+        IncludeUseCase, InterfaceDef, InterfaceDefBody, InterfaceDefBodyElement,
+        InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement, ItemDef,
+        ItemUsage as ParserItemUsage, KermlBindingMember, KermlClassifierDecl, KermlConnectorEnd,
+        KermlConnectorMember, KermlEndMember, KermlFeatureMember, KermlInvariantMember,
+        LibraryPackage, Membership, MembershipKind as ParserMembershipKind, MetadataAnnotation,
+        MetadataDef, MetadataUsage as ParserMetadataUsage, NamespaceDecl, Node,
         OccurrenceBodyElement, OccurrenceDef, OccurrenceUsage as ParserOccurrenceUsage,
         OccurrenceUsageBody, Package, PackageBody, PackageBodyElement, PartDef, PartDefBody,
         PartDefBodyElement, PartUsage, PartUsageBody, PartUsageBodyElement,
@@ -587,6 +588,16 @@ enum DeclarationKind {
     /// ActorUsage` (`ast::requirement::ActorUsage`), a different AST shape found only in case-family
     /// bodies, which is out of scope for this slice.
     RequirementActor,
+    /// An `actor` member found in a use-case-family (`use case`/`analysis`/`case`/`verification`)
+    /// def or usage body (BNF `ActorUsage`, `ast::requirement::ActorUsage`), e.g. `actor driver :
+    /// Person;` inside `use case def DriveVehicle`. Distinct from `RequirementActor`
+    /// (`RequirementActorDecl`), a different AST shape found only in requirement/concern bodies:
+    /// mirrors it structurally (ownership, membership, an unconditional `FeatureTyping` reference
+    /// to the declared type) but reads visibility off `ActorUsage::membership` (kind always
+    /// `ActorMembership`) rather than `RequirementActorDecl`'s own membership. The optional
+    /// trailing multiplicity (`actor passengers : Person[0..4];`) is not modeled as a distinct
+    /// fact, mirroring `lower_subject_decl`'s own out-of-scope multiplicity.
+    CaseActor,
     /// A named `frame` member found in a requirement def body (BNF `FrameMember`,
     /// `ast::requirement::FrameMember`), e.g. `frame concernFraming { stakeholder ...; }` -- a
     /// purely syntactic named grouping around further requirement-frame body content (subject/
@@ -4687,6 +4698,90 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
+    /// Lowers a case-family `return` declaration (BNF `CaseReturnDecl`) found in an analysis/
+    /// verification/use-case/case def or usage body, e.g. `return calculatedFuelEconomy :
+    /// DistancePerVolumeValue;`, `return part :>> selectedAlternative : Engine;`, `return
+    /// simulatedRange = vehicle.vehicleBehavior.output.distance;`, or the bare shorthand `return
+    /// :>> target;`. Mirrors `lower_parameter_declaration`'s shape (reusing the same
+    /// `DeclarationKind::ParameterUsage` -- a case return is itself an output-parameter-like
+    /// feature, same as a calc's own `ReturnDecl`): ownership, membership, a `FeatureTyping` (`:`)
+    /// or `Subsetting` (`:>`, `is_subsetting`) reference to the declared type, an authored
+    /// `Redefinition` reference for the `:>>`-shorthand `target` (mirrors `VerifyRequirementMember::
+    /// redefines`'s identical bare-`QualifiedReferenceId` handling), and a bound `=`/`:=` value
+    /// through the same `classify_calc_expression`/`lower_calc_expression` pipeline `lower_return_
+    /// decl` uses. `declaration_name` is empty for the common anonymous `return : Type = expr;`
+    /// form; `intern_declared_name` folds that to `None`. The `part`/`attribute` `feature_kind`
+    /// prefix and `multiplicity` are not modeled as distinct facts, mirroring `lower_parameter_
+    /// declaration`'s own out-of-scope fields.
+    fn lower_case_return_decl(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        family: UnsupportedFamily,
+        node: &Node<CaseReturnDecl>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declared_name(&node.value.declaration_name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::ParameterUsage,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span.clone(),
+        )?;
+        if let Some(type_name) = node.value.type_name {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(type_name)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span
+                .clone();
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: if node.value.is_subsetting {
+                    ReferenceKind::Subsetting
+                } else {
+                    ReferenceKind::FeatureTyping
+                },
+                document,
+                local: type_name,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
+        if let Some(target) = node.value.target {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(target)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span
+                .clone();
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::Redefinition,
+                document,
+                local: target,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
+        if let Some(feature_value) = &node.value.value {
+            let expression = feature_value.value.expression.clone();
+            self.push_evaluation_fact(declaration, classify_calc_expression(&expression.value));
+            self.lower_calc_expression(document, declaration, family, &expression)?;
+        }
+        Ok(())
+    }
+
     /// Lowers a `subject` declaration (BNF `SubjectDecl`) found in a requirement/concern/case-
     /// family def or usage body, e.g. `subject vehicle : Vehicle;`, mirroring
     /// `lower_parameter_declaration`'s shape: ownership, membership, and (when a type is present)
@@ -4860,6 +4955,55 @@ impl SemanticModelBuilder {
             MembershipKind::Feature,
             Visibility::Default,
             node.span.clone(),
+        )?;
+        let type_name = node.value.type_name;
+        let span = self.documents[document.index()]
+            .parsed
+            .qualified_reference(type_name)
+            .ok_or(ConstructionError::InvalidParserReference)?
+            .metadata
+            .span
+            .clone();
+        self.push_reference(PendingReference {
+            source: declaration,
+            kind: ReferenceKind::FeatureTyping,
+            document,
+            local: type_name,
+            flags: RelationshipFlags::default(),
+            span,
+            import: None,
+        })?;
+        Ok(())
+    }
+
+    /// Lowers an `actor` member found in a use-case-family def/usage body (BNF `ActorUsage`,
+    /// e.g. `actor driver : Person;`, `actor passengers : Person[0..4];`), mirroring
+    /// `lower_requirement_actor_decl`'s shape (ownership, membership, an unconditional
+    /// `FeatureTyping` reference to the declared type) but reading visibility off `ActorUsage::
+    /// membership` (kind `ActorMembership`) instead. The optional trailing multiplicity is not
+    /// modeled as a distinct fact, mirroring `lower_subject_decl`'s own out-of-scope multiplicity.
+    fn lower_actor_usage(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        node: &Node<ActorUsage>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declared_name(&node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::CaseActor,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::ActorMembership,
+            )?,
+            node.value.membership.span.clone(),
         )?;
         let type_name = node.value.type_name;
         let span = self.documents[document.index()]
@@ -8375,23 +8519,65 @@ impl SemanticModelBuilder {
                 // SubjectRef` handling in `lower_requirement_shaped_body` -- an entirely empty AST
                 // node with nothing to lower, recognized and silently ignored.
                 UseCaseDefBodyElement::SubjectRef(_) => {}
+                UseCaseDefBodyElement::ActorUsage(node) => {
+                    self.lower_actor_usage(document, owner, node)?;
+                }
+                // `objective { ... }`/`objective <name> [: Type] { ... }` wraps a fully typed
+                // `RequirementUsage` (`Objective::requirement`) -- lower it through the exact same
+                // `lower_requirement_usage` pipeline every other requirement-usage site uses.
+                // `Objective::visibility` (an outer `private`/`protected`/`public` prefix consumed
+                // separately by the parser, before the wrapped `RequirementUsage`'s own membership)
+                // is not threaded through; the nested node's own membership visibility is used as
+                // authored, mirroring other case-family wrapper nodes' out-of-scope facts.
+                UseCaseDefBodyElement::Objective(node) => {
+                    self.lower_requirement_usage(document, Some(owner), &node.value.requirement)?;
+                }
+                UseCaseDefBodyElement::CaseReturnDecl(node) => {
+                    self.lower_case_return_decl(document, owner, unsupported, node)?;
+                }
+                UseCaseDefBodyElement::Assign(node) => {
+                    self.lower_assign_stmt(
+                        document,
+                        owner,
+                        unsupported,
+                        node.span.clone(),
+                        &node.value,
+                    )?;
+                }
+                UseCaseDefBodyElement::ForLoop(node) => {
+                    self.lower_for_loop(
+                        document,
+                        owner,
+                        unsupported,
+                        node.span.clone(),
+                        &node.value,
+                    )?;
+                }
+                UseCaseDefBodyElement::ThenAction(node) => {
+                    self.lower_then_action(document, owner, unsupported, node)?;
+                }
+                UseCaseDefBodyElement::FlowUsage(node) => {
+                    self.lower_flow_usage(document, owner, unsupported, node)?;
+                }
+                // Bare result expression in an analysis/case body (validation `10a`: `vehicle.
+                // mass`) -- mirrors `CalcDefBodyElement::Expression`'s identical shape: the
+                // expression is the enclosing case-family declaration's own evaluated result, not
+                // a new nested declaration, so it is classified/lowered directly at `owner` through
+                // the same `classify_calc_expression`/`lower_calc_expression` pipeline a calc def's
+                // bare body expression uses.
+                UseCaseDefBodyElement::Expression(expression) => {
+                    self.push_evaluation_fact(owner, classify_calc_expression(&expression.value));
+                    self.lower_calc_expression(document, owner, unsupported, expression)?;
+                }
                 UseCaseDefBodyElement::Other(_)
                 | UseCaseDefBodyElement::Annotation(_)
                 | UseCaseDefBodyElement::MetadataKeywordUsage(_)
-                | UseCaseDefBodyElement::ActorUsage(_)
                 | UseCaseDefBodyElement::ActorRedefinitionAssignment(_)
-                | UseCaseDefBodyElement::Objective(_)
                 | UseCaseDefBodyElement::FirstSuccession(_)
                 | UseCaseDefBodyElement::ThenUseCaseUsage(_)
                 | UseCaseDefBodyElement::ThenDone(_)
                 | UseCaseDefBodyElement::RefRedefinition(_)
-                | UseCaseDefBodyElement::ReturnRef(_)
-                | UseCaseDefBodyElement::CaseReturnDecl(_)
-                | UseCaseDefBodyElement::Assign(_)
-                | UseCaseDefBodyElement::ForLoop(_)
-                | UseCaseDefBodyElement::ThenAction(_)
-                | UseCaseDefBodyElement::Expression(_)
-                | UseCaseDefBodyElement::FlowUsage(_) => {
+                | UseCaseDefBodyElement::ReturnRef(_) => {
                     self.push_unsupported(document, unsupported, element.span.clone())
                 }
             }
