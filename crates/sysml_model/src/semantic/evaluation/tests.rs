@@ -83,6 +83,8 @@ fn add_feature_with_identity(
             }),
             ..Default::default()
         },
+        source_text: Default::default(),
+        expression_text: Default::default(),
         parent_id: None,
     };
     let index = graph.graph.add_node(node);
@@ -262,6 +264,8 @@ fn publishes_analysis_for_a_constraint_usage_with_an_own_expression() {
             own_expression: Some(reference("missing")),
             ..Default::default()
         },
+        source_text: Default::default(),
+        expression_text: Default::default(),
         parent_id: None,
     };
     let index = graph.graph.add_node(node);
@@ -361,7 +365,7 @@ fn parser_backed_resolution_prefers_nearest_lexical_scope() {
         .to_string(),
         path_hint: None,
         source_kind: SysmlDocumentSourceKind::Workspace,
-        sha256: None,
+        content_digest: None,
         byte_size: None,
     };
     let (graph, _) = build_and_link_graph(&[document]).expect("graph");

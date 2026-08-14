@@ -4,8 +4,7 @@ use sysml_v2_parser::ast::{InterfaceDefBody, PartDefBody, PartDefBodyElement};
 use url::Url;
 
 use crate::semantic::ast_util::{
-    attach_short_name_attribute, definition_feature_properties, identification_name, span_to_range,
-    typing_targets,
+    definition_feature_properties, identification_name, span_to_range, typing_targets,
 };
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{DeclaredFeatureProperties, NodeId, RelationshipKind};
@@ -38,19 +37,11 @@ pub(super) fn build_from_part_def_body_element(
             let qualified =
                 qualified_name_for_node(g, uri, container_prefix, name, "attribute def");
             let range = span_to_range(&n.span);
-            let mut attrs = HashMap::new();
+            let attrs = HashMap::new();
             g.register_declared_membership_facts(
                 NodeId::new(uri, &qualified),
                 crate::semantic::ast_util::declared_membership_facts(&n.membership),
             );
-            if let Some(ref t) = n.typing {
-                attrs.insert("attributeType".to_string(), serde_json::json!(t));
-            }
-            if let Some(ref v) = n.value.value {
-                let rendered = expressions::expression_to_debug_string(&v.value.expression);
-                attrs.insert("value".to_string(), serde_json::json!(rendered));
-                attrs.insert("defaultValue".to_string(), serde_json::json!(rendered));
-            }
             add_node_and_recurse(
                 g,
                 uri,
@@ -62,6 +53,13 @@ pub(super) fn build_from_part_def_body_element(
                 Some(parent_id),
             );
             let node_id = NodeId::new(uri, &qualified);
+            if let Some(ref v) = n.value.value {
+                let rendered = expressions::expression_to_debug_string(&v.value.expression);
+                if let Some(node) = g.get_node_mut(&node_id) {
+                    node.expression_text.value = Some(rendered.clone());
+                    node.expression_text.default_value = Some(rendered);
+                }
+            }
             attach_declared_typing_relationship(g, &node_id, n.typing.as_deref());
             attach_feature_properties(
                 g,
@@ -84,10 +82,7 @@ pub(super) fn build_from_part_def_body_element(
             let qualified =
                 qualified_name_for_node(g, uri, container_prefix, &es.name, "exhibit state");
             let range = span_to_range(&es_node.span);
-            let mut attrs = HashMap::new();
-            if let Some(ref state_type) = es.type_name {
-                attrs.insert("stateType".to_string(), serde_json::json!(state_type));
-            }
+            let attrs = HashMap::new();
             add_node_and_recurse(
                 g,
                 uri,
@@ -118,7 +113,11 @@ pub(super) fn build_from_part_def_body_element(
             );
             let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "part def");
             let range = span_to_range(&pd_node.span);
-            attach_short_name_attribute(&mut attrs, &pd_node.identification);
+            if let Some(short_name) =
+                crate::semantic::ast_util::declared_short_name(&pd_node.identification)
+            {
+                g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
+            }
             g.register_declared_membership_facts(
                 NodeId::new(uri, &qualified),
                 crate::semantic::ast_util::declared_membership_facts(&pd_node.membership),
@@ -131,9 +130,6 @@ pub(super) fn build_from_part_def_body_element(
                         sysml_v2_parser::ast::DefinitionPrefix::Variation => "variation",
                     }),
                 );
-            }
-            if let Some(ref s) = pd_node.specializes {
-                attrs.insert("specializes".to_string(), serde_json::json!(s));
             }
             add_node_and_recurse(
                 g,
@@ -183,14 +179,15 @@ pub(super) fn build_from_part_def_body_element(
                 &mut attrs,
             );
             let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "item def");
-            attach_short_name_attribute(&mut attrs, &item_node.identification);
+            if let Some(short_name) =
+                crate::semantic::ast_util::declared_short_name(&item_node.identification)
+            {
+                g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
+            }
             g.register_declared_membership_facts(
                 NodeId::new(uri, &qualified),
                 crate::semantic::ast_util::declared_membership_facts(&item_node.membership),
             );
-            if let Some(ref s) = item_node.specializes {
-                attrs.insert("specializes".to_string(), serde_json::json!(s));
-            }
             add_node_and_recurse(
                 g,
                 uri,
@@ -289,8 +286,12 @@ pub(super) fn build_from_part_def_body_element(
             let qualified =
                 qualified_name_for_node(g, uri, container_prefix, &name, "interface def");
             let range = span_to_range(&id_node.span);
-            let mut attrs = HashMap::new();
-            attach_short_name_attribute(&mut attrs, &id_node.identification);
+            let attrs = HashMap::new();
+            if let Some(short_name) =
+                crate::semantic::ast_util::declared_short_name(&id_node.identification)
+            {
+                g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
+            }
             g.register_declared_membership_facts(
                 NodeId::new(uri, &qualified),
                 crate::semantic::ast_util::declared_membership_facts(&id_node.membership),
@@ -501,9 +502,6 @@ pub(super) fn build_from_part_def_body_element(
                 NodeId::new(uri, &qualified),
                 crate::semantic::ast_util::declared_membership_facts(&enum_node.membership),
             );
-            if let Some(ref t) = enum_node.type_name {
-                attrs.insert("enumerationType".to_string(), serde_json::json!(t));
-            }
             if let Some(ref m) = enum_node.multiplicity {
                 attrs.insert("multiplicity".to_string(), serde_json::json!(m));
             }
@@ -538,9 +536,7 @@ pub(super) fn build_from_part_def_body_element(
             };
             let qualified =
                 qualified_name_for_node(g, uri, container_prefix, &name, "opaque member");
-            let mut attrs = HashMap::new();
-            attrs.insert("keyword".to_string(), serde_json::json!(opaque.keyword));
-            attrs.insert("text".to_string(), serde_json::json!(opaque.text));
+            let attrs = HashMap::new();
             add_node_and_recurse(
                 g,
                 uri,
@@ -552,6 +548,10 @@ pub(super) fn build_from_part_def_body_element(
                 Some(parent_id),
             );
             let node_id = NodeId::new(uri, &qualified);
+            if let Some(node) = g.get_node_mut(&node_id) {
+                node.source_text.keyword = Some(opaque.keyword.to_string());
+                node.source_text.text = Some(opaque.text.to_string());
+            }
             attribute_body::build_from_attribute_body(
                 &opaque.body,
                 uri,

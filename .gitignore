@@ -19,3 +19,6 @@ third_party/
 crates/kernel/tests/output/*
 perf.data
 __pycache__/
+
+# Agent worktrees created by Claude Code
+.claude/worktrees/

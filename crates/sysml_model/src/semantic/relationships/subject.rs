@@ -58,7 +58,10 @@ pub fn add_subject_relationship_to_declared_type_if_resolved(
                 g,
                 case_node_id,
                 &target_id,
-                SemanticEdge::plain(RelationshipKind::Subject),
+                SemanticEdge::plain(
+                    RelationshipKind::Subject,
+                    ConstructionOwner::DocumentConstruction,
+                ),
             );
             return;
         }
@@ -81,7 +84,10 @@ pub fn add_subject_relationship_to_declared_type_if_resolved(
         g,
         case_node_id,
         &target_id,
-        SemanticEdge::plain(RelationshipKind::Subject),
+        SemanticEdge::plain(
+            RelationshipKind::Subject,
+            ConstructionOwner::DocumentConstruction,
+        ),
     );
 }
 
@@ -178,7 +184,10 @@ pub(crate) fn link_case_subject_relationships(g: &mut SemanticGraph) {
                 g,
                 &node_id,
                 &target_id,
-                SemanticEdge::plain(RelationshipKind::Subject),
+                SemanticEdge::plain(
+                    RelationshipKind::Subject,
+                    ConstructionOwner::DocumentConstruction,
+                ),
             );
         }
     }

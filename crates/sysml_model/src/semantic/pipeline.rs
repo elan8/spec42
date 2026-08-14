@@ -6,12 +6,17 @@ use std::time::Instant;
 use rayon::prelude::*;
 use url::Url;
 
+use source_identity::{
+    ContentDigest, RootDigest, SourceManifestBuilder, SourceManifestEntry, SourceRole,
+};
+
 use crate::semantic::analysis_typing::prepare_analysis_evaluation_context;
 use crate::semantic::evaluation::evaluate_expressions;
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::graph_builder::{build_graph_from_doc, build_structural_graph_from_doc};
 use crate::semantic::library_loader::declared_packages_from_parsed;
-use crate::semantic::model::SemanticEdge;
+use crate::semantic::model::{ConstructionOwner, SemanticEdge};
+use crate::semantic::publication::{SemanticCompleteness, SemanticPhase, SemanticPublication};
 use crate::semantic::relationships::{
     add_cross_document_edges_for_uri, add_semantic_edge_once, link_workspace_derivations,
     link_workspace_relationships, rebuild_static_dependency_index, refresh_relationship_frontier,
@@ -20,6 +25,54 @@ use crate::semantic::relationships::{
 };
 use crate::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
 use crate::semantic::workspace_graph::WorkspaceParsedDocument;
+
+/// Maps a document's source kind to the [`SourceRole`] committed into its
+/// [`SourceManifestEntry`] for the graph's own [`SemanticPublication::root_digest`].
+fn source_role_for(kind: SysmlDocumentSourceKind) -> SourceRole {
+    match kind {
+        SysmlDocumentSourceKind::Workspace => SourceRole::Workspace,
+        SysmlDocumentSourceKind::StandardLibrary => SourceRole::StandardLibrary,
+        SysmlDocumentSourceKind::Library => SourceRole::Library,
+        SysmlDocumentSourceKind::External => SourceRole::External,
+    }
+}
+
+/// Builds a [`SourceManifestEntry`] for `document`, using its real
+/// [`SysmlDocument::content_digest`] when the provider computed one, or hashing the exact same
+/// content bytes otherwise (never a placeholder) -- see [`SysmlDocument::content_digest`]'s doc
+/// comment for why a provider without a discrete backing buffer may leave it `None`.
+///
+/// Entries are pushed as workspace (non-root-scoped) entries regardless of source kind: the
+/// pipeline layer building this manifest does not know configured library-root precedence
+/// (`ROUNDTRIP_SEMGRAPH_PREREQS.md` B3's job, owned by the workspace layer that supplies library
+/// roots). The digest is still real, deterministic, and sensitive to every admitted source byte
+/// and role, satisfying B4's requirement that the root digest changes when a source byte changes
+/// or a source is reclassified -- B3's root-slot precedence remains a separate, additive
+/// refinement layered on top by the owning caller.
+fn manifest_entry_for(document: &SysmlDocument) -> SourceManifestEntry {
+    let content_digest = document
+        .content_digest
+        .unwrap_or_else(|| ContentDigest::of_bytes(document.content.as_bytes()));
+    SourceManifestEntry {
+        uri: document.uri.to_string(),
+        path_hint: document.path_hint.clone(),
+        role: source_role_for(document.source_kind),
+        content_digest,
+        byte_len: document.content.len() as u64,
+        library_root_slot: None,
+        relative_path: None,
+    }
+}
+
+/// Computes the [`RootDigest`] that identifies exactly `documents`' content, roles, and URIs
+/// (`ROUNDTRIP_SEMGRAPH_PREREQS.md` B4: "which exact source root produced it").
+fn root_digest_for(documents: &[SysmlDocument]) -> RootDigest {
+    let mut builder = SourceManifestBuilder::new();
+    for document in documents {
+        builder.push_workspace_entry(manifest_entry_for(document));
+    }
+    builder.build().root_digest()
+}
 
 /// A parsed document paired with the source kind (workspace/library/external) needed to
 /// decide how it merges â€” see [`link_parsed_documents_parallel`].
@@ -48,6 +101,11 @@ pub fn build_and_link_graph(
     documents: &[SysmlDocument],
 ) -> Result<(SemanticGraph, Vec<WorkspaceParsedDocument>), String> {
     let mut graph = SemanticGraph::new();
+    graph.set_source_origins(
+        documents
+            .iter()
+            .map(|document| (document.uri.clone(), source_role_for(document.source_kind))),
+    );
     graph.set_standard_library_uris(
         documents
             .iter()
@@ -75,10 +133,13 @@ pub fn build_and_link_graph(
     }
 
     let mut workspace_packages = HashSet::new();
+    let mut had_recovery = false;
 
     for document in workspace_docs {
         let parse_start = Instant::now();
-        let parsed = sysml_v2_parser::parse_for_editor(&document.content).root;
+        let result = sysml_v2_parser::parse_for_editor(&document.content);
+        had_recovery |= !result.is_ok();
+        let parsed = result.root;
         workspace_packages.extend(declared_packages_from_parsed(&parsed));
         let parse_time_ms = parse_start.elapsed().as_millis().max(1) as u32;
         let doc_graph = build_graph_from_doc(&parsed, &document.uri);
@@ -96,7 +157,9 @@ pub fn build_and_link_graph(
 
     for document in library_docs {
         let parse_start = Instant::now();
-        let parsed = sysml_v2_parser::parse_for_editor(&document.content).root;
+        let result = sysml_v2_parser::parse_for_editor(&document.content);
+        had_recovery |= !result.is_ok();
+        let parsed = result.root;
         let parse_time_ms = parse_start.elapsed().as_millis().max(1) as u32;
         let doc_graph = build_graph_from_doc(&parsed, &document.uri);
         graph.merge_skip_existing_qualified_names(doc_graph, &workspace_packages);
@@ -109,22 +172,37 @@ pub fn build_and_link_graph(
         });
     }
 
+    let completeness = if had_recovery {
+        SemanticCompleteness::EditorRecovery
+    } else {
+        SemanticCompleteness::Complete
+    };
+    graph.publication = SemanticPublication::new(root_digest_for(documents), completeness);
+
     finalize_and_evaluate(&mut graph);
 
     Ok((graph, parsed_docs))
 }
 
-fn parse_document(document: &SysmlDocument) -> WorkspaceParsedDocument {
+/// Parses `document`, returning the [`WorkspaceParsedDocument`] plus whether parsing required
+/// editor recovery (non-empty parse diagnostics) -- the per-document input to
+/// [`build_and_link_graph_parallel`]'s overall [`SemanticCompleteness`].
+fn parse_document(document: &SysmlDocument) -> (WorkspaceParsedDocument, bool) {
     let parse_start = Instant::now();
-    let parsed = sysml_v2_parser::parse_for_editor(&document.content).root;
+    let result = sysml_v2_parser::parse_for_editor(&document.content);
+    let had_recovery = !result.is_ok();
+    let parsed = result.root;
     let parse_time_ms = parse_start.elapsed().as_millis().max(1) as u32;
-    WorkspaceParsedDocument {
-        uri: document.uri.clone(),
-        content: document.content.clone(),
-        parsed,
-        parse_time_ms,
-        parse_cached: false,
-    }
+    (
+        WorkspaceParsedDocument {
+            uri: document.uri.clone(),
+            content: document.content.clone(),
+            parsed,
+            parse_time_ms,
+            parse_cached: false,
+        },
+        had_recovery,
+    )
 }
 
 /// Build only the stable authored graph used as input to the canonical publication resolver.
@@ -139,15 +217,15 @@ pub(crate) fn build_structural_graph(
 ) -> (
     SemanticGraph,
     Vec<WorkspaceParsedDocument>,
-    crate::semantic::publication::SemanticCompleteness,
+    crate::semantic::publication::SemanticModelCompleteness,
 ) {
     let completeness = if documents
         .iter()
         .any(|document| !sysml_v2_parser::parse_for_editor(&document.content).is_ok())
     {
-        crate::semantic::publication::SemanticCompleteness::EditorRecovery
+        crate::semantic::publication::SemanticModelCompleteness::EditorRecovery
     } else {
-        crate::semantic::publication::SemanticCompleteness::Complete
+        crate::semantic::publication::SemanticModelCompleteness::Complete
     };
     let (graph, parsed) = match strategy {
         crate::semantic::publication::ConstructionStrategy::Sequential => {
@@ -191,7 +269,7 @@ fn build_structural_graph_sequential(
     }
     let mut workspace_packages = HashSet::new();
     for document in workspace_docs {
-        let entry = parse_document(document);
+        let (entry, _) = parse_document(document);
         workspace_packages.extend(declared_packages_from_parsed(&entry.parsed));
         let doc_graph = build_structural_graph_from_doc(&entry.parsed, &entry.uri);
         graph.merge(doc_graph);
@@ -199,7 +277,7 @@ fn build_structural_graph_sequential(
     }
     let workspace_packages = most_specific_packages(workspace_packages);
     for document in library_docs {
-        let entry = parse_document(document);
+        let (entry, _) = parse_document(document);
         let doc_graph = build_structural_graph_from_doc(&entry.parsed, &entry.uri);
         graph.merge_skip_existing_qualified_names(doc_graph, &workspace_packages);
         parsed_docs.push(entry);
@@ -213,7 +291,7 @@ fn build_structural_graph_parallel(
 ) -> (SemanticGraph, Vec<WorkspaceParsedDocument>) {
     let entries: Vec<SourceTaggedDocument> = documents
         .par_iter()
-        .map(|document| (document.source_kind, parse_document(document)))
+        .map(|document| (document.source_kind, parse_document(document).0))
         .collect();
     let (workspace_entries, library_entries): (
         Vec<SourceTaggedDocument>,
@@ -278,11 +356,26 @@ fn build_structural_graph_parallel(
 pub fn build_and_link_graph_parallel(
     documents: &[SysmlDocument],
 ) -> (SemanticGraph, Vec<WorkspaceParsedDocument>) {
-    let entries: Vec<SourceTaggedDocument> = documents
+    let parsed: Vec<(SysmlDocumentSourceKind, WorkspaceParsedDocument, bool)> = documents
         .par_iter()
-        .map(|document| (document.source_kind, parse_document(document)))
+        .map(|document| {
+            let (parsed_doc, had_recovery) = parse_document(document);
+            (document.source_kind, parsed_doc, had_recovery)
+        })
         .collect();
-    link_parsed_documents_parallel(entries, true)
+    let completeness = if parsed.iter().any(|(_, _, had_recovery)| *had_recovery) {
+        SemanticCompleteness::EditorRecovery
+    } else {
+        SemanticCompleteness::Complete
+    };
+    let entries: Vec<SourceTaggedDocument> = parsed
+        .into_iter()
+        .map(|(kind, doc, _)| (kind, doc))
+        .collect();
+
+    let mut base_graph = SemanticGraph::new();
+    base_graph.publication = SemanticPublication::new(root_digest_for(documents), completeness);
+    link_parsed_documents_parallel_from(base_graph, entries, true)
 }
 
 /// Merges and links already-parsed documents in parallel â€” the merge/link half of
@@ -335,6 +428,12 @@ pub fn link_parsed_documents_parallel_from(
 
     let mut uris: Vec<Url> = base_graph.all_uris();
     let mut graph = base_graph;
+    graph.set_source_origins(
+        workspace_entries
+            .iter()
+            .chain(library_entries.iter())
+            .map(|(kind, entry)| (entry.uri.clone(), source_role_for(*kind))),
+    );
     graph.add_standard_library_uris(
         library_entries
             .iter()
@@ -390,7 +489,12 @@ pub fn link_parsed_documents_parallel_from(
         // for a same-document reference, `build_graph_from_doc` may already have wired the
         // identical edge. Use `add_semantic_edge_once` (not a raw `add_edge`) so this phase
         // dedupes the same way `link_workspace_relationships`'s per-node loop does.
-        add_semantic_edge_once(&mut graph, &src_id, &tgt_id, SemanticEdge::plain(kind));
+        add_semantic_edge_once(
+            &mut graph,
+            &src_id,
+            &tgt_id,
+            SemanticEdge::plain(kind, ConstructionOwner::DocumentConstruction),
+        );
     }
     graph.invalidate_query_indexes();
 
@@ -399,8 +503,21 @@ pub fn link_parsed_documents_parallel_from(
     resolve_workspace_pending_relationships(&mut graph);
     graph.refresh_universal_standard_library_relationships();
     graph.refresh_effective_facts();
+    // Structural linking, effective-fact construction, and pending-relationship resolution have
+    // now crossed their barrier -- see `SemanticPhase::StructurallyLinked`'s doc comment. This
+    // must happen even when `evaluate` is `false`, so a caller that deliberately stops here
+    // (e.g. a fast structural-only relink) observes the phase it actually reached, not `Parsed`.
+    graph
+        .publication
+        .advance_phase(SemanticPhase::StructurallyLinked);
     if evaluate {
         evaluate_expressions(&mut graph);
+        // `evaluate_expressions` is the same barrier that sets `evaluation_publication` to
+        // `Complete` -- advancing here keeps the two in lockstep (see `SemanticGraph::publication`'s
+        // doc comment).
+        graph
+            .publication
+            .advance_phase(SemanticPhase::SettledEvaluated);
     }
     graph.invalidate_query_indexes();
     // See the matching comment in `finalize_and_evaluate` â€” this path resolves cross-document
@@ -418,6 +535,9 @@ pub fn link_parsed_documents_parallel_from(
 /// `finalize_and_evaluate`'s evaluation half.
 pub fn evaluate_workspace_graph(graph: &mut SemanticGraph) {
     evaluate_expressions(graph);
+    graph
+        .publication
+        .advance_phase(SemanticPhase::SettledEvaluated);
     graph.invalidate_query_indexes();
 }
 
@@ -432,6 +552,11 @@ pub fn finalize_workspace_graph(graph: &mut SemanticGraph) {
     resolve_workspace_pending_relationships(graph);
     graph.refresh_universal_standard_library_relationships();
     graph.refresh_effective_facts();
+    // Structural linking, effective-fact construction, and pending-relationship resolution have
+    // crossed their barrier -- see `SemanticPhase::StructurallyLinked`'s doc comment.
+    graph
+        .publication
+        .advance_phase(SemanticPhase::StructurallyLinked);
     // Edge additions above go via graph.graph.add_edge() directly, bypassing
     // insert_workspace_edge. Invalidate here so the first post-finalization query
     // builds the edge index with all edges present.
@@ -447,6 +572,12 @@ pub fn finalize_workspace_graph(graph: &mut SemanticGraph) {
 pub fn finalize_and_evaluate(graph: &mut SemanticGraph) {
     finalize_workspace_graph(graph);
     evaluate_expressions(graph);
+    // `evaluate_expressions` is the same barrier that sets `evaluation_publication` to
+    // `Complete` -- advancing here keeps the two in lockstep (see `SemanticGraph::publication`'s
+    // doc comment).
+    graph
+        .publication
+        .advance_phase(SemanticPhase::SettledEvaluated);
     graph.invalidate_query_indexes();
     // Whole-graph relink doesn't go through `add_cross_document_edges_for_uri`'s incremental
     // index maintenance, so rebuild the relationship-frontier index from scratch here. Cheap
@@ -502,8 +633,19 @@ pub fn finalize_and_evaluate_frontier(graph: &mut SemanticGraph, changed_uri: &U
     resolve_workspace_pending_relationships(graph);
     graph.refresh_universal_standard_library_relationships();
     graph.refresh_effective_facts();
+    // Structural linking has crossed its barrier for the affected frontier -- see
+    // `SemanticPhase::StructurallyLinked`'s doc comment.
+    graph
+        .publication
+        .advance_phase(SemanticPhase::StructurallyLinked);
     graph.invalidate_query_indexes();
     evaluate_expressions(graph);
+    // `evaluate_expressions` is the same barrier that sets `evaluation_publication` to
+    // `Complete` -- advancing here keeps the two in lockstep (see `SemanticGraph::publication`'s
+    // doc comment).
+    graph
+        .publication
+        .advance_phase(SemanticPhase::SettledEvaluated);
     graph.invalidate_query_indexes();
 }
 

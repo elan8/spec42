@@ -42,7 +42,10 @@ pub(crate) fn try_wire_derivation_connection(
         g,
         &original_id,
         &derived_id,
-        SemanticEdge::plain(RelationshipKind::Derivation),
+        SemanticEdge::plain(
+            RelationshipKind::Derivation,
+            ConstructionOwner::DerivationLinking,
+        ),
     );
     if let Some(connection) = g.get_node_mut(connection_node_id) {
         connection.attributes.insert(
@@ -74,7 +77,7 @@ fn resolve_derivation_end_target(
     {
         return Some(target.id.clone());
     }
-    let type_ref = end.attributes.get("endType")?.as_str()?;
+    let type_ref = end.declared_facts.declared_end_reference()?;
     match resolve_expression_endpoint_strict(g, uri, container_prefix, type_ref) {
         ResolveResult::Resolved(id) => Some(id),
         ResolveResult::Ambiguous | ResolveResult::Unresolved => {

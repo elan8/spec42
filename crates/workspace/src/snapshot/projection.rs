@@ -60,6 +60,7 @@ pub enum HostRelationshipProvenance {
 pub enum HostImpliedRelationshipRule {
     UniversalStandardLibraryRelationship,
     EnumerationValueTyping,
+    MetadataRedefinitionEntailsSubsetting,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
@@ -100,7 +101,7 @@ pub struct HostElementFacts {
     /// Documentation comment text lifted from the legacy `doc` attribute.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub documentation: Option<String>,
-    /// Declared short name lifted from the legacy `shortName` attribute.
+    /// Declared short name lifted from `DeclaredSemanticFacts::short_name`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub declared_short_name: Option<String>,
     /// Normative Systems Modeling API `@type` for this element when it differs from

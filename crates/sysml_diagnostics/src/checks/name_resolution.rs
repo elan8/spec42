@@ -157,9 +157,9 @@ fn collect_duplicate_namespace_members(
                 .or_default()
                 .push(child);
             if let Some(short_name) = child
-                .attributes
-                .get("shortName")
-                .and_then(serde_json::Value::as_str)
+                .declared_facts
+                .short_name
+                .as_deref()
                 .filter(|short_name| !short_name.trim().is_empty() && *short_name != child.name)
             {
                 members_by_identifier

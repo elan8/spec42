@@ -12,13 +12,9 @@ use sysml_v2_parser::Node;
 use url::Url;
 
 use super::requirement_body::{import_member_label, walk_requirement_def_body};
-use super::{
-    add_node_and_recurse, insert_def_specialization_attr, qualified_name_for_node,
-    wire_def_specialization_edge,
-};
+use super::{add_node_and_recurse, qualified_name_for_node, wire_def_specialization_edge};
 use crate::semantic::ast_util::{
-    attach_short_name_attribute, declared_expression, identification_name, span_to_range,
-    subsetting_target,
+    declared_expression, identification_name, span_to_range, subsetting_target,
 };
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::graph_builder::expressions;
@@ -40,12 +36,6 @@ pub(super) fn add_view_filter_node(
         "filter",
     );
     let mut attrs = HashMap::new();
-    attrs.insert(
-        "condition".to_string(),
-        serde_json::json!(expressions::expression_to_debug_string(
-            &filter.value.condition
-        )),
-    );
     attrs.insert(
         "conditionIsBoolean".to_string(),
         serde_json::json!(expressions::expression_is_boolean_valued(
@@ -73,6 +63,9 @@ pub(super) fn add_view_filter_node(
     let node_id = NodeId::new(uri, &qualified);
     if let Some(node) = g.get_node_mut(&node_id) {
         node.declared_facts.own_expression = Some(declared_expression(&filter.value.condition));
+        node.expression_text.condition = Some(expressions::expression_to_debug_string(
+            &filter.value.condition,
+        ));
     }
 }
 
@@ -194,9 +187,6 @@ fn add_view_column_node(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&cv.membership),
     );
-    if let Some(redefines) = redefines_name {
-        attrs.insert("redefines".to_string(), serde_json::json!(redefines));
-    }
     if let Some(ref multiplicity) = cv.multiplicity {
         attrs.insert("multiplicity".to_string(), serde_json::json!(multiplicity));
     }
@@ -355,13 +345,16 @@ pub(super) fn build_view_def(
     let name = identification_name(&vd_node.value.identification);
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "view def");
     let range = span_to_range(&vd_node.span);
-    let mut attrs = HashMap::new();
-    attach_short_name_attribute(&mut attrs, &vd_node.value.identification);
+    let attrs = HashMap::new();
+    if let Some(short_name) =
+        crate::semantic::ast_util::declared_short_name(&vd_node.value.identification)
+    {
+        g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
+    }
     g.register_declared_membership_facts(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&vd_node.value.membership),
     );
-    insert_def_specialization_attr(&mut attrs, vd_node.value.specializes.as_deref());
     add_node_and_recurse(
         g,
         uri,
@@ -418,13 +411,16 @@ pub(super) fn build_viewpoint_def(
     let name = identification_name(&vpd_node.value.identification);
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "viewpoint def");
     let range = span_to_range(&vpd_node.span);
-    let mut attrs = HashMap::new();
-    attach_short_name_attribute(&mut attrs, &vpd_node.value.identification);
+    let attrs = HashMap::new();
+    if let Some(short_name) =
+        crate::semantic::ast_util::declared_short_name(&vpd_node.value.identification)
+    {
+        g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
+    }
     g.register_declared_membership_facts(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&vpd_node.value.membership),
     );
-    insert_def_specialization_attr(&mut attrs, vpd_node.value.specializes.as_deref());
     add_node_and_recurse(
         g,
         uri,
@@ -465,13 +461,16 @@ pub(super) fn build_rendering_def(
     let name = identification_name(&rd_node.value.identification);
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "rendering def");
     let range = span_to_range(&rd_node.span);
-    let mut attrs = HashMap::new();
-    attach_short_name_attribute(&mut attrs, &rd_node.value.identification);
+    let attrs = HashMap::new();
+    if let Some(short_name) =
+        crate::semantic::ast_util::declared_short_name(&rd_node.value.identification)
+    {
+        g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
+    }
     g.register_declared_membership_facts(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&rd_node.value.membership),
     );
-    insert_def_specialization_attr(&mut attrs, rd_node.value.specializes.as_deref());
     add_node_and_recurse(
         g,
         uri,
@@ -503,14 +502,11 @@ pub(super) fn build_view_usage(
     let name = &vu_node.value.name;
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "view");
     let range = span_to_range(&vu_node.span);
-    let mut attrs = HashMap::new();
+    let attrs = HashMap::new();
     g.register_declared_membership_facts(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&vu_node.value.membership),
     );
-    if let Some(ref t) = vu_node.value.type_name {
-        attrs.insert("viewType".to_string(), serde_json::json!(t));
-    }
     add_node_and_recurse(
         g,
         uri,
@@ -538,14 +534,10 @@ pub(super) fn build_viewpoint_usage(
     let name = &vpu_node.value.name;
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "viewpoint");
     let range = span_to_range(&vpu_node.span);
-    let mut attrs = HashMap::new();
+    let attrs = HashMap::new();
     g.register_declared_membership_facts(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&vpu_node.value.membership),
-    );
-    attrs.insert(
-        "viewpointType".to_string(),
-        serde_json::json!(vpu_node.value.type_name.as_str()),
     );
     add_node_and_recurse(
         g,
@@ -623,10 +615,6 @@ pub(super) fn build_filter_member(
     let qualified = qualified_name_for_node(g, uri, container_prefix, "_filter", "filter");
     let mut attrs = HashMap::new();
     attrs.insert(
-        "condition".to_string(),
-        serde_json::json!(expressions::expression_to_debug_string(&f.value.condition)),
-    );
-    attrs.insert(
         "conditionIsBoolean".to_string(),
         serde_json::json!(expressions::expression_is_boolean_valued(
             &f.value.condition
@@ -649,5 +637,7 @@ pub(super) fn build_filter_member(
     let node_id = NodeId::new(uri, &qualified);
     if let Some(node) = g.get_node_mut(&node_id) {
         node.declared_facts.own_expression = Some(declared_expression(&f.value.condition));
+        node.expression_text.condition =
+            Some(expressions::expression_to_debug_string(&f.value.condition));
     }
 }

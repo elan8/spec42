@@ -146,26 +146,27 @@ fn attribute_type_name(state: &ServerState, node: &SemanticNode) -> Option<Strin
         .into_iter()
         .find_map(|target| Some(target.name.clone()).filter(|name| !name.trim().is_empty()))
         .or_else(|| {
-            node.attributes
-                .get("attributeType")
-                .or_else(|| node.attributes.get("dataType"))
-                .or_else(|| node.attributes.get("type"))
-                .and_then(|value| value.as_str())
+            node.declared_facts
+                .relationships
+                .typing_display()
                 .map(|raw| raw.split("::").last().unwrap_or(raw).to_string())
         })
 }
 
 fn declared_value_text(node: &SemanticNode) -> Option<String> {
-    for key in ["value", "defaultValue", "literal"] {
-        let Some(value) = node.attributes.get(key) else {
-            continue;
-        };
-        if value.is_null() {
-            continue;
-        }
-        return Some(value_to_display_text(value));
+    if let Some(value) = node
+        .expression_text
+        .value
+        .as_deref()
+        .or(node.expression_text.default_value.as_deref())
+    {
+        return Some(value.to_string());
     }
-    None
+    let value = node.attributes.get("literal")?;
+    if value.is_null() {
+        return None;
+    }
+    Some(value_to_display_text(value))
 }
 
 fn effective_value_text(graph: &sysml_model::SemanticGraph, node: &SemanticNode) -> Option<String> {

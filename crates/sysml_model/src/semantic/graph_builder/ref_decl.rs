@@ -7,8 +7,7 @@ use sysml_v2_parser::Node;
 use url::Url;
 
 use crate::semantic::ast_util::{
-    declared_feature_value, ref_decl_feature_properties, span_to_range, subsetting_target,
-    typing_targets,
+    declared_feature_value, ref_decl_feature_properties, span_to_range, typing_targets,
 };
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{NodeId, RelationshipKind};
@@ -40,22 +39,15 @@ pub(super) fn materialize_ref_decl(
     let n = &wrap.value;
     let qualified = qualified_name_for_node(g, uri, container_prefix, &n.name, "ref");
     let range = span_to_range(&wrap.span);
-    let mut attrs = HashMap::new();
-    attrs.insert("refType".to_string(), serde_json::json!(&n.type_name));
+    let attrs = HashMap::new();
     g.register_declared_membership_facts(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&n.membership),
     );
-    if let Some(r) = subsetting_target(n.redefines.as_deref()) {
-        attrs.insert("redefines".to_string(), serde_json::json!(r));
-    }
     let value_expression = n
         .value
         .as_ref()
         .map(|value| expressions::expression_to_debug_string(&value.value.expression));
-    if let Some(ref v) = value_expression {
-        attrs.insert("value".to_string(), serde_json::json!(v));
-    }
     add_node_and_recurse(
         g,
         uri,
@@ -73,6 +65,11 @@ pub(super) fn materialize_ref_decl(
     if let Some(value) = &n.value {
         if let Some(node) = g.get_node_mut(&node_id) {
             node.declared_facts.feature_value = Some(declared_feature_value(value));
+        }
+    }
+    if let Some(ref v) = value_expression {
+        if let Some(node) = g.get_node_mut(&node_id) {
+            node.expression_text.value = Some(v.clone());
         }
     }
     for target in typing_targets(n.typing.as_deref()) {

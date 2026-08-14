@@ -11,10 +11,10 @@ use crate::semantic::ast_util::{
     declared_subsetting_targets, declared_typing_targets, span_to_range, subsetting_target,
     typing_targets,
 };
-use crate::semantic::graph::SemanticGraph;
+use crate::semantic::graph::{insert_canonical, SemanticGraph};
 use crate::semantic::model::{
-    DeclaredFeatureProperties, DeclaredRelationshipTarget, ElementKind, NodeId, RelationshipKind,
-    SemanticEdge, SemanticNode,
+    ConstructionOwner, DeclaredFeatureProperties, DeclaredRelationshipTarget, ElementKind, NodeId,
+    RelationshipKind, SemanticEdge, SemanticNode,
 };
 use crate::semantic::relationships::add_semantic_edge_once;
 
@@ -98,6 +98,7 @@ fn build_graph_from_doc_mode(
         }
     }
     g.assert_no_pending_declared_membership_facts();
+    g.assert_no_pending_declared_short_names();
     g
 }
 
@@ -269,6 +270,7 @@ pub(super) fn add_node_and_recurse(
 ) {
     let node_id = NodeId::new(uri, qualified);
     let declared_membership = g.take_declared_membership_facts(&node_id);
+    let declared_short_name = g.take_declared_short_name(&node_id);
     let is_anonymous = attrs
         .get("isAnonymous")
         .and_then(serde_json::Value::as_bool)
@@ -282,8 +284,11 @@ pub(super) fn add_node_and_recurse(
         attributes: attrs,
         declared_facts: crate::semantic::model::DeclaredSemanticFacts {
             membership: declared_membership,
+            short_name: declared_short_name,
             ..Default::default()
         },
+        source_text: crate::semantic::model::SourceTextFacts::default(),
+        expression_text: crate::semantic::model::DeclaredExpressionText::default(),
         parent_id: parent_id.cloned(),
     };
     // Also index the node under its short-name-qualified variant (if any), so
@@ -295,14 +300,18 @@ pub(super) fn add_node_and_recurse(
     g.register_short_name_alias(&node_id, &node);
     let idx = g.graph.add_node(node);
     g.node_index_by_id.insert(node_id.clone(), idx);
+    // `nodes_by_uri` stays insertion (AST-traversal) ordered -- see the matching comment in
+    // `SemanticGraphData::merge_inner`.
     g.nodes_by_uri
         .entry(uri.clone())
         .or_default()
         .push(node_id.clone());
-    g.node_ids_by_qualified_name
-        .entry(qualified.to_string())
-        .or_default()
-        .push(NodeId::new(uri, qualified));
+    insert_canonical(
+        g.node_ids_by_qualified_name
+            .entry(qualified.to_string())
+            .or_default(),
+        NodeId::new(uri, qualified),
+    );
     if let Some(pid) = parent_id {
         g.children_by_parent_id
             .entry(pid.clone())
@@ -406,8 +415,8 @@ pub(super) fn attach_declared_subsetting_family(
 }
 
 /// Attaches a `doc /* ... */` comment as an addressable Documentation child of the
-/// annotated element, wires an Annotation edge, and keeps the convenience `doc`
-/// attribute text on the annotated node (multiple docs join with a blank line).
+/// annotated element, wires an Annotation edge, and records the combined text on the
+/// annotated node's typed `source_text.doc` fact (multiple docs join with a blank line).
 pub(super) fn attach_doc_comment(g: &mut SemanticGraph, node_id: &NodeId, text: &str) {
     let text = text.trim();
     if text.is_empty() {
@@ -416,21 +425,19 @@ pub(super) fn attach_doc_comment(g: &mut SemanticGraph, node_id: &NodeId, text: 
     let Some(annotated) = g.get_node(node_id).cloned() else {
         return;
     };
-    let combined = match annotated.attributes.get("doc").and_then(|v| v.as_str()) {
+    let combined = match annotated.source_text.doc.as_deref() {
         Some(existing) if !existing.is_empty() => format!("{existing}\n\n{text}"),
         _ => text.to_string(),
     };
     if let Some(node) = g.get_node_mut(node_id) {
-        node.attributes
-            .insert("doc".to_string(), serde_json::json!(combined));
+        node.source_text.doc = Some(combined.clone());
     }
 
     let uri = &node_id.uri;
     let container_prefix = Some(node_id.qualified_name.as_str());
     let qualified =
         qualified_name_for_node(g, uri, container_prefix, "_documentation", "documentation");
-    let mut attrs = HashMap::new();
-    attrs.insert("body".to_string(), serde_json::json!(text));
+    let attrs = HashMap::new();
     add_node_and_recurse(
         g,
         uri,
@@ -442,29 +449,18 @@ pub(super) fn attach_doc_comment(g: &mut SemanticGraph, node_id: &NodeId, text: 
         Some(node_id),
     );
     let doc_id = NodeId::new(uri, &qualified);
+    if let Some(doc_node) = g.get_node_mut(&doc_id) {
+        doc_node.source_text.body = Some(text.to_string());
+    }
     add_semantic_edge_once(
         g,
         &doc_id,
         node_id,
-        SemanticEdge::plain(RelationshipKind::Annotation),
+        SemanticEdge::plain(
+            RelationshipKind::Annotation,
+            ConstructionOwner::DocumentConstruction,
+        ),
     );
-}
-
-/// Inserts a `specializes` attribute on a def-kind node's attribute map, if present. SysML v2
-/// allows a comma-separated multi-target clause (`specializes A, B;`), so this joins every
-/// declared target for display -- the real per-target `Specializes` edges are wired separately by
-/// [`wire_def_specialization_edge`].
-pub(super) fn insert_def_specialization_attr(
-    attrs: &mut HashMap<String, serde_json::Value>,
-    specializes: Option<&TypingRelationship>,
-) {
-    let targets = typing_targets(specializes);
-    if !targets.is_empty() {
-        attrs.insert(
-            "specializes".to_string(),
-            serde_json::json!(targets.join(", ")),
-        );
-    }
 }
 
 /// Wires a `Specializes` edge for a def-kind node for every declared `specializes` target, not

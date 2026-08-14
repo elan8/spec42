@@ -190,10 +190,7 @@ package P {
         .expect("payload feature");
 
     assert_eq!(
-        payload
-            .attributes
-            .get("payloadType")
-            .and_then(serde_json::Value::as_str),
+        payload.declared_facts.relationships.typing_display(),
         Some("Scalar"),
         "the authored payload type must remain a semantic fact"
     );
@@ -286,9 +283,11 @@ package P {
         .expect("redefining mass feature");
 
     assert_eq!(
-        mass.attributes
-            .get("redefines")
-            .and_then(serde_json::Value::as_str),
+        mass.declared_facts
+            .relationships
+            .redefinition
+            .first()
+            .map(|target| target.reference.as_str()),
         Some("mass"),
         "the authored redefinition must remain distinct from the resolved target"
     );

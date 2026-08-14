@@ -23,8 +23,8 @@ pub(crate) fn assess_identity_preservation(
         return IdentityPreservationStatus::IncompatibleEnvironment;
     }
 
-    let previous_uris: std::collections::BTreeSet<_> = previous.document_hashes.keys().collect();
-    let next_uris: std::collections::BTreeSet<_> = next.document_hashes.keys().collect();
+    let previous_uris: std::collections::BTreeSet<_> = previous.document_digests.keys().collect();
+    let next_uris: std::collections::BTreeSet<_> = next.document_digests.keys().collect();
     if previous_uris != next_uris {
         return IdentityPreservationStatus::DocumentSetChanged;
     }
@@ -35,6 +35,8 @@ pub(crate) fn assess_identity_preservation(
 #[cfg(test)]
 mod tests {
     use std::collections::BTreeMap;
+
+    use source_identity::ContentDigest;
 
     use super::*;
     use crate::version::{HostArtifactMetadata, HostSchemaVersions};
@@ -54,10 +56,10 @@ mod tests {
         let mut previous = sample_metadata("catalog", "file:///a.sysml");
         let mut next = sample_metadata("catalog", "file:///a.sysml");
         previous
-            .document_hashes
-            .insert("file:///a.sysml".into(), "hash-a".into());
-        next.document_hashes
-            .insert("file:///a.sysml".into(), "hash-b".into());
+            .document_digests
+            .insert("file:///a.sysml".into(), ContentDigest::of_bytes(b"a"));
+        next.document_digests
+            .insert("file:///a.sysml".into(), ContentDigest::of_bytes(b"b"));
         assert_eq!(
             assess_identity_preservation(&previous, &next),
             IdentityPreservationStatus::Preserved
@@ -70,7 +72,7 @@ mod tests {
             engine_version: "0.33.0".to_string(),
             library_catalog_hash: catalog_hash.to_string(),
             built_at: "2026-06-22T10:00:00Z".to_string(),
-            document_hashes: BTreeMap::from([(uri.to_string(), "hash".to_string())]),
+            document_digests: BTreeMap::from([(uri.to_string(), ContentDigest::of_bytes(b"hash"))]),
         }
     }
 }

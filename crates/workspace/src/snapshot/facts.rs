@@ -87,6 +87,11 @@ fn build_host_semantic_model_node(
     library_urls: &[Url],
 ) -> HostSemanticModelNode {
     let mut attributes = node.attributes.clone();
+    sysml_model::semantic::model_projection::project_source_text_attributes(&mut attributes, node);
+    sysml_model::semantic::model_projection::project_type_reference_attributes(
+        &mut attributes,
+        node,
+    );
     // Additive: resolve the usage's canonical type reference. Existing
     // textual hints (`partType`, `type`, `typing`, ...) are left untouched.
     if let Some(typed_by) = typed_by_reference(graph, node) {
@@ -94,14 +99,8 @@ fn build_host_semantic_model_node(
             attributes.insert("typedBy".to_string(), value);
         }
     }
-    let documentation = attributes
-        .get("doc")
-        .and_then(|value| value.as_str())
-        .map(str::to_owned);
-    let declared_short_name = attributes
-        .get("shortName")
-        .and_then(|value| value.as_str())
-        .map(str::to_owned);
+    let documentation = node.source_text.doc.clone();
+    let declared_short_name = node.declared_facts.short_name.clone();
 
     HostSemanticModelNode {
         semantic_id: semantic_element_id(
@@ -990,6 +989,9 @@ fn relationship_provenance_discriminator(
         sysml_model::RelationshipProvenance::Implied(
             sysml_model::ImpliedRelationshipRule::UniversalStandardLibraryRelationship,
         ) => "implied:universal-standard-library-relationship",
+        sysml_model::RelationshipProvenance::Implied(
+            sysml_model::ImpliedRelationshipRule::MetadataRedefinitionEntailsSubsetting,
+        ) => "implied:metadata-redefinition-entails-subsetting",
         sysml_model::RelationshipProvenance::Derived(
             sysml_model::DerivedRelationshipRule::CaseSubjectFromTypedSubject,
         ) => "derived:case-subject-from-typed-subject",
@@ -1005,6 +1007,11 @@ fn host_relationship_provenance(
             sysml_model::ImpliedRelationshipRule::UniversalStandardLibraryRelationship,
         ) => HostRelationshipProvenance::Implied(
             HostImpliedRelationshipRule::UniversalStandardLibraryRelationship,
+        ),
+        sysml_model::RelationshipProvenance::Implied(
+            sysml_model::ImpliedRelationshipRule::MetadataRedefinitionEntailsSubsetting,
+        ) => HostRelationshipProvenance::Implied(
+            HostImpliedRelationshipRule::MetadataRedefinitionEntailsSubsetting,
         ),
         sysml_model::RelationshipProvenance::Derived(
             sysml_model::DerivedRelationshipRule::CaseSubjectFromTypedSubject,
@@ -1124,7 +1131,7 @@ mod tests {
             content: content.to_string(),
             path_hint: None,
             source_kind: sysml_model::SysmlDocumentSourceKind::Workspace,
-            sha256: None,
+            content_digest: None,
             byte_size: None,
         };
         InMemoryDocumentProvider::new(vec![doc])
@@ -1421,6 +1428,8 @@ package P {
             ),
             attributes: HashMap::new(),
             declared_facts: Default::default(),
+            source_text: Default::default(),
+            expression_text: Default::default(),
             parent_id: None,
         };
         let mut graph = SemanticGraph::new();
@@ -2490,7 +2499,7 @@ package Demo {
             content: lib_content.to_string(),
             path_hint: None,
             source_kind: sysml_model::SysmlDocumentSourceKind::Library,
-            sha256: None,
+            content_digest: None,
             byte_size: None,
         };
         let workspace_doc = sysml_model::SysmlDocument {
@@ -2498,7 +2507,7 @@ package Demo {
             content: workspace_content.to_string(),
             path_hint: None,
             source_kind: sysml_model::SysmlDocumentSourceKind::Workspace,
-            sha256: None,
+            content_digest: None,
             byte_size: None,
         };
         let provider = InMemoryDocumentProvider::new(vec![lib_doc, workspace_doc]);
@@ -2582,7 +2591,7 @@ package Demo {
                 // (`pipeline.rs`'s `set_standard_library_uris`). A plain `Library` document is a
                 // valid target for ordinary typing, but not for this rule specifically.
                 source_kind: sysml_model::SysmlDocumentSourceKind::StandardLibrary,
-                sha256: None,
+                content_digest: None,
                 byte_size: None,
             },
             sysml_model::SysmlDocument {
@@ -2590,7 +2599,7 @@ package Demo {
                 content: workspace_content.to_owned(),
                 path_hint: None,
                 source_kind: sysml_model::SysmlDocumentSourceKind::Workspace,
-                sha256: None,
+                content_digest: None,
                 byte_size: None,
             },
         ]);

@@ -13,14 +13,15 @@ use crate::semantic::import_resolution::{
     resolve_type_reference_targets,
 };
 use crate::semantic::kinds::{
-    self, element_kind_allowed, SUBJECT_TYPE_TARGET_KINDS, VERIFIED_REQUIREMENT_TARGET_KINDS,
+    self, element_kind_allowed, METADATA_RESTRICTION_FEATURE_NAMES, SUBJECT_TYPE_TARGET_KINDS,
+    VERIFIED_REQUIREMENT_TARGET_KINDS,
 };
 pub use crate::semantic::kinds::{
     ANNOTATED_ELEMENT_TARGET_KINDS, SPECIALIZES_TARGET_KINDS, TYPING_TARGET_KINDS,
 };
 use crate::semantic::model::{
-    ConnectStatementDetail, DeclaredRelationshipTarget, ElementKind, NodeId, RelationshipKind,
-    SemanticEdge, SemanticNode,
+    ConnectStatementDetail, ConstructionOwner, DeclaredRelationshipTarget, ElementKind,
+    ImpliedRelationshipRule, NodeId, RelationshipKind, SemanticEdge, SemanticNode,
 };
 use crate::semantic::reference_resolution::{
     resolve_expression_endpoint_strict, resolve_inherited_member_via_type, ResolveResult,
@@ -132,6 +133,18 @@ pub(crate) fn record_declared_relationship_target(
 
 /// Resolve a subsetting-family attribute value to a target node id.
 /// Prefers a direct qualified-name hit, then inherited-member resolution via the owner.
+///
+/// `g.node_ids_by_qualified_name` entries are maintained in canonical `NodeId` order
+/// (`ROUNDTRIP_SEMGRAPH_PREREQS.md` §6, `semantic::graph::insert_canonical`), so `.find()` below
+/// always picks the same candidate for the same qualified-name bucket regardless of document
+/// merge order or build parallelism -- it is no longer an accidental insertion-order pick. This
+/// function's signature (`Option<NodeId>`, no ambiguous variant) predates that guarantee and
+/// still cannot *report* a genuine multi-candidate qualified-name collision as ambiguous the way
+/// [`crate::semantic::reference_resolution::ResolveResult`] does elsewhere; it silently takes the
+/// canonically-first non-source candidate. That residual gap is unchanged by B3 and is called out
+/// in `ROUNDTRIP_SEMGRAPH_PREREQS.md` follow-up notes rather than fixed here, since typing it
+/// properly would require `Subsetting`/`Redefinition`/`ReferenceSubsetting`/`CrossSubsetting`
+/// edges to carry an ambiguous-target outcome, which is an edge-model change outside B3's scope.
 fn resolve_subsetting_family_target(
     g: &SemanticGraph,
     owner: Option<&SemanticNode>,
@@ -197,7 +210,38 @@ fn link_subsetting_family_edges_for_node(g: &mut SemanticGraph, node_id: &NodeId
             if let Some(target_id) =
                 resolve_subsetting_family_target(g, owner.as_ref(), node_id, &target.reference)
             {
-                add_semantic_edge_once(g, node_id, &target_id, SemanticEdge::plain(kind.clone()));
+                add_semantic_edge_once(
+                    g,
+                    node_id,
+                    &target_id,
+                    SemanticEdge::plain(kind.clone(), ConstructionOwner::DocumentConstruction),
+                );
+                // KerML's `Redefinition` specializes `Subsetting`
+                // (`org.omg.sysml/model/kerml.ecore:1471` in the OMG pilot metamodel), so a
+                // `:>>` redefinition of a `metadata def` restriction feature
+                // (`annotatedElement`/`baseType`) is also, structurally, a subsetting of that
+                // feature. Nobody authors that subsetting, so it is published here as an
+                // *implied* edge alongside the authored redefinition edge, to the same resolved
+                // target, rather than recorded as a second declared fact (see
+                // `ImpliedRelationshipRule::MetadataRedefinitionEntailsSubsetting`). Deliberately
+                // narrowed to the metadata restriction shorthand -- see that rule's doc comment
+                // for why this is not widened to every redefinition.
+                if kind == RelationshipKind::Redefinition
+                    && owner
+                        .as_ref()
+                        .is_some_and(|owner| owner.element_kind == ElementKind::MetadataDef)
+                    && METADATA_RESTRICTION_FEATURE_NAMES.contains(&target.reference.as_str())
+                {
+                    add_semantic_edge_once(
+                        g,
+                        node_id,
+                        &target_id,
+                        SemanticEdge::implied(
+                            RelationshipKind::Subsetting,
+                            ImpliedRelationshipRule::MetadataRedefinitionEntailsSubsetting,
+                        ),
+                    );
+                }
             }
         }
     }
@@ -292,8 +336,11 @@ fn add_edge_if_both_exist_opt(
     let Some(tgt_idx) = g.node_index_by_id.get(&tgt_id).copied() else {
         return false;
     };
-    g.graph
-        .add_edge(src_idx, tgt_idx, SemanticEdge::plain(kind));
+    g.graph.add_edge(
+        src_idx,
+        tgt_idx,
+        SemanticEdge::plain(kind, ConstructionOwner::DocumentConstruction),
+    );
     true
 }
 
@@ -309,7 +356,7 @@ pub fn add_semantic_edge_once(
     g: &mut SemanticGraph,
     source_id: &NodeId,
     target_id: &NodeId,
-    edge: SemanticEdge,
+    mut edge: SemanticEdge,
 ) -> AddSemanticEdgeResult {
     let (Some(&src_idx), Some(&tgt_idx)) = (
         g.node_index_by_id.get(source_id),
@@ -317,6 +364,26 @@ pub fn add_semantic_edge_once(
     ) else {
         return AddSemanticEdgeResult::SkippedSameKind;
     };
+    // Structural construction-owner promotion: every caller that builds a Typing/Specializes/
+    // Subject edge through the generic per-node/whole-graph linking path tags it
+    // `ConstructionOwner::DocumentConstruction` by default (it doesn't know in advance whether
+    // its target will land in another document). The *only* place that can know for certain --
+    // after both endpoints are resolved -- is here. Promoting uniformly at this single point,
+    // purely from `source_id.uri != target_id.uri`, is what makes whole-graph, parallel, and
+    // scoped/incremental builds converge on identical ownership for the same graph content: all
+    // three paths funnel Typing/Specializes/Subject edges through this function. Callers that
+    // explicitly tag a more specific owner (pending resolution, derivation linking, the implied
+    // rule) are never reclassified -- those categories are cross-document-agnostic by design.
+    let is_cross_document_relationship_kind = matches!(
+        edge.kind,
+        RelationshipKind::Typing | RelationshipKind::Specializes | RelationshipKind::Subject
+    );
+    let promote_to_cross_document = is_cross_document_relationship_kind
+        && edge.owner == ConstructionOwner::DocumentConstruction
+        && source_id.uri != target_id.uri;
+    if promote_to_cross_document {
+        edge.owner = ConstructionOwner::WorkspaceCrossDocumentLinking;
+    }
     if edge.kind == RelationshipKind::Connection {
         if let Some(connect) = edge.connect.clone() {
             // Collect edge data before mutating — borrow checker requires immutable scan
@@ -383,6 +450,12 @@ pub fn add_semantic_edge_once(
             return AddSemanticEdgeResult::SkippedSameKind;
         }
     }
+    if promote_to_cross_document {
+        g.cross_document_edges_by_source_uri
+            .entry(source_id.uri.clone())
+            .or_default()
+            .push((source_id.clone(), target_id.clone(), edge.kind.clone()));
+    }
     g.graph.add_edge(src_idx, tgt_idx, edge);
     AddSemanticEdgeResult::Added
 }
@@ -403,7 +476,10 @@ pub fn wire_metadata_annotated_elements(
             g,
             metadata_id,
             owner_id,
-            SemanticEdge::plain(RelationshipKind::Annotation),
+            SemanticEdge::plain(
+                RelationshipKind::Annotation,
+                ConstructionOwner::DocumentConstruction,
+            ),
         );
         let _ = uri;
         return;
@@ -421,7 +497,10 @@ pub fn wire_metadata_annotated_elements(
             g,
             metadata_id,
             &target_id,
-            SemanticEdge::plain(RelationshipKind::Annotation),
+            SemanticEdge::plain(
+                RelationshipKind::Annotation,
+                ConstructionOwner::DocumentConstruction,
+            ),
         );
     }
     let _ = uri;
@@ -497,7 +576,10 @@ pub fn add_typing_edge_for_node(g: &mut SemanticGraph, source_id: &NodeId, type_
                 g,
                 source_id,
                 &target_id,
-                SemanticEdge::plain(RelationshipKind::Typing),
+                SemanticEdge::plain(
+                    RelationshipKind::Typing,
+                    ConstructionOwner::DocumentConstruction,
+                ),
             );
             return;
         }
@@ -513,7 +595,10 @@ pub fn add_typing_edge_for_node(g: &mut SemanticGraph, source_id: &NodeId, type_
         g,
         source_id,
         &target_id,
-        SemanticEdge::plain(RelationshipKind::Typing),
+        SemanticEdge::plain(
+            RelationshipKind::Typing,
+            ConstructionOwner::DocumentConstruction,
+        ),
     );
 }
 
@@ -534,7 +619,10 @@ pub fn add_specializes_edges_for_node(
                 g,
                 source_id,
                 &target_id,
-                SemanticEdge::plain(RelationshipKind::Specializes),
+                SemanticEdge::plain(
+                    RelationshipKind::Specializes,
+                    ConstructionOwner::DocumentConstruction,
+                ),
             );
         }
     }

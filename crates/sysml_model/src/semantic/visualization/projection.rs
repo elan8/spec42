@@ -11,6 +11,10 @@ use crate::semantic::dto::{
 };
 use crate::semantic::extracted_model::{extract_activity_diagrams, ActivityDiagramDto};
 use crate::semantic::ibd::{IbdDataDto, IbdPackageContainerGroupDto, IbdPartDto};
+use crate::semantic::model_projection::{
+    project_relationship_target_attributes, project_source_text_attributes,
+    project_type_reference_attributes,
+};
 use crate::semantic::workspace_graph::WorkspaceParsedDocument;
 use crate::SemanticGraph;
 
@@ -28,6 +32,10 @@ pub fn build_workspace_graph_dto_for_uris(
             .filter(|n| n.element_kind != crate::semantic::model::ElementKind::Diagnostic)
         {
             node_ids.insert(node.id.qualified_name.clone());
+            let mut attributes = node.attributes.clone();
+            project_source_text_attributes(&mut attributes, node);
+            project_relationship_target_attributes(&mut attributes, node);
+            project_type_reference_attributes(&mut attributes, node);
             nodes.push(GraphNodeDto {
                 id: node.id.qualified_name.clone(),
                 element_type: node.element_kind.as_str().to_string(),
@@ -38,7 +46,7 @@ pub fn build_workspace_graph_dto_for_uris(
                     .as_ref()
                     .map(|parent| parent.qualified_name.clone()),
                 range: range_to_dto(node.range),
-                attributes: node.attributes.clone(),
+                attributes,
             });
         }
     }

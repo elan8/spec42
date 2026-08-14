@@ -43,9 +43,9 @@ fn interface_def_body_materializes_ends_with_port_type() {
     assert_eq!(ends.len(), 2, "expected two interface ends");
     for end in &ends {
         assert_eq!(
-            end.attributes.get("portType").and_then(|v| v.as_str()),
+            end.declared_facts.interface_end_type.as_deref(),
             Some("PowerPort"),
-            "interface end should expose portType for conformance"
+            "interface end should expose its declared type for conformance"
         );
     }
     let _ = uri;

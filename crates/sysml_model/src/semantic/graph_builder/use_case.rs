@@ -86,11 +86,7 @@ impl CaseSuccessionChain {
                     &action.name,
                     "action",
                 );
-                let mut attrs = HashMap::new();
-                attrs.insert(
-                    "actionType".to_string(),
-                    serde_json::json!(action.type_name.as_str()),
-                );
+                let attrs = HashMap::new();
                 add_node_and_recurse(
                     g,
                     uri,
@@ -243,15 +239,11 @@ impl CaseSuccessionChain {
             name,
             "use case",
         );
-        let mut attrs = HashMap::new();
+        let attrs = HashMap::new();
         g.register_declared_membership_facts(
             NodeId::new(uri, &qualified),
             crate::semantic::ast_util::declared_membership_facts(&use_case.value.membership),
         );
-        if let Some(ref typing) = use_case.value.type_name {
-            attrs.insert("useCaseType".to_string(), serde_json::json!(typing));
-        }
-        attrs.insert("isThen".to_string(), serde_json::json!(true));
         add_node_and_recurse(
             g,
             uri,
@@ -262,6 +254,9 @@ impl CaseSuccessionChain {
             attrs,
             Some(parent_id),
         );
+        if let Some(node) = g.get_node_mut(&NodeId::new(uri, &qualified)) {
+            node.expression_text.is_then = Some(true);
+        }
         let node_id = NodeId::new(uri, &qualified);
         if let Some(ref typing) = use_case.value.type_name {
             add_typing_edge_if_exists(g, uri, &qualified, typing, container_prefix);
@@ -320,9 +315,6 @@ pub(super) fn mark_subject_ref(g: &mut SemanticGraph, parent_id: &NodeId) {
         parent_node
             .attributes
             .insert("hasSubject".to_string(), serde_json::json!(true));
-        parent_node
-            .attributes
-            .insert("subjectRef".to_string(), serde_json::json!(true));
     }
 }
 
@@ -343,12 +335,11 @@ pub(super) fn add_actor_usage_node(
         "actor",
     );
     let range = span_to_range(span);
-    let mut attrs = HashMap::new();
+    let attrs = HashMap::new();
     g.register_declared_membership_facts(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&actor.membership),
     );
-    attrs.insert("actorType".to_string(), serde_json::json!(&actor.type_name));
     add_node_and_recurse(
         g,
         uri,
@@ -376,11 +367,7 @@ pub(super) fn add_actor_redefinition_assignment_node(
         &assignment.name,
         "actor redefinition",
     );
-    let mut attrs = HashMap::new();
-    attrs.insert(
-        "rhs".to_string(),
-        serde_json::json!(assignment.rhs.as_str()),
-    );
+    let attrs = HashMap::new();
     add_node_and_recurse(
         g,
         uri,
@@ -391,6 +378,9 @@ pub(super) fn add_actor_redefinition_assignment_node(
         attrs,
         Some(parent_id),
     );
+    if let Some(node) = g.get_node_mut(&NodeId::new(uri, &qualified)) {
+        node.expression_text.rhs = Some(assignment.rhs.clone());
+    }
 }
 
 pub(super) fn add_ref_redefinition_node(
@@ -407,8 +397,8 @@ pub(super) fn add_ref_redefinition_node(
         &redef.name,
         "ref redefinition",
     );
-    let mut attrs = HashMap::new();
-    attrs.insert("body".to_string(), serde_json::json!(redef.body.as_str()));
+    let attrs = HashMap::new();
+    let node_id = NodeId::new(uri, &qualified);
     add_node_and_recurse(
         g,
         uri,
@@ -419,6 +409,9 @@ pub(super) fn add_ref_redefinition_node(
         attrs,
         Some(parent_id),
     );
+    if let Some(node) = g.get_node_mut(&node_id) {
+        node.source_text.body = Some(redef.body.as_str().to_string());
+    }
 }
 
 /// Wire case-body elements shared across use-case, analysis, and verification walkers.
@@ -605,11 +598,7 @@ pub(super) fn build_from_use_case_body(
                     &name,
                     "subject",
                 );
-                let mut attrs = HashMap::new();
-                attrs.insert(
-                    "subjectType".to_string(),
-                    serde_json::json!(sd.value.type_name.as_str()),
-                );
+                let attrs = HashMap::new();
                 add_node_and_recurse(
                     g,
                     uri,
@@ -642,9 +631,6 @@ pub(super) fn build_from_use_case_body(
                     "objectiveBindingKind".to_string(),
                     serde_json::json!("case_result_default"),
                 );
-                if let Some(type_name) = obj.value.requirement.value.type_name.as_ref() {
-                    attrs.insert("objectiveType".to_string(), serde_json::json!(type_name));
-                }
                 add_node_and_recurse(
                     g,
                     uri,

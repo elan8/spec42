@@ -5,30 +5,20 @@ use std::fs;
 
 use sysml_v2_parser::ast::{
     CalcDef, CalcDefBody, CalcDefBodyElement, ConstraintDef, ConstraintDefBody,
-    ConstraintDefBodyElement, ConstraintUsage, InOut,
+    ConstraintDefBodyElement, ConstraintUsage,
 };
 use sysml_v2_parser::Node;
 use url::Url;
 
 use super::{
-    add_node_and_recurse, insert_def_specialization_attr, qualified_name_for_node,
-    resolve_addressable_name, wire_def_specialization_edge,
+    add_node_and_recurse, qualified_name_for_node, resolve_addressable_name,
+    wire_def_specialization_edge,
 };
-use crate::semantic::ast_util::{
-    attach_short_name_attribute, declared_expression, identification_name, span_to_range,
-};
+use crate::semantic::ast_util::{declared_expression, identification_name, span_to_range};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::graph_builder::expressions;
 use crate::semantic::model::NodeId;
 use crate::semantic::relationships::add_typing_edge_if_exists;
-
-fn direction_to_str(direction: &InOut) -> &'static str {
-    match direction {
-        InOut::In => "in",
-        InOut::Out => "out",
-        InOut::InOut => "inout",
-    }
-}
 
 fn compact_whitespace(text: &str) -> String {
     text.split_whitespace().collect::<Vec<_>>().join(" ")
@@ -51,20 +41,17 @@ fn expression_text_from_span(uri: &Url, span: &sysml_v2_parser::Span, fallback: 
     compact_whitespace(&lines[start..=end].join(" "))
 }
 
-fn extract_constraint_metadata(
-    uri: &Url,
-    body: &ConstraintDefBody,
-) -> (Vec<serde_json::Value>, Option<String>) {
-    let mut params = Vec::new();
+/// Extracts the flat declared-expression text for a `constraint def`/`constraint` body's
+/// `analysisExpression` fact. Previously also collected an `in`/`out` parameter list into
+/// `attributes["analysisParams"]`/`["parameters"]` and a kind tag into `["analysisKind"]`; an
+/// exhaustive repository grep found no reader for any of those three keys (only this file ever
+/// wrote them), so per the B9 "no reader" rule they were deleted outright rather than migrated to
+/// a typed fact -- see `UNIFY_CACHE_PROGRESS.md` chunk E.
+fn extract_constraint_metadata(uri: &Url, body: &ConstraintDefBody) -> Option<String> {
     let mut expression: Option<String> = None;
     if let ConstraintDefBody::Brace { elements } = body {
         for element in elements {
             match &element.value {
-                ConstraintDefBodyElement::InOutDecl(param) => params.push(serde_json::json!({
-                    "direction": direction_to_str(&param.value.direction),
-                    "name": param.value.name,
-                    "type": param.value.type_name,
-                })),
                 ConstraintDefBodyElement::Expression(expr) => {
                     let rendered = expression_text_from_span(
                         uri,
@@ -76,8 +63,9 @@ fn extract_constraint_metadata(
                     }
                 }
                 // Nested constraint/attribute content isn't summarized here -- this function
-                // only extracts the flat params/expression pair for the `analysis*` attrs below.
-                ConstraintDefBodyElement::Error(_)
+                // only extracts the flat expression for the `analysisExpression` fact below.
+                ConstraintDefBodyElement::InOutDecl(_)
+                | ConstraintDefBodyElement::Error(_)
                 | ConstraintDefBodyElement::Doc(_)
                 | ConstraintDefBodyElement::MetadataAnnotation(_)
                 | ConstraintDefBodyElement::Other(_)
@@ -86,7 +74,7 @@ fn extract_constraint_metadata(
             }
         }
     }
-    (params, expression)
+    expression
 }
 
 fn declared_constraint_expression(
@@ -111,31 +99,17 @@ fn strip_calc_return_expression(text: &str) -> String {
         .to_string()
 }
 
-fn extract_calc_metadata(
-    uri: &Url,
-    body: &CalcDefBody,
-) -> (
-    Vec<serde_json::Value>,
-    Option<serde_json::Value>,
-    Option<String>,
-) {
-    let mut params = Vec::new();
-    let mut return_decl: Option<serde_json::Value> = None;
+/// Extracts the flat declared-expression text for a `calc def`'s `analysisExpression` fact.
+/// Previously also collected an `in`/`out` parameter list into `attributes["analysisParams"]`/
+/// `["parameters"]`, a `return` declaration into `["analysisReturn"]`, and a kind tag into
+/// `["analysisKind"]`; an exhaustive repository grep found no reader for any of those four keys
+/// (only this file ever wrote them), so per the B9 "no reader" rule they were deleted outright
+/// rather than migrated to a typed fact -- see `UNIFY_CACHE_PROGRESS.md` chunk E.
+fn extract_calc_metadata(uri: &Url, body: &CalcDefBody) -> Option<String> {
     let mut expression: Option<String> = None;
     if let CalcDefBody::Brace { elements } = body {
         for element in elements {
             match &element.value {
-                CalcDefBodyElement::InOutDecl(param) => params.push(serde_json::json!({
-                    "direction": direction_to_str(&param.value.direction),
-                    "name": param.value.name,
-                    "type": param.value.type_name,
-                })),
-                CalcDefBodyElement::ReturnDecl(ret) => {
-                    return_decl = Some(serde_json::json!({
-                        "name": ret.value.name,
-                        "type": ret.value.type_name,
-                    }));
-                }
                 CalcDefBodyElement::Expression(expr) => {
                     let rendered = expression_text_from_span(
                         uri,
@@ -154,8 +128,10 @@ fn extract_calc_metadata(
                     }
                 }
                 // Nested calc/part content isn't summarized here -- this function only extracts
-                // the flat params/return/expression triple for the `analysis*` attrs below.
-                CalcDefBodyElement::Error(_)
+                // the flat expression for the `analysisExpression` fact below.
+                CalcDefBodyElement::InOutDecl(_)
+                | CalcDefBodyElement::ReturnDecl(_)
+                | CalcDefBodyElement::Error(_)
                 | CalcDefBodyElement::Doc(_)
                 | CalcDefBodyElement::MetadataAnnotation(_)
                 | CalcDefBodyElement::CalcUsage(_)
@@ -164,7 +140,7 @@ fn extract_calc_metadata(
             }
         }
     }
-    (params, return_decl, expression)
+    expression
 }
 
 fn declared_calc_expression(
@@ -193,20 +169,12 @@ pub(super) fn build_constraint_def(
         &mut attrs,
     );
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "constraint def");
-    let (params, expression) = extract_constraint_metadata(uri, &c_node.value.body);
-    attrs.insert(
-        "analysisKind".to_string(),
-        serde_json::json!("constraint_def"),
-    );
-    attrs.insert(
-        "analysisParams".to_string(),
-        serde_json::Value::Array(params),
-    );
-    if let Some(expr) = expression {
-        attrs.insert("analysisExpression".to_string(), serde_json::json!(expr));
+    let expression = extract_constraint_metadata(uri, &c_node.value.body);
+    if let Some(short_name) =
+        crate::semantic::ast_util::declared_short_name(&c_node.value.identification)
+    {
+        g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
     }
-    insert_def_specialization_attr(&mut attrs, c_node.value.specializes.as_deref());
-    attach_short_name_attribute(&mut attrs, &c_node.value.identification);
     g.register_declared_membership_facts(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&c_node.value.membership),
@@ -225,6 +193,14 @@ pub(super) fn build_constraint_def(
     if let Some(expression) = declared_constraint_expression(&c_node.value.body) {
         if let Some(node) = g.get_node_mut(&constraint_id) {
             node.declared_facts.own_expression = Some(expression);
+        }
+    }
+    if let Some(expr) = expression {
+        if let Some(node) = g.get_node_mut(&constraint_id) {
+            node.declared_facts
+                .analysis_case
+                .get_or_insert_with(Default::default)
+                .expression = Some(expr);
         }
     }
     wire_def_specialization_edge(
@@ -258,25 +234,11 @@ pub(super) fn build_constraint_usage(
     let mut attrs = HashMap::new();
     let name = resolve_addressable_name(&c_node.value.name, "constraint", &mut attrs);
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "constraint");
-    let (params, expression) = extract_constraint_metadata(uri, &c_node.value.body);
+    let expression = extract_constraint_metadata(uri, &c_node.value.body);
     g.register_declared_membership_facts(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&c_node.value.membership),
     );
-    attrs.insert(
-        "analysisKind".to_string(),
-        serde_json::json!("constraint_usage"),
-    );
-    attrs.insert(
-        "analysisParams".to_string(),
-        serde_json::Value::Array(params),
-    );
-    if let Some(expr) = expression {
-        attrs.insert("analysisExpression".to_string(), serde_json::json!(expr));
-    }
-    if let Some(ref t) = c_node.value.type_name {
-        attrs.insert("constraintType".to_string(), serde_json::json!(t));
-    }
     add_node_and_recurse(
         g,
         uri,
@@ -291,6 +253,14 @@ pub(super) fn build_constraint_usage(
     if let Some(expression) = declared_constraint_expression(&c_node.value.body) {
         if let Some(node) = g.get_node_mut(&constraint_id) {
             node.declared_facts.own_expression = Some(expression);
+        }
+    }
+    if let Some(expr) = expression {
+        if let Some(node) = g.get_node_mut(&constraint_id) {
+            node.declared_facts
+                .analysis_case
+                .get_or_insert_with(Default::default)
+                .expression = Some(expr);
         }
     }
     if let Some(ref t) = c_node.value.type_name {
@@ -319,18 +289,12 @@ pub(super) fn build_calc_def(
         &mut attrs,
     );
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "calc def");
-    let (params, return_decl, expression) = extract_calc_metadata(uri, &c_node.value.body);
-    attrs.insert("analysisKind".to_string(), serde_json::json!("calc_def"));
-    let params_json = serde_json::Value::Array(params.clone());
-    attrs.insert("analysisParams".to_string(), params_json.clone());
-    attrs.insert("parameters".to_string(), params_json);
-    if let Some(ret) = return_decl {
-        attrs.insert("analysisReturn".to_string(), ret);
+    let expression = extract_calc_metadata(uri, &c_node.value.body);
+    if let Some(short_name) =
+        crate::semantic::ast_util::declared_short_name(&c_node.value.identification)
+    {
+        g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
     }
-    if let Some(expr) = expression {
-        attrs.insert("analysisExpression".to_string(), serde_json::json!(expr));
-    }
-    attach_short_name_attribute(&mut attrs, &c_node.value.identification);
     g.register_declared_membership_facts(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&c_node.value.membership),
@@ -346,6 +310,14 @@ pub(super) fn build_calc_def(
         parent_id,
     );
     let calc_id = NodeId::new(uri, &qualified);
+    if let Some(expr) = expression {
+        if let Some(node) = g.get_node_mut(&calc_id) {
+            node.declared_facts
+                .analysis_case
+                .get_or_insert_with(Default::default)
+                .expression = Some(expr);
+        }
+    }
     if let Some(expression) = declared_calc_expression(&c_node.value.body) {
         if let Some(node) = g.get_node_mut(&calc_id) {
             node.declared_facts.own_expression = Some(expression);
@@ -383,10 +355,6 @@ pub(super) fn build_calc_def_body_elements(
                 );
                 let mut ret_attrs = HashMap::new();
                 ret_attrs.insert("direction".to_string(), serde_json::json!("return"));
-                ret_attrs.insert(
-                    "parameterType".to_string(),
-                    serde_json::json!(&ret.value.type_name),
-                );
                 add_node_and_recurse(
                     g,
                     uri,
@@ -459,15 +427,16 @@ pub(super) fn materialize_calc_usage(
     let name = identification_name(&calc_node.value.identification);
     let qualified = qualified_name_for_node(g, uri, Some(&parent_id.qualified_name), &name, "calc");
     let range = span_to_range(&calc_node.span);
-    let mut attrs = HashMap::new();
-    attach_short_name_attribute(&mut attrs, &calc_node.value.identification);
+    let attrs = HashMap::new();
+    if let Some(short_name) =
+        crate::semantic::ast_util::declared_short_name(&calc_node.value.identification)
+    {
+        g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
+    }
     g.register_declared_membership_facts(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&calc_node.value.membership),
     );
-    if let Some(ref t) = calc_node.value.type_name {
-        attrs.insert("calcType".to_string(), serde_json::json!(t));
-    }
     add_node_and_recurse(
         g,
         uri,

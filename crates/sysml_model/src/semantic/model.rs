@@ -18,6 +18,12 @@ fn deserialize_url<'de, D: Deserializer<'de>>(d: D) -> Result<Url, D::Error> {
 
 /// Unique identifier for a node in the semantic graph.
 /// Combines document URI and qualified name for workspace-wide uniqueness.
+///
+/// `Ord`/`PartialOrd` implement the canonical `NodeId` order from
+/// `ROUNDTRIP_SEMGRAPH_PREREQS.md` §6: normalized URI string, then qualified name. This is the
+/// one ordering-policy owner for `NodeId`; any lookup vector or candidate list that must not
+/// depend on insertion/merge order sorts through this `Ord` impl rather than defining its own
+/// comparator (see `semantic::graph::sort_node_ids_canonically`).
 #[derive(Clone, Debug, Hash, Eq, PartialEq, PartialOrd, Ord, Serialize, Deserialize)]
 pub struct NodeId {
     #[serde(serialize_with = "serialize_url", deserialize_with = "deserialize_url")]
@@ -746,6 +752,13 @@ pub struct SemanticEdge {
     /// source range or from relationship kind.
     #[serde(default)]
     pub provenance: RelationshipProvenance,
+    /// Which construction pass created (and therefore owns and may remove) this edge. This is
+    /// a distinct axis from `provenance`: `provenance` is a semantic fact about the model
+    /// (authored vs. rule-implied), while `owner` is a mechanical fact about the graph builder
+    /// (which pass is responsible for removing/replacing this edge on re-resolution). Never
+    /// infer one from the other.
+    #[serde(default)]
+    pub owner: ConstructionOwner,
     /// Set when a structural expression relationship (`connect` or `bind`) was resolved, retaining
     /// its declaring context and endpoint expressions for instance projection.
     pub connect: Option<ConnectStatementDetail>,
@@ -755,20 +768,24 @@ pub struct SemanticEdge {
 }
 
 impl SemanticEdge {
-    pub fn plain(kind: RelationshipKind) -> Self {
+    pub fn plain(kind: RelationshipKind, owner: ConstructionOwner) -> Self {
         Self {
             kind,
             provenance: RelationshipProvenance::Authored,
+            owner,
             connect: None,
             flow: None,
         }
     }
 
-    /// Constructs a relationship produced by a graph-owned semantic rule.
+    /// Constructs a relationship produced by a graph-owned semantic rule. Always owned by
+    /// [`ConstructionOwner::UniversalImpliedRuleConstruction`] -- the rule that publishes the
+    /// fact is also the only pass allowed to remove it.
     pub fn implied(kind: RelationshipKind, rule: ImpliedRelationshipRule) -> Self {
         Self {
             kind,
             provenance: RelationshipProvenance::Implied(rule),
+            owner: ConstructionOwner::UniversalImpliedRuleConstruction,
             connect: None,
             flow: None,
         }
@@ -778,15 +795,20 @@ impl SemanticEdge {
         Self {
             kind,
             provenance: RelationshipProvenance::Derived(rule),
+            owner: ConstructionOwner::DocumentConstruction,
             connect: None,
             flow: None,
         }
     }
 
-    pub fn connection_with_connect(connect: ConnectStatementDetail) -> Self {
+    pub fn connection_with_connect(
+        connect: ConnectStatementDetail,
+        owner: ConstructionOwner,
+    ) -> Self {
         Self {
             kind: RelationshipKind::Connection,
             provenance: RelationshipProvenance::Authored,
+            owner,
             connect: Some(connect),
             flow: None,
         }
@@ -795,23 +817,72 @@ impl SemanticEdge {
     pub fn interconnection_with_detail(
         kind: RelationshipKind,
         connect: ConnectStatementDetail,
+        owner: ConstructionOwner,
     ) -> Self {
         Self {
             kind,
             provenance: RelationshipProvenance::Authored,
+            owner,
             connect: Some(connect),
             flow: None,
         }
     }
 
-    pub fn flow_with_detail(kind: RelationshipKind, flow: FlowStatementDetail) -> Self {
+    pub fn flow_with_detail(
+        kind: RelationshipKind,
+        flow: FlowStatementDetail,
+        owner: ConstructionOwner,
+    ) -> Self {
         Self {
             kind,
             provenance: RelationshipProvenance::Authored,
+            owner,
             connect: None,
             flow: Some(flow),
         }
     }
+}
+
+/// Typed construction owner for a semantic edge: which pass created it, and therefore which
+/// pass is responsible for removing/replacing it on re-resolution. This is a distinct axis
+/// from [`RelationshipProvenance`] (semantic authored-vs-implied) -- an edge's owner is a fact
+/// about the graph builder, never inferred from provenance or relationship kind.
+///
+/// This enum, plus source identity, is the sole authority `SemanticGraphData::rebuild_cross_document_edge_ownership_index`
+/// uses to rebuild `cross_document_edges_by_source_uri`. Whole, parallel, merge-from-base,
+/// incremental, and decoded builds must all tag edges with the *same* owner for equivalent
+/// input, or the rebuilt index (and therefore later removal/refresh) will diverge by
+/// construction path -- see `ROUNDTRIP_SEMGRAPH_PREREQS.md` B1.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Default)]
+#[serde(rename_all = "camelCase")]
+pub enum ConstructionOwner {
+    /// Built directly from one document's own parsed content: the per-document graph builder
+    /// (`graph_builder/*`) and the initial per-node materialization of a single document's
+    /// declared facts. Never a Typing/Specializes/Subject edge whose endpoints can cross
+    /// documents once the workspace is fully linked -- those are always retagged
+    /// [`Self::WorkspaceCrossDocumentLinking`] regardless of which pass produced them (see
+    /// `add_semantic_edge_once`).
+    #[default]
+    DocumentConstruction,
+    /// Typing, Specializes, and Subject edges published by workspace relationship linking --
+    /// whichever of the two equivalent engines ran: the whole-graph fixed-point pass
+    /// (`link_workspace_relationships`/`link_case_subject_relationships`) or the URI-scoped
+    /// resolver (`add_cross_document_edges_for_uri`/`resolve_cross_document_edges_for_uri`),
+    /// including the parallel-build variant that calls the scoped resolver directly. The owning
+    /// URI recorded in `cross_document_edges_by_source_uri` is always the edge's *source* node's
+    /// URI, matching the scoped resolver's per-URI removal contract.
+    WorkspaceCrossDocumentLinking,
+    /// `Derivation` edges wired by `try_wire_derivation_connection` linking a `#derive`/
+    /// `#original` connection pair.
+    DerivationLinking,
+    /// Edges resolved from a previously-deferred `PendingRelationship` or
+    /// `PendingExpressionRelationship` once their endpoints became resolvable.
+    PendingResolution,
+    /// Edges published by a universal standard-library implied rule
+    /// (`refresh_universal_standard_library_relationships`). Always paired with
+    /// `RelationshipProvenance::Implied`; that pass self-cleans its own prior edges by
+    /// provenance and does not use `cross_document_edges_by_source_uri`.
+    UniversalImpliedRuleConstruction,
 }
 
 /// Provenance carried by every resolved relationship edge.
@@ -829,6 +900,24 @@ pub enum RelationshipProvenance {
 #[serde(rename_all = "camelCase")]
 pub enum ImpliedRelationshipRule {
     UniversalStandardLibraryRelationship,
+    /// KerML's `Redefinition` specializes `Subsetting`
+    /// (`org.omg.sysml/model/kerml.ecore:1471` in the OMG pilot metamodel: `eClassifiers
+    /// xsi:type="ecore:EClass" name="Redefinition" eSuperTypes="#//Subsetting"`) -- every
+    /// authored redefinition is therefore *also*, structurally, a subsetting of the same target.
+    /// Nothing authors that subsetting, so it must never be recorded as a declared fact
+    /// (`DeclaredRelationshipTarget` has no provenance field precisely because declared facts are
+    /// authored by definition); it is published as an implied edge alongside the authored
+    /// `Redefinition` edge, to the same resolved target.
+    ///
+    /// Deliberately narrow: only published for a `:>>` redefinition of a metadata-def restriction
+    /// feature (`annotatedElement`/`baseType`, `kinds::METADATA_RESTRICTION_FEATURE_NAMES`),
+    /// matching today's only consumer that depends on the entailed subsetting (the
+    /// incompatible-type-kind check for `metadata def` restriction shorthand). The specification
+    /// entailment is universal to every `Redefinition`, not only this shorthand -- widening this
+    /// rule to publish an implied `Subsetting` edge for *every* redefinition is legitimate future
+    /// work, but is a separate, deliberately sequenced change: it would move a large number of
+    /// corpus golden fixtures. See `UNIFY_CACHE_PROGRESS.md` chunk G.
+    MetadataRedefinitionEntailsSubsetting,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -1091,6 +1180,211 @@ pub struct DeclaredSemanticFacts {
     /// feature's value is X". Projected as `HostElementFacts::content_expression_id`.
     #[serde(default)]
     pub own_expression: Option<DeclaredExpression>,
+    /// Set on a `Transition` node: the authored source/target endpoint references plus the
+    /// `initial`/`done` state-machine flags derived from them. Endpoint resolution to concrete
+    /// node IDs happens downstream (e.g. `sysml_diagnostics::behavior_conformance`), the same
+    /// two-step handoff `ConnectStatementDetail`'s `source_expression`/`target_expression` use.
+    #[serde(default)]
+    pub transition_endpoints: Option<TransitionEndpointFacts>,
+    /// Authored short name (e.g. `part def <'CB'> ControlBoard;`), present only when a short
+    /// name is declared alongside a regular name. When short_name is the *only* name,
+    /// [`ast_util::identification_name`] already uses it as [`SemanticNode::name`], so there is
+    /// nothing extra to capture here.
+    #[serde(default)]
+    pub short_name: Option<String>,
+    /// Unit-catalog metadata (prefix, conversion, and value-expression facts) for
+    /// `attribute def`/`attribute` nodes that participate in the unit catalog.
+    #[serde(default)]
+    pub unit: Option<DeclaredUnitFacts>,
+    /// Analysis/verification-case level facts: rendered case expression, aggregated
+    /// require/assert constraints, and objective-to-result binding. See
+    /// [`DeclaredAnalysisCaseFacts`]. Replaces `attributes["analysisExpression"]`,
+    /// `["analysisConstraints"]`, `["objectiveBoundTo"]` (`UNIFY_CACHE_PROGRESS.md` chunk E).
+    #[serde(default)]
+    pub analysis_case: Option<DeclaredAnalysisCaseFacts>,
+    /// The recognized KerML metaclass role for a raw `KermlSemanticDecl`/`KermlFeatureDecl`
+    /// library declaration node, when its opaque BNF-tagged text names a known metaclass.
+    /// Drives genuine semantic classification (`is_kerml_metadata_supertype`, the
+    /// `SemanticMetadata` parent check) rather than presentation (was
+    /// `attributes["metaclassRole"]`, `UNIFY_CACHE_PROGRESS.md` chunk F).
+    #[serde(default)]
+    pub metaclass_role: Option<KermlMetaclassRole>,
+    /// An interface/connection end's declared type name (`end name : Type;`), kept separate from
+    /// `relationships.typing` so that generic unresolved-typing diagnostics do not walk it: ends
+    /// resolve leniently as either a type or a feature reference, and already have their own
+    /// `interface_end_invalid`-family diagnostics (was `attributes["endType"]`,
+    /// `UNIFY_CACHE_PROGRESS.md` chunk F).
+    #[serde(default)]
+    pub interface_end_type: Option<String>,
+    /// Declared keyword spelling used only for semantic-classification decisions: user-defined
+    /// modeled-keyword detection on a `feature decl`/`classifier decl` node, or the matched
+    /// keyword on a `MetadataKeyword` usage (see
+    /// `sysml_diagnostics::checks::view_metadata_conformance`). Deliberately distinct from
+    /// `SourceTextFacts::keyword`, which covers only the unrelated hover/doc-comment spelling of
+    /// an opaque member / action body decl (was `attributes["keyword"]` for this use,
+    /// `UNIFY_CACHE_PROGRESS.md` chunk F).
+    #[serde(default)]
+    pub modeled_keyword: Option<String>,
+    /// Authored payload-typing display text for an action/transition `accept`/`send` clause
+    /// (`accept x : T` / `send x : T`), deliberately kept OUT of `relationships.typing`. Routing
+    /// it there would send it through the over-broad workspace-wide
+    /// `link_workspace_relationships_pass`, which resolves references without the KerML
+    /// namespace-containment/visibility scoping the specification requires -- a semantic defect
+    /// tracked in `RESOLUTION_LAYER_INVESTIGATION.md` ("type-reference resolution ignores KerML
+    /// scoping"), not specific to payload clauses. Migrate into `relationships.typing` once that
+    /// defect is fixed. Distinct from a named flow's own payload feature typing, which already
+    /// resolves through an ordinary `Typing` edge (was `attributes["payloadType"]` for
+    /// accept/send clauses only; the named-flow-payload use of the same key was a pure duplicate
+    /// of its `Typing` edge and was retired, not migrated).
+    #[serde(default)]
+    pub payload_type_reference: Option<String>,
+    /// Authored payload-typing display text for an action/transition `accept` clause
+    /// specifically, kept separate from `payload_type_reference` because an `accept` clause
+    /// publishes both an accept-specific name/type pair and the general payload name/type pair
+    /// (see `graph_builder::payload::insert_payload_clause_attrs`). Same resolution-scoping
+    /// rationale as `payload_type_reference` (was `attributes["acceptType"]`).
+    #[serde(default)]
+    pub accept_type_reference: Option<String>,
+}
+
+impl DeclaredRelationshipFacts {
+    /// The first authored typing target's display text, if any. Several element kinds
+    /// (`part`/`port`/`ref`/`in out parameter`) used to duplicate this into a `*Type` attribute
+    /// map entry alongside the real `Typing` edge/declared fact; this accessor is their single
+    /// replacement (`UNIFY_CACHE_PROGRESS.md` B9 chunk-G-remaining `partType`/`portType`/
+    /// `refType`/`parameterType` rewiring).
+    pub fn typing_display(&self) -> Option<&str> {
+        self.typing
+            .first()
+            .map(|target| target.reference.as_str())
+            .filter(|reference| !reference.trim().is_empty())
+    }
+}
+
+impl DeclaredSemanticFacts {
+    /// The declared target name for an interface/connection end: either its declared
+    /// `interface_end_type` or, for a `::>`/`references` end, its authored reference-subsetting
+    /// target. The two are mutually exclusive per the parser's `uses_derived_syntax`
+    /// discriminator, so the first present one is authoritative. Used by connection-wiring and
+    /// derivation-connection fallback resolution when no `Typing` edge has been published yet.
+    pub fn declared_end_reference(&self) -> Option<&str> {
+        self.interface_end_type.as_deref().or_else(|| {
+            self.relationships
+                .reference_subsetting
+                .first()
+                .map(|target| target.reference.as_str())
+        })
+    }
+}
+
+/// A recognized KerML metaclass role carried by a raw library declaration node.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum KermlMetaclassRole {
+    /// The declaration names (or contains) `SemanticMetadata`.
+    SemanticMetadata,
+}
+
+/// Declared analysis/verification-case facts that previously round-tripped through JSON
+/// attributes. `analysisKind`/`analysisParams`/`analysisReturn`/`parameters` are deliberately
+/// **not** modeled here: an exhaustive repository grep found no reader for any of the four
+/// (`calc_constraint_def.rs` only ever wrote them), so their producer writes were deleted
+/// outright per the B9 "no reader" rule instead of being migrated to a typed fact.
+#[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq, Eq)]
+pub struct DeclaredAnalysisCaseFacts {
+    /// Rendered analysis/verification-case expression text (was `attributes["analysisExpression"]`).
+    /// Remains a rendered string, not a `DeclaredExpression` tree, because every consumer (case
+    /// inheritance propagation, `requirement_case_conformance`, hover) matches on the text itself
+    /// rather than walking a parsed tree; producers only ever had a debug-rendered string here.
+    #[serde(default)]
+    pub expression: Option<String>,
+    /// Aggregated `require constraint` / `assert constraint` facts owned by this case/requirement
+    /// (was `attributes["analysisConstraints"]`).
+    #[serde(default)]
+    pub constraints: Vec<DeclaredAnalysisConstraint>,
+    /// Qualified name of the analysis result this objective is bound to (was
+    /// `attributes["objectiveBoundTo"]`). Modeled as the qualified-name target rather than a
+    /// presence-only bool: `requirement_case_conformance.rs` reads the string content (and
+    /// requires it to be non-empty), not merely whether the key exists; the `engine_impl.rs`
+    /// gate is a strict subset (`is_some()`) of that same fact.
+    #[serde(default)]
+    pub objective_bound_to: Option<String>,
+}
+
+/// One aggregated constraint fact contributing to a case/requirement's
+/// [`DeclaredAnalysisCaseFacts::constraints`]. Mirrors the two producers of
+/// `attributes["analysisConstraints"]` entries: a requirement's authored `require constraint`
+/// body, and an owned `assert constraint` child projected onto its parent.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase", tag = "kind")]
+#[allow(clippy::enum_variant_names)]
+pub enum DeclaredAnalysisConstraint {
+    RequireConstraint {
+        params: Vec<DeclaredAnalysisConstraintParam>,
+        expression: String,
+        #[serde(default)]
+        doc: String,
+        #[serde(default)]
+        metadata: Vec<String>,
+    },
+    AssertConstraint {
+        expression: String,
+    },
+}
+
+/// One `in`/`out`/`inout` parameter of a `require constraint`'s declared parameter list.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct DeclaredAnalysisConstraintParam {
+    pub direction: String,
+    pub name: String,
+    #[serde(default)]
+    pub param_type: Option<String>,
+}
+
+/// Typed source/target endpoint facts for a `transition` statement's `Transition` node.
+/// Mirrors [`ConnectStatementDetail`] for state-machine transitions instead of connect usages.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct TransitionEndpointFacts {
+    /// Authored source endpoint reference, qualified relative to the enclosing state definition.
+    pub source_expression: String,
+    /// Authored target endpoint reference, qualified relative to the enclosing state definition.
+    pub target_expression: String,
+    /// True when this transition was declared with the `initial` keyword.
+    pub is_initial: bool,
+    /// True when the target endpoint resolves to the implicit `done` pseudostate.
+    pub target_is_done: bool,
+}
+
+/// Parser-authored unit-catalog metadata for an `attribute def`/`attribute` node: prefix
+/// declarations (`UnitPrefix`), unit conversions (`ConversionByConvention`, `ConversionByPrefix`,
+/// `IntervalScale`), and the rendered debug form of a declared value expression. Owned entirely
+/// by the semantic system (see `graph_builder::unit_metadata`); no `serde_json::Value` involved.
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+pub struct DeclaredUnitFacts {
+    #[serde(default)]
+    pub prefix: Option<DeclaredUnitPrefix>,
+    #[serde(default)]
+    pub conversion: Option<DeclaredUnitConversion>,
+    #[serde(default)]
+    pub value_expr: Option<String>,
+}
+
+/// A declared `UnitPrefix` catalog entry (e.g. `attribute kilo: UnitPrefix { :>> symbol = "k";
+/// :>> conversionFactor = 1E3; }`).
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct DeclaredUnitPrefix {
+    pub symbol: Option<String>,
+    pub conversion_factor: f64,
+}
+
+/// A declared unit conversion, in one of the catalog's supported shapes.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct DeclaredUnitConversion {
+    pub kind: String,
+    pub reference_unit: Option<String>,
+    pub conversion_factor: Option<f64>,
+    pub prefix: Option<String>,
+    pub interval_unit: Option<String>,
+    pub zero_offset_kelvin: Option<f64>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -1241,6 +1535,14 @@ pub struct DeclaredRelationshipFacts {
     /// remain owned by their `typing` facts on `ElementKind::Subject` children.
     #[serde(default)]
     pub subject: Vec<DeclaredRelationshipTarget>,
+    /// Authored but unresolved-edge reference targets: a `Stakeholder`/`Purpose` declaration's
+    /// bare target name when no typed clause is authored alongside it (was
+    /// `attributes["refTarget"]`, `UNIFY_CACHE_PROGRESS.md` chunk F). These never publish a
+    /// graph edge; consumers resolve the name against the workspace directly. Distinct from
+    /// `reference`, which holds authored `RelationshipKind::Reference` targets that publish
+    /// edges on linking.
+    #[serde(default)]
+    pub reference_target: Vec<DeclaredRelationshipTarget>,
     /// Authored endpoint relationships whose parser adapter exposes only qualified target text.
     /// Their ranges remain explicit `None` until a richer AST adapter supplies them.
     #[serde(default)]
@@ -1325,6 +1627,16 @@ impl DeclaredRelationshipFacts {
                 range: None,
             },
         )
+    }
+
+    /// Records a `Stakeholder`/`Purpose` bare reference name. Kept out of `record_target`'s
+    /// kind routing: `RelationshipKind::Reference` there belongs to `reference`, whose facts
+    /// publish edges on linking, while these never do.
+    pub fn record_reference_target(&mut self, reference: &str) {
+        self.reference_target.push(DeclaredRelationshipTarget {
+            reference: reference.trim().to_string(),
+            range: None,
+        });
     }
 }
 
@@ -1981,6 +2293,80 @@ impl Drop for DeclaredExpression {
     }
 }
 
+/// Typed source-fidelity/documentation text retained from the parser AST, parallel to
+/// [`DeclaredSemanticFacts`]. These fields deliberately remain separate from the legacy
+/// display-oriented `attributes` map: they are the sole semantic-node-owned source of
+/// documentation and representation text for presentation consumers (see
+/// `crates/language_service/src/presentation_hover.rs`), and must not be reconstructed from
+/// JSON attribute projections.
+///
+/// `keyword` here covers only the hover/doc-comment presentation use (opaque member / action
+/// body decl spelling). The *semantic* classification use of a `keyword` value -- feature/
+/// classifier-decl user-defined-keyword detection and metadata-keyword-usage matching in
+/// `sysml_diagnostics::checks::view_metadata_conformance` -- reads a distinct producer/consumer
+/// pair on the untyped `attributes` map and is out of scope here; see
+/// `UNIFY_CACHE_PROGRESS.md` chunk F.
+#[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq, Eq)]
+pub struct SourceTextFacts {
+    /// Documentation comment text (`doc` member of a `TextualRepresentation`/annotation, or the
+    /// combined text attached by `attach_doc_comment`). Multiple `///`/`doc` blocks on the same
+    /// element are joined with a blank line.
+    #[serde(default)]
+    pub doc: Option<String>,
+    /// Free-form body/content text retained for source-fidelity presentation (e.g. a `ref
+    /// redefinition` body, or a synthesized `documentation` node's own text).
+    #[serde(default)]
+    pub body: Option<String>,
+    /// Raw source text of a declaration or textual representation (feature/classifier decl body,
+    /// action body decl, opaque member, or `TextualRepresentation` content).
+    #[serde(default)]
+    pub text: Option<String>,
+    /// Declared language tag for a `TextualRepresentation`.
+    #[serde(default)]
+    pub language: Option<String>,
+    /// Declared keyword spelling for an opaque member / action body decl (hover-only use).
+    #[serde(default)]
+    pub keyword: Option<String>,
+}
+
+/// Debug-rendered expression text kept for consumers that still compare against the raw
+/// rendered text rather than a structured tree (boolean-literal detection, unit-bracket
+/// parsing, `::`-qualification checks, LHS/RHS assignment-target text). Replaces
+/// `attributes["value"]`, `["defaultValue"]`, `["lhs"]`, `["rhs"]`, `["condition"]`,
+/// `["isThen"]` (`UNIFY_CACHE_PROGRESS.md` chunk E).
+///
+/// Where a producer also has a parsed expression AST available, the structured tree is (and
+/// remains) recorded separately as [`DeclaredSemanticFacts::feature_value`] or
+/// `::own_expression`; this struct duplicates the *same* already-computed rendered string 1:1
+/// with the previous JSON attribute value, so no consumer-visible text changes. A handful of
+/// producers (`use_case.rs` `isThen`/"actor redefinition" `rhs`, `analysis_case.rs`'s
+/// `parse_analysis_attributes_from_other`, `requirement_body.rs`'s span-fallback `defaultValue`)
+/// never had a parsed expression to begin with -- only authored/derived text -- so this struct
+/// is their sole representation, matching [`TransitionEndpointFacts`]'s authored-text pattern.
+#[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq, Eq)]
+pub struct DeclaredExpressionText {
+    /// Rendered declared/initial value text (was `attributes["value"]`).
+    #[serde(default)]
+    pub value: Option<String>,
+    /// Rendered attribute-def default-value text (was `attributes["defaultValue"]`).
+    #[serde(default)]
+    pub default_value: Option<String>,
+    /// Rendered LHS of a `verify`/`assign` comparison (was `attributes["lhs"]`).
+    #[serde(default)]
+    pub lhs: Option<String>,
+    /// Rendered RHS of a `verify`/`assign` comparison, or of an actor redefinition (was
+    /// `attributes["rhs"]`).
+    #[serde(default)]
+    pub rhs: Option<String>,
+    /// Rendered guard/filter condition text (was `attributes["condition"]`).
+    #[serde(default)]
+    pub condition: Option<String>,
+    /// True when a `verify`/`assign` comparison, or a chained use case, was declared with
+    /// `then` (was `attributes["isThen"]`).
+    #[serde(default)]
+    pub is_then: Option<bool>,
+}
+
 /// A node in the semantic graph representing a model element.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SemanticNode {
@@ -1996,19 +2382,20 @@ pub struct SemanticNode {
     pub attributes: HashMap<String, serde_json::Value>,
     #[serde(default)]
     pub declared_facts: DeclaredSemanticFacts,
+    /// Typed source-fidelity/documentation text. See [`SourceTextFacts`].
+    #[serde(default)]
+    pub source_text: SourceTextFacts,
+    /// Typed rendered-expression-text facts. See [`DeclaredExpressionText`].
+    #[serde(default)]
+    pub expression_text: DeclaredExpressionText,
     pub parent_id: Option<NodeId>,
 }
 
-/// True if `node`'s declared name or short name (see `ast_util::attach_short_name_attribute`)
+/// True if `node`'s declared name or short name (see [`DeclaredSemanticFacts::short_name`])
 /// equals `target`. Use this instead of `node.name == target` anywhere a simple-name match is
 /// used for reference resolution, so short names declared alongside a regular name
 /// (`part def <'CB'> ControlBoard;`) resolve as real alternate identifiers, matching SysML v2/
 /// KerML semantics, instead of only being findable in the raw source text.
 pub fn node_matches_simple_name(node: &SemanticNode, target: &str) -> bool {
-    node.name == target
-        || node
-            .attributes
-            .get("shortName")
-            .and_then(serde_json::Value::as_str)
-            == Some(target)
+    node.name == target || node.declared_facts.short_name.as_deref() == Some(target)
 }

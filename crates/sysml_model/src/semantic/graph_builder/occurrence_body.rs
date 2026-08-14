@@ -9,7 +9,7 @@ use sysml_v2_parser::ast::{
 use url::Url;
 
 use crate::semantic::ast_util::{
-    declared_expression, declared_feature_value, span_to_range, subsetting_target, typing_targets,
+    declared_expression, declared_feature_value, span_to_range, typing_targets,
 };
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{ElementKind, NodeId, RelationshipKind};
@@ -74,27 +74,11 @@ pub(super) fn build_from_occurrence_body_element(
             let value = &attribute.value;
             let name = super::effective_usage_name(&value.name, value.redefines.as_deref());
             let qualified = qualified_name_for_node(g, uri, container_prefix, name, "attribute");
-            let mut attrs = HashMap::new();
+            let attrs = HashMap::new();
             g.register_declared_membership_facts(
                 NodeId::new(uri, &qualified),
                 crate::semantic::ast_util::declared_membership_facts(&value.membership),
             );
-            let typed_by = typing_targets(value.typing.as_deref());
-            if !typed_by.is_empty() {
-                attrs.insert(
-                    "attributeType".to_string(),
-                    serde_json::json!(typed_by.join(", ")),
-                );
-            }
-            if let Some(r) = subsetting_target(value.redefines.as_deref()) {
-                attrs.insert("redefines".to_string(), serde_json::json!(r));
-            }
-            if let Some(expr_node) = &value.value {
-                attrs.insert(
-                    "value".to_string(),
-                    serde_json::json!(expression_to_debug_string(&expr_node.value.expression)),
-                );
-            }
             add_node_and_recurse(
                 g,
                 uri,
@@ -111,6 +95,8 @@ pub(super) fn build_from_occurrence_body_element(
                 if let Some(attribute) = g.get_node_mut(&node_id) {
                     attribute.declared_facts.feature_value =
                         Some(declared_feature_value(feature_value));
+                    attribute.expression_text.value =
+                        Some(expression_to_debug_string(&feature_value.value.expression));
                 }
             }
             attach_declared_subsetting_family(
@@ -134,7 +120,6 @@ pub(super) fn build_from_occurrence_body_element(
                 NodeId::new(uri, &qualified),
                 crate::semantic::ast_util::declared_membership_facts(&part.membership),
             );
-            attrs.insert("partType".to_string(), serde_json::json!(&part.type_name));
             if let Some(ref m) = part.multiplicity {
                 attrs.insert("multiplicity".to_string(), serde_json::json!(m));
             }

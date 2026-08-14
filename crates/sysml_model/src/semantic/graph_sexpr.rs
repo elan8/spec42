@@ -20,7 +20,7 @@ use crate::semantic::model::{
 };
 use crate::semantic::publication::{
     ImportConformanceOutcome, ReferenceKind, ResolutionOutcome, ResolutionProvenance,
-    ResolvedRelationship, SemanticCompleteness, SemanticModel, SemanticPhase,
+    ResolvedRelationship, SemanticModelCompleteness, SemanticModel, SemanticModelPhase,
 };
 
 const FORMAT_ROOT: &str = "semantic-graph";
@@ -239,12 +239,12 @@ fn render_model_metadata(
     output: &mut dyn std::fmt::Write,
 ) -> std::fmt::Result {
     let phase = match model.phase() {
-        SemanticPhase::Resolved => "resolved",
-        SemanticPhase::Evaluated => "evaluated",
+        SemanticModelPhase::Resolved => "resolved",
+        SemanticModelPhase::Evaluated => "evaluated",
     };
     let completeness = match model.completeness() {
-        SemanticCompleteness::Complete => "complete",
-        SemanticCompleteness::EditorRecovery => "editor-recovery",
+        SemanticModelCompleteness::Complete => "complete",
+        SemanticModelCompleteness::EditorRecovery => "editor-recovery",
     };
     let identity = model.identity();
     writeln!(
@@ -994,6 +994,9 @@ fn render_resolved_relationship(
             let rule = match rule {
                 ImpliedRelationshipRule::UniversalStandardLibraryRelationship => {
                     "universal-standard-library-relationship"
+                }
+                ImpliedRelationshipRule::MetadataRedefinitionEntailsSubsetting => {
+                    "metadata-redefinition-entails-subsetting"
                 }
             };
             let _ = write!(output, " (provenance (implied (rule {rule})))");

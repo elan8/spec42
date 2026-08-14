@@ -36,7 +36,6 @@ fn build_in_out_decl(
         "direction".to_string(),
         serde_json::json!(direction_name(d.direction)),
     );
-    attrs.insert("parameterType".to_string(), serde_json::json!(&d.type_name));
     add_node_and_recurse(
         g,
         uri,
@@ -75,31 +74,14 @@ pub(super) fn materialize_port_usage(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&n.membership),
     );
-    if let Some(ref t) = n.type_name {
-        attrs.insert("portType".to_string(), serde_json::json!(t));
-    }
     if let Some(ref m) = n.multiplicity {
         attrs.insert("multiplicity".to_string(), serde_json::json!(m));
     }
-    if let Some((ref feat, ref val)) = n.subsets {
-        if let Some(target) = subsetting_target(Some(&feat.value)) {
-            attrs.insert("subsetsFeature".to_string(), serde_json::json!(target));
-        }
-        if let Some(v) = val {
-            attrs.insert(
-                "subsetsValue".to_string(),
-                serde_json::json!(expressions::expression_to_debug_string(v)),
-            );
-        }
-    }
-    if let Some(r) = subsetting_target(n.references.as_deref()) {
-        attrs.insert("referencesFeature".to_string(), serde_json::json!(r));
-    }
-    if let Some(c) = subsetting_target(n.crosses.as_deref()) {
-        attrs.insert("crossesFeature".to_string(), serde_json::json!(c));
-    }
-    if let Some(r) = subsetting_target(n.redefines.as_deref()) {
-        attrs.insert("redefines".to_string(), serde_json::json!(r));
+    if let Some((_, Some(ref v))) = n.subsets {
+        attrs.insert(
+            "subsetsValue".to_string(),
+            serde_json::json!(expressions::expression_to_debug_string(v)),
+        );
     }
     add_node_and_recurse(
         g,
@@ -188,18 +170,11 @@ pub(super) fn build_from_port_def_body_element(
             let qualified =
                 qualified_name_for_node(g, uri, container_prefix, name, "attribute def");
             let range = span_to_range(&n.span);
-            let mut attrs = HashMap::new();
+            let attrs = HashMap::new();
             g.register_declared_membership_facts(
                 NodeId::new(uri, &qualified),
                 crate::semantic::ast_util::declared_membership_facts(&n.membership),
             );
-            let typed_by = typing_targets(n.typing.as_deref());
-            if !typed_by.is_empty() {
-                attrs.insert(
-                    "attributeType".to_string(),
-                    serde_json::json!(typed_by.join(", ")),
-                );
-            }
             add_node_and_recurse(
                 g,
                 uri,
@@ -235,22 +210,6 @@ pub(super) fn build_from_port_def_body_element(
                     serde_json::json!(direction_name(direction)),
                 );
                 let typed_by = typing_targets(n.typing.as_deref());
-                let parameter_type_display = if typed_by.is_empty() {
-                    subsetting_target(n.subsets.as_deref())
-                        .unwrap_or_default()
-                        .to_string()
-                } else {
-                    typed_by.join(", ")
-                };
-                if !parameter_type_display.is_empty() {
-                    attrs.insert(
-                        "parameterType".to_string(),
-                        serde_json::json!(parameter_type_display),
-                    );
-                }
-                if let Some(r) = subsetting_target(n.redefines.as_deref()) {
-                    attrs.insert("redefines".to_string(), serde_json::json!(r));
-                }
                 add_node_and_recurse(
                     g,
                     uri,
@@ -333,9 +292,6 @@ fn materialize_port_def_item_usage(
             "direction".to_string(),
             serde_json::json!(direction_name(direction)),
         );
-    }
-    if let Some(ref t) = n.type_name {
-        attrs.insert("itemType".to_string(), serde_json::json!(t));
     }
     if let Some(ref m) = n.multiplicity {
         attrs.insert("multiplicity".to_string(), serde_json::json!(m));

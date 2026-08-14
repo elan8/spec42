@@ -355,7 +355,7 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
         if node.element_kind == sysml_model::ElementKind::Ref {
             continue;
         }
-        if !node.attributes.contains_key("value")
+        if node.expression_text.value.is_none()
             || !node.declared_facts.relationships.redefinition.is_empty()
         {
             continue;
@@ -408,7 +408,7 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
         if node.element_kind != sysml_model::ElementKind::Attribute {
             continue;
         }
-        let Some(value) = node.attributes.get("value").and_then(|v| v.as_str()) else {
+        let Some(value) = node.expression_text.value.as_deref() else {
             continue;
         };
         if !attribute_value_is_string_literal(value) {
@@ -666,7 +666,12 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
         else {
             continue;
         };
-        if node.attributes.contains_key("objectiveBoundTo") {
+        if node
+            .declared_facts
+            .analysis_case
+            .as_ref()
+            .is_some_and(|facts| facts.objective_bound_to.is_some())
+        {
             continue;
         }
         if binding_kind == "case_result_default" {

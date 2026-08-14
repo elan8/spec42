@@ -165,7 +165,10 @@ impl GeneratorModelView {
             .map(|document| {
                 (
                     normalized_origin(&self.snapshot, &NodeId::new(&document.uri, "")),
-                    document.sha256.clone().unwrap_or_default(),
+                    document
+                        .content_digest
+                        .map(|digest| digest.to_string())
+                        .unwrap_or_default(),
                 )
             })
             .collect::<Vec<_>>();
@@ -251,9 +254,6 @@ impl GeneratorModelView {
             .parent_of(node)
             .map(|parent| self.expose_node(parent));
         let projected = self.projected(node);
-        let attributes = projected
-            .map(|value| &value.attributes)
-            .unwrap_or(&node.attributes);
         let properties = projected.and_then(|value| value.facts.feature_properties.as_ref());
         let declared_properties = node.declared_facts.feature_properties.as_ref();
         let ownership = self
@@ -289,14 +289,8 @@ impl GeneratorModelView {
                 end_character: node.range.end.character,
             },
             definition: node.element_kind.is_definition(),
-            documentation: attributes
-                .get("doc")
-                .and_then(|value| value.as_str())
-                .map(str::to_owned),
-            short_name: attributes
-                .get("shortName")
-                .and_then(|value| value.as_str())
-                .map(str::to_owned),
+            documentation: node.source_text.doc.clone(),
+            short_name: node.declared_facts.short_name.clone(),
             direction: properties
                 .and_then(|value| value.direction.clone())
                 .or_else(|| declared_properties.and_then(|value| value.direction.clone())),
@@ -603,9 +597,9 @@ fn normalized_origin(snapshot: &HostWorkspaceSnapshot, id: &NodeId) -> String {
     }
     let content_digest = snapshot
         .metadata()
-        .document_hashes
+        .document_digests
         .get(id.uri.as_str())
-        .cloned()
+        .map(|digest| digest.to_string())
         .unwrap_or_else(|| "unknown".to_owned());
     format!("content:{content_digest}")
 }

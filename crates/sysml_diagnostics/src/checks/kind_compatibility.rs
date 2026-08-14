@@ -328,9 +328,7 @@ pub(crate) fn collect_kind_compatibility_diagnostics(
                         }
 
                         if node.element_kind == sysml_model::ElementKind::Attribute {
-                            if let Some(value) =
-                                node.attributes.get("value").and_then(|v| v.as_str())
-                            {
+                            if let Some(value) = node.expression_text.value.as_deref() {
                                 if attribute_value_is_string_literal(value) {
                                     if let Some(type_ref) = declared_type_ref(target) {
                                         if resolves_to_enum_def(graph, target, type_ref) {

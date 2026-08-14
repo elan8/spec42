@@ -13,7 +13,10 @@ use crate::semantic::ast_util::{
     declared_expression, declared_feature_value, span_to_range, text_range_to_json,
 };
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::model::{DeclaredRelationshipTarget, ElementKind, NodeId, RelationshipKind};
+use crate::semantic::model::{
+    DeclaredAnalysisCaseFacts, DeclaredAnalysisConstraint, DeclaredAnalysisConstraintParam,
+    DeclaredRelationshipTarget, ElementKind, NodeId, RelationshipKind,
+};
 use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
 use crate::semantic::text_span::TextRange;
 
@@ -26,7 +29,6 @@ use super::{
 use crate::semantic::ast_util::identification_name;
 
 const REQUIREMENT_CONSTRAINTS_ATTR: &str = "requirementConstraints";
-const ANALYSIS_CONSTRAINTS_ATTR: &str = "analysisConstraints";
 
 fn append_string_list_attribute(g: &mut SemanticGraph, node_id: &NodeId, key: &str, line: String) {
     let Some(node) = g.get_node_mut(node_id) else {
@@ -49,26 +51,22 @@ fn append_string_list_attribute(g: &mut SemanticGraph, node_id: &NodeId, key: &s
     }
 }
 
-fn append_json_list_attribute(
+/// Appends `constraint` onto `node_id`'s [`DeclaredAnalysisCaseFacts::constraints`], deduplicating
+/// by value. Mirrors the dedup behavior of the JSON `append_json_list_attribute` this replaces.
+fn append_analysis_constraint(
     g: &mut SemanticGraph,
     node_id: &NodeId,
-    key: &str,
-    value: serde_json::Value,
+    constraint: DeclaredAnalysisConstraint,
 ) {
     let Some(node) = g.get_node_mut(node_id) else {
         return;
     };
-    let entry = node
-        .attributes
-        .entry(key.to_string())
-        .or_insert_with(|| serde_json::Value::Array(Vec::new()));
-    if !entry.is_array() {
-        *entry = serde_json::Value::Array(Vec::new());
-    }
-    if let serde_json::Value::Array(values) = entry {
-        if !values.iter().any(|existing| existing == &value) {
-            values.push(value);
-        }
+    let facts = node
+        .declared_facts
+        .analysis_case
+        .get_or_insert_with(DeclaredAnalysisCaseFacts::default);
+    if !facts.constraints.contains(&constraint) {
+        facts.constraints.push(constraint);
     }
 }
 
@@ -163,7 +161,7 @@ fn declared_require_constraint_expression(
 fn require_constraint_structured(
     uri: &Url,
     body: &RequireConstraintBody,
-) -> Option<serde_json::Value> {
+) -> Option<DeclaredAnalysisConstraint> {
     let RequireConstraintBody::Brace { elements } = body else {
         return None;
     };
@@ -179,11 +177,11 @@ fn require_constraint_structured(
                     InOut::Out => "out",
                     InOut::InOut => "inout",
                 };
-                params.push(serde_json::json!({
-                    "direction": direction,
-                    "name": param.value.name,
-                    "type": param.value.type_name,
-                }));
+                params.push(DeclaredAnalysisConstraintParam {
+                    direction: direction.to_string(),
+                    name: param.value.name.clone(),
+                    param_type: Some(param.value.type_name.clone()),
+                });
             }
             ConstraintDefBodyElement::Expression(expr) => {
                 let rendered = text_from_span(uri, &expr.span)
@@ -213,14 +211,11 @@ fn require_constraint_structured(
         return None;
     }
     let doc = doc_fragments.join("\n\n");
-    Some({
-        serde_json::json!({
-            "kind": "require_constraint",
-            "params": params,
-            "expression": expression,
-            "doc": doc,
-            "metadata": metadata_names,
-        })
+    Some(DeclaredAnalysisConstraint::RequireConstraint {
+        params,
+        expression,
+        doc,
+        metadata: metadata_names,
     })
 }
 
@@ -374,11 +369,7 @@ pub(super) fn walk_requirement_def_body(
                     &name,
                     "subject",
                 );
-                let mut attrs = HashMap::new();
-                attrs.insert(
-                    "subjectType".to_string(),
-                    serde_json::json!(sd.value.type_name.as_str()),
-                );
+                let attrs = HashMap::new();
                 add_node_and_recurse(
                     g,
                     uri,
@@ -413,11 +404,7 @@ pub(super) fn walk_requirement_def_body(
                     &name,
                     "actor",
                 );
-                let mut attrs = HashMap::new();
-                attrs.insert(
-                    "actorType".to_string(),
-                    serde_json::json!(ad.value.type_name.as_str()),
-                );
+                let attrs = HashMap::new();
                 add_node_and_recurse(
                     g,
                     uri,
@@ -461,12 +448,7 @@ pub(super) fn walk_requirement_def_body(
                 }
                 let structured = require_constraint_structured(uri, &rc.value.body);
                 if let Some(ref constraint) = structured {
-                    append_json_list_attribute(
-                        g,
-                        parent_id,
-                        ANALYSIS_CONSTRAINTS_ATTR,
-                        constraint.clone(),
-                    );
+                    append_analysis_constraint(g, parent_id, constraint.clone());
                 }
                 let constraint_index = g
                     .get_node(parent_id)
@@ -486,12 +468,32 @@ pub(super) fn walk_requirement_def_body(
                     "require constraint",
                 );
                 let mut attrs = HashMap::new();
-                if let Some(constraint) = structured {
-                    if let Some(obj) = constraint.as_object() {
-                        for (key, value) in obj {
-                            attrs.insert(key.clone(), value.clone());
-                        }
-                    }
+                // These `require constraint` child attributes (`kind`/`params`/`expression`/`doc`/
+                // `metadata`) are a distinct, non-B9-chunk-E key set from `analysisConstraints`
+                // above -- projected here 1:1 from the same typed `DeclaredAnalysisConstraint` so
+                // their JSON shape is unchanged.
+                if let Some(DeclaredAnalysisConstraint::RequireConstraint {
+                    params,
+                    expression,
+                    doc,
+                    metadata,
+                }) = &structured
+                {
+                    attrs.insert("kind".to_string(), serde_json::json!("require_constraint"));
+                    attrs.insert(
+                        "params".to_string(),
+                        serde_json::json!(params
+                            .iter()
+                            .map(|param| serde_json::json!({
+                                "direction": param.direction,
+                                "name": param.name,
+                                "type": param.param_type,
+                            }))
+                            .collect::<Vec<_>>()),
+                    );
+                    attrs.insert("expression".to_string(), serde_json::json!(expression));
+                    attrs.insert("doc".to_string(), serde_json::json!(doc));
+                    attrs.insert("metadata".to_string(), serde_json::json!(metadata));
                 }
                 add_node_and_recurse(
                     g,
@@ -581,26 +583,7 @@ pub(super) fn walk_requirement_def_body(
                     name,
                     "attribute def",
                 );
-                let mut attrs = HashMap::new();
-                let typed_by =
-                    crate::semantic::ast_util::typing_targets(attr_def.value.typing.as_deref());
-                if !typed_by.is_empty() {
-                    attrs.insert(
-                        "attributeType".to_string(),
-                        serde_json::json!(typed_by.join(", ")),
-                    );
-                }
-                if let Some(value_expr) = &attr_def.value.value {
-                    let rendered = expression_to_debug_string(&value_expr.value.expression);
-                    if !rendered.is_empty() {
-                        attrs.insert("value".to_string(), serde_json::json!(rendered));
-                        attrs.insert("defaultValue".to_string(), serde_json::json!(rendered));
-                    }
-                } else if let Some(initializer) =
-                    extract_attribute_initializer_from_span(uri, &attr_def.span)
-                {
-                    attrs.insert("defaultValue".to_string(), serde_json::json!(initializer));
-                }
+                let attrs = HashMap::new();
                 add_node_and_recurse(
                     g,
                     uri,
@@ -613,9 +596,20 @@ pub(super) fn walk_requirement_def_body(
                 );
                 let attribute_id = NodeId::new(uri, &qualified);
                 if let Some(feature_value) = &attr_def.value.value {
+                    let rendered = expression_to_debug_string(&feature_value.value.expression);
                     if let Some(attribute) = g.get_node_mut(&attribute_id) {
                         attribute.declared_facts.feature_value =
                             Some(declared_feature_value(feature_value));
+                        if !rendered.is_empty() {
+                            attribute.expression_text.value = Some(rendered.clone());
+                            attribute.expression_text.default_value = Some(rendered);
+                        }
+                    }
+                } else if let Some(initializer) =
+                    extract_attribute_initializer_from_span(uri, &attr_def.span)
+                {
+                    if let Some(attribute) = g.get_node_mut(&attribute_id) {
+                        attribute.expression_text.default_value = Some(initializer);
                     }
                 }
                 for target in
@@ -636,26 +630,7 @@ pub(super) fn walk_requirement_def_body(
                     name,
                     "attribute",
                 );
-                let mut attrs = HashMap::new();
-                let typed_by =
-                    crate::semantic::ast_util::typing_targets(attr_usage.value.typing.as_deref());
-                if !typed_by.is_empty() {
-                    attrs.insert(
-                        "attributeType".to_string(),
-                        serde_json::json!(typed_by.join(", ")),
-                    );
-                }
-                if let Some(redefines) = crate::semantic::ast_util::subsetting_target(
-                    attr_usage.value.redefines.as_deref(),
-                ) {
-                    attrs.insert("redefines".to_string(), serde_json::json!(redefines));
-                }
-                if let Some(ref value) = attr_usage.value.value {
-                    attrs.insert(
-                        "value".to_string(),
-                        serde_json::json!(expression_to_debug_string(&value.value.expression)),
-                    );
-                }
+                let attrs = HashMap::new();
                 add_node_and_recurse(
                     g,
                     uri,
@@ -672,6 +647,8 @@ pub(super) fn walk_requirement_def_body(
                     if let Some(attribute) = g.get_node_mut(&attribute_id) {
                         attribute.declared_facts.feature_value =
                             Some(declared_feature_value(feature_value));
+                        attribute.expression_text.value =
+                            Some(expression_to_debug_string(&feature_value.value.expression));
                     }
                 }
                 attach_declared_subsetting_family(
@@ -701,8 +678,7 @@ pub(super) fn walk_requirement_def_body(
                         &s.name,
                         "stakeholder",
                     );
-                    let mut attrs = HashMap::new();
-                    attrs.insert("stakeholderType".to_string(), serde_json::json!(type_name));
+                    let attrs = HashMap::new();
                     add_node_and_recurse(
                         g,
                         uri,
@@ -728,8 +704,7 @@ pub(super) fn walk_requirement_def_body(
                         &format!("_stakeholder_{}", s.name),
                         "stakeholder",
                     );
-                    let mut attrs = HashMap::new();
-                    attrs.insert("refTarget".to_string(), serde_json::json!(&s.name));
+                    let node_id = NodeId::new(uri, &qualified);
                     add_node_and_recurse(
                         g,
                         uri,
@@ -737,9 +712,14 @@ pub(super) fn walk_requirement_def_body(
                         "stakeholder",
                         s.name.clone(),
                         span_to_range(&stakeholder.span),
-                        attrs,
+                        HashMap::new(),
                         Some(parent_id),
                     );
+                    if let Some(node) = g.get_node_mut(&node_id) {
+                        node.declared_facts
+                            .relationships
+                            .record_reference_target(&s.name);
+                    }
                 }
             }
             RequirementDefBodyElement::Purpose(purpose) => {
@@ -751,8 +731,7 @@ pub(super) fn walk_requirement_def_body(
                     &format!("_purpose_{}", p.target),
                     "purpose",
                 );
-                let mut attrs = HashMap::new();
-                attrs.insert("refTarget".to_string(), serde_json::json!(&p.target));
+                let node_id = NodeId::new(uri, &qualified);
                 add_node_and_recurse(
                     g,
                     uri,
@@ -760,9 +739,14 @@ pub(super) fn walk_requirement_def_body(
                     "purpose",
                     p.target.clone(),
                     span_to_range(&purpose.span),
-                    attrs,
+                    HashMap::new(),
                     Some(parent_id),
                 );
+                if let Some(node) = g.get_node_mut(&node_id) {
+                    node.declared_facts
+                        .relationships
+                        .record_reference_target(&p.target);
+                }
             }
             RequirementDefBodyElement::TextualRep(t) => {
                 let tr = &t.value;
@@ -780,14 +764,15 @@ pub(super) fn walk_requirement_def_body(
                     "textualRep",
                 );
                 let mut attrs = HashMap::new();
-                attrs.insert("language".to_string(), serde_json::json!(&tr.language));
-                attrs.insert("text".to_string(), serde_json::json!(&tr.text));
+                // `language` also feeds the `viewpoint_rep_language_unresolved` diagnostic, which
+                // reads the typed `source_text.language` fact set below.
                 if let Some(ref language_span) = tr.language_span {
                     attrs.insert(
                         "languageSpan".to_string(),
                         text_range_to_json(span_to_range(language_span)),
                     );
                 }
+                let node_id = NodeId::new(uri, &qualified);
                 add_node_and_recurse(
                     g,
                     uri,
@@ -798,6 +783,10 @@ pub(super) fn walk_requirement_def_body(
                     attrs,
                     Some(parent_id),
                 );
+                if let Some(node) = g.get_node_mut(&node_id) {
+                    node.source_text.text = Some(tr.text.clone());
+                    node.source_text.language = Some(tr.language.clone());
+                }
             }
             RequirementDefBodyElement::VerifyRequirement(verify_node) => {
                 if let Some(requirement_ref) = verify_requirement_target(&verify_node.value) {

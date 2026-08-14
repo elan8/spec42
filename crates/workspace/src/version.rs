@@ -4,8 +4,14 @@ use std::collections::BTreeMap;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 use serde::{Deserialize, Serialize};
+use source_identity::ContentDigest;
 
-pub const ARTIFACT_METADATA_VERSION: u32 = 1;
+/// Schema v2 breaks compatibility with v1: `SysmlDocument.sha256: Option<String>` became
+/// `content_digest: Option<ContentDigest>`, `HostArtifactMetadata.document_hashes` became
+/// `document_digests: BTreeMap<String, ContentDigest>`, and `LibraryCatalog.content_hash`
+/// became `root_digest: RootDigest` computed from verified content. Old v1 metadata (containing
+/// the old field shapes) is rejected on load, never upgraded or defaulted (plan §5.3).
+pub const ARTIFACT_METADATA_VERSION: u32 = 2;
 /// Schema v17 adds the host evaluation query/value projection.
 pub const PROJECTION_SCHEMA_VERSION: u32 = 17;
 pub const RENDERER_COMPATIBILITY_VERSION: u32 = 1;
@@ -40,21 +46,21 @@ pub struct HostArtifactMetadata {
     pub engine_version: String,
     pub library_catalog_hash: String,
     pub built_at: String,
-    pub document_hashes: BTreeMap<String, String>,
+    pub document_digests: BTreeMap<String, ContentDigest>,
 }
 
 impl HostArtifactMetadata {
     pub fn new(
         engine_version: impl Into<String>,
         library_catalog_hash: impl Into<String>,
-        document_hashes: BTreeMap<String, String>,
+        document_digests: BTreeMap<String, ContentDigest>,
     ) -> Self {
         Self {
             schema_versions: HostSchemaVersions::current(),
             engine_version: engine_version.into(),
             library_catalog_hash: library_catalog_hash.into(),
             built_at: rfc3339_timestamp(SystemTime::now()),
-            document_hashes,
+            document_digests,
         }
     }
 }

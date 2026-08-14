@@ -405,9 +405,11 @@ pub(crate) fn collect_view_metadata_conformance_diagnostics(
                 continue;
             }
             let Some(target) = node
-                .attributes
-                .get("refTarget")
-                .and_then(|v| v.as_str())
+                .declared_facts
+                .relationships
+                .reference_target
+                .first()
+                .map(|t| t.reference.as_str())
                 .map(str::trim)
                 .filter(|value| !value.is_empty())
             else {
@@ -465,12 +467,7 @@ pub(crate) fn collect_view_metadata_conformance_diagnostics(
         {
             continue;
         }
-        let language = node
-            .attributes
-            .get("language")
-            .and_then(|v| v.as_str())
-            .unwrap_or("")
-            .trim();
+        let language = node.source_text.language.as_deref().unwrap_or("").trim();
         if !language.is_empty() {
             continue;
         }
@@ -502,7 +499,7 @@ pub(crate) fn collect_view_metadata_conformance_diagnostics(
             node.element_kind.as_str(),
             "feature decl" | "classifier decl"
         ) {
-            let Some(keyword) = node.attributes.get("keyword").and_then(|v| v.as_str()) else {
+            let Some(keyword) = node.declared_facts.modeled_keyword.as_deref() else {
                 continue;
             };
             let keyword = keyword.trim();
@@ -511,7 +508,7 @@ pub(crate) fn collect_view_metadata_conformance_diagnostics(
             }
             keyword.to_string()
         } else if node.element_kind == ElementKind::MetadataKeyword {
-            let Some(keyword) = node.attributes.get("keyword").and_then(|v| v.as_str()) else {
+            let Some(keyword) = node.declared_facts.modeled_keyword.as_deref() else {
                 continue;
             };
             let keyword = keyword.trim();
@@ -822,9 +819,9 @@ fn collect_view_body_filters(
         .filter(|child| child.element_kind == ElementKind::Filter)
         .filter_map(|child| {
             child
-                .attributes
-                .get("condition")
-                .and_then(|value| value.as_str())
+                .expression_text
+                .condition
+                .as_deref()
                 .map(|text| parse_filter_text(text.trim()))
         })
         .collect()

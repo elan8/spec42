@@ -1,5 +1,6 @@
 //! Protocol-neutral workspace build, snapshot, comparison and library management for Spec42.
 
+pub mod cache;
 pub mod catalog;
 pub mod comparison;
 pub mod engine;
@@ -54,6 +55,7 @@ pub use semantic::{
     add_cross_document_edges_for_uri, build_graph_from_doc, evaluate_expressions,
     hover_markdown_for_node, NodeId, RelationshipKind, SemanticGraph, SemanticNode,
 };
+pub use source_identity::{ContentDigest, RootDigest};
 pub use sysml_model::ElementKind;
 
 pub use session::{PublicationToken, RelinkToken, SessionLifecycle, WorkspaceSession};

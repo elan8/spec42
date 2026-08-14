@@ -12,11 +12,11 @@ use super::modeled_kerml_name::{extract_kerml_feature_names_from_text, extract_m
 use super::{add_node_and_recurse, qualified_name_for_node, unit_type_promotion};
 use crate::semantic::ast_util::span_to_range;
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::model::{ElementKind, NodeId};
+use crate::semantic::model::{ElementKind, KermlMetaclassRole, NodeId};
 
-fn semantic_metadata_metaclass_role(display_name: &str, text: &str) -> Option<&'static str> {
+fn semantic_metadata_metaclass_role(display_name: &str, text: &str) -> Option<KermlMetaclassRole> {
     if display_name == "SemanticMetadata" || text.contains("SemanticMetadata") {
-        Some("SemanticMetadata")
+        Some(KermlMetaclassRole::SemanticMetadata)
     } else {
         None
     }
@@ -67,10 +67,7 @@ fn add_kerml_library_decl_node(g: &mut SemanticGraph, input: KermlLibraryNodeInp
         "bnfProduction".to_string(),
         serde_json::json!(bnf_production),
     );
-    attrs.insert("text".to_string(), serde_json::json!(text));
-    if let Some(role) = metaclass_role {
-        attrs.insert("metaclassRole".to_string(), serde_json::json!(role));
-    }
+    let node_id = NodeId::new(uri, &qualified);
     add_node_and_recurse(
         g,
         uri,
@@ -81,7 +78,11 @@ fn add_kerml_library_decl_node(g: &mut SemanticGraph, input: KermlLibraryNodeInp
         attrs,
         Some(parent_id),
     );
-    if metaclass_role == Some("SemanticMetadata") {
+    if let Some(node) = g.get_node_mut(&node_id) {
+        node.source_text.text = Some(text.to_string());
+        node.declared_facts.metaclass_role = metaclass_role;
+    }
+    if metaclass_role == Some(KermlMetaclassRole::SemanticMetadata) {
         let node_id = NodeId::new(uri, &qualified);
         for feature_name in extract_kerml_feature_names_from_text(text) {
             let feature_qualified = qualified_name_for_node(
@@ -120,11 +121,7 @@ pub(super) fn add_kerml_library_feature_node(
     } = input;
     if let Some(parent) = g.get_node(parent_id) {
         if parent.element_kind == ElementKind::MetadataDef
-            && parent
-                .attributes
-                .get("metaclassRole")
-                .and_then(|value| value.as_str())
-                == Some("SemanticMetadata")
+            && parent.declared_facts.metaclass_role == Some(KermlMetaclassRole::SemanticMetadata)
         {
             let qualified = qualified_name_for_node(
                 g,
@@ -138,7 +135,7 @@ pub(super) fn add_kerml_library_feature_node(
                 "bnfProduction".to_string(),
                 serde_json::json!(bnf_production),
             );
-            attrs.insert("text".to_string(), serde_json::json!(text));
+            let node_id = NodeId::new(uri, &qualified);
             add_node_and_recurse(
                 g,
                 uri,
@@ -149,6 +146,9 @@ pub(super) fn add_kerml_library_feature_node(
                 attrs,
                 Some(parent_id),
             );
+            if let Some(node) = g.get_node_mut(&node_id) {
+                node.source_text.text = Some(text.to_string());
+            }
             return;
         }
     }
@@ -158,7 +158,7 @@ pub(super) fn add_kerml_library_feature_node(
         "bnfProduction".to_string(),
         serde_json::json!(bnf_production),
     );
-    attrs.insert("text".to_string(), serde_json::json!(text));
+    let node_id = NodeId::new(uri, &qualified);
     add_node_and_recurse(
         g,
         uri,
@@ -169,6 +169,9 @@ pub(super) fn add_kerml_library_feature_node(
         attrs,
         Some(parent_id),
     );
+    if let Some(node) = g.get_node_mut(&node_id) {
+        node.source_text.text = Some(text.to_string());
+    }
 }
 
 pub(super) fn build_kerml_semantic_decl(

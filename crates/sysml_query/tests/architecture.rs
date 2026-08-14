@@ -244,11 +244,11 @@ fn workspace_cannot_restore_the_retired_semantic_publication_wrapper() {
         "ResolutionProvenance",
         "SemanticBuildFailure",
         "SemanticBuildRequest",
-        "SemanticCompleteness",
+        "SemanticModelCompleteness",
         "SemanticConfiguration",
         "SemanticModel",
         "SemanticModelIdentity",
-        "SemanticPhase",
+        "SemanticModelPhase",
     ]);
     let mut violations = Vec::new();
     for file in files {

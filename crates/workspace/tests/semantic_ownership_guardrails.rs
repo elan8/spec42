@@ -42,6 +42,56 @@ const RELATIONSHIP_PROJECTION_KEYS: &[&str] = &[
     "crossesFeature",
     "typeRef",
     "valueType",
+    "endType",
+    "metaclassRole",
+    "refTarget",
+    "keyword",
+    // `UNIFY_CACHE_PROGRESS.md` B9 chunk-G-remaining: `parameterType` is a pure duplicate of the
+    // first `DeclaredRelationshipFacts::typing` target (same family as `partType`/`portType`/
+    // `refType`/`attributeType` above). `payloadType`/`acceptType` are not relationship-typing
+    // duplicates -- they back the genuinely separate `DeclaredSemanticFacts::
+    // payload_type_reference`/`accept_type_reference` facts -- but share the same enforcement:
+    // post-construction consumers must read the typed fact, not the legacy projection key.
+    "parameterType",
+    "payloadType",
+    "acceptType",
+];
+
+/// `*Type` attribute projections that have been retired outright: their producers were removed
+/// because `DeclaredRelationshipFacts::typing` already carries the same authored typing, and their
+/// consumers now read that typed fact. Unlike `RELATIONSHIP_PROJECTION_KEYS`, which only bars
+/// post-construction *consumers*, these keys must not reappear anywhere in production source —
+/// including the graph builders that used to write them.
+const RETIRED_TYPING_PROJECTION_KEYS: &[&str] = &[
+    // Redundant with `attach_declared_subsetting_family`'s
+    // `DeclaredRelationshipFacts::reference_subsetting`/`cross_subsetting` typed facts: an
+    // exhaustive sweep found no reader anywhere (`UNIFY_CACHE_PROGRESS.md` chunk G).
+    "referencesFeature",
+    "crossesFeature",
+    "actionType",
+    "actorType",
+    "allocationType",
+    "analysisType",
+    "calcType",
+    "caseType",
+    "concernType",
+    "connectionType",
+    "constraintType",
+    "enumerationType",
+    "flowType",
+    "itemType",
+    "keywordType",
+    "metadataType",
+    "objectiveType",
+    "occurrenceType",
+    "requirementType",
+    "stakeholderType",
+    "stateType",
+    "subjectType",
+    "useCaseType",
+    "verificationType",
+    "viewType",
+    "viewpointType",
 ];
 
 const MEMBERSHIP_IMPORT_PROJECTION_KEYS: &[&str] = &[
@@ -163,6 +213,67 @@ fn visitor_catches_direct_helper_const_and_loop_indirection_without_reading_comm
     }
 }
 
+#[test]
+fn retired_typing_projection_keys_are_absent_from_production_source() {
+    let root = repository_root();
+    let mut violations = Vec::new();
+    visit_repository_rust_files(&root.join("crates"), &mut |path| {
+        let source = fs::read_to_string(path).expect("read production Rust module");
+        let parsed = syn::parse_file(&source)
+            .unwrap_or_else(|error| panic!("{}: Rust parse error: {error}", path.display()));
+        let mut visitor = RetiredTypingKeyVisitor::default();
+        visitor.visit_file(&parsed);
+        for key in visitor.keys {
+            violations.push(format!("{}: retired attribute key {key}", path.display()));
+        }
+    });
+    assert!(
+        violations.is_empty(),
+        "retired `*Type` projections must not be reintroduced; the authored typing lives in \
+         DeclaredRelationshipFacts::typing:\n{}",
+        violations.join("\n")
+    );
+}
+
+#[test]
+fn retired_typing_key_guard_rejects_producers_and_consumers_but_not_comments() {
+    let cases = [
+        (
+            r#"fn f(a: &mut Map) { a.insert("stateType".to_string(), json!(t)); }"#,
+            vec!["stateType"],
+        ),
+        (
+            r#"fn f(node: Node) { let _ = node.attributes.get("itemType"); }"#,
+            vec!["itemType"],
+        ),
+        (
+            r#"// attributes.get("viewType"); const SAFE: &str = "prose about typing";"#,
+            vec![],
+        ),
+    ];
+    for (source, expected) in cases {
+        let parsed = syn::parse_file(source).expect("retired-key guard fixture parses");
+        let mut visitor = RetiredTypingKeyVisitor::default();
+        visitor.visit_file(&parsed);
+        assert_eq!(visitor.keys, expected);
+    }
+}
+
+#[derive(Default)]
+struct RetiredTypingKeyVisitor {
+    keys: Vec<String>,
+}
+
+impl<'ast> Visit<'ast> for RetiredTypingKeyVisitor {
+    fn visit_lit_str(&mut self, literal: &'ast LitStr) {
+        let key = literal.value();
+        if RETIRED_TYPING_PROJECTION_KEYS.contains(&key.as_str()) {
+            self.keys.push(key);
+        }
+        syn::visit::visit_lit_str(self, literal);
+    }
+}
+
 #[derive(Default)]
 struct RelationshipProjectionAttributeVisitor {
     keys: Vec<String>,
@@ -227,6 +338,12 @@ fn is_excluded(path: &Path) -> bool {
         "component_view.rs",
         // Owns relationship spelling serialization, not a consumer decision.
         "model.rs",
+        // Boundary DTO projection (`project_source_text_attributes`,
+        // `project_relationship_target_attributes`, `project_expression_text_attributes`):
+        // projects typed facts onto a transport DTO's `attributes` map at construction sites
+        // only, never reading the map back into a semantic decision (`UNIFY_CACHE_PROGRESS.md`
+        // chunk D/G, precedented by `project_expression_text_attributes` in chunk E).
+        "model_projection.rs",
     ];
     path.components().any(|component| {
         EXCLUDED_DIRECTORIES

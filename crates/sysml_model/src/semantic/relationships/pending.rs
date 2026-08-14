@@ -154,7 +154,10 @@ pub fn resolve_pending_relationships_for_uri(g: &mut SemanticGraph, uri: &Url) {
             g,
             &source_id,
             &target_id,
-            SemanticEdge::plain(pending_edge.kind.clone()),
+            SemanticEdge::plain(
+                pending_edge.kind.clone(),
+                ConstructionOwner::PendingResolution,
+            ),
         );
     }
 }
@@ -232,9 +235,16 @@ fn resolve_pending_expression_relationships_for_uri(g: &mut SemanticGraph, uri: 
                 &source_id,
                 &target_id,
                 if kind == RelationshipKind::Connection {
-                    SemanticEdge::connection_with_connect(detail)
+                    SemanticEdge::connection_with_connect(
+                        detail,
+                        ConstructionOwner::PendingResolution,
+                    )
                 } else {
-                    SemanticEdge::interconnection_with_detail(kind, detail)
+                    SemanticEdge::interconnection_with_detail(
+                        kind,
+                        detail,
+                        ConstructionOwner::PendingResolution,
+                    )
                 },
             );
         } else {
@@ -242,7 +252,10 @@ fn resolve_pending_expression_relationships_for_uri(g: &mut SemanticGraph, uri: 
                 g,
                 &source_id,
                 &target_id,
-                SemanticEdge::plain(pending_edge.kind.clone()),
+                SemanticEdge::plain(
+                    pending_edge.kind.clone(),
+                    ConstructionOwner::PendingResolution,
+                ),
             );
         }
     }

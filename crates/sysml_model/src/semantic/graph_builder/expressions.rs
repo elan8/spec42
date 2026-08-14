@@ -7,8 +7,8 @@ use crate::semantic::ast_util::span_to_range;
 use crate::semantic::expression_fold::{fold_expression, ExpressionAlgebra, FoldedChild};
 use crate::semantic::graph::{DeclaredExpressionRelationshipRecord, SemanticGraph};
 use crate::semantic::model::{
-    ConnectStatementDetail, DeclaredExpressionRelationship, ElementKind, NodeId, RelationshipKind,
-    SemanticEdge,
+    ConnectStatementDetail, ConstructionOwner, DeclaredExpressionRelationship, ElementKind, NodeId,
+    RelationshipKind, SemanticEdge,
 };
 use crate::semantic::reference_resolution::{resolve_expression_endpoint_strict, ResolveResult};
 use crate::semantic::relationships::{
@@ -49,10 +49,7 @@ pub(super) fn add_perform_usage_node(
         .node_index_by_id
         .contains_key(&NodeId::new(uri, &qualified))
     {
-        let mut attrs = HashMap::new();
-        if let Some(action_type) = action_type {
-            attrs.insert("actionType".to_string(), serde_json::json!(action_type));
-        }
+        let attrs = HashMap::new();
         add_node_and_recurse(
             g,
             uri,
@@ -193,6 +190,7 @@ fn add_expression_edge_with_metadata(
                                 is_interface_usage,
                                 interface_type,
                             },
+                            ConstructionOwner::DocumentConstruction,
                         ),
                     );
                     return;
@@ -201,15 +199,18 @@ fn add_expression_edge_with_metadata(
                     g,
                     &src_id,
                     &tgt_id,
-                    SemanticEdge::connection_with_connect(ConnectStatementDetail {
-                        declaring_uri: uri.clone(),
-                        range: span_to_range(&left.span),
-                        source_expression: left_str,
-                        target_expression: right_str,
-                        container_prefix: container_prefix.map(ToString::to_string),
-                        is_interface_usage,
-                        interface_type: interface_type.clone(),
-                    }),
+                    SemanticEdge::connection_with_connect(
+                        ConnectStatementDetail {
+                            declaring_uri: uri.clone(),
+                            range: span_to_range(&left.span),
+                            source_expression: left_str,
+                            target_expression: right_str,
+                            container_prefix: container_prefix.map(ToString::to_string),
+                            is_interface_usage,
+                            interface_type: interface_type.clone(),
+                        },
+                        ConstructionOwner::DocumentConstruction,
+                    ),
                 ) == AddSemanticEdgeResult::DuplicateConnect
                 {
                     add_diagnostic_node(
@@ -403,15 +404,18 @@ fn add_expression_edge_with_metadata(
                 g,
                 &src_id,
                 &tgt_id,
-                SemanticEdge::connection_with_connect(ConnectStatementDetail {
-                    declaring_uri: uri.clone(),
-                    range: span_to_range(&left.span),
-                    source_expression: left_str.clone(),
-                    target_expression: right_str.clone(),
-                    container_prefix: container_prefix.map(ToString::to_string),
-                    is_interface_usage,
-                    interface_type: interface_type.clone(),
-                }),
+                SemanticEdge::connection_with_connect(
+                    ConnectStatementDetail {
+                        declaring_uri: uri.clone(),
+                        range: span_to_range(&left.span),
+                        source_expression: left_str.clone(),
+                        target_expression: right_str.clone(),
+                        container_prefix: container_prefix.map(ToString::to_string),
+                        is_interface_usage,
+                        interface_type: interface_type.clone(),
+                    },
+                    ConstructionOwner::DocumentConstruction,
+                ),
             ),
             AddSemanticEdgeResult::DuplicateConnect
         ) {

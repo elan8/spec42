@@ -1,6 +1,7 @@
 use sysml_diagnostics::{collect_diagnostics_from_graph, DiagnosticsOptions};
 use sysml_model::{
-    build_semantic_graph_from_documents, RelationshipKind, SysmlDocument, SysmlDocumentSourceKind,
+    build_semantic_graph_from_documents, ImpliedRelationshipRule, RelationshipKind,
+    RelationshipProvenance, SysmlDocument, SysmlDocumentSourceKind,
 };
 
 const METADATA_DESIGN_DECISION_SYSML: &str = r#"
@@ -359,7 +360,7 @@ fn metadata_keyword_usage_resolves_with_typing_edge() {
         .find(|child| child.element_kind == "metadata keyword")
         .expect("metadata keyword");
     assert_eq!(
-        keyword.attributes.get("keyword").and_then(|v| v.as_str()),
+        keyword.declared_facts.modeled_keyword.as_deref(),
         Some("Tag")
     );
     let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
@@ -464,16 +465,18 @@ fn requirement_metadata_def_shorthand_projects_restriction_attributes() {
         .expect("annotatedElement restriction attribute");
     assert_eq!(
         annotated_element
-            .attributes
-            .get("subsetsFeature")
-            .and_then(|v| v.as_str()),
+            .declared_facts
+            .relationships
+            .subsetting
+            .first()
+            .map(|target| target.reference.as_str()),
         Some("annotatedElement")
     );
     assert!(
         annotated_element
-            .attributes
-            .get("attributeType")
-            .and_then(|v| v.as_str())
+            .declared_facts
+            .relationships
+            .typing_display()
             .is_some_and(|t| t.contains("RequirementUsage")),
         "expected RequirementUsage typing on annotatedElement restriction"
     );
@@ -490,16 +493,18 @@ fn requirement_metadata_def_shorthand_projects_restriction_attributes() {
         .expect("baseType restriction attribute");
     assert_eq!(
         base_type
-            .attributes
-            .get("redefines")
-            .and_then(|v| v.as_str()),
+            .declared_facts
+            .relationships
+            .redefinition
+            .first()
+            .map(|target| target.reference.as_str()),
         Some("baseType")
     );
     assert!(
         base_type
-            .attributes
-            .get("value")
-            .and_then(|v| v.as_str())
+            .expression_text
+            .value
+            .as_deref()
             .is_some_and(|v| v.contains("meta SysML::Usage")),
         "expected meta cast value on baseType restriction"
     );
@@ -560,7 +565,11 @@ fn metadata_redefine_shorthand_projects_subsets_feature_for_annotated_element() 
         "metadata-redefine-shorthand",
         "redefine.sysml",
         r#"package P {
-  metadata def Role {
+  metadata def SemanticMetadata {
+    attribute annotatedElement;
+  }
+
+  metadata def Role :> SemanticMetadata {
     :>> annotatedElement : SysML::RequirementUsage;
   }
 }"#
@@ -601,17 +610,35 @@ fn metadata_redefine_shorthand_projects_subsets_feature_for_annotated_element() 
         .expect("annotatedElement");
     assert_eq!(
         annotated
-            .attributes
-            .get("subsetsFeature")
-            .and_then(|value| value.as_str()),
+            .declared_facts
+            .relationships
+            .redefinition
+            .first()
+            .map(|target| target.reference.as_str()),
         Some("annotatedElement")
     );
-    assert_eq!(
-        annotated
-            .attributes
-            .get("redefines")
-            .and_then(|value| value.as_str()),
-        Some("annotatedElement")
+    // The `:>>` redefinition entails a subsetting per KerML (`Redefinition` specializes
+    // `Subsetting`), but nobody authors it -- it appears as an *implied* graph edge, not a
+    // declared fact (`UNIFY_CACHE_PROGRESS.md` chunk G).
+    let edges = graph.edges_for_uri(&uri);
+    assert!(
+        edges.iter().any(|(source, _target, edge)| {
+            *source == annotated.id
+                && edge.kind == RelationshipKind::Subsetting
+                && edge.provenance
+                    == RelationshipProvenance::Implied(
+                        ImpliedRelationshipRule::MetadataRedefinitionEntailsSubsetting,
+                    )
+        }),
+        "expected implied subsetting edge for :>> annotatedElement"
+    );
+    assert!(
+        edges.iter().any(|(source, _target, edge)| {
+            *source == annotated.id
+                && edge.kind == RelationshipKind::Redefinition
+                && edge.provenance == RelationshipProvenance::Authored
+        }),
+        "expected authored redefinition edge for :>> annotatedElement"
     );
 
     let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());

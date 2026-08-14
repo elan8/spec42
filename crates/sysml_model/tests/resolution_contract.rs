@@ -1,6 +1,7 @@
 use sysml_diagnostics::{collect_diagnostics_from_graph, DiagnosticsOptions};
 use sysml_model::{
-    build_semantic_graph_from_documents, RelationshipKind, SysmlDocument, SysmlDocumentSourceKind,
+    build_semantic_graph_from_documents, ImpliedRelationshipRule, RelationshipKind,
+    RelationshipProvenance, SysmlDocument, SysmlDocumentSourceKind,
 };
 
 fn workspace_doc(path: &str, content: &str) -> SysmlDocument {
@@ -213,7 +214,11 @@ fn contract_metadata_redefine_shorthand_annotated_element_no_incompatible_type_k
     let workspace = workspace_doc(
         "RedefineAnnotatedElement.sysml",
         r#"package Demo {
-  metadata def Role {
+  metadata def SemanticMetadata {
+    attribute annotatedElement;
+  }
+
+  metadata def Role :> SemanticMetadata {
     :>> annotatedElement : SysML::RequirementUsage;
   }
 }"#,
@@ -231,13 +236,28 @@ fn contract_metadata_redefine_shorthand_annotated_element_no_incompatible_type_k
         .into_iter()
         .find(|child| child.name == "annotatedElement")
         .expect("annotatedElement attribute");
+    // The `:>>` redefinition entails a subsetting per KerML (`Redefinition` specializes
+    // `Subsetting`), but nobody authors it -- it must appear as an *implied* graph edge, not a
+    // declared fact (`UNIFY_CACHE_PROGRESS.md` chunk G).
+    let edges = graph.edges_for_uri(&uri);
     assert!(
-        annotated
-            .attributes
-            .get("subsetsFeature")
-            .and_then(|value| value.as_str())
-            == Some("annotatedElement"),
-        "expected subsetsFeature projection for :>> annotatedElement"
+        edges.iter().any(|(source, _target, edge)| {
+            *source == annotated.id
+                && edge.kind == RelationshipKind::Subsetting
+                && edge.provenance
+                    == RelationshipProvenance::Implied(
+                        ImpliedRelationshipRule::MetadataRedefinitionEntailsSubsetting,
+                    )
+        }),
+        "expected implied subsetting edge for :>> annotatedElement"
+    );
+    assert!(
+        edges.iter().any(|(source, _target, edge)| {
+            *source == annotated.id
+                && edge.kind == RelationshipKind::Redefinition
+                && edge.provenance == RelationshipProvenance::Authored
+        }),
+        "expected authored redefinition edge for :>> annotatedElement"
     );
 
     let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
@@ -281,11 +301,8 @@ fn contract_omg_style_fmea_metadata_block_no_metadata_typing_warnings() {
         graph.get_node(id).filter(|node| {
             node.name == "SemanticMetadata"
                 && node.element_kind == "metadata def"
-                && node
-                    .attributes
-                    .get("metaclassRole")
-                    .and_then(|value| value.as_str())
-                    == Some("SemanticMetadata")
+                && node.declared_facts.metaclass_role
+                    == Some(sysml_model::semantic::model::KermlMetaclassRole::SemanticMetadata)
         })
     });
     assert!(

@@ -45,16 +45,45 @@ fn unit_catalog_short_names_materialize_on_graph_nodes() {
         .into_iter()
         .find(|n| n.name == "metre")
         .expect("metre node");
+    assert_eq!(metre.declared_facts.short_name.as_deref(), Some("m"));
     assert_eq!(
-        metre.attributes.get("shortName").and_then(|v| v.as_str()),
-        Some("m")
-    );
-    assert_eq!(
-        metre
-            .attributes
-            .get("attributeType")
-            .and_then(|v| v.as_str()),
+        metre.declared_facts.relationships.typing_display(),
         Some("LengthUnit")
+    );
+}
+
+#[test]
+fn declared_short_name_drives_simple_name_resolution() {
+    let content = "package P { part def <'CB'> ControlBoard; }";
+    let doc = SysmlDocument::from_memory_path(
+        "short-name",
+        "short_name.sysml",
+        content.to_string(),
+        SysmlDocumentSourceKind::Workspace,
+        None,
+        None,
+    )
+    .expect("document");
+    let (graph, _) = build_semantic_graph_from_documents(&[doc]).expect("graph should build");
+
+    // Positive: a short name declared alongside a regular name resolves by simple-name lookup.
+    let by_short_name = graph.nodes_named("CB");
+    assert_eq!(
+        by_short_name.len(),
+        1,
+        "expected exactly one node named by short name CB, got {by_short_name:?}"
+    );
+    assert_eq!(by_short_name[0].name, "ControlBoard");
+    assert_eq!(
+        by_short_name[0].declared_facts.short_name.as_deref(),
+        Some("CB")
+    );
+
+    // Negative: a name that was never declared (short or otherwise) does not resolve.
+    let by_unknown_name = graph.nodes_named("NotDeclared");
+    assert!(
+        by_unknown_name.is_empty(),
+        "expected no match for an undeclared name, got {by_unknown_name:?}"
     );
 }
 

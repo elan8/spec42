@@ -312,7 +312,7 @@ pub(crate) fn collect_structural_feature_conformance_diagnostics(
 mod tests {
     use super::*;
     use sysml_model::semantic::text_span::{TextPosition, TextRange};
-    use sysml_model::{NodeId, SemanticEdge, SemanticNode};
+    use sysml_model::{ConstructionOwner, NodeId, SemanticEdge, SemanticNode};
 
     fn node(
         uri: &Url,
@@ -340,6 +340,8 @@ mod tests {
                 feature_properties: Some(props),
                 ..Default::default()
             },
+            source_text: Default::default(),
+            expression_text: Default::default(),
             parent_id: None,
         }
     }
@@ -380,12 +382,18 @@ mod tests {
         graph.insert_workspace_edge(
             &redefining.id,
             &base.id,
-            SemanticEdge::plain(RelationshipKind::Redefinition),
+            SemanticEdge::plain(
+                RelationshipKind::Redefinition,
+                ConstructionOwner::DocumentConstruction,
+            ),
         );
         graph.insert_workspace_edge(
             &redefining.id,
             &unique.id,
-            SemanticEdge::plain(RelationshipKind::Subsetting),
+            SemanticEdge::plain(
+                RelationshipKind::Subsetting,
+                ConstructionOwner::DocumentConstruction,
+            ),
         );
         let codes: Vec<_> = collect_structural_feature_conformance_diagnostics(&graph, &uri)
             .into_iter()
@@ -467,17 +475,26 @@ mod tests {
         graph.insert_workspace_edge(
             &derived_type.id,
             &base_type.id,
-            SemanticEdge::plain(RelationshipKind::Specializes),
+            SemanticEdge::plain(
+                RelationshipKind::Specializes,
+                ConstructionOwner::DocumentConstruction,
+            ),
         );
         graph.insert_workspace_edge(
             &valid_redefinition.id,
             &base_feature.id,
-            SemanticEdge::plain(RelationshipKind::Redefinition),
+            SemanticEdge::plain(
+                RelationshipKind::Redefinition,
+                ConstructionOwner::DocumentConstruction,
+            ),
         );
         graph.insert_workspace_edge(
             &invalid_redefinition.id,
             &base_feature.id,
-            SemanticEdge::plain(RelationshipKind::Redefinition),
+            SemanticEdge::plain(
+                RelationshipKind::Redefinition,
+                ConstructionOwner::DocumentConstruction,
+            ),
         );
         graph.refresh_effective_facts();
 
@@ -605,7 +622,10 @@ mod tests {
         graph.insert_workspace_edge(
             &derived.id,
             &base.id,
-            SemanticEdge::plain(RelationshipKind::Specializes),
+            SemanticEdge::plain(
+                RelationshipKind::Specializes,
+                ConstructionOwner::DocumentConstruction,
+            ),
         );
 
         let reported: HashSet<_> = collect_structural_feature_conformance_diagnostics(&graph, &uri)
