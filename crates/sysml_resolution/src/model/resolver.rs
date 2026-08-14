@@ -346,7 +346,12 @@ impl IdentityIndex {
     fn build(storage: &SemanticModelStorage) -> Result<Self, ResolutionError> {
         let occurrences = name_occurrences(storage)?;
         let mut text: Vec<Box<str>> = Vec::with_capacity(storage.declarations.len());
-        let mut name_paths: Vec<Option<String>> = Vec::with_capacity(storage.declarations.len());
+        let mut name_paths: Vec<Option<usize>> = Vec::with_capacity(storage.declarations.len());
+        let mut name_path_ids = std::collections::HashMap::new();
+        name_path_ids
+            .try_reserve(storage.declarations.len())
+            .map_err(|_| ResolutionError::Capacity)?;
+        let mut name_path_counts: Vec<u32> = Vec::new();
         for index in 0..storage.declarations.len() {
             let id = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
             let declaration = storage
@@ -355,75 +360,53 @@ impl IdentityIndex {
             let document = storage
                 .document(declaration.document)
                 .ok_or(ResolutionError::InvalidStorage)?;
-            let (mut identity, mut name_path) = if let Some(owner) = declaration.owner {
+            let mut identity = if let Some(owner) = declaration.owner {
                 let owner_declaration = storage
                     .declaration(owner)
                     .ok_or(ResolutionError::InvalidStorage)?;
                 if owner.index() >= index || owner_declaration.document != declaration.document {
                     return Err(ResolutionError::InvalidStorage);
                 }
-                (
-                    text[owner.index()].to_string(),
-                    name_paths[owner.index()].clone(),
-                )
+                text[owner.index()].to_string()
             } else {
                 let mut identity = String::from(IDENTITY_ENCODING_VERSION);
                 push_identity_field(&mut identity, &document.identity);
-                let mut name_path = String::new();
-                push_identity_field(&mut name_path, &document.identity);
-                (identity, Some(name_path))
+                identity
             };
             push_identity_segment(storage, id, &occurrences, &mut identity)?;
-            match declaration.name {
-                Some(name) => {
-                    if let Some(path) = name_path.as_mut() {
-                        push_identity_field(
-                            path,
-                            storage
-                                .symbol(name)
-                                .ok_or(ResolutionError::InvalidStorage)?,
-                        );
+            let name_path = if declaration
+                .owner
+                .is_some_and(|owner| name_paths.get(owner.index()).copied().flatten().is_none())
+            {
+                None
+            } else if let Some(name) = declaration.name {
+                let parent = declaration
+                    .owner
+                    .and_then(|owner| name_paths[owner.index()]);
+                let key = (declaration.document, parent, name);
+                let path = match name_path_ids.get(&key) {
+                    Some(path) => *path,
+                    None => {
+                        let path = name_path_counts.len();
+                        name_path_counts.push(0);
+                        name_path_ids.insert(key, path);
+                        path
                     }
-                }
-                None => name_path = None,
-            }
+                };
+                name_path_counts[path] = name_path_counts[path]
+                    .checked_add(1)
+                    .ok_or(ResolutionError::Capacity)?;
+                Some(path)
+            } else {
+                None
+            };
             text.push(identity.into_boxed_str());
             name_paths.push(name_path);
         }
         // A qualified name identifies a declaration only when nothing else in the publication
         // renders the same one -- two same-named siblings of different kinds otherwise share it.
-        let mut name_path_counts: HashTable<(usize, u32)> = HashTable::new();
-        let counting_hash = RandomState::default();
-        for (index, path) in name_paths.iter().enumerate() {
-            let Some(path) = path else { continue };
-            let hash = counting_hash.hash_one(path.as_str());
-            let matches = |candidate: &(usize, u32)| {
-                name_paths[candidate.0].as_deref() == Some(path.as_str())
-            };
-            if let Some(entry) = name_path_counts.find_mut(hash, matches) {
-                entry.1 += 1;
-            } else {
-                let rehash = |candidate: &(usize, u32)| {
-                    counting_hash.hash_one(name_paths[candidate.0].as_deref().unwrap_or_default())
-                };
-                name_path_counts
-                    .try_reserve(1, rehash)
-                    .map_err(|_| ResolutionError::Capacity)?;
-                name_path_counts.insert_unique(hash, (index, 1), rehash);
-            }
-        }
         let shorthand = (0..storage.declarations.len())
-            .map(|index| {
-                let Some(path) = name_paths[index].as_deref() else {
-                    return false;
-                };
-                let hash = counting_hash.hash_one(path);
-                name_path_counts
-                    .find(hash, |candidate| {
-                        name_paths[candidate.0].as_deref() == Some(path)
-                    })
-                    .is_some_and(|entry| entry.1 == 1)
-            })
+            .map(|index| name_paths[index].is_some_and(|path| name_path_counts[path] == 1))
             .collect::<Vec<_>>()
             .into_boxed_slice();
         let mut next = vec![None; text.len()];
