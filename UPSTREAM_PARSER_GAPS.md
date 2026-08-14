@@ -122,6 +122,11 @@ entry should carry enough detail to file/update an upstream issue against
   `time_varying_features.md`, `time_varying_features_enhanced.md`. Needs a `var` member production
   wired into the relevant starter tables, filed upstream against
   `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+  **Re-verified against `cb026cd` (closing-the-gap, composite-step/var-modifiers slice):** still
+  accurate -- `ATTRIBUTE_BODY_STARTERS` in the pinned checkout has no `b"var"` entry, confirmed by
+  direct inspection of `src/parser/attribute.rs:28-49`. `test/snapshots/kerml/behaviors.md`'s
+  `out var y1;` still reports `unrecognized_declaration_in_scope`. No `sysml_resolution` lowering
+  work is possible until this lands upstream.
 
 - Gap 19. `composite`-prefixed feature declarations (e.g. `composite feature engine subsets
   carParts { ... }`) are unrecognized in both attribute bodies and package bodies. Root cause: no
@@ -147,6 +152,16 @@ entry should carry enough detail to file/update an upstream issue against
   `test/snapshots/kerml/coverage_behaviors.md`. Needs `step` added to `ATTRIBUTE_BODY_STARTERS`
   with dispatch to the existing step production, filed upstream against
   `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+  **Re-verified against `cb026cd` (closing-the-gap, composite-step/var-modifiers slice):** still
+  accurate -- `ATTRIBUTE_BODY_STARTERS` in the pinned checkout has no `b"step"` entry, confirmed by
+  direct inspection of `src/parser/attribute.rs:28-49`; `KermlClassifierKeyword::Behavior` bodies
+  (`src/parser/package.rs:683`) dispatch through the same attribute-body production, so
+  `behavior A { ... composite step b : B { ... } }` in `test/snapshots/kerml/behaviors.md` still
+  reports `unrecognized_declaration_in_scope` for the whole `step` member (range covers both the
+  `composite` prefix and the nested `in x1 = A::x;` body -- neither the `composite` ownership
+  modifier nor the nested qualified-reference-valued parameter is reachable for lowering while the
+  member itself is opaque). No `sysml_resolution` lowering work is possible until this lands
+  upstream; nothing to implement in this slice.
 
 - Gap 21. Nested `class`-keyword definitions inside an attribute/class body are unrecognized, even
   though `class` is a fully supported *top-level* package-body production (`definition_prefix`
