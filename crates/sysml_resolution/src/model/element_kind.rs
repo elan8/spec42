@@ -15,7 +15,9 @@
 //! The collapse table is pinned by a test, so a *new* collapse cannot appear by accident.
 
 use super::DeclarationKind;
-use crate::element_kind::{ElementKind, MembershipRole, StateSubactionKind};
+use crate::element_kind::{
+    ElementKind, MembershipRole, RequirementConstraintKind, StateSubactionKind,
+};
 
 /// The published kind of a declaration.
 pub(crate) fn element_kind(kind: DeclarationKind) -> ElementKind {
@@ -63,6 +65,12 @@ pub(crate) fn element_kind(kind: DeclarationKind) -> ElementKind {
         DeclarationKind::CalcUsage => ElementKind::CalculationUsage,
         DeclarationKind::ConstraintDefinition => ElementKind::ConstraintDefinition,
         DeclarationKind::ConstraintUsage => ElementKind::ConstraintUsage,
+        DeclarationKind::AssertConstraintUsage => ElementKind::AssertConstraintUsage,
+        // Both are a plain `ConstraintUsage`; `assume` vs `require` is the owning
+        // `RequirementConstraintMembership`'s kind, published as a role.
+        DeclarationKind::AssumeConstraintUsage | DeclarationKind::RequireConstraintUsage => {
+            ElementKind::ConstraintUsage
+        }
         DeclarationKind::RequirementDefinition => ElementKind::RequirementDefinition,
         DeclarationKind::RequirementUsage => ElementKind::RequirementUsage,
         // A verified requirement is a `RequirementUsage` under a
@@ -183,6 +191,12 @@ pub(crate) fn membership_role(kind: DeclarationKind) -> Option<MembershipRole> {
             Some(MembershipRole::Parameter)
         }
         DeclarationKind::KermlEnd => Some(MembershipRole::EndFeature),
+        DeclarationKind::AssumeConstraintUsage => Some(MembershipRole::RequirementConstraint(
+            RequirementConstraintKind::Assumption,
+        )),
+        DeclarationKind::RequireConstraintUsage => Some(MembershipRole::RequirementConstraint(
+            RequirementConstraintKind::Requirement,
+        )),
 
         DeclarationKind::Namespace
         | DeclarationKind::Package
@@ -217,6 +231,7 @@ pub(crate) fn membership_role(kind: DeclarationKind) -> Option<MembershipRole> {
         | DeclarationKind::CalcUsage
         | DeclarationKind::ConstraintDefinition
         | DeclarationKind::ConstraintUsage
+        | DeclarationKind::AssertConstraintUsage
         | DeclarationKind::RequirementDefinition
         | DeclarationKind::RequirementUsage
         | DeclarationKind::ConcernDefinition
@@ -344,6 +359,9 @@ mod tests {
         DeclarationKind::InterfaceUsage,
         DeclarationKind::ConstraintDefinition,
         DeclarationKind::ConstraintUsage,
+        DeclarationKind::AssertConstraintUsage,
+        DeclarationKind::AssumeConstraintUsage,
+        DeclarationKind::RequireConstraintUsage,
         DeclarationKind::ConcernDefinition,
         DeclarationKind::ConcernUsage,
         DeclarationKind::CalcDefinition,
@@ -444,6 +462,14 @@ mod tests {
             ],
         ),
         (
+            ElementKind::ConstraintUsage,
+            &[
+                DeclarationKind::ConstraintUsage,
+                DeclarationKind::AssumeConstraintUsage,
+                DeclarationKind::RequireConstraintUsage,
+            ],
+        ),
+        (
             ElementKind::EnumerationUsage,
             &[
                 DeclarationKind::EnumerationUsage,
@@ -532,6 +558,43 @@ mod tests {
             "the set of many-to-one collapses changed; a collapse merges two elements into one \
              published kind, so add it to COLLAPSES only with a reason recorded in \
              `element_kind`'s own comments"
+        );
+    }
+
+    /// The `assume`/`require` distinction is what the OMG parks on
+    /// `RequirementConstraintMembership.kind`, and the keyword is the only thing that carries it,
+    /// so both spellings must reach the published role rather than collapsing on the way.
+    #[test]
+    fn assume_and_require_constraints_publish_their_membership_role() {
+        assert_eq!(
+            element_kind(DeclarationKind::AssumeConstraintUsage),
+            ElementKind::ConstraintUsage
+        );
+        assert_eq!(
+            element_kind(DeclarationKind::RequireConstraintUsage),
+            ElementKind::ConstraintUsage
+        );
+        assert_eq!(
+            membership_role(DeclarationKind::AssumeConstraintUsage),
+            Some(MembershipRole::RequirementConstraint(
+                RequirementConstraintKind::Assumption
+            ))
+        );
+        assert_eq!(
+            membership_role(DeclarationKind::RequireConstraintUsage),
+            Some(MembershipRole::RequirementConstraint(
+                RequirementConstraintKind::Requirement
+            ))
+        );
+
+        // `assert constraint` is a metaclass of its own, not a role on a plain constraint.
+        assert_eq!(
+            element_kind(DeclarationKind::AssertConstraintUsage),
+            ElementKind::AssertConstraintUsage
+        );
+        assert_eq!(
+            membership_role(DeclarationKind::AssertConstraintUsage),
+            None
         );
     }
 

@@ -94,6 +94,10 @@ element_kinds! {
     CalculationUsage,
     ConstraintDefinition,
     ConstraintUsage,
+    /// `assert constraint ...`.
+    ///
+    /// A concrete metaclass of its own: `AssertConstraintUsage <: Invariant, ConstraintUsage`.
+    AssertConstraintUsage,
     RequirementDefinition,
     RequirementUsage,
     ConcernDefinition,
@@ -210,6 +214,19 @@ pub enum StateSubactionKind {
     Exit,
 }
 
+/// Whether a constraint framed by a requirement is an assumption or a required constraint.
+///
+/// Mirrors the OMG `RequirementConstraintKind`. The specification also uses it on
+/// `FramedConcernMembership` and `RequirementVerificationMembership`, whose authored forms this
+/// crate does not yet distinguish, so it is published only for the `assume`/`require` pair.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum RequirementConstraintKind {
+    /// `assume constraint ...`.
+    Assumption,
+    /// `require constraint ...`.
+    Requirement,
+}
+
 /// The role an element plays in its owner, where the OMG carries that role on the owning
 /// membership rather than on the element itself.
 ///
@@ -221,6 +238,8 @@ pub enum StateSubactionKind {
 pub enum MembershipRole {
     /// `StateSubactionMembership` -- an `entry`/`do`/`exit` action of a state.
     StateSubaction(StateSubactionKind),
+    /// `RequirementConstraintMembership` -- an `assume`/`require` constraint of a requirement.
+    RequirementConstraint(RequirementConstraintKind),
     /// `SubjectMembership`.
     Subject,
     /// `StakeholderMembership`.
@@ -246,6 +265,8 @@ impl MembershipRole {
             Self::StateSubaction(StateSubactionKind::Entry) => "entry",
             Self::StateSubaction(StateSubactionKind::Do) => "do",
             Self::StateSubaction(StateSubactionKind::Exit) => "exit",
+            Self::RequirementConstraint(RequirementConstraintKind::Assumption) => "assumption",
+            Self::RequirementConstraint(RequirementConstraintKind::Requirement) => "requirement",
             Self::Subject => "subject",
             Self::Stakeholder => "stakeholder",
             Self::Actor => "actor",
@@ -309,6 +330,8 @@ mod tests {
             MembershipRole::StateSubaction(StateSubactionKind::Entry),
             MembershipRole::StateSubaction(StateSubactionKind::Do),
             MembershipRole::StateSubaction(StateSubactionKind::Exit),
+            MembershipRole::RequirementConstraint(RequirementConstraintKind::Assumption),
+            MembershipRole::RequirementConstraint(RequirementConstraintKind::Requirement),
             MembershipRole::Subject,
             MembershipRole::Stakeholder,
             MembershipRole::Actor,

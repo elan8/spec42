@@ -399,6 +399,21 @@ pub(crate) enum DeclarationKind {
     /// (planning/UPSTREAM_PARSER_GAPS.md #4): `ConstraintUsage` previously had no `subsets`/`redefines`
     /// fields at all.
     ConstraintUsage,
+    /// An `assert constraint <name>? { ... }` member.
+    ///
+    /// OMG `AssertConstraintUsage`, a concrete metaclass in its own right
+    /// (`AssertConstraintUsage <: Invariant, ConstraintUsage`) rather than a plain constraint.
+    AssertConstraintUsage,
+    /// An `assume constraint <name>? { ... }` member of a requirement body.
+    ///
+    /// OMG `ConstraintUsage` owned by a `RequirementConstraintMembership` whose `kind` is
+    /// `assumption`; the keyword is the only thing that distinguishes it from the `require` form,
+    /// so it needs its own declaration kind for that role to be derivable.
+    AssumeConstraintUsage,
+    /// A `require constraint <name>? { ... }` member of a requirement body.
+    ///
+    /// As above, with `RequirementConstraintMembership.kind` = `requirement`.
+    RequireConstraintUsage,
     /// `concern def` (BNF ConcernDefinition, Clause 8.2.2.11): a type whose owned members share
     /// `RequirementDefBody`/`RequirementDefBodyElement` with `RequirementDefinition`, mirroring
     /// `lower_viewpoint_def`. The parser models both `concern def` and `concern` under a single
@@ -11559,12 +11574,12 @@ impl SemanticModelBuilder {
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
-            DeclarationKind::ConstraintUsage,
+            DeclarationKind::AssertConstraintUsage,
             name,
             node.span.clone(),
-            // `ast::AssertConstraintMember` carries only `is_negated`, an assertion-polarity fact
-            // rather than a declaration modifier, and the negated form is routed to the
-            // unsupported diagnostic above.
+            // `ast::AssertConstraintMember`'s remaining field is `is_negated`, an
+            // assertion-polarity fact rather than a declaration modifier, and the negated form is
+            // routed to the unsupported diagnostic above.
             DeclarationFacts::none(),
         )?;
         self.push_membership(
@@ -11639,11 +11654,16 @@ impl SemanticModelBuilder {
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
-            DeclarationKind::ConstraintUsage,
+            if node.value.is_assume {
+                DeclarationKind::AssumeConstraintUsage
+            } else {
+                DeclarationKind::RequireConstraintUsage
+            },
             name,
             node.span.clone(),
-            // `ast::RequireConstraint` carries only `is_assume`/`has_constraint_keyword`, which
-            // select the authored form rather than modify the declaration.
+            // `has_constraint_keyword` selects the authored form (checked above) rather than
+            // modifying the declaration; `is_assume` rides the declaration kind, because it is
+            // what makes `RequirementConstraintMembership.kind` derivable.
             DeclarationFacts::none(),
         )?;
         self.push_membership(
@@ -16573,7 +16593,7 @@ mod tests {
              }\n",
         );
         assert!(
-            output.contains("(qualified-name \"Demo::C::check\"))) (kind constraint)"),
+            output.contains("(qualified-name \"Demo::C::check\"))) (kind assert-constraint)"),
             "expected an assert-constraint declaration for check, got:\n{output}"
         );
         assert!(

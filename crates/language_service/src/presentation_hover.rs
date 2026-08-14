@@ -427,7 +427,9 @@ pub fn hover_markdown_for_node(
 
 #[cfg(test)]
 mod tests {
-    use sysml_model::{build_graph_from_doc, SemanticGraph, SemanticNode};
+    use sysml_model::{
+        build_graph_from_doc, link_workspace_relationships, SemanticGraph, SemanticNode,
+    };
     use sysml_v2_parser::parse;
     use url::Url;
 
@@ -489,7 +491,10 @@ mod tests {
 }"#;
         let root = parse(input).expect("parse");
         let uri = Url::parse("file:///c.sysml").expect("uri");
-        let graph = build_graph_from_doc(&root, &uri);
+        // The builder publishes authored relationship facts; the resolved edges hover reads are
+        // produced by the linking pass, exactly as in the production pipeline.
+        let mut graph = build_graph_from_doc(&root, &uri);
+        link_workspace_relationships(&mut graph);
         let c = graph_node(&graph, &uri, "part def", "C");
         let hover = hover_markdown_for_node(&graph, c, false);
         assert!(

@@ -1,6 +1,7 @@
 use sysml_model::{
-    build_graph_from_doc, build_semantic_graph_from_documents, ElementKind, NodeId,
-    RelationshipKind, SysmlDocument, SysmlDocumentSourceKind,
+    build_graph_from_doc, build_semantic_graph_from_documents, link_workspace_relationships,
+    resolve_workspace_pending_relationships, ElementKind, NodeId, RelationshipKind, SysmlDocument,
+    SysmlDocumentSourceKind,
 };
 use sysml_v2_parser::parse;
 use url::Url;
@@ -16,7 +17,12 @@ package Selection {
 "#;
     let parsed = parse(source).expect("parse dependency model");
     let uri = Url::parse("file:///dependency-selection.sysml").expect("fixture URI");
-    let graph = build_graph_from_doc(&parsed, &uri);
+    // The builder publishes authored dependency facts and queues the client/supplier endpoints;
+    // the resolved edges asserted below are produced by the linking and pending-resolution passes,
+    // exactly as in the production pipeline.
+    let mut graph = build_graph_from_doc(&parsed, &uri);
+    link_workspace_relationships(&mut graph);
+    resolve_workspace_pending_relationships(&mut graph);
     let client_id = NodeId::new(&uri, "Selection::RequiredSensor");
     let client = graph.get_node(&client_id).expect("dependency client");
 
@@ -91,7 +97,12 @@ package Selection {
 "#;
     let parsed = parse(source).expect("parse nested dependency model");
     let uri = Url::parse("file:///nested-dependency-selection.sysml").expect("fixture URI");
-    let graph = build_graph_from_doc(&parsed, &uri);
+    // The builder publishes authored dependency facts and queues the client/supplier endpoints;
+    // the resolved edges asserted below are produced by the linking and pending-resolution passes,
+    // exactly as in the production pipeline.
+    let mut graph = build_graph_from_doc(&parsed, &uri);
+    link_workspace_relationships(&mut graph);
+    resolve_workspace_pending_relationships(&mut graph);
 
     let dependency_id = NodeId::new(&uri, "Selection::RequiredSensor::selectedImplementation");
     let dependency = graph

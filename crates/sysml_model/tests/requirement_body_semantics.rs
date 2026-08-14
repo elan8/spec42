@@ -185,7 +185,10 @@ fn standalone_verification_graph_links_objective_verified_requirement_to_case() 
 }"#;
     let parsed = sysml_v2_parser::parse(source).expect("parse");
     let uri = url::Url::parse("file:///verification.sysml").expect("uri");
-    let graph = sysml_model::build_graph_from_doc(&parsed, &uri);
+    // The case-subject edge is derived by the linking pass, not by construction; the assertion
+    // below still guards the "exactly one" part, which is what this test is for.
+    let mut graph = sysml_model::build_graph_from_doc(&parsed, &uri);
+    sysml_model::link_workspace_relationships(&mut graph);
 
     let case_subject_edges: Vec<_> = graph
         .edges_for_uri_as_strings(&uri)

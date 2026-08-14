@@ -103,16 +103,16 @@ pub(super) fn add_interface_edge_if_both_exist(
     );
 }
 
+/// Records one authored expression relationship against `owner`.
+///
+/// Takes the whole `DeclaredExpressionRelationship` rather than its fields one by one: the
+/// positional form put two `bool`/`Option<String>` arguments next to each other, which is exactly
+/// the shape a caller can transpose silently. `scope_owner` is owned by this function -- whatever
+/// the caller sets is overwritten with `owner`, so there is one source of truth for it.
 pub(super) fn record_declared_expression_relationship(
     g: &mut SemanticGraph,
     owner: NodeId,
-    kind: RelationshipKind,
-    source_expression: String,
-    target_expression: String,
-    source_range: TextRange,
-    target_range: Option<TextRange>,
-    is_interface_usage: bool,
-    interface_type: Option<String>,
+    relationship: DeclaredExpressionRelationship,
 ) {
     let authored_ordinal = g
         .declared_expression_relationships
@@ -124,14 +124,8 @@ pub(super) fn record_declared_expression_relationship(
             owner: owner.clone(),
             authored_ordinal,
             relationship: DeclaredExpressionRelationship {
-                kind,
-                source_expression,
-                target_expression,
                 scope_owner: Some(owner),
-                source_range,
-                target_range,
-                is_interface_usage,
-                interface_type,
+                ..relationship
             },
         });
 }
@@ -158,13 +152,16 @@ fn add_expression_edge_with_metadata(
         record_declared_expression_relationship(
             g,
             owner,
-            kind.clone(),
-            left_str,
-            right_str,
-            span_to_range(&left.span),
-            Some(span_to_range(&right.span)),
-            is_interface_usage,
-            interface_type,
+            DeclaredExpressionRelationship {
+                kind: kind.clone(),
+                source_expression: left_str,
+                target_expression: right_str,
+                scope_owner: None,
+                source_range: span_to_range(&left.span),
+                target_range: Some(span_to_range(&right.span)),
+                is_interface_usage,
+                interface_type,
+            },
         );
         return;
     }

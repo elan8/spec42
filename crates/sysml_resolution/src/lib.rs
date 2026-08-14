@@ -10,7 +10,9 @@ use source_identity::{ContentDigest, RootDigest, SourceManifest, SourceManifestE
 mod element_kind;
 mod model;
 
-pub use element_kind::{ElementKind, MembershipRole, StateSubactionKind};
+pub use element_kind::{
+    ElementKind, MembershipRole, RequirementConstraintKind, StateSubactionKind,
+};
 
 use model::resolver::ResolvedSemanticModel;
 use model::{BuildSchedule, CoordinatorError, OwnedSourceRecord, SemanticModelBuildCoordinator};
@@ -945,9 +947,15 @@ mod tests {
         let sexpr = semantic_sexpr_for(
             "package P { attribute massActual; attribute massReqd; requirement def R { require constraint { massActual <= massReqd } assume constraint fuelOk { massActual >= 0 } } }",
         );
+        // The two spellings get their own declaration kinds, because the `assume`/`require`
+        // keyword is the only thing that carries `RequirementConstraintMembership.kind`.
         assert!(
-            sexpr.matches("(kind constraint)").count() >= 2,
-            "expected two constraint declarations (anonymous `require` + named `assume fuelOk`), got: {sexpr}"
+            sexpr.contains("(kind require-constraint)"),
+            "expected a require-constraint declaration for the anonymous `require`, got: {sexpr}"
+        );
+        assert!(
+            sexpr.contains("(qualified-name \"P::R::fuelOk\"))) (kind assume-constraint)"),
+            "expected an assume-constraint declaration for `assume constraint fuelOk`, got: {sexpr}"
         );
         assert!(
             !sexpr.contains("unsupported_requirement_definition_member"),

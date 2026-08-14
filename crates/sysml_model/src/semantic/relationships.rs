@@ -662,7 +662,35 @@ pub fn link_workspace_relationships(g: &mut SemanticGraph) {
         try_wire_derivation_connection(g, &connection_id.uri, &connection_id);
     }
 
+    rewire_connection_ends_after_merge(g);
     link_case_subject_relationships(g);
+}
+
+/// Re-derives connection edges from connector ends once the workspace is merged.
+///
+/// A connection end redefined to a nested feature path (`end producer ::> sensor.reading;`) can
+/// only be walked when `sensor`'s typing edge exists, and during a per-document build it may not
+/// yet -- the same reason derivation connections are re-wired above. The synthesis inserts each
+/// edge at most once, so running it a second time adds nothing for ends that already resolved.
+fn rewire_connection_ends_after_merge(g: &mut SemanticGraph) {
+    let connection_ids: Vec<NodeId> = sorted_node_ids(g)
+        .into_iter()
+        .filter(|node_id| {
+            g.get_node(node_id).is_some_and(|node| {
+                matches!(
+                    node.element_kind,
+                    ElementKind::Connection | ElementKind::Interface
+                )
+            })
+        })
+        .collect();
+    for connection_id in connection_ids {
+        crate::semantic::graph_builder::interface_def::add_connection_edges_from_end_typing(
+            g,
+            &connection_id.uri,
+            &connection_id,
+        );
+    }
 }
 
 /// Wire derivation connections after a full parallel cross-document edge resolution.
@@ -707,4 +735,5 @@ pub fn link_workspace_derivations(g: &mut SemanticGraph) {
         converged,
         "workspace derivation linking did not converge within {max_passes} passes; semantic graph was not published"
     );
+    rewire_connection_ends_after_merge(g);
 }

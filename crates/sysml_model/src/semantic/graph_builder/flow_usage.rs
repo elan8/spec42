@@ -9,7 +9,8 @@ use crate::semantic::ast_util::{declared_multiplicity, span_to_range};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::kinds::TYPING_TARGET_KINDS;
 use crate::semantic::model::{
-    ConstructionOwner, FlowStatementDetail, NodeId, RelationshipKind, SemanticEdge,
+    ConstructionOwner, DeclaredExpressionRelationship, FlowStatementDetail, NodeId,
+    RelationshipKind, SemanticEdge,
 };
 use crate::semantic::relationships::{
     add_semantic_edge_once, add_typing_edge_if_exists, resolve_type_target_in_workspace,
@@ -177,13 +178,16 @@ fn add_flow_edge_if_both_exist(
         expressions::record_declared_expression_relationship(
             g,
             parent_id.clone(),
-            relationship_kind_for_flow(flow.kind),
-            expressions::expr_node_to_qualified_string(from),
-            expressions::expr_node_to_qualified_string(to),
-            span_to_range(&from.span),
-            Some(span_to_range(&to.span)),
-            false,
-            None,
+            DeclaredExpressionRelationship {
+                kind: relationship_kind_for_flow(flow.kind),
+                source_expression: expressions::expr_node_to_qualified_string(from),
+                target_expression: expressions::expr_node_to_qualified_string(to),
+                scope_owner: None,
+                source_range: span_to_range(&from.span),
+                target_range: Some(span_to_range(&to.span)),
+                is_interface_usage: false,
+                interface_type: None,
+            },
         );
         return;
     }

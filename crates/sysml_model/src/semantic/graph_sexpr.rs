@@ -562,7 +562,7 @@ fn render_model_evaluation(
         return Ok(());
     };
     let mut facts = facts.iter().collect::<Vec<_>>();
-    facts.sort_by(|(left, _), (right, _)| left.cmp(right));
+    facts.sort_by_key(|(node, _)| *node);
     output.write_str("  (evaluation\n")?;
     for (node, facts) in facts {
         write!(output, "    (node {}", identities.node(node))?;
