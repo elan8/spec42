@@ -300,6 +300,8 @@ fn regenerate_snapshot(
         &probes,
     )?;
     ensure_strategy_parity(path, &sequential, &parallel)?;
+    ensure_sections_balanced(&sequential)
+        .map_err(|error| format!("{}: {error}", path.display()))?;
 
     let fixture = replace_or_insert_section(fixture, "SMG", &sequential.smg)
         .ok_or_else(|| format!("{}: missing SOURCE/SMG section", path.display()))?;
@@ -369,6 +371,52 @@ fn render_owned_sections(
         navigation,
         editor_queries,
     })
+}
+
+/// Rejects an owned section whose S-expression does not close.
+///
+/// These sections are a contract, not decoration: a reader that parses them has to be able to.
+/// Three separate producers had drifted out of balance without any check noticing, because a
+/// snapshot only ever had to match its own previous text. Parentheses inside quoted strings are
+/// content, not structure, so the scan tracks quoting.
+fn ensure_balanced(name: &str, text: &str) -> Result<(), String> {
+    let mut depth = 0i64;
+    let mut quoted = false;
+    let mut escaped = false;
+    for character in text.chars() {
+        if quoted {
+            match character {
+                _ if escaped => escaped = false,
+                '\\' => escaped = true,
+                '"' => quoted = false,
+                _ => {}
+            }
+            continue;
+        }
+        match character {
+            '"' => quoted = true,
+            '(' => depth += 1,
+            ')' => {
+                depth -= 1;
+                if depth < 0 {
+                    return Err(format!("{name} section closes more elements than it opens"));
+                }
+            }
+            _ => {}
+        }
+    }
+    if depth != 0 {
+        return Err(format!("{name} section leaves {depth} element(s) open"));
+    }
+    Ok(())
+}
+
+fn ensure_sections_balanced(sections: &OwnedSections) -> Result<(), String> {
+    ensure_balanced("SMG", &sections.smg)?;
+    ensure_balanced("TYPES", &sections.types)?;
+    ensure_balanced("DIAGNOSTICS", &sections.diagnostics)?;
+    ensure_balanced("NAVIGATION", &sections.navigation)?;
+    ensure_balanced("EDITOR RESULTS", &sections.editor_queries)
 }
 
 fn ensure_strategy_parity(

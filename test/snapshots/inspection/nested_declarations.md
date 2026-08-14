@@ -37,7 +37,7 @@ probe nested_declarations.md 2 24
   (declarations
     (declaration (id (node (document "memory://snapshot/nested_declarations.md") (qualified-name "Outer"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/nested_declarations.md") (qualified-name "Outer::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/nested_declarations.md") (qualified-name "Outer::Vehicle::engine"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Vehicle"))))
+    (declaration (id (node (document "memory://snapshot/nested_declarations.md") (qualified-name "Outer::Vehicle::engine"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Vehicle")))))
     (declaration (id (node (document "memory://snapshot/nested_declarations.md") (qualified-name "Outer::Vehicle::engine::displacement"))) (kind attribute) (membership (kind feature) (visibility default)))
   )
   (references
@@ -66,6 +66,7 @@ probe nested_declarations.md 2 24
   (query (document "memory://snapshot/nested_declarations.md") (range (start 2 22) (end 2 29)) (probe (position 2 22))
     (reference (id (source (node (document "memory://snapshot/nested_declarations.md") (qualified-name "Outer::Vehicle::engine"))) (kind featureTyping) (ordinal 0) (authored-target "Vehicle")
       (outcome (status resolved) (target (node (document "memory://snapshot/nested_declarations.md") (qualified-name "Outer::Vehicle")))))
+    )
   )
 )
 ~~~

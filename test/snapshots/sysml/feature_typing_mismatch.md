@@ -23,7 +23,7 @@ part p : Foo;
   (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:a0a856788cf1ca3fd0dda5bb3371ffcf886813008ca1718209210cbd802e6668") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/feature_typing_mismatch.md") (qualified-name "Foo"))) (kind attribute-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/feature_typing_mismatch.md") (qualified-name "p"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Foo"))))
+    (declaration (id (node (document "memory://snapshot/feature_typing_mismatch.md") (qualified-name "p"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Foo")))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/feature_typing_mismatch.md") (qualified-name "p"))) (kind featureTyping) (ordinal 0))
@@ -51,6 +51,7 @@ part p : Foo;
   (query (document "memory://snapshot/feature_typing_mismatch.md") (range (start 1 9) (end 1 12)) (probe (position 1 9))
     (reference (id (source (node (document "memory://snapshot/feature_typing_mismatch.md") (qualified-name "p"))) (kind featureTyping) (ordinal 0) (authored-target "Foo")
       (outcome (status resolved) (target (node (document "memory://snapshot/feature_typing_mismatch.md") (qualified-name "Foo")))))
+    )
   )
 )
 ~~~

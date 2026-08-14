@@ -27,8 +27,8 @@ package AliasCoverage {
   (declarations
     (declaration (id (node (document "memory://snapshot/alias_target_binding.md") (qualified-name "AliasCoverage"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/alias_target_binding.md") (qualified-name "AliasCoverage::Device"))) (kind part-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/alias_target_binding.md") (qualified-name "AliasCoverage::DeviceAlias"))) (kind alias) (membership (kind alias) (visibility default)) (authored (membership (kind alias) (visibility default)) (relationships (aliasBinding (reference "Device"))))
-    (declaration (id (node (document "memory://snapshot/alias_target_binding.md") (qualified-name "AliasCoverage::device"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "DeviceAlias"))))
+    (declaration (id (node (document "memory://snapshot/alias_target_binding.md") (qualified-name "AliasCoverage::DeviceAlias"))) (kind alias) (membership (kind alias) (visibility default)) (authored (membership (kind alias) (visibility default)) (relationships (aliasBinding (reference "Device")))))
+    (declaration (id (node (document "memory://snapshot/alias_target_binding.md") (qualified-name "AliasCoverage::device"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "DeviceAlias")))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/alias_target_binding.md") (qualified-name "AliasCoverage::DeviceAlias"))) (kind aliasBinding) (ordinal 0))
@@ -62,10 +62,12 @@ package AliasCoverage {
   (query (document "memory://snapshot/alias_target_binding.md") (range (start 2 26) (end 2 32)) (probe (position 2 26))
     (reference (id (source (node (document "memory://snapshot/alias_target_binding.md") (qualified-name "AliasCoverage::DeviceAlias"))) (kind aliasBinding) (ordinal 0) (authored-target "Device")
       (outcome (status resolved) (target (node (document "memory://snapshot/alias_target_binding.md") (qualified-name "AliasCoverage::Device")))))
+    )
   )
   (query (document "memory://snapshot/alias_target_binding.md") (range (start 3 18) (end 3 29)) (probe (position 3 18))
     (reference (id (source (node (document "memory://snapshot/alias_target_binding.md") (qualified-name "AliasCoverage::device"))) (kind featureTyping) (ordinal 0) (authored-target "DeviceAlias")
       (outcome (status resolved) (target (node (document "memory://snapshot/alias_target_binding.md") (qualified-name "AliasCoverage::DeviceAlias")))))
+    )
   )
 )
 ~~~

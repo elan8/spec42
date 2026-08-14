@@ -91,14 +91,14 @@ package 'Interaction Example-2' {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:a7d64d59aa843b02caf516aad5856077fb1fec8581e6cedd28cdcf6c23048bec") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/27_interaction_example_2.md") (qualified-name "Interaction Example-2"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/27_interaction_example_2.md") (path (named (kind package) (name "Interaction Example-2")) (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Event Occurrence Example") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/27_interaction_example_2.md") (path (named (kind package) (name "Interaction Example-2")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Event Occurrence Example") (import (shape namespace) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/27_interaction_example_2.md") (qualified-name "Interaction Example-2::CruiseControlInteraction"))) (kind occurrence-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/27_interaction_example_2.md") (qualified-name "Interaction Example-2::FuelCommand"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/27_interaction_example_2.md") (qualified-name "Interaction Example-2::SensedSpeed"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/27_interaction_example_2.md") (qualified-name "Interaction Example-2::SetSpeed"))) (kind item-def) (membership (kind owning) (visibility default)))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/27_interaction_example_2.md") (path (named (kind package) (name "Interaction Example-2")) (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/27_interaction_example_2.md") (path (named (kind package) (name "Interaction Example-2")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
       (authored-target "Event Occurrence Example")
       (outcome (status unresolved)))
   )
@@ -117,8 +117,9 @@ package 'Interaction Example-2' {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/27_interaction_example_2.md") (range (start 1 16) (end 1 45)) (probe (position 1 16))
-    (reference (id (source (node (document "memory://snapshot/27_interaction_example_2.md") (path (named (kind package) (name "Interaction Example-2")) (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0) (authored-target "Event Occurrence Example")
+    (reference (id (source (node (document "memory://snapshot/27_interaction_example_2.md") (path (named (kind package) (name "Interaction Example-2")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "Event Occurrence Example")
       (outcome (status unresolved)))
+    )
   )
 )
 ~~~

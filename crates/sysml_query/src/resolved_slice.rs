@@ -487,8 +487,9 @@ fn write_rename_outcome(output: &mut dyn fmt::Write, outcome: &RenameOutcome) ->
             }
             write!(output, ")")?;
         }
+        // No trailing `)` here: the shared `writeln!` below closes `(rename` for every arm.
         RenameOutcome::Ambiguous(targets) => {
-            write!(output, "(status ambiguous) (candidates {}))", targets.len())?
+            write!(output, "(status ambiguous) (candidates {})", targets.len())?
         }
         RenameOutcome::InvalidName => write!(output, "(status invalid-name)")?,
         RenameOutcome::Unresolved => write!(output, "(status unresolved)")?,

@@ -52,8 +52,8 @@ package 'Comment Example' {
   (declarations
     (declaration (id (node (document "memory://snapshot/01_comment_example.md") (qualified-name "Comment Example"))) (kind package) (membership (kind owning) (visibility default)) (documentation (comment (text " This is a named comment. ")) (comment (text " This is an unnamed comment, annotating an \n\t * explicitly specified element. \n\t "))))
     (declaration (id (node (document "memory://snapshot/01_comment_example.md") (qualified-name "Comment Example::Automobile"))) (kind part-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/01_comment_example.md") (qualified-name "Comment Example::Car"))) (kind alias) (membership (kind alias) (visibility default)) (authored (membership (kind alias) (visibility default)) (relationships (aliasBinding (reference "Automobile"))))
-    (declaration (id (node (document "memory://snapshot/01_comment_example.md") (qualified-name "Comment Example::Torque"))) (kind alias) (membership (kind alias) (visibility default)) (authored (membership (kind alias) (visibility default)) (relationships (aliasBinding (reference "ISQ::TorqueValue"))))
+    (declaration (id (node (document "memory://snapshot/01_comment_example.md") (qualified-name "Comment Example::Car"))) (kind alias) (membership (kind alias) (visibility default)) (authored (membership (kind alias) (visibility default)) (relationships (aliasBinding (reference "Automobile")))))
+    (declaration (id (node (document "memory://snapshot/01_comment_example.md") (qualified-name "Comment Example::Torque"))) (kind alias) (membership (kind alias) (visibility default)) (authored (membership (kind alias) (visibility default)) (relationships (aliasBinding (reference "ISQ::TorqueValue")))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/01_comment_example.md") (qualified-name "Comment Example::Car"))) (kind aliasBinding) (ordinal 0))
@@ -81,10 +81,12 @@ package 'Comment Example' {
   (query (document "memory://snapshot/01_comment_example.md") (range (start 13 15) (end 13 25)) (probe (position 13 15))
     (reference (id (source (node (document "memory://snapshot/01_comment_example.md") (qualified-name "Comment Example::Car"))) (kind aliasBinding) (ordinal 0) (authored-target "Automobile")
       (outcome (status resolved) (target (node (document "memory://snapshot/01_comment_example.md") (qualified-name "Comment Example::Automobile")))))
+    )
   )
   (query (document "memory://snapshot/01_comment_example.md") (range (start 22 18) (end 22 34)) (probe (position 22 18))
     (reference (id (source (node (document "memory://snapshot/01_comment_example.md") (qualified-name "Comment Example::Torque"))) (kind aliasBinding) (ordinal 0) (authored-target "ISQ::TorqueValue")
       (outcome (status unresolved)))
+    )
   )
 )
 ~~~

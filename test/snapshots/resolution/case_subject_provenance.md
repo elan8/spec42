@@ -28,7 +28,7 @@ package M {
   (declarations
     (declaration (id (node (document "memory://snapshot/case_subject_provenance.md") (qualified-name "M"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/case_subject_provenance.md") (qualified-name "M::A"))) (kind analysis-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/case_subject_provenance.md") (qualified-name "M::A::s"))) (kind subject) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "P"))))
+    (declaration (id (node (document "memory://snapshot/case_subject_provenance.md") (qualified-name "M::A::s"))) (kind subject) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "P")))))
     (declaration (id (node (document "memory://snapshot/case_subject_provenance.md") (qualified-name "M::P"))) (kind part-def) (membership (kind owning) (visibility default)))
   )
   (references
@@ -57,6 +57,7 @@ package M {
   (query (document "memory://snapshot/case_subject_provenance.md") (range (start 3 20) (end 3 21)) (probe (position 3 20))
     (reference (id (source (node (document "memory://snapshot/case_subject_provenance.md") (qualified-name "M::A::s"))) (kind featureTyping) (ordinal 0) (authored-target "P")
       (outcome (status resolved) (target (node (document "memory://snapshot/case_subject_provenance.md") (qualified-name "M::P")))))
+    )
   )
 )
 ~~~

@@ -75,15 +75,15 @@ package ExtendedExamples {
   (declarations
     (declaration (id (node (document "memory://snapshot/coverage_extended.md") (qualified-name "ExtendedExamples"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_extended.md") (qualified-name "ExtendedExamples::AbstractFailure"))) (kind extended-definition) (membership (kind owning) (visibility default)) (facts (modifiers abstract)))
-    (declaration (id (node (document "memory://snapshot/coverage_extended.md") (path (named (kind package) (name "ExtendedExamples")) (named (kind extended-definition) (name "Failure")))))) (kind extended-definition) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/coverage_extended.md") (path (named (kind package) (name "ExtendedExamples")) (named (kind extended-definition) (name "Failure") (occurrence 1)))))) (kind extended-definition) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Base"))))
-    (declaration (id (node (document "memory://snapshot/coverage_extended.md") (path (named (kind package) (name "ExtendedExamples")) (named (kind extended-definition) (name "Failure") (occurrence 2)))))) (kind extended-definition) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_extended.md") (path (named (kind package) (name "ExtendedExamples")) (named (kind extended-definition) (name "Failure"))))) (kind extended-definition) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_extended.md") (path (named (kind package) (name "ExtendedExamples")) (named (kind extended-definition) (name "Failure") (occurrence 1))))) (kind extended-definition) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Base")))))
+    (declaration (id (node (document "memory://snapshot/coverage_extended.md") (path (named (kind package) (name "ExtendedExamples")) (named (kind extended-definition) (name "Failure") (occurrence 2))))) (kind extended-definition) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_extended.md") (qualified-name "ExtendedExamples::Failure::p"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_extended.md") (qualified-name "ExtendedExamples::V"))) (kind extended-definition) (membership (kind owning) (visibility default)) (facts (modifiers variation)))
     (declaration (id (node (document "memory://snapshot/coverage_extended.md") (qualified-name "ExtendedExamples::Vulnerability"))) (kind extended-definition) (membership (kind owning) (visibility default)))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/coverage_extended.md") (path (named (kind package) (name "ExtendedExamples")) (named (kind extended-definition) (name "Failure") (occurrence 1)))))) (kind specialization) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/coverage_extended.md") (path (named (kind package) (name "ExtendedExamples")) (named (kind extended-definition) (name "Failure") (occurrence 1))))) (kind specialization) (ordinal 0))
       (authored-target "Base")
       (outcome (status unresolved)))
   )
@@ -102,8 +102,9 @@ package ExtendedExamples {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/coverage_extended.md") (range (start 2 30) (end 2 34)) (probe (position 2 30))
-    (reference (id (source (node (document "memory://snapshot/coverage_extended.md") (path (named (kind package) (name "ExtendedExamples")) (named (kind extended-definition) (name "Failure") (occurrence 1)))))) (kind specialization) (ordinal 0) (authored-target "Base")
+    (reference (id (source (node (document "memory://snapshot/coverage_extended.md") (path (named (kind package) (name "ExtendedExamples")) (named (kind extended-definition) (name "Failure") (occurrence 1))))) (kind specialization) (ordinal 0) (authored-target "Base")
       (outcome (status unresolved)))
+    )
   )
 )
 ~~~

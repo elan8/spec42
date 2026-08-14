@@ -787,7 +787,9 @@ fn write_navigation(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) 
         write_reference_path(model, reference.path, output)?;
         write!(output, ")\n      ")?;
         write_outcome(model, id, output)?;
-        writeln!(output, ")\n  )")?;
+        // Closes `(id`, then `(reference`, then `(query`. The last one was missing, so every
+        // rendered query left its element open.
+        writeln!(output, ")\n    )\n  )")?;
     }
     write!(output, ")")
 }
@@ -865,7 +867,10 @@ fn write_authored(
         }
         output.write_char(')')?;
     }
-    output.write_str(")")
+    // Closes `(relationships` and then `(authored`. Only the first was emitted before, so the
+    // declaration's own closer was consumed by `(authored` and every declaration carrying
+    // authored facts left its element open.
+    output.write_str("))")
 }
 
 fn write_import(import: AuthoredImportFacts, output: &mut dyn fmt::Write) -> fmt::Result {
@@ -908,11 +913,15 @@ fn write_node_identity(
         // every segment named, no same-named sibling, and nothing else rendering the same name.
         output.write_str(") (qualified-name ")?;
         write_declaration_name(model, id, output)?;
+        output.write_char(')')?;
     } else {
+        // `write_declaration_path` closes its own `(path ...)`, so only the node itself is left
+        // open here. Closing both forms with one shared `))` emitted an extra paren for every
+        // explicit path and left the section unbalanced.
         output.write_str(") ")?;
         write_declaration_path(model, id, output)?;
     }
-    output.write_str("))")
+    output.write_char(')')
 }
 
 /// Renders the explicit root-to-leaf scope path used whenever the qualified name alone would not

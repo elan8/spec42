@@ -35,8 +35,8 @@ package FeatureInheritance {
   (declarations
     (declaration (id (node (document "memory://snapshot/feature_inheritance.md") (qualified-name "FeatureInheritance"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/feature_inheritance.md") (qualified-name "FeatureInheritance::s"))) (kind kerml-feature) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/feature_inheritance.md") (qualified-name "FeatureInheritance::s::t"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ISQ::TorqueValue"))))
-    (declaration (id (node (document "memory://snapshot/feature_inheritance.md") (qualified-name "FeatureInheritance::u"))) (kind default-reference) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "s"))))
+    (declaration (id (node (document "memory://snapshot/feature_inheritance.md") (qualified-name "FeatureInheritance::s::t"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ISQ::TorqueValue")))))
+    (declaration (id (node (document "memory://snapshot/feature_inheritance.md") (qualified-name "FeatureInheritance::u"))) (kind default-reference) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "s")))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/feature_inheritance.md") (qualified-name "FeatureInheritance::s::t"))) (kind featureTyping) (ordinal 0))
@@ -67,10 +67,12 @@ package FeatureInheritance {
   (query (document "memory://snapshot/feature_inheritance.md") (range (start 2 14) (end 2 30)) (probe (position 2 14))
     (reference (id (source (node (document "memory://snapshot/feature_inheritance.md") (qualified-name "FeatureInheritance::s::t"))) (kind featureTyping) (ordinal 0) (authored-target "ISQ::TorqueValue")
       (outcome (status unresolved)))
+    )
   )
   (query (document "memory://snapshot/feature_inheritance.md") (range (start 5 19) (end 5 20)) (probe (position 5 19))
     (reference (id (source (node (document "memory://snapshot/feature_inheritance.md") (qualified-name "FeatureInheritance::u"))) (kind subsetting) (ordinal 0) (authored-target "s")
       (outcome (status resolved) (target (node (document "memory://snapshot/feature_inheritance.md") (qualified-name "FeatureInheritance::s")))))
+    )
   )
 )
 ~~~

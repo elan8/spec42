@@ -26,7 +26,7 @@ package P {
   (declarations
     (declaration (id (node (document "memory://snapshot/resolved.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/resolved.md") (qualified-name "P::Engine"))) (kind part-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/resolved.md") (qualified-name "P::engine"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Engine"))))
+    (declaration (id (node (document "memory://snapshot/resolved.md") (qualified-name "P::engine"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Engine")))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/resolved.md") (qualified-name "P::engine"))) (kind featureTyping) (ordinal 0))
@@ -54,6 +54,7 @@ package P {
   (query (document "memory://snapshot/resolved.md") (range (start 2 18) (end 2 24)) (probe (position 2 18))
     (reference (id (source (node (document "memory://snapshot/resolved.md") (qualified-name "P::engine"))) (kind featureTyping) (ordinal 0) (authored-target "Engine")
       (outcome (status resolved) (target (node (document "memory://snapshot/resolved.md") (qualified-name "P::Engine")))))
+    )
   )
 )
 ~~~

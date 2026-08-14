@@ -158,7 +158,7 @@ package Connectors {
     (declaration (id (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A"))) (kind class-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A::binding"))) (kind attribute) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A::connector"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "c2"))))
+    (declaration (id (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A::connector"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "c2")))))
     (declaration (id (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A::succession"))) (kind attribute) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::B"))) (kind class-def) (membership (kind owning) (visibility default)))
   )
@@ -185,6 +185,7 @@ package Connectors {
   (query (document "memory://snapshot/connectors.md") (range (start 8 14) (end 8 16)) (probe (position 8 14))
     (reference (id (source (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A::connector"))) (kind expressionOperand) (ordinal 0) (authored-target "c2")
       (outcome (status unresolved)))
+    )
   )
 )
 ~~~

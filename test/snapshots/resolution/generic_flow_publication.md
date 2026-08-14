@@ -23,21 +23,21 @@ package P { action def ExecuteMission { action validateRoute; action startMissio
   (declarations
     (declaration (id (node (document "memory://snapshot/generic_flow_publication.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generic_flow_publication.md") (qualified-name "P::ExecuteMission"))) (kind action-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/generic_flow_publication.md") (path (named (kind package) (name "P")) (named (kind action-def) (name "ExecuteMission")) (anonymous (kind succession) (ordinal 0)))))) (kind succession) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (succession (reference "validateRoute")) (succession (reference "startMission"))))
+    (declaration (id (node (document "memory://snapshot/generic_flow_publication.md") (path (named (kind package) (name "P")) (named (kind action-def) (name "ExecuteMission")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (succession (reference "validateRoute")) (succession (reference "startMission")))))
     (declaration (id (node (document "memory://snapshot/generic_flow_publication.md") (qualified-name "P::ExecuteMission::startMission"))) (kind action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generic_flow_publication.md") (qualified-name "P::ExecuteMission::validateRoute"))) (kind action) (membership (kind feature) (visibility default)))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/generic_flow_publication.md") (path (named (kind package) (name "P")) (named (kind action-def) (name "ExecuteMission")) (anonymous (kind succession) (ordinal 0)))))) (kind succession) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/generic_flow_publication.md") (path (named (kind package) (name "P")) (named (kind action-def) (name "ExecuteMission")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0))
       (authored-target "validateRoute")
       (outcome (status resolved) (target (node (document "memory://snapshot/generic_flow_publication.md") (qualified-name "P::ExecuteMission::validateRoute")))))
-    (reference (id (source (node (document "memory://snapshot/generic_flow_publication.md") (path (named (kind package) (name "P")) (named (kind action-def) (name "ExecuteMission")) (anonymous (kind succession) (ordinal 0)))))) (kind succession) (ordinal 1))
+    (reference (id (source (node (document "memory://snapshot/generic_flow_publication.md") (path (named (kind package) (name "P")) (named (kind action-def) (name "ExecuteMission")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 1))
       (authored-target "startMission")
       (outcome (status resolved) (target (node (document "memory://snapshot/generic_flow_publication.md") (qualified-name "P::ExecuteMission::startMission")))))
   )
   (relationships
-    (relationship (kind succession) (source (node (document "memory://snapshot/generic_flow_publication.md") (path (named (kind package) (name "P")) (named (kind action-def) (name "ExecuteMission")) (anonymous (kind succession) (ordinal 0)))))) (target (node (document "memory://snapshot/generic_flow_publication.md") (qualified-name "P::ExecuteMission::validateRoute"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/generic_flow_publication.md") (path (named (kind package) (name "P")) (named (kind action-def) (name "ExecuteMission")) (anonymous (kind succession) (ordinal 0)))))) (kind succession) (ordinal 0)))
-    (relationship (kind succession) (source (node (document "memory://snapshot/generic_flow_publication.md") (path (named (kind package) (name "P")) (named (kind action-def) (name "ExecuteMission")) (anonymous (kind succession) (ordinal 0)))))) (target (node (document "memory://snapshot/generic_flow_publication.md") (qualified-name "P::ExecuteMission::startMission"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/generic_flow_publication.md") (path (named (kind package) (name "P")) (named (kind action-def) (name "ExecuteMission")) (anonymous (kind succession) (ordinal 0)))))) (kind succession) (ordinal 1)))
+    (relationship (kind succession) (source (node (document "memory://snapshot/generic_flow_publication.md") (path (named (kind package) (name "P")) (named (kind action-def) (name "ExecuteMission")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/generic_flow_publication.md") (qualified-name "P::ExecuteMission::validateRoute"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/generic_flow_publication.md") (path (named (kind package) (name "P")) (named (kind action-def) (name "ExecuteMission")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0)))
+    (relationship (kind succession) (source (node (document "memory://snapshot/generic_flow_publication.md") (path (named (kind package) (name "P")) (named (kind action-def) (name "ExecuteMission")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/generic_flow_publication.md") (qualified-name "P::ExecuteMission::startMission"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/generic_flow_publication.md") (path (named (kind package) (name "P")) (named (kind action-def) (name "ExecuteMission")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 1)))
   )
   (evaluation
   )
@@ -52,12 +52,14 @@ package P { action def ExecuteMission { action validateRoute; action startMissio
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/generic_flow_publication.md") (range (start 0 89) (end 0 102)) (probe (position 0 89))
-    (reference (id (source (node (document "memory://snapshot/generic_flow_publication.md") (path (named (kind package) (name "P")) (named (kind action-def) (name "ExecuteMission")) (anonymous (kind succession) (ordinal 0)))))) (kind succession) (ordinal 0) (authored-target "validateRoute")
+    (reference (id (source (node (document "memory://snapshot/generic_flow_publication.md") (path (named (kind package) (name "P")) (named (kind action-def) (name "ExecuteMission")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0) (authored-target "validateRoute")
       (outcome (status resolved) (target (node (document "memory://snapshot/generic_flow_publication.md") (qualified-name "P::ExecuteMission::validateRoute")))))
+    )
   )
   (query (document "memory://snapshot/generic_flow_publication.md") (range (start 0 108) (end 0 120)) (probe (position 0 108))
-    (reference (id (source (node (document "memory://snapshot/generic_flow_publication.md") (path (named (kind package) (name "P")) (named (kind action-def) (name "ExecuteMission")) (anonymous (kind succession) (ordinal 0)))))) (kind succession) (ordinal 1) (authored-target "startMission")
+    (reference (id (source (node (document "memory://snapshot/generic_flow_publication.md") (path (named (kind package) (name "P")) (named (kind action-def) (name "ExecuteMission")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 1) (authored-target "startMission")
       (outcome (status resolved) (target (node (document "memory://snapshot/generic_flow_publication.md") (qualified-name "P::ExecuteMission::startMission")))))
+    )
   )
 )
 ~~~

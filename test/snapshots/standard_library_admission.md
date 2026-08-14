@@ -28,9 +28,9 @@ package Vehicles {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:8cd0ff72ecf52111076d9483d56a039f71edaa94f5305ec88dd6f96b856b735c") (contract-version "parser-owned-resolution-v1") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/standard_library_admission.md") (qualified-name "Vehicles"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/standard_library_admission.md") (qualified-name "Vehicles::Car"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Vehicle"))))
+    (declaration (id (node (document "memory://snapshot/standard_library_admission.md") (qualified-name "Vehicles::Car"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Vehicle")))))
     (declaration (id (node (document "memory://snapshot/standard_library_admission.md") (qualified-name "Vehicles::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/standard_library_admission.md") (qualified-name "Vehicles::Vehicle::mass"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ScalarValues::Real"))))
+    (declaration (id (node (document "memory://snapshot/standard_library_admission.md") (qualified-name "Vehicles::Vehicle::mass"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ScalarValues::Real")))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/standard_library_admission.md") (qualified-name "Vehicles::Car"))) (kind specialization) (ordinal 0))
@@ -71,10 +71,12 @@ package Vehicles {
   (query (document "memory://snapshot/standard_library_admission.md") (range (start 4 17) (end 4 24)) (probe (position 4 17))
     (reference (id (source (node (document "memory://snapshot/standard_library_admission.md") (qualified-name "Vehicles::Car"))) (kind specialization) (ordinal 0) (authored-target "Vehicle")
       (outcome (status resolved) (target (node (document "memory://snapshot/standard_library_admission.md") (qualified-name "Vehicles::Vehicle")))))
+    )
   )
   (query (document "memory://snapshot/standard_library_admission.md") (range (start 2 19) (end 2 37)) (probe (position 2 19))
     (reference (id (source (node (document "memory://snapshot/standard_library_admission.md") (qualified-name "Vehicles::Vehicle::mass"))) (kind featureTyping) (ordinal 0) (authored-target "ScalarValues::Real")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Real")))))
+    )
   )
 )
 ~~~
