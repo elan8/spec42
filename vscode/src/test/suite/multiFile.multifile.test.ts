@@ -92,13 +92,21 @@ describe("Multi-file VS Code Flows", () => {
 
     const workspaceEdit = await waitFor(
       "cross-file rename",
-      () =>
-        vscode.commands.executeCommand<vscode.WorkspaceEdit>(
-          "vscode.executeDocumentRenameProvider",
-          useDoc.uri,
-          findPosition(useDoc, "Widget", 1),
-          "RenamedWidget"
-        ),
+      async () => {
+        try {
+          return await vscode.commands.executeCommand<vscode.WorkspaceEdit>(
+            "vscode.executeDocumentRenameProvider",
+            useDoc.uri,
+            findPosition(useDoc, "Widget", 1),
+            "RenamedWidget"
+          );
+        } catch (error) {
+          if (error instanceof Error && error.message === "The element can't be renamed.") {
+            return undefined;
+          }
+          throw error;
+        }
+      },
       (value) => Boolean(value),
     );
 
