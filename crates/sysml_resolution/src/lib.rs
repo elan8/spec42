@@ -26,6 +26,17 @@ pub use inspection::{
 use model::resolver::ResolvedSemanticModel;
 use model::{BuildSchedule, CoordinatorError, OwnedSourceRecord, SemanticModelBuildCoordinator};
 
+/// Owner-measured elapsed times for the stable publication barriers.
+///
+/// Parallel phase durations are wall time rather than summed worker CPU time. Source acquisition
+/// and request construction happen outside these measurements.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct BuildMeasurements {
+    pub parse: std::time::Duration,
+    pub lowering: std::time::Duration,
+    pub resolution: std::time::Duration,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum SourceKind {
     Workspace,
@@ -266,6 +277,13 @@ unsafe impl Send for PublishedResolution {}
 unsafe impl Sync for PublishedResolution {}
 
 pub fn build(request: BuildRequest) -> Result<PublishedResolution, BuildFailure> {
+    build_measured(request).map(|(publication, _)| publication)
+}
+
+/// Builds one coherent publication and returns measurements captured by its phase owner.
+pub fn build_measured(
+    request: BuildRequest,
+) -> Result<(PublishedResolution, BuildMeasurements), BuildFailure> {
     let schedule = match request.schedule {
         ConstructionSchedule::Sequential => BuildSchedule::Sequential,
         ConstructionSchedule::Parallel => BuildSchedule::Parallel,
@@ -278,16 +296,24 @@ pub fn build(request: BuildRequest) -> Result<PublishedResolution, BuildFailure>
             content: source.content,
         })
         .collect();
-    let model = SemanticModelBuildCoordinator::build(sources, schedule, request.policy).map_err(
-        |error| match error {
-            CoordinatorError::DuplicateSourceIdentity => BuildFailure::DuplicateSourceIdentity,
-            CoordinatorError::ConstructionFailed => BuildFailure::ConstructionFailed,
+    let (model, measurements) =
+        SemanticModelBuildCoordinator::build_measured(sources, schedule, request.policy).map_err(
+            |error| match error {
+                CoordinatorError::DuplicateSourceIdentity => BuildFailure::DuplicateSourceIdentity,
+                CoordinatorError::ConstructionFailed => BuildFailure::ConstructionFailed,
+            },
+        )?;
+    Ok((
+        PublishedResolution {
+            identity: request.identity,
+            model,
         },
-    )?;
-    Ok(PublishedResolution {
-        identity: request.identity,
-        model,
-    })
+        BuildMeasurements {
+            parse: measurements.parse,
+            lowering: measurements.lowering,
+            resolution: measurements.resolution,
+        },
+    ))
 }
 
 impl PublishedResolution {
