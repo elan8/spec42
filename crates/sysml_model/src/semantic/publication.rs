@@ -817,12 +817,7 @@ fn derive_inherited_feature_diagnostics(
         {
             continue;
         }
-        let Some(authored_value) = node
-            .attributes
-            .get("value")
-            .and_then(|value| value.as_str())
-            .map(str::to_string)
-        else {
+        let Some(authored_value) = node.expression_text.value.clone() else {
             continue;
         };
         let Some(owner_id) = node.parent_id.as_ref() else {
