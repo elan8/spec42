@@ -2047,6 +2047,18 @@ fn is_range_or_coalesce_operator(op: &BinaryOperator) -> bool {
 /// falls through to its existing unsupported-member diagnostic in that case. A bare
 /// `FeatureRef`/`FeatureChainRef` (no `MemberAccess` wrapper at all) flattens to a single-entry
 /// list, letting callers route both shapes through the same chain-resolution path uniformly.
+///
+/// `Expression::Parenthesized` and `Expression::TypeCheck` (the `as`/`istype`/`hastype` cast
+/// family) are transparent wrappers for this purpose: `(vehicles as VehiclePart).m` (real corpus
+/// usage, `sysml/examples/calculation_test.md`) is `MemberAccess(Parenthesized(TypeCheck{operand:
+/// FeatureRef(vehicles), type_name: VehiclePart}), m)`, and its member `m` resolves relative to
+/// `vehicles`' own lexical lookup exactly like an uncast `vehicles.m` would -- this pipeline does
+/// not model the cast's type-narrowing effect on member lookup (no call site needs it yet), it
+/// just stops treating the cast as an opaque root the way it previously stopped the whole chain
+/// from resolving at all. A `TypeCheck` with no operand (bare `istype`/`hastype` with an implicit
+/// subject) still returns `None`, matching Gap 41's `that`-self-reference boundary: an implicit
+/// `that` operand is indistinguishable from a genuinely absent one without the same upstream
+/// parser fix that gap already documents.
 fn flatten_member_access_chain(node: &Node<Expression>) -> Option<Vec<QualifiedReferenceId>> {
     match &node.value {
         Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => Some(vec![*target]),
@@ -2055,6 +2067,11 @@ fn flatten_member_access_chain(node: &Node<Expression>) -> Option<Vec<QualifiedR
             chain.push(*member);
             Some(chain)
         }
+        Expression::Parenthesized(inner) => flatten_member_access_chain(inner),
+        Expression::TypeCheck {
+            operand: Some(operand),
+            ..
+        } => flatten_member_access_chain(operand),
         _ => None,
     }
 }
@@ -11912,6 +11929,48 @@ mod tests {
         assert!(
             output.contains("(kind memberAccessOperand) (ordinal 0))\n      (authored-target \"f::missing\")\n      (outcome (status unresolved))"),
             "expected a member absent from f's type F to leave the chain explicitly unresolved (never fabricated), got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn attribute_default_value_member_access_through_type_check_cast_resolves_through_the_operand()
+    {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpart def F {\n\
+             \t\tattribute a;\n\
+             \t}\n\
+             \tpart f : F;\n\
+             \tattribute g = (f as F).a;\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind memberAccessOperand) (ordinal 0))\n      (authored-target \"f::a\")\n      (outcome (status resolved) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::F::a\")))))"
+            ),
+            "expected the TypeCheck cast wrapping f to be transparent, resolving (f as F).a exactly \
+             like the uncast f.a case, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn attribute_default_value_member_access_through_parenthesized_base_resolves_through_the_operand(
+    ) {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpart def F {\n\
+             \t\tattribute a;\n\
+             \t}\n\
+             \tpart f : F;\n\
+             \tattribute g = (f).a;\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind memberAccessOperand) (ordinal 0))\n      (authored-target \"f::a\")\n      (outcome (status resolved) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::F::a\")))))"
+            ),
+            "expected the redundant parentheses around f to be transparent, resolving (f).a exactly \
+             like the unparenthesized f.a case, got:\n{output}"
         );
     }
 

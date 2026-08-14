@@ -476,7 +476,7 @@ standard library package StatePerformances {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_calc_definition_member")
+        (code "unresolved_reference")
         (source "semantic")
         (range (start 127 9) (end 127 61))
       )
@@ -577,7 +577,7 @@ standard library package StatePerformances {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:981e589ea0af87db2114a10b5c29f9f49abda207ec2737f61cf4d698b029b526") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:981e589ea0af87db2114a10b5c29f9f49abda207ec2737f61cf4d698b029b526") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/state_performances.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Boolean") (import (shape membership) (recursive false)))))
@@ -639,7 +639,7 @@ standard library package StatePerformances {
     (declaration (id (node (document "memory://snapshot/state_performances.md") (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "accepted"))))
     (declaration (id (node (document "memory://snapshot/state_performances.md") (anonymous (kind kerml-feature) (ordinal 1))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "StatePerformance::acceptable"))))
     (declaration (id (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance::transitionLinkTarget"))) (kind kerml-feature) (membership (kind feature) (visibility private)) (authored (membership (kind feature) (visibility private)) (relationships (featureTyping (reference "Occurrence")) (memberAccessOperand (reference "transitionLink::laterOccurrence"))))
-    (declaration (id (node (document "memory://snapshot/state_performances.md") (anonymous (kind kerml-invariant) (ordinal 0))))) (kind kerml-invariant) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "that")) (expressionOperand (reference "trigger")) (typeCheckTarget (reference "StatePerformance"))))
+    (declaration (id (node (document "memory://snapshot/state_performances.md") (anonymous (kind kerml-invariant) (ordinal 0))))) (kind kerml-invariant) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "that")) (expressionOperand (reference "trigger")) (memberAccessOperand (reference "that::incomingTransitionTrigger")) (typeCheckTarget (reference "StatePerformance"))))
     (declaration (id (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance::trigger"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "acceptable")) (subsetting (reference "transitionLinkSource::accepted")) (redefinition (reference "TransitionPerformance::trigger"))))
     (declaration (id (node (document "memory://snapshot/state_performances.md") (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "endShot"))))
   )
@@ -950,6 +950,9 @@ standard library package StatePerformances {
     (reference (id (source (node (document "memory://snapshot/state_performances.md") (anonymous (kind kerml-invariant) (ordinal 0))))) (kind expressionOperand) (ordinal 1))
       (authored-target "trigger")
       (outcome (status resolved) (target (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance::trigger")))))
+    (reference (id (source (node (document "memory://snapshot/state_performances.md") (anonymous (kind kerml-invariant) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0))
+      (authored-target "that::incomingTransitionTrigger")
+      (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/state_performances.md") (anonymous (kind kerml-invariant) (ordinal 0))))) (kind typeCheckTarget) (ordinal 0))
       (authored-target "StatePerformance")
       (outcome (status resolved) (target (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StatePerformance")))))
@@ -1426,6 +1429,10 @@ standard library package StatePerformances {
   (query (document "memory://snapshot/state_performances.md") (range (start 127 65) (end 127 72)) (probe (position 127 65))
     (reference (id (source (node (document "memory://snapshot/state_performances.md") (anonymous (kind kerml-invariant) (ordinal 0))))) (kind expressionOperand) (ordinal 1) (authored-target "trigger")
       (outcome (status resolved) (target (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance::trigger")))))
+  )
+  (query (document "memory://snapshot/state_performances.md") (range (start 127 9) (end 127 61)) (probe (position 127 9))
+    (reference (id (source (node (document "memory://snapshot/state_performances.md") (anonymous (kind kerml-invariant) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0) (authored-target "that::incomingTransitionTrigger")
+      (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/state_performances.md") (range (start 126 22) (end 126 38)) (probe (position 126 22))
     (reference (id (source (node (document "memory://snapshot/state_performances.md") (anonymous (kind kerml-invariant) (ordinal 0))))) (kind typeCheckTarget) (ordinal 0) (authored-target "StatePerformance")

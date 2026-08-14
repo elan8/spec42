@@ -939,6 +939,115 @@ found; all 51 fixtures are genuine upstream parser gaps**, grouped into Gaps 15-
   `attribute_body`/`attribute_body_element` directly, if no metadata-specific body semantics
   require the separate production), filed upstream against
   `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+  **Update (exhaustive `unsupported_attribute_member` audit, this pass):** this is the single
+  largest root cause of the 328-occurrence baseline for that diagnostic -- 195 of 328 (59%), all
+  `derived ref item <name> : <Type>[mult] subsets/redefines <target>[, <target>]*;` members nested
+  directly in `metadata def` bodies, confirmed via the same mechanism this gap already describes.
+  Adds three more confirming fixtures to the blocked list above:
+  `test/snapshots/sysml.library/sys_ml.md` (192 occurrences -- the Systems Library's own
+  reflective KerML-abstract-syntax metadata defs, e.g. `metadata def ActionUsage specializes Step,
+  OccurrenceUsage { derived ref item actionDefinition : Behavior[0..*] ordered redefines
+  behavior, occurrenceDefinition subsets Metadata::metadataItems; }`) and
+  `test/snapshots/sysml.library/modeling_metadata.md` (2 occurrences: `item risk : Risk [0..1] {
+  ... }` inside `metadata def StatusInfo { ... }`, `ref explanation : Anything [0..1] { ... }`
+  inside `metadata def Rationale { ... }`).
+
+- Gap 49. Four further distinct root causes found during the same exhaustive
+  `unsupported_attribute_member` audit (baseline 328 occurrences across the non-parser-grammar-
+  blocked corpus; 195 traced to Gap 40 above, 2 fixed in `sysml_resolution` this pass by widening
+  `flatten_member_access_chain` to see through `Expression::Parenthesized`/`Expression::TypeCheck`
+  wrappers -- see the commit on `closing-the-gap` touching `crates/sysml_resolution/src/model.rs`
+  -- and the remaining ~131 trace to the four gaps below), all confirmed via direct
+  `sysml_v2_parser_next::parse_for_editor_owned` AST-dump probes (temporary
+  `crates/sysml_resolution/examples/dump_attr_ast*.rs`, removed after use) against `cb026cd`:
+
+  (a) **`AttributeBodyElement` (`src/ast/structure.rs:347-377`) has no `Bind`, `Connect`-typed
+  named-connection, or `Calc`/`CalcDef`/plain-`ConstraintUsage` variant** -- the same
+  enum-narrowness pattern Gap 42 catalogued for `StateDefBodyElement`/`RequirementDefBodyElement`,
+  here for the body shared by `attribute def`/`item def`/usage bodies. Confirmed by direct AST
+  inspection: `attribute_body_element`'s `alt` list (`src/parser/attribute.rs:191-259`) has no arm
+  dispatching to `bind_`/`connection_usage`/`interface_usage`/`calc_def`/`calc_usage`/a plain
+  (non-`assert`) `constraint_usage`, even though `binding`/`connection` are both registered as
+  `ATTRIBUTE_BODY_STARTERS` (`src/parser/attribute.rs:28-49`, so they don't misfire as
+  `unrecognized_declaration_in_scope`) and their own parser productions (`bind_`,
+  `connection_usage`) are used successfully elsewhere (e.g. `PartUsageBodyElement`). Every
+  instance falls straight to `AttributeBodyElement::Other`. Largest contributor:
+  `test/snapshots/sysml.library/shape_items.md` (76 occurrences: 51 `binding [1] bind [mult] a.b =
+  [mult] c;` named/multiplicity-qualified bind statements nested in `item def` bodies, e.g.
+  `ConeOrCylinder`'s `binding [1] bind [0..*] base.edges = [0..*] be;`, plus 25 `connection
+  :MatesWith connect [mult] a to [mult] b;` named/typed connection usages, e.g. `connection
+  :MatesWith connect [1] tfe to [1] tfe;`). Also blocks `test/snapshots/sysml/examples/
+  product_selection_owned_ends.md`/`product_selection_unowned_ends.md` (2 occurrences each:
+  `connection ps1 : ProductSelection connect myCart to products { :>> info = info1; }`),
+  `test/snapshots/sysml.library/time.md` (2 occurrences: `private calc getElapsedUtcTime { in
+  iso8601DateTime: Iso8601DateTimeEncoding; return : Real; }` nested in an `attribute def`'s own
+  body -- confirmed via probe that the *sibling* `attribute :>> num = getElapsedUtcTime(val);`
+  statement parses and lowers perfectly fine; only the nested `calc` definition itself is
+  unreachable), `test/snapshots/sysml.library/items.md` (1 occurrence: `abstract constraint
+  checkedConstraints: ConstraintCheck[0..*] :> constraintChecks, ownedPerformances { doc ... }`,
+  a plain nested constraint usage with no `assert` keyword -- `assert_constraint_member`
+  (`src/parser/occurrence_body.rs:694-730`) requires a literal `assert` tag and has no
+  bare-`constraint` alternative), and `test/snapshots/sysml.library/state_space_representation.md`
+  (1 occurrence: bare `constraint { stateSpace.order == order }`, same root cause). Needs
+  `attribute_body_element` widened with `Bind`/`Connect`-multi-end/`Calc`/plain-`ConstraintUsage`
+  variants and dispatch arms (mirroring how `PartUsageBodyElement`/`PartDefBodyElement` already
+  reach these same underlying productions), filed upstream against
+  `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+
+  (b) **`attribute_feature_binding`'s bare `:>>`/`:>` shorthand (no `attribute` keyword) supports
+  only a single redefinition/subsets target**, unlike every other redefinition/subsets clause in
+  the grammar. Root cause: `attribute_feature_binding` (`src/parser/attribute.rs:283-345`) builds
+  its `subsets`/`redefines` relationship via `single_target_subsetting(prefix_span, kind,
+  qualified_reference(input)?)` -- a direct `qualified_reference` call that stops at the first
+  comma -- instead of `subsetting`/`redefinition` (`src/parser/usage.rs:378-412`), which both call
+  the comma-aware `specialization_targets` (`src/parser/usage.rs:275-285`) and are what the *full*
+  `attribute` production (`attribute_usage`, dispatched when the `attribute` keyword is present)
+  uses for the exact same clause. Confirmed via probe: `attribute :>> A::x, B::y { ... }` (full
+  keyword form) parses fine with both targets in `SubsettingRelationship.target: Vec<...>`, while
+  the byte-identical bare-shorthand `:>> A::x, B::y { ... }` (no `attribute` keyword) fails
+  `attribute_feature_binding` entirely once it hits the comma and falls to
+  `AttributeBodyElement::Other`. Confirmed blocking `test/snapshots/sysml.library/si.md` (3
+  occurrences, e.g. `kelvin`'s nested `:>> ThermodynamicTemperatureUnit::quantityDimension::
+  quantityPowerFactors, TemperatureDifferenceUnit::quantityDimension::quantityPowerFactors;`) and
+  `test/snapshots/sysml.library/us_customary_units.md` (1 occurrence, the outer `:>>
+  ThermodynamicTemperatureUnit::quantityDimension, TemperatureDifferenceUnit::quantityDimension {
+  ... }` header itself, since it too has two comma-separated targets with no `attribute` keyword).
+  Needs `attribute_feature_binding`'s prefix-target parsing switched from `qualified_reference` to
+  `specialization_targets` (matching `subsetting`/`redefinition`), filed upstream against
+  `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+
+  (c) **A parenthesized tuple/vector literal immediately followed by a bracket-suffixed identifier
+  (`(a, b, c)[frameName]`) has no `Expression` grammar production**, breaking the whole enclosing
+  statement. This is the Domain Geometry libraries' idiom for tagging a literal 3-vector with the
+  coordinate frame it's expressed in (e.g. `new Translation( (0, shape.width/2, 0)[source] )`);
+  the same `[frameName]` bracket suffix used for ordinary unit annotations on a *scalar* literal
+  (`18 [mm]`, which parses fine) has no equivalent production when the base is a parenthesized
+  tuple rather than a single numeric literal. Confirmed via probe: the failing statement's own
+  sibling members parse and lower correctly (e.g. `test/snapshots/sysml/examples/
+  simple_quadcopter.md`'s outer `:>> transformation : TranslationRotationSequence { ... }` lowers
+  fine as an `AttributeUsage`; only its nested `:>> elements = (new Translation( (0,
+  shape.width/2, 0)[source] ));` value statement falls to `AttributeBodyElement::Other`, because
+  the whole statement fails to parse once its value expression cannot be parsed as any
+  `Expression` variant). Confirmed blocking `test/snapshots/sysml/examples/simple_quadcopter.md`
+  (16 occurrences), `test/snapshots/sysml/examples/vehicle_geometry_and_coordinate_frames.md` (5
+  occurrences), and `test/snapshots/sysml/examples/car_with_shape_and_csg.md` (3 occurrences), all
+  in the same `(new Translation(...)[frame])`/`(new Rotation(...)[frame], angle[unit])` idiom.
+  Needs a new `Expression` production for a bracket-suffixed parenthesized tuple, filed upstream
+  against `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+
+  (d) **`ref_decl`'s optional declared-name parse (`opt(name)`, `src/parser/connector.rs:394`)
+  greedily consumes a following `redefines`/`subsets` keyword as the name** when no real name is
+  present before it, since neither is in the reserved-keyword set checked at that point (contrast
+  with `attribute_feature_binding`'s own `is_reserved_shorthand_starter` guard, which exists
+  precisely to prevent this class of misparse for `:>>`/`:>` but isn't shared with `ref_decl`).
+  Confirmed via probe: `private ref redefines Item::incomingTransferSort,
+  subobjects::incomingTransferSort;` (`test/snapshots/sysml.library/items.md`, 1 occurrence) fails
+  to parse as `RefDecl` at all and falls to `AttributeBodyElement::Other` -- `name()` consumes the
+  literal word `redefines` as the declared name, leaving the comma-separated qualified-reference
+  target list unconsumed. Needs `ref_decl`'s name parse guarded the same way
+  `attribute_feature_binding`'s is (reject `redefines`/`subsets`/other relationship keywords as a
+  bare name when no separate name token precedes them), filed upstream against
+  `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
 
 - Gap 36. KerML `const` end-feature prefix (`const end [1] feature a;` / `const end feature
   b;`, representative fixture: `test/snapshots/kerml/associations.md`, `assoc struct C { ... }`)
