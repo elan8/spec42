@@ -13,7 +13,13 @@ function isGeneralViewDiagramNode(node: UnknownRecord): boolean {
 function buildGeneralPackageContainerGroups(nodes: PreparedNode[]): UnknownRecord[] {
   const byPackage = new Map<string, string[]>();
   for (const node of nodes) {
-    const qn = asString(asRecord(node.attributes).qualifiedName);
+    // `node.attributes.qualifiedName` is empty for every graph node coming off the Rust side --
+    // there's no separate `qualifiedName` field on the raw payload, `node.id` carries the
+    // qualified name instead (mirrors `qualifiedNameOf` in `standard-views.ts`, which already
+    // falls back to `node.id` for the same reason). Falling back to `id` only when the attribute
+    // is genuinely empty keeps the synthetic-fixture contract (an explicit `qualifiedName` that
+    // differs from a short `id`) working too.
+    const qn = asString(asRecord(node.attributes).qualifiedName) || node.id;
     const sep = qn.indexOf("::");
     if (sep <= 0) continue;
     const pkg = qn.slice(0, sep);

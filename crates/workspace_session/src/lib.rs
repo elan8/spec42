@@ -12,9 +12,7 @@
 //! `ensure_render_snapshot`/`build_view_catalog` (`crates/lsp_server/src/views/workspace_artifacts.rs`)
 //! and `babel42-app`'s per-session `update_document`-under-mutex path
 //! (`babel42-v2/backend/crates/babel42-app/src/editor.rs`) are the two motivating call sites;
-//! wiring either up is deliberately out of scope here — see
-//! `docs/engineering/TIER2-UNIFIED-INCREMENTAL-ENGINE-DESIGN.md` for the precedent of landing
-//! `IncrementalWorkspace` standalone in its own phase before any consumer migrated onto it.
+//! wiring either up is deliberately out of scope here.
 //!
 //! This crate deliberately depends on `tokio` and on `workspace`, but not on any
 //! protocol/binary-layer crate (`tower-lsp`, `axum`, `rmcp`, `clap`, `lsp_server`) — see
@@ -22,11 +20,23 @@
 //! by both an LSP server and an HTTP server.
 
 mod actor;
+mod semantic_model;
 mod snapshot;
 
-pub use actor::{MutatePanicked, SessionActor, TracksRelink};
+pub use actor::{MutatePanicked, Mutation, MutationOutcome, SessionActor, TracksRelink};
+pub use semantic_model::{
+    PublishedModelSnapshot, SemanticBuildFailureKind, SemanticBuildToken,
+    SemanticPublicationOutcome, SemanticPublicationSession,
+};
 pub use snapshot::SnapshotHandle;
 
 // Re-exported so callers building `report_job_result` call sites don't need a direct
 // `workspace` dependency just for the token type.
-pub use workspace::RelinkToken;
+pub use workspace::{PublicationToken, RelinkToken};
+
+/// The raw model and the former workspace construction wrapper are deliberately inaccessible.
+///
+/// ```compile_fail
+/// use workspace::{build_semantic_model_from_documents, SemanticModel};
+/// ```
+pub struct RawSemanticPublicationIsNotPublic;

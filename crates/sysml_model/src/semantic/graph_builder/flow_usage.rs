@@ -5,12 +5,12 @@ use std::collections::HashMap;
 use sysml_v2_parser::ast::{FlowUsage, FlowUsageKind, Node, PayloadFeature};
 use url::Url;
 
-use crate::semantic::ast_util::{
-    attach_membership_visibility, declared_multiplicity, span_to_range,
-};
+use crate::semantic::ast_util::{declared_multiplicity, span_to_range};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::kinds::TYPING_TARGET_KINDS;
-use crate::semantic::model::{FlowStatementDetail, NodeId, RelationshipKind, SemanticEdge};
+use crate::semantic::model::{
+    ConstructionOwner, FlowStatementDetail, NodeId, RelationshipKind, SemanticEdge,
+};
 use crate::semantic::relationships::{
     add_semantic_edge_once, add_typing_edge_if_exists, resolve_type_target_in_workspace,
 };
@@ -50,14 +50,10 @@ pub(super) fn materialize_flow_usage(
 ) {
     let flow = &flow_node.value;
     let mut attrs = HashMap::new();
-    attach_membership_visibility(&mut attrs, &flow.membership);
     attrs.insert(
         "flowKind".to_string(),
         serde_json::json!(flow_kind_label(flow.kind)),
     );
-    if let Some(ref type_name) = flow.type_name {
-        attrs.insert("flowType".to_string(), serde_json::json!(type_name));
-    }
     if let Some(ref payload) = flow.payload {
         attrs.insert(
             "payloadExpression".to_string(),
@@ -79,6 +75,10 @@ pub(super) fn materialize_flow_usage(
 
     if let Some(ref name) = flow.name {
         let qualified = qualified_name_for_node(g, uri, container_prefix, name, "flow");
+        g.register_declared_membership_facts(
+            NodeId::new(uri, &qualified),
+            crate::semantic::ast_util::declared_membership_facts(&flow.membership),
+        );
         add_node_and_recurse(
             g,
             uri,
@@ -124,10 +124,7 @@ fn materialize_flow_payload(
         .clone()
         .unwrap_or_else(|| "_payload".to_string());
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "flow payload");
-    let mut attrs = HashMap::new();
-    if let Some(ref type_name) = payload.value.type_name {
-        attrs.insert("payloadType".to_string(), serde_json::json!(type_name));
-    }
+    let attrs = HashMap::new();
     add_node_and_recurse(
         g,
         uri,
@@ -176,6 +173,20 @@ fn add_flow_edge_if_both_exist(
     let (Some(from), Some(to)) = (&flow.from, &flow.to) else {
         return;
     };
+    if g.structural_input_only {
+        expressions::record_declared_expression_relationship(
+            g,
+            parent_id.clone(),
+            relationship_kind_for_flow(flow.kind),
+            expressions::expr_node_to_qualified_string(from),
+            expressions::expr_node_to_qualified_string(to),
+            span_to_range(&from.span),
+            Some(span_to_range(&to.span)),
+            false,
+            None,
+        );
+        return;
+    }
     let from_str = expressions::expr_node_to_qualified_string(from);
     let to_str = expressions::expr_node_to_qualified_string(to);
     if from_str.is_empty() || to_str.is_empty() {
@@ -219,6 +230,10 @@ fn add_flow_edge_if_both_exist(
         g,
         &NodeId::new(uri, &src),
         &NodeId::new(uri, &tgt),
-        SemanticEdge::flow_with_detail(relationship_kind_for_flow(flow.kind), detail),
+        SemanticEdge::flow_with_detail(
+            relationship_kind_for_flow(flow.kind),
+            detail,
+            ConstructionOwner::DocumentConstruction,
+        ),
     );
 }

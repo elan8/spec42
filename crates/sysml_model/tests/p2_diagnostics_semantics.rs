@@ -1,5 +1,8 @@
-﻿use sysml_diagnostics::{collect_diagnostics_from_graph, DiagnosticsOptions};
-use sysml_model::{build_semantic_graph_from_documents, SysmlDocument, SysmlDocumentSourceKind};
+use sysml_diagnostics::{collect_diagnostics_from_graph, DiagnosticsOptions};
+use sysml_model::{
+    build_semantic_graph_from_documents, ElementKind, NodeId, SemanticGraph, SemanticNode,
+    SysmlDocument, SysmlDocumentSourceKind, TextPosition, TextRange,
+};
 
 fn workspace_doc(path: &str, content: &str) -> SysmlDocument {
     SysmlDocument::from_memory_path(
@@ -138,6 +141,66 @@ fn view_without_expose_emits_empty_expose_diagnostic() {
     assert!(
         has_code(&diagnostics, "view_expose_empty"),
         "expected view_expose_empty, got: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn view_filters_removing_all_resolved_exposes_emit_empty_result() {
+    let doc = workspace_doc(
+        "view_empty_result.sysml",
+        r#"package Demo {
+  part def Engine;
+  part engine : Engine;
+  view structure : GeneralView {
+    expose Demo::engine;
+    filter @SysML::RequirementUsage;
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        has_code(&diagnostics, "view_expose_empty_result"),
+        "expected view_expose_empty_result, got: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+    assert!(
+        !has_code(&diagnostics, "view_expose_unresolved"),
+        "expose should resolve; empty result is a filter outcome, got: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn view_filters_that_keep_resolved_exposes_do_not_emit_empty_result() {
+    let doc = workspace_doc(
+        "view_kept_result.sysml",
+        r#"package Demo {
+  part def Engine;
+  part engine : Engine;
+  view structure : GeneralView {
+    expose Demo::engine;
+    filter @SysML::PartUsage;
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        !has_code(&diagnostics, "view_expose_empty_result"),
+        "PartUsage filter should keep the exposed part, got: {:?}",
         diagnostics
             .iter()
             .map(|d| (&d.code, &d.message))
@@ -492,6 +555,273 @@ fn verification_without_subject_emits_case_subject_diagnostic() {
             .iter()
             .map(|d| (&d.code, &d.message))
             .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn duplicate_subject_members_emit_role_cardinality_diagnostic() {
+    let doc = workspace_doc(
+        "duplicate_subject.sysml",
+        r#"package Demo {
+  part def System;
+  requirement def Range {
+    subject primary : System;
+    subject backup : System;
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        has_code(&diagnostics, "duplicate_role_member"),
+        "expected duplicate_role_member, got: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+    let duplicate = diagnostics
+        .iter()
+        .find(|diagnostic| diagnostic.code == "duplicate_role_member")
+        .expect("duplicate subject diagnostic");
+    assert_eq!(
+        duplicate.severity,
+        sysml_diagnostics::DiagnosticSeverity::Warning
+    );
+    assert_eq!(duplicate.range.start.line, 4);
+}
+
+#[test]
+fn subject_after_actor_emits_ordering_diagnostic() {
+    let doc = workspace_doc(
+        "subject_order.sysml",
+        r#"package Demo {
+  part def System;
+  requirement def Range {
+    actor operator : System;
+    subject vehicle : System;
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        has_code(&diagnostics, "subject_member_not_first"),
+        "expected subject_member_not_first, got: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn duplicate_objective_members_emit_role_cardinality_diagnostic() {
+    let doc = workspace_doc(
+        "duplicate_objective.sysml",
+        r#"package Demo {
+  requirement def ReqA;
+  verification def Check {
+    subject subject;
+    objective { verify requirement ReqA; }
+    objective { verify requirement ReqA; }
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        has_code(&diagnostics, "duplicate_role_member"),
+        "expected duplicate_role_member, got: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn duplicate_view_rendering_members_emit_role_cardinality_diagnostic() {
+    let doc = workspace_doc(
+        "duplicate_rendering.sysml",
+        r#"package Demo {
+  rendering def First;
+  rendering def Second;
+  view def Summary {
+    render first : First;
+    render second : Second;
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        has_code(&diagnostics, "duplicate_role_member"),
+        "expected duplicate_role_member, got: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn singular_role_members_and_subject_before_actor_do_not_emit_role_diagnostics() {
+    let doc = workspace_doc(
+        "singular_role_members.sysml",
+        r#"package Demo {
+  part def System;
+  rendering def SummaryStyle;
+  requirement def ReqA;
+  requirement def Range {
+    subject vehicle : System;
+    actor operator : System;
+  }
+  verification def Check {
+    subject subject;
+    objective { verify requirement ReqA; }
+  }
+  view def Summary {
+    render style : SummaryStyle;
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    for code in ["duplicate_role_member", "subject_member_not_first"] {
+        assert!(
+            !has_code(&diagnostics, code),
+            "unexpected {code}, got: {:?}",
+            diagnostics
+                .iter()
+                .map(|d| (&d.code, &d.message))
+                .collect::<Vec<_>>()
+        );
+    }
+}
+
+#[test]
+fn verification_membership_retains_its_objective_parentage() {
+    let doc = workspace_doc(
+        "verification_objective_parentage.sysml",
+        r#"package Demo {
+  requirement def ReqA;
+  verification def Check {
+    subject subject;
+    objective { verify requirement ReqA; }
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let verified_requirement = graph
+        .nodes_for_uri(&uri)
+        .into_iter()
+        .find(|node| node.element_kind == sysml_model::ElementKind::VerifiedRequirement)
+        .expect("verified requirement");
+    let parent = verified_requirement
+        .parent_id
+        .as_ref()
+        .and_then(|id| graph.get_node(id))
+        .expect("verified requirement has an owning objective");
+
+    assert_eq!(parent.element_kind, sysml_model::ElementKind::Objective);
+
+    let case_subject_edges: Vec<_> = graph
+        .edges_for_uri_as_strings(&uri)
+        .into_iter()
+        .filter(|(source, target, kind, _)| {
+            source == "Demo::Check"
+                && target == "Demo::ReqA"
+                && *kind == sysml_model::RelationshipKind::Subject
+        })
+        .collect();
+    assert_eq!(
+        case_subject_edges.len(),
+        1,
+        "the verification case must retain exactly one resolved subject edge"
+    );
+    assert!(
+        !graph.edges_for_uri_as_strings(&uri).iter().any(|(source, target, kind, _)| {
+            source == "Demo::Check::ReqA"
+                && target == "Demo::ReqA"
+                && *kind == sysml_model::RelationshipKind::Subject
+        }),
+        "the objective owns the verified-requirement member but is not the verification case's subject"
+    );
+}
+
+#[test]
+fn verification_membership_must_belong_to_a_verification_objective() {
+    let uri = url::Url::parse("memory://workspace/verification_membership.sysml").unwrap();
+    let range = TextRange::new(TextPosition::new(0, 0), TextPosition::new(0, 1));
+    let node =
+        |qualified_name: &str, name: &str, element_kind: ElementKind, parent_id| SemanticNode {
+            id: NodeId::new(&uri, qualified_name),
+            element_kind,
+            declared_name: Some(name.to_string()),
+            name: name.to_string(),
+            range,
+            attributes: Default::default(),
+            declared_facts: Default::default(),
+            source_text: Default::default(),
+            expression_text: Default::default(),
+            parent_id,
+        };
+    let verification = node("P::Check", "Check", ElementKind::VerificationDef, None);
+    let objective = node(
+        "P::Check::objective",
+        "objective",
+        ElementKind::Objective,
+        Some(verification.id.clone()),
+    );
+    let valid_membership = SemanticNode {
+        range: TextRange::new(TextPosition::new(1, 0), TextPosition::new(1, 1)),
+        ..node(
+            "P::Check::objective::Req",
+            "Req",
+            ElementKind::VerifiedRequirement,
+            Some(objective.id.clone()),
+        )
+    };
+    let misplaced_membership = SemanticNode {
+        range: TextRange::new(TextPosition::new(2, 0), TextPosition::new(2, 1)),
+        ..node(
+            "P::Check::Req",
+            "Req",
+            ElementKind::VerifiedRequirement,
+            Some(verification.id.clone()),
+        )
+    };
+    let mut graph = SemanticGraph::new();
+    for node in [
+        verification,
+        objective,
+        valid_membership.clone(),
+        misplaced_membership.clone(),
+    ] {
+        graph.insert_workspace_node(node);
+    }
+
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "verification_membership_outside_objective"
+                && diagnostic.range == misplaced_membership.range
+        }),
+        "misplaced membership must be diagnosed: {diagnostics:?}"
+    );
+    assert!(
+        !diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "verification_membership_outside_objective"
+                && diagnostic.range == valid_membership.range
+        }),
+        "membership in a verification objective must remain accepted: {diagnostics:?}"
     );
 }
 

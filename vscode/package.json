@@ -4,7 +4,7 @@
   "publisher": "Elan8",
   "icon": "logo/logo.png",
   "description": "Open, local-first SysML v2 and KerML tooling: live editing, model exploration, diagrams, and the same analysis engine for CI and assistants.",
-  "version": "0.49.0",
+  "version": "0.50.0",
   "license": "MIT",
   "keywords": [
     "sysml",
@@ -781,7 +781,7 @@
         "spec42.debug": {
           "type": "boolean",
           "default": false,
-          "description": "Enable debug logging to the SysML output channel (View \u2192 Output \u2192 SysML)."
+          "description": "Enable debug logging to the SysML output channel (View → Output → SysML)."
         },
         "spec42.logging.verbose": {
           "type": "boolean",
@@ -843,7 +843,6 @@
     "package": "vsce package"
   },
   "devDependencies": {
-    "@types/adm-zip": "^0.5.8",
     "@types/d3": "^7.4.3",
     "@types/mocha": "^10.0.0",
     "@types/node": "^22.0.0",
@@ -856,7 +855,6 @@
     "typescript": "~5.6.0"
   },
   "dependencies": {
-    "adm-zip": "^0.5.16",
     "d3": "^7.9.0",
     "elkjs": "^0.11.1",
     "vscode-languageclient": "^9.0.0",

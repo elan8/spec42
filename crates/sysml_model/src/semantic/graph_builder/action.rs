@@ -9,12 +9,13 @@ use sysml_v2_parser::ast::{
 };
 use url::Url;
 
+use crate::semantic::ast_util::declared_expression;
 use crate::semantic::ast_util::{
-    action_usage_feature_properties, attach_membership_visibility, attach_short_name_attribute,
-    declared_multiplicity, span_to_range, state_usage_feature_properties, subsetting_target,
-    subsetting_targets, typing_targets,
+    action_usage_feature_properties, declared_multiplicity, span_to_range,
+    state_usage_feature_properties, typing_targets,
 };
 use crate::semantic::graph::SemanticGraph;
+use crate::semantic::model::DeclaredFeatureProperties;
 use crate::semantic::model::{NodeId, RelationshipKind};
 use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
 
@@ -22,7 +23,8 @@ use super::expressions;
 use super::payload::insert_action_payload_attrs;
 use super::state;
 use super::{
-    add_node_and_recurse, attach_feature_properties, qualified_name, qualified_name_for_node,
+    add_node_and_recurse, attach_declared_typing_relationship, attach_feature_properties,
+    qualified_name, qualified_name_for_node, resolve_addressable_name,
 };
 
 struct ThenActionChain {
@@ -129,11 +131,7 @@ impl ThenActionChain {
             "action",
         );
         let mut attrs = HashMap::new();
-        attrs.insert(
-            "actionType".to_string(),
-            serde_json::json!(action.type_name.as_str()),
-        );
-        insert_action_payload_attrs(&mut attrs, action);
+        let payload_type_refs = insert_action_payload_attrs(&mut attrs, action);
         add_node_and_recurse(
             g,
             uri,
@@ -144,6 +142,7 @@ impl ThenActionChain {
             attrs,
             Some(parent_id),
         );
+        super::payload::apply_payload_type_refs(g, uri, &action_qualified, &payload_type_refs);
         add_typing_edge_if_exists(
             g,
             uri,
@@ -206,16 +205,6 @@ pub(super) fn add_in_out_decl(
             InOut::InOut => "inout",
         }),
     );
-    attrs.insert(
-        "parameterType".to_string(),
-        serde_json::json!(&parameter.type_name),
-    );
-    if let Some(ref v) = parameter.value {
-        attrs.insert(
-            "defaultValue".to_string(),
-            serde_json::json!(super::expressions::expression_to_debug_string(v)),
-        );
-    }
     add_node_and_recurse(
         g,
         uri,
@@ -226,6 +215,25 @@ pub(super) fn add_in_out_decl(
         attrs,
         Some(parent_id),
     );
+    let parameter_id = NodeId::new(uri, &child_qualified);
+    if let Some(node) = g.get_node_mut(&parameter_id) {
+        node.declared_facts.feature_properties = Some(DeclaredFeatureProperties {
+            direction: Some(
+                match parameter.direction {
+                    InOut::In => "in",
+                    InOut::Out => "out",
+                    InOut::InOut => "inout",
+                }
+                .to_string(),
+            ),
+            ..Default::default()
+        });
+        node.declared_facts.own_expression = parameter.value.as_ref().map(declared_expression);
+        node.expression_text.default_value = parameter
+            .value
+            .as_ref()
+            .map(super::expressions::expression_to_debug_string);
+    }
     add_typing_edge_if_exists(
         g,
         uri,
@@ -252,10 +260,7 @@ pub(super) fn add_perform_step(
         perform.value.action_name.clone()
     };
     let child_qualified = qualified_name_for_node(g, uri, container_prefix, &step_name, "perform");
-    let mut attrs = HashMap::new();
-    if let Some(ref action_type) = perform.value.type_name {
-        attrs.insert("actionType".to_string(), serde_json::json!(action_type));
-    }
+    let attrs = HashMap::new();
     add_node_and_recurse(
         g,
         uri,
@@ -288,8 +293,18 @@ fn add_ref_decl(
         super::ref_decl::RefDeclOptions::default(),
     );
     if let RefBody::Brace { elements } = &wrap.value.body {
-        if !elements.is_empty() {
-            build_from_action_def_body(elements, uri, container_prefix, &ref_node_id, g);
+        // `RefBody::Brace` elements are `RefBodyElement`-wrapped (shared across action/part/state
+        // ref-body contexts); this caller only recurses the action-shaped ones, since
+        // `build_from_action_def_body` graph-builds `ActionDefBodyElement` content specifically.
+        let action_elements: Vec<sysml_v2_parser::Node<ActionDefBodyElement>> = elements
+            .iter()
+            .filter_map(|el| match &el.value {
+                sysml_v2_parser::ast::RefBodyElement::Action(action_el) => Some(action_el.clone()),
+                _ => None,
+            })
+            .collect();
+        if !action_elements.is_empty() {
+            build_from_action_def_body(&action_elements, uri, container_prefix, &ref_node_id, g);
         }
     }
 }
@@ -308,16 +323,7 @@ fn add_assign_stmt(
         "_assign",
         "assign",
     );
-    let mut attrs = HashMap::new();
-    attrs.insert(
-        "lhs".to_string(),
-        serde_json::json!(expressions::expression_to_debug_string(&value.lhs)),
-    );
-    attrs.insert(
-        "rhs".to_string(),
-        serde_json::json!(expressions::expression_to_debug_string(&value.rhs)),
-    );
-    attrs.insert("isThen".to_string(), serde_json::json!(value.is_then));
+    let attrs = HashMap::new();
     add_node_and_recurse(
         g,
         uri,
@@ -328,6 +334,53 @@ fn add_assign_stmt(
         attrs,
         Some(parent_id),
     );
+    if let Some(node) = g.get_node_mut(&NodeId::new(uri, &qualified)) {
+        node.expression_text.lhs = Some(expressions::expression_to_debug_string(&value.lhs));
+        node.expression_text.rhs = Some(expressions::expression_to_debug_string(&value.rhs));
+        node.expression_text.is_then = Some(value.is_then);
+    }
+}
+
+/// Materialize the standalone `first <step>;` form as an explicit initial control node.
+///
+/// `first <source> then <target>;` is a succession and is handled as a direct flow edge by the
+/// callers below. Without `then`, the parser distinguishes the form as an initial-node marker;
+/// retaining it as a child node preserves that authored behavior fact and its resolved outgoing
+/// flow without asking downstream projections to rediscover it from syntax.
+fn add_initial_stmt(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    container_prefix: Option<&str>,
+    parent_id: &NodeId,
+    first: &sysml_v2_parser::Node<sysml_v2_parser::ast::FirstStmt>,
+) {
+    let target_expression = expressions::expr_node_to_qualified_string(&first.value.first);
+    let mut attrs = HashMap::new();
+    let addressable_name = resolve_addressable_name("", "initial", &mut attrs);
+    let qualified = qualified_name_for_node(g, uri, container_prefix, &addressable_name, "initial");
+    attrs.insert(
+        "initialTarget".to_string(),
+        serde_json::json!(&target_expression),
+    );
+    add_node_and_recurse(
+        g,
+        uri,
+        &qualified,
+        "initial",
+        addressable_name,
+        span_to_range(&first.span),
+        attrs,
+        Some(parent_id),
+    );
+
+    if target_expression.is_empty() {
+        return;
+    }
+    // `add_edge_if_both_exist` enqueues the relationship when the target declaration follows
+    // this marker. The normal final-link phase then resolves that queued edge against the same
+    // canonical qualified identity used for immediately declared targets.
+    let target = qualified_name(container_prefix, &target_expression);
+    add_edge_if_both_exist(g, uri, &qualified, &target, RelationshipKind::Flow);
 }
 
 fn add_state_usage(
@@ -339,6 +392,10 @@ fn add_state_usage(
 ) {
     let name = &su_node.value.name;
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "state");
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&su_node.value.membership),
+    );
     let attrs = state_usage_graph_attrs(&su_node.value);
     add_node_and_recurse(
         g,
@@ -461,23 +518,12 @@ fn add_default_reference_usage(
 ) {
     let value = &node.value;
     let qualified = qualified_name_for_node(g, uri, container_prefix, &value.name, "attribute");
-    let mut attrs = HashMap::new();
-    attach_membership_visibility(&mut attrs, &value.membership);
+    let attrs = HashMap::new();
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&value.membership),
+    );
     let targets = typing_targets(value.typing.as_deref());
-    if !targets.is_empty() {
-        attrs.insert(
-            "attributeType".to_string(),
-            serde_json::json!(targets.join(", ")),
-        );
-    }
-    if let Some(expr_node) = &value.value {
-        attrs.insert(
-            "value".to_string(),
-            serde_json::json!(expressions::expression_to_debug_string(
-                &expr_node.value.expression
-            )),
-        );
-    }
     add_node_and_recurse(
         g,
         uri,
@@ -488,6 +534,14 @@ fn add_default_reference_usage(
         attrs,
         Some(parent_id),
     );
+    if let Some(expr_node) = &value.value {
+        if let Some(n) = g.get_node_mut(&NodeId::new(uri, &qualified)) {
+            n.expression_text.value = Some(expressions::expression_to_debug_string(
+                &expr_node.value.expression,
+            ));
+        }
+    }
+    attach_declared_typing_relationship(g, &NodeId::new(uri, &qualified), value.typing.as_deref());
     for target in targets {
         add_typing_edge_if_exists(g, uri, &qualified, target, container_prefix);
     }
@@ -596,9 +650,8 @@ fn add_action_body_decl(
         d.text.clone()
     };
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "action body decl");
-    let mut attrs = HashMap::new();
-    attrs.insert("keyword".to_string(), serde_json::json!(&d.keyword));
-    attrs.insert("text".to_string(), serde_json::json!(&d.text));
+    let attrs = HashMap::new();
+    let node_id = NodeId::new(uri, &qualified);
     add_node_and_recurse(
         g,
         uri,
@@ -609,6 +662,10 @@ fn add_action_body_decl(
         attrs,
         Some(parent_id),
     );
+    if let Some(node) = g.get_node_mut(&node_id) {
+        node.source_text.keyword = Some(d.keyword.clone());
+        node.source_text.text = Some(d.text.clone());
+    }
 }
 
 fn materialize_nested_action_usage(
@@ -622,8 +679,12 @@ fn materialize_nested_action_usage(
 ) -> String {
     let name = &au_node.name;
     let child_qualified = qualified_name_for_node(g, uri, container_prefix, name, "action");
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &child_qualified),
+        crate::semantic::ast_util::declared_membership_facts(&au_node.membership),
+    );
     let mut attrs = action_usage_graph_attrs(au_node);
-    insert_action_payload_attrs(&mut attrs, au_node);
+    let payload_type_refs = insert_action_payload_attrs(&mut attrs, au_node);
     add_node_and_recurse(
         g,
         uri,
@@ -634,6 +695,7 @@ fn materialize_nested_action_usage(
         attrs,
         Some(parent_id),
     );
+    super::payload::apply_payload_type_refs(g, uri, &child_qualified, &payload_type_refs);
     let action_id = NodeId::new(uri, &child_qualified);
     attach_action_usage_facts(g, &action_id, au_node);
     wire_action_usage_typing(g, uri, &child_qualified, au_node, container_prefix);
@@ -654,11 +716,6 @@ fn materialize_nested_action_usage(
 
 fn action_usage_graph_attrs(usage: &ActionUsage) -> HashMap<String, serde_json::Value> {
     let mut attrs = HashMap::new();
-    attach_membership_visibility(&mut attrs, &usage.membership);
-    attrs.insert(
-        "actionType".to_string(),
-        serde_json::json!(&usage.type_name),
-    );
     if usage.is_abstract {
         attrs.insert("isAbstract".to_string(), serde_json::json!(true));
     }
@@ -668,20 +725,18 @@ fn action_usage_graph_attrs(usage: &ActionUsage) -> HashMap<String, serde_json::
     if let Some(ref m) = usage.multiplicity {
         attrs.insert("multiplicity".to_string(), serde_json::json!(m));
     }
-    let subset_targets = subsetting_targets(usage.subsets.as_deref());
-    if !subset_targets.is_empty() {
-        attrs.insert(
-            "subsetsFeature".to_string(),
-            serde_json::json!(subset_targets.join(", ")),
-        );
-    }
-    if let Some(r) = subsetting_target(usage.redefines.as_deref()) {
-        attrs.insert("redefines".to_string(), serde_json::json!(r));
-    }
     attrs
 }
 
 fn attach_action_usage_facts(g: &mut SemanticGraph, node_id: &NodeId, usage: &ActionUsage) {
+    super::attach_declared_subsetting_family(
+        g,
+        node_id,
+        usage.subsets.as_deref(),
+        usage.redefines.as_deref(),
+        None,
+        None,
+    );
     attach_feature_properties(g, node_id, action_usage_feature_properties(usage));
     if let Some(multiplicity) = &usage.multiplicity {
         if let Some(node) = g.get_node_mut(node_id) {
@@ -708,10 +763,6 @@ fn wire_action_usage_typing(
 
 pub(super) fn state_usage_graph_attrs(usage: &StateUsage) -> HashMap<String, serde_json::Value> {
     let mut attrs = HashMap::new();
-    attach_membership_visibility(&mut attrs, &usage.membership);
-    if let Some(ref t) = usage.type_name {
-        attrs.insert("stateType".to_string(), serde_json::json!(t));
-    }
     if usage.is_abstract {
         attrs.insert("isAbstract".to_string(), serde_json::json!(true));
     }
@@ -721,16 +772,6 @@ pub(super) fn state_usage_graph_attrs(usage: &StateUsage) -> HashMap<String, ser
     if let Some(ref m) = usage.multiplicity {
         attrs.insert("multiplicity".to_string(), serde_json::json!(m));
     }
-    let subset_targets = subsetting_targets(usage.subsets.as_deref());
-    if !subset_targets.is_empty() {
-        attrs.insert(
-            "subsetsFeature".to_string(),
-            serde_json::json!(subset_targets.join(", ")),
-        );
-    }
-    if let Some(r) = subsetting_target(usage.redefines.as_deref()) {
-        attrs.insert("redefines".to_string(), serde_json::json!(r));
-    }
     attrs
 }
 
@@ -739,6 +780,14 @@ pub(super) fn attach_state_usage_facts(
     node_id: &NodeId,
     usage: &StateUsage,
 ) {
+    super::attach_declared_subsetting_family(
+        g,
+        node_id,
+        usage.subsets.as_deref(),
+        usage.redefines.as_deref(),
+        None,
+        None,
+    );
     attach_feature_properties(g, node_id, state_usage_feature_properties(usage));
     if let Some(multiplicity) = &usage.multiplicity {
         if let Some(node) = g.get_node_mut(node_id) {
@@ -803,8 +852,6 @@ pub(super) fn build_from_action_def_body(
                 );
             }
             ActionDefBodyElement::FirstStmt(first) => {
-                // `then` is `None` for the standalone initial-node marker `first start;` (§6
-                // G13) -- nothing to connect a Flow edge to in that case.
                 if let Some(then) = &first.value.then {
                     expressions::add_expression_edge_if_both_exist(
                         g,
@@ -814,6 +861,8 @@ pub(super) fn build_from_action_def_body(
                         then,
                         RelationshipKind::Flow,
                     );
+                } else {
+                    add_initial_stmt(g, uri, container_prefix, parent_id, first);
                 }
             }
             ActionDefBodyElement::MergeStmt(merge) => {
@@ -1022,8 +1071,6 @@ pub(super) fn build_from_action_usage_body(
                 );
             }
             ActionUsageBodyElement::FirstStmt(first) => {
-                // `then` is `None` for the standalone initial-node marker `first start;` (§6
-                // G13) -- nothing to connect a Flow edge to in that case.
                 if let Some(then) = &first.value.then {
                     expressions::add_expression_edge_if_both_exist(
                         g,
@@ -1033,6 +1080,8 @@ pub(super) fn build_from_action_usage_body(
                         then,
                         RelationshipKind::Flow,
                     );
+                } else {
+                    add_initial_stmt(g, uri, container_prefix, parent_id, first);
                 }
             }
             ActionUsageBodyElement::MergeStmt(merge) => {
@@ -1214,8 +1263,12 @@ pub(super) fn materialize_top_level_action_usage(
     let usage = &au_node.value;
     let name = &usage.name;
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "action");
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&usage.membership),
+    );
     let mut attrs = action_usage_graph_attrs(usage);
-    insert_action_payload_attrs(&mut attrs, usage);
+    let payload_type_refs = insert_action_payload_attrs(&mut attrs, usage);
     add_node_and_recurse(
         g,
         uri,
@@ -1226,6 +1279,7 @@ pub(super) fn materialize_top_level_action_usage(
         attrs,
         parent_id,
     );
+    super::payload::apply_payload_type_refs(g, uri, &qualified, &payload_type_refs);
     let action_id = NodeId::new(uri, &qualified);
     attach_action_usage_facts(g, &action_id, usage);
     wire_action_usage_typing(g, uri, &qualified, usage, container_prefix);
@@ -1246,21 +1300,22 @@ pub(super) fn materialize_action_def(
 ) -> String {
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "action def");
     let action_id = NodeId::new(uri, &qualified);
-    let mut attrs = HashMap::new();
-    attach_short_name_attribute(&mut attrs, &ad_node.identification);
-    attach_membership_visibility(&mut attrs, &ad_node.membership);
+    let attrs = HashMap::new();
+    if let Some(short_name) =
+        crate::semantic::ast_util::declared_short_name(&ad_node.identification)
+    {
+        g.register_declared_short_name(action_id.clone(), short_name);
+    }
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&ad_node.membership),
+    );
     let spec_targets: Vec<&str> = specializes
         .map(|spec| crate::semantic::ast_util::typing_targets(Some(spec)))
         .unwrap_or_default()
         .into_iter()
         .filter(|target| !target.trim().is_empty())
         .collect();
-    if !spec_targets.is_empty() {
-        attrs.insert(
-            "specializes".to_string(),
-            serde_json::json!(spec_targets.join(", ")),
-        );
-    }
     add_node_and_recurse(
         g,
         uri,
@@ -1271,6 +1326,21 @@ pub(super) fn materialize_action_def(
         attrs,
         parent_id,
     );
+    super::attach_declared_relationship_targets(
+        g,
+        &action_id,
+        RelationshipKind::Specializes,
+        spec_targets.iter().copied(),
+    );
+    for target in spec_targets {
+        crate::semantic::relationships::add_specializes_edge_if_exists(
+            g,
+            uri,
+            &qualified,
+            target,
+            container_prefix,
+        );
+    }
     if let ActionDefBody::Brace { elements } = &ad_node.body {
         build_from_action_def_body(elements, uri, Some(&qualified), &action_id, g);
     }

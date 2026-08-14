@@ -199,6 +199,7 @@ pub fn is_namespace(element_kind: &ElementKind) -> bool {
     matches!(
         element_kind,
         ElementKind::Package
+            | ElementKind::ClassifierDecl
             | ElementKind::RequirementDef
             | ElementKind::Requirement
             | ElementKind::UseCaseDef
@@ -212,6 +213,21 @@ pub fn is_namespace(element_kind: &ElementKind) -> bool {
     )
 }
 
+/// Whether two direct members must have distinct identifiers in `owner`'s namespace.
+///
+/// Definitions declared directly in a package participate in one classifier namespace even
+/// when their concrete metaclasses differ (for example, a `part def` and an `action def`).
+/// Other modeled namespace members retain the existing kind-specific distinguishability rule:
+/// role members and behavioral features may use the same name when their kinds differ.
+pub fn namespace_member_names_must_be_distinguishable(
+    owner: &ElementKind,
+    left: &ElementKind,
+    right: &ElementKind,
+) -> bool {
+    left == right
+        || (*owner == ElementKind::Package && left.is_definition() && right.is_definition())
+}
+
 pub fn is_part_like(element_kind: &ElementKind) -> bool {
     matches!(
         element_kind,
@@ -220,6 +236,19 @@ pub fn is_part_like(element_kind: &ElementKind) -> bool {
             | ElementKind::ItemDef
             | ElementKind::OccurrenceDef
     ) || matches!(element_kind, ElementKind::Unknown(s) if s.contains("part"))
+}
+
+/// Definitions that are concrete occurrence types for a flow payload.
+///
+/// This deliberately names the metaclass family rather than relying on a library type name:
+/// part, item, and occurrence definitions are the occurrence classifiers represented by the
+/// current graph. Other typing targets, such as attributes and enumerations, are value types
+/// and cannot be transported as a flow payload occurrence.
+pub fn is_flow_payload_occurrence_type(element_kind: &ElementKind) -> bool {
+    matches!(
+        element_kind,
+        ElementKind::PartDef | ElementKind::ItemDef | ElementKind::OccurrenceDef
+    )
 }
 
 /// Canonical `element_type`-string form of [`is_part_like`], for callers holding only a
@@ -254,17 +283,18 @@ pub fn is_requirement(element_kind: &ElementKind) -> bool {
 }
 
 pub fn is_metadata_restriction_attribute(node: &SemanticNode) -> bool {
-    node.attributes.contains_key("subsetsFeature") || is_known_metadata_redefine(node)
+    !node.declared_facts.relationships.subsetting.is_empty() || is_known_metadata_redefine(node)
 }
 
 /// Feature names that may appear in metadata def restriction shorthand (`:>` / `:>>`).
 pub const METADATA_RESTRICTION_FEATURE_NAMES: &[&str] = &["annotatedElement", "baseType"];
 
 pub fn is_known_metadata_redefine(node: &SemanticNode) -> bool {
-    node.attributes
-        .get("redefines")
-        .and_then(|value| value.as_str())
-        .is_some_and(|feature| METADATA_RESTRICTION_FEATURE_NAMES.contains(&feature))
+    node.declared_facts
+        .relationships
+        .redefinition
+        .iter()
+        .any(|target| METADATA_RESTRICTION_FEATURE_NAMES.contains(&target.reference.as_str()))
 }
 
 pub fn is_reflective_sysml_usage_type(type_ref: &str, target: &SemanticNode) -> bool {
@@ -276,11 +306,8 @@ pub fn is_reflective_sysml_usage_type(type_ref: &str, target: &SemanticNode) -> 
 }
 
 pub fn is_kerml_metadata_supertype(target: &SemanticNode) -> bool {
-    if target
-        .attributes
-        .get("metaclassRole")
-        .and_then(|value| value.as_str())
-        == Some("SemanticMetadata")
+    if target.declared_facts.metaclass_role
+        == Some(crate::semantic::model::KermlMetaclassRole::SemanticMetadata)
     {
         return true;
     }
@@ -302,16 +329,18 @@ pub fn is_kerml_metadata_supertype(target: &SemanticNode) -> bool {
 pub fn is_semantic_metadata_base_type_redefine(owner: &SemanticNode, node: &SemanticNode) -> bool {
     node.name == "baseType"
         && node
-            .attributes
-            .get("redefines")
-            .and_then(|value| value.as_str())
-            == Some("baseType")
+            .declared_facts
+            .relationships
+            .redefinition
+            .iter()
+            .any(|target| target.reference == "baseType")
         && owner.element_kind == ElementKind::MetadataDef
         && owner
-            .attributes
-            .get("specializes")
-            .and_then(|value| value.as_str())
-            .is_some_and(|value| value.contains("SemanticMetadata"))
+            .declared_facts
+            .relationships
+            .specializes
+            .iter()
+            .any(|target| target.reference.contains("SemanticMetadata"))
 }
 
 pub fn is_compatible_kind(target_kind: &ElementKind, allowed: &[ElementKind]) -> bool {

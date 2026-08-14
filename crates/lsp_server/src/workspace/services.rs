@@ -213,6 +213,7 @@ pub(crate) fn store_parsed_document_text(
             include_in_semantic_graph: true,
         },
     );
+    crate::workspace::state::refresh_published_model(state);
     refresh_symbols_for_uri(state, uri_norm);
     warning_from_parse_errors(uri_norm, parse_errors, diagnostic_count, context)
 }
@@ -338,6 +339,7 @@ pub(crate) fn ingest_parsed_scan_entries_batch(
         );
         loaded.push((uri_norm, warning));
     }
+    crate::workspace::state::refresh_published_model(state);
     loaded
 }
 
@@ -347,11 +349,9 @@ pub(crate) fn ingest_parsed_scan_entries_batch(
 /// can decide whether a (potentially slow) parse is needed.
 mod edits;
 mod rebuild;
+pub(crate) use edits::{apply_content_changes, apply_parsed_document_update, remove_document};
 #[cfg(test)]
 pub(crate) use edits::{apply_document_changes, apply_document_changes_fast};
-pub(crate) use edits::{
-    apply_document_content_edit, apply_parsed_document_update, remove_document,
-};
 pub(crate) use rebuild::{
     clear_documents_under_roots, index_library_paths_for_search, rebuild_all_document_links,
     rebuild_semantic_graph_staged,

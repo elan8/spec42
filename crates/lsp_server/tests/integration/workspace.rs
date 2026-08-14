@@ -27,7 +27,11 @@ fn lsp_workspace_scan_goto_definition() {
     let root: PathBuf = temp.path().canonicalize().expect("canonical root");
 
     std::fs::write(root.join("def.sysml"), "package P { part def Engine; }").expect("write def");
-    std::fs::write(root.join("use.sysml"), "package Q { part e : Engine; }").expect("write use");
+    std::fs::write(
+        root.join("use.sysml"),
+        "package Q { import P::*; part e : Engine; }",
+    )
+    .expect("write use");
 
     let root_uri = url::Url::from_file_path(&root).expect("root uri");
     let uri_use = url::Url::from_file_path(root.join("use.sysml")).expect("use uri");
@@ -67,7 +71,7 @@ fn lsp_workspace_scan_goto_definition() {
                 "uri": uri_use.as_str(),
                 "languageId": "sysml",
                 "version": 1,
-                "text": "package Q { part e : Engine; }"
+                "text": "package Q { import P::*; part e : Engine; }"
             }
         }
     });
@@ -81,7 +85,7 @@ fn lsp_workspace_scan_goto_definition() {
         "method": "textDocument/definition",
         "params": {
             "textDocument": { "uri": uri_use.as_str() },
-            "position": { "line": 0, "character": 22 }
+            "position": { "line": 0, "character": 35 }
         }
     });
     send_message(&mut stdin, &def_req.to_string());

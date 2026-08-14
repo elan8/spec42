@@ -72,7 +72,8 @@ pub struct EvaluatedView {
 
 /// Build a catalog of view definitions and usages from parsed workspace documents.
 ///
-/// Callers (for example the LSP server) typically derive [`WorkspaceParsedDocument`] values
+/// Callers (for example the LSP server) typically derive
+/// [`WorkspaceParsedDocument`](crate::semantic::workspace_graph::WorkspaceParsedDocument) values
 /// from their on-disk index; the graph-first workspace builder passes the documents returned
 /// alongside [`crate::semantic::graph::SemanticGraph`].
 pub fn build_view_catalog(
@@ -113,6 +114,7 @@ mod filter_match;
 mod filter_parser;
 pub(crate) use catalog_build::*;
 pub use evaluate::*;
+pub use filter_match::element_type_matches_all_filters;
 pub(crate) use filter_match::*;
 pub(crate) use filter_parser::*;
 
@@ -151,7 +153,13 @@ fn span_to_range_dto(span: &Span) -> RangeDto {
     }
 }
 
-pub(crate) fn parse_filter_text(text: &str) -> FilterExpr {
+/// Parse a view/expose filter expression text into a [`FilterExpr`] tree.
+///
+/// Accepts the same textual subset used by SysML view `filter` members (for example
+/// `@SysML::PartUsage or @SysML::PartDefinition`). Also accepts the debug-serialized
+/// `condition` attribute stored on graph `filter` nodes, which uses the same `@Kind`
+/// form for classification expressions.
+pub fn parse_filter_text(text: &str) -> FilterExpr {
     let tokens = tokenize_filter(text);
     let mut parser = FilterParser { tokens, index: 0 };
     parser.parse_expr()

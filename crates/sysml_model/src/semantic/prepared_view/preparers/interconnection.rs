@@ -9,6 +9,43 @@ use crate::semantic::prepared_view::graph_norm::{
     is_definition_kind, is_reference_kind, normalize_edge_kind,
 };
 
+fn root_coverage(root_id: &str, scene: &InterconnectionSceneDto) -> usize {
+    let descendant_prefix = format!("{root_id}.");
+    scene
+        .nodes
+        .iter()
+        .filter(|node| node.id == root_id || node.id.starts_with(&descendant_prefix))
+        .count()
+}
+
+fn selected_root(scene: &InterconnectionSceneDto) -> Option<&str> {
+    scene
+        .view
+        .root_ids
+        .iter()
+        .max_by(|left, right| {
+            root_coverage(left, scene)
+                .cmp(&root_coverage(right, scene))
+                .then_with(|| right.matches('.').count().cmp(&left.matches('.').count()))
+                .then_with(|| right.cmp(left))
+        })
+        .map(String::as_str)
+}
+
+fn container_is_in_selected_scope(
+    container_id: &str,
+    root: Option<&str>,
+    has_coverage: bool,
+) -> bool {
+    if !has_coverage {
+        return true;
+    }
+    let Some(root) = root else {
+        return true;
+    };
+    container_id == root || container_id.starts_with(&format!("{root}."))
+}
+
 pub fn prepare_interconnection_prepared_view(
     response: &SysmlVisualizationResultDto,
 ) -> Result<PreparedViewDto, String> {
@@ -23,6 +60,10 @@ pub fn prepare_interconnection_scene(
     scene: &InterconnectionSceneDto,
     response: &SysmlVisualizationResultDto,
 ) -> PreparedViewDto {
+    let selected_root = selected_root(scene);
+    let selected_root_has_coverage = selected_root
+        .map(|root| root_coverage(root, scene) > 0)
+        .unwrap_or(false);
     let mut node_ids: std::collections::HashSet<String> =
         scene.nodes.iter().map(|node| node.id.clone()).collect();
     let mut nodes: Vec<PreparedNodeDto> = scene
@@ -36,8 +77,10 @@ pub fn prepare_interconnection_scene(
                 .map(|port| {
                     json!({
                         "id": port.id,
+                        "semanticId": port.semantic_id,
                         "name": port.name,
                         "direction": port.direction,
+                        "multiplicity": port.multiplicity,
                         "portType": port.type_name,
                         "portSide": match port.side_hint.as_str() {
                             "west" => json!("left"),
@@ -78,7 +121,13 @@ pub fn prepare_interconnection_scene(
         .collect();
 
     for container in &scene.containers {
-        if node_ids.contains(&container.id) {
+        if node_ids.contains(&container.id)
+            || !container_is_in_selected_scope(
+                &container.id,
+                selected_root,
+                selected_root_has_coverage,
+            )
+        {
             continue;
         }
         nodes.push(PreparedNodeDto {
@@ -144,14 +193,15 @@ pub fn prepare_interconnection_scene(
         meta: Some(json!({
             "canonicalScene": true,
             "schemaVersion": scene.schema_version,
-            "selectedRoot": scene.view.root_ids.first(),
+            "selectedRoot": selected_root,
+            "rootCandidates": scene.view.root_ids,
         })),
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashMap;
+    use std::collections::{BTreeMap, HashMap};
 
     use crate::semantic::dto::{PositionDto, RangeDto, SysmlVisualizationResultDto};
     use crate::semantic::ibd::{IbdDataDto, IbdPartDto, IbdPortDto};
@@ -190,6 +240,7 @@ mod tests {
             parent_id: parent.to_string(),
             direction: None,
             port_type: None,
+            multiplicity: Some("[1]".to_string()),
             port_side: None,
             uri: Some("file:///model.sysml".to_string()),
             range: Some(RangeDto {
@@ -229,7 +280,7 @@ mod tests {
             package_container_groups: Vec::new(),
             root_candidates: vec!["Grid.mainElectronics".to_string()],
             default_root: None,
-            root_views: HashMap::new(),
+            root_views: BTreeMap::new(),
             def_instance_mappings: Vec::new(),
         };
         let scene = build_interconnection_scene(
@@ -290,5 +341,13 @@ mod tests {
             Some("file:///model.sysml")
         );
         assert!(port.get("range").is_some_and(|value| !value.is_null()));
+        assert_eq!(
+            port.get("multiplicity").and_then(|value| value.as_str()),
+            Some("[1]")
+        );
+        assert_eq!(
+            port.get("semanticId").and_then(|value| value.as_str()),
+            scene.ports.first().map(|value| value.semantic_id.as_str())
+        );
     }
 }

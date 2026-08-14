@@ -85,6 +85,43 @@ fn part_def_enum_usage_materializes_inner_attribute() {
 }
 
 #[test]
+fn part_usage_enum_usage_materializes_inner_attribute() {
+    // Issue #25: `enum` inside a `part` *usage* body (as opposed to a `part def` body, covered
+    // by `part_def_enum_usage_materializes_inner_attribute` above) was silently dropped by
+    // `PartUsageBodyElement::EnumerationUsage(_) => {}` in part_usage.rs.
+    let doc = workspace_doc(
+        "enum_in_part_usage.sysml",
+        r#"package P {
+  enum def Status;
+  part def Vehicle;
+  part vehicle : Vehicle {
+    enum status : Status {
+      attribute code : String;
+    }
+  }
+}"#,
+    );
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let vehicle = graph
+        .nodes_named("vehicle")
+        .into_iter()
+        .find(|node| node.element_kind == "part")
+        .expect("part usage");
+    let enum_usage = graph
+        .children_of(vehicle)
+        .into_iter()
+        .find(|child| child.element_kind == "enumeration" && child.name == "status")
+        .expect("enumeration usage");
+    assert!(
+        graph.children_of(enum_usage).iter().any(|child| {
+            (child.element_kind == "attribute" || child.element_kind == "attribute def")
+                && child.name == "code"
+        }),
+        "expected attribute under enumeration usage"
+    );
+}
+
+#[test]
 fn part_def_item_usage_materializes_inner_attribute() {
     let doc = workspace_doc(
         "item.sysml",
@@ -347,10 +384,13 @@ fn part_def_ref_action_materializes_as_reference_action_not_opaque() {
     assert!(facts.is_abstract);
     assert_eq!(
         performed
-            .attributes
-            .get("subsetsFeature")
-            .and_then(|v| v.as_str()),
-        Some("actions, enactedPerformances")
+            .declared_facts
+            .relationships
+            .subsetting
+            .iter()
+            .map(|target| target.reference.as_str())
+            .collect::<Vec<_>>(),
+        vec!["actions", "enactedPerformances"]
     );
     let nested_state = children
         .iter()
@@ -412,4 +452,43 @@ fn occurrence_def_body_flow_emits_flow_edge() {
         .iter()
         .any(|(_, _, k, _)| *k == RelationshipKind::Flow);
     assert!(has_flow, "expected Flow edge from occurrence def body flow");
+}
+
+#[test]
+fn part_def_body_bind_emits_bind_edge_between_nested_features() {
+    let doc = workspace_doc(
+        "part_def_bind.sysml",
+        r#"package P {
+  port def SignalPort;
+  part def Component {
+    port internalPort : SignalPort;
+  }
+  part def Boundary {
+    port boundaryPort : SignalPort;
+  }
+  part def Assembly :> Boundary {
+    part component : Component;
+    bind boundaryPort = component.internalPort;
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+
+    let bind_edges: Vec<_> = graph
+        .edges_for_uri_as_strings(&uri)
+        .into_iter()
+        .filter(|(_, _, kind, _)| *kind == RelationshipKind::Bind)
+        .collect();
+
+    assert_eq!(bind_edges.len(), 1, "expected exactly one Bind edge");
+    let (source, target, _, _) = &bind_edges[0];
+    assert!(
+        source.ends_with("::Boundary::boundaryPort"),
+        "unexpected bind source: {source}"
+    );
+    assert!(
+        target.ends_with("::Component::internalPort"),
+        "unexpected bind target: {target}"
+    );
 }

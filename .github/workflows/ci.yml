@@ -12,6 +12,8 @@ permissions:
 
 env:
   VSCODE_TEST_VERSION: "1.106.0"
+  # Keep in sync with `channel` in rust-toolchain.toml; bump both deliberately.
+  RUST_TOOLCHAIN_VERSION: "1.97.1"
 
 jobs:
   rust-core:
@@ -23,8 +25,9 @@ jobs:
           submodules: recursive
 
       - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@master
         with:
+          toolchain: ${{ env.RUST_TOOLCHAIN_VERSION }}
           components: clippy
 
       - name: Cache cargo
@@ -41,6 +44,9 @@ jobs:
 
       - name: Extension versions match Cargo workspace
         run: node scripts/sync-workspace-version.mjs --check
+
+      - name: SysML reference tooling smoke checks
+        run: python3 -m unittest tools/sysml_reference/test_tools.py
 
       - name: Prepare SysML stdlib bundle
         run: |
@@ -100,6 +106,12 @@ jobs:
       - name: Conformance matrix is current
         run: node scripts/generate-conformance-matrix.mjs --check
 
+      - name: Generator ABI manifest and specification are current
+        run: |
+          cargo run -p spec42-generator-protocol --example abi-manifest > docs/generation/generator-abi.json
+          git diff --exit-code docs/generation/generator-abi.json
+          node scripts/sync-generator-abi.mjs --check
+
       - name: Requirements slice integration checks
         run: |
           cargo test -p lsp_server --test lsp_integration integration::model::lsp_sysml_model_graph_resolves_requirement_usage_typing_same_file
@@ -117,6 +129,26 @@ jobs:
           cargo test -p lsp_server --test lsp_integration -- --test-threads=1
           cargo test -p server --lib
 
+      - name: SysML fuzz seed regression corpus
+        run: cargo test --manifest-path fuzz/Cargo.toml --test sysml_seed_corpus
+
+      - name: Generator conformance corpus
+        run: |
+          scripts/build-generator-plugins.sh
+          cargo run -p generator_conformance --bin generator-conformance
+          # A blessed golden must be committed, never produced by CI.
+          git diff --exit-code generator-tests/golden
+          # Subprocess layer: exit codes, the output transaction and cross-process
+          # determinism, none of which the in-process corpus can observe. Must run after the
+          # plugins are built or it skips itself.
+          cargo test -p server --test generator_cli
+
+      - name: Sandboxed Rust generator smoke
+        run: |
+          cargo build --release --manifest-path generator-examples/rust/Cargo.toml --target wasm32-unknown-unknown
+          cargo run -p server --bin spec42 -- --no-stdlib generate generator-examples/rust/target/wasm32-unknown-unknown/release/spec42_example_generator.wasm vscode/testFixture/workspaces/multi-file/def.sysml --output target/generator-smoke -- target=rust
+          cargo run -p server --bin spec42 -- --no-stdlib generate generator-examples/rust/target/wasm32-unknown-unknown/release/spec42_example_generator.wasm vscode/testFixture/workspaces/multi-file/def.sysml --output target/generator-smoke --check -- target=rust
+
       # Robot-vacuum zero-warning / view smoke stay local-only (`--ignored` tests +
       # scripts/fetch-robot-vacuum-cleaner.sh). The showcase repo already gates
       # Spec42 errors/warnings on its own CI; pinning it here couples Spec42
@@ -125,8 +157,27 @@ jobs:
       - name: cargo clippy
         run: cargo clippy --workspace --all-targets --all-features -- -D warnings
 
+      - name: cargo doc
+        run: cargo doc --no-deps --workspace
+        env:
+          RUSTDOCFLAGS: -D warnings
+
+  audit:
+    name: Dependency audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install cargo-audit
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-audit
+
+      - name: cargo audit
+        run: cargo audit
+
   rust-surfaces:
-    name: Rust agent/API surfaces
+    name: Rust agent CLI surfaces
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -134,7 +185,9 @@ jobs:
           submodules: recursive
 
       - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN_VERSION }}
 
       - name: Cache cargo
         uses: Swatinem/rust-cache@v2
@@ -194,21 +247,14 @@ jobs:
             .cache/elan8-method-libraries-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}.kpar
           key: kpar-libraries-domain-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}-method-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}
 
-      - name: Agent/API surface integration tests
+      - name: Agent CLI surface integration tests
         run: |
           cargo test -p server \
-            --test api_http \
-            --test mcp_tools \
             --test cli_ai_tools \
-            --test mcp_protocol \
-            --test mcp_binary \
             --test kitchen_timer_check \
             --test kpar_stdlib_embed_smoke \
             --test multi_file_check \
             -- --include-ignored
-
-      - name: Build spec42-mcp binary
-        run: cargo build -p server --bin spec42-mcp
 
   frontend-unit:
     name: Frontend unit checks
@@ -233,6 +279,9 @@ jobs:
       - name: npm ci (diagram renderer)
         run: cd shared/diagram-renderer && npm ci
 
+      - name: npm audit (diagram renderer)
+        run: cd shared/diagram-renderer && npm audit --omit=dev
+
       - name: npm typecheck (diagram renderer)
         run: cd shared/diagram-renderer && npm run typecheck
 
@@ -244,6 +293,9 @@ jobs:
 
       - name: npm ci (vscode)
         run: cd vscode && npm ci
+
+      - name: npm audit (vscode)
+        run: cd vscode && npm audit --omit=dev
 
       - name: Typecheck extension
         run: cd vscode && npm run typecheck
@@ -286,7 +338,9 @@ jobs:
           cache-dependency-path: vscode/package-lock.json
 
       - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN_VERSION }}
 
       - name: Prepare SysML stdlib bundle
         run: |
@@ -418,7 +472,9 @@ jobs:
           cache-dependency-path: vscode/package-lock.json
 
       - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN_VERSION }}
 
       - name: Prepare SysML stdlib bundle
         run: |
@@ -533,8 +589,9 @@ jobs:
           submodules: recursive
 
       - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@master
         with:
+          toolchain: ${{ env.RUST_TOOLCHAIN_VERSION }}
           targets: wasm32-wasip2
 
       - name: Cache cargo
@@ -542,3 +599,37 @@ jobs:
 
       - name: cargo check (zed extension)
         run: cargo check --manifest-path zed/Cargo.toml --target wasm32-wasip2 --release
+
+  generator-policy-platforms:
+    name: Generator policy (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN_VERSION }}
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+
+      # Only the crates whose behaviour depends on the filesystem: artifact path validation
+      # (case folding, Unicode normalization, device names, alternate data streams) and the
+      # transaction planner and executor. On Windows this also runs the differential test
+      # that uses the platform itself as the oracle for what a valid filename is.
+      #
+      # `server`'s default features re-enable `workspace`'s embedded stdlib/KPAR libraries
+      # (correct for the shipped CLI, irrelevant to path/transaction-policy behaviour), and this
+      # job never fetches those bundles -- `--no-default-features` keeps it building the
+      # lightweight path this job actually needs, matching what its own tests exercise.
+      - name: Artifact path and transaction policy
+        run: |
+          cargo test -p generator_api --lib path
+          cargo test -p generator_api --lib artifacts
+          cargo test -p server --lib generation::plan --no-default-features
+          cargo test -p server --lib generation::apply --no-default-features

@@ -156,6 +156,8 @@ function prepareStateMachine(machine: UnknownRecord, visualization: Visualizatio
         label,
         attributes: {
           selfLoop: Boolean(edge.selfLoop ?? source === target),
+          relationType: "transition",
+          trigger: edge.trigger,
           guard: edge.guard,
           effect: edge.effect,
           accept: edge.accept,

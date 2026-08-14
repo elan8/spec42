@@ -135,10 +135,14 @@ fn attribute_redefining_a_port_is_classified_as_port_in_every_containing_context
     for (path, src) in contexts {
         let doc = workspace_doc(path, src);
         let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
-        let node = graph
-            .nodes_named("p")
-            .into_iter()
-            .find(|node| node.attributes.get("redefines").and_then(|v| v.as_str()) == Some("p"));
+        let node = graph.nodes_named("p").into_iter().find(|node| {
+            node.declared_facts
+                .relationships
+                .redefinition
+                .first()
+                .map(|target| target.reference.as_str())
+                == Some("p")
+        });
         let node = node.unwrap_or_else(|| {
             panic!("expected an attribute usage redefining `p` to exist in context {path}")
         });
@@ -177,10 +181,16 @@ fn unnamed_redefining_usage_gets_effective_name_per_spec_7_6_5() {
         );
     assert_eq!(
         redefining
-            .attributes
-            .get("redefines")
-            .and_then(|v| v.as_str()),
+            .declared_facts
+            .relationships
+            .redefinition
+            .first()
+            .map(|target| target.reference.as_str()),
         Some("cylinders")
+    );
+    assert_eq!(
+        redefining.declared_name, None,
+        "the effective name is implied by the redefinition and was not authored"
     );
 }
 
@@ -219,7 +229,12 @@ fn anonymous_item_redefinition_gets_effective_name_and_typing_in_part_def_body()
             "expected the redefining `shape` item usage to be addressable by its effective name",
         );
     assert_eq!(
-        shape.attributes.get("redefines").and_then(|v| v.as_str()),
+        shape
+            .declared_facts
+            .relationships
+            .redefinition
+            .first()
+            .map(|target| target.reference.as_str()),
         Some("shape")
     );
     assert!(
@@ -229,6 +244,29 @@ fn anonymous_item_redefinition_gets_effective_name_and_typing_in_part_def_body()
             .any(|child| child.name == "radius"),
         "expected nested `:>> radius` body member to be reachable as a child of the `shape` item usage"
     );
+    assert_eq!(shape.declared_name, None);
+}
+
+#[test]
+fn named_redefining_usage_keeps_its_authored_name() {
+    let src = r#"package P {
+  part def Engine {
+    part cylinders[8];
+  }
+  part def ServiceEngine :> Engine {
+    part replacement redefines cylinders[6];
+  }
+}"#;
+    let doc = workspace_doc("named_redefinition.sysml", src);
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let replacement = graph
+        .nodes_named("replacement")
+        .into_iter()
+        .find(|node| node.id.qualified_name == "P::ServiceEngine::replacement")
+        .expect("named redefining usage");
+
+    assert_eq!(replacement.declared_name.as_deref(), Some("replacement"));
+    assert_eq!(replacement.name, "replacement");
 }
 
 #[test]
@@ -330,12 +368,14 @@ fn requirement_usage_subsets_feature_is_preserved_in_every_containing_context() 
                 panic!("expected requirement usage `r2` to exist in context {path}")
             });
         assert_eq!(
-            node.attributes
-                .get("subsetsFeature")
-                .and_then(|v| v.as_str()),
+            node.declared_facts
+                .relationships
+                .subsetting
+                .first()
+                .map(|target| target.reference.as_str()),
             Some("r1"),
-            "expected `r2` to keep subsetsFeature=\"r1\" in context {path}, got {:#?}",
-            node.attributes
+            "expected `r2` to keep a subsetting fact to \"r1\" in context {path}, got {:#?}",
+            node.declared_facts.relationships.subsetting
         );
     }
 }

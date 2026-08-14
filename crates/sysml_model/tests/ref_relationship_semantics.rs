@@ -150,12 +150,12 @@ fn astronomy_orbit_pattern_uses_ref_relationships() {
     let central_body_ref = graph
         .nodes_named("centralBody")
         .into_iter()
-        .find(|node| node.element_kind == "ref" && node.attributes.contains_key("value"))
+        .find(|node| node.element_kind == "ref" && node.expression_text.value.is_some())
         .expect("centralBody assigned ref node");
     let orbiting_body_ref = graph
         .nodes_named("orbitingBody")
         .into_iter()
-        .find(|node| node.element_kind == "ref" && node.attributes.contains_key("value"))
+        .find(|node| node.element_kind == "ref" && node.expression_text.value.is_some())
         .expect("orbitingBody assigned ref node");
 
     let typing_targets = graph.outgoing_typing_or_specializes_targets(orbiting_body_ref);
@@ -206,7 +206,7 @@ fn part_def_ref_assignment_creates_reference_edge() {
     let central_body_ref = graph
         .nodes_named("centralBody")
         .into_iter()
-        .find(|node| node.element_kind == "ref" && node.attributes.contains_key("value"))
+        .find(|node| node.element_kind == "ref" && node.expression_text.value.is_some())
         .expect("assigned ref in part def");
     let edges = graph.edges_for_workspace_as_strings(&[]);
 
@@ -242,7 +242,7 @@ fn part_usage_ref_redefinition_shorthand_creates_reference_edge() {
     let central_body_ref = graph
         .nodes_named("centralBody")
         .into_iter()
-        .find(|node| node.element_kind == "ref" && node.attributes.contains_key("value"))
+        .find(|node| node.element_kind == "ref" && node.expression_text.value.is_some())
         .expect("assigned ref with :>> shorthand");
     let edges = graph.edges_for_workspace_as_strings(&[]);
 
@@ -380,7 +380,7 @@ fn part_def_and_part_usage_ref_assignments_both_emit_reference_edges() {
         let ref_node = graph
             .nodes_named(ref_name)
             .into_iter()
-            .find(|node| node.element_kind == "ref" && node.attributes.contains_key("value"))
+            .find(|node| node.element_kind == "ref" && node.expression_text.value.is_some())
             .unwrap_or_else(|| panic!("expected assigned ref '{ref_name}'"));
         assert!(
             edges.iter().any(|(src, tgt, kind, _)| {

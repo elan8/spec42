@@ -173,18 +173,20 @@ pub(crate) fn collect_connection_conformance_diagnostics(
         // references, not declared on the end itself, so it has no `portType` attribute by
         // design (see `add_end_decl`). Don't flag it as missing a port type it was never meant
         // to declare.
-        if node
-            .attributes
-            .get("referencesFeature")
-            .and_then(|value| value.as_str())
-            .is_some()
+        if !node
+            .declared_facts
+            .relationships
+            .reference_subsetting
+            .is_empty()
         {
             continue;
         }
         let Some(port_type) = node
-            .attributes
-            .get("portType")
-            .and_then(|value| value.as_str())
+            .declared_facts
+            .relationships
+            .typing
+            .first()
+            .map(|target| target.reference.as_str())
         else {
             let key = format!("iface|{}", node.id.qualified_name);
             if seen.insert(key) {
@@ -239,16 +241,18 @@ pub(crate) fn collect_connection_conformance_diagnostics(
                     && right.element_kind == sysml_model::ElementKind::Attribute
                 {
                     let left_type = left
-                        .attributes
-                        .get("valueType")
-                        .or_else(|| left.attributes.get("typeRef"))
-                        .and_then(|v| v.as_str())
+                        .declared_facts
+                        .relationships
+                        .typing
+                        .first()
+                        .map(|target| target.reference.as_str())
                         .unwrap_or("");
                     let right_type = right
-                        .attributes
-                        .get("valueType")
-                        .or_else(|| right.attributes.get("typeRef"))
-                        .and_then(|v| v.as_str())
+                        .declared_facts
+                        .relationships
+                        .typing
+                        .first()
+                        .map(|target| target.reference.as_str())
                         .unwrap_or("");
                     if !left_type.is_empty() && !right_type.is_empty() && left_type != right_type {
                         let key = format!(

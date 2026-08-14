@@ -386,10 +386,11 @@ pub fn install_standard_library_from_bytes(
     }
     let staging_version_root = staging_root.join(&config.version);
     let staging_install_path = staging_version_root.join(&normalized_content_path);
-    ensure_directory_path(
-        &staging_install_path,
-        "Managed standard-library staging path",
-    )?;
+    // Not pre-created: `materialize_kpar_bytes` (a real KPAR archive) requires its destination
+    // to not exist yet and creates it itself as part of an atomic publish. Pre-creating it here
+    // would make every KPAR install fail that check against a directory this function just
+    // made. `materialize_embedded_stdlib_kpar_bundle` (the other branch) always creates its own
+    // destination unconditionally, so leaving this to the callee is correct for both.
 
     let project_name = if is_kpar_bytes(archive_bytes) {
         let materialized = materialize_kpar_bytes(archive_bytes, &staging_install_path)?;
@@ -529,7 +530,7 @@ fn canonicalize_lossy(path: &Path) -> PathBuf {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use kpar::pack::{build_kpar, PackOptions};
+    use kpar::pack::{build_kpar, ArchiveTimestamp, PackOptions};
     use kpar::schema::Project;
 
     fn minimal_stdlib_kpar_bytes(work: &Path) -> Vec<u8> {
@@ -557,6 +558,8 @@ mod tests {
             source_roots: vec![lib],
             named_source_roots: vec![],
             excludes: vec![],
+            timestamp: ArchiveTimestamp::default(),
+            compression: kpar::pack::ArchiveCompression::default(),
         };
         build_kpar(&options, &kpar_path).expect("pack kpar");
         fs::read(&kpar_path).expect("read kpar")

@@ -1,6 +1,6 @@
 use std::fs;
 
-use kpar::pack::{build_kpar, PackOptions};
+use kpar::pack::{build_kpar, ArchiveTimestamp, PackOptions};
 use kpar::schema::Project;
 use workspace::{
     library::bundle::discover_library_roots, resolve_explicit_library_path, EngineBuilder,
@@ -32,6 +32,8 @@ fn minimal_domain_kpar(work: &std::path::Path) -> std::path::PathBuf {
         source_roots: vec![lib],
         named_source_roots: vec![],
         excludes: vec![],
+        timestamp: ArchiveTimestamp::default(),
+        compression: kpar::pack::ArchiveCompression::default(),
     };
     build_kpar(&options, &kpar_path).expect("pack kpar");
     kpar_path

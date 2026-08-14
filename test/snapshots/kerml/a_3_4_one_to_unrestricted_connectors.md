@@ -1,0 +1,474 @@
+# META
+~~~ini
+description=KerML KerML Spec Annex A: A-3-4-OneToUnrestrictedConnectors
+type=file
+~~~
+# SOURCE
+~~~kerml
+
+package OneToUnrestrictedConnectorsModelToBeExecuted {
+	doc
+	/* 
+	 */
+
+	private import WithoutConnectorsModelToBeExecuted::BikeFork;
+
+	classifier Bicycle {
+		feature carrier : BikeBasket [*];
+		feature holdsWheel : BikeFork [*];
+		connector carrierFixed : BikeBasketFixed from [*] carrier to [1] holdsWheel;
+	}
+	classifier BikeBasket;
+
+	assoc BikeBasketFixed {
+		end feature basket : BikeBasket;
+		end feature fixedTo : BikeFork;
+	}
+}
+
+package OneToUnrestrictedConnectorsExecution {
+	doc
+	/* 
+	 */
+
+	private import Atoms::*;
+	private import OneToUnrestrictedConnectorsModelToBeExecuted::*;
+	private import OneToOneConnectorsExecution::MyBikeFork1;
+	private import OneToOneConnectorsExecution::MyBikeFork2;
+	private import OneToOneConnectorsExecution::MyBikeFork;
+
+	#atom
+	classifier MyBikeBasket1 specializes BikeBasket;
+	#atom
+	classifier MyBikeBasket2 specializes BikeBasket;
+
+	classifier MyBikeBasket unions MyBikeBasket1, MyBikeBasket2;
+
+	#atom
+	assoc MyBikeBasket1_Fork1_BBF_Link specializes BikeBasketFixed {
+		end feature redefines basket : MyBikeBasket1;
+		end feature redefines fixedTo : MyBikeFork1;
+	}
+	#atom
+	assoc MyBikeBasket2_Fork1_BBF_Link specializes BikeBasketFixed {
+		end feature redefines basket : MyBikeBasket2;
+		end feature redefines fixedTo : MyBikeFork1;
+	}
+
+	classifier MyBikeBasket_Fork_BBF_Link unions MyBikeBasket1_Fork1_BBF_Link, MyBikeBasket2_Fork1_BBF_Link;
+
+	#atom
+	classifier MyBike specializes Bicycle {
+		feature redefines carrier : MyBikeBasket [2];
+		feature redefines holdsWheel : MyBikeFork [2];
+		connector redefines carrierFixed : MyBikeBasket_Fork_BBF_Link [2] from [*] carrier to [1] holdsWheel;
+	}
+}
+~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 6 16) (end 6 60))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 9 20) (end 9 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 10 23) (end 10 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 13 1) (end 13 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 16 23) (end 16 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 17 24) (end 17 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 26 16) (end 26 24))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 28 16) (end 28 56))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 29 16) (end 29 56))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 30 16) (end 30 55))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 32 1) (end 33 1))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 33 38) (end 33 48))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 34 1) (end 35 1))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 35 38) (end 35 48))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 39 1) (end 40 1))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 42 34) (end 42 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 44 1) (end 45 1))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 47 34) (end 47 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 52 1) (end 53 1))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 55 33) (end 55 43))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "parser")
+        (range (start 56 2) (end 57 1))
+      )
+    )
+  )
+)
+~~~
+# SMG
+~~~sexpr
+(semantic-model
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:8e47dd9f44c10386e51751f0192eaa7c572b29cfb66ebde9a307e295b3c90c9c") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution"))) (kind package) (membership (kind owning) (visibility default)) (documentation (doc (text " \n\t "))))
+    (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Atoms") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "OneToUnrestrictedConnectorsModelToBeExecuted") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind import) (ordinal 2))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "OneToOneConnectorsExecution::MyBikeFork1") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind import) (ordinal 3))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "OneToOneConnectorsExecution::MyBikeFork2") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind import) (ordinal 4))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "OneToOneConnectorsExecution::MyBikeFork") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBike"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Bicycle"))))
+    (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 2) (upper 2))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MyBikeBasket")) (redefinition (reference "carrier"))))
+    (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 1))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 2) (upper 2))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MyBikeFork")) (redefinition (reference "holdsWheel"))))
+    (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket1"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "BikeBasket"))))
+    (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket1_Fork1_BBF_Link"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "BikeBasketFixed"))))
+    (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MyBikeBasket1")) (redefinition (reference "basket"))))
+    (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 1))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MyBikeFork1")) (redefinition (reference "fixedTo"))))
+    (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket2"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "BikeBasket"))))
+    (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket2_Fork1_BBF_Link"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "BikeBasketFixed"))))
+    (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MyBikeBasket2")) (redefinition (reference "basket"))))
+    (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 1))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MyBikeFork1")) (redefinition (reference "fixedTo"))))
+    (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket_Fork_BBF_Link"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted"))) (kind package) (membership (kind owning) (visibility default)) (documentation (doc (text " \n\t "))))
+    (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "WithoutConnectorsModelToBeExecuted::BikeFork") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle::carrier"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (multiplicity (lower unbounded) (upper unbounded))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "BikeBasket"))))
+    (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle::carrierFixed"))) (kind kerml-connector) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "BikeBasketFixed")) (connectorEnd (reference "carrier")) (connectorEnd (reference "holdsWheel"))))
+    (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle::holdsWheel"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (multiplicity (lower unbounded) (upper unbounded))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "BikeFork"))))
+    (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed::basket"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "BikeBasket"))))
+    (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed::fixedTo"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "BikeFork"))))
+  )
+  (references
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "Atoms")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "OneToUnrestrictedConnectorsModelToBeExecuted")
+      (outcome (status resolved) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted")))))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind import) (ordinal 2))))) (kind membershipImport) (ordinal 0))
+      (authored-target "OneToOneConnectorsExecution::MyBikeFork1")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind import) (ordinal 3))))) (kind membershipImport) (ordinal 0))
+      (authored-target "OneToOneConnectorsExecution::MyBikeFork2")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind import) (ordinal 4))))) (kind membershipImport) (ordinal 0))
+      (authored-target "OneToOneConnectorsExecution::MyBikeFork")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBike"))) (kind specialization) (ordinal 0))
+      (authored-target "Bicycle")
+      (outcome (status resolved) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle")))))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 0))))) (kind featureTyping) (ordinal 0))
+      (authored-target "MyBikeBasket")
+      (outcome (status resolved) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket")))))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 1))))) (kind featureTyping) (ordinal 0))
+      (authored-target "MyBikeFork")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 0))))) (kind redefinition) (ordinal 0))
+      (authored-target "carrier")
+      (outcome (status resolved) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle::carrier")))))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 1))))) (kind redefinition) (ordinal 0))
+      (authored-target "holdsWheel")
+      (outcome (status resolved) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle::holdsWheel")))))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket1"))) (kind specialization) (ordinal 0))
+      (authored-target "BikeBasket")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket1_Fork1_BBF_Link"))) (kind specialization) (ordinal 0))
+      (authored-target "BikeBasketFixed")
+      (outcome (status resolved) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed")))))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 0))))) (kind featureTyping) (ordinal 0))
+      (authored-target "MyBikeBasket1")
+      (outcome (status resolved) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket1")))))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 1))))) (kind featureTyping) (ordinal 0))
+      (authored-target "MyBikeFork1")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 0))))) (kind redefinition) (ordinal 0))
+      (authored-target "basket")
+      (outcome (status resolved) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed::basket")))))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 1))))) (kind redefinition) (ordinal 0))
+      (authored-target "fixedTo")
+      (outcome (status resolved) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed::fixedTo")))))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket2"))) (kind specialization) (ordinal 0))
+      (authored-target "BikeBasket")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket2_Fork1_BBF_Link"))) (kind specialization) (ordinal 0))
+      (authored-target "BikeBasketFixed")
+      (outcome (status resolved) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed")))))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 0))))) (kind featureTyping) (ordinal 0))
+      (authored-target "MyBikeBasket2")
+      (outcome (status resolved) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket2")))))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 1))))) (kind featureTyping) (ordinal 0))
+      (authored-target "MyBikeFork1")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 0))))) (kind redefinition) (ordinal 0))
+      (authored-target "basket")
+      (outcome (status resolved) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed::basket")))))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 1))))) (kind redefinition) (ordinal 0))
+      (authored-target "fixedTo")
+      (outcome (status resolved) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed::fixedTo")))))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
+      (authored-target "WithoutConnectorsModelToBeExecuted::BikeFork")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle::carrier"))) (kind featureTyping) (ordinal 0))
+      (authored-target "BikeBasket")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle::carrierFixed"))) (kind featureTyping) (ordinal 0))
+      (authored-target "BikeBasketFixed")
+      (outcome (status resolved) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed")))))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle::carrierFixed"))) (kind connectorEnd) (ordinal 0))
+      (authored-target "carrier")
+      (outcome (status resolved) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle::carrier")))))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle::carrierFixed"))) (kind connectorEnd) (ordinal 1))
+      (authored-target "holdsWheel")
+      (outcome (status resolved) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle::holdsWheel")))))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle::holdsWheel"))) (kind featureTyping) (ordinal 0))
+      (authored-target "BikeFork")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed::basket"))) (kind featureTyping) (ordinal 0))
+      (authored-target "BikeBasket")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed::fixedTo"))) (kind featureTyping) (ordinal 0))
+      (authored-target "BikeFork")
+      (outcome (status unresolved)))
+  )
+  (relationships
+    (relationship (kind specialization) (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBike"))) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBike"))) (kind specialization) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 0))))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle::carrier"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 0))))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 1))))) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle::holdsWheel"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 1))))) (kind redefinition) (ordinal 0)))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket1_Fork1_BBF_Link"))) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket1_Fork1_BBF_Link"))) (kind specialization) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket1"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 0))))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed::basket"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 0))))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 1))))) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed::fixedTo"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 1))))) (kind redefinition) (ordinal 0)))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket2_Fork1_BBF_Link"))) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket2_Fork1_BBF_Link"))) (kind specialization) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket2"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 0))))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed::basket"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 0))))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 1))))) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed::fixedTo"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 1))))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle::carrierFixed"))) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle::carrierFixed"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind connectorEnd) (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle::carrierFixed"))) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle::carrier"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle::carrierFixed"))) (kind connectorEnd) (ordinal 0)))
+    (relationship (kind connectorEnd) (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle::carrierFixed"))) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle::holdsWheel"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle::carrierFixed"))) (kind connectorEnd) (ordinal 1)))
+  )
+  (evaluation
+  )
+)
+~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (query (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (range (start 26 16) (end 26 24)) (probe (position 26 16))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "Atoms")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (range (start 27 16) (end 27 63)) (probe (position 27 16))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0) (authored-target "OneToUnrestrictedConnectorsModelToBeExecuted")
+      (outcome (status resolved) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted")))))
+  )
+  (query (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (range (start 28 16) (end 28 56)) (probe (position 28 16))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind import) (ordinal 2))))) (kind membershipImport) (ordinal 0) (authored-target "OneToOneConnectorsExecution::MyBikeFork1")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (range (start 29 16) (end 29 56)) (probe (position 29 16))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind import) (ordinal 3))))) (kind membershipImport) (ordinal 0) (authored-target "OneToOneConnectorsExecution::MyBikeFork2")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (range (start 30 16) (end 30 55)) (probe (position 30 16))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind import) (ordinal 4))))) (kind membershipImport) (ordinal 0) (authored-target "OneToOneConnectorsExecution::MyBikeFork")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (range (start 53 31) (end 53 38)) (probe (position 53 31))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBike"))) (kind specialization) (ordinal 0) (authored-target "Bicycle")
+      (outcome (status resolved) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle")))))
+  )
+  (query (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (range (start 54 30) (end 54 42)) (probe (position 54 30))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 0))))) (kind featureTyping) (ordinal 0) (authored-target "MyBikeBasket")
+      (outcome (status resolved) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket")))))
+  )
+  (query (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (range (start 55 33) (end 55 43)) (probe (position 55 33))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 1))))) (kind featureTyping) (ordinal 0) (authored-target "MyBikeFork")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (range (start 54 20) (end 54 27)) (probe (position 54 20))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "carrier")
+      (outcome (status resolved) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle::carrier")))))
+  )
+  (query (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (range (start 55 20) (end 55 30)) (probe (position 55 20))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 1))))) (kind redefinition) (ordinal 0) (authored-target "holdsWheel")
+      (outcome (status resolved) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle::holdsWheel")))))
+  )
+  (query (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (range (start 33 38) (end 33 48)) (probe (position 33 38))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket1"))) (kind specialization) (ordinal 0) (authored-target "BikeBasket")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (range (start 40 48) (end 40 63)) (probe (position 40 48))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket1_Fork1_BBF_Link"))) (kind specialization) (ordinal 0) (authored-target "BikeBasketFixed")
+      (outcome (status resolved) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed")))))
+  )
+  (query (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (range (start 41 33) (end 41 46)) (probe (position 41 33))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 0))))) (kind featureTyping) (ordinal 0) (authored-target "MyBikeBasket1")
+      (outcome (status resolved) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket1")))))
+  )
+  (query (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (range (start 42 34) (end 42 45)) (probe (position 42 34))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 1))))) (kind featureTyping) (ordinal 0) (authored-target "MyBikeFork1")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (range (start 41 24) (end 41 30)) (probe (position 41 24))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "basket")
+      (outcome (status resolved) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed::basket")))))
+  )
+  (query (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (range (start 42 24) (end 42 31)) (probe (position 42 24))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 1))))) (kind redefinition) (ordinal 0) (authored-target "fixedTo")
+      (outcome (status resolved) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed::fixedTo")))))
+  )
+  (query (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (range (start 35 38) (end 35 48)) (probe (position 35 38))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket2"))) (kind specialization) (ordinal 0) (authored-target "BikeBasket")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (range (start 45 48) (end 45 63)) (probe (position 45 48))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket2_Fork1_BBF_Link"))) (kind specialization) (ordinal 0) (authored-target "BikeBasketFixed")
+      (outcome (status resolved) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed")))))
+  )
+  (query (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (range (start 46 33) (end 46 46)) (probe (position 46 33))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 0))))) (kind featureTyping) (ordinal 0) (authored-target "MyBikeBasket2")
+      (outcome (status resolved) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket2")))))
+  )
+  (query (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (range (start 47 34) (end 47 45)) (probe (position 47 34))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 1))))) (kind featureTyping) (ordinal 0) (authored-target "MyBikeFork1")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (range (start 46 24) (end 46 30)) (probe (position 46 24))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "basket")
+      (outcome (status resolved) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed::basket")))))
+  )
+  (query (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (range (start 47 24) (end 47 31)) (probe (position 47 24))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind kerml-feature) (ordinal 1))))) (kind redefinition) (ordinal 0) (authored-target "fixedTo")
+      (outcome (status resolved) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed::fixedTo")))))
+  )
+  (query (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (range (start 6 16) (end 6 60)) (probe (position 6 16))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "WithoutConnectorsModelToBeExecuted::BikeFork")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (range (start 9 20) (end 9 30)) (probe (position 9 20))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle::carrier"))) (kind featureTyping) (ordinal 0) (authored-target "BikeBasket")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (range (start 11 27) (end 11 42)) (probe (position 11 27))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle::carrierFixed"))) (kind featureTyping) (ordinal 0) (authored-target "BikeBasketFixed")
+      (outcome (status resolved) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed")))))
+  )
+  (query (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (range (start 11 52) (end 11 59)) (probe (position 11 52))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle::carrierFixed"))) (kind connectorEnd) (ordinal 0) (authored-target "carrier")
+      (outcome (status resolved) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle::carrier")))))
+  )
+  (query (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (range (start 11 67) (end 11 77)) (probe (position 11 67))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle::carrierFixed"))) (kind connectorEnd) (ordinal 1) (authored-target "holdsWheel")
+      (outcome (status resolved) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle::holdsWheel")))))
+  )
+  (query (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (range (start 10 23) (end 10 31)) (probe (position 10 23))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle::holdsWheel"))) (kind featureTyping) (ordinal 0) (authored-target "BikeFork")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (range (start 16 23) (end 16 33)) (probe (position 16 23))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed::basket"))) (kind featureTyping) (ordinal 0) (authored-target "BikeBasket")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (range (start 17 24) (end 17 32)) (probe (position 17 24))
+    (reference (id (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed::fixedTo"))) (kind featureTyping) (ordinal 0) (authored-target "BikeFork")
+      (outcome (status unresolved)))
+  )
+)
+~~~

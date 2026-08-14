@@ -6,14 +6,12 @@ use sysml_v2_parser::ast::{AttributeBody, AttributeBodyElement};
 use url::Url;
 
 use super::{
-    add_node_and_recurse, expressions, qualified_name_for_node, unit_metadata, usage_builders,
+    add_node_and_recurse, attach_declared_name, attach_declared_subsetting_family, expressions,
+    qualified_name_for_node, unit_metadata, usage_builders,
 };
-use crate::semantic::ast_util::{
-    attach_membership_visibility, span_to_range, subsetting_target, typing_targets,
-};
+use crate::semantic::ast_util::{span_to_range, typing_targets};
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::kinds::METADATA_RESTRICTION_FEATURE_NAMES;
-use crate::semantic::model::{ElementKind, NodeId, RelationshipKind};
+use crate::semantic::model::{NodeId, RelationshipKind};
 use crate::semantic::relationships::add_typing_edge_if_exists;
 
 /// Attaches any `doc` comments written inside a nested attribute def/usage's own
@@ -48,22 +46,15 @@ pub(super) fn build_from_attribute_body(
                 let value = &attribute.value;
                 let qualified =
                     qualified_name_for_node(g, uri, container_prefix, &value.name, "attribute def");
-                let mut attrs = HashMap::new();
-                attach_membership_visibility(&mut attrs, &value.membership);
+                let attrs = HashMap::new();
+                g.register_declared_membership_facts(
+                    NodeId::new(uri, &qualified),
+                    crate::semantic::ast_util::declared_membership_facts(&value.membership),
+                );
+                if let Some(short_name) = unit_metadata::attribute_def_short_name(value) {
+                    g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
+                }
                 let targets = typing_targets(value.typing.as_deref());
-                if !targets.is_empty() {
-                    attrs.insert(
-                        "attributeType".to_string(),
-                        serde_json::json!(targets.join(", ")),
-                    );
-                }
-                unit_metadata::project_attribute_def_unit_metadata(&mut attrs, value);
-                if let Some(expr_node) = &value.value {
-                    let rendered =
-                        expressions::expression_to_debug_string(&expr_node.value.expression);
-                    attrs.insert("value".to_string(), serde_json::json!(rendered));
-                    attrs.insert("defaultValue".to_string(), serde_json::json!(rendered));
-                }
                 add_node_and_recurse(
                     g,
                     uri,
@@ -74,46 +65,34 @@ pub(super) fn build_from_attribute_body(
                     attrs,
                     Some(parent_id),
                 );
-                for target in typing_targets(value.typing.as_deref()) {
+                let node_id = NodeId::new(uri, &qualified);
+                if let Some(node) = g.get_node_mut(&node_id) {
+                    node.declared_facts.unit = unit_metadata::attribute_def_unit_facts(value);
+                }
+                if let Some(expr_node) = &value.value {
+                    let rendered =
+                        expressions::expression_to_debug_string(&expr_node.value.expression);
+                    if let Some(node) = g.get_node_mut(&node_id) {
+                        node.expression_text.value = Some(rendered.clone());
+                        node.expression_text.default_value = Some(rendered);
+                    }
+                }
+                for target in targets.iter().copied() {
                     add_typing_edge_if_exists(g, uri, &qualified, target, container_prefix);
                 }
-                attach_nested_doc_comments(g, &NodeId::new(uri, &qualified), &value.body);
+                attach_nested_doc_comments(g, &node_id, &value.body);
             }
             AttributeBodyElement::AttributeUsage(attribute) => {
                 let value = &attribute.value;
                 let name = super::effective_usage_name(&value.name, value.redefines.as_deref());
                 let qualified =
                     qualified_name_for_node(g, uri, container_prefix, name, "attribute");
-                let mut attrs = HashMap::new();
-                attach_membership_visibility(&mut attrs, &value.membership);
+                let attrs = HashMap::new();
+                g.register_declared_membership_facts(
+                    NodeId::new(uri, &qualified),
+                    crate::semantic::ast_util::declared_membership_facts(&value.membership),
+                );
                 let targets = typing_targets(value.typing.as_deref());
-                if !targets.is_empty() {
-                    attrs.insert(
-                        "attributeType".to_string(),
-                        serde_json::json!(targets.join(", ")),
-                    );
-                }
-                unit_metadata::project_attribute_usage_unit_metadata(&mut attrs, value);
-                if let Some(s) = subsetting_target(value.subsets.as_deref()) {
-                    attrs.insert("subsetsFeature".to_string(), serde_json::json!(s));
-                }
-                if let Some(r) = subsetting_target(value.redefines.as_deref()) {
-                    attrs.insert("redefines".to_string(), serde_json::json!(r));
-                    if g.get_node(parent_id).is_some_and(|parent| {
-                        parent.element_kind == ElementKind::MetadataDef
-                            && METADATA_RESTRICTION_FEATURE_NAMES.contains(&r)
-                    }) {
-                        attrs.insert("subsetsFeature".to_string(), serde_json::json!(r));
-                    }
-                }
-                if let Some(expr_node) = &value.value {
-                    attrs.insert(
-                        "value".to_string(),
-                        serde_json::json!(expressions::expression_to_debug_string(
-                            &expr_node.value.expression
-                        )),
-                    );
-                }
                 add_node_and_recurse(
                     g,
                     uri,
@@ -124,10 +103,39 @@ pub(super) fn build_from_attribute_body(
                     attrs,
                     Some(parent_id),
                 );
-                for target in typing_targets(value.typing.as_deref()) {
+                let node_id = NodeId::new(uri, &qualified);
+                if let Some(expr_node) = &value.value {
+                    if let Some(node) = g.get_node_mut(&node_id) {
+                        node.expression_text.value = Some(expressions::expression_to_debug_string(
+                            &expr_node.value.expression,
+                        ));
+                    }
+                }
+                attach_declared_name(g, &node_id, &value.name);
+                attach_declared_subsetting_family(
+                    g,
+                    &node_id,
+                    value.subsets.as_deref(),
+                    value.redefines.as_deref(),
+                    value.references.as_deref(),
+                    value.crosses.as_deref(),
+                );
+                // The KerML entailment that a `:>>` redefinition of a semantic-metadata
+                // restriction feature (`annotatedElement`/`baseType`) is also a subsetting of
+                // that feature (`Redefinition` specializes `Subsetting`,
+                // `org.omg.sysml/model/kerml.ecore:1471` in the OMG pilot) is published as an
+                // *implied* graph edge by `relationships::link_subsetting_family_edges_for_node`,
+                // not recorded here as a second declared fact -- `DeclaredRelationshipTarget` has
+                // no provenance field, so writing it here would make an entailed relationship
+                // look authored (`UNIFY_CACHE_PROGRESS.md` chunk G, `AGENTS.md` "One semantic
+                // system").
+                if let Some(node) = g.get_node_mut(&node_id) {
+                    node.declared_facts.unit = unit_metadata::attribute_usage_unit_facts(value);
+                }
+                for target in targets.iter().copied() {
                     add_typing_edge_if_exists(g, uri, &qualified, target, container_prefix);
                 }
-                attach_nested_doc_comments(g, &NodeId::new(uri, &qualified), &value.body);
+                attach_nested_doc_comments(g, &node_id, &value.body);
             }
             AttributeBodyElement::Doc(doc) => {
                 super::attach_doc_comment(g, parent_id, &doc.value.text);
@@ -165,6 +173,33 @@ pub(super) fn build_from_attribute_body(
                     &mk_node.span,
                 );
             }
+            // Also shared with `item def`/`item` usage bodies: `ref`/`ref part` members
+            // (validation `15_11`/`15_19`/`17a`/`17b`). Same materialization interface_def.rs/
+            // action.rs already use for `ref` in their own body contexts.
+            AttributeBodyElement::RefDecl(ref_node) => {
+                super::ref_decl::materialize_ref_decl(
+                    g,
+                    uri,
+                    container_prefix,
+                    parent_id,
+                    ref_node,
+                    super::ref_decl::RefDeclOptions::default(),
+                );
+            }
+            // Nested `part` usage inside an item/attribute body (validation `3e`/`14c`).
+            AttributeBodyElement::PartUsage(part) => {
+                usage_builders::materialize_part_usage(
+                    part,
+                    uri,
+                    container_prefix,
+                    Some(parent_id),
+                    g,
+                );
+            }
+            // `assert constraint` here mirrors `part_def.rs`'s/`action.rs`'s existing
+            // `AssertConstraint(_) => {}` precedent -- no dedicated graph projection yet for any
+            // body kind except `occurrence_body.rs`'s.
+            AttributeBodyElement::AssertConstraint(_) => {}
             AttributeBodyElement::Error(_) | AttributeBodyElement::Other(_) => {}
         }
     }

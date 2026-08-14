@@ -1,7 +1,10 @@
 ﻿//! P1 diagnostic regression tests.
 
 use sysml_diagnostics::{collect_diagnostics_from_graph, DiagnosticsOptions};
-use sysml_model::build_graph_from_doc;
+use sysml_model::{
+    build_graph_from_doc, build_semantic_graph_from_documents, NodeId, SysmlDocument,
+    SysmlDocumentSourceKind,
+};
 use url::Url;
 
 fn diags_for(input: &str) -> Vec<sysml_diagnostics::SemanticDiagnostic> {
@@ -13,6 +16,26 @@ fn diags_for(input: &str) -> Vec<sysml_diagnostics::SemanticDiagnostic> {
 
 fn has_code(diags: &[sysml_diagnostics::SemanticDiagnostic], code: &str) -> bool {
     diags.iter().any(|d| d.code == code)
+}
+
+fn linked_graph_for(input: &str) -> (sysml_model::SemanticGraph, Url) {
+    let document = SysmlDocument::from_memory_path(
+        "workspace",
+        "p1.sysml",
+        input.to_string(),
+        SysmlDocumentSourceKind::Workspace,
+        None,
+        None,
+    )
+    .expect("document");
+    let uri = document.uri.clone();
+    let (graph, _) = build_semantic_graph_from_documents(&[document]).expect("graph");
+    (graph, uri)
+}
+
+fn linked_diags_for(input: &str) -> Vec<sysml_diagnostics::SemanticDiagnostic> {
+    let (graph, uri) = linked_graph_for(input);
+    collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default())
 }
 
 #[test]
@@ -226,6 +249,59 @@ fn emits_duplicate_namespace_member() {
 }
 
 #[test]
+fn emits_duplicate_namespace_member_for_declared_short_name() {
+    let input = "package P {\n  part def <'Shared'> First;\n  part def Shared;\n}\n";
+    let diags = diags_for(input);
+    let duplicate = diags
+        .iter()
+        .find(|diagnostic| diagnostic.code == "duplicate_namespace_member")
+        .expect("declared short name collides with the sibling primary name");
+
+    assert_eq!(duplicate.range.start.line, 2);
+    assert_eq!(duplicate.range.start.character, 2);
+}
+
+#[test]
+fn distinct_declared_short_names_remain_distinguishable() {
+    let input = r#"
+        package P {
+            part def <'First'> One;
+            part def <'Second'> Two;
+        }
+    "#;
+    let diags = diags_for(input);
+    assert!(
+        !has_code(&diags, "duplicate_namespace_member"),
+        "distinct declared short names must not collide: {:?}",
+        diags
+            .iter()
+            .filter(|diagnostic| diagnostic.code == "duplicate_namespace_member")
+            .map(|diagnostic| &diagnostic.message)
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn cross_category_short_name_collision_is_not_distinguishable_in_a_package() {
+    let input = r#"
+        package P {
+            part def <'Shared'> First;
+            action def <'Shared'> Act;
+        }
+    "#;
+    let diags = diags_for(input);
+    assert!(
+        has_code(&diags, "duplicate_namespace_member"),
+        "owned members with the same short name must be distinguishable: {:?}",
+        diags
+            .iter()
+            .filter(|diagnostic| diagnostic.code == "duplicate_namespace_member")
+            .map(|diagnostic| &diagnostic.message)
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
 fn emits_attribute_value_type_mismatch_for_boolean_on_real() {
     let input = r#"
         package P {
@@ -354,4 +430,157 @@ fn package_connection_usage_resolves_redefined_features_from_its_type() {
             .map(|d| &d.message)
             .collect::<Vec<_>>()
     );
+}
+
+#[test]
+fn redefinition_type_conformance_uses_specialization_relationships() {
+    let input = r#"
+        package P {
+            part def BaseType;
+            part def NarrowType :> BaseType;
+            part def Parent {
+                part feature : BaseType;
+            }
+            part def Child :> Parent {
+                part feature : NarrowType :>> feature;
+            }
+        }
+    "#;
+    let diags = linked_diags_for(input);
+    assert!(
+        !has_code(&diags, "redefinition_type_incompatible"),
+        "a specializing type must conform, got {:?}",
+        diags
+            .iter()
+            .filter(|d| d.code == "redefinition_type_incompatible")
+            .map(|d| &d.message)
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn redefinition_type_conformance_rejects_generalizing_type() {
+    let input = r#"
+        package P {
+            part def BaseType;
+            part def NarrowType :> BaseType;
+            part def Parent {
+                part feature : NarrowType;
+            }
+            part def Child :> Parent {
+                part feature : BaseType :>> feature;
+            }
+        }
+    "#;
+    let diags = linked_diags_for(input);
+    assert!(
+        has_code(&diags, "redefinition_type_incompatible"),
+        "a generalizing type must not conform, got {:?}",
+        diags
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn subsetting_type_conformance_uses_specialization_relationships() {
+    let input = r#"
+        package P {
+            part def BaseType;
+            part def NarrowType :> BaseType;
+            part def Parent {
+                part allFeatures : BaseType;
+                part selectedFeature : NarrowType :> allFeatures;
+            }
+        }
+    "#;
+    let diags = linked_diags_for(input);
+    assert!(
+        !has_code(&diags, "subsetting_type_incompatible"),
+        "a specializing subset type must conform, got {:?}",
+        diags
+            .iter()
+            .filter(|d| d.code == "subsetting_type_incompatible")
+            .map(|d| &d.message)
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn subsetting_type_conformance_rejects_generalizing_type() {
+    let input = r#"
+        package P {
+            part def BaseType;
+            part def NarrowType :> BaseType;
+            part def Parent {
+                part allFeatures : NarrowType;
+                part selectedFeature : BaseType :> allFeatures;
+            }
+        }
+    "#;
+    let diags = linked_diags_for(input);
+    assert!(
+        has_code(&diags, "subsetting_type_incompatible"),
+        "a generalizing subset type must not conform, got {:?}",
+        diags
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn reference_and_cross_subsetting_require_conformant_types() {
+    let input = r#"
+        package P {
+            part def BaseType;
+            part def NarrowType :> BaseType;
+            part def Parent {
+                attribute selectedFeature : NarrowType;
+                attribute referenceFeature : BaseType references selectedFeature;
+                attribute crossFeature : BaseType crosses selectedFeature;
+            }
+        }
+    "#;
+    let diags = linked_diags_for(input);
+    assert_eq!(
+        diags
+            .iter()
+            .filter(|d| d.code == "subsetting_type_incompatible")
+            .count(),
+        2,
+        "reference and cross subsetting must each use the resolved target type: {:?}",
+        diags
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn specialization_query_is_transitive_and_cycle_safe() {
+    let (graph, uri) = linked_graph_for(
+        r#"
+            package P {
+                part def Base;
+                part def Middle :> Base;
+                part def Leaf :> Middle;
+                part def CycleA :> CycleB;
+                part def CycleB :> CycleA;
+            }
+        "#,
+    );
+    let base = graph
+        .get_node(&NodeId::new(&uri, "P::Base"))
+        .expect("base node");
+    let leaf = graph
+        .get_node(&NodeId::new(&uri, "P::Leaf"))
+        .expect("leaf node");
+    let cycle_a = graph
+        .get_node(&NodeId::new(&uri, "P::CycleA"))
+        .expect("cycle node");
+
+    assert!(graph.specializes_transitively(leaf, base));
+    assert!(!graph.specializes_transitively(cycle_a, base));
 }

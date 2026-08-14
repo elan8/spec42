@@ -314,7 +314,7 @@ fn pack_or_copy_library(entry: &LibraryEntry, out_kpar: &Path) {
         entry.id, entry.version
     );
     eprintln!(
-        "workspace build: set {env_source}, place sibling {}, or run scripts/fetch-kpar-library-bundle.sh {}",
+        "workspace build: set {env_source}, place sibling {}, or run scripts/fetch-kpar-libraries-bundle.sh {}",
         entry.pack.sibling_relative, entry.id
     );
     let _ = entry.config_path;
@@ -346,6 +346,8 @@ fn pack_library(entry: &LibraryEntry, source_dir: &Path, out_kpar: &Path) {
                 source_roots: Vec::new(),
                 named_source_roots: vec![(prefix, source_dir.to_path_buf())],
                 excludes: kpar::pack::default_domain_excludes(),
+                timestamp: kpar::pack::ArchiveTimestamp::default(),
+                compression: kpar::pack::ArchiveCompression::default(),
             }
         }
         other => {

@@ -6,7 +6,7 @@ use crate::helpers::{diag, diagnostic_range, is_synthetic};
 use crate::types::DiagnosticSeverity;
 use crate::SemanticDiagnostic;
 use sysml_model::semantic::kinds::VERIFIED_REQUIREMENT_TARGET_KINDS;
-use sysml_model::semantic::model::{ElementKind, RelationshipKind};
+use sysml_model::semantic::model::{DeclaredAnalysisConstraint, ElementKind, RelationshipKind};
 use sysml_model::semantic::reference_resolution::resolve_expression_endpoint_strict;
 use sysml_model::{resolve_type_reference_targets, ResolveResult, SemanticGraph};
 
@@ -50,6 +50,40 @@ fn is_viewpoint_kind(kind: &sysml_model::ElementKind) -> bool {
     matches!(kind, ElementKind::Viewpoint | ElementKind::ViewpointDef)
 }
 
+fn supports_subject_role(kind: &sysml_model::ElementKind) -> bool {
+    matches!(
+        kind,
+        ElementKind::Requirement
+            | ElementKind::RequirementDef
+            | ElementKind::Concern
+            | ElementKind::ConcernDef
+            | ElementKind::Case
+            | ElementKind::CaseDef
+            | ElementKind::Analysis
+            | ElementKind::AnalysisDef
+            | ElementKind::Verification
+            | ElementKind::VerificationDef
+            | ElementKind::UseCase
+            | ElementKind::UseCaseDef
+            | ElementKind::Viewpoint
+            | ElementKind::ViewpointDef
+    )
+}
+
+fn is_case_kind(kind: &sysml_model::ElementKind) -> bool {
+    matches!(
+        kind,
+        ElementKind::Case
+            | ElementKind::CaseDef
+            | ElementKind::Analysis
+            | ElementKind::AnalysisDef
+            | ElementKind::Verification
+            | ElementKind::VerificationDef
+            | ElementKind::UseCase
+            | ElementKind::UseCaseDef
+    )
+}
+
 fn container_prefix_for(node: &sysml_model::SemanticNode) -> Option<&str> {
     node.id
         .qualified_name
@@ -63,6 +97,99 @@ pub(crate) fn collect_requirement_case_conformance_diagnostics(
 ) -> Vec<SemanticDiagnostic> {
     let mut diagnostics = Vec::new();
     let mut seen = HashSet::new();
+
+    // Source spans are explicit graph facts, retaining the SysML member order
+    // without reconstructing syntax or inferring semantic types from strings.
+    for node in graph.nodes_for_uri(uri) {
+        if is_synthetic(node) || !supports_subject_role(&node.element_kind) {
+            continue;
+        }
+        let members = graph.children_of(node);
+        let mut subjects: Vec<_> = members
+            .iter()
+            .copied()
+            .filter(|child| child.element_kind == ElementKind::Subject && !is_synthetic(child))
+            .collect();
+        subjects.sort_by_key(|child| (child.range.start.line, child.range.start.character));
+        if subjects.len() > 1 {
+            let key = format!("duplicate_subject|{}", node.id.qualified_name);
+            if seen.insert(key) {
+                diagnostics.push(diag(
+                    uri,
+                    diagnostic_range(graph, subjects[1], None),
+                    DiagnosticSeverity::Warning,
+                    "semantic",
+                    "duplicate_role_member",
+                    format!(
+                        "{} '{}' declares more than one subject member.",
+                        node.element_kind, node.name
+                    ),
+                ));
+            }
+        }
+
+        let first_parameter = members
+            .iter()
+            .copied()
+            .filter(|child| {
+                matches!(
+                    child.element_kind,
+                    ElementKind::Subject | ElementKind::Actor | ElementKind::Stakeholder
+                ) && !is_synthetic(child)
+            })
+            .min_by_key(|child| (child.range.start.line, child.range.start.character));
+        let first_subject = subjects
+            .into_iter()
+            .min_by_key(|child| (child.range.start.line, child.range.start.character));
+        if let (Some(parameter), Some(subject)) = (first_parameter, first_subject) {
+            if parameter.element_kind != ElementKind::Subject {
+                let key = format!("subject_not_first|{}", node.id.qualified_name);
+                if seen.insert(key) {
+                    diagnostics.push(diag(
+                        uri,
+                        diagnostic_range(graph, subject, None),
+                        DiagnosticSeverity::Warning,
+                        "semantic",
+                        "subject_member_not_first",
+                        format!(
+                            "Subject member '{}' on {} '{}' must precede other input role members.",
+                            subject.name, node.element_kind, node.name
+                        ),
+                    ));
+                }
+            }
+        }
+    }
+
+    for node in graph.nodes_for_uri(uri) {
+        if is_synthetic(node) || !is_case_kind(&node.element_kind) {
+            continue;
+        }
+        let mut objectives: Vec<_> = graph
+            .children_of(node)
+            .into_iter()
+            .filter(|child| child.element_kind == ElementKind::Objective && !is_synthetic(child))
+            .collect();
+        objectives.sort_by_key(|child| (child.range.start.line, child.range.start.character));
+        if objectives.len() <= 1 {
+            continue;
+        }
+        let key = format!("duplicate_objective|{}", node.id.qualified_name);
+        if !seen.insert(key) {
+            continue;
+        }
+        diagnostics.push(diag(
+            uri,
+            diagnostic_range(graph, objectives[1], None),
+            DiagnosticSeverity::Warning,
+            "semantic",
+            "duplicate_role_member",
+            format!(
+                "{} '{}' declares more than one objective member.",
+                node.element_kind, node.name
+            ),
+        ));
+    }
 
     for (source_qn, target_qn, kind, _) in graph.edges_for_uri_as_strings(uri) {
         if kind != RelationshipKind::Satisfy {
@@ -112,10 +239,46 @@ pub(crate) fn collect_requirement_case_conformance_diagnostics(
         if node.element_kind != ElementKind::VerifiedRequirement || is_synthetic(node) {
             continue;
         }
+        let verification_objective = node
+            .parent_id
+            .as_ref()
+            .and_then(|id| graph.get_node(id))
+            .filter(|parent| parent.element_kind == ElementKind::Objective)
+            .and_then(|objective| {
+                objective
+                    .parent_id
+                    .as_ref()
+                    .and_then(|id| graph.get_node(id))
+                    .filter(|case| {
+                        matches!(
+                            case.element_kind,
+                            ElementKind::VerificationDef | ElementKind::Verification
+                        )
+                    })
+                    .map(|_| objective)
+            });
+        if verification_objective.is_none() {
+            let key = format!("verification_membership_owner|{}", node.id.qualified_name);
+            if seen.insert(key) {
+                diagnostics.push(diag(
+                    uri,
+                    diagnostic_range(graph, node, None),
+                    DiagnosticSeverity::Error,
+                    "semantic",
+                    "verification_membership_outside_objective",
+                    format!(
+                        "Verification membership '{}' must be owned by an objective of a verification case.",
+                        node.name
+                    ),
+                ));
+            }
+        }
         let Some(requirement_ref) = node
-            .attributes
-            .get("verifiedRequirement")
-            .and_then(|v| v.as_str())
+            .declared_facts
+            .relationships
+            .subject
+            .first()
+            .map(|target| target.reference.as_str())
         else {
             continue;
         };
@@ -149,7 +312,7 @@ pub(crate) fn collect_requirement_case_conformance_diagnostics(
         if node.element_kind != ElementKind::Verify || is_synthetic(node) {
             continue;
         }
-        let Some(lhs) = node.attributes.get("lhs").and_then(|v| v.as_str()) else {
+        let Some(lhs) = node.expression_text.lhs.as_deref() else {
             continue;
         };
         let lhs = lhs.trim();
@@ -225,25 +388,17 @@ pub(crate) fn collect_requirement_case_conformance_diagnostics(
         {
             continue;
         }
-        let Some(constraints) = node.attributes.get("analysisConstraints") else {
+        let Some(facts) = node.declared_facts.analysis_case.as_ref() else {
             continue;
         };
-        let items = match constraints {
-            serde_json::Value::Array(items) => items,
-            _ => continue,
-        };
-        for item in items {
-            let Some(kind) = item.get("kind").and_then(|v| v.as_str()) else {
+        for item in &facts.constraints {
+            let DeclaredAnalysisConstraint::RequireConstraint {
+                params, expression, ..
+            } = item
+            else {
                 continue;
             };
-            if kind != "require_constraint" {
-                continue;
-            }
-            let expression = item
-                .get("expression")
-                .and_then(|v| v.as_str())
-                .unwrap_or("")
-                .trim();
+            let expression = expression.trim();
             if expression.is_empty() {
                 let key = format!("constraint_expr|{}", node.id.qualified_name);
                 if seen.insert(key) {
@@ -261,36 +416,23 @@ pub(crate) fn collect_requirement_case_conformance_diagnostics(
                 }
                 continue;
             }
-            if let Some(params) = item.get("params").and_then(|v| v.as_array()) {
-                for param in params {
-                    let direction = param
-                        .get("direction")
-                        .and_then(|v| v.as_str())
-                        .unwrap_or("");
-                    let param_type = param
-                        .get("type")
-                        .and_then(|v| v.as_str())
-                        .unwrap_or("")
-                        .trim();
-                    if !matches!(direction, "in" | "out" | "inout") || param_type.is_empty() {
-                        let key = format!(
-                            "constraint_param|{}|{}",
-                            node.id.qualified_name,
-                            param.get("name").and_then(|v| v.as_str()).unwrap_or("")
-                        );
-                        if seen.insert(key) {
-                            diagnostics.push(diag(
-                                uri,
-                                diagnostic_range(graph, node, None),
-                                DiagnosticSeverity::Warning,
-                                "semantic",
-                                "requirement_constraint_invalid_membership",
-                                format!(
-                                    "Requirement '{}' require constraint parameter is missing direction or type.",
-                                    node.name
-                                ),
-                            ));
-                        }
+            for param in params {
+                let direction = param.direction.as_str();
+                let param_type = param.param_type.as_deref().unwrap_or("").trim();
+                if !matches!(direction, "in" | "out" | "inout") || param_type.is_empty() {
+                    let key = format!("constraint_param|{}|{}", node.id.qualified_name, param.name);
+                    if seen.insert(key) {
+                        diagnostics.push(diag(
+                            uri,
+                            diagnostic_range(graph, node, None),
+                            DiagnosticSeverity::Warning,
+                            "semantic",
+                            "requirement_constraint_invalid_membership",
+                            format!(
+                                "Requirement '{}' require constraint parameter is missing direction or type.",
+                                node.name
+                            ),
+                        ));
                     }
                 }
             }
@@ -437,12 +579,17 @@ pub(crate) fn collect_requirement_case_conformance_diagnostics(
                 .into_iter()
                 .filter(|child| child.element_kind == ElementKind::AnalysisResult)
                 .count();
-            let has_inherited_result = node.attributes.contains_key("analysisExpression")
+            let has_inherited_result = node
+                .declared_facts
+                .analysis_case
+                .as_ref()
+                .is_some_and(|facts| facts.expression.is_some())
                 || objectives.iter().any(|objective| {
                     objective
-                        .attributes
-                        .get("objectiveBoundTo")
-                        .and_then(|v| v.as_str())
+                        .declared_facts
+                        .analysis_case
+                        .as_ref()
+                        .and_then(|facts| facts.objective_bound_to.as_deref())
                         .is_some_and(|value| !value.trim().is_empty())
                 });
             let total = analysis_result_count.max(local_results as u64);
@@ -456,7 +603,7 @@ pub(crate) fn collect_requirement_case_conformance_diagnostics(
                         "semantic",
                         "case_objective_binding_cardinality",
                         format!(
-                            "Analysis case '{}' has objectives bound to analysis result but no return ref is declared.",
+                            "Analysis case '{}' has objectives bound to an analysis result but no returned result is declared.",
                             node.name
                         ),
                     ));

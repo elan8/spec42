@@ -1,10 +1,9 @@
-//! Shared incremental workspace engine (Tier 2 unified-incremental-engine).
+//! Shared incremental workspace engine.
 //!
 //! Wraps a [`SemanticGraph`] plus the documents currently indexed into it, and exposes a
 //! full-load operation and a single-document incremental patch operation, both delegating to
 //! `sysml_model`'s shared pipeline primitives (`build_and_link_graph_parallel`,
-//! `patch_graph_for_document`) rather than re-implementing the build/link sequence — see
-//! `docs/engineering/TIER2-UNIFIED-INCREMENTAL-ENGINE-DESIGN.md`.
+//! `patch_graph_for_document`) rather than re-implementing the build/link sequence.
 //!
 //! This is the one engine every live consumer uses directly: `lsp_server`'s `ServerState`
 //! (`rebuild_all_document_links` / `rebuild_semantic_graph_staged`) and Babel42's
@@ -29,7 +28,7 @@ use crate::error::WorkspaceResult;
 use crate::parse_cache;
 use crate::semantic::{
     build_and_link_graph_parallel, link_parsed_documents_parallel_from, patch_graph_for_document,
-    SemanticGraph, WorkspaceParsedDocument,
+    patch_graph_for_document_scoped, SemanticGraph, WorkspaceParsedDocument,
 };
 use crate::snapshot::{HostSemanticProjection, HostValidationReport};
 use crate::{SysmlDocument, SysmlDocumentSourceKind};
@@ -149,7 +148,7 @@ impl IncrementalWorkspace {
     /// Full load from documents this engine has already parsed — e.g. a caller with its own
     /// pre-parsed document index (`lsp_server`'s `IndexEntry.parsed`) that would otherwise
     /// have to throw that work away to call [`Self::load`]. Delegates to
-    /// [`link_parsed_documents_parallel`] — the merge/link half of
+    /// [`sysml_model::link_parsed_documents_parallel`] — the merge/link half of
     /// [`build_and_link_graph_parallel`] with the parse step already done by the caller.
     pub fn load_parsed(
         &mut self,
@@ -262,7 +261,11 @@ impl IncrementalWorkspace {
         let parse_ms = elapsed_ms(parse_start);
 
         let build_start = Instant::now();
-        patch_graph_for_document(&mut self.graph, &document.uri, parsed.as_ref(), true);
+        // The semantic pipeline owns the frontier calculation and its parity guarantees. A
+        // single-document patch can therefore relink only the changed document and the
+        // documents that explicitly depend on it, while preserving the same settled graph as
+        // a full relink.
+        patch_graph_for_document_scoped(&mut self.graph, &document.uri, parsed.as_ref(), true);
         let graph_update_ms = elapsed_ms(build_start);
 
         match parsed {
@@ -334,12 +337,11 @@ impl IncrementalWorkspace {
 /// graph/documents, without building a [`crate::snapshot::HostWorkspaceSnapshot`].
 ///
 /// A thin, same-crate call into `snapshot::facts::collect_host_validation_report` — the exact
-/// function [`crate::snapshot::build::build_workspace_snapshot`] already uses internally.
+/// function `snapshot::build::build_workspace_snapshot` already uses internally.
 /// Exists so embedders that hold an [`IncrementalWorkspace`] directly (rather than going
 /// through the `snapshot` pipeline) can still get diagnostics, without paying for the rest of
 /// a snapshot's eager derived fields (`language_workspace`/`render_snapshot`/
-/// `semantic_projection`) they don't need. See
-/// `docs/engineering/TIER2-UNIFIED-INCREMENTAL-ENGINE-DESIGN.md`'s "Phase 5" write-up.
+/// `semantic_projection`) they don't need.
 ///
 /// # Errors
 ///
@@ -729,7 +731,7 @@ package Architecture {
         assert!(metrics.parse_ms >= 1);
     }
 
-    /// Same parity check, but for the evaluated-attribute side effect specifically — the
+    /// Same parity check, but for the canonical evaluation publication specifically — the
     /// exact class of bug (`evaluate_expressions` silently skipped) Tier 2 Phase 3b Steps
     /// 1-4 found in the two hand-written pipelines this engine is designed to replace.
     #[test]
@@ -756,8 +758,13 @@ package Architecture {
             .find(|node| node.name == "mass")
             .expect("mass attribute node");
         assert_eq!(
-            mass.attributes.get("evaluatedValue"),
-            Some(&serde_json::json!(3))
+            graph.expression_evaluation_for(mass),
+            sysml_model::ExpressionEvaluationQuery::Result(&sysml_model::ExpressionEvaluation {
+                status: sysml_model::EvaluationStatus::Ok,
+                value: Some(sysml_model::EvaluatedValue::Integer(3)),
+                unit: None,
+                error: None,
+            })
         );
     }
 

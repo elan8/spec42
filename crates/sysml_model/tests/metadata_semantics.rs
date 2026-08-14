@@ -1,6 +1,7 @@
 use sysml_diagnostics::{collect_diagnostics_from_graph, DiagnosticsOptions};
 use sysml_model::{
-    build_semantic_graph_from_documents, RelationshipKind, SysmlDocument, SysmlDocumentSourceKind,
+    build_semantic_graph_from_documents, ImpliedRelationshipRule, RelationshipKind,
+    RelationshipProvenance, SysmlDocument, SysmlDocumentSourceKind,
 };
 
 const METADATA_DESIGN_DECISION_SYSML: &str = r#"
@@ -238,6 +239,104 @@ fn metadata_usage_about_clause_wires_annotation_edges() {
 }
 
 #[test]
+fn part_def_body_allows_multiple_named_about_bound_usages_of_the_same_metadata_def() {
+    // Issue #24 / S42-LIM-015: applying the same `metadata def` more than once inside one
+    // `part def` body needs each usage to have a distinct name (and, typically, an `about`
+    // binding to the specific member it characterizes) so the usages don't collide as anonymous
+    // same-named members (`duplicate_namespace_member`). Both the `@name : Type about target
+    // { ... }` prefix form and the equivalent `metadata name : Type about target { ... }` form
+    // are BNF-legal (`MetadataUsage = ('@' | 'metadata') MetadataUsageDeclaration ('about'
+    // Annotation)? MetadataBody`, §8.2.2.27) and already parse cleanly -- the two forms
+    // previously written up as failing in DIAGNOSTIC-CATALOG.md's S42-LIM-015 entry used
+    // non-BNF syntax (`@Type name { ... }` with the type and name in the wrong order, and
+    // `about` placed *after* the body instead of before it), not a real parser or graph gap.
+    let doc = SysmlDocument::from_memory_path(
+        "metadata-part-def-multiple-usages",
+        "power_module.sysml",
+        r#"package P {
+  metadata def PowerRailBudget {
+    attribute nominalVoltage;
+  }
+  port def PowerRailPort;
+  part def PowerModule {
+    port batteryRail : PowerRailPort;
+    port logicRail : PowerRailPort;
+
+    @batteryRailBudget : PowerRailBudget about batteryRail {
+      nominalVoltage = 14.4;
+    }
+    @logicRailBudget : PowerRailBudget about logicRail {
+      nominalVoltage = 3.3;
+    }
+  }
+}"#
+        .to_string(),
+        SysmlDocumentSourceKind::Workspace,
+        None,
+        None,
+    )
+    .expect("document uri");
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+
+    let power_module = graph
+        .nodes_named("PowerModule")
+        .into_iter()
+        .find(|node| node.element_kind == "part def")
+        .expect("PowerModule part def");
+    let battery_rail = graph
+        .children_of(power_module)
+        .into_iter()
+        .find(|child| child.name == "batteryRail")
+        .expect("batteryRail port");
+    let logic_rail = graph
+        .children_of(power_module)
+        .into_iter()
+        .find(|child| child.name == "logicRail")
+        .expect("logicRail port");
+
+    let battery_budget = graph
+        .children_of(power_module)
+        .into_iter()
+        .find(|child| child.element_kind == "metadata usage" && child.name == "batteryRailBudget")
+        .expect("batteryRailBudget metadata usage");
+    let logic_budget = graph
+        .children_of(power_module)
+        .into_iter()
+        .find(|child| child.element_kind == "metadata usage" && child.name == "logicRailBudget")
+        .expect("logicRailBudget metadata usage");
+
+    assert!(
+        graph
+            .outgoing_targets_by_kind(battery_budget, RelationshipKind::Annotation)
+            .iter()
+            .any(|target| target.id == battery_rail.id),
+        "expected batteryRailBudget's annotation edge to point at batteryRail, not logicRail"
+    );
+    assert!(
+        graph
+            .outgoing_targets_by_kind(logic_budget, RelationshipKind::Annotation)
+            .iter()
+            .any(|target| target.id == logic_rail.id),
+        "expected logicRailBudget's annotation edge to point at logicRail, not batteryRail"
+    );
+
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    let unexpected: Vec<_> = diagnostics
+        .iter()
+        .filter(|diag| {
+            diag.code == "duplicate_namespace_member"
+                || diag.code == "unsupported_annotation_syntax"
+        })
+        .map(|diag| format!("{}: {}", diag.code, diag.message))
+        .collect();
+    assert!(
+        unexpected.is_empty(),
+        "unexpected diagnostics for distinct named/about-bound metadata usages: {unexpected:?}"
+    );
+}
+
+#[test]
 fn metadata_keyword_usage_resolves_with_typing_edge() {
     let doc = SysmlDocument::from_memory_path(
         "metadata-keyword-typed",
@@ -261,7 +360,7 @@ fn metadata_keyword_usage_resolves_with_typing_edge() {
         .find(|child| child.element_kind == "metadata keyword")
         .expect("metadata keyword");
     assert_eq!(
-        keyword.attributes.get("keyword").and_then(|v| v.as_str()),
+        keyword.declared_facts.modeled_keyword.as_deref(),
         Some("Tag")
     );
     let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
@@ -366,16 +465,18 @@ fn requirement_metadata_def_shorthand_projects_restriction_attributes() {
         .expect("annotatedElement restriction attribute");
     assert_eq!(
         annotated_element
-            .attributes
-            .get("subsetsFeature")
-            .and_then(|v| v.as_str()),
+            .declared_facts
+            .relationships
+            .subsetting
+            .first()
+            .map(|target| target.reference.as_str()),
         Some("annotatedElement")
     );
     assert!(
         annotated_element
-            .attributes
-            .get("attributeType")
-            .and_then(|v| v.as_str())
+            .declared_facts
+            .relationships
+            .typing_display()
             .is_some_and(|t| t.contains("RequirementUsage")),
         "expected RequirementUsage typing on annotatedElement restriction"
     );
@@ -392,16 +493,18 @@ fn requirement_metadata_def_shorthand_projects_restriction_attributes() {
         .expect("baseType restriction attribute");
     assert_eq!(
         base_type
-            .attributes
-            .get("redefines")
-            .and_then(|v| v.as_str()),
+            .declared_facts
+            .relationships
+            .redefinition
+            .first()
+            .map(|target| target.reference.as_str()),
         Some("baseType")
     );
     assert!(
         base_type
-            .attributes
-            .get("value")
-            .and_then(|v| v.as_str())
+            .expression_text
+            .value
+            .as_deref()
             .is_some_and(|v| v.contains("meta SysML::Usage")),
         "expected meta cast value on baseType restriction"
     );
@@ -462,7 +565,11 @@ fn metadata_redefine_shorthand_projects_subsets_feature_for_annotated_element() 
         "metadata-redefine-shorthand",
         "redefine.sysml",
         r#"package P {
-  metadata def Role {
+  metadata def SemanticMetadata {
+    attribute annotatedElement;
+  }
+
+  metadata def Role :> SemanticMetadata {
     :>> annotatedElement : SysML::RequirementUsage;
   }
 }"#
@@ -503,17 +610,35 @@ fn metadata_redefine_shorthand_projects_subsets_feature_for_annotated_element() 
         .expect("annotatedElement");
     assert_eq!(
         annotated
-            .attributes
-            .get("subsetsFeature")
-            .and_then(|value| value.as_str()),
+            .declared_facts
+            .relationships
+            .redefinition
+            .first()
+            .map(|target| target.reference.as_str()),
         Some("annotatedElement")
     );
-    assert_eq!(
-        annotated
-            .attributes
-            .get("redefines")
-            .and_then(|value| value.as_str()),
-        Some("annotatedElement")
+    // The `:>>` redefinition entails a subsetting per KerML (`Redefinition` specializes
+    // `Subsetting`), but nobody authors it -- it appears as an *implied* graph edge, not a
+    // declared fact (`UNIFY_CACHE_PROGRESS.md` chunk G).
+    let edges = graph.edges_for_uri(&uri);
+    assert!(
+        edges.iter().any(|(source, _target, edge)| {
+            *source == annotated.id
+                && edge.kind == RelationshipKind::Subsetting
+                && edge.provenance
+                    == RelationshipProvenance::Implied(
+                        ImpliedRelationshipRule::MetadataRedefinitionEntailsSubsetting,
+                    )
+        }),
+        "expected implied subsetting edge for :>> annotatedElement"
+    );
+    assert!(
+        edges.iter().any(|(source, _target, edge)| {
+            *source == annotated.id
+                && edge.kind == RelationshipKind::Redefinition
+                && edge.provenance == RelationshipProvenance::Authored
+        }),
+        "expected authored redefinition edge for :>> annotatedElement"
     );
 
     let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());

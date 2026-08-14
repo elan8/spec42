@@ -1,0 +1,855 @@
+# META
+~~~ini
+description=Standard Library: Kernel Libraries/Kernel Semantic Library/ControlPerformances
+type=file
+~~~
+# SOURCE
+~~~kerml
+standard library package ControlPerformances {
+	doc
+	/*
+	 * This package defines Behaviors to be used to type Steps that control the sequencing of performance
+	 * of other Steps. 
+	 */
+
+	private import ScalarValues::Boolean;
+	private import SequenceFunctions::size;
+	private import SequenceFunctions::notEmpty;
+	private import Occurrences::Occurrence;
+	private import Occurrences::HappensBefore;
+	private import Occurrences::SelfSameLifeLink;
+	private import Performances::Performance;
+	private import Performances::BooleanEvaluation;
+	
+	behavior DecisionPerformance specializes Performance {
+		doc
+		/*
+		 * A DecisionPerformance is a Performance that represents the selection of one of the Successions
+		 * that have the DecisionPerforance behavior as their source. All such Successions must subset the 
+		 * outgoingHBLink feature of the source DecisionPerformance. For each instance of DecisionPerformance, 
+		 * the outgoingHBLink is an instance of exactly one of the Successions, ordering the DecisionPerformance
+		 * as happening before an instance of the target of that Succcession.
+		 */
+		
+		feature outgoingHBLink: HappensBefore[1] {
+			doc
+			/*
+			 * Specializations subset this by all
+			 * successions going out of a decision step.
+			 */
+
+			 end feature redefines earlierOccurrence subsets that;
+		}
+	}
+	
+	behavior MergePerformance specializes Performance {
+		doc
+		/*
+		 * A MergePerformance is a Performance that represents the merging of all Successions that
+		 * target the MergePerforance behavior. All such Successions must subset the incomingHBLink
+		 * feature of the target MergePerformance. For each instance of MergePerformance, the
+		 * incomingHBLink is an instance of exactly one of the Successions, ordering the
+		 * MergePerformance as happening after an instance of the source of that Succession.
+		 */
+
+		feature incomingHBLink: HappensBefore[1] {
+			doc
+			/*
+			 * Specializations subset this by all
+			 * successions coming into a merge step.
+			 */
+
+			 end feature redefines laterOccurrence subsets that;
+		}
+	}
+
+	abstract behavior IfPerformance specializes Performance {
+		doc
+		/*
+		 * An IfPerformance is a Performance that determines whether the ifTest evaluation result is true 
+		 * (by whether ifTrue has a value).
+		 */	
+		 
+		in ifTest : BooleanEvaluation[1];
+	}
+	
+	behavior IfThenPerformance specializes IfPerformance {
+		doc
+		/*
+		 * An IfThenPerformance is an IfPerformance where the thenClause occurs after and only after the 
+		 * ifTest evaluation result is true.
+		 */
+		
+		in redefines ifTest;
+		in thenClause : Occurrence[0..1];
+		succession [1] ifTest then [0..1] thenClause;
+		inv { ifTest() == thenClause->notEmpty() }
+	}
+	
+	behavior IfElsePerformance specializes IfPerformance {
+		doc
+		/*
+		 * An IfElsePerformance is an IfPerformance where the elseClause occurs after and only 
+		 * after the ifTest evaluation result is not true.
+		 */
+
+		in redefines ifTest;
+		in elseClause : Occurrence[0..1];
+		succession [1] ifTest then [0..1] elseClause;
+		inv { not ifTest() == elseClause->notEmpty() }
+	}
+	
+	behavior IfThenElsePerformance specializes IfThenPerformance {
+		doc
+		/*
+		 * An IfThenElsePerformance is an IfThenPerformance with an additional elseClause that
+		 * occurs after and only after the ifTest evaluation is false.
+		 */
+		 
+		in redefines ifTest;
+		in redefines thenClause;
+        in elseClause : Occurrence[0..1];
+        succession [1] ifTest then [0..1] elseClause;
+        inv { not ifTest() == elseClause->notEmpty() }
+	}
+	
+	behavior LoopPerformance specializes Performance {
+		doc
+		/*
+		 * A LoopPerformance is a Performance where the body occurs repeatedly in sequence (iterates) 
+		 * as long as the whileTest evaluation result is true before each iteration (and after the 
+		 * previous one, except the first time) and the untilTest evaluation result is not true after 
+		 * each iteration and before the next one (except the last one).
+		 */
+		 
+		in whileTest : BooleanEvaluation[1..*];
+		in body : Occurrence[0..*];
+        in untilTest : BooleanEvaluation[0..*];
+		
+		step whileDecision : IfThenPerformance[1..*];
+		step untilDecision : IfElsePerformance[0..*];
+		
+		binding [1] whileDecision.ifTest = [1] whileTest;
+		binding [1] whileDecision.thenClause = [1] body;
+		
+		succession body then untilDecision;
+		
+		binding [1] untilDecision.ifTest = [1] untilTest;
+		binding loopBack of [0..1] untilDecision.elseClause = [1] whileDecision;
+		
+		inv { loopBack->size() == whileDecision->size() - 1 }
+	}
+}
+~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "memory://snapshot/control_performances.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 16) (end 7 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 8 16) (end 8 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 9 16) (end 9 43))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 10 16) (end 10 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 11 16) (end 11 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 12 16) (end 12 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 13 16) (end 13 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 14 16) (end 14 47))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 16 42) (end 16 53))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 26 26) (end 26 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 33 26) (end 33 43))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 33 52) (end 33 56))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 37 39) (end 37 50))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 47 26) (end 47 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 54 26) (end 54 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 54 50) (end 54 54))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 58 45) (end 58 56))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 65 14) (end 65 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 76 18) (end 76 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 77 17) (end 77 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 78 8) (end 78 14))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 89 18) (end 89 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 90 17) (end 90 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 91 12) (end 91 18))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 103 24) (end 103 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 104 23) (end 104 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 105 18) (end 105 24))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 108 38) (end 108 49))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 117 17) (end 117 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 118 12) (end 118 22))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 119 23) (end 119 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 124 14) (end 124 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 125 14) (end 125 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 129 14) (end 129 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 130 29) (end 130 53))
+      )
+    )
+  )
+)
+~~~
+# SMG
+~~~sexpr
+(semantic-model
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:4374b5e56a6b66d8eff91d505af4f134ce37ada0ab5677bed0860a7b491dd573") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package defines Behaviors to be used to type Steps that control the sequencing of performance\n\t * of other Steps. \n\t "))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Boolean") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "SequenceFunctions::size") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (anonymous (kind import) (ordinal 2))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "SequenceFunctions::notEmpty") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (anonymous (kind import) (ordinal 3))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Occurrences::Occurrence") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (anonymous (kind import) (ordinal 4))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Occurrences::HappensBefore") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (anonymous (kind import) (ordinal 5))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Occurrences::SelfSameLifeLink") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (anonymous (kind import) (ordinal 6))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Performances::Performance") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (anonymous (kind import) (ordinal 7))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Performances::BooleanEvaluation") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::DecisionPerformance"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t\t * A DecisionPerformance is a Performance that represents the selection of one of the Successions\n\t\t * that have the DecisionPerforance behavior as their source. All such Successions must subset the \n\t\t * outgoingHBLink feature of the source DecisionPerformance. For each instance of DecisionPerformance, \n\t\t * the outgoingHBLink is an instance of exactly one of the Successions, ordering the DecisionPerformance\n\t\t * as happening before an instance of the target of that Succcession.\n\t\t "))) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Performance"))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::DecisionPerformance::outgoingHBLink"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 1) (upper 1))) (documentation (doc (text "\n\t\t\t * Specializations subset this by all\n\t\t\t * successions going out of a decision step.\n\t\t\t "))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "HappensBefore"))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "that")) (redefinition (reference "earlierOccurrence"))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfElsePerformance"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t\t * An IfElsePerformance is an IfPerformance where the elseClause occurs after and only \n\t\t * after the ifTest evaluation result is not true.\n\t\t "))) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "IfPerformance"))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "ifTest"))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (succession (reference "ifTest")) (succession (reference "elseClause"))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-invariant) (ordinal 0))))) (kind kerml-invariant) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "elseClause")) (invocationCallee (reference "ifTest"))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfElsePerformance::elseClause"))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in) (multiplicity (lower 0) (upper 1))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Occurrence") (direction in))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfPerformance"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (facts (modifiers abstract)) (documentation (doc (text "\n\t\t * An IfPerformance is a Performance that determines whether the ifTest evaluation result is true \n\t\t * (by whether ifTrue has a value).\n\t\t "))) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Performance"))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfPerformance::ifTest"))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in) (multiplicity (lower 1) (upper 1))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "BooleanEvaluation") (direction in))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenElsePerformance"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t\t * An IfThenElsePerformance is an IfThenPerformance with an additional elseClause that\n\t\t * occurs after and only after the ifTest evaluation is false.\n\t\t "))) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "IfThenPerformance"))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "ifTest"))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (anonymous (kind parameter) (ordinal 1))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "thenClause"))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (succession (reference "ifTest")) (succession (reference "elseClause"))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-invariant) (ordinal 0))))) (kind kerml-invariant) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "elseClause")) (invocationCallee (reference "ifTest"))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenElsePerformance::elseClause"))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in) (multiplicity (lower 0) (upper 1))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Occurrence") (direction in))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenPerformance"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t\t * An IfThenPerformance is an IfPerformance where the thenClause occurs after and only after the \n\t\t * ifTest evaluation result is true.\n\t\t "))) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "IfPerformance"))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "ifTest"))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (succession (reference "ifTest")) (succession (reference "thenClause"))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-invariant) (ordinal 0))))) (kind kerml-invariant) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "thenClause")) (invocationCallee (reference "ifTest"))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenPerformance::thenClause"))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in) (multiplicity (lower 0) (upper 1))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Occurrence") (direction in))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t\t * A LoopPerformance is a Performance where the body occurs repeatedly in sequence (iterates) \n\t\t * as long as the whileTest evaluation result is true before each iteration (and after the \n\t\t * previous one, except the first time) and the untilTest evaluation result is not true after \n\t\t * each iteration and before the next one (except the last one).\n\t\t "))) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Performance"))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-binding) (ordinal 0))))) (kind kerml-binding) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (bindSource (reference "whileDecision::ifTest")) (bindTarget (reference "whileTest"))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-binding) (ordinal 1))))) (kind kerml-binding) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (bindSource (reference "whileDecision::thenClause")) (bindTarget (reference "body"))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (succession (reference "body")) (succession (reference "untilDecision"))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-binding) (ordinal 2))))) (kind kerml-binding) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (bindSource (reference "untilDecision::ifTest")) (bindTarget (reference "untilTest"))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-invariant) (ordinal 0))))) (kind kerml-invariant) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "loopBack")) (expressionOperand (reference "whileDecision"))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::body"))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in) (multiplicity (lower 0) (upper unbounded))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Occurrence") (direction in))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::loopBack"))) (kind kerml-binding) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (bindSource (reference "untilDecision::elseClause")) (bindTarget (reference "whileDecision"))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::untilDecision"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 0) (upper unbounded))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "IfElsePerformance"))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::untilTest"))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in) (multiplicity (lower 0) (upper unbounded))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "BooleanEvaluation") (direction in))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::whileDecision"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 1) (upper unbounded))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "IfThenPerformance"))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::whileTest"))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in) (multiplicity (lower 1) (upper unbounded))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "BooleanEvaluation") (direction in))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::MergePerformance"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t\t * A MergePerformance is a Performance that represents the merging of all Successions that\n\t\t * target the MergePerforance behavior. All such Successions must subset the incomingHBLink\n\t\t * feature of the target MergePerformance. For each instance of MergePerformance, the\n\t\t * incomingHBLink is an instance of exactly one of the Successions, ordering the\n\t\t * MergePerformance as happening after an instance of the source of that Succession.\n\t\t "))) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Performance"))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::MergePerformance::incomingHBLink"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 1) (upper 1))) (documentation (doc (text "\n\t\t\t * Specializations subset this by all\n\t\t\t * successions coming into a merge step.\n\t\t\t "))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "HappensBefore"))))
+    (declaration (id (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "that")) (redefinition (reference "laterOccurrence"))))
+  )
+  (references
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
+      (authored-target "ScalarValues::Boolean")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind import) (ordinal 1))))) (kind membershipImport) (ordinal 0))
+      (authored-target "SequenceFunctions::size")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind import) (ordinal 2))))) (kind membershipImport) (ordinal 0))
+      (authored-target "SequenceFunctions::notEmpty")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind import) (ordinal 3))))) (kind membershipImport) (ordinal 0))
+      (authored-target "Occurrences::Occurrence")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind import) (ordinal 4))))) (kind membershipImport) (ordinal 0))
+      (authored-target "Occurrences::HappensBefore")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind import) (ordinal 5))))) (kind membershipImport) (ordinal 0))
+      (authored-target "Occurrences::SelfSameLifeLink")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind import) (ordinal 6))))) (kind membershipImport) (ordinal 0))
+      (authored-target "Performances::Performance")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind import) (ordinal 7))))) (kind membershipImport) (ordinal 0))
+      (authored-target "Performances::BooleanEvaluation")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::DecisionPerformance"))) (kind specialization) (ordinal 0))
+      (authored-target "Performance")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::DecisionPerformance::outgoingHBLink"))) (kind featureTyping) (ordinal 0))
+      (authored-target "HappensBefore")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-feature) (ordinal 0))))) (kind subsetting) (ordinal 0))
+      (authored-target "that")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-feature) (ordinal 0))))) (kind redefinition) (ordinal 0))
+      (authored-target "earlierOccurrence")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfElsePerformance"))) (kind specialization) (ordinal 0))
+      (authored-target "IfPerformance")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfPerformance")))))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind parameter) (ordinal 0))))) (kind redefinition) (ordinal 0))
+      (authored-target "ifTest")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfPerformance::ifTest")))))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0))
+      (authored-target "ifTest")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 1))
+      (authored-target "elseClause")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfElsePerformance::elseClause")))))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-invariant) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
+      (authored-target "elseClause")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfElsePerformance::elseClause")))))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-invariant) (ordinal 0))))) (kind invocationCallee) (ordinal 0))
+      (authored-target "ifTest")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfElsePerformance::elseClause"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Occurrence")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfPerformance"))) (kind specialization) (ordinal 0))
+      (authored-target "Performance")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfPerformance::ifTest"))) (kind featureTyping) (ordinal 0))
+      (authored-target "BooleanEvaluation")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenElsePerformance"))) (kind specialization) (ordinal 0))
+      (authored-target "IfThenPerformance")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenPerformance")))))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind parameter) (ordinal 0))))) (kind redefinition) (ordinal 0))
+      (authored-target "ifTest")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfPerformance::ifTest")))))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind parameter) (ordinal 1))))) (kind redefinition) (ordinal 0))
+      (authored-target "thenClause")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenPerformance::thenClause")))))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0))
+      (authored-target "ifTest")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 1))
+      (authored-target "elseClause")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenElsePerformance::elseClause")))))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-invariant) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
+      (authored-target "elseClause")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenElsePerformance::elseClause")))))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-invariant) (ordinal 0))))) (kind invocationCallee) (ordinal 0))
+      (authored-target "ifTest")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenElsePerformance::elseClause"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Occurrence")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenPerformance"))) (kind specialization) (ordinal 0))
+      (authored-target "IfPerformance")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfPerformance")))))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind parameter) (ordinal 0))))) (kind redefinition) (ordinal 0))
+      (authored-target "ifTest")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfPerformance::ifTest")))))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0))
+      (authored-target "ifTest")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 1))
+      (authored-target "thenClause")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenPerformance::thenClause")))))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-invariant) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
+      (authored-target "thenClause")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenPerformance::thenClause")))))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-invariant) (ordinal 0))))) (kind invocationCallee) (ordinal 0))
+      (authored-target "ifTest")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenPerformance::thenClause"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Occurrence")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance"))) (kind specialization) (ordinal 0))
+      (authored-target "Performance")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0))
+      (authored-target "body")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::body")))))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 1))
+      (authored-target "untilDecision")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::untilDecision")))))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-invariant) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
+      (authored-target "loopBack")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::loopBack")))))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-invariant) (ordinal 0))))) (kind expressionOperand) (ordinal 1))
+      (authored-target "whileDecision")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::whileDecision")))))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-binding) (ordinal 0))))) (kind bindSource) (ordinal 0))
+      (authored-target "whileDecision::ifTest")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-binding) (ordinal 1))))) (kind bindSource) (ordinal 0))
+      (authored-target "whileDecision::thenClause")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-binding) (ordinal 2))))) (kind bindSource) (ordinal 0))
+      (authored-target "untilDecision::ifTest")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-binding) (ordinal 0))))) (kind bindTarget) (ordinal 0))
+      (authored-target "whileTest")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::whileTest")))))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-binding) (ordinal 1))))) (kind bindTarget) (ordinal 0))
+      (authored-target "body")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::body")))))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-binding) (ordinal 2))))) (kind bindTarget) (ordinal 0))
+      (authored-target "untilTest")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::untilTest")))))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::body"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Occurrence")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::loopBack"))) (kind bindSource) (ordinal 0))
+      (authored-target "untilDecision::elseClause")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::loopBack"))) (kind bindTarget) (ordinal 0))
+      (authored-target "whileDecision")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::whileDecision")))))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::untilDecision"))) (kind featureTyping) (ordinal 0))
+      (authored-target "IfElsePerformance")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfElsePerformance")))))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::untilTest"))) (kind featureTyping) (ordinal 0))
+      (authored-target "BooleanEvaluation")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::whileDecision"))) (kind featureTyping) (ordinal 0))
+      (authored-target "IfThenPerformance")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenPerformance")))))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::whileTest"))) (kind featureTyping) (ordinal 0))
+      (authored-target "BooleanEvaluation")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::MergePerformance"))) (kind specialization) (ordinal 0))
+      (authored-target "Performance")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::MergePerformance::incomingHBLink"))) (kind featureTyping) (ordinal 0))
+      (authored-target "HappensBefore")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-feature) (ordinal 0))))) (kind subsetting) (ordinal 0))
+      (authored-target "that")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-feature) (ordinal 0))))) (kind redefinition) (ordinal 0))
+      (authored-target "laterOccurrence")
+      (outcome (status unresolved)))
+  )
+  (relationships
+    (relationship (kind specialization) (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfElsePerformance"))) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfPerformance"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfElsePerformance"))) (kind specialization) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfPerformance::ifTest"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind parameter) (ordinal 0))))) (kind redefinition) (ordinal 0)))
+    (relationship (kind succession) (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfElsePerformance::elseClause"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 1)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-invariant) (ordinal 0))))) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfElsePerformance::elseClause"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-invariant) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenElsePerformance"))) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenPerformance"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenElsePerformance"))) (kind specialization) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfPerformance::ifTest"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind parameter) (ordinal 0))))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenPerformance::thenClause"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind parameter) (ordinal 1))))) (kind redefinition) (ordinal 0)))
+    (relationship (kind succession) (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenElsePerformance::elseClause"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 1)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-invariant) (ordinal 0))))) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenElsePerformance::elseClause"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-invariant) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenPerformance"))) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfPerformance"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenPerformance"))) (kind specialization) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfPerformance::ifTest"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind parameter) (ordinal 0))))) (kind redefinition) (ordinal 0)))
+    (relationship (kind succession) (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenPerformance::thenClause"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 1)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-invariant) (ordinal 0))))) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenPerformance::thenClause"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-invariant) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
+    (relationship (kind succession) (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::body"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0)))
+    (relationship (kind succession) (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::untilDecision"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 1)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-invariant) (ordinal 0))))) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::loopBack"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-invariant) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-invariant) (ordinal 0))))) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::whileDecision"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-invariant) (ordinal 0))))) (kind expressionOperand) (ordinal 1)))
+    (relationship (kind bindTarget) (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-binding) (ordinal 0))))) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::whileTest"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-binding) (ordinal 0))))) (kind bindTarget) (ordinal 0)))
+    (relationship (kind bindTarget) (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-binding) (ordinal 1))))) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::body"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-binding) (ordinal 1))))) (kind bindTarget) (ordinal 0)))
+    (relationship (kind bindTarget) (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-binding) (ordinal 2))))) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::untilTest"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-binding) (ordinal 2))))) (kind bindTarget) (ordinal 0)))
+    (relationship (kind bindTarget) (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::loopBack"))) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::whileDecision"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::loopBack"))) (kind bindTarget) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::untilDecision"))) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfElsePerformance"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::untilDecision"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::whileDecision"))) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenPerformance"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::whileDecision"))) (kind featureTyping) (ordinal 0)))
+  )
+  (evaluation
+  )
+)
+~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (query (document "memory://snapshot/control_performances.md") (range (start 7 16) (end 7 37)) (probe (position 7 16))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Boolean")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 8 16) (end 8 39)) (probe (position 8 16))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind import) (ordinal 1))))) (kind membershipImport) (ordinal 0) (authored-target "SequenceFunctions::size")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 9 16) (end 9 43)) (probe (position 9 16))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind import) (ordinal 2))))) (kind membershipImport) (ordinal 0) (authored-target "SequenceFunctions::notEmpty")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 10 16) (end 10 39)) (probe (position 10 16))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind import) (ordinal 3))))) (kind membershipImport) (ordinal 0) (authored-target "Occurrences::Occurrence")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 11 16) (end 11 42)) (probe (position 11 16))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind import) (ordinal 4))))) (kind membershipImport) (ordinal 0) (authored-target "Occurrences::HappensBefore")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 12 16) (end 12 45)) (probe (position 12 16))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind import) (ordinal 5))))) (kind membershipImport) (ordinal 0) (authored-target "Occurrences::SelfSameLifeLink")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 13 16) (end 13 41)) (probe (position 13 16))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind import) (ordinal 6))))) (kind membershipImport) (ordinal 0) (authored-target "Performances::Performance")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 14 16) (end 14 47)) (probe (position 14 16))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind import) (ordinal 7))))) (kind membershipImport) (ordinal 0) (authored-target "Performances::BooleanEvaluation")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 16 42) (end 16 53)) (probe (position 16 42))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::DecisionPerformance"))) (kind specialization) (ordinal 0) (authored-target "Performance")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 26 26) (end 26 39)) (probe (position 26 26))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::DecisionPerformance::outgoingHBLink"))) (kind featureTyping) (ordinal 0) (authored-target "HappensBefore")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 33 52) (end 33 56)) (probe (position 33 52))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-feature) (ordinal 0))))) (kind subsetting) (ordinal 0) (authored-target "that")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 33 26) (end 33 43)) (probe (position 33 26))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-feature) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "earlierOccurrence")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 81 40) (end 81 53)) (probe (position 81 40))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfElsePerformance"))) (kind specialization) (ordinal 0) (authored-target "IfPerformance")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfPerformance")))))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 88 15) (end 88 21)) (probe (position 88 15))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind parameter) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "ifTest")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfPerformance::ifTest")))))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 90 17) (end 90 23)) (probe (position 90 17))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0) (authored-target "ifTest")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 90 36) (end 90 46)) (probe (position 90 36))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 1) (authored-target "elseClause")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfElsePerformance::elseClause")))))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 91 24) (end 91 34)) (probe (position 91 24))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-invariant) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "elseClause")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfElsePerformance::elseClause")))))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 91 12) (end 91 18)) (probe (position 91 12))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-invariant) (ordinal 0))))) (kind invocationCallee) (ordinal 0) (authored-target "ifTest")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 89 18) (end 89 28)) (probe (position 89 18))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfElsePerformance::elseClause"))) (kind featureTyping) (ordinal 0) (authored-target "Occurrence")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 58 45) (end 58 56)) (probe (position 58 45))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfPerformance"))) (kind specialization) (ordinal 0) (authored-target "Performance")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 65 14) (end 65 31)) (probe (position 65 14))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfPerformance::ifTest"))) (kind featureTyping) (ordinal 0) (authored-target "BooleanEvaluation")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 94 44) (end 94 61)) (probe (position 94 44))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenElsePerformance"))) (kind specialization) (ordinal 0) (authored-target "IfThenPerformance")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenPerformance")))))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 101 15) (end 101 21)) (probe (position 101 15))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind parameter) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "ifTest")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfPerformance::ifTest")))))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 102 15) (end 102 25)) (probe (position 102 15))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind parameter) (ordinal 1))))) (kind redefinition) (ordinal 0) (authored-target "thenClause")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenPerformance::thenClause")))))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 104 23) (end 104 29)) (probe (position 104 23))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0) (authored-target "ifTest")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 104 42) (end 104 52)) (probe (position 104 42))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 1) (authored-target "elseClause")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenElsePerformance::elseClause")))))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 105 30) (end 105 40)) (probe (position 105 30))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-invariant) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "elseClause")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenElsePerformance::elseClause")))))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 105 18) (end 105 24)) (probe (position 105 18))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-invariant) (ordinal 0))))) (kind invocationCallee) (ordinal 0) (authored-target "ifTest")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 103 24) (end 103 34)) (probe (position 103 24))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenElsePerformance::elseClause"))) (kind featureTyping) (ordinal 0) (authored-target "Occurrence")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 68 40) (end 68 53)) (probe (position 68 40))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenPerformance"))) (kind specialization) (ordinal 0) (authored-target "IfPerformance")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfPerformance")))))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 75 15) (end 75 21)) (probe (position 75 15))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind parameter) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "ifTest")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfPerformance::ifTest")))))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 77 17) (end 77 23)) (probe (position 77 17))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0) (authored-target "ifTest")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 77 36) (end 77 46)) (probe (position 77 36))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 1) (authored-target "thenClause")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenPerformance::thenClause")))))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 78 20) (end 78 30)) (probe (position 78 20))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-invariant) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "thenClause")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenPerformance::thenClause")))))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 78 8) (end 78 14)) (probe (position 78 8))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-invariant) (ordinal 0))))) (kind invocationCallee) (ordinal 0) (authored-target "ifTest")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 76 18) (end 76 28)) (probe (position 76 18))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenPerformance::thenClause"))) (kind featureTyping) (ordinal 0) (authored-target "Occurrence")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 108 38) (end 108 49)) (probe (position 108 38))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance"))) (kind specialization) (ordinal 0) (authored-target "Performance")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 127 13) (end 127 17)) (probe (position 127 13))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0) (authored-target "body")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::body")))))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 127 23) (end 127 36)) (probe (position 127 23))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 1) (authored-target "untilDecision")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::untilDecision")))))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 132 8) (end 132 16)) (probe (position 132 8))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-invariant) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "loopBack")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::loopBack")))))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 132 28) (end 132 41)) (probe (position 132 28))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-invariant) (ordinal 0))))) (kind expressionOperand) (ordinal 1) (authored-target "whileDecision")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::whileDecision")))))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 124 14) (end 124 34)) (probe (position 124 14))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-binding) (ordinal 0))))) (kind bindSource) (ordinal 0) (authored-target "whileDecision::ifTest")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 125 14) (end 125 38)) (probe (position 125 14))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-binding) (ordinal 1))))) (kind bindSource) (ordinal 0) (authored-target "whileDecision::thenClause")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 129 14) (end 129 34)) (probe (position 129 14))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-binding) (ordinal 2))))) (kind bindSource) (ordinal 0) (authored-target "untilDecision::ifTest")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 124 41) (end 124 50)) (probe (position 124 41))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-binding) (ordinal 0))))) (kind bindTarget) (ordinal 0) (authored-target "whileTest")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::whileTest")))))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 125 45) (end 125 49)) (probe (position 125 45))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-binding) (ordinal 1))))) (kind bindTarget) (ordinal 0) (authored-target "body")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::body")))))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 129 41) (end 129 50)) (probe (position 129 41))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-binding) (ordinal 2))))) (kind bindTarget) (ordinal 0) (authored-target "untilTest")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::untilTest")))))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 118 12) (end 118 22)) (probe (position 118 12))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::body"))) (kind featureTyping) (ordinal 0) (authored-target "Occurrence")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 130 29) (end 130 53)) (probe (position 130 29))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::loopBack"))) (kind bindSource) (ordinal 0) (authored-target "untilDecision::elseClause")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 130 60) (end 130 73)) (probe (position 130 60))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::loopBack"))) (kind bindTarget) (ordinal 0) (authored-target "whileDecision")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::whileDecision")))))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 122 23) (end 122 40)) (probe (position 122 23))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::untilDecision"))) (kind featureTyping) (ordinal 0) (authored-target "IfElsePerformance")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfElsePerformance")))))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 119 23) (end 119 40)) (probe (position 119 23))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::untilTest"))) (kind featureTyping) (ordinal 0) (authored-target "BooleanEvaluation")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 121 23) (end 121 40)) (probe (position 121 23))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::whileDecision"))) (kind featureTyping) (ordinal 0) (authored-target "IfThenPerformance")
+      (outcome (status resolved) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenPerformance")))))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 117 17) (end 117 34)) (probe (position 117 17))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::whileTest"))) (kind featureTyping) (ordinal 0) (authored-target "BooleanEvaluation")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 37 39) (end 37 50)) (probe (position 37 39))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::MergePerformance"))) (kind specialization) (ordinal 0) (authored-target "Performance")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 47 26) (end 47 39)) (probe (position 47 26))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::MergePerformance::incomingHBLink"))) (kind featureTyping) (ordinal 0) (authored-target "HappensBefore")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 54 50) (end 54 54)) (probe (position 54 50))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-feature) (ordinal 0))))) (kind subsetting) (ordinal 0) (authored-target "that")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/control_performances.md") (range (start 54 26) (end 54 41)) (probe (position 54 26))
+    (reference (id (source (node (document "memory://snapshot/control_performances.md") (anonymous (kind kerml-feature) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "laterOccurrence")
+      (outcome (status unresolved)))
+  )
+)
+~~~

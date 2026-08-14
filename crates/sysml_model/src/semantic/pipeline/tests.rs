@@ -1,5 +1,15 @@
 use super::*;
-use crate::semantic::model::RelationshipKind;
+use crate::semantic::model::{
+    ConstructionOwner, EvaluatedValue, EvaluationPublicationState, EvaluationStatus,
+    ExpressionEvaluationQuery, RelationshipKind, SemanticNode,
+};
+
+fn expression_value(graph: &SemanticGraph, node: &SemanticNode) -> Option<EvaluatedValue> {
+    match graph.expression_evaluation_for(node) {
+        ExpressionEvaluationQuery::Result(result) => result.value.clone(),
+        ExpressionEvaluationQuery::NotRun | ExpressionEvaluationQuery::NotApplicable => None,
+    }
+}
 
 fn parse(_uri: &Url, content: &str) -> sysml_v2_parser::RootNamespace {
     sysml_v2_parser::parse(content).expect("parse")
@@ -61,10 +71,14 @@ fn evaluate_false_skips_expression_evaluation() {
         .into_iter()
         .find(|node| node.name == "mass")
         .expect("mass attribute node");
-    assert!(
-        !mass.attributes.contains_key("evaluatedValue"),
-        "evaluate: false should not populate evaluatedValue"
+    assert_eq!(
+        graph.evaluation_publication,
+        EvaluationPublicationState::NotRun
     );
+    assert!(matches!(
+        graph.expression_evaluation_for(mass),
+        ExpressionEvaluationQuery::NotRun
+    ));
 }
 
 #[test]
@@ -83,14 +97,73 @@ fn evaluate_true_populates_evaluated_value() {
         .find(|node| node.name == "mass")
         .expect("mass attribute node");
     assert_eq!(
-        mass.attributes.get("evaluatedValue"),
-        Some(&serde_json::json!(3))
+        graph.evaluation_publication,
+        EvaluationPublicationState::Complete
+    );
+    assert_eq!(
+        expression_value(&graph, mass),
+        Some(EvaluatedValue::Integer(3))
+    );
+}
+
+#[test]
+fn full_and_incremental_typed_expression_evaluation_match() {
+    let uri = Url::parse("file:///typed-evaluation-parity.sysml").expect("uri");
+    let content = r#"
+        package Demo {
+            requirement def Capacity {
+                attribute load = 12;
+                attribute limit = 16;
+                require constraint { load <= limit }
+            }
+        }
+    "#;
+    let document = SysmlDocument {
+        uri: uri.clone(),
+        content: content.to_string(),
+        path_hint: None,
+        source_kind: SysmlDocumentSourceKind::Workspace,
+        content_digest: None,
+        byte_size: None,
+    };
+    let (full, _) = build_and_link_graph(&[document]).expect("full graph");
+
+    let parsed = parse(&uri, content);
+    let mut incremental = SemanticGraph::new();
+    patch_graph_for_document(&mut incremental, &uri, Some(&parsed), true);
+
+    let outcomes = |graph: &SemanticGraph| {
+        graph
+            .node_ids_by_qualified_name
+            .get("Demo::Capacity")
+            .and_then(|ids| ids.first())
+            .and_then(|id| graph.get_node(id))
+            .and_then(|node| graph.evaluation_facts_for(node))
+            .and_then(|facts| facts.analysis.as_ref())
+            .map(|analysis| {
+                (
+                    analysis.expression.status,
+                    analysis.expression.value.clone(),
+                    analysis.passed,
+                )
+            })
+            .expect("capacity requirement")
+    };
+
+    assert_eq!(outcomes(&incremental), outcomes(&full));
+    assert_eq!(
+        outcomes(&full),
+        (
+            EvaluationStatus::Ok,
+            Some(EvaluatedValue::Boolean(true)),
+            Some(true),
+        )
     );
 }
 
 /// Track C: `link_parsed_documents_parallel_from`'s `evaluate` parameter must skip
 /// expression evaluation (but still do structural relink/dependency-index work) when
-/// `false`, and populate `evaluatedValue` when `true` — the same contract
+/// `false`, and publish `NotRun` when `true` is deferred — the same contract
 /// `patch_graph_for_document`'s `evaluate` flag already has, now on the parallel full-build
 /// path `lsp_server`'s live-edit relink uses.
 #[test]
@@ -116,10 +189,10 @@ fn link_parsed_documents_parallel_from_respects_evaluate_flag() {
         .into_iter()
         .find(|node| node.name == "mass")
         .expect("mass attribute node");
-    assert!(
-        !mass_no_eval.attributes.contains_key("evaluatedValue"),
-        "evaluate: false should not populate evaluatedValue"
-    );
+    assert!(matches!(
+        graph_no_eval.expression_evaluation_for(mass_no_eval),
+        ExpressionEvaluationQuery::NotRun
+    ));
 
     let (graph_eval, _) = link_parsed_documents_parallel_from(
         SemanticGraph::new(),
@@ -132,13 +205,13 @@ fn link_parsed_documents_parallel_from_respects_evaluate_flag() {
         .find(|node| node.name == "mass")
         .expect("mass attribute node");
     assert_eq!(
-        mass_eval.attributes.get("evaluatedValue"),
-        Some(&serde_json::json!(3))
+        expression_value(&graph_eval, mass_eval),
+        Some(EvaluatedValue::Integer(3))
     );
 }
 
 /// Equivalence fixture for `build_and_link_graph` vs. `build_and_link_graph_parallel`
-/// (Tier 2 Phase 3b Step 5a — see `docs/engineering/TIER2-PHASE3B-STEP5-FULL-REBUILD-DESIGN.md`).
+/// Equivalence fixture for sequential vs parallel full-graph rebuild.
 /// Exercises cross-document typing (`part mobility : MobilitySubsystem` resolved via
 /// import) and cross-document subject edges (`subject robot : AutonomousFloorCleaningRobot`,
 /// resolved via `private import Architecture::*`) — the two edge kinds
@@ -331,13 +404,12 @@ fn parallel_build_evaluates_expressions_like_sequential_build() {
             .graph
             .node_weights()
             .find(|node| node.name == "drivePowerW")
-            .and_then(|node| node.attributes.get("evaluatedValue"))
-            .cloned()
+            .and_then(|node| expression_value(graph, node))
     };
     let sequential_value = find_drive_power(&sequential_graph);
     let parallel_value = find_drive_power(&parallel_graph);
     assert_eq!(sequential_value, parallel_value);
-    assert_eq!(sequential_value, Some(serde_json::json!(28)));
+    assert_eq!(sequential_value, Some(EvaluatedValue::Integer(28)));
 }
 
 // Equivalence for the Tier 2 unified-incremental-engine Phase 4 extraction:
@@ -795,4 +867,823 @@ fn benchmark_frontier_relink_vs_full_relink_on_cross_referenced_fixture() {
         "frontier relink benchmark ({PAIR_COUNT} pairs, {ITERATIONS} iterations): \
              full={full_total:?} frontier={frontier_total:?}"
     );
+}
+
+// --- B1: cross-document edge ownership regression suite ---
+//
+// `ROUNDTRIP_SEMGRAPH_PREREQS.md` B1: `cross_document_edges_by_source_uri` must be an
+// accurate record of which Typing/Specializes/Subject edges the workspace cross-document
+// linking pass owns, *no matter which construction path produced the graph* -- a normal
+// whole-graph `build_and_link_graph`, `build_and_link_graph_parallel`, a decoded (serde
+// round-tripped) graph, or one assembled one document at a time via
+// `patch_graph_for_document_scoped`. Every test below starts from a **normal whole-graph
+// build** (not a scoped-patch-assembled graph) before exercising the scoped/incremental
+// refresh path, since that is exactly the path a purely scoped-construction test suite would
+// never exercise.
+
+/// Simulates a "decoded" graph: resets every `#[serde(skip)]` derived index --including
+/// `cross_document_edges_by_source_uri`-- to its default and re-runs `rebuild_derived_indexes()`,
+/// exactly what real deserialization does. A literal serde round-trip through postcard (the
+/// project's actual cache codec) is blocked today by `SemanticNode.attributes:
+/// HashMap<String, serde_json::Value>` (see B9's `deserialize_any` note), which is out of
+/// scope here; `SemanticGraphData::simulate_decode_reset_for_test` exercises the exact same
+/// post-deserialize contract without depending on a working full-graph codec.
+fn roundtrip_through_serde(graph: &SemanticGraph) -> SemanticGraph {
+    let mut data = graph.clone().into_data();
+    data.simulate_decode_reset_for_test();
+    SemanticGraph::from_data(data)
+}
+
+/// The set of (source qualified name, target qualified name, kind) triples for every
+/// Typing/Specializes/Subject edge owned by `ConstructionOwner::WorkspaceCrossDocumentLinking`
+/// -- i.e. exactly what `cross_document_edges_by_source_uri` should account for.
+fn cross_document_owned_edge_triples(
+    graph: &SemanticGraph,
+) -> std::collections::BTreeSet<(String, String, String)> {
+    graph
+        .graph
+        .edge_indices()
+        .filter_map(|edge_idx| {
+            let weight = &graph.graph[edge_idx];
+            if weight.owner != ConstructionOwner::WorkspaceCrossDocumentLinking {
+                return None;
+            }
+            if !matches!(
+                weight.kind,
+                RelationshipKind::Typing
+                    | RelationshipKind::Specializes
+                    | RelationshipKind::Subject
+            ) {
+                return None;
+            }
+            let (src, tgt) = graph.graph.edge_endpoints(edge_idx).expect("endpoints");
+            Some((
+                graph.graph[src].id.qualified_name.clone(),
+                graph.graph[tgt].id.qualified_name.clone(),
+                weight.kind.as_str().to_string(),
+            ))
+        })
+        .collect()
+}
+
+/// Flattens `cross_document_edges_by_source_uri` into the same triple shape as
+/// `cross_document_owned_edge_triples`, resolving each `NodeId` back to its qualified name via
+/// the live graph (both share `SemanticGraphData::get_node`).
+fn recorded_cross_document_edge_triples(
+    graph: &SemanticGraph,
+) -> std::collections::BTreeSet<(String, String, String)> {
+    graph
+        .cross_document_edges_by_source_uri
+        .values()
+        .flatten()
+        .map(|(src_id, tgt_id, kind)| {
+            (
+                src_id.qualified_name.clone(),
+                tgt_id.qualified_name.clone(),
+                kind.as_str().to_string(),
+            )
+        })
+        .collect()
+}
+
+/// Core B1 regression: build A+B as a normal whole-graph build (not a scoped-patch
+/// assembly), edit A away so B's cross-document typing edge becomes unresolved, then edit A
+/// back so the same edge resolves again -- via the scoped/incremental refresh path
+/// (`patch_graph_for_document_scoped`, which calls `refresh_relationship_frontier`) applied
+/// directly on top of the whole-graph build. After every step, B's Typing/Specializes/Subject
+/// edges (and the `cross_document_edges_by_source_uri` bookkeeping behind them) must match a
+/// fresh full rebuild of the same document set -- proving ownership was established correctly
+/// by the whole build, not only by the scoped-patch path that originally recorded it.
+#[test]
+fn full_build_then_scoped_refresh_matches_full_rebuild_at_every_step() {
+    let (a_uri, a_doc, b_uri, b_doc) = two_file_typing_fixture();
+
+    let mut graph = {
+        let (built, _) = build_and_link_graph(&[a_doc.clone(), b_doc.clone()]).expect("build");
+        built
+    };
+
+    let assert_matches_fresh_rebuild = |graph: &SemanticGraph, a_content: &str, step: &str| {
+        let baseline_docs = vec![memory_doc("A.sysml", a_content), b_doc.clone()];
+        let (baseline, _) = build_and_link_graph(&baseline_docs).expect("baseline build");
+        assert_eq!(
+            node_qualified_names(graph),
+            node_qualified_names(&baseline),
+            "{step}: node set diverged from a fresh full rebuild"
+        );
+        assert_eq!(
+            edge_triples(graph),
+            edge_triples(&baseline),
+            "{step}: edge set diverged from a fresh full rebuild"
+        );
+        assert_eq!(
+            cross_document_owned_edge_triples(graph),
+            cross_document_owned_edge_triples(&baseline),
+            "{step}: cross-document-owned edge set diverged from a fresh full rebuild"
+        );
+        assert_eq!(
+            recorded_cross_document_edge_triples(graph),
+            cross_document_owned_edge_triples(graph),
+            "{step}: cross_document_edges_by_source_uri bookkeeping diverged from the \
+                 graph's own owned-edge state"
+        );
+    };
+    assert_matches_fresh_rebuild(&graph, &a_doc.content, "initial full build");
+
+    let typing_edge = (
+        "B::x".to_string(),
+        "A::Thing".to_string(),
+        RelationshipKind::Typing.as_str().to_string(),
+    );
+    assert!(edge_triples(&graph).contains(&typing_edge));
+
+    // Step 1: rename A's target away via the scoped path. B's edge must disappear -- an
+    // unresolved reference is observably a removed edge, never a stale one left pointing at
+    // a node that no longer exists.
+    let renamed_a = "package A { part def Widget; }";
+    apply_scoped_patch(&mut graph, &a_uri, renamed_a);
+    assert!(
+        !edge_triples(&graph).contains(&typing_edge),
+        "unresolved reference must remove the stale edge, not leave it in place"
+    );
+    assert_matches_fresh_rebuild(&graph, renamed_a, "after renaming A's target away");
+
+    // Step 2: restore A. B's edge must reappear.
+    apply_scoped_patch(&mut graph, &a_uri, &a_doc.content);
+    assert!(
+        edge_triples(&graph).contains(&typing_edge),
+        "edge should be restored once the referenced type reappears"
+    );
+    assert_matches_fresh_rebuild(&graph, &a_doc.content, "after restoring A's target");
+    let _ = &b_uri;
+}
+
+/// Sibling of the core regression starting from a **decoded** graph (serde round-tripped, the
+/// exact scenario B1 describes: `cross_document_edges_by_source_uri` is `#[serde(skip)]` and
+/// starts empty after decode) rather than a live whole-graph build. The decoded graph must
+/// behave identically to the live one at every step.
+#[test]
+fn decoded_full_build_then_scoped_refresh_matches_full_rebuild_at_every_step() {
+    let (a_uri, a_doc, _b_uri, b_doc) = two_file_typing_fixture();
+    let (built, _) = build_and_link_graph(&[a_doc.clone(), b_doc.clone()]).expect("build");
+    let mut graph = roundtrip_through_serde(&built);
+
+    // Immediately after decode, the skipped map must already be fully reconstructed --
+    // not merely "repaired lazily by whatever runs next".
+    assert_eq!(
+        recorded_cross_document_edge_triples(&graph),
+        cross_document_owned_edge_triples(&built),
+        "decode must eagerly rebuild cross_document_edges_by_source_uri from graph edges"
+    );
+
+    let typing_edge = (
+        "B::x".to_string(),
+        "A::Thing".to_string(),
+        RelationshipKind::Typing.as_str().to_string(),
+    );
+    assert!(edge_triples(&graph).contains(&typing_edge));
+
+    let renamed_a = "package A { part def Widget; }";
+    apply_scoped_patch(&mut graph, &a_uri, renamed_a);
+    assert!(
+        !edge_triples(&graph).contains(&typing_edge),
+        "decoded graph must drop the stale edge on refresh, exactly like a live graph"
+    );
+    let baseline_docs_renamed = vec![memory_doc("A.sysml", renamed_a), b_doc.clone()];
+    let (baseline_renamed, _) = build_and_link_graph(&baseline_docs_renamed).expect("baseline");
+    assert_eq!(edge_triples(&graph), edge_triples(&baseline_renamed));
+
+    apply_scoped_patch(&mut graph, &a_uri, &a_doc.content);
+    assert!(edge_triples(&graph).contains(&typing_edge));
+    let baseline_docs_restored = vec![a_doc.clone(), b_doc.clone()];
+    let (baseline_restored, _) = build_and_link_graph(&baseline_docs_restored).expect("baseline");
+    assert_eq!(edge_triples(&graph), edge_triples(&baseline_restored));
+}
+
+/// Covers the "new target differs" half of B1's required resolution: A is edited so B's
+/// reference still resolves, but to a *different* node than before. Starting from a normal
+/// whole-graph build, the scoped refresh must retarget B's edge -- not leave the old target
+/// alongside the new one.
+#[test]
+fn full_build_then_scoped_refresh_retargets_edge_when_new_target_differs() {
+    let (a_uri, a_doc, _b_uri, b_doc) = two_file_fixture(
+        "A.sysml",
+        "package A { part def Thing; part def OtherThing; }",
+        "B.sysml",
+        "package B { private import A::*; part x : Thing; }",
+    );
+    let (mut graph, _) = build_and_link_graph(&[a_doc.clone(), b_doc.clone()]).expect("build");
+
+    let old_edge = (
+        "B::x".to_string(),
+        "A::Thing".to_string(),
+        RelationshipKind::Typing.as_str().to_string(),
+    );
+    let new_edge = (
+        "B::x".to_string(),
+        "A::OtherThing".to_string(),
+        RelationshipKind::Typing.as_str().to_string(),
+    );
+    assert!(edge_triples(&graph).contains(&old_edge));
+    assert!(!edge_triples(&graph).contains(&new_edge));
+
+    // Force a genuine retarget: remove `Thing` first (B's edge must drop), then reintroduce
+    // `Thing` as a structurally distinct node (a fresh specialization of `OtherThing`, not the
+    // original bare definition) -- node identity is qualified-name-based, so this is the same
+    // `NodeId` as before but a different underlying declaration, exercising the "new target
+    // differs" case even though the qualified name round-trips.
+    apply_scoped_patch(&mut graph, &a_uri, "package A { part def OtherThing; }");
+    assert!(!edge_triples(&graph).contains(&old_edge));
+
+    let retargeted_a = "package A { part def OtherThing; part def Thing :> OtherThing; }";
+    apply_scoped_patch(&mut graph, &a_uri, retargeted_a);
+
+    let baseline_docs = vec![memory_doc("A.sysml", retargeted_a), b_doc.clone()];
+    let (baseline, _) = build_and_link_graph(&baseline_docs).expect("baseline build");
+
+    assert_eq!(
+        node_qualified_names(&graph),
+        node_qualified_names(&baseline)
+    );
+    assert_eq!(edge_triples(&graph), edge_triples(&baseline));
+    assert!(
+        edge_triples(&graph).contains(&old_edge),
+        "B::x -> A::Thing should resolve again once A::Thing exists, now as a distinct node"
+    );
+    assert_eq!(
+        cross_document_owned_edge_triples(&graph),
+        cross_document_owned_edge_triples(&baseline)
+    );
+}
+
+/// Ownership-state equality across construction paths: build the same A+B document set via
+/// whole-graph (`build_and_link_graph`), parallel (`build_and_link_graph_parallel`), and
+/// document-at-a-time scoped-patch construction, and confirm all three agree on exactly which
+/// edges are owned by `ConstructionOwner::WorkspaceCrossDocumentLinking` -- the same set that
+/// `cross_document_edges_by_source_uri` is built from. This is the B1 requirement that whole,
+/// parallel, and incremental builds establish identical ownership, not merely identical edges.
+#[test]
+fn whole_parallel_and_incremental_builds_agree_on_cross_document_edge_ownership() {
+    let (a_uri, a_doc, b_uri, b_doc) = two_file_typing_fixture();
+    let documents = vec![a_doc.clone(), b_doc.clone()];
+
+    let (whole_graph, _) = build_and_link_graph(&documents).expect("whole build");
+    let (parallel_graph, _) = build_and_link_graph_parallel(&documents);
+
+    let mut incremental_graph = SemanticGraph::new();
+    apply_scoped_patch(&mut incremental_graph, &a_uri, &a_doc.content);
+    apply_scoped_patch(&mut incremental_graph, &b_uri, &b_doc.content);
+
+    let whole_owned = cross_document_owned_edge_triples(&whole_graph);
+    let parallel_owned = cross_document_owned_edge_triples(&parallel_graph);
+    let incremental_owned = cross_document_owned_edge_triples(&incremental_graph);
+
+    assert!(
+        !whole_owned.is_empty(),
+        "fixture must actually exercise a cross-document edge"
+    );
+    assert_eq!(
+        whole_owned, parallel_owned,
+        "whole vs parallel ownership diverged"
+    );
+    assert_eq!(
+        whole_owned, incremental_owned,
+        "whole vs incremental ownership diverged"
+    );
+
+    // And the edge sets themselves (not just the owned subset) must also agree, and the
+    // recorded bookkeeping must exactly mirror the owned edges in every construction.
+    assert_eq!(edge_triples(&whole_graph), edge_triples(&parallel_graph));
+    assert_eq!(edge_triples(&whole_graph), edge_triples(&incremental_graph));
+    for graph in [&whole_graph, &parallel_graph, &incremental_graph] {
+        assert_eq!(
+            recorded_cross_document_edge_triples(graph),
+            cross_document_owned_edge_triples(graph)
+        );
+    }
+}
+
+// --- B4: `SemanticPublication` phase/completeness/storage-eligibility ---
+//
+// Covers `ROUNDTRIP_SEMGRAPH_PREREQS.md` B4's required tests: phase monotonicity, completeness
+// distinctions, the unresolved/ambiguous-does-not-mean-incomplete rule, root-digest agreement
+// with the built sources, and whole/parallel/incremental agreement on phase/completeness/root
+// digest.
+
+mod publication_tests {
+    use super::*;
+    use crate::semantic::publication::{SemanticCompleteness, SemanticPhase};
+    use source_identity::{ContentDigest, SourceManifestBuilder, SourceManifestEntry, SourceRole};
+
+    /// Recomputes the root digest the same way `pipeline::root_digest_for` does, from a raw
+    /// document list -- an independent oracle so the test doesn't just call the function under
+    /// test on itself.
+    fn expected_root_digest(documents: &[SysmlDocument]) -> source_identity::RootDigest {
+        let mut builder = SourceManifestBuilder::new();
+        for document in documents {
+            let role = match document.source_kind {
+                SysmlDocumentSourceKind::Workspace => SourceRole::Workspace,
+                SysmlDocumentSourceKind::StandardLibrary => SourceRole::StandardLibrary,
+                SysmlDocumentSourceKind::Library => SourceRole::Library,
+                SysmlDocumentSourceKind::External => SourceRole::External,
+            };
+            builder.push_workspace_entry(SourceManifestEntry {
+                uri: document.uri.to_string(),
+                path_hint: document.path_hint.clone(),
+                role,
+                content_digest: document
+                    .content_digest
+                    .unwrap_or_else(|| ContentDigest::of_bytes(document.content.as_bytes())),
+                byte_len: document.content.len() as u64,
+                library_root_slot: None,
+                relative_path: None,
+            });
+        }
+        builder.build().root_digest()
+    }
+
+    #[test]
+    fn full_build_reaches_settled_evaluated_and_is_storage_eligible() {
+        let documents = vec![memory_doc(
+            "settled.sysml",
+            "package Demo { part def Engine; part motor : Engine; }",
+        )];
+        let (graph, _) = build_and_link_graph(&documents).expect("build");
+        assert_eq!(graph.publication.phase(), SemanticPhase::SettledEvaluated);
+        assert_eq!(
+            graph.publication.completeness(),
+            SemanticCompleteness::Complete
+        );
+        assert_eq!(
+            graph.evaluation_publication,
+            EvaluationPublicationState::Complete
+        );
+        assert!(graph.is_storage_eligible());
+    }
+
+    #[test]
+    fn build_stopped_at_linking_reports_structurally_linked_and_is_not_storage_eligible() {
+        let uri = memory_doc("linked_only.sysml", "package Demo { part def Engine; }").uri;
+        let parsed = sysml_v2_parser::parse("package Demo { part def Engine; }").expect("parse");
+        let mut graph = SemanticGraph::new();
+        // `evaluate: false` stops at the structural-linking barrier -- never reaches
+        // SettledEvaluated, and must never claim storage eligibility.
+        patch_graph_for_document(&mut graph, &uri, Some(&parsed), false);
+        finalize_workspace_graph(&mut graph);
+        assert_eq!(graph.publication.phase(), SemanticPhase::StructurallyLinked);
+        assert!(!graph.is_storage_eligible());
+
+        // Now actually cross the evaluation barrier and confirm it becomes eligible.
+        evaluate_workspace_graph(&mut graph);
+        assert_eq!(graph.publication.phase(), SemanticPhase::SettledEvaluated);
+    }
+
+    #[test]
+    fn editor_recovery_input_produces_editor_recovery_completeness_and_is_not_storage_eligible() {
+        // Missing closing brace forces `parse_for_editor` recovery.
+        let documents = vec![memory_doc(
+            "broken.sysml",
+            "package Demo { part def Engine;",
+        )];
+        let (graph, _) = build_and_link_graph(&documents).expect("build");
+        assert_eq!(graph.publication.phase(), SemanticPhase::SettledEvaluated);
+        assert_eq!(
+            graph.publication.completeness(),
+            SemanticCompleteness::EditorRecovery
+        );
+        assert!(!graph.is_storage_eligible());
+    }
+
+    #[test]
+    fn partial_cancelled_and_failed_completeness_are_distinct_and_none_are_storage_eligible() {
+        let root = source_identity::RootDigest::from_digest(
+            source_identity::Blake3Digest::from_bytes([7u8; 32]),
+        );
+        for completeness in [
+            SemanticCompleteness::Partial,
+            SemanticCompleteness::Cancelled,
+            SemanticCompleteness::Failed,
+            SemanticCompleteness::Unsupported,
+        ] {
+            let mut publication =
+                crate::semantic::publication::SemanticPublication::new(root, completeness);
+            publication.advance_phase(SemanticPhase::SettledEvaluated);
+            assert_eq!(publication.completeness(), completeness);
+            assert!(!publication.is_storage_eligible());
+        }
+        // And they are pairwise distinct.
+        let all = [
+            SemanticCompleteness::Complete,
+            SemanticCompleteness::EditorRecovery,
+            SemanticCompleteness::Unsupported,
+            SemanticCompleteness::Partial,
+            SemanticCompleteness::Cancelled,
+            SemanticCompleteness::Failed,
+        ];
+        for (i, a) in all.iter().enumerate() {
+            for (j, b) in all.iter().enumerate() {
+                assert_eq!(i == j, a == b);
+            }
+        }
+    }
+
+    /// The easiest thing to get backwards, per both design documents: an explicit unresolved
+    /// semantic relationship in a settled graph is a complete, correctly settled fact -- not
+    /// evidence of an incomplete build. This must remain storage-eligible.
+    #[test]
+    fn settled_graph_with_unresolved_type_reference_is_complete_and_storage_eligible() {
+        let documents = vec![memory_doc(
+            "unresolved.sysml",
+            "package Demo { part x : DoesNotExist; }",
+        )];
+        let (graph, _) = build_and_link_graph(&documents).expect("build");
+        // The reference to `DoesNotExist` never resolves to a Typing edge -- an explicit
+        // unresolved outcome, not a build failure (`unresolved_type_reference` is exactly the
+        // diagnostic this state drives in `sysml_diagnostics`).
+        assert!(
+            !edge_triples(&graph).iter().any(|(source, _, kind)| {
+                source == "Demo::x" && kind == RelationshipKind::Typing.as_str()
+            }),
+            "fixture must actually leave an unresolved type reference"
+        );
+        assert_eq!(graph.publication.phase(), SemanticPhase::SettledEvaluated);
+        assert_eq!(
+            graph.publication.completeness(),
+            SemanticCompleteness::Complete
+        );
+        assert!(
+            graph.is_storage_eligible(),
+            "an explicit unresolved relationship must not disqualify storage eligibility"
+        );
+    }
+
+    #[test]
+    fn root_digest_matches_built_sources_and_changes_with_a_source_byte() {
+        let documents = vec![memory_doc(
+            "digest.sysml",
+            "package Demo { part def Engine; }",
+        )];
+        let (graph, _) = build_and_link_graph(&documents).expect("build");
+        assert_eq!(
+            graph.publication.root_digest(),
+            expected_root_digest(&documents)
+        );
+
+        let mut changed = documents.clone();
+        changed[0].content = "package Demo { part def Motor; }".to_string();
+        let (changed_graph, _) = build_and_link_graph(&changed).expect("build changed");
+        assert_ne!(
+            graph.publication.root_digest(),
+            changed_graph.publication.root_digest()
+        );
+        assert_eq!(
+            changed_graph.publication.root_digest(),
+            expected_root_digest(&changed)
+        );
+    }
+
+    #[test]
+    fn whole_parallel_and_incremental_builds_agree_on_publication() {
+        let (a_uri, a_doc, b_uri, b_doc) = two_file_typing_fixture();
+        let documents = vec![a_doc.clone(), b_doc.clone()];
+
+        let (whole_graph, _) = build_and_link_graph(&documents).expect("whole build");
+        let (parallel_graph, _) = build_and_link_graph_parallel(&documents);
+
+        let mut incremental_graph = SemanticGraph::new();
+        incremental_graph.publication = crate::semantic::publication::SemanticPublication::new(
+            expected_root_digest(&documents),
+            SemanticCompleteness::Complete,
+        );
+        apply_scoped_patch(&mut incremental_graph, &a_uri, &a_doc.content);
+        apply_scoped_patch(&mut incremental_graph, &b_uri, &b_doc.content);
+
+        for graph in [&whole_graph, &parallel_graph, &incremental_graph] {
+            assert_eq!(graph.publication.phase(), SemanticPhase::SettledEvaluated);
+            assert_eq!(
+                graph.publication.completeness(),
+                SemanticCompleteness::Complete
+            );
+            assert!(graph.is_storage_eligible());
+        }
+        assert_eq!(
+            whole_graph.publication.root_digest(),
+            parallel_graph.publication.root_digest()
+        );
+        assert_eq!(
+            whole_graph.publication.root_digest(),
+            incremental_graph.publication.root_digest()
+        );
+        assert_eq!(
+            whole_graph.publication.root_digest(),
+            expected_root_digest(&documents)
+        );
+    }
+
+    #[test]
+    fn phase_never_regresses_across_a_document_patch_that_stops_before_evaluation() {
+        let uri = memory_doc("regress.sysml", "package Demo { part def Engine; }").uri;
+        let content = "package Demo { part def Engine; }";
+        let parsed = sysml_v2_parser::parse(content).expect("parse");
+        let mut graph = SemanticGraph::new();
+        patch_graph_for_document(&mut graph, &uri, Some(&parsed), true);
+        assert_eq!(graph.publication.phase(), SemanticPhase::SettledEvaluated);
+
+        // Patching again without evaluating must not claim a settled/evaluated phase for content
+        // that was never relinked -- it must honestly retreat, not silently keep the old phase.
+        let parsed_again = sysml_v2_parser::parse(content).expect("parse");
+        patch_graph_for_document(&mut graph, &uri, Some(&parsed_again), false);
+        assert_ne!(graph.publication.phase(), SemanticPhase::SettledEvaluated);
+        assert!(!graph.is_storage_eligible());
+    }
+}
+
+// --- B3: source role and lookup precedence ---
+//
+// `ROUNDTRIP_SEMGRAPH_PREREQS.md` B3/§6: `node_ids_by_qualified_name` and `nodes_by_uri` vector
+// order must be a function of canonical `NodeId` order alone, never of document/merge insertion
+// order. These tests build the same source set in forward and reverse document order and assert
+// the lookup vectors (and therefore any first-match consumer) are identical, plus cover the
+// complete source-origin classification map and one genuine-duplicate-namespace case.
+#[cfg(test)]
+mod b3_source_role_and_precedence {
+    use super::*;
+    use source_identity::SourceRole;
+    use std::collections::BTreeMap;
+
+    fn doc(scope: &str, name: &str, content: &str, kind: SysmlDocumentSourceKind) -> SysmlDocument {
+        SysmlDocument::from_memory_path(scope, name, content.to_string(), kind, None, None)
+            .expect("doc")
+    }
+
+    /// Canonical-order snapshot of every `node_ids_by_qualified_name` bucket, for comparing
+    /// graphs built from the same sources in different document orders.
+    fn qualified_name_snapshot(graph: &SemanticGraph) -> BTreeMap<String, Vec<(String, String)>> {
+        graph
+            .node_ids_by_qualified_name
+            .iter()
+            .map(|(qualified, ids)| {
+                (
+                    qualified.clone(),
+                    ids.iter()
+                        .map(|id| (id.uri.to_string(), id.qualified_name.clone()))
+                        .collect(),
+                )
+            })
+            .collect()
+    }
+
+    fn nodes_by_uri_snapshot(graph: &SemanticGraph) -> BTreeMap<String, Vec<String>> {
+        graph
+            .nodes_by_uri
+            .iter()
+            .map(|(uri, ids)| {
+                (
+                    uri.to_string(),
+                    ids.iter().map(|id| id.qualified_name.clone()).collect(),
+                )
+            })
+            .collect()
+    }
+
+    /// Building the same workspace documents in forward and reverse order must produce
+    /// byte-identical `node_ids_by_qualified_name`/`nodes_by_uri` vectors (§6's document-order
+    /// reversal requirement), even though the two builds start from `SysmlDocument` lists in
+    /// opposite order and therefore merge nodes in opposite order internally.
+    #[test]
+    fn document_order_reversal_yields_identical_lookup_vectors() {
+        let docs = vec![
+            doc(
+                "rev",
+                "A.sysml",
+                "package A { part def Thing; }",
+                SysmlDocumentSourceKind::Workspace,
+            ),
+            doc(
+                "rev",
+                "B.sysml",
+                "package B { part def OtherThing; }",
+                SysmlDocumentSourceKind::Workspace,
+            ),
+            doc(
+                "rev",
+                "C.sysml",
+                "package C { part def ThirdThing; }",
+                SysmlDocumentSourceKind::Workspace,
+            ),
+        ];
+        let mut reversed = docs.clone();
+        reversed.reverse();
+
+        let (forward_graph, _) = build_and_link_graph(&docs).expect("forward build");
+        let (reverse_graph, _) = build_and_link_graph(&reversed).expect("reverse build");
+
+        assert_eq!(
+            qualified_name_snapshot(&forward_graph),
+            qualified_name_snapshot(&reverse_graph),
+            "node_ids_by_qualified_name must not depend on document order"
+        );
+        assert_eq!(
+            nodes_by_uri_snapshot(&forward_graph),
+            nodes_by_uri_snapshot(&reverse_graph),
+            "nodes_by_uri must not depend on document order"
+        );
+
+        // Same check against the parallel builder, which merges workspace documents through a
+        // different code path (`link_parsed_documents_parallel_from`) than the sequential
+        // `build_and_link_graph`.
+        let (forward_parallel, _) = build_and_link_graph_parallel(&docs);
+        let (reverse_parallel, _) = build_and_link_graph_parallel(&reversed);
+        assert_eq!(
+            qualified_name_snapshot(&forward_parallel),
+            qualified_name_snapshot(&reverse_parallel),
+            "parallel build's node_ids_by_qualified_name must not depend on document order"
+        );
+    }
+
+    /// A workspace package and a library package sharing a qualified name: the workspace
+    /// declaration must shadow the library one, and this must hold regardless of whether the
+    /// workspace or the library document is listed (and therefore parsed/merged) first.
+    #[test]
+    fn workspace_shadows_library_regardless_of_document_order() {
+        let workspace = doc(
+            "shadow",
+            "Workspace.sysml",
+            "package Shared { part def Thing { doc /* workspace */ '' } }",
+            SysmlDocumentSourceKind::Workspace,
+        );
+        let library = doc(
+            "shadow",
+            "Library.sysml",
+            "package Shared { part def Thing { doc /* library */ '' } }",
+            SysmlDocumentSourceKind::Library,
+        );
+
+        for docs in [
+            vec![workspace.clone(), library.clone()],
+            vec![library.clone(), workspace.clone()],
+        ] {
+            let (graph, _) = build_and_link_graph(&docs).expect("build");
+            let ids = graph
+                .node_ids_for_qualified_name("Shared::Thing")
+                .expect("Shared::Thing present");
+            assert_eq!(
+                ids.len(),
+                1,
+                "workspace must shadow the duplicate library declaration, leaving one node"
+            );
+            assert_eq!(
+                ids[0].uri, workspace.uri,
+                "the surviving node must be the workspace one"
+            );
+        }
+    }
+
+    /// Two distinct workspace documents that both declare the same qualified name are a genuine
+    /// duplicate, not a shadowing case: both nodes must survive (neither `merge` variant drops
+    /// workspace-vs-workspace duplicates), and the resulting `node_ids_by_qualified_name` bucket
+    /// must contain both candidates in canonical order rather than picking a silent winner.
+    #[test]
+    fn duplicate_workspace_namespace_retains_both_candidates_in_canonical_order() {
+        let first = doc(
+            "dup",
+            "First.sysml",
+            "package Dup { part def Thing; }",
+            SysmlDocumentSourceKind::Workspace,
+        );
+        let second = doc(
+            "dup",
+            "Second.sysml",
+            "package Dup { part def Thing; }",
+            SysmlDocumentSourceKind::Workspace,
+        );
+
+        let (forward, _) = build_and_link_graph(&[first.clone(), second.clone()]).expect("forward");
+        let (reverse, _) = build_and_link_graph(&[second.clone(), first.clone()]).expect("reverse");
+
+        let forward_ids = forward
+            .node_ids_for_qualified_name("Dup::Thing")
+            .expect("Dup::Thing present")
+            .to_vec();
+        let reverse_ids = reverse
+            .node_ids_for_qualified_name("Dup::Thing")
+            .expect("Dup::Thing present")
+            .to_vec();
+
+        assert_eq!(
+            forward_ids.len(),
+            2,
+            "both genuine workspace duplicates must be retained as explicit candidates"
+        );
+        assert_eq!(
+            forward_ids, reverse_ids,
+            "the candidate list order must be canonical, not a function of document order"
+        );
+        let mut canonically_sorted = forward_ids.clone();
+        canonically_sorted.sort();
+        assert_eq!(
+            forward_ids, canonically_sorted,
+            "candidates must already be in canonical NodeId order (normalized URI, then qualified name)"
+        );
+    }
+
+    /// The graph's source-origin map must classify every admitted document with its complete
+    /// `SourceRole` (Workspace/StandardLibrary/Library/External), not merely the
+    /// `standard_library_uris` fast-path subset.
+    #[test]
+    fn source_origin_map_classifies_every_admitted_role() {
+        let workspace = doc(
+            "roles",
+            "Workspace.sysml",
+            "package W { part def Thing; }",
+            SysmlDocumentSourceKind::Workspace,
+        );
+        let stdlib = doc(
+            "roles",
+            "Std.sysml",
+            "package Std { part def Base; }",
+            SysmlDocumentSourceKind::StandardLibrary,
+        );
+        let library = doc(
+            "roles",
+            "Lib.sysml",
+            "package Lib { part def Extra; }",
+            SysmlDocumentSourceKind::Library,
+        );
+        let external = doc(
+            "roles",
+            "Ext.sysml",
+            "package Ext { part def Other; }",
+            SysmlDocumentSourceKind::External,
+        );
+        let docs = vec![
+            workspace.clone(),
+            stdlib.clone(),
+            library.clone(),
+            external.clone(),
+        ];
+
+        let (graph, _) = build_and_link_graph(&docs).expect("build");
+
+        assert_eq!(
+            graph.source_role_for_uri(&workspace.uri),
+            Some(SourceRole::Workspace)
+        );
+        assert_eq!(
+            graph.source_role_for_uri(&stdlib.uri),
+            Some(SourceRole::StandardLibrary)
+        );
+        assert_eq!(
+            graph.source_role_for_uri(&library.uri),
+            Some(SourceRole::Library)
+        );
+        assert_eq!(
+            graph.source_role_for_uri(&external.uri),
+            Some(SourceRole::External)
+        );
+        // Every classified standard-library entry is also in the fast-path set the universal
+        // standard-library relationship resolver consults.
+        assert!(graph.standard_library_uris.contains(&stdlib.uri));
+
+        // Reversing document order must not change the classification.
+        let mut reversed = docs.clone();
+        reversed.reverse();
+        let (reverse_graph, _) = build_and_link_graph(&reversed).expect("reverse build");
+        assert_eq!(
+            graph.source_origins_sorted(),
+            reverse_graph.source_origins_sorted(),
+            "source-origin classification must not depend on document order"
+        );
+    }
+
+    /// Same source-origin coverage through the parallel/merge-onto-base path
+    /// (`link_parsed_documents_parallel_from`), which populates the map from a different call
+    /// site than `build_and_link_graph`.
+    #[test]
+    fn source_origin_map_populated_by_parallel_merge_from_base() {
+        let workspace = doc(
+            "roles-parallel",
+            "Workspace.sysml",
+            "package W { part def Thing; }",
+            SysmlDocumentSourceKind::Workspace,
+        );
+        let library = doc(
+            "roles-parallel",
+            "Lib.sysml",
+            "package Lib { part def Extra; }",
+            SysmlDocumentSourceKind::Library,
+        );
+        let docs = vec![workspace.clone(), library.clone()];
+
+        let (graph, _) = build_and_link_graph_parallel(&docs);
+
+        assert_eq!(
+            graph.source_role_for_uri(&workspace.uri),
+            Some(SourceRole::Workspace)
+        );
+        assert_eq!(
+            graph.source_role_for_uri(&library.uri),
+            Some(SourceRole::Library)
+        );
+    }
 }

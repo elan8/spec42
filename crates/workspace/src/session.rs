@@ -5,7 +5,7 @@
 //! This generalizes the token/generation state-machine pattern already proven in
 //! production by `lsp_server`'s `SemanticCoordinator`
 //! (`crates/lsp_server/src/workspace/coordinator.rs`). See
-//! `docs/engineering/TIER2-LSP-WORKSPACE-CONSOLIDATION.md` for the migration plan.
+//! Migration history lives in git.
 //!
 //! `workspace` is deliberately protocol/runtime-neutral (see
 //! `tests/dependency_guardrails.rs` — no `tokio`, `clap`, `axum`, etc.), so this type has
@@ -27,6 +27,27 @@ pub enum SessionLifecycle {
     Indexing,
     Ready,
     Reindexing,
+    Closed,
+}
+
+/// Owner-scoped identity for a coherent workspace publication.
+///
+/// Background work captures this value together with the immutable inputs it reads.  It may
+/// publish only when [`WorkspaceSession::is_publication_current`] still accepts it.  The owner
+/// component prevents a revision from one workspace session being mistaken for a revision from
+/// another session.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct PublicationToken {
+    owner: u64,
+    version: u64,
+}
+
+impl PublicationToken {
+    /// Monotonic version within this token's owning session. This is useful for cache keys and
+    /// observability, but is not an identity without the owner retained by this token.
+    pub fn version(&self) -> u64 {
+        self.version
+    }
 }
 
 /// Token returned by [`WorkspaceSession::schedule_relink`].
@@ -37,8 +58,8 @@ pub enum SessionLifecycle {
 /// match the session at commit time.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct RelinkToken {
+    publication: PublicationToken,
     generation: u64,
-    version: u64,
 }
 
 impl RelinkToken {
@@ -46,9 +67,9 @@ impl RelinkToken {
         self.generation
     }
 
-    #[cfg(test)]
-    fn version(&self) -> u64 {
-        self.version
+    /// The owner-scoped publication identity captured when this relink was scheduled.
+    pub fn publication(&self) -> PublicationToken {
+        self.publication
     }
 }
 
@@ -71,10 +92,12 @@ impl RelinkToken {
 /// Reindexing → Ready          commit_relink()
 /// * → Reindexing              begin_library_reindex()
 /// Reindexing → Ready          complete_reindex()
-/// * → Cold                    reset()
+/// Cold/Indexing/Ready/Reindexing → Cold  reset()
+/// * → Closed                  close() (terminal)
 /// ```
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone)]
 pub struct WorkspaceSession {
+    owner: u64,
     lifecycle: SessionLifecycle,
     /// Bumped on every transition and on bare `bump_version` calls. Used as a
     /// monotonic "did anything change?" discriminator for in-flight async tasks.
@@ -82,6 +105,17 @@ pub struct WorkspaceSession {
     /// Incremented each time a new relink is scheduled. Only the newest token's
     /// generation passes `is_token_current`, so superseded relinks self-cancel.
     relink_generation: u64,
+}
+
+impl Default for WorkspaceSession {
+    fn default() -> Self {
+        Self {
+            owner: next_session_owner(),
+            lifecycle: SessionLifecycle::Cold,
+            version: 0,
+            relink_generation: 0,
+        }
+    }
 }
 
 impl WorkspaceSession {
@@ -97,11 +131,40 @@ impl WorkspaceSession {
         self.version
     }
 
-    /// Resets to `Cold` (e.g. workspace re-initialization). Any tokens issued before
-    /// reset are permanently stale — the relink generation is intentionally *not*
-    /// bumped, since a `Cold` lifecycle already invalidates every in-flight consumer.
+    /// Captures the identity of the complete state currently published by this session.
+    ///
+    /// Call this immediately after taking an immutable input snapshot for background work, and
+    /// use [`Self::is_publication_current`] at the actor's publication barrier.
+    pub fn publication(&self) -> PublicationToken {
+        PublicationToken {
+            owner: self.owner,
+            version: self.version,
+        }
+    }
+
+    /// Returns whether `token` still names the complete state currently owned by this session.
+    pub fn is_publication_current(&self, token: &PublicationToken) -> bool {
+        self.owner == token.owner
+            && self.version == token.version
+            && self.lifecycle != SessionLifecycle::Closed
+    }
+
+    /// Gives a newly spawned actor a distinct owner identity, invalidating tokens inherited
+    /// from a cloned seed state.
+    pub fn rekey_for_owner(&mut self) {
+        self.owner = next_session_owner();
+    }
+
+    /// Resets to `Cold` (e.g. workspace re-initialization). This invalidates every
+    /// outstanding publication and relink token.
     pub fn reset(&mut self) {
-        self.lifecycle = SessionLifecycle::Cold;
+        self.transition(SessionLifecycle::Cold);
+    }
+
+    /// Permanently closes this session. All outstanding publication and relink tokens become
+    /// stale, and a closed session cannot accept a later background result.
+    pub fn close(&mut self) {
+        self.transition(SessionLifecycle::Closed);
     }
 
     /// `Cold → Indexing` — workspace startup scan begins.
@@ -129,18 +192,20 @@ impl WorkspaceSession {
             self.lifecycle,
             SessionLifecycle::Ready | SessionLifecycle::Reindexing
         ));
-        self.relink_generation = self.relink_generation.wrapping_add(1);
-        let version = self.transition(SessionLifecycle::Reindexing);
+        self.relink_generation = increment(self.relink_generation, "relink generation");
+        self.transition(SessionLifecycle::Reindexing);
         RelinkToken {
+            publication: self.publication(),
             generation: self.relink_generation,
-            version,
         }
     }
 
     /// Returns `true` when `token` still represents the current pending relink (i.e.
     /// has not been superseded by a newer edit).
     pub fn is_token_current(&self, token: &RelinkToken) -> bool {
-        self.relink_generation == token.generation && self.version == token.version
+        self.relink_generation == token.generation
+            && self.is_publication_current(&token.publication)
+            && self.lifecycle == SessionLifecycle::Reindexing
     }
 
     /// `Reindexing → Ready` — async relink committed.
@@ -148,13 +213,7 @@ impl WorkspaceSession {
     /// Returns `true` if committed, `false` if `token` has been superseded by a newer
     /// relink (the caller should discard its computed snapshot in that case).
     pub fn commit_relink(&mut self, token: &RelinkToken) -> bool {
-        // `reset()` intentionally doesn't bump the relink generation/version (a `Cold`
-        // lifecycle already invalidates every in-flight consumer by itself), so a
-        // token issued before a `reset()` can still look "current" by generation and
-        // version alone. Checking `lifecycle == Reindexing` here catches that case
-        // (and a double-commit of the same token) without relying on callers never
-        // committing after a reset.
-        if !self.is_token_current(token) || self.lifecycle != SessionLifecycle::Reindexing {
+        if !self.is_token_current(token) {
             return false;
         }
         self.transition(SessionLifecycle::Ready);
@@ -176,15 +235,36 @@ impl WorkspaceSession {
     /// in-flight tasks (e.g. a document is removed) but don't affect the lifecycle
     /// state.
     pub fn bump_version(&mut self) -> u64 {
-        self.version = self.version.wrapping_add(1);
+        self.version = increment(self.version, "publication version");
         self.version
     }
 
     fn transition(&mut self, new: SessionLifecycle) -> u64 {
+        assert!(
+            self.lifecycle != SessionLifecycle::Closed || new == SessionLifecycle::Closed,
+            "a closed workspace session cannot be reopened"
+        );
         self.lifecycle = new;
-        self.version = self.version.wrapping_add(1);
+        self.version = increment(self.version, "publication version");
         self.version
     }
+}
+
+fn increment(value: u64, label: &str) -> u64 {
+    value
+        .checked_add(1)
+        .unwrap_or_else(|| panic!("workspace session {label} exhausted"))
+}
+
+fn next_session_owner() -> u64 {
+    use std::sync::atomic::{AtomicU64, Ordering};
+
+    static NEXT_SESSION_OWNER: AtomicU64 = AtomicU64::new(1);
+    NEXT_SESSION_OWNER
+        .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |owner| {
+            owner.checked_add(1)
+        })
+        .expect("workspace session owner identities exhausted")
 }
 
 #[cfg(test)]
@@ -262,6 +342,7 @@ mod tests {
         let token = session.schedule_relink();
         session.reset();
         assert_eq!(session.lifecycle(), SessionLifecycle::Cold);
+        assert!(!session.is_token_current(&token));
         assert!(!session.commit_relink(&token));
     }
 
@@ -296,11 +377,51 @@ mod tests {
     }
 
     #[test]
-    fn relink_token_carries_generation_and_version() {
+    fn relink_token_carries_generation_and_owner_scoped_publication() {
         let mut session = WorkspaceSession::new();
         session.complete_startup();
         let token = session.schedule_relink();
         assert_eq!(token.generation(), 1);
-        assert_eq!(token.version(), session.version());
+        assert_eq!(token.publication(), session.publication());
+    }
+
+    #[test]
+    fn publication_from_another_session_cannot_commit_here() {
+        let mut first = WorkspaceSession::new();
+        first.complete_startup();
+        let first_token = first.schedule_relink();
+
+        let mut second = WorkspaceSession::new();
+        second.complete_startup();
+        let second_token = second.schedule_relink();
+
+        assert_eq!(first_token.generation(), second_token.generation());
+        assert_ne!(first_token.publication(), second_token.publication());
+        assert!(!second.is_token_current(&first_token));
+        assert!(!second.commit_relink(&first_token));
+        assert!(second.is_token_current(&second_token));
+    }
+
+    #[test]
+    fn close_invalidates_all_outstanding_publication_work() {
+        let mut session = WorkspaceSession::new();
+        session.complete_startup();
+        let publication = session.publication();
+        let relink = session.schedule_relink();
+
+        session.close();
+
+        assert_eq!(session.lifecycle(), SessionLifecycle::Closed);
+        assert!(!session.is_publication_current(&publication));
+        assert!(!session.is_token_current(&relink));
+        assert!(!session.commit_relink(&relink));
+    }
+
+    #[test]
+    #[should_panic(expected = "cannot be reopened")]
+    fn closed_session_cannot_be_reset_or_restarted() {
+        let mut session = WorkspaceSession::new();
+        session.close();
+        session.reset();
     }
 }

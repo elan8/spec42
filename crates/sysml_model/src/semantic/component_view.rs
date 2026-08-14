@@ -13,7 +13,7 @@ use url::Url;
 
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::kinds::is_part_like;
-use crate::semantic::model::{NodeId, SemanticNode};
+use crate::semantic::model::{DeclaredLiteral, ElementKind, NodeId, SemanticNode};
 
 // Re-export the canonical port predicate for consumers of this module.
 pub use crate::semantic::kinds::is_port_like;
@@ -44,8 +44,58 @@ pub struct ExpandedPort {
     pub name: String,
     pub direction: Option<String>,
     pub port_type: Option<String>,
+    /// Canonical display multiplicity. Port usages default to exactly one in SysML v2.
+    pub multiplicity: String,
     /// Dot-notation path of the owning part.
     pub parent_path: String,
+}
+
+fn declared_expression_atom(
+    expression: &crate::semantic::model::DeclaredExpression,
+) -> Option<String> {
+    if let Some(literal) = &expression.literal {
+        return Some(match literal {
+            DeclaredLiteral::Integer(value) => value.to_string(),
+            DeclaredLiteral::Real(value) | DeclaredLiteral::String(value) => value.clone(),
+            DeclaredLiteral::Boolean(value) => value.to_string(),
+        });
+    }
+    if let Some(reference) = expression.reference.as_deref() {
+        return Some(reference.to_string());
+    }
+    expression
+        .operator
+        .as_ref()
+        .filter(|_| expression.children.is_empty())
+        .map(|operator| operator.as_str().to_owned())
+}
+
+pub(crate) fn port_multiplicity_label(graph: &SemanticGraph, node: &SemanticNode) -> String {
+    let Some(multiplicity) = node.declared_facts.multiplicity.as_ref() else {
+        return graph
+            .effective_facts_for(node)
+            .and_then(|facts| facts.implied_multiplicity)
+            .map(|multiplicity| match multiplicity.upper {
+                Some(upper) if upper == multiplicity.lower => format!("[{}]", multiplicity.lower),
+                Some(upper) => format!("[{}..{}]", multiplicity.lower, upper),
+                None => format!("[{}..*]", multiplicity.lower),
+            })
+            .unwrap_or_else(|| "[?]".to_string());
+    };
+    let lower = multiplicity
+        .lower
+        .as_ref()
+        .and_then(declared_expression_atom);
+    let upper = multiplicity
+        .upper
+        .as_ref()
+        .and_then(declared_expression_atom);
+    match (lower, upper) {
+        (Some(lower), Some(upper)) if lower == upper => format!("[{lower}]"),
+        (Some(lower), Some(upper)) => format!("[{lower}..{upper}]"),
+        (Some(value), None) | (None, Some(value)) => format!("[{value}]"),
+        (None, None) => "[?]".to_string(),
+    }
 }
 
 /// Source location of a node, for client-side "open source" navigation.
@@ -157,7 +207,7 @@ pub fn expand_part_usage(
 
 /// Resolves the canonical type/specialization target for a usage-like node.
 ///
-/// Unlike [`first_typed_definition_with_shape`], this does not require the
+/// Unlike `first_typed_definition_with_shape`, this does not require the
 /// target to have materialized shape or be part-like: `typedBy` should point
 /// at whatever the usage is typed by (a `part def`, `port def`, `item def`,
 /// `attribute def`, `action def`, ...) even if that definition has no members.
@@ -198,6 +248,21 @@ fn node_to_typed_by_ref(node: &SemanticNode) -> TypedByRef {
     }
 }
 
+/// Classifies usages that can materialize as structural parts in a component tree.
+///
+/// A generic `ref` can reference many kinds of elements, so it is structural only
+/// when its resolved typing target is itself part-like. This intentionally stays
+/// local to component expansion: the broader `is_part_like` predicate is also used
+/// for definition classification and type compatibility.
+fn is_structural_part_usage(graph: &SemanticGraph, node: &SemanticNode) -> bool {
+    is_part_like(&node.element_kind)
+        || (node.element_kind == ElementKind::Ref
+            && graph
+                .outgoing_typing_or_specializes_targets(node)
+                .into_iter()
+                .any(|target| is_part_like(&target.element_kind)))
+}
+
 fn compute_has_materialized_shape(
     graph: &SemanticGraph,
     def_node: &SemanticNode,
@@ -212,7 +277,7 @@ fn compute_has_materialized_shape(
     let has_direct = graph
         .children_of(def_node)
         .iter()
-        .any(|child| is_part_like(&child.element_kind) || is_port_like(&child.element_kind));
+        .any(|child| is_structural_part_usage(graph, child) || is_port_like(&child.element_kind));
     let result = has_direct
         || graph
             .outgoing_typing_or_specializes_targets(def_node)
@@ -268,10 +333,13 @@ fn collect_inherited_ports(
                     .and_then(|v| v.as_str())
                     .map(String::from),
                 port_type: child
-                    .attributes
-                    .get("portType")
-                    .and_then(|v| v.as_str())
+                    .declared_facts
+                    .relationships
+                    .typing
+                    .first()
+                    .map(|target| target.reference.as_str())
                     .map(String::from),
+                multiplicity: port_multiplicity_label(graph, child),
                 parent_path: parent_path.to_string(),
             });
         }
@@ -297,7 +365,7 @@ fn expand_def_subtree(
     let can_recurse = max_depth.is_none_or(|max| current_depth < max);
 
     for part_child in graph.children_of(def_node) {
-        if !is_part_like(&part_child.element_kind) {
+        if !is_structural_part_usage(graph, part_child) {
             continue;
         }
         let child_path = format!("{parent_path}.{}", part_child.name);
@@ -316,7 +384,19 @@ fn expand_def_subtree(
             parent_path: Some(parent_path.to_string()),
             ports: Vec::new(),
             children: Vec::new(),
-            attributes: part_child.attributes.clone(),
+            attributes: {
+                let mut attrs = part_child.attributes.clone();
+                crate::semantic::model_projection::project_expression_text_attributes(
+                    &mut attrs, part_child,
+                );
+                crate::semantic::model_projection::project_source_text_attributes(
+                    &mut attrs, part_child,
+                );
+                crate::semantic::model_projection::project_type_reference_attributes(
+                    &mut attrs, part_child,
+                );
+                attrs
+            },
             uri: Some(part_child.id.uri.clone()),
         };
 
@@ -376,7 +456,7 @@ fn expand_usage_children(
     existing_paths: &mut HashSet<String>,
 ) {
     for part_child in graph.children_of(usage_node) {
-        if !is_part_like(&part_child.element_kind) {
+        if !is_structural_part_usage(graph, part_child) {
             continue;
         }
         let child_path = format!("{parent_path}.{}", part_child.name);
@@ -417,7 +497,19 @@ fn expand_usage_children(
             parent_path: Some(parent_path.to_string()),
             ports: inherited_ports(graph, part_child, &child_path),
             children: sub_out.clone(),
-            attributes: part_child.attributes.clone(),
+            attributes: {
+                let mut attrs = part_child.attributes.clone();
+                crate::semantic::model_projection::project_expression_text_attributes(
+                    &mut attrs, part_child,
+                );
+                crate::semantic::model_projection::project_source_text_attributes(
+                    &mut attrs, part_child,
+                );
+                crate::semantic::model_projection::project_type_reference_attributes(
+                    &mut attrs, part_child,
+                );
+                attrs
+            },
             uri: Some(part_child.id.uri.clone()),
         });
         out.extend(sub_out);
@@ -429,7 +521,7 @@ mod tests {
     use crate::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
     use crate::semantic::workspace_graph::build_semantic_graph_from_documents;
 
-    use super::typed_by_reference;
+    use super::{expand_part_definition, inherited_ports, typed_by_reference};
 
     fn build_graph(source: &str) -> crate::semantic::graph::SemanticGraph {
         let doc = SysmlDocument::from_memory_path(
@@ -483,5 +575,71 @@ mod tests {
         let graph = build_graph("package Demo { part def Robot { part loose; } }");
         let usage = node_by_qualified_name(&graph, "Demo::Robot::loose");
         assert!(typed_by_reference(&graph, usage).is_none());
+    }
+
+    #[test]
+    fn expansion_includes_typed_ref_parts_but_excludes_untyped_refs() {
+        let graph = build_graph(
+            r#"package Demo {
+  port def LinkPort;
+  part def System {
+    port link : LinkPort;
+  }
+  part def Peer {
+    port link : LinkPort;
+  }
+  part def Context {
+    ref part system : System;
+    part peer : Peer;
+    ref part loose;
+    connect system.link to peer.link;
+  }
+  part context : Context;
+}"#,
+        );
+        let context = node_by_qualified_name(&graph, "Demo::Context");
+
+        let expanded = expand_part_definition(&graph, context, "Demo.context", None);
+        let system = expanded
+            .iter()
+            .find(|part| part.path == "Demo.context.system")
+            .expect("typed ref part should be materialized");
+
+        assert_eq!(system.element_kind, "ref");
+        assert!(system.ports.iter().any(|port| port.name == "link"));
+        assert!(expanded.iter().any(|part| part.path == "Demo.context.peer"));
+        assert!(!expanded
+            .iter()
+            .any(|part| part.path == "Demo.context.loose"));
+    }
+
+    #[test]
+    fn inherited_ports_report_explicit_and_default_multiplicity() {
+        let graph = build_graph(
+            r#"package Demo {
+  port def LinkPort;
+  part def Component {
+    port optionalLink : LinkPort[0..1];
+    port standard : LinkPort;
+  }
+}"#,
+        );
+        let component = node_by_qualified_name(&graph, "Demo::Component");
+        let ports = inherited_ports(&graph, component, "Demo.component");
+
+        assert_eq!(
+            ports
+                .iter()
+                .find(|port| port.name == "optionalLink")
+                .map(|port| port.multiplicity.as_str()),
+            Some("[0..1]")
+        );
+        assert_eq!(
+            ports
+                .iter()
+                .find(|port| port.name == "standard")
+                .map(|port| port.multiplicity.as_str()),
+            Some("[1]")
+        );
     }
 }

@@ -32,6 +32,16 @@ export default defineConfig({
         ],
       },
       {
+        text: "SysML Language Guides",
+        items: [
+          { text: "Definitions, Usages, and Specialization", link: "/guide/language-basics" },
+          { text: "Packages and Multi-File Workspaces", link: "/guide/packages-and-workspaces" },
+          { text: "Attributes, Parts, and Connections", link: "/guide/structure-and-values" },
+          { text: "Behavior and Requirements", link: "/guide/behavior-and-requirements" },
+          { text: "Validation and Diagnostics", link: "/guide/validation-and-diagnostics" },
+        ],
+      },
+      {
         text: "Reference",
         items: [
           { text: "What's Included", link: "/reference/whats-included" },

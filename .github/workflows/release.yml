@@ -16,8 +16,9 @@ permissions:
 
 env:
   BINARY_NAME: spec42
-  MCP_BINARY_NAME: spec42-mcp
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+  # Keep in sync with `channel` in rust-toolchain.toml; bump both deliberately.
+  RUST_TOOLCHAIN_VERSION: "1.97.1"
 
 jobs:
   preflight:
@@ -29,8 +30,9 @@ jobs:
           submodules: recursive
 
       - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@master
         with:
+          toolchain: ${{ env.RUST_TOOLCHAIN_VERSION }}
           components: clippy
 
       - name: Cache cargo
@@ -110,11 +112,7 @@ jobs:
           # Run this suite serially so CPU contention cannot exhaust its retry budget.
           cargo test -p lsp_server --test lsp_integration -- --test-threads=1
           cargo test -p server \
-            --test api_http \
-            --test mcp_tools \
             --test cli_ai_tools \
-            --test mcp_protocol \
-            --test mcp_binary \
             --test kitchen_timer_check \
             -- --include-ignored
 
@@ -169,8 +167,9 @@ jobs:
           submodules: recursive
 
       - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@master
         with:
+          toolchain: ${{ env.RUST_TOOLCHAIN_VERSION }}
           targets: ${{ matrix.target }}
 
       - name: Cache cargo
@@ -243,12 +242,10 @@ jobs:
         run: |
           VERSION="${{ steps.version.outputs.version }}"
           BIN="${{ env.BINARY_NAME }}${{ matrix.binary_ext }}"
-          MCP_BIN="${{ env.MCP_BINARY_NAME }}${{ matrix.binary_ext }}"
           ARCHIVE="${{ env.BINARY_NAME }}-${VERSION}-${{ matrix.package_dir }}.${{ matrix.archive_ext }}"
           mkdir -p staging
           cp "target/${{ matrix.target }}/release/${{ env.BINARY_NAME }}" "staging/$BIN"
-          cp "target/${{ matrix.target }}/release/${{ env.MCP_BINARY_NAME }}" "staging/$MCP_BIN"
-          tar czf "$ARCHIVE" -C staging "$BIN" "$MCP_BIN"
+          tar czf "$ARCHIVE" -C staging "$BIN"
           echo "ARCHIVE_NAME=$ARCHIVE" >> $GITHUB_ENV
 
       - name: Prepare archive (Windows)
@@ -257,7 +254,7 @@ jobs:
           $version = "${{ steps.version.outputs.version }}"
           $archive = "${{ env.BINARY_NAME }}-$version-${{ matrix.package_dir }}.zip"
           $releaseDir = "target/${{ matrix.target }}/release"
-          Compress-Archive -Path "$releaseDir/${{ env.BINARY_NAME }}.exe", "$releaseDir/${{ env.MCP_BINARY_NAME }}.exe" -DestinationPath $archive
+          Compress-Archive -Path "$releaseDir/${{ env.BINARY_NAME }}.exe" -DestinationPath $archive
           echo "ARCHIVE_NAME=$archive" >> $env:GITHUB_ENV
         shell: pwsh
 
@@ -352,8 +349,9 @@ jobs:
           ref: ${{ steps.version.outputs.tag || github.ref }}
 
       - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@master
         with:
+          toolchain: ${{ env.RUST_TOOLCHAIN_VERSION }}
           targets: wasm32-wasip2
 
       - name: Cache cargo
@@ -476,8 +474,7 @@ jobs:
 
           ## Included Artifacts
 
-          - Platform archives include \`spec42\` and \`spec42-mcp\`.
-          - \`spec42-mcp\` is a stdio MCP server exposing validation and model-inspection tools for assistant workflows.
+          - Platform archives include \`spec42\`.
           - The VS Code .vsix includes the matching language server binary.
           - The Zed extension can download the matching server binary automatically when no configured or PATH-installed \`spec42\` binary is found.
           - \`SHA256SUMS.txt\` contains checksums for all attached artifacts.
@@ -485,7 +482,7 @@ jobs:
           ## Documentation
 
           - GitHub Action usage: docs/user/GITHUB-ACTION.md
-          - Assistant and MCP setup: docs/user/AI-ASSISTANTS.md
+          - Assistant setup: docs/user/AI-ASSISTANTS.md
           - Troubleshooting: docs/user/TROUBLESHOOTING.md
           EOF
           } > RELEASE_NOTES.txt

@@ -58,8 +58,15 @@ pub fn find_part_def_in_elements<'a>(
 }
 
 /// URI-scoped resolver for workspace relationship linking. Adds typing/specializes/subject
-/// edges from nodes in the given URI, and maintains `cross_document_edges_by_source_uri` (see
-/// `graph.rs`) so it can cleanly remove and re-add its own edges on a later call.
+/// edges from nodes in the given URI.
+///
+/// `cross_document_edges_by_source_uri` (see `graph.rs`) is maintained centrally by
+/// `add_semantic_edge_once`, which promotes any Typing/Specializes/Subject edge whose endpoints
+/// cross a document boundary to `ConstructionOwner::WorkspaceCrossDocumentLinking` and records
+/// it there -- the same promotion applies uniformly regardless of whether this scoped resolver,
+/// the whole-graph fixed-point pass, or the parallel-build resolver produced the edge. This
+/// function does not need to (and must not) do that bookkeeping itself, so whole/parallel/
+/// scoped builds agree on ownership by construction rather than by convention.
 ///
 /// Self-cleaning and idempotent: any cross-document edges this function previously added for
 /// `uri` are removed first (via `remove_recorded_cross_document_edges_for_uri`), so calling it
@@ -76,20 +83,13 @@ pub fn find_part_def_in_elements<'a>(
 pub fn add_cross_document_edges_for_uri(g: &mut SemanticGraph, uri: &Url) {
     g.remove_recorded_cross_document_edges_for_uri(uri);
     let edges = resolve_cross_document_edges_for_uri(g, uri);
-    let mut recorded = Vec::with_capacity(edges.len());
     for (src_id, tgt_id, kind) in edges {
-        if let (Some(&src_idx), Some(&tgt_idx)) = (
-            g.node_index_by_id.get(&src_id),
-            g.node_index_by_id.get(&tgt_id),
-        ) {
-            g.graph
-                .add_edge(src_idx, tgt_idx, SemanticEdge::plain(kind.clone()));
-            recorded.push((src_id, tgt_id, kind));
-        }
-    }
-    if !recorded.is_empty() {
-        g.cross_document_edges_by_source_uri
-            .insert(uri.clone(), recorded);
+        add_semantic_edge_once(
+            g,
+            &src_id,
+            &tgt_id,
+            SemanticEdge::plain(kind, ConstructionOwner::DocumentConstruction),
+        );
     }
 }
 
@@ -182,14 +182,15 @@ pub fn compute_static_dependency_targets(
             }
             continue;
         }
-        for key in TYPE_REFERENCE_ATTR_KEYS.iter().copied().chain([
-            "specializes",
-            "subjectType",
-            "verifiedRequirement",
-        ]) {
-            let Some(raw) = node.attributes.get(key).and_then(|value| value.as_str()) else {
-                continue;
-            };
+        for raw in node
+            .declared_facts
+            .relationships
+            .typing
+            .iter()
+            .chain(node.declared_facts.relationships.specializes.iter())
+            .chain(node.declared_facts.relationships.subject.iter())
+            .map(|target| target.reference.as_str())
+        {
             if let Some((prefix, _member)) = raw.rsplit_once("::") {
                 if !prefix.is_empty() {
                     prefixes.insert(prefix.to_string());
@@ -317,39 +318,36 @@ pub fn resolve_cross_document_edges_for_uri(
             .and_then(|pid| g.get_node(pid))
             .map(|p| p.id.qualified_name.clone());
 
-        // Typing relationships
-        for key in TYPE_REFERENCE_ATTR_KEYS {
-            if let Some(type_ref) = node.attributes.get(*key).and_then(|v| v.as_str()) {
-                if let Some(target_id) = resolve_typing_edge_cross_document_inner(
-                    g,
-                    node,
-                    type_ref,
-                    prefix.as_deref(),
-                    RelationshipKind::Typing,
-                ) {
-                    let dedupe_key = (node_id.clone(), target_id.clone(), "typing");
-                    if seen_edges.insert(dedupe_key) {
-                        resolved_edges.push((node_id.clone(), target_id, RelationshipKind::Typing));
-                    }
+        // Parser-authored typing relationships.
+        for target in &node.declared_facts.relationships.typing {
+            if let Some(target_id) = resolve_typing_edge_cross_document_inner(
+                g,
+                node,
+                &target.reference,
+                prefix.as_deref(),
+                RelationshipKind::Typing,
+            ) {
+                let dedupe_key = (node_id.clone(), target_id.clone(), "typing");
+                if seen_edges.insert(dedupe_key) {
+                    resolved_edges.push((node_id.clone(), target_id, RelationshipKind::Typing));
                 }
             }
         }
 
-        // Specializes relationships
-        let specializes_refs = node
-            .attributes
-            .get("specializes")
-            .map(specializes_refs_from_value)
-            .unwrap_or_default();
-        for specializes_ref in specializes_refs {
+        // Parser-authored specialization relationships.
+        for target in &node.declared_facts.relationships.specializes {
             if let Some(target_id) = resolve_typing_edge_cross_document_inner(
                 g,
                 node,
-                &specializes_ref,
+                &target.reference,
                 prefix.as_deref(),
                 RelationshipKind::Specializes,
             ) {
-                let dedupe_key = (node_id.clone(), target_id.clone(), "specializes");
+                let dedupe_key = (
+                    node_id.clone(),
+                    target_id.clone(),
+                    RelationshipKind::Specializes.as_str(),
+                );
                 if seen_edges.insert(dedupe_key) {
                     resolved_edges.push((
                         node_id.clone(),
@@ -376,9 +374,11 @@ pub fn resolve_cross_document_edges_for_uri(
                     .map(|target| target.id.clone())
                     .or_else(|| {
                         subject
-                            .attributes
-                            .get("subjectType")
-                            .and_then(|value| value.as_str())
+                            .declared_facts
+                            .relationships
+                            .typing
+                            .first()
+                            .map(|target| target.reference.as_str())
                             .and_then(|type_ref| {
                                 resolve_type_reference_targets(
                                     g,
@@ -402,28 +402,7 @@ pub fn resolve_cross_document_edges_for_uri(
                 }
             }
 
-            for verified_requirement in g
-                .children_of(node)
-                .into_iter()
-                .filter(|child| child.element_kind == ElementKind::VerifiedRequirement)
-            {
-                let Some(requirement_ref) = verified_requirement
-                    .attributes
-                    .get("verifiedRequirement")
-                    .and_then(|value| value.as_str())
-                else {
-                    continue;
-                };
-                let Some(target_id) = resolve_type_reference_targets(
-                    g,
-                    verified_requirement,
-                    requirement_ref,
-                    VERIFIED_REQUIREMENT_TARGET_KINDS,
-                )
-                .into_iter()
-                .next() else {
-                    continue;
-                };
+            for target_id in resolved_verified_requirement_targets_for_case(g, node) {
                 let dedupe_key = (node_id.clone(), target_id.clone(), "subject");
                 if seen_edges.insert(dedupe_key) {
                     resolved_edges.push((node_id.clone(), target_id, RelationshipKind::Subject));

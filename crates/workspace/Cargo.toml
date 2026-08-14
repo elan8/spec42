@@ -23,6 +23,7 @@ kpar = { path = "../kpar" }
 kpar = { path = "../kpar" }
 sysml_diagnostics = { path = "../sysml_diagnostics" }
 sysml_model = { path = "../sysml_model" }
+source_identity = { path = "../source_identity" }
 language_service = { path = "../language_service" }
 serde = { workspace = true }
 serde_json = { workspace = true }
@@ -37,11 +38,16 @@ walkdir = "2"
 sysml-v2-parser = { workspace = true }
 petgraph = { workspace = true }
 tracing = "0.1"
-bincode = { version = "2", features = ["serde"] }
+postcard = { workspace = true }
 rayon = "1.12"
+tempfile = "3"
+blake3 = { workspace = true }
+zstd = { workspace = true }
 
 [dev-dependencies]
-tempfile = "3"
+source_identity = { path = "../source_identity" }
+syn = { version = "2", features = ["full", "visit"] }
+proc-macro2 = { version = "1", features = ["span-locations"] }
 
 [[test]]
 name = "dependency_guardrails"
@@ -62,6 +68,14 @@ path = "tests/robot_vacuum_snapshot.rs"
 [[test]]
 name = "artifact_metadata_serde"
 path = "tests/artifact_metadata_serde.rs"
+
+[[test]]
+name = "cache_store"
+path = "tests/cache_store.rs"
+
+[[test]]
+name = "cache_artifacts"
+path = "tests/cache_artifacts.rs"
 
 [[test]]
 name = "host_errors"
@@ -122,6 +136,10 @@ path = "tests/deferred_validation.rs"
 [[test]]
 name = "robot_vacuum_performance"
 path = "tests/robot_vacuum_performance.rs"
+
+[[test]]
+name = "skip_guardrails"
+path = "tests/skip_guardrails.rs"
 
 [[example]]
 name = "profile_robot_vacuum"

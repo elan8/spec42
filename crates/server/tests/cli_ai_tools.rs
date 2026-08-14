@@ -1,4 +1,4 @@
-//! CLI parity for agent surfaces (`explain-diagnostic`, `model-summary`) vs MCP handlers.
+//! CLI coverage for agent surfaces (`explain-diagnostic`, `model-summary`).
 
 mod common;
 
@@ -7,7 +7,6 @@ use std::process::Command;
 
 use common::with_isolated_data_dir;
 use serde_json::Value;
-use spec42::mcp::handlers::{handle_spec42_explain_diagnostic, handle_spec42_model_summary};
 
 fn kitchen_timer_path() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../examples/timer/KitchenTimer.sysml")
@@ -34,13 +33,8 @@ fn run_spec42_json(args: &[&str]) -> Value {
 }
 
 #[test]
-#[ignore = "agent/API/MCP integration; run: cargo test -p spec42 -- --include-ignored"]
-fn cli_explain_diagnostic_matches_mcp_catalog() {
+fn cli_explain_diagnostic_returns_catalog_entry() {
     with_isolated_data_dir(|| {
-        let mcp = handle_spec42_explain_diagnostic(serde_json::json!({
-            "code": "unresolved_type_reference",
-        }))
-        .expect("mcp explain");
         let cli = run_spec42_json(&[
             "explain-diagnostic",
             "--code",
@@ -50,32 +44,23 @@ fn cli_explain_diagnostic_matches_mcp_catalog() {
         ]);
         assert_eq!(
             cli.get("code").and_then(|v| v.as_str()),
-            mcp.get("code").and_then(|v| v.as_str())
+            Some("unresolved_type_reference")
         );
         assert_eq!(
             cli.get("catalog")
                 .and_then(|c| c.get("code"))
                 .and_then(|v| v.as_str()),
-            mcp.get("catalog")
-                .and_then(|c| c.get("code"))
-                .and_then(|v| v.as_str())
+            Some("unresolved_type_reference")
         );
     });
 }
 
 #[test]
-#[ignore = "agent/API/MCP integration; run: cargo test -p spec42 -- --include-ignored"]
-fn cli_model_summary_matches_mcp_with_max_nodes_one() {
+fn cli_model_summary_respects_max_nodes() {
     with_isolated_data_dir(|| {
         let path = kitchen_timer_path();
         let path = path.canonicalize().unwrap_or(path);
         let path_str = path.display().to_string();
-
-        let mcp = handle_spec42_model_summary(serde_json::json!({
-            "path": path_str,
-            "max_nodes": 1,
-        }))
-        .expect("mcp model summary");
 
         let cli = run_spec42_json(&[
             "model-summary",
@@ -90,17 +75,14 @@ fn cli_model_summary_matches_mcp_with_max_nodes_one() {
             cli.get("truncation")
                 .and_then(|t| t.get("nodes_returned"))
                 .and_then(|v| v.as_u64()),
-            mcp.get("truncation")
-                .and_then(|t| t.get("nodes_returned"))
-                .and_then(|v| v.as_u64())
+            Some(1)
         );
         assert_eq!(
             cli.get("summary")
                 .and_then(|s| s.get("error_count"))
                 .and_then(|v| v.as_u64()),
-            mcp.get("summary")
-                .and_then(|s| s.get("error_count"))
-                .and_then(|v| v.as_u64())
+            Some(0),
+            "expected no errors in KitchenTimer example"
         );
     });
 }

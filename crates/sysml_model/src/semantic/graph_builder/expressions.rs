@@ -5,9 +5,10 @@ use url::Url;
 
 use crate::semantic::ast_util::span_to_range;
 use crate::semantic::expression_fold::{fold_expression, ExpressionAlgebra, FoldedChild};
-use crate::semantic::graph::SemanticGraph;
+use crate::semantic::graph::{DeclaredExpressionRelationshipRecord, SemanticGraph};
 use crate::semantic::model::{
-    ConnectStatementDetail, ElementKind, NodeId, RelationshipKind, SemanticEdge,
+    ConnectStatementDetail, ConstructionOwner, DeclaredExpressionRelationship, ElementKind, NodeId,
+    RelationshipKind, SemanticEdge,
 };
 use crate::semantic::reference_resolution::{resolve_expression_endpoint_strict, ResolveResult};
 use crate::semantic::relationships::{
@@ -48,10 +49,7 @@ pub(super) fn add_perform_usage_node(
         .node_index_by_id
         .contains_key(&NodeId::new(uri, &qualified))
     {
-        let mut attrs = HashMap::new();
-        if let Some(action_type) = action_type {
-            attrs.insert("actionType".to_string(), serde_json::json!(action_type));
-        }
+        let attrs = HashMap::new();
         add_node_and_recurse(
             g,
             uri,
@@ -105,6 +103,39 @@ pub(super) fn add_interface_edge_if_both_exist(
     );
 }
 
+pub(super) fn record_declared_expression_relationship(
+    g: &mut SemanticGraph,
+    owner: NodeId,
+    kind: RelationshipKind,
+    source_expression: String,
+    target_expression: String,
+    source_range: TextRange,
+    target_range: Option<TextRange>,
+    is_interface_usage: bool,
+    interface_type: Option<String>,
+) {
+    let authored_ordinal = g
+        .declared_expression_relationships
+        .iter()
+        .filter(|record| record.owner == owner)
+        .count() as u32;
+    g.declared_expression_relationships
+        .push(DeclaredExpressionRelationshipRecord {
+            owner: owner.clone(),
+            authored_ordinal,
+            relationship: DeclaredExpressionRelationship {
+                kind,
+                source_expression,
+                target_expression,
+                scope_owner: Some(owner),
+                source_range,
+                target_range,
+                is_interface_usage,
+                interface_type,
+            },
+        });
+}
+
 fn add_expression_edge_with_metadata(
     g: &mut SemanticGraph,
     uri: &Url,
@@ -118,28 +149,68 @@ fn add_expression_edge_with_metadata(
     let interface_type = metadata.interface_type.clone();
     let left_str = expr_node_to_qualified_string(left);
     let right_str = expr_node_to_qualified_string(right);
-    if left_str.is_empty() || right_str.is_empty() {
+    if g.structural_input_only {
+        let owner = container_prefix
+            .map(|prefix| NodeId::new(uri, prefix))
+            .filter(|id| g.get_node(id).is_some())
+            .or_else(|| g.root_scope_id(uri))
+            .expect("structural documents always materialize a root semantic scope");
+        record_declared_expression_relationship(
+            g,
+            owner,
+            kind.clone(),
+            left_str,
+            right_str,
+            span_to_range(&left.span),
+            Some(span_to_range(&right.span)),
+            is_interface_usage,
+            interface_type,
+        );
         return;
     }
-    if kind == RelationshipKind::Connection {
+    if matches!(kind, RelationshipKind::Connection | RelationshipKind::Bind) {
         let left_resolved = resolve_expression_endpoint_strict(g, uri, container_prefix, &left_str);
         let right_resolved =
             resolve_expression_endpoint_strict(g, uri, container_prefix, &right_str);
         match (left_resolved, right_resolved) {
             (ResolveResult::Resolved(src_id), ResolveResult::Resolved(tgt_id)) => {
+                if kind == RelationshipKind::Bind {
+                    add_semantic_edge_once(
+                        g,
+                        &src_id,
+                        &tgt_id,
+                        SemanticEdge::interconnection_with_detail(
+                            kind,
+                            ConnectStatementDetail {
+                                declaring_uri: uri.clone(),
+                                range: span_to_range(&left.span),
+                                source_expression: left_str,
+                                target_expression: right_str,
+                                container_prefix: container_prefix.map(ToString::to_string),
+                                is_interface_usage,
+                                interface_type,
+                            },
+                            ConstructionOwner::DocumentConstruction,
+                        ),
+                    );
+                    return;
+                }
                 if add_semantic_edge_once(
                     g,
                     &src_id,
                     &tgt_id,
-                    SemanticEdge::connection_with_connect(ConnectStatementDetail {
-                        declaring_uri: uri.clone(),
-                        range: span_to_range(&left.span),
-                        source_expression: left_str,
-                        target_expression: right_str,
-                        container_prefix: container_prefix.map(ToString::to_string),
-                        is_interface_usage,
-                        interface_type: interface_type.clone(),
-                    }),
+                    SemanticEdge::connection_with_connect(
+                        ConnectStatementDetail {
+                            declaring_uri: uri.clone(),
+                            range: span_to_range(&left.span),
+                            source_expression: left_str,
+                            target_expression: right_str,
+                            container_prefix: container_prefix.map(ToString::to_string),
+                            is_interface_usage,
+                            interface_type: interface_type.clone(),
+                        },
+                        ConstructionOwner::DocumentConstruction,
+                    ),
                 ) == AddSemanticEdgeResult::DuplicateConnect
                 {
                     add_diagnostic_node(
@@ -333,15 +404,18 @@ fn add_expression_edge_with_metadata(
                 g,
                 &src_id,
                 &tgt_id,
-                SemanticEdge::connection_with_connect(ConnectStatementDetail {
-                    declaring_uri: uri.clone(),
-                    range: span_to_range(&left.span),
-                    source_expression: left_str.clone(),
-                    target_expression: right_str.clone(),
-                    container_prefix: container_prefix.map(ToString::to_string),
-                    is_interface_usage,
-                    interface_type: interface_type.clone(),
-                }),
+                SemanticEdge::connection_with_connect(
+                    ConnectStatementDetail {
+                        declaring_uri: uri.clone(),
+                        range: span_to_range(&left.span),
+                        source_expression: left_str.clone(),
+                        target_expression: right_str.clone(),
+                        container_prefix: container_prefix.map(ToString::to_string),
+                        is_interface_usage,
+                        interface_type: interface_type.clone(),
+                    },
+                    ConstructionOwner::DocumentConstruction,
+                ),
             ),
             AddSemanticEdgeResult::DuplicateConnect
         ) {
@@ -473,6 +547,8 @@ pub(super) fn classify_expression(
                 | Expression::Collect { .. }
                 | Expression::Constructor { .. }
                 | Expression::CollectionOp { .. }
+                | Expression::Conditional { .. }
+                | Expression::Extent { .. }
                 | Expression::Null => results.push(ExprClass::Unknown),
             },
             Frame::AfterUnaryOperand => {
@@ -604,6 +680,10 @@ impl ExpressionAlgebra for DebugStringAlgebra {
             }
             Expression::MetadataAccess(_) => format!("{}.metadata", subs[0]),
             Expression::Null => "()".to_string(),
+            Expression::Conditional { .. } => {
+                format!("if {} ? {} else {}", subs[0], subs[1], subs[2])
+            }
+            Expression::Extent { target } => format!("all {target}"),
         }
     }
 }
@@ -784,10 +864,10 @@ fn add_diagnostic_node_with_attrs(
 mod expr_string_tests {
     use super::{
         classify_expression, expr_node_to_qualified_string, expression_to_debug_string,
-        resolve_expression_endpoint_legacy, resolve_expression_endpoint_strict, ExprClass,
+        resolve_expression_endpoint_legacy, ExprClass,
     };
+    use crate::build_graph_from_doc;
     use crate::semantic::relationships::add_cross_document_edges_for_uri;
-    use crate::{build_graph_from_doc, ResolveResult};
     use sysml_v2_parser::ast::{BinaryOperator, Expression, Node};
     use sysml_v2_parser::Span;
     use url::Url;
@@ -882,7 +962,7 @@ mod expr_string_tests {
     }
 
     #[test]
-    fn legacy_endpoint_resolution_follows_member_imported_instance_name() {
+    fn canonical_publication_resolves_imported_instance_type() {
         let architecture = r#"
             package WebShopArchitecture {
                 part def CheckoutService {}
@@ -898,34 +978,42 @@ mod expr_string_tests {
             }
         "#;
 
-        let architecture_uri = Url::parse("file:///WebShopArchitecture.sysml").expect("arch uri");
-        let usage_uri = Url::parse("file:///webshop.sysml").expect("usage uri");
-        let architecture_root = sysml_v2_parser::parse(architecture).expect("parse architecture");
-        let usage_root = sysml_v2_parser::parse(usage).expect("parse usage");
-
-        let mut graph = build_graph_from_doc(&architecture_root, &architecture_uri);
-        graph.merge(build_graph_from_doc(&usage_root, &usage_uri));
-        add_cross_document_edges_for_uri(&mut graph, &usage_uri);
-
-        let owner = resolve_expression_endpoint_strict(
-            &graph,
-            &usage_uri,
-            Some("WebShopExample"),
-            "webshopSystem",
-        );
-        assert!(matches!(owner, ResolveResult::Resolved(_)));
-
-        let resolved = resolve_expression_endpoint_legacy(
-            &graph,
-            &usage_uri,
-            Some("WebShopExample"),
-            "webshopSystem::checkoutService",
-        );
-
-        assert_eq!(
-            resolved.as_deref(),
-            Some("WebShopArchitecture::WebShopSystem::checkoutService")
-        );
+        let architecture = crate::semantic::source::SysmlDocument::from_uri(
+            "file:///WebShopArchitecture.sysml",
+            architecture.to_string(),
+            None,
+            crate::semantic::source::SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("architecture document");
+        let usage = crate::semantic::source::SysmlDocument::from_uri(
+            "file:///webshop.sysml",
+            usage.to_string(),
+            None,
+            crate::semantic::source::SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("usage document");
+        let snapshot = crate::ImmutableSourceSnapshot::new(vec![architecture, usage])
+            .expect("source snapshot");
+        let model = crate::build_semantic_model(crate::SemanticBuildRequest {
+            sources: snapshot,
+            construction: crate::ConstructionStrategy::Sequential,
+            evaluation: crate::EvaluationPolicy::ResolvedOnly,
+            configuration: crate::SemanticConfiguration::default(),
+        })
+        .expect("canonical semantic model");
+        assert!(model.resolution().facts().iter().any(|fact| {
+            fact.reference.source.qualified_name == "WebShopExample::webshopSystem"
+                && fact.reference.kind == crate::ReferenceKind::MembershipImport
+                && matches!(
+                    &fact.outcome,
+                    crate::ResolutionOutcome::Resolved { target }
+                        if target.qualified_name == "WebShopArchitecture::webshopSystem"
+                )
+        }));
     }
 
     #[test]

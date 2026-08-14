@@ -60,7 +60,7 @@ let view = snapshot.prepare_view("general-view", Some("productStructure"))?;
 let report = snapshot.ensure_validation()?; // collect diagnostics on demand
 ```
 
-`prepare_view` reuses the load-time `WorkspaceRenderSnapshot` and scoped IBD for `general-view` / `interconnection-view`. See [ROBOT-VACUUM-PERFORMANCE-ANALYSIS.md](../../docs/engineering/ROBOT-VACUUM-PERFORMANCE-ANALYSIS.md) for before/after timings on the robot-vacuum fixture (~8.6 s → ~2.8 s release cold path).
+`prepare_view` reuses the load-time `WorkspaceRenderSnapshot` and scoped IBD for `general-view` / `interconnection-view`. See GitHub Issues / git history for past robot-vacuum embedding cold-path timings.
 
 Snapshots are immutable after construction. Share them across worker threads with `Arc`; types are `Send + Sync`. `update_snapshot` always returns a **new** `Arc`; existing readers keep the previous snapshot until they adopt the new one.
 
@@ -100,7 +100,7 @@ Pass the same `WorkspaceLoadRequest` used for the initial load (`targets`, `work
 **Performance note:** the graph-patch itself skips re-parsing unchanged documents, but
 `update_snapshot`'s snapshot assembly (`language_workspace`, `render_snapshot`, eager
 `validation_report`, `semantic_projection`) is currently recomputed in full regardless of
-the patch — see `docs/engineering/TIER2-UNIFIED-INCREMENTAL-ENGINE-DESIGN.md`. Benchmarking
+the patch. Benchmarking
 (`workspace/tests/incremental_benchmark.rs`) has not yet shown a measurable end-to-end win at
 this layer; the default was flipped to `true` for single-code-path correctness (no more
 `try_incremental_update` drifting from `build_workspace_snapshot`), not a proven speedup.
@@ -120,7 +120,7 @@ Every `HostWorkspaceSnapshot` carries `HostArtifactMetadata` via `metadata()`. P
 | `schema_versions.artifact_metadata_version` | Schema of `HostArtifactMetadata` itself (currently `1`) |
 | `schema_versions.projection_schema_version` | Semantic projection DTO layout |
 | `schema_versions.renderer_compatibility_version` | Renderer/view compatibility |
-| `schema_versions.comparison_schema_version` | `SemanticComparisonReport` layout (currently `1`) |
+| `schema_versions.comparison_schema_version` | `SemanticComparisonReport` layout (currently `2`) |
 | `engine_version` | `spec42_host` crate version at build time |
 | `library_catalog_hash` | Content hash of the resolved library catalog |
 | `built_at` | UTC RFC3339 timestamp (`YYYY-MM-DDTHH:MM:SSZ`) |
@@ -134,7 +134,7 @@ Example:
     "artifact_metadata_version": 1,
     "projection_schema_version": 1,
     "renderer_compatibility_version": 1,
-    "comparison_schema_version": 1
+    "comparison_schema_version": 2
   },
   "engine_version": "0.35.0",
   "library_catalog_hash": "catalog-hash",
@@ -162,7 +162,7 @@ Host-facing APIs return `HostResult<T>` (`Result<T, Spec42HostError>`). Use `err
 | `resource_limit_exceeded` | Document count, bytes, or graph size limit hit | Reject oversized workspaces or raise limits |
 | `internal_invariant_failure` | Unexpected empty state after prior checks | Log and treat as bug |
 
-The CLI/HTTP/MCP server maps errors to strings via `Display`; embedding hosts should match on `code()` instead.
+The CLI maps errors to strings via `Display`; embedding hosts should match on `code()` instead.
 
 ## HostContext
 
@@ -203,14 +203,19 @@ let report = compare_snapshots(&previous, &next)?;
 
 `SemanticComparisonReport` is serde-stable and persistable alongside snapshot artifacts. It reports **semantic facts only** — no inferred engineering impact.
 
+Schema 2 adds typed element/relationship field values plus changed relationship and addressable
+derived-fact sections. Its deserializer defaults those additive sections and new identity provenance
+fields when reading a persisted schema-1 report.
+
 | Section | Contents |
 | --- | --- |
-| `schema_versions.comparison_schema_version` | Report schema (currently `1`) |
+| `schema_versions.comparison_schema_version` | Report schema (currently `2`) |
 | `previous_artifact` / `next_artifact` | `HostArtifactMetadata` from each snapshot |
 | `identity_preservation` | `preserved`, `incompatible_environment`, or `document_set_changed` |
-| `elements` | added / removed / changed model elements (key: `uri` + `qualified_name`) |
-| `relationships` | added / removed edges (`source`, `target`, `kind`) |
-| `diagnostics` | introduced / resolved per document |
+| `elements` | added / removed / changed model elements (projection `semantic_id` plus readable URI/name context; changed facts preserve JSON types) |
+| `relationships` | added / removed / changed addressable relationships (projection `semantic_id` plus readable endpoints) |
+| `diagnostics` | introduced / resolved per document, including primary range, producer, and related-information provenance |
+| `facts` | added / removed / changed multiplicity, expression, feature-value, and connector-end facts by semantic ID |
 | `views` | catalog changes + changed supported-view payload hashes |
 
 ### Identity preservation
@@ -225,7 +230,8 @@ Phase 4 does not remap URIs across Git renames; use `document_hashes` in artifac
 
 ### Diagnostic matching
 
-Diagnostics match on `(uri, code, severity, message)`. **Range is excluded** so line shifts from formatting do not appear as resolve+introduce churn.
+Diagnostics match on `(uri, code, severity, message, range, source, related_information)`. A
+location change is explicit diagnostic churn rather than a silently ignored semantic fact.
 
 ### View payload identity
 
@@ -235,15 +241,21 @@ Example (abbreviated):
 
 ```json
 {
-  "schema_versions": { "comparison_schema_version": 1 },
+  "schema_versions": { "comparison_schema_version": 2 },
   "identity_preservation": "preserved",
   "elements": {
     "added": [],
     "removed": [],
     "changed": []
   },
-  "relationships": { "added": [], "removed": [] },
+  "relationships": { "added": [], "removed": [], "changed": [] },
   "diagnostics": { "by_document": {} },
+  "facts": {
+    "multiplicities": { "added": [], "removed": [], "changed": [] },
+    "expressions": { "added": [], "removed": [], "changed": [] },
+    "feature_values": { "added": [], "removed": [], "changed": [] },
+    "connector_ends": { "added": [], "removed": [], "changed": [] }
+  },
   "views": {
     "catalog_added": [],
     "catalog_removed": [],
@@ -258,7 +270,7 @@ Example (abbreviated):
 | Consumer | Diagnostics source |
 | --- | --- |
 | Embedding host (`snapshot.validation()`) | portable `SemanticDiagnostic` DTOs from `semantic_core` |
-| CLI / HTTP / MCP | kernel `semantic_report_from_built_workspace` on the same pre-built graph for full parity |
+| CLI | kernel `semantic_report_from_built_workspace` on the same pre-built graph for full parity |
 
 ## Concurrency contract
 

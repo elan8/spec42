@@ -73,37 +73,14 @@ pub(super) fn parse_attribute_text_range(node: &SemanticNode, key: &str) -> Opti
     })
 }
 
-pub(super) fn parse_origin_range(node: &SemanticNode) -> Option<TextRange> {
-    let origin = node.attributes.get("originRange")?;
-    let start = origin.get("start")?;
-    let end = origin.get("end")?;
-    Some(TextRange {
-        start: TextPosition {
-            line: start.get("line")?.as_u64()? as u32,
-            character: start.get("character")?.as_u64()? as u32,
-        },
-        end: TextPosition {
-            line: end.get("line")?.as_u64()? as u32,
-            character: end.get("character")?.as_u64()? as u32,
-        },
-    })
-}
-
+// `originRange` (B9 chunk E) had no writer anywhere in the codebase -- an exhaustive repository
+// grep found only this reader, which therefore always returned `None`. Deleted per the B9 "no
+// reader"/no-writer rule rather than migrated to a typed `TextRange` fact; `node.range` (and, for
+// synthetic ports, direct downstream anchor data) already covers what this always-empty fallback
+// attempted to provide.
 fn preferred_port_anchor_range(node: &SemanticNode) -> Option<TextRange> {
-    if is_synthetic(node) {
-        if let Some(origin) = parse_origin_range(node) {
-            if !is_unknown_range(origin) {
-                return Some(origin);
-            }
-        }
-    }
     if !is_unknown_range(node.range) {
         return Some(node.range);
-    }
-    if let Some(origin) = parse_origin_range(node) {
-        if !is_unknown_range(origin) {
-            return Some(origin);
-        }
     }
     None
 }
@@ -316,8 +293,18 @@ pub(super) fn port_compatibility_mismatch(
     src: &SemanticNode,
     tgt: &SemanticNode,
 ) -> Option<String> {
-    let src_type = src.attributes.get("portType").and_then(|v| v.as_str())?;
-    let tgt_type = tgt.attributes.get("portType").and_then(|v| v.as_str())?;
+    let src_type = src
+        .declared_facts
+        .relationships
+        .typing
+        .first()
+        .map(|target| target.reference.as_str())?;
+    let tgt_type = tgt
+        .declared_facts
+        .relationships
+        .typing
+        .first()
+        .map(|target| target.reference.as_str())?;
 
     let (src_base, src_conj) = parse_port_type(src_type);
     let (tgt_base, tgt_conj) = parse_port_type(tgt_type);
@@ -407,8 +394,12 @@ fn port_feature_from_child(child: &SemanticNode) -> Option<PortFeature> {
         .and_then(|v| v.as_str())
         .and_then(parse_feature_direction)?;
     let type_ref = match child.element_kind {
-        ElementKind::InOutParameter => child.attributes.get("parameterType")?.as_str()?,
-        ElementKind::Item => child.attributes.get("itemType")?.as_str()?,
+        ElementKind::InOutParameter | ElementKind::Item => child
+            .declared_facts
+            .relationships
+            .typing
+            .first()
+            .map(|target| target.reference.as_str())?,
         _ => return None,
     };
     Some(PortFeature {
@@ -513,39 +504,11 @@ pub(super) fn unresolved_type_diagnostic_range(
 }
 
 pub(super) fn declared_type_ref(node: &SemanticNode) -> Option<&str> {
-    [
-        "partType",
-        "refType",
-        "attributeType",
-        "portType",
-        "actionType",
-        "actorType",
-        "itemType",
-        "occurrenceType",
-        "flowType",
-        "allocationType",
-        "stateType",
-        "requirementType",
-        "useCaseType",
-        "concernType",
-        "viewType",
-        "viewpointType",
-        "renderingType",
-        "subjectType",
-        "analysisType",
-        "verificationType",
-        "connectionType",
-        "metadataType",
-        "objectiveType",
-    ]
-    .iter()
-    .find_map(|k| {
-        node.attributes
-            .get(*k)
-            .and_then(|v| v.as_str())
-            .map(str::trim)
-            .filter(|s| !s.is_empty())
-    })
+    node.declared_facts
+        .relationships
+        .typing
+        .first()
+        .map(|target| target.reference.as_str())
 }
 
 pub(super) fn condition_expression_is_boolean(node: &SemanticNode, condition: &str) -> bool {
@@ -586,55 +549,43 @@ pub(super) fn is_boolean_literal_value(value: &str) -> bool {
 }
 
 pub(super) fn declared_specializes_refs(node: &SemanticNode) -> Vec<String> {
-    let Some(raw) = node.attributes.get("specializes") else {
-        return Vec::new();
-    };
-    match raw {
-        serde_json::Value::String(value) => value
-            .split(',')
-            .map(str::trim)
-            .filter(|item| !item.is_empty())
-            .map(ToOwned::to_owned)
-            .collect(),
-        serde_json::Value::Array(items) => items
-            .iter()
-            .filter_map(|item| item.as_str())
-            .flat_map(|item| {
-                item.split(',')
-                    .map(str::trim)
-                    .filter(|entry| !entry.is_empty())
-                    .map(ToOwned::to_owned)
-                    .collect::<Vec<_>>()
-            })
-            .collect(),
-        _ => Vec::new(),
-    }
+    node.declared_facts
+        .relationships
+        .specializes
+        .iter()
+        .map(|target| target.reference.clone())
+        .collect()
 }
 
-pub(super) fn multiplicity_issue_message(multiplicity: &str) -> Option<String> {
-    let normalized = multiplicity
-        .trim()
-        .trim_start_matches('[')
-        .trim_end_matches(']');
-    if normalized.is_empty() {
-        return Some("empty multiplicity".to_string());
-    }
-    let Some((lower_raw, upper_raw)) = normalized.split_once("..") else {
-        return validate_single_multiplicity_value(normalized);
-    };
-    let lower = match parse_non_negative_bound(lower_raw.trim()) {
-        Ok(value) => value,
-        Err(error) => return Some(error),
-    };
-    let upper = if upper_raw.trim() == "*" {
-        None
-    } else {
-        match parse_non_negative_bound(upper_raw.trim()) {
-            Ok(value) => Some(value),
-            Err(error) => return Some(error),
+/// Validates only directly-known parser-backed multiplicity bounds.  Bounds
+/// requiring expression evaluation stay explicitly unresolved here; a display
+/// string is never used as a replacement semantic input.
+pub(super) fn declared_multiplicity_issue_message(
+    multiplicity: &sysml_model::DeclaredMultiplicity,
+) -> Option<String> {
+    use sysml_model::DeclaredMultiplicityBound::{Integer, NonIntegerLiteral, Unbounded};
+
+    let bounds = multiplicity.direct_bounds();
+    match bounds.lower {
+        NonIntegerLiteral => return Some("lower bound must be an integer".to_string()),
+        Integer(value) if value < 0 => {
+            return Some(format!("lower bound {value} must be non-negative"));
         }
-    };
-    if let Some(upper) = upper {
+        _ => {}
+    }
+    match bounds.upper {
+        NonIntegerLiteral => return Some("upper bound must be an integer or '*'".to_string()),
+        Integer(value) if value < 0 => {
+            return Some(format!("upper bound {value} must be non-negative"));
+        }
+        _ => {}
+    }
+    if let (Unbounded, Integer(upper)) = (bounds.lower, bounds.upper) {
+        return Some(format!(
+            "unbounded lower bound is not valid with finite upper bound {upper}"
+        ));
+    }
+    if let (Integer(lower), Integer(upper)) = (bounds.lower, bounds.upper) {
         if lower > upper {
             return Some(format!(
                 "lower bound {lower} is greater than upper bound {upper}"
@@ -642,21 +593,6 @@ pub(super) fn multiplicity_issue_message(multiplicity: &str) -> Option<String> {
         }
     }
     None
-}
-
-pub(super) fn validate_single_multiplicity_value(raw: &str) -> Option<String> {
-    if raw == "*" {
-        return None;
-    }
-    parse_non_negative_bound(raw).err()
-}
-
-pub(super) fn parse_non_negative_bound(raw: &str) -> Result<i64, String> {
-    match raw.parse::<i64>() {
-        Ok(value) if value >= 0 => Ok(value),
-        Ok(value) => Err(format!("bound {value} must be non-negative")),
-        Err(_) => Err(format!("bound '{raw}' is not an integer or '*'")),
-    }
 }
 
 /// User-facing text for [`objective_binding_unresolved`](super::engine_impl) diagnostics.
@@ -672,8 +608,8 @@ Add a `subject` clause to the verification def before this objective \
         ),
         "analysis_result" => format!(
             "Analysis objective '{objective_name}' is not bound to a case result. \
-Add a `return ref` clause to the analysis def before this objective \
-(for example: `return ref analysisResult {{ return true; }}`)."
+Add a returned result to the analysis def before this objective \
+(for example: `return attribute analysisResult : Real = 1.0;`)."
         ),
         other => format!(
             "Objective '{objective_name}' could not be bound (expected binding: {other}). \
@@ -737,9 +673,10 @@ mod objective_binding_message_tests {
     }
 
     #[test]
-    fn analysis_result_message_mentions_return_ref() {
+    fn analysis_result_message_mentions_returned_result() {
         let message = objective_binding_unresolved_message("runtimeObjective", "analysis_result");
-        assert!(message.contains("return ref"));
+        assert!(message.contains("return attribute"));
+        assert!(message.contains("case result"));
         assert!(!message.contains("analysis_result"));
     }
 }

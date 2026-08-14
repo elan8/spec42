@@ -1,7 +1,7 @@
 //! IBD DTO types shared across extraction, merge, and visualization.
 
 use serde::Serialize;
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 use ts_rs::TS;
 
 use crate::semantic::dto::RangeDto;
@@ -44,6 +44,9 @@ pub struct IbdPortDto {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
     pub port_type: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub multiplicity: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
     pub port_side: Option<String>,
@@ -132,7 +135,10 @@ pub struct IbdDataDto {
     pub package_container_groups: Vec<IbdPackageContainerGroupDto>,
     pub root_candidates: Vec<String>,
     pub default_root: Option<String>,
-    pub root_views: HashMap<String, IbdRootViewDto>,
+    // O-6: `BTreeMap`, not `HashMap` -- this serializes directly to a JSON object, and a HashMap's
+    // hash-randomized iteration order would leak into that object's key order, varying run to run
+    // for byte-identical input even though the content is the same.
+    pub root_views: BTreeMap<String, IbdRootViewDto>,
 }
 
 #[derive(Debug, Clone, Serialize, TS)]

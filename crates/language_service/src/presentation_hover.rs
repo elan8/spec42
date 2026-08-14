@@ -1,11 +1,32 @@
-﻿use sysml_model::{SemanticGraph, SemanticNode};
+use sysml_model::{EvaluatedValue, SemanticGraph, SemanticNode};
+
+fn evaluated_value_to_inline_text(value: &EvaluatedValue) -> String {
+    match value {
+        EvaluatedValue::Integer(value) => value.to_string(),
+        EvaluatedValue::Real(value) => value.to_string(),
+        EvaluatedValue::Boolean(value) => value.to_string(),
+        EvaluatedValue::String(value) => value.clone(),
+    }
+}
 
 fn attr_str<'a>(node: &'a SemanticNode, key: &str) -> Option<&'a str> {
     node.attributes.get(key).and_then(|value| value.as_str())
 }
 
-fn first_attr_str<'a>(node: &'a SemanticNode, keys: &[&str]) -> Option<&'a str> {
-    keys.iter().find_map(|key| attr_str(node, key))
+/// Comma-joined display text for the node's authored `specializes` clause, sourced from the
+/// typed `DeclaredRelationshipFacts::specializes` fact rather than the legacy attribute map.
+fn specializes_display(node: &SemanticNode) -> Option<String> {
+    let targets = &node.declared_facts.relationships.specializes;
+    if targets.is_empty() {
+        return None;
+    }
+    Some(
+        targets
+            .iter()
+            .map(|target| target.reference.as_str())
+            .collect::<Vec<_>>()
+            .join(", "),
+    )
 }
 
 fn json_value_to_inline_text(value: &serde_json::Value) -> Option<String> {
@@ -63,24 +84,20 @@ fn append_plain_field(md: &mut String, label: &str, value: &str) {
     md.push_str(&format!("**{}:** {}  \n", label, value));
 }
 
+/// The authored typing spelling from the typed declared fact. This is a presentation projection
+/// of `DeclaredRelationshipFacts::typing`, never a resolution decision: hover renders the text the
+/// author wrote, exactly as the retired `*Type` attribute projections used to carry it.
+fn declared_typing_display(node: &SemanticNode) -> Option<&str> {
+    node.declared_facts
+        .relationships
+        .typing
+        .first()
+        .map(|target| target.reference.as_str())
+        .filter(|reference| !reference.trim().is_empty())
+}
+
 fn declared_type(node: &SemanticNode) -> Option<&str> {
-    first_attr_str(
-        node,
-        &[
-            "partType",
-            "subjectType",
-            "attributeType",
-            "portType",
-            "actorType",
-            "itemType",
-            "parameterType",
-            "stateType",
-            "requirementType",
-            "objectiveType",
-            "refType",
-            "type",
-        ],
-    )
+    declared_typing_display(node)
 }
 
 fn append_attribute_value(md: &mut String, node: &SemanticNode, label: &str, keys: &[&str]) {
@@ -114,9 +131,10 @@ pub fn signature_from_node(node: &SemanticNode) -> Option<String> {
         .map(|m| format!(" {}", m))
         .unwrap_or_default();
     let value_suffix = node
-        .attributes
-        .get("value")
-        .and_then(json_value_to_inline_text)
+        .expression_text
+        .value
+        .as_deref()
+        .filter(|value| !value.trim().is_empty())
         .map(|value| format!(" = {}", value))
         .unwrap_or_default();
 
@@ -125,13 +143,13 @@ pub fn signature_from_node(node: &SemanticNode) -> Option<String> {
             let prefix = attr_str(node, "definitionPrefix")
                 .map(|p| format!("{p} "))
                 .unwrap_or_default();
-            let specializes = attr_str(node, "specializes")
+            let specializes = specializes_display(node)
                 .map(|base| format!(" :> {}", base))
                 .unwrap_or_default();
             format!("{prefix}part def {}{specializes};", node.name)
         }
         "part" => {
-            let type_part = attr_str(node, "partType")
+            let type_part = declared_typing_display(node)
                 .map(|t| format!(" : {}", t))
                 .unwrap_or_default();
             format!(
@@ -140,19 +158,19 @@ pub fn signature_from_node(node: &SemanticNode) -> Option<String> {
             )
         }
         "subject" => {
-            let type_part = attr_str(node, "subjectType")
+            let type_part = declared_typing_display(node)
                 .map(|t| format!(" : {}", t))
                 .unwrap_or_default();
             format!("subject {}{};", node.name, type_part)
         }
         "attribute def" => {
-            let type_part = attr_str(node, "attributeType")
+            let type_part = declared_typing_display(node)
                 .map(|t| format!(" : {}", t))
                 .unwrap_or_default();
             format!("attribute def {}{};", node.name, type_part)
         }
         "attribute" => {
-            let type_part = attr_str(node, "attributeType")
+            let type_part = declared_typing_display(node)
                 .map(|t| format!(" : {}", t))
                 .unwrap_or_default();
             format!(
@@ -161,43 +179,44 @@ pub fn signature_from_node(node: &SemanticNode) -> Option<String> {
             )
         }
         "port def" => {
-            let specializes = attr_str(node, "specializes")
+            let specializes = specializes_display(node)
                 .map(|base| format!(" :> {}", base))
                 .unwrap_or_default();
             format!("port def {}{specializes};", node.name)
         }
         "port" => {
-            let type_part = attr_str(node, "portType")
+            let type_part = declared_typing_display(node)
                 .map(|t| format!(" : {}", t))
                 .unwrap_or_default();
             format!("port {}{}{};", node.name, type_part, multiplicity)
         }
         "item def" => {
-            let specializes = attr_str(node, "specializes")
+            let specializes = specializes_display(node)
                 .map(|base| format!(" :> {}", base))
                 .unwrap_or_default();
             format!("item def {}{specializes};", node.name)
         }
         "individual def" => {
-            let specializes = attr_str(node, "specializes")
+            let specializes = specializes_display(node)
                 .map(|base| format!(" :> {}", base))
                 .unwrap_or_default();
             format!("individual def {}{specializes};", node.name)
         }
         "item" => {
-            let type_part = attr_str(node, "itemType")
+            let type_part = declared_typing_display(node)
                 .map(|t| format!(" : {}", t))
                 .unwrap_or_default();
             format!("item {}{}{};", node.name, type_part, multiplicity)
         }
         "enumeration" => {
-            let type_part = first_attr_str(node, &["enumerationType", "type"])
+            let type_part = declared_typing_display(node)
+                .or_else(|| attr_str(node, "type"))
                 .map(|t| format!(" : {}", t))
                 .unwrap_or_default();
             format!("enum {}{}{};", node.name, type_part, multiplicity)
         }
         "opaque member" => {
-            let keyword = attr_str(node, "keyword").unwrap_or("opaque");
+            let keyword = node.source_text.keyword.as_deref().unwrap_or("opaque");
             format!("{} {};", keyword, node.name)
         }
         "require constraint" => {
@@ -218,11 +237,11 @@ pub fn signature_from_node(node: &SemanticNode) -> Option<String> {
             format!("render {}{};", node.name, type_part)
         }
         "ref redefinition" => {
-            let body = attr_str(node, "body").unwrap_or("{}");
+            let body = node.source_text.body.as_deref().unwrap_or("{}");
             format!("ref :>> {} {{ {} }};", node.name, body.trim())
         }
         "actor redefinition" => {
-            let rhs = attr_str(node, "rhs").unwrap_or("");
+            let rhs = node.expression_text.rhs.as_deref().unwrap_or("");
             format!("actor :>> {} = {};", node.name, rhs.trim())
         }
         "include use case" => {
@@ -230,7 +249,7 @@ pub fn signature_from_node(node: &SemanticNode) -> Option<String> {
             format!("include {};", target)
         }
         "filter" => {
-            let condition = attr_str(node, "condition").unwrap_or("");
+            let condition = node.expression_text.condition.as_deref().unwrap_or("");
             if condition.trim().is_empty() {
                 "filter {};".to_string()
             } else {
@@ -242,13 +261,13 @@ pub fn signature_from_node(node: &SemanticNode) -> Option<String> {
             format!("return {} {};", node.name, token)
         }
         "occurrence" => {
-            let type_part = attr_str(node, "occurrenceType")
+            let type_part = declared_typing_display(node)
                 .map(|t| format!(" : {}", t))
                 .unwrap_or_default();
             format!("occurrence {}{};", node.name, type_part)
         }
         "flow" => {
-            let type_part = attr_str(node, "flowType")
+            let type_part = declared_typing_display(node)
                 .map(|t| format!(" : {}", t))
                 .unwrap_or_default();
             format!("flow {}{};", node.name, type_part)
@@ -259,7 +278,7 @@ pub fn signature_from_node(node: &SemanticNode) -> Option<String> {
         }
         "in out parameter" => {
             let direction = attr_str(node, "direction").unwrap_or("in");
-            let type_part = first_attr_str(node, &["parameterType", "type"])
+            let type_part = declared_typing_display(node)
                 .map(|t| format!(" : {}", t))
                 .unwrap_or_default();
             format!("{direction} {}{type_part};", node.name)
@@ -287,8 +306,10 @@ pub fn signature_from_node(node: &SemanticNode) -> Option<String> {
             let target = attr_str(node, "importTarget").unwrap_or(node.name.as_str());
             format!("{visibility}import {recursive}{target};")
         }
-        "feature decl" | "classifier decl" => attr_str(node, "text")
-            .map(str::to_string)
+        "feature decl" | "classifier decl" => node
+            .source_text
+            .text
+            .clone()
             .unwrap_or_else(|| format!("{} {};", kind, node.name)),
         _ => format!("{} {};", kind, node.name),
     };
@@ -313,7 +334,7 @@ pub fn hover_markdown_for_node(
     // rule-separated bands per field.
     let mut body = String::new();
 
-    if let Some(doc) = attr_str(node, "doc") {
+    if let Some(doc) = node.source_text.doc.as_deref() {
         let doc = doc.trim();
         if !doc.is_empty() {
             body.push_str(doc);
@@ -363,9 +384,30 @@ pub fn hover_markdown_for_node(
     }
 
     append_attribute_value(&mut body, node, "Multiplicity", &["multiplicity"]);
-    append_attribute_value(&mut body, node, "Value", &["value", "defaultValue"]);
-    append_attribute_value(&mut body, node, "Evaluated value", &["evaluatedValue"]);
-    append_attribute_value(&mut body, node, "Unit", &["evaluatedUnit"]);
+    if let Some(value) = node
+        .expression_text
+        .value
+        .as_deref()
+        .or(node.expression_text.default_value.as_deref())
+        .filter(|value| !value.trim().is_empty())
+    {
+        append_field(&mut body, "Value", value);
+    }
+    if let Some(evaluation) = graph
+        .evaluation_facts_for(node)
+        .and_then(|facts| facts.expression.as_ref())
+    {
+        if let Some(value) = evaluation
+            .value
+            .as_ref()
+            .map(evaluated_value_to_inline_text)
+        {
+            append_field(&mut body, "Evaluated value", &value);
+        }
+        if let Some(unit) = evaluation.unit.as_deref().filter(|unit| !unit.is_empty()) {
+            append_field(&mut body, "Unit", unit);
+        }
+    }
 
     if show_location {
         append_plain_field(&mut body, "Defined in", node.id.uri.path());
@@ -512,6 +554,30 @@ mod tests {
         assert!(
             signature.starts_with("enum status"),
             "enumeration signature should use enum keyword: {signature}"
+        );
+    }
+
+    #[test]
+    fn hover_includes_multiline_doc_comment_text_via_typed_source_text_fact() {
+        let input = r#"package P {
+  part def Widget {
+    doc /* First line of documentation.
+    Second line of documentation. */
+  }
+}"#;
+        let root = parse(input).expect("parse");
+        let uri = Url::parse("file:///w-multiline.sysml").expect("uri");
+        let graph = build_graph_from_doc(&root, &uri);
+        let widget = graph_node(&graph, &uri, "part def", "Widget");
+        assert!(
+            widget.source_text.doc.is_some(),
+            "doc text should be captured on the typed source_text fact"
+        );
+        let hover = hover_markdown_for_node(&graph, widget, false);
+        assert!(
+            hover.contains("First line of documentation.")
+                && hover.contains("Second line of documentation."),
+            "hover should surface the full multi-line doc comment unchanged: {hover}"
         );
     }
 }

@@ -1,5 +1,6 @@
 use crate::language::SymbolEntry;
 use crate::semantic;
+use std::sync::Arc;
 use sysml_v2_parser::RootNamespace;
 use tower_lsp::lsp_types::Url;
 use workspace_session::{RelinkToken, TracksRelink};
@@ -38,10 +39,12 @@ pub(crate) struct RuntimeConfig {
 pub(crate) struct ServerState {
     pub(crate) workspace_roots: Vec<Url>,
     pub(crate) library_paths: Vec<Url>,
+    pub(crate) standard_library_paths: Vec<Url>,
     pub(crate) session: workspace::WorkspaceSession,
     pub(crate) index: std::collections::HashMap<Url, IndexEntry>,
     pub(crate) symbol_table: Vec<SymbolEntry>,
     pub(crate) semantic_graph: semantic::SemanticGraph,
+    pub(crate) published_model: Option<Arc<sysml_query::resolved_slice::PublishedModel>>,
     /// Snapshot of the library-only portion of the semantic graph.
     ///
     /// Set during startup when library files are loaded from cache (no library paths
@@ -56,6 +59,10 @@ impl TracksRelink for ServerState {
     fn is_token_current(&self, token: &RelinkToken) -> bool {
         self.session.is_token_current(token)
     }
+
+    fn rekey_for_actor(&mut self) {
+        self.session.rekey_for_owner();
+    }
 }
 
 /// Shared accessors letting `workspace/services.rs`'s free functions stay agnostic of the
@@ -67,6 +74,9 @@ pub(crate) trait DocumentStore {
     fn symbol_table_mut(&mut self) -> &mut Vec<SymbolEntry>;
     fn semantic_graph(&self) -> &semantic::SemanticGraph;
     fn semantic_graph_mut(&mut self) -> &mut semantic::SemanticGraph;
+    fn published_model_mut(
+        &mut self,
+    ) -> &mut Option<Arc<sysml_query::resolved_slice::PublishedModel>>;
 }
 
 impl DocumentStore for ServerState {
@@ -85,6 +95,34 @@ impl DocumentStore for ServerState {
     fn semantic_graph_mut(&mut self) -> &mut semantic::SemanticGraph {
         &mut self.semantic_graph
     }
+    fn published_model_mut(
+        &mut self,
+    ) -> &mut Option<Arc<sysml_query::resolved_slice::PublishedModel>> {
+        &mut self.published_model
+    }
+}
+
+pub(crate) fn refresh_published_model(state: &mut impl DocumentStore) {
+    let sources = state
+        .index()
+        .iter()
+        .filter(|(_, entry)| entry.include_in_semantic_graph)
+        .filter_map(|(uri, entry)| {
+            sysml_query::resolved_slice::SourceDocument::from_uri(
+                uri.as_str(),
+                entry.content.clone(),
+                sysml_query::resolved_slice::SourceKind::Workspace,
+            )
+            .ok()
+        })
+        .collect::<Vec<_>>();
+    *state.published_model_mut() = sysml_query::resolved_slice::BuildRequest::resolved(
+        sources,
+        sysml_query::resolved_slice::ConstructionStrategy::Parallel,
+    )
+    .ok()
+    .and_then(|request| sysml_query::resolved_slice::build(request).ok())
+    .map(Arc::new);
 }
 
 pub(crate) fn supports_semantic_queries(lifecycle: workspace::SessionLifecycle) -> bool {

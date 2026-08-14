@@ -36,6 +36,16 @@ package MyFirstModel {
 }
 ```
 
+### Start a multi-file workspace from the CLI
+
+If you use the Spec42 CLI, create a validated starter workspace with:
+
+```bash
+spec42 init my-model
+```
+
+`my-model` must be a new or empty directory. Spec42 never overwrites files during initialization and runs its normal semantic check before reporting success. The starter includes definitions, a baseline configuration, requirements, and a small domain-type library.
+
 ## Exploring your model
 
 After opening a SysML workspace, the **Spec42** sidebar gives you four main tools:
@@ -71,5 +81,6 @@ The **Feature Inspector** also lives in the secondary sidebar alongside the visu
 - [Learn the visualizer](./visualizer) to get the most out of the diagrams.
 - [Learn the Feature Inspector](./feature-inspector) for resolved semantic details.
 - [Manage libraries and dependencies](./libraries) for standard, domain, custom, and Sysand-backed content.
+- [Learn the SysML language patterns](./language-basics) for definitions, usages, packages, structure, behavior, and validation.
 - [What's included](../reference/whats-included) for Spec42 and bundled library versions.
 - [SysML v2 Quick Reference](../reference/sysml-quick-reference) for language syntax.

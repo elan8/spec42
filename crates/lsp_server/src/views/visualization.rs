@@ -175,7 +175,7 @@ pub(crate) fn build_sysml_visualization_response(
 
 #[cfg(test)]
 mod tests {
-    use std::collections::{HashMap, HashSet};
+    use std::collections::{BTreeMap, HashMap, HashSet};
     use std::path::PathBuf;
     use std::time::Instant;
 
@@ -225,6 +225,7 @@ mod tests {
                     parent_id: "WebShopArchitecture.WebShopSystem.checkoutService".to_string(),
                     direction: None,
                     port_type: None,
+                    multiplicity: Some("[1]".to_string()),
                     port_side: None,
                     uri: None,
                     range: None,
@@ -238,6 +239,7 @@ mod tests {
                     parent_id: "WebShopArchitecture.WebShopSystem.apiGateway".to_string(),
                     direction: None,
                     port_type: None,
+                    multiplicity: Some("[1]".to_string()),
                     port_side: None,
                     uri: None,
                     range: None,
@@ -260,7 +262,7 @@ mod tests {
             package_container_groups: Vec::new(),
             root_candidates: Vec::new(),
             default_root: None,
-            root_views: HashMap::new(),
+            root_views: BTreeMap::new(),
             def_instance_mappings: Vec::new(),
         };
         let selected_ids: HashSet<String> = HashSet::from([
@@ -516,7 +518,7 @@ mod tests {
             package_container_groups: Vec::new(),
             root_candidates: vec!["Vehicle".to_string()],
             default_root: Some("Vehicle".to_string()),
-            root_views: HashMap::from([(
+            root_views: BTreeMap::from([(
                 "Vehicle".to_string(),
                 IbdRootViewDto {
                     parts: vec![IbdPartDto {

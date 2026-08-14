@@ -1,6 +1,6 @@
 //! IBD scoping and filtering for interconnection visualization.
 
-use std::collections::{HashMap, HashSet};
+use std::collections::{BTreeMap, HashSet};
 
 use crate::semantic::ibd::{IbdDataDto, IbdRootViewDto};
 
@@ -81,7 +81,7 @@ pub fn filter_ibd_by_visible_ids(ibd: &IbdDataDto, visible_ids: &HashSet<String>
         })
         .cloned()
         .collect();
-    let mut root_views = HashMap::new();
+    let mut root_views = BTreeMap::new();
     for (name, view) in &ibd.root_views {
         let filtered_parts: Vec<_> = view
             .parts
@@ -338,7 +338,7 @@ pub(crate) fn filter_ibd_by_root_prefixes(
         .cloned()
         .collect();
 
-    let mut root_views = HashMap::new();
+    let mut root_views = BTreeMap::new();
     for (name, view) in &ibd.root_views {
         let filtered_parts: Vec<_> = view
             .parts
@@ -496,7 +496,7 @@ pub fn select_interconnection_ibd_scope_with_trace(
             package_container_groups: Vec::new(),
             root_candidates: Vec::new(),
             default_root: None,
-            root_views: HashMap::new(),
+            root_views: BTreeMap::new(),
             def_instance_mappings: Vec::new(),
         };
         let trace_result = trace(label, &visible_scope_ibd, &empty);
@@ -563,6 +563,7 @@ pub fn select_interconnection_ibd_scope(
 mod interconnection_scope_tests {
     use super::*;
     use crate::semantic::ibd::{IbdConnectorDto, IbdDataDto, IbdPartDto};
+    use std::collections::HashMap;
 
     fn sample_ibd() -> IbdDataDto {
         IbdDataDto {
@@ -593,7 +594,7 @@ mod interconnection_scope_tests {
             package_container_groups: Vec::new(),
             root_candidates: Vec::new(),
             default_root: None,
-            root_views: HashMap::new(),
+            root_views: BTreeMap::new(),
             def_instance_mappings: Vec::new(),
         }
     }

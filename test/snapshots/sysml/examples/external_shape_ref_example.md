@@ -1,0 +1,246 @@
+# META
+~~~ini
+description=SysML Example (Geometry): ExternalShapeRefExample
+type=file
+~~~
+# SOURCE
+~~~sysml
+package ExternalShapeRefExample {
+	private import ScalarValues::String;
+	private import ShapeItems::*;
+	private import ISQ::mass;
+	private import SI::mm;
+
+	metadata def ExternalShapeRef {
+		doc
+		/*
+		 * Metadata to reference an externally defined shape.
+		 */
+	
+		attribute purpose : String[1];
+		attribute shapeIri : String[1];
+	}
+	
+	part myBatteryUnit {
+	    item :>> shape : Shell {
+			metadata ExternalShapeRef {
+				purpose = "highLoD";
+				shapeIri = "file:/detailed-geometry/LEMS-250W_BatteryHousing_Example.step";
+			}
+		}		
+
+		private item envelopingBoxBatteryUnit : Box :> envelopingShapes {
+			:>> length = 140[mm];
+			:>> width = 148[mm];
+			:>> height = 90[mm];
+		}
+	}
+}
+~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "memory://snapshot/external_shape_ref_example.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 36))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 16) (end 2 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 3 16) (end 3 25))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 4 16) (end 4 22))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 12 22) (end 12 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 13 23) (end 13 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 17 14) (end 17 19))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 17 22) (end 17 27))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "parser")
+        (range (start 18 3) (end 22 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 24 42) (end 24 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 25 7) (end 25 13))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 26 7) (end 26 12))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 27 7) (end 27 13))
+      )
+    )
+  )
+)
+~~~
+# SMG
+~~~sexpr
+(semantic-model
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:b94e974af4b6326e15db5a4ea051a93c6015cbfcb56fe7b7aba8a2cd9a5706b6") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/external_shape_ref_example.md") (qualified-name "ExternalShapeRefExample"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/external_shape_ref_example.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::String") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/external_shape_ref_example.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ShapeItems") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/external_shape_ref_example.md") (anonymous (kind import) (ordinal 2))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ISQ::mass") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/external_shape_ref_example.md") (anonymous (kind import) (ordinal 3))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "SI::mm") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/external_shape_ref_example.md") (qualified-name "ExternalShapeRefExample::ExternalShapeRef"))) (kind metadata-def) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t\t * Metadata to reference an externally defined shape.\n\t\t "))))
+    (declaration (id (node (document "memory://snapshot/external_shape_ref_example.md") (qualified-name "ExternalShapeRefExample::ExternalShapeRef::purpose"))) (kind attribute) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 1) (upper 1))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "String"))))
+    (declaration (id (node (document "memory://snapshot/external_shape_ref_example.md") (qualified-name "ExternalShapeRefExample::ExternalShapeRef::shapeIri"))) (kind attribute) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 1) (upper 1))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "String"))))
+    (declaration (id (node (document "memory://snapshot/external_shape_ref_example.md") (qualified-name "ExternalShapeRefExample::myBatteryUnit"))) (kind part) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/external_shape_ref_example.md") (anonymous (kind item) (ordinal 0))))) (kind item) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Shell")) (redefinition (reference "shape"))))
+    (declaration (id (node (document "memory://snapshot/external_shape_ref_example.md") (qualified-name "ExternalShapeRefExample::myBatteryUnit::envelopingBoxBatteryUnit"))) (kind item) (membership (kind feature) (visibility private)) (authored (membership (kind feature) (visibility private)) (relationships (featureTyping (reference "Box"))))
+    (declaration (id (node (document "memory://snapshot/external_shape_ref_example.md") (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "length"))))
+    (declaration (id (node (document "memory://snapshot/external_shape_ref_example.md") (anonymous (kind attribute) (ordinal 1))))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "width"))))
+    (declaration (id (node (document "memory://snapshot/external_shape_ref_example.md") (anonymous (kind attribute) (ordinal 2))))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "height"))))
+  )
+  (references
+    (reference (id (source (node (document "memory://snapshot/external_shape_ref_example.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "ShapeItems")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/external_shape_ref_example.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
+      (authored-target "ScalarValues::String")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/external_shape_ref_example.md") (anonymous (kind import) (ordinal 2))))) (kind membershipImport) (ordinal 0))
+      (authored-target "ISQ::mass")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/external_shape_ref_example.md") (anonymous (kind import) (ordinal 3))))) (kind membershipImport) (ordinal 0))
+      (authored-target "SI::mm")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/external_shape_ref_example.md") (qualified-name "ExternalShapeRefExample::ExternalShapeRef::purpose"))) (kind featureTyping) (ordinal 0))
+      (authored-target "String")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/external_shape_ref_example.md") (qualified-name "ExternalShapeRefExample::ExternalShapeRef::shapeIri"))) (kind featureTyping) (ordinal 0))
+      (authored-target "String")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/external_shape_ref_example.md") (anonymous (kind item) (ordinal 0))))) (kind featureTyping) (ordinal 0))
+      (authored-target "Shell")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/external_shape_ref_example.md") (anonymous (kind item) (ordinal 0))))) (kind redefinition) (ordinal 0))
+      (authored-target "shape")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/external_shape_ref_example.md") (qualified-name "ExternalShapeRefExample::myBatteryUnit::envelopingBoxBatteryUnit"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Box")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/external_shape_ref_example.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0))
+      (authored-target "length")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/external_shape_ref_example.md") (anonymous (kind attribute) (ordinal 1))))) (kind redefinition) (ordinal 0))
+      (authored-target "width")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/external_shape_ref_example.md") (anonymous (kind attribute) (ordinal 2))))) (kind redefinition) (ordinal 0))
+      (authored-target "height")
+      (outcome (status unresolved)))
+  )
+  (relationships
+  )
+  (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/external_shape_ref_example.md") (anonymous (kind attribute) (ordinal 0))))) (value (kind quantity) (magnitude (value (kind integer) (integer 140))) (unit "mm")))
+    (evaluated (declaration (node (document "memory://snapshot/external_shape_ref_example.md") (anonymous (kind attribute) (ordinal 1))))) (value (kind quantity) (magnitude (value (kind integer) (integer 148))) (unit "mm")))
+    (evaluated (declaration (node (document "memory://snapshot/external_shape_ref_example.md") (anonymous (kind attribute) (ordinal 2))))) (value (kind quantity) (magnitude (value (kind integer) (integer 90))) (unit "mm")))
+  )
+)
+~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (query (document "memory://snapshot/external_shape_ref_example.md") (range (start 2 16) (end 2 29)) (probe (position 2 16))
+    (reference (id (source (node (document "memory://snapshot/external_shape_ref_example.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0) (authored-target "ShapeItems")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/external_shape_ref_example.md") (range (start 1 16) (end 1 36)) (probe (position 1 16))
+    (reference (id (source (node (document "memory://snapshot/external_shape_ref_example.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::String")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/external_shape_ref_example.md") (range (start 3 16) (end 3 25)) (probe (position 3 16))
+    (reference (id (source (node (document "memory://snapshot/external_shape_ref_example.md") (anonymous (kind import) (ordinal 2))))) (kind membershipImport) (ordinal 0) (authored-target "ISQ::mass")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/external_shape_ref_example.md") (range (start 4 16) (end 4 22)) (probe (position 4 16))
+    (reference (id (source (node (document "memory://snapshot/external_shape_ref_example.md") (anonymous (kind import) (ordinal 3))))) (kind membershipImport) (ordinal 0) (authored-target "SI::mm")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/external_shape_ref_example.md") (range (start 12 22) (end 12 28)) (probe (position 12 22))
+    (reference (id (source (node (document "memory://snapshot/external_shape_ref_example.md") (qualified-name "ExternalShapeRefExample::ExternalShapeRef::purpose"))) (kind featureTyping) (ordinal 0) (authored-target "String")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/external_shape_ref_example.md") (range (start 13 23) (end 13 29)) (probe (position 13 23))
+    (reference (id (source (node (document "memory://snapshot/external_shape_ref_example.md") (qualified-name "ExternalShapeRefExample::ExternalShapeRef::shapeIri"))) (kind featureTyping) (ordinal 0) (authored-target "String")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/external_shape_ref_example.md") (range (start 17 22) (end 17 27)) (probe (position 17 22))
+    (reference (id (source (node (document "memory://snapshot/external_shape_ref_example.md") (anonymous (kind item) (ordinal 0))))) (kind featureTyping) (ordinal 0) (authored-target "Shell")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/external_shape_ref_example.md") (range (start 17 14) (end 17 19)) (probe (position 17 14))
+    (reference (id (source (node (document "memory://snapshot/external_shape_ref_example.md") (anonymous (kind item) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "shape")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/external_shape_ref_example.md") (range (start 24 42) (end 24 45)) (probe (position 24 42))
+    (reference (id (source (node (document "memory://snapshot/external_shape_ref_example.md") (qualified-name "ExternalShapeRefExample::myBatteryUnit::envelopingBoxBatteryUnit"))) (kind featureTyping) (ordinal 0) (authored-target "Box")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/external_shape_ref_example.md") (range (start 25 7) (end 25 13)) (probe (position 25 7))
+    (reference (id (source (node (document "memory://snapshot/external_shape_ref_example.md") (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "length")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/external_shape_ref_example.md") (range (start 26 7) (end 26 12)) (probe (position 26 7))
+    (reference (id (source (node (document "memory://snapshot/external_shape_ref_example.md") (anonymous (kind attribute) (ordinal 1))))) (kind redefinition) (ordinal 0) (authored-target "width")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/external_shape_ref_example.md") (range (start 27 7) (end 27 13)) (probe (position 27 7))
+    (reference (id (source (node (document "memory://snapshot/external_shape_ref_example.md") (anonymous (kind attribute) (ordinal 2))))) (kind redefinition) (ordinal 0) (authored-target "height")
+      (outcome (status unresolved)))
+  )
+)
+~~~

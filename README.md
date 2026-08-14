@@ -25,7 +25,7 @@ It stays local-first: the language server, standard library, and Elan8 domain/me
 - **Validation you can trust in automation** — the same engine in `spec42 check`, with text/JSON/SARIF/JUnit output for local scripts and CI quality gates.
 - **Diagrams for review and documentation** — interactive views in the editor, plus deterministic JSON/SVG export for pipelines and design packages.
 - **Libraries ready to use** — bundled OMG SysML libraries plus searchable Elan8 domain and method libraries, with room for your own library roots.
-- **Room for assistants** — Copilot Language Model Tools in VS Code, plus an MCP server and CLI helpers for other AI hosts.
+- **Room for assistants** — Copilot Language Model Tools in VS Code, plus CLI helpers for other AI hosts.
 
 ## Where Spec42 fits
 
@@ -34,7 +34,7 @@ It stays local-first: the language server, standard library, and Elan8 domain/me
 | **VS Code** | Primary modeling environment: edit, explore, visualize, inspect. |
 | **CLI** | Doctor, check, model summary, diagram export, and assistant-oriented commands. |
 | **GitHub Action** | Repeatable model validation with optional SARIF upload. |
-| **MCP / LM Tools** | Validation and model context for AI-assisted workflows. |
+| **LM Tools** | Validation and model context for AI-assisted workflows. |
 | **Zed** | Lightweight editor support with the same server family. |
 
 ## Views
@@ -65,6 +65,14 @@ It stays local-first: the language server, standard library, and Elan8 domain/me
 1. Install **[SysML v2 Editor](https://marketplace.visualstudio.com/items?itemName=Elan8.spec42)** from the VS Code Marketplace.
 2. Open a `.sysml` / `.kerml` file, or try the bundled **timer** example from the Spec42 sidebar.
 3. Follow the full walkthrough in **[Getting Started](https://elan8.github.io/spec42/guide/getting-started)**.
+
+To start a clean multi-file workspace from the CLI, run:
+
+```bash
+spec42 init my-model
+```
+
+The target must be new or empty; `init` never overwrites existing files and validates the generated workspace before reporting success.
 
 CLI and CI users can download platform archives from [GitHub Releases](https://github.com/elan8/spec42/releases). Setup details for Actions, assistants, and troubleshooting live in the docs linked below.
 

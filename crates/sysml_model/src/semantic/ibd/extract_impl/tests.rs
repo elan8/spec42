@@ -46,6 +46,7 @@ fn test_port(id: &str, name: &str, parent_id: &str) -> IbdPortDto {
         parent_id: parent_id.to_string(),
         direction: None,
         port_type: None,
+        multiplicity: Some("[1]".to_string()),
         port_side: None,
         uri: None,
         range: None,
@@ -290,7 +291,9 @@ fn build_ibd_mirrors_definition_connections_onto_cross_file_instance() {
 
     let root_view = merged
         .root_views
-        .get("webshopSystem")
+        .iter()
+        .find(|(key, _)| key.ends_with("webshopSystem"))
+        .map(|(_, view)| view)
         .expect("webshopSystem root view");
     assert!(
         root_view.connectors.iter().any(|connector| {
@@ -398,7 +401,7 @@ fn normalize_ibd_remaps_non_regional_architecture_ports_to_instance_paths() {
             package_container_groups: Vec::new(),
             root_candidates: Vec::new(),
             default_root: None,
-            root_views: std::collections::HashMap::new(),
+            root_views: std::collections::BTreeMap::new(),
             // In production this is always populated by `build_instance_def_mappings` from real
             // typing edges (see `ibd/connectors.rs`); this hand-built fixture supplies the
             // equivalent mapping directly since it doesn't go through `build_ibd_for_uri`.
@@ -575,7 +578,9 @@ fn build_ibd_expands_library_typed_part_usage() {
         .expect("semantic graph should build");
     let ibd = build_ibd_for_uri(&graph, &uri);
     assert!(
-        ibd.root_candidates.iter().any(|root| root == "robot"),
+        ibd.root_candidates
+            .iter()
+            .any(|root| root.ends_with("robot")),
         "expected robot as IBD root, got {:?}",
         ibd.root_candidates
     );
@@ -647,9 +652,10 @@ fn build_ibd_surveillance_drone_instance_has_nested_parts_and_connectors() {
     let uri = Url::parse("memory://workspace/surveillance_drone_full.sysml").expect("uri");
     let ibd = build_ibd_for_uri(&graph, &uri);
 
-    assert_eq!(
-        ibd.default_root.as_deref(),
-        Some("droneInstance"),
+    assert!(
+        ibd.default_root
+            .as_deref()
+            .is_some_and(|root| root.ends_with("droneInstance")),
         "expected drone instance as default root, got {:?}",
         ibd.default_root
     );
@@ -825,7 +831,9 @@ fn build_ibd_resolves_connectors_with_bare_own_port_endpoint_and_no_phantom_pack
 
     let view = ibd
         .root_views
-        .get("driveModule")
+        .iter()
+        .find(|(key, _)| key.ends_with("driveModule"))
+        .map(|(_, view)| view)
         .expect("expected a driveModule root view");
 
     assert_eq!(

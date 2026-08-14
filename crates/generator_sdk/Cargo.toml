@@ -1,0 +1,11 @@
+[package]
+name = "spec42-generator-sdk"
+version.workspace = true
+edition.workspace = true
+description = "Rust guest bindings for the Spec42 core WebAssembly generator ABI"
+license.workspace = true
+
+[dependencies]
+spec42-generator-protocol = { path = "../generator_protocol" }
+serde = { workspace = true }
+postcard = { workspace = true }

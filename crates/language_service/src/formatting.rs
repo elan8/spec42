@@ -5,90 +5,221 @@ pub struct FormatOptions {
     pub insert_spaces: bool,
 }
 
-/// Formats a whole document: trim trailing whitespace per line, single trailing newline, indent by brace depth.
+/// Formats a whole SysML/KerML document without changing its parsed meaning.
+///
+/// This deliberately remains a lightweight formatter: Spec42 keeps the pinned
+/// parser as its only compiler frontend.  The lexical pass is nevertheless
+/// aware of strings and both comment forms, so braces in those regions do not
+/// affect layout. Editor recovery must never turn malformed input into a
+/// different partial model, so a candidate layout is retained only when the
+/// parser's recovered tree and diagnostic kinds remain unchanged.
 pub fn format_document_text(source: &str, options: FormatOptions) -> String {
-    let lines: Vec<&str> = source.lines().collect();
-    if lines.is_empty() {
+    let analysis = match analyze(source) {
+        Some(analysis) => analysis,
+        None => return source.to_string(),
+    };
+
+    if source.is_empty() {
         return "\n".to_string();
     }
+
     let indent_unit = if options.insert_spaces {
         " ".repeat(options.tab_size as usize)
     } else {
         "\t".to_string()
     };
-    let mut depth: i32 = 0;
-    let mut formatted_lines: Vec<String> = Vec::with_capacity(lines.len());
-    for line in &lines {
-        let trimmed = line.trim();
-        let mut open_braces = 0i32;
-        let mut close_braces = 0i32;
-        let mut leading_close_braces = 0i32;
-        let mut only_leading_closes = true;
-        for ch in code_chars_before_comment(trimmed) {
-            match ch {
-                '{' => {
-                    open_braces += 1;
-                    only_leading_closes = false;
-                }
-                '}' => {
-                    close_braces += 1;
-                    if only_leading_closes {
-                        leading_close_braces += 1;
-                    }
-                }
-                c if c.is_whitespace() => {}
-                _ => {
-                    only_leading_closes = false;
-                }
-            }
+    let mut depth = 0i32;
+    let mut formatted_lines = Vec::with_capacity(analysis.len());
+
+    for line in analysis {
+        // Physical lines that begin within a multiline string or block comment
+        // are payload, not layout.  Keep their whitespace byte-for-byte.
+        if line.starts_in_protected_region {
+            formatted_lines.push(line.text.to_string());
+            depth += line.opens - line.closes;
+            continue;
         }
-        let indent_depth = (depth - leading_close_braces).max(0);
-        depth += open_braces - close_braces;
-        let indent = indent_unit.repeat(indent_depth as usize);
-        let content = if trimmed.is_empty() {
-            String::new()
+
+        // A line that opens a multiline protected region owns everything after
+        // the delimiter. Its trailing spaces are payload and must survive.
+        let content = if line.ends_in_protected_region {
+            line.text.trim_start()
         } else {
-            format!("{}{}", indent, trimmed)
+            line.text.trim()
         };
-        formatted_lines.push(content);
+        if content.is_empty() {
+            formatted_lines.push(String::new());
+            continue;
+        }
+
+        let indent_depth = (depth - line.leading_closes).max(0);
+        formatted_lines.push(format!(
+            "{}{}",
+            indent_unit.repeat(indent_depth as usize),
+            content
+        ));
+        depth += line.opens - line.closes;
     }
-    while formatted_lines.last().is_some_and(|line| line.is_empty()) {
-        formatted_lines.pop();
+
+    // Retain intentional separation, but
+    // collapse runs of blank lines and do not leave whitespace-only EOF lines.
+    let mut collapsed = Vec::with_capacity(formatted_lines.len());
+    let mut previous_blank = false;
+    for line in formatted_lines {
+        let blank = line.is_empty();
+        if blank && previous_blank {
+            continue;
+        }
+        previous_blank = blank;
+        collapsed.push(line);
     }
-    if formatted_lines.is_empty() {
+    while collapsed.last().is_some_and(|line| line.is_empty()) {
+        collapsed.pop();
+    }
+
+    let candidate = if collapsed.is_empty() {
         "\n".to_string()
     } else {
-        format!("{}\n", formatted_lines.join("\n"))
+        format!("{}\n", collapsed.join("\n"))
+    };
+
+    if preserves_parse_meaning(source, &candidate) {
+        candidate
+    } else {
+        source.to_string()
     }
 }
 
-fn code_chars_before_comment(line: &str) -> Vec<char> {
-    let mut chars = Vec::new();
-    let mut in_string = false;
-    let mut escaped = false;
-    let mut iter = line.chars().peekable();
-    while let Some(ch) = iter.next() {
-        if escaped {
-            chars.push(ch);
-            escaped = false;
-            continue;
-        }
-        if ch == '\\' && in_string {
-            chars.push(ch);
-            escaped = true;
-            continue;
-        }
-        if ch == '"' {
-            in_string = !in_string;
-            chars.push(ch);
-            continue;
-        }
-        if !in_string && ch == '/' && iter.peek() == Some(&'/') {
-            break;
-        }
-        chars.push(ch);
+fn preserves_parse_meaning(source: &str, candidate: &str) -> bool {
+    match sysml_v2_parser::parse(source) {
+        Ok(original) => sysml_v2_parser::parse(candidate).is_ok_and(|reparsed| {
+            original.normalize_for_test_comparison() == reparsed.normalize_for_test_comparison()
+        }),
+        Err(_) => recovery_equivalent(source, candidate),
     }
-    chars
+}
+
+fn recovery_equivalent(source: &str, candidate: &str) -> bool {
+    let source = sysml_v2_parser::parse_for_editor(source);
+    let candidate = sysml_v2_parser::parse_for_editor(candidate);
+    !candidate.is_ok()
+        && source.root.normalize_for_test_comparison()
+            == candidate.root.normalize_for_test_comparison()
+        && recovery_diagnostic_signature(&source.errors)
+            == recovery_diagnostic_signature(&candidate.errors)
+}
+
+fn recovery_diagnostic_signature(errors: &[sysml_v2_parser::ParseError]) -> Vec<String> {
+    errors
+        .iter()
+        .map(|error| {
+            format!(
+                "{:?}|{:?}|{:?}|{:?}|{:?}|{:?}|{:?}",
+                error.category,
+                error.severity,
+                error.code,
+                error.message,
+                error.expected,
+                error.found,
+                error.is_cascade,
+            )
+        })
+        .collect()
+}
+
+#[derive(Debug)]
+struct LineAnalysis<'a> {
+    text: &'a str,
+    starts_in_protected_region: bool,
+    ends_in_protected_region: bool,
+    opens: i32,
+    closes: i32,
+    leading_closes: i32,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum LexState {
+    Code,
+    String { escaped: bool },
+    UnrestrictedName { escaped: bool },
+    BlockComment,
+}
+
+/// Returns `None` for incomplete lexical structure. This is a conservative
+/// recovery boundary because an unfinished string, unrestricted name, or
+/// comment can contain whitespace payload.
+fn analyze(source: &str) -> Option<Vec<LineAnalysis<'_>>> {
+    let mut state = LexState::Code;
+    let mut lines = Vec::new();
+
+    for raw_line in source.split('\n') {
+        let line = raw_line.strip_suffix('\r').unwrap_or(raw_line);
+        let starts_in_protected_region = state != LexState::Code;
+        let mut opens = 0;
+        let mut closes = 0;
+        let mut leading_closes = 0;
+        let mut only_leading_closes = true;
+        let mut chars = line.chars().peekable();
+
+        while let Some(ch) = chars.next() {
+            match state {
+                LexState::Code => match ch {
+                    '/' if chars.peek() == Some(&'/') => break,
+                    '/' if chars.peek() == Some(&'*') => {
+                        chars.next();
+                        state = LexState::BlockComment;
+                    }
+                    '"' => state = LexState::String { escaped: false },
+                    '\'' => state = LexState::UnrestrictedName { escaped: false },
+                    '{' => {
+                        opens += 1;
+                        only_leading_closes = false;
+                    }
+                    '}' => {
+                        closes += 1;
+                        if only_leading_closes {
+                            leading_closes += 1;
+                        }
+                    }
+                    c if c.is_whitespace() => {}
+                    _ => only_leading_closes = false,
+                },
+                LexState::String { escaped } => {
+                    state = match (escaped, ch) {
+                        (true, _) => LexState::String { escaped: false },
+                        (false, '\\') => LexState::String { escaped: true },
+                        (false, '"') => LexState::Code,
+                        _ => LexState::String { escaped: false },
+                    };
+                }
+                LexState::UnrestrictedName { escaped } => {
+                    state = match (escaped, ch) {
+                        (true, _) => LexState::UnrestrictedName { escaped: false },
+                        (false, '\\') => LexState::UnrestrictedName { escaped: true },
+                        (false, '\'') => LexState::Code,
+                        _ => LexState::UnrestrictedName { escaped: false },
+                    };
+                }
+                LexState::BlockComment => {
+                    if ch == '*' && chars.peek() == Some(&'/') {
+                        chars.next();
+                        state = LexState::Code;
+                    }
+                }
+            }
+        }
+
+        lines.push(LineAnalysis {
+            text: line,
+            starts_in_protected_region,
+            ends_in_protected_region: state != LexState::Code,
+            opens,
+            closes,
+            leading_closes,
+        });
+    }
+
+    (state == LexState::Code).then_some(lines)
 }
 
 #[cfg(test)]
@@ -144,5 +275,96 @@ mod tests {
         let formatted = format_document_text(source, default_options());
         assert!(formatted.ends_with('\n'));
         assert_eq!(formatted.matches('\n').count(), 1);
+    }
+
+    #[test]
+    fn format_document_ignores_braces_in_strings_and_comments() {
+        let source = "package P {\nattr text = \"{ not a block }\"; // }\n/* { */\npart x;\n}";
+        assert_eq!(
+            format_document_text(source, default_options()),
+            "package P {\n    attr text = \"{ not a block }\"; // }\n    /* { */\n    part x;\n}\n"
+        );
+    }
+
+    #[test]
+    fn format_document_ignores_syntax_inside_unrestricted_names() {
+        let source = r"package P {
+feature 'brace { } // /* and slash \\ then escaped \' quote';
+part x;
+}";
+        assert_eq!(
+            format_document_text(source, default_options()),
+            r"package P {
+    feature 'brace { } // /* and slash \\ then escaped \' quote';
+    part x;
+}
+"
+        );
+    }
+
+    #[test]
+    fn format_document_preserves_multiline_string_and_comment_payload() {
+        let source = "package P {\ndoc /* first\n  { payload }  \n*/\nattr text = \"first  \n  { payload }  \nlast\";\n}";
+        let formatted = format_document_text(source, default_options());
+        assert!(formatted.contains("attr text = \"first  \n"));
+        assert!(formatted.contains("  { payload }  \n"));
+        assert_eq!(
+            formatted,
+            format_document_text(&formatted, default_options())
+        );
+    }
+
+    #[test]
+    fn format_document_preserves_incomplete_source_verbatim() {
+        let source = "package P {\n  attr text = \"unfinished";
+        assert_eq!(format_document_text(source, default_options()), source);
+    }
+
+    #[test]
+    fn format_document_preserves_unfinished_unrestricted_name_verbatim() {
+        let source = "package P {\n  feature 'brace { // unfinished";
+        assert_eq!(format_document_text(source, default_options()), source);
+    }
+
+    #[test]
+    fn format_document_preserves_source_when_layout_changes_the_strict_parse_tree() {
+        let source = "package ion {\n  class A {\n    in<f;\n  }\n\n  class A { in #su f;\n  }\n}";
+        assert!(sysml_v2_parser::parse(source).is_ok());
+        assert_eq!(format_document_text(source, default_options()), source);
+    }
+
+    #[test]
+    fn format_document_recovers_unbalanced_blocks_without_changing_tokens() {
+        let source = "package P {\npart x;\n";
+        let formatted = format_document_text(source, default_options());
+        assert_eq!(formatted, "package P {\n    part x;\n");
+        assert_eq!(
+            formatted,
+            format_document_text(&formatted, default_options())
+        );
+    }
+
+    #[test]
+    fn format_document_collapses_blank_line_runs() {
+        let source = "package P {\n\n\npart x;\n\n\n}";
+        assert_eq!(
+            format_document_text(source, default_options()),
+            "package P {\n\n    part x;\n\n}\n"
+        );
+    }
+
+    #[test]
+    fn format_document_honors_tabs() {
+        let source = "package P {\npart x;\n}";
+        assert_eq!(
+            format_document_text(
+                source,
+                FormatOptions {
+                    tab_size: 8,
+                    insert_spaces: false,
+                },
+            ),
+            "package P {\n\tpart x;\n}\n"
+        );
     }
 }

@@ -1,0 +1,865 @@
+# META
+~~~ini
+description=SysML Example (Variability): VehicleVariabilityModel
+type=file
+~~~
+# SOURCE
+~~~sysml
+package VehicleVariabilityModel {
+
+	package DesignModel {
+		public import PartDefinitions::*;
+		public import PartsTree::*;
+		public import ActionDefinitions::*;
+		public import ActionTree::*;
+	
+		package PartDefinitions {
+			part def Vehicle;
+			
+		    attribute def Diameter;
+		    part def Cylinder {
+		        attribute diameter : Diameter[1];
+		    }
+		
+		    part def Engine;
+		    part def Transmission;
+		    part def Sunroof;
+		
+		    port def AutoPort;
+	    }
+	    
+	    package PartsTree {
+	    	part vehicle : Vehicle {
+	    		part engine : Engine[1];
+	    		part transmission : Transmission[1];
+	    		part sunroof : Sunroof[0..1];
+	    	}
+	    	
+		    part engine : Engine {
+		        port autoPort : AutoPort;
+		        part cylinder : Cylinder[2..*];
+		    }
+		    
+		    part '4cylEngine' :> engine {
+		    	part :>> cylinder[4];
+		    }
+		    
+		    part '6cylEngine' :> engine {
+		    	part :>> cylinder[6];
+		    }
+		
+			part transmission : Transmission;
+		    part manualTransmission :> transmission;
+		    part automaticTransmission :> transmission;
+	    }
+	
+		package ActionDefinitions {   
+		    action def GenerateTorque;
+		    action def AmplifyTorque;
+		    action def ProvidePower;
+	    }
+	    
+	    package ActionTree {    
+		    action generateTorque4Cyl : GenerateTorque;
+		    action generateTorque6Cyl : GenerateTorque;
+		    
+		    action amplifyTorqueManual : AmplifyTorque;
+		    action amplifyTorqueAutomatic : AmplifyTorque;
+	    }	
+	}
+		
+	package '150% Model' {
+		private import DesignModel::*;
+	
+		package PartsTree {
+		
+		    // Variation point definitions
+		
+		    variation attribute def DiameterChoices :> Diameter {
+		    	variant attribute diameterSmall;
+		    	variant attribute diameterLarge;
+		    }
+		
+		    variation part def EngineChoices :> Engine {
+		        variant '4cylEngine';
+		        variant '6cylEngine' {
+		        	variation port :>> autoPort {
+		        		variant port autoPort1;
+		        		variant port autoPort2;
+		        	}
+		        	
+		        	part :>> cylinder {
+		        		attribute :>> diameter : DiameterChoices;
+		        	}
+		        	
+		          	assert constraint {
+		            	(autoPort == autoPort::autoPort1 and cylinder.diameter == cylinder::diameter::diameterSmall) xor
+		             	(autoPort == autoPort::autoPort2 and cylinder.diameter == cylinder::diameter::diameterLarge)
+		        	}
+		        }
+		    }
+		
+		    // Part superset model
+		    
+		    abstract part vehicleFamily :> vehicle {
+		    	// Variation point usage
+		        part :>> engine : EngineChoices[1];
+		        
+		        // Variation point with embedded variant definitions
+		        variation part :>> transmission : Transmission[1] {
+		        	variant manualTransmission;
+		        	variant automaticTransmission;
+		        }
+		        
+		        assert constraint {
+		            (engine == engine::'4cylEngine' and transmission == transmission::manualTransmission) xor
+		            (engine == engine::'6cylEngine' and transmission == transmission::automaticTransmission)
+		        }
+		        
+		        // Variation point on variant multiplicity (inherited multiplicity is [0..1]) 
+		        variation part :>> sunroof {
+		        	variant part withSunroof[1];
+		        	variant part withoutSunroof[0];
+		        }
+		        
+		        perform ActionTree::providePowerFamily;
+		    }
+		}
+		
+		package ActionTree {
+		
+		    // Action superset Model
+		    
+		    action providePowerFamily : ProvidePower {
+		        variation action generateTorque : GenerateTorque {
+		        	variant generateTorque4Cyl;
+		        	variant generateTorque6Cyl;
+		        }
+		        
+		        variation action amplifyTorque : AmplifyTorque {
+		        	variant amplifyTorqueManual;
+		        	variant amplifyTorqueAutomatic;
+		        }
+		        
+			    assert constraint {
+			        (generateTorque == generateTorque::generateTorque4Cyl and 
+			        	amplifyTorque == amplifyTorque::amplifyTorqueManual
+			        ) xor
+			        (generateTorque == generateTorque::generateTorque6Cyl and 
+			        	amplifyTorque == amplifyTorque::amplifyTorqueAutomatic
+			        )
+			    }		   
+		    }		    
+		}
+	}
+	
+	package '100% Model' {
+		private import '150% Model'::*;
+		
+		// Vehicle instance model
+		
+	    part vehicle4Cyl :> PartsTree::vehicleFamily {
+	        part :>> engine = engine::'4cylEngine';
+	        part :>> transmission = transmission::manualTransmission;
+	        part :>> sunroof = sunroof::withoutSunroof;
+	        
+	        perform action :>> providePowerFamily {
+	            action :>> generateTorque = generateTorque::generateTorque4Cyl;
+	            action :>> amplifyTorque = amplifyTorque::amplifyTorqueManual;
+	        }
+	    }
+	}
+}
+~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "memory://snapshot/vehicle_variability_model.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 36 16) (end 36 24))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 40 16) (end 40 24))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 70 6) (end 73 7))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 70 6) (end 73 7))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_definition_member")
+        (source "semantic")
+        (range (start 77 10) (end 91 11))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_part_usage_body_element")
+        (source "parser")
+        (range (start 78 11) (end 83 11))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 107 25) (end 107 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 107 66) (end 107 98))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 108 25) (end 108 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 108 66) (end 108 101))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 112 29) (end 112 36))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_usage_member")
+        (source "semantic")
+        (range (start 113 11) (end 113 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_usage_member")
+        (source "semantic")
+        (range (start 114 11) (end 114 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 137 30) (end 137 64))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 138 29) (end 138 63))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 140 30) (end 140 64))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 141 29) (end 141 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 154 18) (end 154 24))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 155 18) (end 155 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 156 18) (end 156 25))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_part_usage_body_element")
+        (source "parser")
+        (range (start 158 9) (end 162 5))
+      )
+    )
+  )
+)
+~~~
+# SMG
+~~~sexpr
+(semantic-model
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:59530216f265c60bb22bc958bfc380a0cd13183f66813b38fb3d5d1430e1736b") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::100% Model"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "150% Model") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::100% Model::vehicle4Cyl"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "PartsTree::vehicleFamily"))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 0))))) (kind part) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "engine"))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 1))))) (kind part) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "transmission"))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 2))))) (kind part) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "sunroof"))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "DesignModel") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily"))) (kind action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ProvidePower"))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind constraint) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "generateTorque")) (expressionOperand (reference "generateTorque::generateTorque4Cyl")) (expressionOperand (reference "amplifyTorque")) (expressionOperand (reference "amplifyTorque::amplifyTorqueManual")) (expressionOperand (reference "generateTorque")) (expressionOperand (reference "generateTorque::generateTorque6Cyl")) (expressionOperand (reference "amplifyTorque")) (expressionOperand (reference "amplifyTorque::amplifyTorqueAutomatic"))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::amplifyTorque"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers variation)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "AmplifyTorque")) (variant (reference "amplifyTorqueManual")) (variant (reference "amplifyTorqueAutomatic"))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::generateTorque"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers variation)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "GenerateTorque")) (variant (reference "generateTorque4Cyl")) (variant (reference "generateTorque6Cyl"))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree::EngineChoices"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (modifiers variation)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Engine")) (variant (reference "4cylEngine"))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree::vehicleFamily"))) (kind part) (membership (kind feature) (visibility default)) (facts (modifiers abstract)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "vehicle"))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 0))))) (kind part) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 1) (upper 1))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "EngineChoices")) (redefinition (reference "engine"))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 1))))) (kind part) (membership (kind feature) (visibility default)) (facts (modifiers variation) (multiplicity (lower 1) (upper 1))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Transmission") (variation true)) (redefinition (reference "transmission")) (variant (reference "manualTransmission")) (variant (reference "automaticTransmission"))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind constraint) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "engine")) (expressionOperand (reference "engine::4cylEngine")) (expressionOperand (reference "transmission")) (expressionOperand (reference "transmission::manualTransmission")) (expressionOperand (reference "engine")) (expressionOperand (reference "engine::6cylEngine")) (expressionOperand (reference "transmission")) (expressionOperand (reference "transmission::automaticTransmission"))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 2))))) (kind part) (membership (kind feature) (visibility default)) (facts (modifiers variation)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "sunroof"))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind perform-action) (ordinal 0))))) (kind perform-action) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "PartDefinitions") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "PartsTree") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind import) (ordinal 2))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "ActionDefinitions") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind import) (ordinal 3))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "ActionTree") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions::AmplifyTorque"))) (kind action-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions::GenerateTorque"))) (kind action-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions::ProvidePower"))) (kind action-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree::amplifyTorqueAutomatic"))) (kind action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "AmplifyTorque"))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree::amplifyTorqueManual"))) (kind action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "AmplifyTorque"))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree::generateTorque4Cyl"))) (kind action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "GenerateTorque"))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree::generateTorque6Cyl"))) (kind action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "GenerateTorque"))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::AutoPort"))) (kind port-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Cylinder"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Cylinder::diameter"))) (kind attribute) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 1) (upper 1))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Diameter"))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Diameter"))) (kind attribute-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Engine"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Sunroof"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Transmission"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::4cylEngine"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "engine"))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 0))))) (kind part) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 4) (upper 4))) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "cylinder"))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::6cylEngine"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "engine"))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 0))))) (kind part) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 6) (upper 6))) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "cylinder"))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::automaticTransmission"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "transmission"))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::engine"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Engine"))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::engine::autoPort"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "AutoPort"))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::engine::cylinder"))) (kind part) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 2) (upper unbounded))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Cylinder"))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::manualTransmission"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "transmission"))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::transmission"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Transmission"))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::vehicle"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Vehicle"))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::vehicle::engine"))) (kind part) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 1) (upper 1))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Engine"))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::vehicle::sunroof"))) (kind part) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 0) (upper 1))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Sunroof"))))
+    (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::vehicle::transmission"))) (kind part) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 1) (upper 1))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Transmission"))))
+  )
+  (references
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "150% Model")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::100% Model::vehicle4Cyl"))) (kind subsetting) (ordinal 0))
+      (authored-target "PartsTree::vehicleFamily")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree::vehicleFamily")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 0))))) (kind redefinition) (ordinal 0))
+      (authored-target "engine")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 1))))) (kind redefinition) (ordinal 0))
+      (authored-target "transmission")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 2))))) (kind redefinition) (ordinal 0))
+      (authored-target "sunroof")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "DesignModel")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily"))) (kind featureTyping) (ordinal 0))
+      (authored-target "ProvidePower")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions::ProvidePower")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
+      (authored-target "generateTorque")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::generateTorque")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 1))
+      (authored-target "generateTorque::generateTorque4Cyl")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 2))
+      (authored-target "amplifyTorque")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::amplifyTorque")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 3))
+      (authored-target "amplifyTorque::amplifyTorqueManual")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 4))
+      (authored-target "generateTorque")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::generateTorque")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 5))
+      (authored-target "generateTorque::generateTorque6Cyl")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 6))
+      (authored-target "amplifyTorque")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::amplifyTorque")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 7))
+      (authored-target "amplifyTorque::amplifyTorqueAutomatic")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::amplifyTorque"))) (kind featureTyping) (ordinal 0))
+      (authored-target "AmplifyTorque")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions::AmplifyTorque")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::amplifyTorque"))) (kind variant) (ordinal 0))
+      (authored-target "amplifyTorqueManual")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree::amplifyTorqueManual")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::amplifyTorque"))) (kind variant) (ordinal 1))
+      (authored-target "amplifyTorqueAutomatic")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree::amplifyTorqueAutomatic")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::generateTorque"))) (kind featureTyping) (ordinal 0))
+      (authored-target "GenerateTorque")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions::GenerateTorque")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::generateTorque"))) (kind variant) (ordinal 0))
+      (authored-target "generateTorque4Cyl")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree::generateTorque4Cyl")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::generateTorque"))) (kind variant) (ordinal 1))
+      (authored-target "generateTorque6Cyl")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree::generateTorque6Cyl")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree::EngineChoices"))) (kind specialization) (ordinal 0))
+      (authored-target "Engine")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Engine")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree::EngineChoices"))) (kind variant) (ordinal 0))
+      (authored-target "4cylEngine")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::4cylEngine")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree::vehicleFamily"))) (kind subsetting) (ordinal 0))
+      (authored-target "vehicle")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::vehicle")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 0))))) (kind featureTyping) (ordinal 0))
+      (authored-target "EngineChoices")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree::EngineChoices")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 1))))) (kind featureTyping) (ordinal 0))
+      (authored-target "Transmission")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Transmission")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 0))))) (kind redefinition) (ordinal 0))
+      (authored-target "engine")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::engine")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 1))))) (kind redefinition) (ordinal 0))
+      (authored-target "transmission")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::transmission")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 2))))) (kind redefinition) (ordinal 0))
+      (authored-target "sunroof")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
+      (authored-target "engine")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::engine")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 1))
+      (authored-target "engine::4cylEngine")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 2))
+      (authored-target "transmission")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::transmission")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 3))
+      (authored-target "transmission::manualTransmission")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 4))
+      (authored-target "engine")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::engine")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 5))
+      (authored-target "engine::6cylEngine")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 6))
+      (authored-target "transmission")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::transmission")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 7))
+      (authored-target "transmission::automaticTransmission")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 1))))) (kind variant) (ordinal 0))
+      (authored-target "manualTransmission")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::manualTransmission")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 1))))) (kind variant) (ordinal 1))
+      (authored-target "automaticTransmission")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::automaticTransmission")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "PartDefinitions")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "PartsTree")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind import) (ordinal 2))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "ActionDefinitions")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind import) (ordinal 3))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "ActionTree")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree::amplifyTorqueAutomatic"))) (kind featureTyping) (ordinal 0))
+      (authored-target "AmplifyTorque")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions::AmplifyTorque")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree::amplifyTorqueManual"))) (kind featureTyping) (ordinal 0))
+      (authored-target "AmplifyTorque")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions::AmplifyTorque")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree::generateTorque4Cyl"))) (kind featureTyping) (ordinal 0))
+      (authored-target "GenerateTorque")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions::GenerateTorque")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree::generateTorque6Cyl"))) (kind featureTyping) (ordinal 0))
+      (authored-target "GenerateTorque")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions::GenerateTorque")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Cylinder::diameter"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Diameter")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Diameter")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::4cylEngine"))) (kind subsetting) (ordinal 0))
+      (authored-target "engine")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::engine")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 0))))) (kind redefinition) (ordinal 0))
+      (authored-target "cylinder")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::6cylEngine"))) (kind subsetting) (ordinal 0))
+      (authored-target "engine")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::engine")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 0))))) (kind redefinition) (ordinal 0))
+      (authored-target "cylinder")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::automaticTransmission"))) (kind subsetting) (ordinal 0))
+      (authored-target "transmission")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::transmission")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::engine"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Engine")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Engine")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::engine::autoPort"))) (kind featureTyping) (ordinal 0))
+      (authored-target "AutoPort")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::AutoPort")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::engine::cylinder"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Cylinder")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Cylinder")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::manualTransmission"))) (kind subsetting) (ordinal 0))
+      (authored-target "transmission")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::transmission")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::transmission"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Transmission")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Transmission")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::vehicle"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Vehicle")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Vehicle")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::vehicle::engine"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Engine")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Engine")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::vehicle::sunroof"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Sunroof")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Sunroof")))))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::vehicle::transmission"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Transmission")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Transmission")))))
+  )
+  (relationships
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::100% Model::vehicle4Cyl"))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree::vehicleFamily"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::100% Model::vehicle4Cyl"))) (kind subsetting) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily"))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions::ProvidePower"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::generateTorque"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::amplifyTorque"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 2)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::generateTorque"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 4)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::amplifyTorque"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 6)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::amplifyTorque"))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions::AmplifyTorque"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::amplifyTorque"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind variant) (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::amplifyTorque"))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree::amplifyTorqueManual"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::amplifyTorque"))) (kind variant) (ordinal 0)))
+    (relationship (kind variant) (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::amplifyTorque"))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree::amplifyTorqueAutomatic"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::amplifyTorque"))) (kind variant) (ordinal 1)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::generateTorque"))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions::GenerateTorque"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::generateTorque"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind variant) (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::generateTorque"))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree::generateTorque4Cyl"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::generateTorque"))) (kind variant) (ordinal 0)))
+    (relationship (kind variant) (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::generateTorque"))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree::generateTorque6Cyl"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::generateTorque"))) (kind variant) (ordinal 1)))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree::EngineChoices"))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Engine"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree::EngineChoices"))) (kind specialization) (ordinal 0)))
+    (relationship (kind variant) (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree::EngineChoices"))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::4cylEngine"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree::EngineChoices"))) (kind variant) (ordinal 0)))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree::vehicleFamily"))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree::vehicleFamily"))) (kind subsetting) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 0))))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree::EngineChoices"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 0))))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (variation true) (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 1))))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Transmission"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 1))))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 0))))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::engine"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 0))))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 1))))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::transmission"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 1))))) (kind redefinition) (ordinal 0)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::engine"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::transmission"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 2)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::engine"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 4)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::transmission"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 6)))
+    (relationship (kind variant) (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 1))))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::manualTransmission"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 1))))) (kind variant) (ordinal 0)))
+    (relationship (kind variant) (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 1))))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::automaticTransmission"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 1))))) (kind variant) (ordinal 1)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree::amplifyTorqueAutomatic"))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions::AmplifyTorque"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree::amplifyTorqueAutomatic"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree::amplifyTorqueManual"))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions::AmplifyTorque"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree::amplifyTorqueManual"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree::generateTorque4Cyl"))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions::GenerateTorque"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree::generateTorque4Cyl"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree::generateTorque6Cyl"))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions::GenerateTorque"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree::generateTorque6Cyl"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Cylinder::diameter"))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Diameter"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Cylinder::diameter"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::4cylEngine"))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::engine"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::4cylEngine"))) (kind subsetting) (ordinal 0)))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::6cylEngine"))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::engine"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::6cylEngine"))) (kind subsetting) (ordinal 0)))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::automaticTransmission"))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::transmission"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::automaticTransmission"))) (kind subsetting) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::engine"))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Engine"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::engine"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::engine::autoPort"))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::AutoPort"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::engine::autoPort"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::engine::cylinder"))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Cylinder"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::engine::cylinder"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::manualTransmission"))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::transmission"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::manualTransmission"))) (kind subsetting) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::transmission"))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Transmission"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::transmission"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::vehicle"))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::vehicle"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::vehicle::engine"))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Engine"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::vehicle::engine"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::vehicle::sunroof"))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Sunroof"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::vehicle::sunroof"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::vehicle::transmission"))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Transmission"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::vehicle::transmission"))) (kind featureTyping) (ordinal 0)))
+  )
+  (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (value (kind unresolved-operand)))
+  )
+)
+~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 149 17) (end 149 32)) (probe (position 149 17))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "150% Model")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 153 25) (end 153 49)) (probe (position 153 25))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::100% Model::vehicle4Cyl"))) (kind subsetting) (ordinal 0) (authored-target "PartsTree::vehicleFamily")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree::vehicleFamily")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 154 18) (end 154 24)) (probe (position 154 18))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "engine")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 155 18) (end 155 30)) (probe (position 155 18))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 1))))) (kind redefinition) (ordinal 0) (authored-target "transmission")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 156 18) (end 156 25)) (probe (position 156 18))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 2))))) (kind redefinition) (ordinal 0) (authored-target "sunroof")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 64 17) (end 64 31)) (probe (position 64 17))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "DesignModel")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 125 34) (end 125 46)) (probe (position 125 34))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily"))) (kind featureTyping) (ordinal 0) (authored-target "ProvidePower")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions::ProvidePower")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 137 12) (end 137 26)) (probe (position 137 12))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "generateTorque")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::generateTorque")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 137 30) (end 137 64)) (probe (position 137 30))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 1) (authored-target "generateTorque::generateTorque4Cyl")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 138 12) (end 138 25)) (probe (position 138 12))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 2) (authored-target "amplifyTorque")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::amplifyTorque")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 138 29) (end 138 63)) (probe (position 138 29))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 3) (authored-target "amplifyTorque::amplifyTorqueManual")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 140 12) (end 140 26)) (probe (position 140 12))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 4) (authored-target "generateTorque")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::generateTorque")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 140 30) (end 140 64)) (probe (position 140 30))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 5) (authored-target "generateTorque::generateTorque6Cyl")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 141 12) (end 141 25)) (probe (position 141 12))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 6) (authored-target "amplifyTorque")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::amplifyTorque")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 141 29) (end 141 66)) (probe (position 141 29))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 7) (authored-target "amplifyTorque::amplifyTorqueAutomatic")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 131 43) (end 131 56)) (probe (position 131 43))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::amplifyTorque"))) (kind featureTyping) (ordinal 0) (authored-target "AmplifyTorque")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions::AmplifyTorque")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 132 19) (end 132 38)) (probe (position 132 19))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::amplifyTorque"))) (kind variant) (ordinal 0) (authored-target "amplifyTorqueManual")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree::amplifyTorqueManual")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 133 19) (end 133 41)) (probe (position 133 19))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::amplifyTorque"))) (kind variant) (ordinal 1) (authored-target "amplifyTorqueAutomatic")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree::amplifyTorqueAutomatic")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 126 44) (end 126 58)) (probe (position 126 44))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::generateTorque"))) (kind featureTyping) (ordinal 0) (authored-target "GenerateTorque")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions::GenerateTorque")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 127 19) (end 127 37)) (probe (position 127 19))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::generateTorque"))) (kind variant) (ordinal 0) (authored-target "generateTorque4Cyl")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree::generateTorque4Cyl")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 128 19) (end 128 37)) (probe (position 128 19))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::generateTorque"))) (kind variant) (ordinal 1) (authored-target "generateTorque6Cyl")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree::generateTorque6Cyl")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 75 42) (end 75 48)) (probe (position 75 42))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree::EngineChoices"))) (kind specialization) (ordinal 0) (authored-target "Engine")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Engine")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 76 18) (end 76 30)) (probe (position 76 18))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree::EngineChoices"))) (kind variant) (ordinal 0) (authored-target "4cylEngine")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::4cylEngine")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 96 37) (end 96 44)) (probe (position 96 37))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree::vehicleFamily"))) (kind subsetting) (ordinal 0) (authored-target "vehicle")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::vehicle")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 98 28) (end 98 41)) (probe (position 98 28))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 0))))) (kind featureTyping) (ordinal 0) (authored-target "EngineChoices")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree::EngineChoices")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 101 44) (end 101 56)) (probe (position 101 44))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 1))))) (kind featureTyping) (ordinal 0) (authored-target "Transmission")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Transmission")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 98 19) (end 98 25)) (probe (position 98 19))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "engine")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::engine")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 101 29) (end 101 41)) (probe (position 101 29))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 1))))) (kind redefinition) (ordinal 0) (authored-target "transmission")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::transmission")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 112 29) (end 112 36)) (probe (position 112 29))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 2))))) (kind redefinition) (ordinal 0) (authored-target "sunroof")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 107 15) (end 107 21)) (probe (position 107 15))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "engine")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::engine")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 107 25) (end 107 45)) (probe (position 107 25))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 1) (authored-target "engine::4cylEngine")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 107 50) (end 107 62)) (probe (position 107 50))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 2) (authored-target "transmission")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::transmission")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 107 66) (end 107 98)) (probe (position 107 66))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 3) (authored-target "transmission::manualTransmission")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 108 15) (end 108 21)) (probe (position 108 15))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 4) (authored-target "engine")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::engine")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 108 25) (end 108 45)) (probe (position 108 25))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 5) (authored-target "engine::6cylEngine")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 108 50) (end 108 62)) (probe (position 108 50))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 6) (authored-target "transmission")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::transmission")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 108 66) (end 108 101)) (probe (position 108 66))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 7) (authored-target "transmission::automaticTransmission")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 102 19) (end 102 37)) (probe (position 102 19))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 1))))) (kind variant) (ordinal 0) (authored-target "manualTransmission")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::manualTransmission")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 103 19) (end 103 40)) (probe (position 103 19))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 1))))) (kind variant) (ordinal 1) (authored-target "automaticTransmission")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::automaticTransmission")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 3 16) (end 3 34)) (probe (position 3 16))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "PartDefinitions")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 4 16) (end 4 28)) (probe (position 4 16))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0) (authored-target "PartsTree")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 5 16) (end 5 36)) (probe (position 5 16))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind import) (ordinal 2))))) (kind namespaceImport) (ordinal 0) (authored-target "ActionDefinitions")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 6 16) (end 6 29)) (probe (position 6 16))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind import) (ordinal 3))))) (kind namespaceImport) (ordinal 0) (authored-target "ActionTree")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 59 38) (end 59 51)) (probe (position 59 38))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree::amplifyTorqueAutomatic"))) (kind featureTyping) (ordinal 0) (authored-target "AmplifyTorque")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions::AmplifyTorque")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 58 35) (end 58 48)) (probe (position 58 35))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree::amplifyTorqueManual"))) (kind featureTyping) (ordinal 0) (authored-target "AmplifyTorque")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions::AmplifyTorque")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 55 34) (end 55 48)) (probe (position 55 34))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree::generateTorque4Cyl"))) (kind featureTyping) (ordinal 0) (authored-target "GenerateTorque")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions::GenerateTorque")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 56 34) (end 56 48)) (probe (position 56 34))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree::generateTorque6Cyl"))) (kind featureTyping) (ordinal 0) (authored-target "GenerateTorque")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions::GenerateTorque")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 13 31) (end 13 39)) (probe (position 13 31))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Cylinder::diameter"))) (kind featureTyping) (ordinal 0) (authored-target "Diameter")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Diameter")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 35 27) (end 35 33)) (probe (position 35 27))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::4cylEngine"))) (kind subsetting) (ordinal 0) (authored-target "engine")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::engine")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 36 16) (end 36 24)) (probe (position 36 16))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "cylinder")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 39 27) (end 39 33)) (probe (position 39 27))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::6cylEngine"))) (kind subsetting) (ordinal 0) (authored-target "engine")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::engine")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 40 16) (end 40 24)) (probe (position 40 16))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (anonymous (kind part) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "cylinder")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 45 36) (end 45 48)) (probe (position 45 36))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::automaticTransmission"))) (kind subsetting) (ordinal 0) (authored-target "transmission")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::transmission")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 30 20) (end 30 26)) (probe (position 30 20))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::engine"))) (kind featureTyping) (ordinal 0) (authored-target "Engine")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Engine")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 31 26) (end 31 34)) (probe (position 31 26))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::engine::autoPort"))) (kind featureTyping) (ordinal 0) (authored-target "AutoPort")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::AutoPort")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 32 26) (end 32 34)) (probe (position 32 26))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::engine::cylinder"))) (kind featureTyping) (ordinal 0) (authored-target "Cylinder")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Cylinder")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 44 33) (end 44 45)) (probe (position 44 33))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::manualTransmission"))) (kind subsetting) (ordinal 0) (authored-target "transmission")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::transmission")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 43 23) (end 43 35)) (probe (position 43 23))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::transmission"))) (kind featureTyping) (ordinal 0) (authored-target "Transmission")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Transmission")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 24 21) (end 24 28)) (probe (position 24 21))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::vehicle"))) (kind featureTyping) (ordinal 0) (authored-target "Vehicle")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Vehicle")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 25 21) (end 25 27)) (probe (position 25 21))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::vehicle::engine"))) (kind featureTyping) (ordinal 0) (authored-target "Engine")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Engine")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 27 22) (end 27 29)) (probe (position 27 22))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::vehicle::sunroof"))) (kind featureTyping) (ordinal 0) (authored-target "Sunroof")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Sunroof")))))
+  )
+  (query (document "memory://snapshot/vehicle_variability_model.md") (range (start 26 27) (end 26 39)) (probe (position 26 27))
+    (reference (id (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::vehicle::transmission"))) (kind featureTyping) (ordinal 0) (authored-target "Transmission")
+      (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Transmission")))))
+  )
+)
+~~~

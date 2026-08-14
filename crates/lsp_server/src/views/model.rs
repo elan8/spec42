@@ -51,14 +51,21 @@ fn build_document_graph_dto(semantic_graph: &semantic::SemanticGraph, uri: &Url)
         .nodes_for_uri(uri)
         .into_iter()
         .filter(|n| n.element_kind != ElementKind::Diagnostic)
-        .map(|n| GraphNodeDto {
-            id: n.id.qualified_name.clone(),
-            element_type: n.element_kind.as_str().to_string(),
-            name: n.name.clone(),
-            uri: Some(n.id.uri.as_str().to_string()),
-            parent_id: n.parent_id.as_ref().map(|p| p.qualified_name.clone()),
-            range: range_to_dto(n.range),
-            attributes: n.attributes.clone(),
+        .map(|n| {
+            let mut attributes = n.attributes.clone();
+            model_projection::project_expression_text_attributes(&mut attributes, n);
+            model_projection::project_source_text_attributes(&mut attributes, n);
+            model_projection::project_relationship_target_attributes(&mut attributes, n);
+            model_projection::project_type_reference_attributes(&mut attributes, n);
+            GraphNodeDto {
+                id: n.id.qualified_name.clone(),
+                element_type: n.element_kind.as_str().to_string(),
+                name: n.name.clone(),
+                uri: Some(n.id.uri.as_str().to_string()),
+                parent_id: n.parent_id.as_ref().map(|p| p.qualified_name.clone()),
+                range: range_to_dto(n.range),
+                attributes,
+            }
         })
         .collect();
 
@@ -338,34 +345,15 @@ async fn log_perf(client: &Client, enabled: bool, event: &str, fields: Vec<(&str
         .await;
 }
 
-const TYPING_ATTRIBUTE_KEYS: &[&str] = &[
-    "partType",
-    "attributeType",
-    "portType",
-    "actionType",
-    "actorType",
-    "itemType",
-    "occurrenceType",
-    "flowType",
-    "allocationType",
-    "stateType",
-    "requirementType",
-    "useCaseType",
-    "concernType",
-    "endType",
-    "refType",
-    "parameterType",
-];
-
+/// A node "expects resolution" when it authored a typing or specialization. Both are typed
+/// declared facts: `DeclaredRelationshipFacts::typing` (dual-written by every `*Type` projection
+/// producer), `interface_end_type` (interface ends, deliberately kept out of the generic typing
+/// vector), and `DeclaredRelationshipFacts::specializes`. The legacy `*Type` attribute keys are
+/// not consulted.
 fn node_expects_resolution(node: &semantic::SemanticNode) -> bool {
-    TYPING_ATTRIBUTE_KEYS
-        .iter()
-        .any(|key| node.attributes.get(*key).and_then(|v| v.as_str()).is_some())
-        || node
-            .attributes
-            .get("specializes")
-            .and_then(|v| v.as_str())
-            .is_some()
+    !node.declared_facts.relationships.typing.is_empty()
+        || node.declared_facts.interface_end_type.is_some()
+        || !node.declared_facts.relationships.specializes.is_empty()
 }
 
 fn count_resolution_stats(semantic_graph: &semantic::SemanticGraph, uri: &Url) -> (u32, u32) {

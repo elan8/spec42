@@ -1,6 +1,7 @@
-﻿use sysml_model::{
-    add_semantic_edge_once, AddSemanticEdgeResult, ConnectStatementDetail, ElementKind, NodeId,
-    RelationshipKind, SemanticEdge, SemanticGraph, SemanticNode, TextPosition, TextRange,
+use sysml_model::{
+    add_semantic_edge_once, AddSemanticEdgeResult, ConnectStatementDetail, ConstructionOwner,
+    ElementKind, NodeId, RelationshipKind, SemanticEdge, SemanticGraph, SemanticNode, TextPosition,
+    TextRange,
 };
 use url::Url;
 
@@ -13,10 +14,13 @@ fn port_nodes(uri: &Url, a_qn: &str, b_qn: &str) -> (SemanticGraph, NodeId, Node
         graph.insert_workspace_node(SemanticNode {
             id,
             element_kind: ElementKind::Port,
+            declared_name: Some(name.to_string()),
             name: name.to_string(),
             range,
             attributes: Default::default(),
             declared_facts: Default::default(),
+            source_text: Default::default(),
+            expression_text: Default::default(),
             parent_id: None,
         });
     }
@@ -27,8 +31,22 @@ fn port_nodes(uri: &Url, a_qn: &str, b_qn: &str) -> (SemanticGraph, NodeId, Node
 fn typing_and_connection_edges_can_coexist_between_same_node_pair() {
     let uri = Url::parse("memory://workspace/edge_kinds.sysml").expect("uri");
     let (mut graph, a, b) = port_nodes(&uri, "Pkg::A", "Pkg::B");
-    graph.insert_workspace_edge(&a, &b, SemanticEdge::plain(RelationshipKind::Typing));
-    graph.insert_workspace_edge(&a, &b, SemanticEdge::plain(RelationshipKind::Connection));
+    graph.insert_workspace_edge(
+        &a,
+        &b,
+        SemanticEdge::plain(
+            RelationshipKind::Typing,
+            ConstructionOwner::DocumentConstruction,
+        ),
+    );
+    graph.insert_workspace_edge(
+        &a,
+        &b,
+        SemanticEdge::plain(
+            RelationshipKind::Connection,
+            ConstructionOwner::DocumentConstruction,
+        ),
+    );
     assert_eq!(graph.graph.edge_count(), 2);
     let node = graph.get_node(&a).expect("node");
     let kinds: Vec<_> = graph
@@ -64,7 +82,10 @@ fn fan_out_connect_statements_with_distinct_targets_add_parallel_connection_edge
                 &mut graph,
                 &a,
                 &b,
-                SemanticEdge::connection_with_connect(connect(target)),
+                SemanticEdge::connection_with_connect(
+                    connect(target),
+                    ConstructionOwner::DocumentConstruction
+                ),
             ),
             AddSemanticEdgeResult::Added
         );
@@ -90,7 +111,10 @@ fn duplicate_connect_on_existing_connection_pair_is_rejected() {
             &mut graph,
             &a,
             &b,
-            SemanticEdge::connection_with_connect(connect.clone()),
+            SemanticEdge::connection_with_connect(
+                connect.clone(),
+                ConstructionOwner::DocumentConstruction
+            ),
         ),
         AddSemanticEdgeResult::Added
     );
@@ -99,7 +123,7 @@ fn duplicate_connect_on_existing_connection_pair_is_rejected() {
             &mut graph,
             &a,
             &b,
-            SemanticEdge::connection_with_connect(connect),
+            SemanticEdge::connection_with_connect(connect, ConstructionOwner::DocumentConstruction),
         ),
         AddSemanticEdgeResult::DuplicateConnect
     );

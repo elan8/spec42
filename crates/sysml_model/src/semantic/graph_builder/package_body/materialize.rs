@@ -1,5 +1,5 @@
 use super::*;
-use crate::semantic::model::{DeclaredFeatureProperties, SemanticEdge};
+use crate::semantic::model::{ConstructionOwner, DeclaredFeatureProperties, SemanticEdge};
 use crate::semantic::relationships::add_semantic_edge_once;
 use crate::semantic::text_span::TextRange;
 
@@ -10,12 +10,23 @@ pub(super) fn materialize_part_def(
     parent_id: Option<&NodeId>,
     pd_node: &Node<PartDef>,
 ) {
-    let name = identification_name(&pd_node.identification);
+    let mut attrs = HashMap::new();
+    let name = resolve_addressable_name(
+        &identification_name(&pd_node.identification),
+        "part def",
+        &mut attrs,
+    );
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "part def");
     let range = span_to_range(&pd_node.span);
-    let mut attrs = HashMap::new();
-    attach_short_name_attribute(&mut attrs, &pd_node.identification);
-    attach_membership_visibility(&mut attrs, &pd_node.membership);
+    if let Some(short_name) =
+        crate::semantic::ast_util::declared_short_name(&pd_node.identification)
+    {
+        g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
+    }
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&pd_node.membership),
+    );
     if let Some(ref p) = pd_node.definition_prefix {
         attrs.insert(
             "definitionPrefix".to_string(),
@@ -25,7 +36,6 @@ pub(super) fn materialize_part_def(
             }),
         );
     }
-    insert_def_specialization_attr(&mut attrs, pd_node.specializes.as_deref());
     add_node_and_recurse(
         g,
         uri,
@@ -68,11 +78,8 @@ pub(super) fn materialize_feature_decl(
     let semantic_metadata_parent = parent_id.and_then(|pid| {
         g.get_node(pid).and_then(|parent| {
             (parent.element_kind == ElementKind::MetadataDef
-                && parent
-                    .attributes
-                    .get("metaclassRole")
-                    .and_then(|value| value.as_str())
-                    == Some("SemanticMetadata"))
+                && parent.declared_facts.metaclass_role
+                    == Some(crate::semantic::model::KermlMetaclassRole::SemanticMetadata))
             .then_some(pid)
         })
     });
@@ -91,9 +98,8 @@ pub(super) fn materialize_feature_decl(
         );
     } else {
         let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "feature decl");
-        let mut attrs = HashMap::new();
-        attrs.insert("keyword".to_string(), serde_json::json!(&fv.keyword));
-        attrs.insert("text".to_string(), serde_json::json!(&fv.text));
+        let attrs = HashMap::new();
+        let node_id = NodeId::new(uri, &qualified);
         add_node_and_recurse(
             g,
             uri,
@@ -104,6 +110,10 @@ pub(super) fn materialize_feature_decl(
             attrs,
             parent_id,
         );
+        if let Some(node) = g.get_node_mut(&node_id) {
+            node.source_text.text = Some(fv.text.clone());
+            node.declared_facts.modeled_keyword = Some(fv.keyword.clone());
+        }
     }
 }
 
@@ -117,9 +127,8 @@ pub(super) fn materialize_classifier_decl(
     let cv = &classifier_node.value;
     let name = extract_modeled_decl_name(&cv.keyword, &cv.text, "_classifier");
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "classifier decl");
-    let mut attrs = HashMap::new();
-    attrs.insert("keyword".to_string(), serde_json::json!(&cv.keyword));
-    attrs.insert("text".to_string(), serde_json::json!(&cv.text));
+    let attrs = HashMap::new();
+    let node_id = NodeId::new(uri, &qualified);
     add_node_and_recurse(
         g,
         uri,
@@ -130,6 +139,10 @@ pub(super) fn materialize_classifier_decl(
         attrs,
         parent_id,
     );
+    if let Some(node) = g.get_node_mut(&node_id) {
+        node.source_text.text = Some(cv.text.clone());
+        node.declared_facts.modeled_keyword = Some(cv.keyword.clone());
+    }
 }
 
 pub(crate) fn materialize_port_def(
@@ -139,13 +152,23 @@ pub(crate) fn materialize_port_def(
     parent_id: Option<&NodeId>,
     pd_node: &Node<PortDef>,
 ) {
-    let name = identification_name(&pd_node.identification);
+    let mut attrs = HashMap::new();
+    let name = resolve_addressable_name(
+        &identification_name(&pd_node.identification),
+        "port def",
+        &mut attrs,
+    );
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "port def");
     let range = span_to_range(&pd_node.span);
-    let mut attrs = HashMap::new();
-    attach_short_name_attribute(&mut attrs, &pd_node.identification);
-    attach_membership_visibility(&mut attrs, &pd_node.membership);
-    insert_def_specialization_attr(&mut attrs, pd_node.specializes.as_deref());
+    if let Some(short_name) =
+        crate::semantic::ast_util::declared_short_name(&pd_node.identification)
+    {
+        g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
+    }
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&pd_node.membership),
+    );
     add_node_and_recurse(
         g,
         uri,
@@ -215,7 +238,10 @@ fn materialize_conjugated_port_definition(
         g,
         &conjugate_id,
         base_id,
-        SemanticEdge::plain(RelationshipKind::PortConjugation),
+        SemanticEdge::plain(
+            RelationshipKind::PortConjugation,
+            ConstructionOwner::DocumentConstruction,
+        ),
     );
 }
 
@@ -229,10 +255,16 @@ pub(super) fn materialize_interface_def(
     let name = identification_name(&id_node.identification);
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "interface def");
     let range = span_to_range(&id_node.span);
-    let mut attrs = HashMap::new();
-    attach_short_name_attribute(&mut attrs, &id_node.identification);
-    attach_membership_visibility(&mut attrs, &id_node.membership);
-    insert_def_specialization_attr(&mut attrs, id_node.specializes.as_deref());
+    let attrs = HashMap::new();
+    if let Some(short_name) =
+        crate::semantic::ast_util::declared_short_name(&id_node.identification)
+    {
+        g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
+    }
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&id_node.membership),
+    );
     add_node_and_recurse(
         g,
         uri,
@@ -267,16 +299,14 @@ pub(crate) fn materialize_attribute_def(
     let name = &value.name;
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "attribute def");
     let range = span_to_range(&ad_node.span);
-    let mut attrs = HashMap::new();
-    let typed_by = crate::semantic::ast_util::typing_targets(value.typing.as_deref());
-    if !typed_by.is_empty() {
-        attrs.insert(
-            "attributeType".to_string(),
-            serde_json::json!(typed_by.join(", ")),
-        );
+    let attrs = HashMap::new();
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&value.membership),
+    );
+    if let Some(short_name) = unit_metadata::attribute_def_short_name(value) {
+        g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
     }
-    unit_metadata::project_attribute_def_unit_metadata(&mut attrs, value);
-    attach_membership_visibility(&mut attrs, &value.membership);
     add_node_and_recurse(
         g,
         uri,
@@ -288,6 +318,9 @@ pub(crate) fn materialize_attribute_def(
         parent_id,
     );
     let node_id = NodeId::new(uri, &qualified);
+    if let Some(node) = g.get_node_mut(&node_id) {
+        node.declared_facts.unit = unit_metadata::attribute_def_unit_facts(value);
+    }
     attach_feature_properties(
         g,
         &node_id,
@@ -323,8 +356,15 @@ pub(super) fn materialize_alias_def(
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "alias");
     let range = span_to_range(&alias_node.span);
     let mut attrs = HashMap::new();
-    attach_short_name_attribute(&mut attrs, &alias_node.identification);
-    attach_membership_visibility(&mut attrs, &alias_node.membership);
+    if let Some(short_name) =
+        crate::semantic::ast_util::declared_short_name(&alias_node.identification)
+    {
+        g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
+    }
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&alias_node.membership),
+    );
     attrs.insert(
         "target".to_string(),
         serde_json::json!(alias_node.target.to_display_string()),
@@ -339,13 +379,23 @@ pub(super) fn materialize_requirement_def(
     parent_id: Option<&NodeId>,
     rd_node: &Node<RequirementDef>,
 ) {
-    let name = identification_name(&rd_node.identification);
+    let mut attrs = HashMap::new();
+    let name = resolve_addressable_name(
+        &identification_name(&rd_node.identification),
+        "requirement def",
+        &mut attrs,
+    );
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "requirement def");
     let range = span_to_range(&rd_node.span);
-    let mut attrs = HashMap::new();
-    attach_short_name_attribute(&mut attrs, &rd_node.identification);
-    attach_membership_visibility(&mut attrs, &rd_node.membership);
-    insert_def_specialization_attr(&mut attrs, rd_node.specializes.as_deref());
+    if let Some(short_name) =
+        crate::semantic::ast_util::declared_short_name(&rd_node.identification)
+    {
+        g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
+    }
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&rd_node.membership),
+    );
     attrs.insert(
         "isAbstract".to_string(),
         serde_json::json!(rd_node.is_abstract),
@@ -413,10 +463,10 @@ pub(super) fn materialize_allocation_usage(
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "allocation");
     let range = span_to_range(&alloc_node.span);
     let mut attrs = HashMap::new();
-    attach_membership_visibility(&mut attrs, &alloc_node.membership);
-    if let Some(ref t) = alloc_node.type_name {
-        attrs.insert("allocationType".to_string(), serde_json::json!(t));
-    }
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&alloc_node.membership),
+    );
     if let Some(source) = alloc_node.source.as_ref() {
         attrs.insert(
             "allocationSource".to_string(),
@@ -473,11 +523,11 @@ pub(super) fn materialize_concern_usage(
     };
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, kind);
     let range = span_to_range(&cu_node.span);
-    let mut attrs = HashMap::new();
-    attach_membership_visibility(&mut attrs, &cu_node.membership);
-    if let Some(ref t) = cu_node.type_name {
-        attrs.insert("concernType".to_string(), serde_json::json!(t));
-    }
+    let attrs = HashMap::new();
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&cu_node.membership),
+    );
     add_node_and_recurse(
         g,
         uri,
@@ -513,9 +563,15 @@ pub(crate) fn materialize_use_case_def(
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "use case def");
     let range = span_to_range(&ucd_node.span);
     let mut attrs = HashMap::new();
-    attach_short_name_attribute(&mut attrs, &ucd_node.identification);
-    attach_membership_visibility(&mut attrs, &ucd_node.membership);
-    insert_def_specialization_attr(&mut attrs, ucd_node.specializes.as_deref());
+    if let Some(short_name) =
+        crate::semantic::ast_util::declared_short_name(&ucd_node.identification)
+    {
+        g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
+    }
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&ucd_node.membership),
+    );
     attrs.insert(
         "isAbstract".to_string(),
         serde_json::json!(ucd_node.is_abstract),
@@ -554,10 +610,10 @@ pub(crate) fn materialize_use_case_usage(
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "use case");
     let range = span_to_range(&ucu_node.span);
     let mut attrs = HashMap::new();
-    attach_membership_visibility(&mut attrs, &ucu_node.membership);
-    if let Some(ref t) = ucu_node.type_name {
-        attrs.insert("useCaseType".to_string(), serde_json::json!(t));
-    }
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&ucu_node.membership),
+    );
     attrs.insert(
         "isAbstract".to_string(),
         serde_json::json!(ucu_node.is_abstract),
@@ -588,15 +644,22 @@ pub(crate) fn materialize_item_def(
     parent_id: Option<&NodeId>,
     item_node: &Node<ItemDef>,
 ) {
-    let name = identification_name(&item_node.identification);
-    if name.is_empty() {
-        return;
-    }
-    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "item def");
     let mut attrs = HashMap::new();
-    attach_short_name_attribute(&mut attrs, &item_node.identification);
-    attach_membership_visibility(&mut attrs, &item_node.membership);
-    insert_def_specialization_attr(&mut attrs, item_node.specializes.as_deref());
+    let name = resolve_addressable_name(
+        &identification_name(&item_node.identification),
+        "item def",
+        &mut attrs,
+    );
+    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "item def");
+    if let Some(short_name) =
+        crate::semantic::ast_util::declared_short_name(&item_node.identification)
+    {
+        g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
+    }
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&item_node.membership),
+    );
     add_node_and_recurse(
         g,
         uri,
@@ -625,15 +688,22 @@ pub(super) fn materialize_individual_def(
     parent_id: Option<&NodeId>,
     ind_node: &Node<IndividualDef>,
 ) {
-    let name = identification_name(&ind_node.identification);
-    if name.is_empty() {
-        return;
-    }
-    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "individual def");
     let mut attrs = HashMap::new();
-    attach_short_name_attribute(&mut attrs, &ind_node.identification);
-    attach_membership_visibility(&mut attrs, &ind_node.membership);
-    insert_def_specialization_attr(&mut attrs, ind_node.specializes.as_deref());
+    let name = resolve_addressable_name(
+        &identification_name(&ind_node.identification),
+        "individual def",
+        &mut attrs,
+    );
+    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "individual def");
+    if let Some(short_name) =
+        crate::semantic::ast_util::declared_short_name(&ind_node.identification)
+    {
+        g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
+    }
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&ind_node.membership),
+    );
     add_node_and_recurse(
         g,
         uri,
@@ -662,15 +732,22 @@ pub(super) fn materialize_metadata_def(
     parent_id: Option<&NodeId>,
     md_node: &Node<MetadataDef>,
 ) {
-    let name = identification_name(&md_node.identification);
-    if name.is_empty() {
-        return;
-    }
-    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "metadata def");
     let mut attrs = HashMap::new();
-    attach_short_name_attribute(&mut attrs, &md_node.identification);
-    attach_membership_visibility(&mut attrs, &md_node.membership);
-    insert_def_specialization_attr(&mut attrs, md_node.specializes.as_deref());
+    let name = resolve_addressable_name(
+        &identification_name(&md_node.identification),
+        "metadata def",
+        &mut attrs,
+    );
+    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "metadata def");
+    if let Some(short_name) =
+        crate::semantic::ast_util::declared_short_name(&md_node.identification)
+    {
+        g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
+    }
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&md_node.membership),
+    );
     add_node_and_recurse(
         g,
         uri,
@@ -705,15 +782,22 @@ pub(super) fn materialize_enum_def(
     parent_id: Option<&NodeId>,
     enum_node: &Node<EnumDef>,
 ) {
-    let name = identification_name(&enum_node.identification);
-    if name.is_empty() {
-        return;
-    }
-    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "enum def");
     let mut attrs = HashMap::new();
-    attach_short_name_attribute(&mut attrs, &enum_node.identification);
-    attach_membership_visibility(&mut attrs, &enum_node.membership);
-    insert_def_specialization_attr(&mut attrs, enum_node.specializes.as_deref());
+    let name = resolve_addressable_name(
+        &identification_name(&enum_node.identification),
+        "enum def",
+        &mut attrs,
+    );
+    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "enum def");
+    if let Some(short_name) =
+        crate::semantic::ast_util::declared_short_name(&enum_node.identification)
+    {
+        g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
+    }
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&enum_node.membership),
+    );
     add_node_and_recurse(
         g,
         uri,
@@ -747,10 +831,8 @@ fn materialize_enumerated_values(
 ) {
     let parent_id = NodeId::new(uri, enum_def_qualified);
     for value_node in values {
-        let name = value_node.value.name.clone();
-        if name.is_empty() {
-            continue;
-        }
+        let mut attrs = HashMap::new();
+        let name = resolve_addressable_name(&value_node.value.name, "enumerated value", &mut attrs);
         let qualified =
             qualified_name_for_node(g, uri, Some(enum_def_qualified), &name, "enumerated value");
         add_node_and_recurse(
@@ -760,13 +842,13 @@ fn materialize_enumerated_values(
             "enumerated value",
             name,
             span_to_range(&value_node.span),
-            HashMap::new(),
+            attrs,
             Some(&parent_id),
         );
     }
 }
 
-pub(super) fn materialize_enum_usage(
+pub(crate) fn materialize_enum_usage(
     g: &mut SemanticGraph,
     uri: &Url,
     container_prefix: Option<&str>,
@@ -777,10 +859,10 @@ pub(super) fn materialize_enum_usage(
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "enumeration");
     let range = span_to_range(&enum_node.span);
     let mut attrs = HashMap::new();
-    attach_membership_visibility(&mut attrs, &enum_node.membership);
-    if let Some(ref t) = enum_node.type_name {
-        attrs.insert("enumerationType".to_string(), serde_json::json!(t));
-    }
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&enum_node.membership),
+    );
     if let Some(ref m) = enum_node.multiplicity {
         attrs.insert("multiplicity".to_string(), serde_json::json!(m));
     }
@@ -808,15 +890,22 @@ pub(super) fn materialize_occurrence_def(
     parent_id: Option<&NodeId>,
     occ_node: &Node<OccurrenceDef>,
 ) {
-    let name = identification_name(&occ_node.identification);
-    if name.is_empty() {
-        return;
-    }
-    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "occurrence def");
     let mut attrs = HashMap::new();
-    attach_short_name_attribute(&mut attrs, &occ_node.identification);
-    attach_membership_visibility(&mut attrs, &occ_node.membership);
-    insert_def_specialization_attr(&mut attrs, occ_node.specializes.as_deref());
+    let name = resolve_addressable_name(
+        &identification_name(&occ_node.identification),
+        "occurrence def",
+        &mut attrs,
+    );
+    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "occurrence def");
+    if let Some(short_name) =
+        crate::semantic::ast_util::declared_short_name(&occ_node.identification)
+    {
+        g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
+    }
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&occ_node.membership),
+    );
     add_node_and_recurse(
         g,
         uri,
@@ -859,28 +948,31 @@ pub(super) fn materialize_connection_def(
     parent_id: Option<&NodeId>,
     conn_node: &Node<ConnectionDef>,
 ) {
-    let name = identification_name(&conn_node.identification);
     let annotation = conn_node.annotation.as_deref();
-    let base_name = if name.is_empty() {
-        if annotation == Some("derivation") {
-            "_derivationConnection"
-        } else {
-            "_connectionDef"
-        }
-    } else {
-        name.as_str()
-    };
     let mut attrs = HashMap::new();
-    attach_short_name_attribute(&mut attrs, &conn_node.identification);
-    attach_membership_visibility(&mut attrs, &conn_node.membership);
+    let declared = identification_name(&conn_node.identification);
+    let base_name = if declared.is_empty() && annotation == Some("derivation") {
+        attrs.insert("isAnonymous".to_string(), serde_json::json!(true));
+        "_derivationConnection".to_string()
+    } else {
+        resolve_addressable_name(&declared, "connection def", &mut attrs)
+    };
     if let Some(annotation) = annotation {
         attrs.insert(
             "connectionAnnotation".to_string(),
             serde_json::json!(annotation),
         );
     }
-    insert_def_specialization_attr(&mut attrs, conn_node.specializes.as_deref());
-    let qualified = qualified_name_for_node(g, uri, container_prefix, base_name, "connection def");
+    let qualified = qualified_name_for_node(g, uri, container_prefix, &base_name, "connection def");
+    if let Some(short_name) =
+        crate::semantic::ast_util::declared_short_name(&conn_node.identification)
+    {
+        g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
+    }
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&conn_node.membership),
+    );
     add_node_and_recurse(
         g,
         uri,
@@ -890,7 +982,7 @@ pub(super) fn materialize_connection_def(
         } else {
             "connection def"
         },
-        base_name.to_string(),
+        base_name,
         span_to_range(&conn_node.span),
         attrs,
         parent_id,
@@ -918,15 +1010,22 @@ pub(super) fn materialize_flow_def(
     parent_id: Option<&NodeId>,
     flow_node: &Node<sysml_v2_parser::ast::FlowDef>,
 ) {
-    let name = identification_name(&flow_node.identification);
-    if name.is_empty() {
-        return;
-    }
-    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "flow def");
     let mut attrs = HashMap::new();
-    attach_short_name_attribute(&mut attrs, &flow_node.identification);
-    attach_membership_visibility(&mut attrs, &flow_node.membership);
-    insert_def_specialization_attr(&mut attrs, flow_node.specializes.as_deref());
+    let name = resolve_addressable_name(
+        &identification_name(&flow_node.identification),
+        "flow def",
+        &mut attrs,
+    );
+    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "flow def");
+    if let Some(short_name) =
+        crate::semantic::ast_util::declared_short_name(&flow_node.identification)
+    {
+        g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
+    }
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&flow_node.membership),
+    );
     add_node_and_recurse(
         g,
         uri,
@@ -961,15 +1060,22 @@ pub(super) fn materialize_allocation_def(
     parent_id: Option<&NodeId>,
     alloc_node: &Node<AllocationDef>,
 ) {
-    let name = identification_name(&alloc_node.identification);
-    if name.is_empty() {
-        return;
-    }
-    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "allocation def");
     let mut attrs = HashMap::new();
-    attach_short_name_attribute(&mut attrs, &alloc_node.identification);
-    attach_membership_visibility(&mut attrs, &alloc_node.membership);
-    insert_def_specialization_attr(&mut attrs, alloc_node.specializes.as_deref());
+    let name = resolve_addressable_name(
+        &identification_name(&alloc_node.identification),
+        "allocation def",
+        &mut attrs,
+    );
+    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "allocation def");
+    if let Some(short_name) =
+        crate::semantic::ast_util::declared_short_name(&alloc_node.identification)
+    {
+        g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
+    }
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&alloc_node.membership),
+    );
     add_node_and_recurse(
         g,
         uri,
@@ -1012,8 +1118,12 @@ pub(crate) fn materialize_dependency(
         .unwrap_or_else(|| "dependency".to_string());
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "dependency");
     let mut attrs = HashMap::new();
-    if let Some(ref ident) = dep_node.identification {
-        attach_short_name_attribute(&mut attrs, ident);
+    if let Some(short_name) = dep_node
+        .identification
+        .as_ref()
+        .and_then(crate::semantic::ast_util::declared_short_name)
+    {
+        g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
     }
     attrs.insert("clients".to_string(), serde_json::json!(dep_node.clients));
     attrs.insert(
@@ -1057,15 +1167,21 @@ pub(crate) fn materialize_case_def(
     parent_id: Option<&NodeId>,
     c_node: &Node<CaseDef>,
 ) {
-    let name = identification_name(&c_node.identification);
-    if name.is_empty() {
-        return;
-    }
-    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "case def");
     let mut attrs = HashMap::new();
-    attach_short_name_attribute(&mut attrs, &c_node.identification);
-    attach_membership_visibility(&mut attrs, &c_node.membership);
-    insert_def_specialization_attr(&mut attrs, c_node.specializes.as_deref());
+    let name = resolve_addressable_name(
+        &identification_name(&c_node.identification),
+        "case def",
+        &mut attrs,
+    );
+    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "case def");
+    if let Some(short_name) = crate::semantic::ast_util::declared_short_name(&c_node.identification)
+    {
+        g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
+    }
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&c_node.membership),
+    );
     attrs.insert(
         "isAbstract".to_string(),
         serde_json::json!(c_node.is_abstract),
@@ -1105,10 +1221,10 @@ pub(crate) fn materialize_case_usage(
 ) {
     let qualified = qualified_name_for_node(g, uri, container_prefix, &c_node.name, "case");
     let mut attrs = HashMap::new();
-    attach_membership_visibility(&mut attrs, &c_node.membership);
-    if let Some(ref t) = c_node.type_name {
-        attrs.insert("caseType".to_string(), serde_json::json!(t));
-    }
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&c_node.membership),
+    );
     attrs.insert(
         "isAbstract".to_string(),
         serde_json::json!(c_node.is_abstract),
@@ -1142,15 +1258,21 @@ pub(crate) fn materialize_analysis_case_def(
     parent_id: Option<&NodeId>,
     c_node: &Node<AnalysisCaseDef>,
 ) {
-    let name = identification_name(&c_node.identification);
-    if name.is_empty() {
-        return;
-    }
-    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "analysis def");
     let mut attrs = HashMap::new();
-    attach_short_name_attribute(&mut attrs, &c_node.identification);
-    attach_membership_visibility(&mut attrs, &c_node.membership);
-    insert_def_specialization_attr(&mut attrs, c_node.specializes.as_deref());
+    let name = resolve_addressable_name(
+        &identification_name(&c_node.identification),
+        "analysis def",
+        &mut attrs,
+    );
+    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "analysis def");
+    if let Some(short_name) = crate::semantic::ast_util::declared_short_name(&c_node.identification)
+    {
+        g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
+    }
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&c_node.membership),
+    );
     attrs.insert(
         "isAbstract".to_string(),
         serde_json::json!(c_node.is_abstract),
@@ -1185,10 +1307,10 @@ pub(crate) fn materialize_analysis_case_usage(
 ) {
     let qualified = qualified_name_for_node(g, uri, container_prefix, &c_node.name, "analysis");
     let mut attrs = HashMap::new();
-    attach_membership_visibility(&mut attrs, &c_node.membership);
-    if let Some(ref t) = c_node.type_name {
-        attrs.insert("analysisType".to_string(), serde_json::json!(t));
-    }
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&c_node.membership),
+    );
     attrs.insert(
         "isAbstract".to_string(),
         serde_json::json!(c_node.is_abstract),
@@ -1217,15 +1339,21 @@ pub(crate) fn materialize_verification_case_def(
     parent_id: Option<&NodeId>,
     c_node: &Node<VerificationCaseDef>,
 ) {
-    let name = identification_name(&c_node.identification);
-    if name.is_empty() {
-        return;
-    }
-    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "verification def");
     let mut attrs = HashMap::new();
-    attach_short_name_attribute(&mut attrs, &c_node.identification);
-    attach_membership_visibility(&mut attrs, &c_node.membership);
-    insert_def_specialization_attr(&mut attrs, c_node.specializes.as_deref());
+    let name = resolve_addressable_name(
+        &identification_name(&c_node.identification),
+        "verification def",
+        &mut attrs,
+    );
+    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "verification def");
+    if let Some(short_name) = crate::semantic::ast_util::declared_short_name(&c_node.identification)
+    {
+        g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
+    }
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&c_node.membership),
+    );
     attrs.insert(
         "isAbstract".to_string(),
         serde_json::json!(c_node.is_abstract),
@@ -1260,10 +1388,10 @@ pub(crate) fn materialize_verification_case_usage(
 ) {
     let qualified = qualified_name_for_node(g, uri, container_prefix, &c_node.name, "verification");
     let mut attrs = HashMap::new();
-    attach_membership_visibility(&mut attrs, &c_node.membership);
-    if let Some(ref t) = c_node.type_name {
-        attrs.insert("verificationType".to_string(), serde_json::json!(t));
-    }
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&c_node.membership),
+    );
     attrs.insert(
         "isAbstract".to_string(),
         serde_json::json!(c_node.is_abstract),
@@ -1295,8 +1423,12 @@ pub(super) fn materialize_actor(
     let name = identification_name(&actor_node.identification);
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "actor");
     let range = span_to_range(&actor_node.span);
-    let mut attrs = HashMap::new();
-    attach_short_name_attribute(&mut attrs, &actor_node.identification);
+    let attrs = HashMap::new();
+    if let Some(short_name) =
+        crate::semantic::ast_util::declared_short_name(&actor_node.identification)
+    {
+        g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
+    }
     add_node_and_recurse(g, uri, &qualified, "actor", name, range, attrs, parent_id);
 }
 
@@ -1310,10 +1442,16 @@ pub(super) fn materialize_state_def(
     let name = identification_name(&sd_node.identification);
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "state def");
     let range = span_to_range(&sd_node.span);
-    let mut attrs = HashMap::new();
-    attach_short_name_attribute(&mut attrs, &sd_node.identification);
-    attach_membership_visibility(&mut attrs, &sd_node.membership);
-    insert_def_specialization_attr(&mut attrs, sd_node.specializes.as_deref());
+    let attrs = HashMap::new();
+    if let Some(short_name) =
+        crate::semantic::ast_util::declared_short_name(&sd_node.identification)
+    {
+        g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
+    }
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&sd_node.membership),
+    );
     add_node_and_recurse(
         g,
         uri,
@@ -1346,6 +1484,10 @@ pub(crate) fn materialize_state_usage(
 ) {
     let name = &su_node.name;
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "state");
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&su_node.membership),
+    );
     let range = span_to_range(&su_node.span);
     let attrs = action::state_usage_graph_attrs(su_node);
     add_node_and_recurse(
@@ -1366,24 +1508,21 @@ pub(crate) fn materialize_state_usage(
     }
 }
 
-pub(super) fn materialize_import(
+pub(crate) fn materialize_import(
     g: &mut SemanticGraph,
     uri: &Url,
     container_prefix: Option<&str>,
     parent_id: Option<&NodeId>,
     imp: &Node<Import>,
 ) {
-    let Some(pid) = parent_id else {
-        return;
-    };
     let v = &imp.value;
     let name = import_member_label(&v.target);
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "import");
-    let mut attrs = HashMap::new();
-    attrs.insert("importTarget".to_string(), serde_json::json!(&v.target));
-    attrs.insert("importAll".to_string(), serde_json::json!(v.is_import_all));
-    attach_membership_visibility(&mut attrs, &v.membership);
-    attrs.insert("recursive".to_string(), serde_json::json!(v.is_recursive));
+    let attrs = HashMap::new();
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_import_membership_facts(imp),
+    );
     add_node_and_recurse(
         g,
         uri,
@@ -1392,7 +1531,7 @@ pub(super) fn materialize_import(
         name,
         span_to_range(&imp.span),
         attrs,
-        Some(pid),
+        parent_id,
     );
 }
 
@@ -1415,17 +1554,23 @@ pub(super) fn materialize_textual_rep(
         .unwrap_or_else(|| "_textualRep".to_string());
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "textualRep");
     let mut attrs = HashMap::new();
-    if let Some(ref rep_identification) = tr.rep_identification {
-        attach_short_name_attribute(&mut attrs, rep_identification);
+    if let Some(short_name) = tr
+        .rep_identification
+        .as_ref()
+        .and_then(crate::semantic::ast_util::declared_short_name)
+    {
+        g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
     }
-    attrs.insert("language".to_string(), serde_json::json!(&tr.language));
-    attrs.insert("text".to_string(), serde_json::json!(&tr.text));
+    // `language` also feeds the `viewpoint_rep_language_unresolved` diagnostic in
+    // `sysml_diagnostics::checks::view_metadata_conformance`, which reads the typed
+    // `source_text.language` fact set below.
     if let Some(ref language_span) = tr.language_span {
         attrs.insert(
             "languageSpan".to_string(),
             text_range_to_json(span_to_range(language_span)),
         );
     }
+    let node_id = NodeId::new(uri, &qualified);
     add_node_and_recurse(
         g,
         uri,
@@ -1436,4 +1581,8 @@ pub(super) fn materialize_textual_rep(
         attrs,
         Some(pid),
     );
+    if let Some(node) = g.get_node_mut(&node_id) {
+        node.source_text.text = Some(tr.text.clone());
+        node.source_text.language = Some(tr.language.clone());
+    }
 }

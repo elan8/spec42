@@ -1,0 +1,11 @@
+# Diagnostic levels, scoping, and the handling of handles that do not resolve.
+
+[[case]]
+id = "diagnostics/levels-and-scoping"
+model = "coverage"
+plugin = "diagnostics"
+description = """
+Every level, plus a diagnostic scoped to a real element and one scoped to a handle that
+does not resolve. The unresolvable handle must degrade to an unscoped diagnostic rather
+than failing the run.
+"""

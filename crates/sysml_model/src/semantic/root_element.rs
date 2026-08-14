@@ -5,7 +5,8 @@ use sysml_v2_parser::ast::{PackageBody, PackageBodyElement, RootElement};
 use crate::semantic::ast_util::identification_name;
 
 /// Extracts (elements, qualified, name_display, span) from Package or Namespace RootElement.
-/// Returns None if body is not Brace.
+/// Returns None only for `RootElement` variants with no identification/body at all
+/// (`Import`/`Member`); a semicolon-terminated body yields an empty element slice.
 pub fn root_element_body(
     re: &RootElement,
 ) -> Option<(
@@ -32,8 +33,12 @@ pub fn root_element_body(
     } else {
         name
     };
-    match body {
-        PackageBody::Brace { elements } => Some((elements, qualified, name_display, span)),
-        _ => None,
-    }
+    // `;` (no elements) is just as valid as `{ ... }` -- unlike `RootElement::Import`/`::Member`
+    // above, a semicolon-bodied package/namespace genuinely has an identification and span, just
+    // no body elements, so it must not be treated the same as "not extractable" is above.
+    let elements: &[sysml_v2_parser::Node<PackageBodyElement>] = match body {
+        PackageBody::Brace { elements } => elements,
+        PackageBody::Semicolon => &[],
+    };
+    Some((elements, qualified, name_display, span))
 }

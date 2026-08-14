@@ -79,7 +79,7 @@ pub(crate) fn inherited_attributes_for_part_def<'a>(
                 name: name.to_string(),
                 type_name: attribute_type_name(state, child),
                 declared_value: declared_value_text(child),
-                effective_value: effective_value_text(child),
+                effective_value: effective_value_text(&state.semantic_graph, child),
                 declared_in: Some(ancestor.name.clone()).filter(|value| !value.trim().is_empty()),
             });
         }
@@ -146,48 +146,59 @@ fn attribute_type_name(state: &ServerState, node: &SemanticNode) -> Option<Strin
         .into_iter()
         .find_map(|target| Some(target.name.clone()).filter(|name| !name.trim().is_empty()))
         .or_else(|| {
-            node.attributes
-                .get("attributeType")
-                .or_else(|| node.attributes.get("dataType"))
-                .or_else(|| node.attributes.get("type"))
-                .and_then(|value| value.as_str())
+            node.declared_facts
+                .relationships
+                .typing_display()
                 .map(|raw| raw.split("::").last().unwrap_or(raw).to_string())
         })
 }
 
 fn declared_value_text(node: &SemanticNode) -> Option<String> {
-    for key in ["value", "defaultValue", "literal"] {
-        let Some(value) = node.attributes.get(key) else {
-            continue;
-        };
-        if value.is_null() {
-            continue;
-        }
-        return Some(value_to_display_text(value));
+    if let Some(value) = node
+        .expression_text
+        .value
+        .as_deref()
+        .or(node.expression_text.default_value.as_deref())
+    {
+        return Some(value.to_string());
     }
-    None
+    let value = node.attributes.get("literal")?;
+    if value.is_null() {
+        return None;
+    }
+    Some(value_to_display_text(value))
 }
 
-fn effective_value_text(node: &SemanticNode) -> Option<String> {
-    let mut value = node
-        .attributes
-        .get("evaluatedValue")
-        .or_else(|| node.attributes.get("value"))
-        .or_else(|| node.attributes.get("defaultValue"))
-        .or_else(|| node.attributes.get("literal"))
-        .map(value_to_display_text)?;
-    if let Some(unit) = node
-        .attributes
-        .get("evaluatedUnit")
-        .and_then(|raw| raw.as_str())
-        .map(str::trim)
-        .filter(|unit| !unit.is_empty())
-    {
-        value.push_str(" [");
-        value.push_str(unit);
-        value.push(']');
+fn effective_value_text(graph: &sysml_model::SemanticGraph, node: &SemanticNode) -> Option<String> {
+    let evaluated = graph
+        .evaluation_facts_for(node)
+        .and_then(|facts| facts.expression.as_ref())
+        .and_then(|evaluation| {
+            evaluation.value.as_ref().map(|value| {
+                let mut text = evaluated_value_to_display_text(value);
+                if let Some(unit) = evaluation
+                    .unit
+                    .as_deref()
+                    .map(str::trim)
+                    .filter(|unit| !unit.is_empty())
+                {
+                    text.push_str(" [");
+                    text.push_str(unit);
+                    text.push(']');
+                }
+                text
+            })
+        });
+    evaluated.or_else(|| declared_value_text(node))
+}
+
+fn evaluated_value_to_display_text(value: &sysml_model::EvaluatedValue) -> String {
+    match value {
+        sysml_model::EvaluatedValue::Integer(value) => value.to_string(),
+        sysml_model::EvaluatedValue::Real(value) => value.to_string(),
+        sysml_model::EvaluatedValue::Boolean(value) => value.to_string(),
+        sysml_model::EvaluatedValue::String(value) => value.clone(),
     }
-    Some(value)
 }
 
 fn value_to_display_text(value: &serde_json::Value) -> String {

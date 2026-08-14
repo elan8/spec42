@@ -3,9 +3,9 @@ use std::collections::HashMap;
 use sysml_v2_parser::ast::{StateDefBody, StateDefBodyElement, TransitionAccept, TransitionEffect};
 use url::Url;
 
-use crate::semantic::ast_util::{attach_membership_visibility, declared_expression, span_to_range};
+use crate::semantic::ast_util::{declared_expression, span_to_range};
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::model::{NodeId, RelationshipKind};
+use crate::semantic::model::{NodeId, RelationshipKind, TransitionEndpointFacts};
 use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
 
 use super::expressions;
@@ -109,7 +109,7 @@ fn materialize_transition_features(
             "transitionFeatureKind".to_string(),
             serde_json::json!("trigger"),
         );
-        insert_transition_accept_attrs(&mut attrs, accept);
+        let payload_type_refs = insert_transition_accept_attrs(&mut attrs, accept);
         let qualified = qualified_name_for_node(
             g,
             uri,
@@ -127,6 +127,7 @@ fn materialize_transition_features(
             attrs,
             Some(transition_id),
         );
+        super::payload::apply_payload_type_refs(g, uri, &qualified, &payload_type_refs);
     }
     if let Some(guard) = guard {
         let mut attrs = HashMap::new();
@@ -187,20 +188,6 @@ fn materialize_transition_features(
     }
 }
 
-fn increment_state_def_counter(g: &mut SemanticGraph, parent_id: &NodeId, attribute: &str) {
-    if let Some(state_def_node) = g.get_node_mut(parent_id) {
-        let count = state_def_node
-            .attributes
-            .get(attribute)
-            .and_then(|v| v.as_u64())
-            .unwrap_or(0)
-            .saturating_add(1);
-        state_def_node
-            .attributes
-            .insert(attribute.to_string(), serde_json::json!(count));
-    }
-}
-
 pub(super) fn build_from_state_body(
     elements: &[sysml_v2_parser::Node<StateDefBodyElement>],
     uri: &Url,
@@ -218,11 +205,11 @@ pub(super) fn build_from_state_body(
                 let name = &state_node.name;
                 let qualified = qualified_name_for_node(g, uri, container_prefix, name, "state");
                 let range = span_to_range(&state_node.span);
-                let mut attrs = HashMap::new();
-                attach_membership_visibility(&mut attrs, &state_node.membership);
-                if let Some(ref t) = state_node.type_name {
-                    attrs.insert("stateType".to_string(), serde_json::json!(t));
-                }
+                let attrs = HashMap::new();
+                g.register_declared_membership_facts(
+                    NodeId::new(uri, &qualified),
+                    crate::semantic::ast_util::declared_membership_facts(&state_node.membership),
+                );
                 add_node_and_recurse(
                     g,
                     uri,
@@ -283,8 +270,6 @@ pub(super) fn build_from_state_body(
                     "transition",
                 );
                 let mut attrs = HashMap::new();
-                attrs.insert("source".to_string(), serde_json::json!(&src));
-                attrs.insert("target".to_string(), serde_json::json!(&tgt));
                 if let Some(guard) = &t.guard {
                     attrs.insert(
                         "guardExpression".to_string(),
@@ -305,16 +290,10 @@ pub(super) fn build_from_state_body(
                         serde_json::json!(transition_effect_to_debug_string(effect)),
                     );
                 }
-                if let Some(ref accept) = t.accept {
-                    insert_transition_accept_attrs(&mut attrs, accept);
-                }
-                if t.is_initial {
-                    attrs.insert("isInitial".to_string(), serde_json::json!(true));
-                }
-                if target_is_done {
-                    attrs.insert("targetIsDone".to_string(), serde_json::json!(true));
-                    increment_state_def_counter(g, parent_id, "doneTransitionCount");
-                }
+                let payload_type_refs = t
+                    .accept
+                    .as_ref()
+                    .map(|accept| insert_transition_accept_attrs(&mut attrs, accept));
                 let transition_range = span_to_range(&transition_node.span);
                 add_node_and_recurse(
                     g,
@@ -326,7 +305,18 @@ pub(super) fn build_from_state_body(
                     attrs,
                     Some(parent_id),
                 );
+                if let Some(refs) = &payload_type_refs {
+                    super::payload::apply_payload_type_refs(g, uri, &qualified, refs);
+                }
                 let transition_id = NodeId::new(uri, &qualified);
+                if let Some(node) = g.get_node_mut(&transition_id) {
+                    node.declared_facts.transition_endpoints = Some(TransitionEndpointFacts {
+                        source_expression: src.clone(),
+                        target_expression: tgt.clone(),
+                        is_initial: t.is_initial,
+                        target_is_done,
+                    });
+                }
                 materialize_transition_features(
                     g,
                     uri,
@@ -358,8 +348,6 @@ pub(super) fn build_from_state_body(
                     &format!("final_{}", fs.state_name),
                     "final state",
                 );
-                let mut attrs = HashMap::new();
-                attrs.insert("stateName".to_string(), serde_json::json!(&fs.state_name));
                 add_node_and_recurse(
                     g,
                     uri,
@@ -367,20 +355,9 @@ pub(super) fn build_from_state_body(
                     "final state",
                     fs.state_name.clone(),
                     span_to_range(&final_node.span),
-                    attrs,
+                    HashMap::new(),
                     Some(parent_id),
                 );
-                if let Some(state_def_node) = g.get_node_mut(parent_id) {
-                    let count = state_def_node
-                        .attributes
-                        .get("finalStateCount")
-                        .and_then(|v| v.as_u64())
-                        .unwrap_or(0)
-                        .saturating_add(1);
-                    state_def_node
-                        .attributes
-                        .insert("finalStateCount".to_string(), serde_json::json!(count));
-                }
             }
             SDBE::Then(then_node) => {
                 let state_name = &then_node.value.state_name;
@@ -518,6 +495,9 @@ pub(super) fn build_from_state_body(
             }
             SDBE::Doc(doc) => {
                 super::attach_doc_comment(g, parent_id, &doc.value.text);
+            }
+            SDBE::InOutDecl(in_out) => {
+                super::action::add_in_out_decl(g, uri, container_prefix, parent_id, in_out);
             }
             SDBE::Error(_) | SDBE::Annotation(_) | SDBE::Other(_) => {}
         }

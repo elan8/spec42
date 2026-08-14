@@ -7,9 +7,8 @@ use sysml_v2_parser::Node;
 use url::Url;
 
 use crate::semantic::ast_util::{
-    attach_membership_visibility, declared_multiplicity, direction_name,
-    item_usage_feature_properties, port_usage_feature_properties, span_to_range, subsetting_target,
-    typing_targets,
+    declared_multiplicity, direction_name, item_usage_feature_properties,
+    port_usage_feature_properties, span_to_range, subsetting_target, typing_targets,
 };
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{DeclaredFeatureProperties, NodeId};
@@ -17,7 +16,10 @@ use crate::semantic::relationships::add_typing_edge_if_exists;
 
 use super::attribute_body;
 use super::expressions;
-use super::{add_node_and_recurse, attach_feature_properties, qualified_name_for_node};
+use super::{
+    add_node_and_recurse, attach_declared_name, attach_declared_subsetting_family,
+    attach_declared_typing_relationship, attach_feature_properties, qualified_name_for_node,
+};
 
 fn build_in_out_decl(
     w: &Node<InOutDecl>,
@@ -34,7 +36,6 @@ fn build_in_out_decl(
         "direction".to_string(),
         serde_json::json!(direction_name(d.direction)),
     );
-    attrs.insert("parameterType".to_string(), serde_json::json!(&d.type_name));
     add_node_and_recurse(
         g,
         uri,
@@ -69,32 +70,18 @@ pub(super) fn materialize_port_usage(
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "port");
     let range = span_to_range(&n.span);
     let mut attrs = HashMap::new();
-    attach_membership_visibility(&mut attrs, &n.membership);
-    if let Some(ref t) = n.type_name {
-        attrs.insert("portType".to_string(), serde_json::json!(t));
-    }
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&n.membership),
+    );
     if let Some(ref m) = n.multiplicity {
         attrs.insert("multiplicity".to_string(), serde_json::json!(m));
     }
-    if let Some((ref feat, ref val)) = n.subsets {
-        if let Some(target) = subsetting_target(Some(&feat.value)) {
-            attrs.insert("subsetsFeature".to_string(), serde_json::json!(target));
-        }
-        if let Some(v) = val {
-            attrs.insert(
-                "subsetsValue".to_string(),
-                serde_json::json!(expressions::expression_to_debug_string(v)),
-            );
-        }
-    }
-    if let Some(r) = subsetting_target(n.references.as_deref()) {
-        attrs.insert("referencesFeature".to_string(), serde_json::json!(r));
-    }
-    if let Some(c) = subsetting_target(n.crosses.as_deref()) {
-        attrs.insert("crossesFeature".to_string(), serde_json::json!(c));
-    }
-    if let Some(r) = subsetting_target(n.redefines.as_deref()) {
-        attrs.insert("redefines".to_string(), serde_json::json!(r));
+    if let Some((_, Some(ref v))) = n.subsets {
+        attrs.insert(
+            "subsetsValue".to_string(),
+            serde_json::json!(expressions::expression_to_debug_string(v)),
+        );
     }
     add_node_and_recurse(
         g,
@@ -107,6 +94,17 @@ pub(super) fn materialize_port_usage(
         Some(parent_id),
     );
     let node_id = NodeId::new(uri, &qualified);
+    attach_declared_subsetting_family(
+        g,
+        &node_id,
+        n.subsets
+            .as_ref()
+            .map(|(relationship, _)| &relationship.value),
+        n.redefines.as_deref(),
+        n.references.as_deref(),
+        n.crosses.as_deref(),
+    );
+    attach_declared_name(g, &node_id, &n.name);
     attach_feature_properties(g, &node_id, port_usage_feature_properties(&n.value));
     if let Some(multiplicity) = &n.multiplicity {
         if let Some(node) = g.get_node_mut(&node_id) {
@@ -172,15 +170,11 @@ pub(super) fn build_from_port_def_body_element(
             let qualified =
                 qualified_name_for_node(g, uri, container_prefix, name, "attribute def");
             let range = span_to_range(&n.span);
-            let mut attrs = HashMap::new();
-            attach_membership_visibility(&mut attrs, &n.membership);
-            let typed_by = typing_targets(n.typing.as_deref());
-            if !typed_by.is_empty() {
-                attrs.insert(
-                    "attributeType".to_string(),
-                    serde_json::json!(typed_by.join(", ")),
-                );
-            }
+            let attrs = HashMap::new();
+            g.register_declared_membership_facts(
+                NodeId::new(uri, &qualified),
+                crate::semantic::ast_util::declared_membership_facts(&n.membership),
+            );
             add_node_and_recurse(
                 g,
                 uri,
@@ -190,6 +184,11 @@ pub(super) fn build_from_port_def_body_element(
                 range,
                 attrs,
                 Some(parent_id),
+            );
+            attach_declared_typing_relationship(
+                g,
+                &NodeId::new(uri, &qualified),
+                n.typing.as_deref(),
             );
             for target in typing_targets(n.typing.as_deref()) {
                 add_typing_edge_if_exists(g, uri, &qualified, target, container_prefix);
@@ -202,28 +201,15 @@ pub(super) fn build_from_port_def_body_element(
                     qualified_name_for_node(g, uri, container_prefix, name, "in out parameter");
                 let range = span_to_range(&n.span);
                 let mut attrs = HashMap::new();
-                attach_membership_visibility(&mut attrs, &n.membership);
+                g.register_declared_membership_facts(
+                    NodeId::new(uri, &qualified),
+                    crate::semantic::ast_util::declared_membership_facts(&n.membership),
+                );
                 attrs.insert(
                     "direction".to_string(),
                     serde_json::json!(direction_name(direction)),
                 );
                 let typed_by = typing_targets(n.typing.as_deref());
-                let parameter_type_display = if typed_by.is_empty() {
-                    subsetting_target(n.subsets.as_deref())
-                        .unwrap_or_default()
-                        .to_string()
-                } else {
-                    typed_by.join(", ")
-                };
-                if !parameter_type_display.is_empty() {
-                    attrs.insert(
-                        "parameterType".to_string(),
-                        serde_json::json!(parameter_type_display),
-                    );
-                }
-                if let Some(r) = subsetting_target(n.redefines.as_deref()) {
-                    attrs.insert("redefines".to_string(), serde_json::json!(r));
-                }
                 add_node_and_recurse(
                     g,
                     uri,
@@ -235,6 +221,15 @@ pub(super) fn build_from_port_def_body_element(
                     Some(parent_id),
                 );
                 let node_id = NodeId::new(uri, &qualified);
+                attach_declared_subsetting_family(
+                    g,
+                    &node_id,
+                    n.subsets.as_deref(),
+                    n.redefines.as_deref(),
+                    n.references.as_deref(),
+                    n.crosses.as_deref(),
+                );
+                attach_declared_name(g, &node_id, &n.name);
                 attach_feature_properties(
                     g,
                     &node_id,
@@ -288,15 +283,15 @@ fn materialize_port_def_item_usage(
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "item");
     let range = span_to_range(&n.span);
     let mut attrs = HashMap::new();
-    attach_membership_visibility(&mut attrs, &n.membership);
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&n.membership),
+    );
     if let Some(direction) = n.direction {
         attrs.insert(
             "direction".to_string(),
             serde_json::json!(direction_name(direction)),
         );
-    }
-    if let Some(ref t) = n.type_name {
-        attrs.insert("itemType".to_string(), serde_json::json!(t));
     }
     if let Some(ref m) = n.multiplicity {
         attrs.insert("multiplicity".to_string(), serde_json::json!(m));

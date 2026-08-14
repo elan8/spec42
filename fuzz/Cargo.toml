@@ -1,0 +1,54 @@
+[package]
+name = "spec42-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2021"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+generator_api = { path = "../crates/generator_api" }
+language_service = { path = "../crates/language_service" }
+spec42-generator-protocol = { path = "../crates/generator_protocol" }
+postcard = { version = "1", features = ["alloc"] }
+sysml_model = { path = "../crates/sysml_model" }
+sysml-v2-parser = { version = "0.54.0" }
+
+[[bin]]
+name = "artifact_path"
+path = "fuzz_targets/artifact_path.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "abi_decode"
+path = "fuzz_targets/abi_decode.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "sysml_parser"
+path = "fuzz_targets/sysml_parser.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "sysml_semantic_graph"
+path = "fuzz_targets/sysml_semantic_graph.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "sysml_formatter"
+path = "fuzz_targets/sysml_formatter.rs"
+test = false
+doc = false
+bench = false
+
+[workspace]

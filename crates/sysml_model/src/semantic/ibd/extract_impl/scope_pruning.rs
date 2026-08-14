@@ -142,6 +142,7 @@ pub(crate) fn ensure_endpoint_parts_present(
         }
         let element_type = normalize_ibd_element_type(node.element_kind.as_str());
         let mut attributes = node.attributes.clone();
+        crate::semantic::model_projection::project_type_reference_attributes(&mut attributes, node);
         decorate_ibd_part_attributes(&element_type, &mut attributes);
         parts.push(IbdPartDto {
             id: node.id.qualified_name.clone(),

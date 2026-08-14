@@ -103,19 +103,8 @@ fn build_machine(graph: &SemanticGraph, root: &SemanticNode) -> Option<StateMach
     })
 }
 
-fn normalized_type_name(type_name: &str) -> String {
-    type_name
-        .split("::")
-        .last()
-        .unwrap_or(type_name)
-        .replace([' ', '_'], "")
-        .to_lowercase()
-}
-
 fn is_terminate_state(node: &SemanticNode) -> bool {
-    attr_str(node, "stateType")
-        .map(|value| normalized_type_name(&value))
-        .is_some_and(|value| value == "terminate")
+    node.element_kind == ElementKind::Terminate
 }
 
 fn build_regions(states: &[StateNodeDto]) -> Vec<RegionDto> {
@@ -155,18 +144,17 @@ fn initial_state_targets(graph: &SemanticGraph, root: &SemanticNode) -> HashSet<
         if child.element_kind != ElementKind::Transition {
             continue;
         }
-        if child
-            .attributes
-            .get("isInitial")
-            .and_then(|v| v.as_bool())
-            .unwrap_or(false)
-        {
-            if let Some(source) = attr_str(child, "source") {
-                if let Some(resolved) =
-                    resolve_state_id_in_machine(graph, root, &source, &HashSet::new())
-                {
-                    targets.insert(resolved);
-                }
+        let Some(endpoints) = child.declared_facts.transition_endpoints.as_ref() else {
+            continue;
+        };
+        if endpoints.is_initial {
+            if let Some(resolved) = resolve_state_id_in_machine(
+                graph,
+                root,
+                &endpoints.source_expression,
+                &HashSet::new(),
+            ) {
+                targets.insert(resolved);
             }
         }
     }
@@ -328,10 +316,11 @@ fn transition_from_node(
     transition: &SemanticNode,
     state_ids: &HashSet<String>,
 ) -> Option<StateTransitionDto> {
-    let source_raw = attr_str(transition, "source")?;
-    let target_raw = attr_str(transition, "target")?;
-    let source = resolve_state_id_in_machine(graph, machine_root, &source_raw, state_ids)?;
-    let target = resolve_state_id_in_machine(graph, machine_root, &target_raw, state_ids)?;
+    let endpoints = transition.declared_facts.transition_endpoints.as_ref()?;
+    let source =
+        resolve_state_id_in_machine(graph, machine_root, &endpoints.source_expression, state_ids)?;
+    let target =
+        resolve_state_id_in_machine(graph, machine_root, &endpoints.target_expression, state_ids)?;
     if !state_ids.contains(&source) || !state_ids.contains(&target) {
         return None;
     }

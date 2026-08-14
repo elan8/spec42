@@ -2,7 +2,6 @@
 /**
  * Generates docs/reference/SYSML-NOTATION-INVENTORY.md from SysML v2 BNF SVG filenames.
  * Set SYSML_V2_RELEASE_DIR to the SysML-v2-Release repo root (optional).
- * Also writes docs/archive/GENERAL-IBD-BNF-SIGNOFF.md for shipped general + interconnection views.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -166,7 +165,7 @@ const lines = [
   "",
   `Source: \`${imagesDir}\` (${files.length} entries)`,
   "",
-  "Shipped product views: **general-view**, **interconnection-view** (+ behavior views). See [GENERAL-IBD-BNF-SIGNOFF.md](../archive/GENERAL-IBD-BNF-SIGNOFF.md) for sign-off checklist.",
+  "Shipped product views: **general-view**, **interconnection-view** (+ behavior views).",
   "",
   "| SVG | Inferred views | Status | Code pointer |",
   "|-----|----------------|--------|--------------|",
@@ -191,62 +190,3 @@ lines.push("");
 const outPath = path.join(repoRoot, "docs", "reference", "SYSML-NOTATION-INVENTORY.md");
 fs.writeFileSync(outPath, lines.join("\n"), "utf8");
 console.log(`Wrote ${outPath} (${files.length} rows)`);
-
-// Sign-off checklist for general + interconnection only
-const signoffRows = files
-  .map((file) => {
-    const views = inferViews(file);
-    if (!views.includes("general-view") && !views.includes("interconnection-view")) return null;
-    const status = inferStatus(file, views);
-    const pointer = codePointer(file, views, status);
-    let testRef = "—";
-    if (status.includes("shared") && !status.includes("compartment")) {
-      if (views.includes("interconnection-view")) {
-        testRef = "`shared/diagram-renderer/src/renderer.test.ts`";
-      } else {
-        testRef = "`shared/diagram-renderer/src/renderer.test.ts`, `crates/kernel/tests/integration/model.rs`";
-      }
-    }
-    return { file, views, status, pointer, testRef };
-  })
-  .filter(Boolean);
-
-const shippedImplemented = signoffRows.filter((r) => r.status === "shared").length;
-const shippedTotal = signoffRows.filter((r) => !r.status.startsWith("WONTFIX (not in shipped")).length;
-const coveragePct =
-  shippedTotal > 0 ? Math.round((shippedImplemented / shippedTotal) * 100) : 0;
-
-const signoffLines = [
-  "# General and interconnection view — BNF sign-off checklist",
-  "",
-  `Generated: ${new Date().toISOString().slice(0, 10)}`,
-  "",
-  "Normative figures: `SysML-v2-Release/bnf/images/`. Implementation: [`shared/diagram-renderer`](../../shared/diagram-renderer).",
-  "",
-  `**Shipped-element coverage:** ${shippedImplemented} / ${shippedTotal} primary notations marked **shared** (${coveragePct}%). Compartment-only rows count as partial notation.`,
-  "",
-  "| BNF SVG | View(s) | Status | Implementation | Tests |",
-  "|---------|---------|--------|----------------|-------|",
-];
-
-for (const row of signoffRows) {
-  signoffLines.push(
-    `| ${row.file} | ${row.views} | ${row.status} | ${row.pointer} | ${row.testRef} |`,
-  );
-}
-
-signoffLines.push("");
-signoffLines.push("## Automated regression");
-signoffLines.push("");
-signoffLines.push("- `cd shared/diagram-renderer && npm test` — edge markers, def/usage/ref chrome, IBD ports/connectors");
-signoffLines.push("- `cargo test -p kernel --test integration model` — visualization payloads");
-signoffLines.push("");
-signoffLines.push("## Manual validation fixtures");
-signoffLines.push("");
-signoffLines.push("- General: `sysml/src/validation/.../01-Parts Tree/1d-Parts Tree with Reference.sysml`");
-signoffLines.push("- Interconnection: KitchenTimer workspace fixture; connected-blocks / webshop models");
-signoffLines.push("");
-
-const signoffPath = path.join(repoRoot, "docs", "archive", "GENERAL-IBD-BNF-SIGNOFF.md");
-fs.writeFileSync(signoffPath, signoffLines.join("\n"), "utf8");
-console.log(`Wrote ${signoffPath} (${signoffRows.length} rows, ${coveragePct}% shared)`);

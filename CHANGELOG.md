@@ -7,6 +7,61 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.50.0] - 2026-08-07
+
+- **Bumped `sysml-v2-parser` 0.53.0 → 0.54.0** ([#18](https://github.com/elan8/spec42/issues/18)) —
+  pulls in #70 (`parse()`/`parse_for_editor()` equivalence), the #78 follow-up (full-library
+  strict-diagnostics gaps: `in`/`ref`/`calc` redefinition forms, nested `calc def`, `abstract
+  calc`), and #85 (connector-end/interface/flow shorthand gaps). `PARSE_AST_VERSION` moved 70 → 71
+  for this release's AST-shape changes, which broke exhaustive matches across `sysml_model` and
+  `sysml_tokens`: new `InOutDecl.is_redefinition`, `CalcDefBodyElement::{CalcUsage,CalcDef,
+  PartUsage}`, `ConstraintDefBodyElement::{Constraint,AttributeUsage}`,
+  `RequirementDefBodyElement::{SubjectRef,VariantUsage,Constraint}`,
+  `StateDefBodyElement::InOutDecl`, `OccurrenceBodyElement::EndDecl`,
+  `InterfaceDefBodyElement::FlowUsage`, `InterfaceUsageBodyElement::EndDecl`,
+  `InterfaceUsage::TypedConnect.name`, `EndDecl.crosses`, `UseCaseDefBodyElement::{ActionUsage,
+  AnalysisCaseUsage,CalcUsage,AttributeUsage,RequirementUsage,PartUsage,Expression}`, and
+  `Expression::{Conditional,Extent}`. Each new variant got real graph-builder/semantic-token
+  handling (not stub catch-alls) by mirroring the closest existing sibling variant's
+  materialization, reusing shared helpers where one already existed (`materialize_part_usage`,
+  `materialize_attribute_usage`, `materialize_requirement_usage`,
+  `materialize_top_level_action_usage`, `materialize_analysis_case_usage`, `collect_semantic_
+  ranges_ref_decl`) and factoring two new ones where duplication would otherwise have tripled
+  (`calc_constraint_def::{build_calc_def_body_elements,materialize_calc_usage}`, now shared by
+  `part_def.rs`'s top-level `calc` usage arm, this module's own nested-calc-in-calc rollups, and
+  analysis/verification case bodies' nested `calc` usages). Also fixed two independent breaking
+  changes from the same bump: `RefBody::Brace`'s `elements` are now `RefBodyElement`-wrapped
+  (`action.rs`'s `add_ref_decl` now filters to the `Action(..)` variant before recursing), and
+  `CaseReturnDecl.value_expression` was renamed/retyped to `value: Option<Node<FeatureValue>>`
+  (`analysis_case.rs` now unwraps `.value.expression`). A few genuinely new constructs
+  (`RequirementDefBodyElement::Expression`'s bare analysis-case result expression,
+  `AssertConstraint` in the newly-reachable body contexts) were left as documented no-ops rather
+  than guessed at, matching this codebase's existing "not yet modeled" precedent for the same
+  constructs elsewhere. Full workspace (`cargo test --workspace`, 130 suites) green; `cargo fmt`,
+  `cargo clippy --workspace --all-targets -- -D warnings`, and `cargo doc --no-deps --workspace`
+  all clean. This is a partial step on #18, not a 1.0 pin confirmation -- the OMG-library-baseline
+  and roadmap-documentation acceptance criteria are still open.
+
+- **Removed the MCP server and read-only HTTP API** ([#51](https://github.com/elan8/spec42/issues/51)) —
+  `spec42-mcp` (stdio MCP server) and `spec42 api serve` (read-only HTTP API, `docs/api/`) are gone.
+  Investigation found no AI host actually depended on either surface: VS Code Language Model Tools
+  and Cursor already call the `spec42` CLI directly, and no external/partner consumer of the HTTP
+  API was found. CLI JSON output (`check`, `model-summary`, `explain-diagnostic`, `doctor`) plus a
+  documented per-host skill/instructions pattern (see `docs/user/AI-ASSISTANTS.md`) is now the sole
+  AI-integration surface for 1.0. `diagnostic_catalog` (shared by the CLI and the removed MCP tools)
+  moved from `crates/server/src/mcp/` to `crates/server/src/diagnostic_catalog.rs`.
+
+- **Fixed interconnection-view layout non-determinism** (O-6, tracked since 0.35.0's Known Issues below and [#22](https://github.com/elan8/spec42/issues/22)) — repeated `spec42 diagrams export` for the same unchanged model could produce different node coordinates each run. Root cause: `merge_ibd_payloads_inner` and `normalize_ibd_to_instance_paths` (`crates/sysml_model/src/semantic/ibd/{merge,instance_paths}.rs`) deduplicate parts/ports/connectors through a `HashMap`, then collect the deduped values straight into the output `Vec` via `.into_values()` — `HashMap`'s default hasher is randomly seeded per process, so that order (stable within one run) differed across separate CLI invocations, silently propagating into `finalize_merged_ibd_connectors`'s instance/def remap and from there into which of several structurally-equal-but-differently-worded connector representations survived dedup, and ultimately into ELK's node/edge order. Fixed by sorting every `HashMap`-derived collection by its DTO's own natural key right after collection, and switching `IbdDataDto.root_views` from `HashMap` to `BTreeMap` (it serializes directly to a JSON object, so its hash-randomized key order was a second, independent source of byte-level non-determinism). Verified byte-identical SVG output across repeated exports of both `examples/webshop` and the larger `sysml-robot-vacuum-cleaner` fixture; action-flow-view was independently re-verified deterministic on both fixtures too (the underlying `activity_graph.rs` extraction doesn't use the `HashMap`-to-`Vec` pattern that caused the interconnection-view bug). Remaining known non-determinism: `stats.modelBuildTimeMs` in the JSON payload is a real wall-clock measurement and legitimately varies run to run — structural (not byte) comparison is still required for that one field.
+
+- **Supports typed numeric analysis results and objective evaluation.** Analysis `return attribute`
+  declarations are materialized with their type and expression, inherited by typed analysis usages,
+  evaluated as numeric values rather than Boolean verdicts, and checked against typed objective
+  requirement constraints. Existing `return ref` and verification verdict behavior is preserved.
+
+- **Fixed a high-severity DNS rebinding vulnerability in the bundled MCP server** ([RUSTSEC-2026-0189](https://rustsec.org/advisories/RUSTSEC-2026-0189)) — `rmcp` (the crate backing `spec42-mcp`'s Streamable HTTP server transport) was pinned to 0.9.1; upgraded to 1.4+ (resolved to 1.8.0), which also drops the unmaintained `paste` dependency (replaced upstream by `pastey`). The upgrade's API changes (tool/result construction moved to non-exhaustive structs with builder methods) are internal to `crates/server/src/mcp/server.rs`; MCP tool behavior is unchanged (confirmed via the existing `mcp_tools`/`mcp_protocol`/`mcp_binary` integration suites).
+- **Removed the unused `adm-zip` VS Code extension dependency**, which carried a high-severity vulnerability ([GHSA-xcpc-8h2w-3j85](https://github.com/advisories/GHSA-xcpc-8h2w-3j85)). Neither `adm-zip` nor `@types/adm-zip` were referenced anywhere in the extension's source; the scripts that do handle VSIX/zip files already use `@vscode/test-electron`'s downloader and the shell `unzip` command. Also picked up a `brace-expansion` fix via `npm audit fix` (no source changes needed).
+- **Hardened CI**: added a `cargo audit` job (dependency vulnerability scanning), `npm audit --omit=dev` steps for both `shared/diagram-renderer` and `vscode`, and a `cargo doc --no-deps --workspace` step with `RUSTDOCFLAGS=-D warnings` to `ci.yml`'s `rust-core` job (fixed the 14 pre-existing broken/private intra-doc links this surfaced, across `sysml_model`, `workspace`, and `server`). Also pinned `rust-toolchain.toml` and every CI/release Rust-install step to an exact version (`1.97.1`) instead of the floating `stable` channel, so a new stable Rust release adding a default-warn lint can no longer break CI on an unrelated day.
+
 ## [0.49.0] - 2026-07-29
 
 - **Aligns standard-view projection with SysML v2.** `GeneralView`, `BrowserView`, `GridView`,
@@ -997,7 +1052,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Known Issues
 
-- **Interconnection-view and action-flow-view layout is non-deterministic run-to-run** — re-exporting the same unchanged model can produce different node coordinates each time (same node/edge content). Byte-diff-based regression checking is unreliable for these 2 of 8 view kinds specifically; not a new issue in this release.
+- ~~**Interconnection-view and action-flow-view layout is non-deterministic run-to-run**~~ — fixed in `[Unreleased]`, see the O-6 entry above.
 - **Scoped/incremental IBD builds can resolve a different (but still valid) root than a full-workspace build** for some views in workspaces that use SysML variant-selection — a parity gap, not a correctness bug, but scoped and full-workspace exports of the same view can disagree.
 
 ## [0.34.0] - 2026-06-30
@@ -1094,7 +1149,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **KPAR crate (`crates/kpar`)** — Read, validate, and materialize KerML Project Archives (`.project.json`, `.meta.json`, SHA-256 checksums, textual `.sysml`/`.kerml` sources). `kpar-pack` binary packs Elan8 domain libraries for release; `extract_archive_subset` lives in `legacy.rs` for zip subset helpers used in tests.
+- **KPAR crate (`crates/kpar`)** — Read, validate, and materialize KerML Project Archives (`.project.json`, `.meta.json`, SHA-256 checksums, textual `.sysml`/`.kerml` sources). The top-level `spec42 bundle` command creates local archives, while `extract_archive_subset` lives in `legacy.rs` for zip subset helpers used in tests.
 - **Domain libraries via KPAR** — Bundled domain libraries ship as `elan8-domain-libraries-{version}.kpar`. `config/domain-libraries.json` pins `format`, `version`, and release `artifact`. Runtime materializes the embedded KPAR on first use; managed install path no longer uses a `tree/` subdirectory when `contentPath` is empty.
 - **Standard library via OMG KPAR** — Bundled stdlib embeds the OMG `sysml.library.kpar` archives from the pinned SysML v2 Release tag. Multiple KPAR subroots are materialized and mounted for semantic indexing (`stdlib_roots` in environment resolution).
 - **Domain library release automation** — GitHub Action on [elan8/sysml-domain-libraries](https://github.com/elan8/sysml-domain-libraries) (`release-kpar.yml`) builds and publishes the KPAR asset plus `SHA256SUMS.txt` on `v*` tags.

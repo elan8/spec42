@@ -11,6 +11,12 @@ pub(crate) mod expression_fold;
 pub mod extracted_model;
 pub mod graph;
 pub mod graph_builder;
+pub mod graph_invariants;
+pub mod graph_sexpr;
+#[cfg(test)]
+pub mod graph_state_fingerprint;
+#[cfg(test)]
+mod graph_state_fingerprint_differential_tests;
 pub mod ibd;
 pub mod import_resolution;
 pub mod interconnection_elk;
@@ -22,6 +28,7 @@ pub mod model;
 pub mod model_projection;
 pub mod pipeline;
 pub mod prepared_view;
+pub mod publication;
 pub mod reference_resolution;
 pub mod relationships;
 pub mod render_snapshot;

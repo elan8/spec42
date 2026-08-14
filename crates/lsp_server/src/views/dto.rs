@@ -62,6 +62,45 @@ pub struct SysmlFeatureInspectorInheritedFeatureDto {
     pub declared_in: SysmlFeatureInspectorElementRefDto,
 }
 
+/// Canonical evaluation state projected by the semantic graph; presentation must not infer it
+/// from an element attribute map.
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase", tag = "state")]
+pub enum SysmlFeatureInspectorEvaluationDto {
+    NotRun,
+    NotApplicable,
+    Result {
+        status: SysmlFeatureInspectorEvaluationStatusDto,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        value: Option<serde_json::Value>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        unit: Option<String>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        error: Option<String>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        passed: Option<bool>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        computed_value: Option<serde_json::Value>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        computed_unit: Option<String>,
+    },
+}
+
+/// Closed inspector representation of a completed expression evaluation status.
+#[derive(Debug, Clone, Copy, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum SysmlFeatureInspectorEvaluationStatusDto {
+    Ok,
+    Unresolved,
+    Ambiguous,
+    Malformed,
+    Incomplete,
+    TypeError,
+    DivByZero,
+    Unsupported,
+    Cycle,
+}
+
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SysmlFeatureInspectorElementDto {
@@ -84,6 +123,7 @@ pub struct SysmlFeatureInspectorElementDto {
     pub direction: Option<String>,
     pub modifiers: Vec<String>,
     pub attributes: std::collections::HashMap<String, serde_json::Value>,
+    pub evaluation: SysmlFeatureInspectorEvaluationDto,
     pub typing: SysmlFeatureInspectorResolutionDto,
     pub effective_typing: SysmlFeatureInspectorResolutionDto,
     pub specialization: SysmlFeatureInspectorResolutionDto,

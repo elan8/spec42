@@ -4,8 +4,7 @@ use url::Url;
 
 use crate::helpers::{
     attribute_value_is_string_literal, declared_specializes_refs, declared_type_ref, diag,
-    diagnostic_range, is_builtin_type_ref, is_synthetic, multiplicity_issue_message,
-    normalize_declared_type_ref, parse_non_negative_bound, reference_token_range,
+    diagnostic_range, is_builtin_type_ref, is_synthetic, normalize_declared_type_ref,
     resolves_to_enum_def, unresolved_type_diagnostic_range,
 };
 use crate::kind_rules::{
@@ -21,7 +20,8 @@ use sysml_model::semantic::kinds::{
 };
 use sysml_model::semantic::relationships::SPECIALIZES_TARGET_KINDS;
 use sysml_model::{
-    resolve_inherited_member_via_type, resolve_type_reference_targets, ResolveResult, SemanticGraph,
+    resolve_inherited_member_via_type, resolve_type_reference_targets, DeclaredMultiplicity,
+    DeclaredMultiplicityBound, RelationshipKind, ResolveResult, SemanticGraph,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -30,32 +30,25 @@ struct MultiplicityBounds {
     upper: Option<i64>,
 }
 
-fn parse_multiplicity_bounds(raw: Option<&str>) -> Option<MultiplicityBounds> {
-    let raw = raw?.trim();
-    if raw.is_empty() || multiplicity_issue_message(raw).is_some() {
+fn direct_multiplicity_bounds(
+    multiplicity: Option<&DeclaredMultiplicity>,
+) -> Option<MultiplicityBounds> {
+    let bounds = multiplicity?.direct_bounds();
+    let DeclaredMultiplicityBound::Integer(lower) = bounds.lower else {
+        return None;
+    };
+    if lower < 0 {
         return None;
     }
-    let normalized = raw.trim_start_matches('[').trim_end_matches(']').trim();
-    if let Some((lower_raw, upper_raw)) = normalized.split_once("..") {
-        let lower = parse_non_negative_bound(lower_raw.trim()).ok()?;
-        let upper = if upper_raw.trim() == "*" {
-            None
-        } else {
-            Some(parse_non_negative_bound(upper_raw.trim()).ok()?)
-        };
-        return Some(MultiplicityBounds { lower, upper });
+    let upper = match bounds.upper {
+        DeclaredMultiplicityBound::Integer(value) if value >= 0 => Some(value),
+        DeclaredMultiplicityBound::Unbounded => None,
+        _ => return None,
+    };
+    if upper.is_some_and(|value| lower > value) {
+        return None;
     }
-    if normalized == "*" {
-        return Some(MultiplicityBounds {
-            lower: 0,
-            upper: None,
-        });
-    }
-    let exact = parse_non_negative_bound(normalized).ok()?;
-    Some(MultiplicityBounds {
-        lower: exact,
-        upper: Some(exact),
-    })
+    Some(MultiplicityBounds { lower, upper })
 }
 
 fn multiplicity_widens(child: MultiplicityBounds, parent: MultiplicityBounds) -> bool {
@@ -269,10 +262,11 @@ pub(crate) fn collect_kind_compatibility_diagnostics(
         }
 
         let redefines_target = node
-            .attributes
-            .get("redefines")
-            .and_then(|value| value.as_str())
-            .map(str::trim)
+            .declared_facts
+            .relationships
+            .redefinition
+            .first()
+            .map(|target| target.reference.trim())
             .filter(|value| !value.is_empty())
             .map(str::to_string);
         if let Some(trimmed) = redefines_target {
@@ -310,15 +304,10 @@ pub(crate) fn collect_kind_compatibility_diagnostics(
                             }
                         }
 
-                        let child_bounds = parse_multiplicity_bounds(
-                            node.attributes.get("multiplicity").and_then(|v| v.as_str()),
-                        );
-                        let parent_bounds = parse_multiplicity_bounds(
-                            target
-                                .attributes
-                                .get("multiplicity")
-                                .and_then(|v| v.as_str()),
-                        );
+                        let child_bounds =
+                            direct_multiplicity_bounds(node.declared_facts.multiplicity.as_ref());
+                        let parent_bounds =
+                            direct_multiplicity_bounds(target.declared_facts.multiplicity.as_ref());
                         if let (Some(child), Some(parent)) = (child_bounds, parent_bounds) {
                             if multiplicity_widens(child, parent) {
                                 let key = format!("mult|{}", node.id.qualified_name);
@@ -339,9 +328,7 @@ pub(crate) fn collect_kind_compatibility_diagnostics(
                         }
 
                         if node.element_kind == sysml_model::ElementKind::Attribute {
-                            if let Some(value) =
-                                node.attributes.get("value").and_then(|v| v.as_str())
-                            {
+                            if let Some(value) = node.expression_text.value.as_deref() {
                                 if attribute_value_is_string_literal(value) {
                                     if let Some(type_ref) = declared_type_ref(target) {
                                         if resolves_to_enum_def(graph, target, type_ref) {
@@ -363,33 +350,6 @@ pub(crate) fn collect_kind_compatibility_diagnostics(
                                                 ));
                                             }
                                         }
-                                    }
-                                }
-                            }
-                            if let (Some(child_type), Some(parent_type)) =
-                                (declared_type_ref(node), declared_type_ref(target))
-                            {
-                                let child_norm = normalize_declared_type_ref(child_type);
-                                let parent_norm = normalize_declared_type_ref(parent_type);
-                                if !child_norm.is_empty()
-                                    && !parent_norm.is_empty()
-                                    && child_norm != parent_norm
-                                    && !is_builtin_type_ref(&child_norm)
-                                {
-                                    let key = format!("rtype|{}", node.id.qualified_name);
-                                    if seen.insert(key) {
-                                        diagnostics.push(diag(
-                                            uri,
-                                            reference_token_range(node, child_type)
-                                                .unwrap_or_else(|| diagnostic_range(graph, node, None)),
-                                            DiagnosticSeverity::Error,
-                                            "semantic",
-                                            "redefinition_type_incompatible",
-                                            format!(
-                                                "Feature '{}' type '{}' is not conformant with inherited type '{}'.",
-                                                node.name, child_norm, parent_norm
-                                            ),
-                                        ));
                                     }
                                 }
                             }
@@ -416,6 +376,57 @@ pub(crate) fn collect_kind_compatibility_diagnostics(
                             ),
                         ));
                     }
+                }
+            }
+        }
+
+        if node
+            .declared_facts
+            .feature_properties
+            .as_ref()
+            .is_some_and(|properties| properties.is_derived)
+        {
+            continue;
+        }
+        for relationship_kind in [
+            RelationshipKind::Redefinition,
+            RelationshipKind::Subsetting,
+            RelationshipKind::ReferenceSubsetting,
+            RelationshipKind::CrossSubsetting,
+        ] {
+            for target in graph.outgoing_targets_by_kind(node, relationship_kind.clone()) {
+                if graph.feature_typing_conforms(node, target) {
+                    continue;
+                }
+                let (code, relationship) = match relationship_kind {
+                    RelationshipKind::Redefinition => {
+                        ("redefinition_type_incompatible", "redefined")
+                    }
+                    RelationshipKind::Subsetting => ("subsetting_type_incompatible", "subsetted"),
+                    RelationshipKind::ReferenceSubsetting => {
+                        ("subsetting_type_incompatible", "reference-subsetted")
+                    }
+                    RelationshipKind::CrossSubsetting => {
+                        ("subsetting_type_incompatible", "cross-subsetted")
+                    }
+                    _ => unreachable!("only type-conformance relationships are checked"),
+                };
+                let key = format!(
+                    "{code}|{}|{}",
+                    node.id.qualified_name, target.id.qualified_name
+                );
+                if seen.insert(key) {
+                    diagnostics.push(diag(
+                        uri,
+                        diagnostic_range(graph, node, Some(target)),
+                        DiagnosticSeverity::Error,
+                        "semantic",
+                        code,
+                        format!(
+                            "Feature '{}' has types that do not conform to {} feature '{}'.",
+                            node.name, relationship, target.name
+                        ),
+                    ));
                 }
             }
         }

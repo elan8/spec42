@@ -1778,8 +1778,8 @@ fn lsp_sysml_model_ibd_surveillance_drone_is_complete_enough_for_interconnection
     let default_root = ibd["defaultRoot"].as_str().expect("default root");
 
     assert_eq!(
-        default_root, "droneInstance",
-        "expected instance root to be selected by default"
+        default_root, "SurveillanceDrone.droneInstance",
+        "expected instance root to be selected by default, keyed by qualified name"
     );
     assert!(
         connectors.len() >= 14,
@@ -2008,7 +2008,7 @@ fn lsp_sysml_model_graph_includes_verification_semantics() {
 }
 
 #[test]
-fn lsp_sysml_model_graph_includes_analysis_objective_binding_to_result() {
+fn lsp_sysml_model_graph_includes_typed_numeric_analysis_result() {
     let mut child = spawn_server();
     let mut stdin = child.stdin.take().expect("stdin");
     let mut stdout = child.stdout.take().expect("stdout");
@@ -2016,13 +2016,17 @@ fn lsp_sysml_model_graph_includes_analysis_objective_binding_to_result() {
     let uri = "file:///analysis_graph_test.sysml";
     let content = r#"
         package V {
-            part def System;
-            analysis def AnalyzeStartup {
-                subject testSystem : System;
-                return ref analysisResult { return 1; }
-                objective startupObjective {
-                    doc /* Analyze startup behavior. */
-                }
+            attribute def PowerLevel :> Real;
+            requirement def MinimumPower {
+                subject result : PowerLevel;
+                attribute minimum : PowerLevel = -6.0;
+                require constraint { result >= minimum }
+            }
+            analysis AnalyzePower {
+                attribute inputPower : PowerLevel = 3.0;
+                attribute loss : Real = 7.5;
+                return attribute outputPower : PowerLevel = inputPower - loss;
+                objective powerObjective : MinimumPower;
             }
         }
     "#;
@@ -2071,16 +2075,24 @@ fn lsp_sysml_model_graph_includes_analysis_objective_binding_to_result() {
     let nodes = model_json["result"]["graph"]["nodes"]
         .as_array()
         .expect("graph nodes array");
-
     assert!(
         nodes.iter().any(|node| {
             node["type"].as_str() == Some("objective")
                 && node["attributes"]["objectiveBindingKind"].as_str() == Some("analysis_result")
                 && node["attributes"]["objectiveBoundTo"]
                     .as_str()
-                    .is_some_and(|bound_to| bound_to.ends_with("analysisResult"))
+                    .is_some_and(|bound_to| bound_to.ends_with("outputPower"))
         }),
         "expected analysis objective binding to analysis result in graph output"
+    );
+    assert!(
+        nodes.iter().any(|node| {
+            node["type"].as_str() == Some("analysis result")
+                && node["name"].as_str() == Some("outputPower")
+                && node["attributes"]["returnType"].as_str() == Some("PowerLevel")
+                && node["attributes"]["value"].as_str() == Some("(inputPower - loss)")
+        }),
+        "expected typed numeric analysis result expression in graph output: {nodes:#?}"
     );
 
     let _ = child.kill();
@@ -2165,10 +2177,9 @@ fn lsp_sysml_model_graph_includes_allocate_edges_for_resolvable_endpoints() {
     let _ = child.kill();
 }
 
-/// sysml/model with scope ["graph"] returns ibd with defaultRoot = SurveillanceQuadrotorDrone
-/// (largest top-level part tree), not Propulsion. Validates IBD backend for interconnection-view.
+/// sysml/model with scope ["graph"] selects the largest connected concrete part subtree as its
+/// IBD root. Definitions remain out of the interconnection payload.
 #[test]
-#[ignore] // behavior variance risk: defaultRoot selection is parser/graph-shape sensitive across fixtures
 fn lsp_sysml_model_ibd_default_root() {
     let mut child = spawn_server();
     let mut stdin = child.stdin.take().expect("stdin");
@@ -2256,8 +2267,8 @@ package SurveillanceDrone {
         .as_str()
         .expect("ibd should have defaultRoot");
     assert_eq!(
-        default_root, "SurveillanceQuadrotorDrone",
-        "defaultRoot must be SurveillanceQuadrotorDrone (largest tree), got: {}",
+        default_root, "SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion",
+        "defaultRoot must be the largest connected concrete part subtree, got: {}",
         default_root
     );
 
@@ -2267,56 +2278,46 @@ package SurveillanceDrone {
     assert!(
         root_candidates
             .iter()
-            .any(|c| c.as_str() == Some("SurveillanceQuadrotorDrone")),
-        "rootCandidates should include SurveillanceQuadrotorDrone: {:?}",
+            .any(|c| c.as_str() == Some("SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion")),
+        "rootCandidates should include the propulsion subtree: {:?}",
         root_candidates
     );
     assert!(
-        root_candidates
-            .iter()
-            .any(|c| c.as_str() == Some("Propulsion")),
-        "rootCandidates should include Propulsion: {:?}",
+        root_candidates.iter().any(|c| {
+            c.as_str() == Some("SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl")
+        }),
+        "rootCandidates should include the flight-control subtree: {:?}",
         root_candidates
     );
 
     let parts = ibd["parts"].as_array().expect("ibd should have parts");
-    let sqd_parts: Vec<_> = parts
+    let propulsion_parts: Vec<_> = parts
         .iter()
         .filter(|p| {
             let qn = p["qualifiedName"].as_str().unwrap_or("");
-            qn == "SurveillanceDrone.SurveillanceQuadrotorDrone"
-                || qn.starts_with("SurveillanceDrone.SurveillanceQuadrotorDrone.")
+            qn == "SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion"
+                || qn.starts_with("SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.")
         })
         .collect();
 
     assert!(
-        sqd_parts.len() >= 8,
-        "IBD must include complete part tree: root + propulsion + flightControl + 4 propulsionUnit + flightController; got {}: {:?}",
-        sqd_parts.len(),
-        sqd_parts.iter().map(|p| p["qualifiedName"].as_str()).collect::<Vec<_>>()
+        propulsion_parts.len() >= 5,
+        "IBD must include the selected subtree and all four propulsion units; got {}: {:?}",
+        propulsion_parts.len(),
+        propulsion_parts
+            .iter()
+            .map(|p| p["qualifiedName"].as_str())
+            .collect::<Vec<_>>()
     );
 
-    let has_propulsion_units = sqd_parts.iter().any(|p| {
+    let has_propulsion_units = propulsion_parts.iter().any(|p| {
         let qn = p["qualifiedName"].as_str().unwrap_or("");
         qn.contains(".propulsion.propulsionUnit")
     });
     assert!(
         has_propulsion_units,
         "IBD must include nested parts under propulsion (propulsionUnit1..4); got: {:?}",
-        sqd_parts
-            .iter()
-            .map(|p| p["qualifiedName"].as_str())
-            .collect::<Vec<_>>()
-    );
-
-    let has_flight_controller = sqd_parts.iter().any(|p| {
-        let qn = p["qualifiedName"].as_str().unwrap_or("");
-        qn.contains(".flightControl.flightController")
-    });
-    assert!(
-        has_flight_controller,
-        "IBD must include nested part under flightControl (flightController); got: {:?}",
-        sqd_parts
+        propulsion_parts
             .iter()
             .map(|p| p["qualifiedName"].as_str())
             .collect::<Vec<_>>()

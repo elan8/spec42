@@ -7,18 +7,23 @@ use sysml_v2_parser::ast::{
 };
 use url::Url;
 
-use crate::semantic::ast_util::{connection_end_expression, span_to_range, subsetting_target};
+use crate::semantic::ast_util::{
+    connection_end_expression, declared_multiplicity, span_to_range, subsetting_target,
+};
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::model::{ElementKind, NodeId, RelationshipKind};
+use crate::semantic::model::{DeclaredFeatureProperties, ElementKind, NodeId, RelationshipKind};
 use crate::semantic::relationships::{
     add_edge_if_both_exist, add_typing_edge_if_exists, try_wire_derivation_connection,
 };
 
 use super::expressions;
-use super::{add_node_and_recurse, qualified_name_for_node};
+use super::{
+    add_node_and_recurse, attach_declared_subsetting_family, attach_feature_properties,
+    qualified_name_for_node,
+};
 use crate::semantic::resolution::resolve_expression_endpoint_qualified;
 
-fn add_end_decl(
+pub(super) fn add_end_decl(
     g: &mut SemanticGraph,
     uri: &Url,
     container_prefix: Option<&str>,
@@ -28,27 +33,17 @@ fn add_end_decl(
     let n = &wrap.value;
     let range = span_to_range(&wrap.span);
     let qualified = qualified_name_for_node(g, uri, container_prefix, &n.name, "interface end");
-    let mut attrs = HashMap::new();
-    // `endType` feeds `add_connection_edges_from_end_typing`'s connection-wiring fallback below
-    // regardless of whether this end is typed (`:`) or reference-subsetted (`::>`/`references`)
-    // -- it resolves via `resolve_expression_endpoint_qualified`, which already understands both
-    // bare names and dotted feature chains as *feature* references, not type names.
-    attrs.insert("endType".to_string(), serde_json::json!(&n.type_name));
-    if let Some(reference_target) = subsetting_target(n.references.as_deref()) {
+    let attrs = HashMap::new();
+    if subsetting_target(n.references.as_deref()).is_none() {
         // spec42#1/#2: `::>`/`references` names a reference (KerML `ReferenceSubsetting`), not a
         // type. Previously this always also set `portType`, which feeds the generic
         // type-resolution diagnostics/edges (`unresolved_type_reference`,
         // `add_typing_edge_if_exists`) and misfired treating the referenced feature's name as an
-        // unresolved type. Set `referencesFeature` instead, which
+        // unresolved type. The reference case is handled below by
+        // `attach_declared_subsetting_family` into the typed `reference_subsetting` fact, which
         // `link_subsetting_family_edges_for_node` already resolves into a proper
         // `ReferenceSubsetting` edge the same way attribute/occurrence usages' `references`
         // clauses do.
-        attrs.insert(
-            "referencesFeature".to_string(),
-            serde_json::json!(reference_target),
-        );
-    } else {
-        attrs.insert("portType".to_string(), serde_json::json!(&n.type_name));
     }
     add_node_and_recurse(
         g,
@@ -60,8 +55,40 @@ fn add_end_decl(
         attrs,
         Some(parent_id),
     );
-    if n.references.is_none() {
+    attach_feature_properties(
+        g,
+        &NodeId::new(uri, &qualified),
+        DeclaredFeatureProperties {
+            is_end: true,
+            ..DeclaredFeatureProperties::default()
+        },
+    );
+    attach_declared_subsetting_family(
+        g,
+        &NodeId::new(uri, &qualified),
+        None,
+        n.redefines.as_deref(),
+        n.references.as_deref(),
+        n.crosses.as_deref(),
+    );
+    if let Some(multiplicity) = &n.multiplicity {
+        if let Some(node) = g.get_node_mut(&NodeId::new(uri, &qualified)) {
+            node.declared_facts.multiplicity = Some(declared_multiplicity(multiplicity, false));
+        }
+    }
+    // A typed end can also carry a trailing `::>` reference-subsetting clause.  The AST's
+    // `references` field represents both that form and the reference-only form, so the syntax
+    // discriminator is the only sound way to decide whether a typing edge is authored.
+    if !n.uses_derived_syntax {
         add_typing_edge_if_exists(g, uri, &qualified, &n.type_name, container_prefix);
+    }
+    // Recorded separately from `DeclaredRelationshipFacts::typing` (which several unresolved-type
+    // diagnostics walk directly): interface ends resolve leniently through
+    // `resolve_expression_endpoint_qualified`/`resolve_type_target_in_workspace`, and folding this
+    // into the generic typing-fact vector would make those diagnostics fire an extra
+    // `unresolved_type_reference` alongside `interface_end_invalid` for every unresolved end.
+    if let Some(node) = g.get_node_mut(&NodeId::new(uri, &qualified)) {
+        node.declared_facts.interface_end_type = Some(n.type_name.clone());
     }
 }
 
@@ -108,6 +135,9 @@ pub(super) fn add_connection_edges_from_end_typing(
     uri: &Url,
     parent_id: &NodeId,
 ) {
+    if g.structural_input_only {
+        return;
+    }
     let Some(parent) = g.get_node(parent_id) else {
         return;
     };
@@ -129,9 +159,8 @@ pub(super) fn add_connection_edges_from_end_typing(
                 .map(|target| target.id.qualified_name.clone())
                 .or_else(|| {
                     child
-                        .attributes
-                        .get("endType")
-                        .and_then(|value| value.as_str())
+                        .declared_facts
+                        .declared_end_reference()
                         .and_then(|end_type| {
                             resolve_expression_endpoint_qualified(g, uri, scope_prefix, end_type)
                         })
@@ -205,7 +234,7 @@ pub(super) fn build_from_interface_def_body_element(
             Some(parent_id),
             item,
         ),
-        E::ItemUsage(_) | E::PortUsage(_) => {}
+        E::ItemUsage(_) | E::PortUsage(_) | E::Error(_) => {}
         E::PortDef(port) => super::package_body::materialize_port_def(
             g,
             uri,
@@ -213,6 +242,11 @@ pub(super) fn build_from_interface_def_body_element(
             Some(parent_id),
             port,
         ),
+        // GH-85 (sysml-v2-parser): bare `flow <a> to <b>;` shorthand connecting two of this
+        // interface's own ends.
+        E::FlowUsage(flow) => {
+            super::flow_usage::materialize_flow_usage(flow, uri, container_prefix, parent_id, g);
+        }
     }
 }
 
@@ -262,7 +296,12 @@ pub(super) fn build_from_connection_def_body_element(
             Some(parent_id),
             port,
         ),
-        E::ItemUsage(_) | E::PortUsage(_) | E::Error(_) => {}
+        E::ItemUsage(_)
+        | E::PortUsage(_)
+        | E::AssertConstraint(_)
+        | E::OccurrenceUsage(_)
+        | E::SuccessionUsage(_)
+        | E::Error(_) => {}
     }
 }
 

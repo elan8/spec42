@@ -1,0 +1,15 @@
+{
+  "outcome": {
+    "kind": "failure",
+    "category": "outputpolicy",
+    "phase": "artifact-validation",
+    "message": "generator returned 3 files; the limit is 2"
+  },
+  "artifacts": {},
+  "diagnostics": [],
+  "query_count": 0,
+  "fuel_consumed": null,
+  "peak_memory_bytes": 0,
+  "output_files": 0,
+  "output_bytes": 0
+}

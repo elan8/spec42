@@ -1,3 +1,8 @@
 [toolchain]
-channel = "stable"
+# Exact version, not a floating "stable" channel: spec42 isn't published to crates.io, so
+# there's no downstream MSRV promise to keep -- this pin exists purely so CI (and local
+# `cargo` invocations, via rustup's toolchain-file auto-detection) can't be broken by a new
+# stable Rust release adding a default-warn lint on an unrelated day. Keep in sync with
+# RUST_TOOLCHAIN_VERSION in .github/workflows/ci.yml and release.yml; bump both deliberately.
+channel = "1.97.1"
 components = ["clippy", "rustfmt"]

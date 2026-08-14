@@ -18,9 +18,9 @@ pub use semantic::evaluation::{
     evaluate_expressions, evaluate_expressions_with_unit_catalogs, UnitRegistry,
 };
 pub use semantic::explicit_views::{
-    build_view_candidates, build_view_catalog, evaluate_views, project_ids_for_renderer,
-    renderer_view_for_view_type, EvaluatedView, ExposeSpec, FilterExpr, ViewCatalog,
-    ViewDefinitionSpec, ViewUsageSpec,
+    build_view_candidates, build_view_catalog, element_type_matches_all_filters, evaluate_views,
+    parse_filter_text, project_ids_for_renderer, renderer_view_for_view_type, EvaluatedView,
+    ExposeSpec, FilterExpr, ViewCatalog, ViewDefinitionSpec, ViewUsageSpec,
 };
 pub use semantic::extracted_model::extract_activity_diagrams;
 pub use semantic::graph::{PendingExpressionRelationship, PendingRelationship, SemanticGraph};
@@ -30,7 +30,8 @@ pub use semantic::ibd::{
     merge_ibd_payloads_for_workspace_finalize, IbdDataDto,
 };
 pub use semantic::import_resolution::{
-    resolve_imported_node_ids_for_simple_name, resolve_type_reference_targets,
+    import_target_range, resolve_import_target, resolve_imported_node_ids_for_simple_name,
+    resolve_type_reference_targets, ImportTargetResolution,
 };
 pub use semantic::interconnection_elk::build_elk_graph_from_scene;
 pub use semantic::interconnection_projection::{
@@ -43,8 +44,21 @@ pub use semantic::library_loader::{
     LibraryClosureOptions, LoadedLibraryFile, WorkspaceSource,
 };
 pub use semantic::model::{
-    ConnectStatementDetail, DeclaredExpression, ElementKind, FlowStatementDetail, NodeId,
-    RelationshipKind, SemanticEdge, SemanticNode,
+    AnalysisEvaluation, ConnectStatementDetail, ConstructionOwner, DeclaredBinaryOperator,
+    DeclaredCollectionOperator, DeclaredExpression, DeclaredExpressionKind,
+    DeclaredExpressionOperator, DeclaredFeatureProperties, DeclaredImportFacts,
+    DeclaredImportTarget, DeclaredLiteral, DeclaredMembershipFacts, DeclaredMembershipKind,
+    DeclaredMultiplicity, DeclaredMultiplicityBound, DeclaredMultiplicityBounds,
+    DeclaredRelationshipFacts, DeclaredRelationshipTarget, DeclaredSemanticFacts,
+    DeclaredTypeCheckOperator, DeclaredUnaryOperator, DerivedRelationshipResolution,
+    EffectiveFeatureOwnership, EffectiveMembershipVisibility, EffectiveSemanticFacts, ElementKind,
+    EvaluatedValue, EvaluationPublicationState, EvaluationStatus, ExpressionEvaluation,
+    ExpressionEvaluationQuery, ExpressionResultId, ExpressionResultRole,
+    FeatureOwnershipProvenance, FlowStatementDetail, ImpliedFeatureOwnership,
+    ImpliedFeatureValueBinding, ImpliedMultiplicity, ImpliedRelationshipRule, ImportOrigin,
+    ImportShape, MembershipVisibilityProvenance, NodeEvaluationFacts, NodeId, RelationshipKind,
+    RelationshipProvenance, SemanticEdge, SemanticNode, SourceTextFacts, StandardLibraryElement,
+    TransitionEndpointFacts, UniversalStandardLibraryRelationship, VisibilityKind,
 };
 pub use semantic::pipeline::{
     build_and_link_graph, build_and_link_graph_parallel, evaluate_workspace_graph,
@@ -56,6 +70,23 @@ pub use semantic::prepared_view::{
     prepare_interconnection_prepared_view, prepare_view_from_visualization, PreparedEdgeDto,
     PreparedNodeDto, PreparedViewDto,
 };
+pub use semantic::publication::{
+    build_prepared_semantic_model, build_semantic_model, AuthoredReferenceId,
+    BehaviorDiagnosticInput, BehaviorDiagnosticRelationship, BuilderDiagnosticInput,
+    BuilderDiagnosticReference, ConnectionDiagnosticInput, ConnectionDiagnosticRelationship,
+    ConstructionStrategy, DerivedRelationshipRule, EvaluationPolicy, ExpressionDiagnosticFact,
+    ExpressionDiagnosticInput, ImmutableSourceSnapshot, ImportConformanceOutcome,
+    NavigationOutcome, NavigationQueryError, NavigationReference, NavigationTarget,
+    PreparedSemanticBuildRequest, ReferenceKind, RequirementCaseDiagnosticInput,
+    RequirementCaseDiagnosticRelationship, ResolutionDiagnosticCandidate,
+    ResolutionDiagnosticInput, ResolutionDiagnosticReference, ResolutionImportFact,
+    ResolutionOutcome, ResolutionProvenance, SemanticBuildFailure, SemanticBuildRequest,
+    SemanticCompleteness, SemanticConfiguration, SemanticContractVersion, SemanticModel,
+    SemanticModelCompleteness, SemanticModelIdentity, SemanticModelPhase, SemanticPhase,
+    SemanticPublication, StructuralDiagnosticFact, StructuralDiagnosticInput, UnitDiagnosticFact,
+    UnitDiagnosticInput, ViewDiagnosticInput, ViewDiagnosticRelationship,
+    CURRENT_SEMANTIC_CONTRACT_VERSION,
+};
 pub use semantic::reference_resolution::{
     parse_expose_target_suffix, resolve_expose_target, resolve_expression_endpoint_strict,
     resolve_expression_endpoint_workspace, resolve_inherited_member_via_type,
@@ -64,7 +95,6 @@ pub use semantic::reference_resolution::{
 pub use semantic::relationships::{
     add_cross_document_edges_for_uri, link_workspace_derivations, link_workspace_relationships,
     resolve_cross_document_edges_for_uri, resolve_workspace_pending_relationships,
-    TYPE_REFERENCE_ATTR_KEYS,
 };
 pub use semantic::relationships::{add_semantic_edge_once, AddSemanticEdgeResult};
 pub use semantic::render_snapshot::{

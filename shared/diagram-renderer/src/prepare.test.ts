@@ -84,6 +84,26 @@ describe("shared prepareViewData", () => {
     expect(groups?.map((g) => g.name).sort()).toEqual(["PkgA", "PkgB"]);
   });
 
+  it("builds package container groups when the raw payload has no separate qualifiedName field", () => {
+    // Regression test for O-4: graph nodes coming off the Rust side never carry a top-level or
+    // `attributes.qualifiedName` field -- `id` *is* the qualified name (e.g.
+    // "PhysicalArchitecture::BaseModule"). Without falling back to `id`, package grouping (and
+    // the compact-layout chunking it enables) silently never activated for any real payload.
+    const prepared = prepareViewData({
+      view: "general-view",
+      graph: {
+        nodes: [
+          { id: "PkgA::A", name: "A", type: "part def" },
+          { id: "PkgB::B", name: "B", type: "part def" },
+        ],
+        edges: [],
+      },
+    });
+    const groups = prepared.meta?.packageContainerGroups as Array<{ name: string; memberIds: string[] }>;
+    expect(groups).toHaveLength(2);
+    expect(groups?.map((g) => g.name).sort()).toEqual(["PkgA", "PkgB"]);
+  });
+
   it("marks reference usages on prepared nodes", () => {
     const prepared = prepareViewData({
       view: "general-view",
@@ -430,6 +450,36 @@ describe("shared prepareViewData", () => {
     expect(prepared.edges).toHaveLength(2);
     expect(prepared.edges[0]?.source).toBe("WebShopBehavior::CheckoutPipeline::validateCart");
     expect(prepared.edges[1]?.target).toBe("WebShopBehavior::CheckoutPipeline::reserveInventory");
+  });
+
+  it("distinguishes streaming flows from successions", () => {
+    const prepared = prepareViewData({
+      view: "action-flow-view",
+      activityDiagrams: [{
+        id: "Demo::Behavior",
+        name: "Behavior",
+        actions: [
+          { id: "Demo::Behavior::a", name: "a", type: "action" },
+          { id: "Demo::Behavior::b", name: "b", type: "action" },
+          { id: "Demo::Behavior::c", name: "c", type: "action" },
+        ],
+        flows: [
+          { id: "stream", from: "a", to: "b", guard: "flow" },
+          { id: "sequence", from: "b", to: "c", guard: "succession" },
+        ],
+      }],
+    });
+
+    expect(prepared.edges[0]?.attributes).toMatchObject({
+      streamingFlow: true,
+      succession: false,
+      flowKind: "streaming",
+    });
+    expect(prepared.edges[1]?.attributes).toMatchObject({
+      streamingFlow: false,
+      succession: true,
+      flowKind: "succession",
+    });
   });
 
   it("matches action-flow diagram when view usage name differs in case from diagram name", () => {

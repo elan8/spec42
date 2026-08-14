@@ -10,6 +10,7 @@
     "sysml-viz-svg": 1,
     "viz-bg": 1,
     "viz-edge": 1,
+    "viz-edge-hit-target": 1,
     "viz-edge--flow": 1,
     "viz-edges": 1,
     "viz-node": 2,

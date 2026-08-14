@@ -14,8 +14,7 @@ use url::Url;
 
 use super::requirement_body::{import_member_label, walk_requirement_def_body};
 use crate::semantic::ast_util::{
-    attach_membership_visibility, attach_short_name_attribute, definition_feature_properties,
-    identification_name, span_to_range, text_range_to_json,
+    definition_feature_properties, identification_name, span_to_range, text_range_to_json,
 };
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{ElementKind, NodeId, RelationshipKind};
@@ -37,13 +36,101 @@ use super::unit_metadata;
 use super::verification;
 use super::view_def;
 use super::{
-    add_node_and_recurse, attach_feature_properties, insert_def_specialization_attr,
-    qualified_name_for_node, wire_def_specialization_edge,
+    add_node_and_recurse, attach_feature_properties, qualified_name_for_node,
+    resolve_addressable_name, wire_def_specialization_edge,
 };
 use super::{interface_def, part_def, port_def, state, usage_builders, use_case};
 
 mod materialize;
 pub(crate) use materialize::*;
+
+/// Materializes a file-scope member only when the parser publishes structured semantic fields.
+///
+/// This match is intentionally exhaustive: source-fidelity and recovery variants are rejected
+/// here instead of being passed to a materializer that could reconstruct facts from their text.
+/// When the parser adds a package-body variant, this function must classify its contract before
+/// a root graph can expose it.
+pub(super) fn build_from_root_member(
+    node: &Node<PackageBodyElement>,
+    uri: &Url,
+    root: &RootNamespace,
+    g: &mut SemanticGraph,
+) {
+    use PackageBodyElement as PBE;
+
+    let has_structured_semantic_fields = match &node.value {
+        PBE::Error(_)
+        | PBE::Doc(_)
+        | PBE::Comment(_)
+        | PBE::FeatureDecl(_)
+        | PBE::ClassifierDecl(_)
+        | PBE::KermlSemanticDecl(_)
+        | PBE::KermlFeatureDecl(_)
+        | PBE::ExtendedLibraryDecl(_) => false,
+        PBE::TextualRep(_)
+        | PBE::Filter(_)
+        | PBE::Package(_)
+        | PBE::LibraryPackage(_)
+        | PBE::Import(_)
+        | PBE::PartDef(_)
+        | PBE::PartUsage(_)
+        | PBE::PortDef(_)
+        | PBE::InterfaceDef(_)
+        | PBE::AliasDef(_)
+        | PBE::AttributeDef(_)
+        | PBE::ActionDef(_)
+        | PBE::ActionUsage(_)
+        | PBE::RequirementDef(_)
+        | PBE::RequirementUsage(_)
+        | PBE::Satisfy(_)
+        | PBE::UseCaseDef(_)
+        | PBE::Actor(_)
+        | PBE::StateDef(_)
+        | PBE::StateUsage(_)
+        | PBE::ItemDef(_)
+        | PBE::IndividualDef(_)
+        | PBE::ConstraintDef(_)
+        | PBE::ConstraintUsage(_)
+        | PBE::CalcDef(_)
+        | PBE::ViewDef(_)
+        | PBE::ViewpointDef(_)
+        | PBE::RenderingDef(_)
+        | PBE::ViewUsage(_)
+        | PBE::ViewpointUsage(_)
+        | PBE::RenderingUsage(_)
+        | PBE::ConnectionDef(_)
+        | PBE::MetadataDef(_)
+        | PBE::MetadataUsage(_)
+        | PBE::EnumDef(_)
+        | PBE::OccurrenceDef(_)
+        | PBE::OccurrenceUsage(_)
+        | PBE::Dependency(_)
+        | PBE::AllocationDef(_)
+        | PBE::AllocationUsage(_)
+        | PBE::FlowDef(_)
+        | PBE::FlowUsage(_)
+        | PBE::ConcernUsage(_)
+        | PBE::CaseDef(_)
+        | PBE::CaseUsage(_)
+        | PBE::AnalysisCaseDef(_)
+        | PBE::AnalysisCaseUsage(_)
+        | PBE::VerificationCaseDef(_)
+        | PBE::VerificationCaseUsage(_)
+        | PBE::UseCaseUsage(_)
+        | PBE::AttributeUsage(_)
+        | PBE::ItemUsage(_)
+        | PBE::PortUsage(_)
+        | PBE::ConnectionUsage(_)
+        | PBE::InterfaceUsage(_)
+        | PBE::Ref(_)
+        | PBE::EnumerationUsage(_)
+        | PBE::MetadataKeywordUsage(_)
+        | PBE::Connect(_) => true,
+    };
+    if has_structured_semantic_fields {
+        build_from_package_body_element(node, uri, None, None, root, g);
+    }
+}
 
 pub(super) fn build_from_package_body_element(
     node: &Node<PackageBodyElement>,

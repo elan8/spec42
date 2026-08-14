@@ -89,20 +89,26 @@ pack_library() {
   local out="$6"
 
   echo "Packing ${id} KPAR from ${source_dir}"
-  if [[ "${kind}" == "named-prefix" ]]; then
-    cargo run --quiet -p kpar --bin kpar-pack -- \
-      --root "${source_dir}" \
-      --name "elan8-${id}-libraries" \
-      --version "${version}" \
-      --named-source "${archive_prefix}=${source_dir}" \
-      --output "${out}"
-  else
-    cargo run --quiet -p kpar --bin kpar-pack -- \
-      --root "${source_dir}" \
-      --name "elan8-${id}-libraries" \
-      --version "${version}" \
-      --output "${out}"
+  local project_file="${source_dir}/.project.json"
+  if [[ ! -f "${project_file}" ]]; then
+    echo "Cannot bundle ${id}: ${project_file} is required and owns KPAR project metadata." >&2
+    echo "Add a valid .project.json with version ${version} to the release source, then retry." >&2
+    exit 1
   fi
+  local project_version
+  project_version="$(node -e 'const fs = require("fs"); const project = JSON.parse(fs.readFileSync(process.argv[1], "utf8")); if (!project.version) process.exit(2); process.stdout.write(String(project.version));' "${project_file}")" || {
+    echo "Cannot bundle ${id}: ${project_file} must be valid project metadata with a version." >&2
+    exit 1
+  }
+  if [[ "${project_version}" != "${version}" ]]; then
+    echo "Cannot bundle ${id}: ${project_file} version ${project_version} does not match pinned version ${version}." >&2
+    exit 1
+  fi
+  local command=(cargo run --quiet -p server --no-default-features --bin spec42 -- bundle "${source_dir}" --output "${out}" --exclude .git --exclude examples --exclude scripts --exclude docs)
+  if [[ "${kind}" == "named-prefix" ]]; then
+    command+=(--archive-prefix "${archive_prefix}")
+  fi
+  "${command[@]}"
   unzip -tq "${out}" >/dev/null
 }
 
@@ -154,7 +160,11 @@ fetch_one() {
 
 ids=("$@")
 if [[ ${#ids[@]} -eq 0 ]]; then
-  mapfile -t ids < <(list_library_ids)
+  while IFS= read -r id; do
+    if [[ -n "${id}" ]]; then
+      ids+=("${id}")
+    fi
+  done < <(list_library_ids)
 fi
 
 for id in "${ids[@]}"; do

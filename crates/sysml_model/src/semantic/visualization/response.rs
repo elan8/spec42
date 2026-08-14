@@ -1,6 +1,6 @@
 //! Visualization response assembly (artifacts, slim payload, DTO output).
 
-use std::collections::{HashMap, HashSet};
+use std::collections::{BTreeMap, HashMap, HashSet};
 use std::time::Instant;
 
 use url::Url;
@@ -130,7 +130,7 @@ pub fn build_merged_workspace_ibd(
             package_container_groups: Vec::new(),
             root_candidates: Vec::new(),
             default_root: None,
-            root_views: HashMap::new(),
+            root_views: BTreeMap::new(),
             def_instance_mappings: Vec::new(),
         };
     }
@@ -172,7 +172,7 @@ pub fn empty_merged_ibd() -> IbdDataDto {
         package_container_groups: Vec::new(),
         root_candidates: Vec::new(),
         default_root: None,
-        root_views: HashMap::new(),
+        root_views: BTreeMap::new(),
         def_instance_mappings: Vec::new(),
     }
 }
@@ -559,7 +559,7 @@ pub fn build_sysml_visualization_from_artifacts(
     );
     let scene_start = Instant::now();
     let interconnection_scene = if resolved_view == "interconnection-view" {
-        let root_ids = selected_evaluated
+        let mut root_ids = selected_evaluated
             .map(|evaluated| {
                 evaluated
                     .exposed_ids
@@ -569,6 +569,12 @@ pub fn build_sysml_visualization_from_artifacts(
             })
             .filter(|ids| !ids.is_empty())
             .unwrap_or_else(|| filtered_ibd.root_candidates.clone());
+        root_ids.sort_by(|left, right| {
+            left.matches('.')
+                .count()
+                .cmp(&right.matches('.').count())
+                .then_with(|| left.cmp(right))
+        });
         Some(build_interconnection_scene(
             &filtered_ibd,
             &selected_view_id,

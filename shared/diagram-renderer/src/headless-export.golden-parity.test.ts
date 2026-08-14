@@ -11,7 +11,7 @@ import interconnectionViewGolden from "./test-support/golden-parity/interconnect
  * QuickJS in `crates/server/src/headless_renderer.rs`). Renders the identical fixture
  * payloads `renderer.golden-parity.test.ts` renders through a real jsdom DOM, and must
  * produce the same structural markers -- see that file's doc comment and
- * DIAGRAM-EXPORT-QUALITY-ANALYSIS.md's "CLI vs VS Code golden parity tests" item.
+ * CLI vs VS Code golden parity structural markers.
  *
  * A failure here that the jsdom suite doesn't share means the virtual DOM shim in
  * `headless-export.ts` has diverged from real DOM behavior for this fixture -- e.g. a new

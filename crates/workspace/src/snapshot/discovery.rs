@@ -66,7 +66,7 @@ pub fn discover_target_files(targets: &[PathBuf]) -> WorkspaceResult<Vec<PathBuf
 /// Public so embedders holding an [`crate::IncrementalWorkspace`] directly (not going through
 /// the `snapshot` build pipeline) can compute `library_urls` for
 /// [`crate::validate_workspace`] with the same normalization
-/// [`super::build::build_workspace_snapshot`] applies — see `SPEC42-ISSUES.md` in downstream
+/// `snapshot::build::build_workspace_snapshot` applies — see `SPEC42-ISSUES.md` in downstream
 /// consumers for what silently diverging normalization once broke.
 pub fn path_to_file_url(path: &Path) -> WorkspaceResult<Url> {
     let absolute = if path.is_absolute() {
@@ -92,27 +92,7 @@ pub fn path_to_file_url(path: &Path) -> WorkspaceResult<Url> {
             canonical.display()
         ))
     })?;
-    Ok(normalize_file_url_drive_letter(url))
-}
-
-/// Lowercases the Windows drive letter in a `file://` URL (`file:///C:/...` → `file:///c:/...`).
-/// Keeps URIs consistent with those produced by `FileSystemDocumentProvider` so that
-/// semantic graph lookups by URI don't fail due to drive-letter case mismatches.
-fn normalize_file_url_drive_letter(url: Url) -> Url {
-    if url.scheme() != "file" {
-        return url;
-    }
-    let path = url.path();
-    if path.len() >= 3 {
-        let bytes = path.as_bytes();
-        if bytes[0] == b'/' && bytes[1].is_ascii_uppercase() && bytes[2] == b':' {
-            let new_path = format!("/{}{}", (bytes[1] as char).to_ascii_lowercase(), &path[2..]);
-            if let Ok(normalized) = Url::parse(&format!("file://{new_path}")) {
-                return normalized;
-            }
-        }
-    }
-    url
+    Ok(language_service::uri::normalize_uri(&url))
 }
 
 fn normalize_existing_path(path: &Path) -> WorkspaceResult<PathBuf> {

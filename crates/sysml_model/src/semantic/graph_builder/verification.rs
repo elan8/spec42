@@ -10,7 +10,7 @@ use super::requirement_body::{add_verified_requirement_node, verify_requirement_
 use super::use_case::{self, add_include_use_case_node};
 use super::{add_node_and_recurse, expressions, qualified_name_for_node};
 use crate::semantic::analysis_typing::strip_analysis_return_body;
-use crate::semantic::ast_util::{attach_membership_visibility, span_to_range, typing_targets};
+use crate::semantic::ast_util::{declared_expression, span_to_range, typing_targets};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::NodeId;
 use crate::semantic::relationships::add_typing_edge_if_exists;
@@ -107,11 +107,7 @@ pub(super) fn build_from_verification_body(
                     &name,
                     "subject",
                 );
-                let mut attrs = HashMap::new();
-                attrs.insert(
-                    "subjectType".to_string(),
-                    serde_json::json!(sd.value.type_name.as_str()),
-                );
+                let attrs = HashMap::new();
                 add_node_and_recurse(
                     g,
                     uri,
@@ -147,14 +143,6 @@ pub(super) fn build_from_verification_body(
                     "objectiveBindingKind".to_string(),
                     serde_json::json!("verification_subject"),
                 );
-                if let Some(bound_to) = case_subject_qualified.as_ref() {
-                    objective_attrs
-                        .insert("objectiveBoundTo".to_string(), serde_json::json!(bound_to));
-                }
-                if let Some(type_name) = objective.value.requirement.value.type_name.as_ref() {
-                    objective_attrs
-                        .insert("objectiveType".to_string(), serde_json::json!(type_name));
-                }
                 add_node_and_recurse(
                     g,
                     uri,
@@ -166,6 +154,14 @@ pub(super) fn build_from_verification_body(
                     Some(parent_id),
                 );
                 objective_node_ids.push(NodeId::new(uri, &qualified));
+                if let Some(bound_to) = case_subject_qualified.as_ref() {
+                    if let Some(node) = g.get_node_mut(&NodeId::new(uri, &qualified)) {
+                        node.declared_facts
+                            .analysis_case
+                            .get_or_insert_with(Default::default)
+                            .objective_bound_to = Some(bound_to.clone());
+                    }
+                }
                 if let Some(type_name) = objective.value.requirement.value.type_name.as_ref() {
                     add_typing_edge_if_exists(g, uri, &qualified, type_name, container_prefix);
                 }
@@ -184,7 +180,7 @@ pub(super) fn build_from_verification_body(
                                 g,
                                 uri,
                                 container_prefix,
-                                parent_id,
+                                &NodeId::new(uri, &qualified),
                                 &requirement_ref,
                                 verify_node.value.explicit_requirement_keyword,
                                 span_to_range(&verify_node.span),
@@ -207,13 +203,8 @@ pub(super) fn build_from_verification_body(
                     "verify",
                 );
                 let mut attrs = HashMap::new();
-                attrs.insert(
-                    "lhs".to_string(),
-                    serde_json::json!(expressions::expression_to_debug_string(&value.lhs)),
-                );
+                let lhs_text = expressions::expression_to_debug_string(&value.lhs);
                 let rhs_text = expressions::expression_to_debug_string(&value.rhs);
-                attrs.insert("rhs".to_string(), serde_json::json!(rhs_text));
-                attrs.insert("isThen".to_string(), serde_json::json!(value.is_then));
                 let rhs_trimmed = rhs_text.trim();
                 attrs.insert(
                     "rhsIsBoolean".to_string(),
@@ -229,6 +220,11 @@ pub(super) fn build_from_verification_body(
                     attrs,
                     Some(parent_id),
                 );
+                if let Some(node) = g.get_node_mut(&NodeId::new(uri, &qualified)) {
+                    node.expression_text.lhs = Some(lhs_text);
+                    node.expression_text.rhs = Some(rhs_text);
+                    node.expression_text.is_then = Some(value.is_then);
+                }
             }
             UseCaseDefBodyElement::ThenDone(done) => {
                 verdict_count += 1;
@@ -276,13 +272,19 @@ pub(super) fn build_from_verification_body(
                     attrs,
                     Some(parent_id),
                 );
+                if let Some(expression) = value.return_expression.as_ref().map(declared_expression) {
+                    if let Some(verdict) = g.get_node_mut(&NodeId::new(uri, &qualified)) {
+                        verdict.declared_facts.own_expression = Some(expression);
+                    }
+                }
                 let expression = strip_analysis_return_body(value.body.as_str());
                 if !expression.is_empty() {
                     if let Some(parent_node) = g.get_node_mut(parent_id) {
-                        parent_node.attributes.insert(
-                            "analysisExpression".to_string(),
-                            serde_json::json!(expression),
-                        );
+                        parent_node
+                            .declared_facts
+                            .analysis_case
+                            .get_or_insert_with(Default::default)
+                            .expression = Some(expression);
                     }
                 }
             }
@@ -316,19 +318,11 @@ pub(super) fn build_from_verification_body(
                     "attribute def",
                 );
                 let mut attrs = HashMap::new();
-                attach_membership_visibility(&mut attrs, &value.membership);
-                let typed_by = typing_targets(value.typing.as_deref());
-                if !typed_by.is_empty() {
-                    attrs.insert(
-                        "attributeType".to_string(),
-                        serde_json::json!(typed_by.join(", ")),
-                    );
-                }
+                g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&value.membership),
+    );
                 if let Some(expr_node) = &value.value {
-                    let rendered =
-                        super::expressions::expression_to_debug_string(&expr_node.value.expression);
-                    attrs.insert("value".to_string(), serde_json::json!(rendered));
-                    attrs.insert("defaultValue".to_string(), serde_json::json!(rendered));
                     attrs.insert(
                         "valueIsBoolean".to_string(),
                         serde_json::json!(super::expressions::expression_is_boolean_valued(
@@ -352,6 +346,14 @@ pub(super) fn build_from_verification_body(
                     attrs,
                     Some(parent_id),
                 );
+                if let Some(expr_node) = &value.value {
+                    let rendered =
+                        super::expressions::expression_to_debug_string(&expr_node.value.expression);
+                    if let Some(node) = g.get_node_mut(&NodeId::new(uri, &qualified)) {
+                        node.expression_text.value = Some(rendered.clone());
+                        node.expression_text.default_value = Some(rendered);
+                    }
+                }
                 for target in typing_targets(value.typing.as_deref()) {
                     add_typing_edge_if_exists(g, uri, &qualified, target, container_prefix);
                 }
@@ -361,7 +363,19 @@ pub(super) fn build_from_verification_body(
             | UseCaseDefBodyElement::FirstSuccession(_)
             | UseCaseDefBodyElement::ThenUseCaseUsage(_)
             | UseCaseDefBodyElement::RefRedefinition(_)
-            | UseCaseDefBodyElement::SubjectRef(_) => {}
+            | UseCaseDefBodyElement::SubjectRef(_)
+            // Nested action/analysis/calc/attribute/requirement/part usages: already fully
+            // materialized by `wire_extended_case_body_element` above (which returns `true` and
+            // `continue`s before this match runs) -- these arms are unreachable, kept only for
+            // exhaustiveness.
+            | UseCaseDefBodyElement::ActionUsage(_)
+            | UseCaseDefBodyElement::AnalysisCaseUsage(_)
+            | UseCaseDefBodyElement::CalcUsage(_)
+            | UseCaseDefBodyElement::AttributeUsage(_)
+            | UseCaseDefBodyElement::RequirementUsage(_)
+            | UseCaseDefBodyElement::PartUsage(_)
+            // Bare result expression -- not modeled in verification-case bodies.
+            | UseCaseDefBodyElement::Expression(_) => {}
             UseCaseDefBodyElement::Doc(doc) => {
                 super::attach_doc_comment(g, parent_id, &doc.value.text);
             }
@@ -406,8 +420,10 @@ pub(super) fn build_from_verification_body(
         for objective_id in &objective_node_ids {
             if let Some(objective_node) = g.get_node_mut(objective_id) {
                 objective_node
-                    .attributes
-                    .insert("objectiveBoundTo".to_string(), serde_json::json!(bound_to));
+                    .declared_facts
+                    .analysis_case
+                    .get_or_insert_with(Default::default)
+                    .objective_bound_to = Some(bound_to.clone());
             }
         }
     }

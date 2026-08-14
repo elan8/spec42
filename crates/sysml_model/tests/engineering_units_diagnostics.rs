@@ -69,7 +69,7 @@ fn engineering_prefixed_units_resolve_from_indexed_qudv_catalog() {
         content: catalog_content.clone(),
         path_hint: Some("Domain Libraries/Quantities and Units/SI.sysml".to_string()),
         source_kind: SysmlDocumentSourceKind::Library,
-        sha256: None,
+        content_digest: None,
         byte_size: None,
     };
     let usage_doc = SysmlDocument::from_memory_path(
@@ -132,7 +132,7 @@ fn domain_monetary_units_resolve_from_indexed_catalog() {
         content: catalog_content.clone(),
         path_hint: Some("generic/units/MonetaryUnits.sysml".to_string()),
         source_kind: SysmlDocumentSourceKind::Library,
-        sha256: None,
+        content_digest: None,
         byte_size: None,
     };
     let usage_doc = SysmlDocument::from_memory_path(
@@ -187,7 +187,7 @@ fn common_si_mass_unit_resolves_from_indexed_si_catalog() {
         content: catalog_content.clone(),
         path_hint: Some("Quantities_and_Units_Library-1.0.0/SI.sysml".to_string()),
         source_kind: SysmlDocumentSourceKind::Library,
-        sha256: None,
+        content_digest: None,
         byte_size: None,
     };
     let usage_doc = SysmlDocument::from_memory_path(
@@ -234,7 +234,7 @@ fn mismatched_unit_dimension_emits_incompatible_not_unknown() {
         content: catalog_content.clone(),
         path_hint: Some("Domain Libraries/Quantities and Units/SI.sysml".to_string()),
         source_kind: SysmlDocumentSourceKind::Library,
-        sha256: None,
+        content_digest: None,
         byte_size: None,
     };
     let usage_doc = SysmlDocument::from_memory_path(
@@ -290,7 +290,7 @@ fn energy_value_accepts_mwh_but_rejects_mw() {
         content: catalog_content.clone(),
         path_hint: Some("Domain Libraries/Quantities and Units/SI.sysml".to_string()),
         source_kind: SysmlDocumentSourceKind::Library,
-        sha256: None,
+        content_digest: None,
         byte_size: None,
     };
     let usage_doc = SysmlDocument::from_memory_path(
@@ -386,7 +386,7 @@ fn sysml_powersystems_check_has_no_engineering_unit_catalog_warnings_when_stdlib
             content,
             path_hint: None,
             source_kind: SysmlDocumentSourceKind::Library,
-            sha256: None,
+            content_digest: None,
             byte_size: None,
         });
     }

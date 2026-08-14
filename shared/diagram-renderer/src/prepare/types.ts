@@ -53,6 +53,7 @@ export interface InterconnectionScenePortDto {
   name: string;
   typeName?: string;
   direction?: string;
+  multiplicity?: string;
   sideHint: string;
   uri?: string;
   range?: { start: { line: number; character: number }; end: { line: number; character: number } };
@@ -151,6 +152,8 @@ export interface InterconnectionPreparedPortDetail {
   id: string;
   name: string;
   direction?: string;
+  semanticId?: string;
+  multiplicity?: string;
   portType?: string;
   portSide?: string;
   attributes: {

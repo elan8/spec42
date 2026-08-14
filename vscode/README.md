@@ -50,7 +50,7 @@ Everything runs locally. Models stay in your workspace; Spec42 does not require 
 
 Full walkthrough: **[Getting Started](https://elan8.github.io/spec42/guide/getting-started)**.
 
-For CLI checks, CI, environment diagnostics, and MCP hosts, see the [main Spec42 README](https://github.com/elan8/spec42#readme) and the docs linked below. Editor and automation share the same analysis engine.
+For CLI checks, CI, environment diagnostics, and other AI hosts, see the [main Spec42 README](https://github.com/elan8/spec42#readme) and the docs linked below. Editor and automation share the same analysis engine.
 
 ## Learn more
 

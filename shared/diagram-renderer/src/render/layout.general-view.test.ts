@@ -71,4 +71,43 @@ describe("general-view layout package hierarchy", () => {
     expect(result.nodes).toHaveLength(2);
     expect(result.nodes.every((n) => typeof n.x === "number" && typeof n.y === "number")).toBe(true);
   });
+
+  // O-4: a same-depth sibling set large enough to dominate a single ELK layer -- a single
+  // package/def with many members and few edges between them -- otherwise lays out as one very
+  // wide row (elk.layered.wrapping.strategy doesn't split a single edge-sparse layer). Mirrors the
+  // robot-vacuum `baseDecomposition` fixture: one "owner" node with many direct "hierarchy"
+  // children and no edges between the children themselves.
+  it("chunks a wide same-parent sibling set into a more compact layout than one flat row", async () => {
+    const memberCount = 19;
+    const owner = partNode("Pkg::Owner", "Owner", "Pkg::Owner");
+    const members = Array.from({ length: memberCount }, (_, i) =>
+      partNode(`Pkg::member${i}`, `member${i}`, `Pkg::member${i}`),
+    );
+    const edges = members.map((member, i) => ({
+      id: `contains-${i}`,
+      source: owner.id,
+      target: member.id,
+      type: "contains",
+    }));
+    const graph = { nodes: [owner, ...members], edges };
+    const prepared = prepareViewData({ view: "general-view", generalViewGraph: graph });
+    // Single package: no package containers, so this exercises the flat-branch chunking path.
+    expect(prepared.meta).toBeUndefined();
+
+    const result = await layoutPrepared(prepared);
+    expect(result.nodes).toHaveLength(memberCount + 1);
+    expect(result.nodes.every((n) => typeof n.x === "number" && typeof n.y === "number")).toBe(true);
+    expect(result.edges).toHaveLength(memberCount);
+    expect(result.edges.every((e) => e.layout)).toBe(true);
+
+    const ys = result.nodes.map((n) => n.y ?? 0);
+    const height = Math.max(...ys) - Math.min(...ys);
+    // Before chunking, every sibling lands in the same ELK layer, so the diagram is only 2 rows
+    // tall regardless of member count (the owner's own row, plus one wide row for every sibling) --
+    // 250px for this exact fixture with WIDE_SIBLING_THRESHOLD disabled. Chunking spreads the
+    // members across several rows instead (446px with chunking on) -- the direct signal that the
+    // wide-row bug is actually fixed, independent of exactly how compact the resulting grid ends up
+    // for a given topology. 350 sits between the two, comfortably on the chunked side.
+    expect(height).toBeGreaterThan(350);
+  });
 });

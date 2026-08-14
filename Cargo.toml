@@ -2,19 +2,29 @@
 resolver = "2"
 members = [
   "crates/diagram",
+  "crates/generator_api",
+  "crates/generator_conformance",
+  "crates/generator_host",
+  "crates/generator_protocol",
+  "crates/generator_sdk",
   "crates/language_service",
   "crates/lsp_server",
   "crates/kpar",
   "crates/server",
+  "crates/source_identity",
   "crates/sysml_diagnostics",
   "crates/sysml_model",
+  "crates/sysml_query",
+  "crates/sysml_resolution",
   "crates/workspace",
   "crates/sysml_tokens",
   "crates/workspace_session",
+  "tools/snapshot_tool",
+  "tools/resolution_benchmark",
 ]
 
 [workspace.package]
-version = "0.49.0"
+version = "0.50.0"
 edition = "2021"
 authors = ["Elan8"]
 license = "MIT"
@@ -26,10 +36,14 @@ debug = true
 [workspace.dependencies]
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+postcard = { version = "1", features = ["alloc"] }
+postcard-schema = { version = "0.2", default-features = false, features = ["derive", "alloc"] }
 thiserror = "2"
 clap = { version = "4", features = ["derive"] }
-rmcp = { version = "0.9", features = ["server"] }
-schemars = { version = "1.1", features = ["derive"] }
 petgraph = { version = "0.8", features = ["serde-1"] }
-sysml-v2-parser = {  version = "0.51.1", features = ["serde"] }
+sha2 = "0.10"
+blake3 = "1"
+sysml-v2-parser = { version = "0.54.0", features = ["serde"] }
+sysml-v2-parser-next = { git = "https://github.com/lukewilliamboswell/sysml-v2-parser.git", rev = "cb026cdc3658c3ac0f9f1b0395ec07bcbea69250", package = "sysml-v2-parser", features = ["serde"] }
 ts-rs = { version = "11", features = ["serde-compat", "serde-json-impl"] }
+zstd = "0.13"

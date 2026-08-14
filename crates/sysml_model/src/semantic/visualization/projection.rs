@@ -11,6 +11,10 @@ use crate::semantic::dto::{
 };
 use crate::semantic::extracted_model::{extract_activity_diagrams, ActivityDiagramDto};
 use crate::semantic::ibd::{IbdDataDto, IbdPackageContainerGroupDto, IbdPartDto};
+use crate::semantic::model_projection::{
+    project_relationship_target_attributes, project_source_text_attributes,
+    project_type_reference_attributes,
+};
 use crate::semantic::workspace_graph::WorkspaceParsedDocument;
 use crate::SemanticGraph;
 
@@ -28,6 +32,10 @@ pub fn build_workspace_graph_dto_for_uris(
             .filter(|n| n.element_kind != crate::semantic::model::ElementKind::Diagnostic)
         {
             node_ids.insert(node.id.qualified_name.clone());
+            let mut attributes = node.attributes.clone();
+            project_source_text_attributes(&mut attributes, node);
+            project_relationship_target_attributes(&mut attributes, node);
+            project_type_reference_attributes(&mut attributes, node);
             nodes.push(GraphNodeDto {
                 id: node.id.qualified_name.clone(),
                 element_type: node.element_kind.as_str().to_string(),
@@ -38,7 +46,7 @@ pub fn build_workspace_graph_dto_for_uris(
                     .as_ref()
                     .map(|parent| parent.qualified_name.clone()),
                 range: range_to_dto(node.range),
-                attributes: node.attributes.clone(),
+                attributes,
             });
         }
     }
@@ -235,7 +243,7 @@ pub fn top_level_package_for_node_id(node_id: &str) -> String {
 
 /// Filters activity diagrams by cross-referencing an already-projected `graph`'s action-like
 /// nodes, keyed by `(name, top_level_package)` — deliberately **not** the same mechanism as
-/// [`crate::semantic::exposed_ids::filter_by_exposed_ids`] (used by
+/// `exposed_ids::filter_by_exposed_ids` (used by
 /// `filter_sequence_diagrams_by_exposed_ids`/`filter_state_machines_by_exposed_ids`), which
 /// matches diagram ids directly against a raw `exposed_ids` set independent of any graph
 /// projection. Investigated during the view-pipeline refactor and confirmed intentional, not

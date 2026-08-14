@@ -111,7 +111,7 @@ pub(crate) fn collect_expression_conformance_diagnostics(
         }
 
         if node.element_kind == sysml_model::ElementKind::Attribute {
-            let Some(value) = node.attributes.get("value").and_then(|v| v.as_str()) else {
+            let Some(value) = node.expression_text.value.as_deref() else {
                 continue;
             };
             if let Some(scalar_kind) = resolved_scalar_kind(graph, node) {
@@ -222,22 +222,38 @@ pub(crate) fn collect_expression_conformance_diagnostics(
             }
         }
 
-        if matches!(
+        let owns_constraint_or_assert = matches!(
             node.element_kind,
-            sysml_model::ElementKind::ConstraintDef | sysml_model::ElementKind::Assert
-        ) {
-            if let Some(status) = node
-                .attributes
-                .get("analysisEvaluationStatus")
-                .and_then(|v| v.as_str())
+            sysml_model::ElementKind::ConstraintDef
+                | sysml_model::ElementKind::Assert
+                | sysml_model::ElementKind::AssertConstraint
+        ) || graph.children_of(node).into_iter().any(|child| {
+            matches!(
+                child.element_kind,
+                sysml_model::ElementKind::AssertConstraint
+                    | sysml_model::ElementKind::RequireConstraint
+            )
+        });
+        if owns_constraint_or_assert {
+            if let Some(analysis) = graph
+                .evaluation_facts_for(node)
+                .and_then(|facts| facts.analysis.as_ref())
             {
-                if status == "analysis_evaluation_unresolved"
-                    || node
-                        .attributes
-                        .get("analysisEvaluationError")
-                        .and_then(|v| v.as_str())
-                        .is_some_and(|err| err.contains("boolean") || err.contains("Boolean"))
-                {
+                let is_non_boolean_result = matches!(
+                    (
+                        analysis.expression.status,
+                        analysis.expression.value.as_ref(),
+                    ),
+                    (
+                        sysml_model::EvaluationStatus::Ok,
+                        Some(
+                            sysml_model::EvaluatedValue::Integer(_)
+                                | sysml_model::EvaluatedValue::Real(_)
+                                | sysml_model::EvaluatedValue::String(_)
+                        ),
+                    )
+                );
+                if is_non_boolean_result {
                     let key = format!("nonbool|{}", node.id.qualified_name);
                     if seen.insert(key) {
                         diagnostics.push(diag(
@@ -265,7 +281,7 @@ pub(crate) fn collect_expression_conformance_diagnostics(
             if !matches!(owner_kind, "view" | "view def") {
                 continue;
             }
-            let Some(condition) = node.attributes.get("condition").and_then(|v| v.as_str()) else {
+            let Some(condition) = node.expression_text.condition.as_deref() else {
                 continue;
             };
             if condition_expression_is_boolean(node, condition) {
@@ -288,10 +304,10 @@ pub(crate) fn collect_expression_conformance_diagnostics(
         }
 
         if node.element_kind == sysml_model::ElementKind::Verify {
-            let Some(lhs) = node.attributes.get("lhs").and_then(|v| v.as_str()) else {
+            let Some(lhs) = node.expression_text.lhs.as_deref() else {
                 continue;
             };
-            let Some(rhs) = node.attributes.get("rhs").and_then(|v| v.as_str()) else {
+            let Some(rhs) = node.expression_text.rhs.as_deref() else {
                 continue;
             };
             let lhs = lhs.trim();

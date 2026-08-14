@@ -602,7 +602,12 @@ fn run_interconnection_lsp_performance_report(config: InterconnectionPerfReportC
     // Budget bumped from 52_000: prepared nodes/ports now carry `uri`/`range` for click-to-source
     // (previously hardcoded to `None` in `prepare_interconnection_prepared_view` — a real bug, not
     // a size-budget trade-off), which legitimately grows the slim payload by a few KB.
-    const MAX_DRONE_SLIM_INTERCONNECTION_BYTES: usize = 62_000;
+    //
+    // Bumped again from 62_000: the typed-facts migration adds new, additive per-node fields
+    // (`membership`/`HostMembershipFacts`, `evaluation`/`HostEvaluationQuery`,
+    // `effective_feature_ownership`, relationship `provenance`) to every projected node, which
+    // legitimately grows the slim payload further — observed 65_912 bytes on the drone fixture.
+    const MAX_DRONE_SLIM_INTERCONNECTION_BYTES: usize = 67_000;
     assert!(
         visualization_capture.raw.len() <= MAX_DRONE_SLIM_INTERCONNECTION_BYTES,
         "expected slim LSP payload under {MAX_DRONE_SLIM_INTERCONNECTION_BYTES} bytes on drone, got {}",

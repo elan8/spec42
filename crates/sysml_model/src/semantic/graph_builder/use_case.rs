@@ -7,7 +7,7 @@ use sysml_v2_parser::ast::{
 use url::Url;
 
 use super::{add_node_and_recurse, qualified_name, qualified_name_for_node};
-use crate::semantic::ast_util::{attach_membership_visibility, span_to_range};
+use crate::semantic::ast_util::span_to_range;
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{NodeId, RelationshipKind};
 use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
@@ -86,11 +86,7 @@ impl CaseSuccessionChain {
                     &action.name,
                     "action",
                 );
-                let mut attrs = HashMap::new();
-                attrs.insert(
-                    "actionType".to_string(),
-                    serde_json::json!(action.type_name.as_str()),
-                );
+                let attrs = HashMap::new();
                 add_node_and_recurse(
                     g,
                     uri,
@@ -243,12 +239,11 @@ impl CaseSuccessionChain {
             name,
             "use case",
         );
-        let mut attrs = HashMap::new();
-        attach_membership_visibility(&mut attrs, &use_case.value.membership);
-        if let Some(ref typing) = use_case.value.type_name {
-            attrs.insert("useCaseType".to_string(), serde_json::json!(typing));
-        }
-        attrs.insert("isThen".to_string(), serde_json::json!(true));
+        let attrs = HashMap::new();
+        g.register_declared_membership_facts(
+            NodeId::new(uri, &qualified),
+            crate::semantic::ast_util::declared_membership_facts(&use_case.value.membership),
+        );
         add_node_and_recurse(
             g,
             uri,
@@ -259,6 +254,9 @@ impl CaseSuccessionChain {
             attrs,
             Some(parent_id),
         );
+        if let Some(node) = g.get_node_mut(&NodeId::new(uri, &qualified)) {
+            node.expression_text.is_then = Some(true);
+        }
         let node_id = NodeId::new(uri, &qualified);
         if let Some(ref typing) = use_case.value.type_name {
             add_typing_edge_if_exists(g, uri, &qualified, typing, container_prefix);
@@ -317,9 +315,6 @@ pub(super) fn mark_subject_ref(g: &mut SemanticGraph, parent_id: &NodeId) {
         parent_node
             .attributes
             .insert("hasSubject".to_string(), serde_json::json!(true));
-        parent_node
-            .attributes
-            .insert("subjectRef".to_string(), serde_json::json!(true));
     }
 }
 
@@ -340,9 +335,11 @@ pub(super) fn add_actor_usage_node(
         "actor",
     );
     let range = span_to_range(span);
-    let mut attrs = HashMap::new();
-    attach_membership_visibility(&mut attrs, &actor.membership);
-    attrs.insert("actorType".to_string(), serde_json::json!(&actor.type_name));
+    let attrs = HashMap::new();
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&actor.membership),
+    );
     add_node_and_recurse(
         g,
         uri,
@@ -370,11 +367,7 @@ pub(super) fn add_actor_redefinition_assignment_node(
         &assignment.name,
         "actor redefinition",
     );
-    let mut attrs = HashMap::new();
-    attrs.insert(
-        "rhs".to_string(),
-        serde_json::json!(assignment.rhs.as_str()),
-    );
+    let attrs = HashMap::new();
     add_node_and_recurse(
         g,
         uri,
@@ -385,6 +378,9 @@ pub(super) fn add_actor_redefinition_assignment_node(
         attrs,
         Some(parent_id),
     );
+    if let Some(node) = g.get_node_mut(&NodeId::new(uri, &qualified)) {
+        node.expression_text.rhs = Some(assignment.rhs.clone());
+    }
 }
 
 pub(super) fn add_ref_redefinition_node(
@@ -401,8 +397,8 @@ pub(super) fn add_ref_redefinition_node(
         &redef.name,
         "ref redefinition",
     );
-    let mut attrs = HashMap::new();
-    attrs.insert("body".to_string(), serde_json::json!(redef.body.as_str()));
+    let attrs = HashMap::new();
+    let node_id = NodeId::new(uri, &qualified);
     add_node_and_recurse(
         g,
         uri,
@@ -413,6 +409,9 @@ pub(super) fn add_ref_redefinition_node(
         attrs,
         Some(parent_id),
     );
+    if let Some(node) = g.get_node_mut(&node_id) {
+        node.source_text.body = Some(redef.body.as_str().to_string());
+    }
 }
 
 /// Wire case-body elements shared across use-case, analysis, and verification walkers.
@@ -480,6 +479,77 @@ pub(super) fn wire_extended_case_body_element(
             }
             false
         }
+        // Nested `action` usage in analysis/verification case bodies (validation `09`).
+        UCBE::ActionUsage(au) => {
+            super::action::materialize_top_level_action_usage(
+                g,
+                uri,
+                container_prefix,
+                Some(parent_id),
+                au.as_ref(),
+            );
+            true
+        }
+        // Nested `analysis` usage in analysis case bodies (validation `10a`).
+        UCBE::AnalysisCaseUsage(n) => {
+            super::package_body::materialize_analysis_case_usage(
+                g,
+                uri,
+                container_prefix,
+                Some(parent_id),
+                n,
+            );
+            true
+        }
+        // Nested `calc` usage in analysis case bodies (validation `10b`).
+        UCBE::CalcUsage(n) => {
+            super::calc_constraint_def::materialize_calc_usage(
+                g,
+                uri,
+                container_prefix,
+                parent_id,
+                n,
+            );
+            true
+        }
+        // `attribute` usage / directed `in attribute …` (validation `10c`/`10d`).
+        UCBE::AttributeUsage(n) => {
+            super::usage_builders::materialize_attribute_usage(
+                n,
+                uri,
+                container_prefix,
+                parent_id,
+                g,
+            );
+            true
+        }
+        // Directed `in requirement …` parameter (validation `10c`).
+        UCBE::RequirementUsage(n) => {
+            super::usage_builders::materialize_requirement_usage(
+                n,
+                uri,
+                container_prefix,
+                Some(parent_id),
+                g,
+            );
+            true
+        }
+        // Directed `in part …` / nested part usage in analysis bodies.
+        UCBE::PartUsage(n) => {
+            super::usage_builders::materialize_part_usage(
+                n,
+                uri,
+                container_prefix,
+                Some(parent_id),
+                g,
+            );
+            true
+        }
+        // Bare result expression in analysis case bodies (validation `10a`: `vehicle.mass`) --
+        // analysis-specific semantics (feeds `analysis_result_qualified`/
+        // `inherited_case_result_qualified`), left to each caller's own body walker rather than
+        // handled generically here.
+        UCBE::Expression(_) => false,
         _ => false,
     }
 }
@@ -528,11 +598,7 @@ pub(super) fn build_from_use_case_body(
                     &name,
                     "subject",
                 );
-                let mut attrs = HashMap::new();
-                attrs.insert(
-                    "subjectType".to_string(),
-                    serde_json::json!(sd.value.type_name.as_str()),
-                );
+                let attrs = HashMap::new();
                 add_node_and_recurse(
                     g,
                     uri,
@@ -565,9 +631,6 @@ pub(super) fn build_from_use_case_body(
                     "objectiveBindingKind".to_string(),
                     serde_json::json!("case_result_default"),
                 );
-                if let Some(type_name) = obj.value.requirement.value.type_name.as_ref() {
-                    attrs.insert("objectiveType".to_string(), serde_json::json!(type_name));
-                }
                 add_node_and_recurse(
                     g,
                     uri,

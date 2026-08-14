@@ -3,7 +3,7 @@
  * Both `renderer.golden-parity.test.ts` (real jsdom DOM, the webview-equivalent path) and
  * `headless-export.golden-parity.test.ts` (the virtual DOM used by `spec42 diagrams export`
  * and `POST /v1/diagrams/export`) render these exact payloads and must produce identical
- * structural markers -- see `svg-markers.ts` and `../../docs/engineering/DIAGRAM-EXPORT-QUALITY-ANALYSIS.md`.
+ * structural markers -- see `svg-markers.ts`.
  */
 import type { UnknownRecord } from "../prepare/types";
 

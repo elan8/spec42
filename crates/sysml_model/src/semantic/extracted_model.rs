@@ -157,6 +157,10 @@ impl ExpressionAlgebra for ExprToStringAlgebra {
             }
             Expression::MetadataAccess(_) => format!("{}.metadata", subs[0]),
             Expression::Null => String::new(),
+            Expression::Conditional { .. } => {
+                format!("if {} ? {} else {}", subs[0], subs[1], subs[2])
+            }
+            Expression::Extent { target } => format!("all {target}"),
         }
     }
 }

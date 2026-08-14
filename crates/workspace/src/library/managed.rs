@@ -294,7 +294,8 @@ pub fn install_kpar_library_from_bytes(
     } else {
         staging_version_root.join(&normalized_content_path)
     };
-    ensure_directory_path(&staging_install_path, "Managed kpar-libraries staging path")?;
+    // Not pre-created: `materialize_kpar_bytes` (a real KPAR archive) requires its destination
+    // not exist yet (see the identical fix in `stdlib.rs`).
 
     let project_name = if is_kpar_bytes(archive_bytes) {
         let materialized = materialize_kpar_bytes(archive_bytes, &staging_install_path)?;

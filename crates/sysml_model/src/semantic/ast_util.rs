@@ -1,17 +1,20 @@
 //! Helpers for working with sysml-v2-parser AST: span/range conversion and name extraction.
 
-use std::collections::HashMap;
-
 use crate::semantic::expression_fold::{fold_expression, ExpressionAlgebra, FoldedChild};
 use crate::semantic::model::{
-    DeclaredExpression, DeclaredExpressionArgument, DeclaredFeatureProperties,
-    DeclaredFeatureValue, DeclaredFeatureValueKind, DeclaredMultiplicity,
+    DeclaredBinaryOperator, DeclaredCollectionOperator, DeclaredExpression,
+    DeclaredExpressionArgument, DeclaredExpressionKind, DeclaredExpressionOperator,
+    DeclaredFeatureProperties, DeclaredFeatureValue, DeclaredFeatureValueKind, DeclaredImportFacts,
+    DeclaredImportTarget, DeclaredLiteral, DeclaredMembershipFacts, DeclaredMembershipKind,
+    DeclaredMultiplicity, DeclaredRelationshipTarget, DeclaredTypeCheckOperator,
+    DeclaredUnaryOperator, ImportOrigin, ImportShape, ImportTargetPresence, VisibilityKind,
 };
 use crate::semantic::text_span::{TextPosition, TextRange};
 use sysml_v2_parser::ast::{
-    Argument, ConnectionEnd, DefinitionPrefix, Identification, InOut, Membership, Node,
-    SubsettingRelationship, TypingRelationship,
+    Argument, ConnectionEnd, DefinitionPrefix, Identification, InOut, Membership, MembershipKind,
+    Node, SubsettingRelationship, TypingRelationship,
 };
+use sysml_v2_parser::ast::{ExposeMember, Import, Visibility};
 use sysml_v2_parser::{Expression, Span};
 
 /// Maps a parser direction prefix to the Systems Modeling API direction token.
@@ -32,29 +35,108 @@ pub fn definition_prefix_flags(prefix: Option<&DefinitionPrefix>) -> (bool, bool
     }
 }
 
-/// Composite ownership defaults for ordinary (non-`ref`) feature usages.
-fn composite_usage_ownership() -> (Option<bool>, Option<bool>) {
-    (Some(true), Some(false))
+/// Parser-backed ownership facts for an explicit `ref` usage.
+///
+/// An ordinary usage does not author either half of the ownership pair. Its composite default is
+/// contextual and is therefore published later as an effective graph fact, after containment is
+/// complete. Keeping it out of this AST adapter preserves the distinction between what appeared
+/// in the source and what SysML supplies by default.
+fn usage_ownership_from_ref_flag(is_reference: bool) -> (Option<bool>, Option<bool>) {
+    if is_reference {
+        (Some(false), Some(true))
+    } else {
+        (None, None)
+    }
 }
 
-/// Attaches the explicit `private`/`protected`/`public` visibility prefix from a member's
-/// `Membership` to its node attributes, if one was written. Mirrors the exact convention
-/// previously duplicated ad hoc in `graph_builder/ref_decl.rs`/`requirement_body.rs`/
-/// `package_body/materialize.rs`; centralized here so every builder that constructs an `attrs`
-/// map for a node with a `membership` field (the parser's Item 4b rollout covers ~51 of 53
-/// `*Def`/`*Usage` structs, see `sysml-v2-parser`'s `src/ast/membership.rs` doc comment) can share
-/// it instead of re-deriving the `format!("{vis:?}")` encoding independently. `None`/omitted when
-/// no explicit prefix was written -- `Membership` records only what was written, not the resolved
-/// default visibility.
-pub fn attach_membership_visibility(
-    attrs: &mut HashMap<String, serde_json::Value>,
-    membership: &Membership,
-) {
-    if let Some(vis) = &membership.visibility {
-        attrs.insert(
-            "visibility".to_string(),
-            serde_json::json!(format!("{vis:?}")),
-        );
+fn visibility_kind(visibility: Visibility) -> VisibilityKind {
+    match visibility {
+        Visibility::Public => VisibilityKind::Public,
+        Visibility::Private => VisibilityKind::Private,
+        Visibility::Protected => VisibilityKind::Protected,
+    }
+}
+
+fn membership_kind(kind: MembershipKind) -> DeclaredMembershipKind {
+    match kind {
+        MembershipKind::OwningMembership => DeclaredMembershipKind::Owning,
+        MembershipKind::FeatureMembership => DeclaredMembershipKind::Feature,
+        MembershipKind::Import => DeclaredMembershipKind::Import,
+        MembershipKind::Alias => DeclaredMembershipKind::Alias,
+        MembershipKind::VariantMembership => DeclaredMembershipKind::Variant,
+        MembershipKind::ActorMembership => DeclaredMembershipKind::Actor,
+    }
+}
+
+/// Retains exactly the membership information supplied by the parser. In particular, no absent
+/// visibility is defaulted here: defaults require the owning graph context.
+pub fn declared_membership_facts(membership: &Membership) -> DeclaredMembershipFacts {
+    DeclaredMembershipFacts {
+        kind: membership_kind(membership.kind),
+        visibility: membership.visibility.map(visibility_kind),
+        range: Some(span_to_range(&membership.span)),
+        import: None,
+    }
+}
+
+/// Parser-backed import membership facts. Filter-package imports remain a separate shape so
+/// downstream resolution cannot accidentally treat an unsupported filter as `::*`.
+pub fn declared_import_membership_facts(import: &Node<Import>) -> DeclaredMembershipFacts {
+    let value = &import.value;
+    let shape = if value.filter_members.is_some() {
+        ImportShape::FilteredNamespace
+    } else if value.is_import_all {
+        ImportShape::Namespace
+    } else {
+        ImportShape::Membership
+    };
+    DeclaredMembershipFacts {
+        kind: membership_kind(value.membership.kind),
+        visibility: value.membership.visibility.map(visibility_kind),
+        range: Some(span_to_range(&value.membership.span)),
+        import: Some(DeclaredImportFacts {
+            target: DeclaredImportTarget {
+                reference: value.target.clone(),
+                presence: if value.target.is_empty() {
+                    ImportTargetPresence::Missing
+                } else {
+                    ImportTargetPresence::Present
+                },
+                range: Some(span_to_range(&value.target_span)),
+            },
+            origin: ImportOrigin::Import,
+            shape,
+            recursive: value.is_recursive,
+        }),
+    }
+}
+
+/// `ExposeMember` currently has no target sub-span or membership wrapper in the parser AST.
+/// Retain that absence explicitly rather than inventing source precision or visibility.
+pub fn declared_expose_membership_facts(expose: &Node<ExposeMember>) -> DeclaredMembershipFacts {
+    let value = &expose.value;
+    DeclaredMembershipFacts {
+        kind: DeclaredMembershipKind::Import,
+        visibility: None,
+        range: Some(span_to_range(&expose.span)),
+        import: Some(DeclaredImportFacts {
+            target: DeclaredImportTarget {
+                reference: value.target.clone(),
+                presence: if value.target.is_empty() {
+                    ImportTargetPresence::Missing
+                } else {
+                    ImportTargetPresence::Present
+                },
+                range: None,
+            },
+            origin: ImportOrigin::Expose,
+            shape: if value.is_import_all {
+                ImportShape::Namespace
+            } else {
+                ImportShape::Membership
+            },
+            recursive: value.is_recursive,
+        }),
     }
 }
 
@@ -63,7 +145,7 @@ pub fn part_usage_feature_properties(
     usage: &sysml_v2_parser::ast::PartUsage,
 ) -> DeclaredFeatureProperties {
     let (is_abstract, is_variation) = definition_prefix_flags(usage.usage_prefix.as_ref());
-    let (is_composite, is_reference) = composite_usage_ownership();
+    let (is_composite, is_reference) = usage_ownership_from_ref_flag(usage.is_reference);
     DeclaredFeatureProperties {
         direction: usage.direction.map(direction_name).map(str::to_owned),
         is_abstract,
@@ -86,7 +168,6 @@ pub fn part_usage_feature_properties(
 pub fn attribute_usage_feature_properties(
     usage: &sysml_v2_parser::ast::AttributeUsage,
 ) -> DeclaredFeatureProperties {
-    let (is_composite, is_reference) = composite_usage_ownership();
     DeclaredFeatureProperties {
         direction: usage.direction.map(direction_name).map(str::to_owned),
         is_abstract: false,
@@ -95,8 +176,8 @@ pub fn attribute_usage_feature_properties(
         is_derived: usage.is_derived,
         is_constant: usage.is_constant,
         is_end: usage.is_end,
-        is_composite,
-        is_reference,
+        is_composite: None,
+        is_reference: None,
         is_conjugated: false,
         is_ordered: Some(usage.ordered),
         is_unique: Some(!usage.nonunique),
@@ -109,7 +190,6 @@ pub fn attribute_usage_feature_properties(
 pub fn port_usage_feature_properties(
     usage: &sysml_v2_parser::ast::PortUsage,
 ) -> DeclaredFeatureProperties {
-    let (is_composite, is_reference) = composite_usage_ownership();
     let conjugated = usage
         .type_name
         .as_deref()
@@ -122,22 +202,13 @@ pub fn port_usage_feature_properties(
         is_derived: usage.is_derived,
         is_constant: usage.is_constant,
         is_end: false,
-        is_composite,
-        is_reference,
+        is_composite: None,
+        is_reference: None,
         is_conjugated: conjugated,
         is_ordered: None,
         is_unique: None,
         is_portion: false,
         portion_kind: None,
-    }
-}
-
-/// Ownership for an `action` / `state` usage: `ref` keywords flip composite → reference.
-fn usage_ownership_from_ref_flag(is_reference: bool) -> (Option<bool>, Option<bool>) {
-    if is_reference {
-        (Some(false), Some(true))
-    } else {
-        composite_usage_ownership()
     }
 }
 
@@ -191,7 +262,6 @@ pub fn state_usage_feature_properties(
 pub fn item_usage_feature_properties(
     usage: &sysml_v2_parser::ast::ItemUsage,
 ) -> DeclaredFeatureProperties {
-    let (is_composite, is_reference) = composite_usage_ownership();
     DeclaredFeatureProperties {
         direction: usage.direction.map(direction_name).map(str::to_owned),
         is_abstract: false,
@@ -200,8 +270,8 @@ pub fn item_usage_feature_properties(
         is_derived: false,
         is_constant: false,
         is_end: false,
-        is_composite,
-        is_reference,
+        is_composite: None,
+        is_reference: None,
         is_conjugated: false,
         is_ordered: None,
         is_unique: None,
@@ -214,14 +284,14 @@ pub fn item_usage_feature_properties(
 pub fn occurrence_usage_feature_properties(
     usage: &sysml_v2_parser::ast::OccurrenceUsage,
 ) -> DeclaredFeatureProperties {
-    let (is_composite, is_reference) = composite_usage_ownership();
+    let (is_composite, is_reference) = usage_ownership_from_ref_flag(usage.is_reference);
     DeclaredFeatureProperties {
         direction: None,
-        is_abstract: false,
+        is_abstract: usage.is_abstract,
         is_variation: false,
         is_individual: usage.is_individual,
         is_derived: false,
-        is_constant: false,
+        is_constant: usage.is_constant,
         is_end: false,
         is_composite,
         is_reference,
@@ -302,6 +372,22 @@ pub fn typing_targets(relationship: Option<&TypingRelationship>) -> Vec<&str> {
     })
 }
 
+/// Parser-owned typing/specialization targets with exact target spans.
+pub fn declared_typing_targets(
+    relationship: Option<&TypingRelationship>,
+) -> Vec<DeclaredRelationshipTarget> {
+    relationship.map_or_else(Vec::new, |relationship| {
+        relationship
+            .target
+            .iter()
+            .map(|target| DeclaredRelationshipTarget {
+                reference: target.value.to_display_string(),
+                range: Some(span_to_range(&target.span)),
+            })
+            .collect()
+    })
+}
+
 /// Returns the complete source-level feature chain of a typed typing or
 /// specialization relationship. Resolution and dependency-closure consumers
 /// must use this form: reducing `OtherPkg::Base` to `Base` loses the package
@@ -327,6 +413,22 @@ pub fn subsetting_targets(relationship: Option<&SubsettingRelationship>) -> Vec<
             .target
             .iter()
             .filter_map(|target| target.value.local_name())
+            .collect()
+    })
+}
+
+/// Parser-owned subsetting-family targets with exact target spans.
+pub fn declared_subsetting_targets(
+    relationship: Option<&SubsettingRelationship>,
+) -> Vec<DeclaredRelationshipTarget> {
+    relationship.map_or_else(Vec::new, |relationship| {
+        relationship
+            .target
+            .iter()
+            .map(|target| DeclaredRelationshipTarget {
+                reference: target.value.to_display_string(),
+                range: Some(span_to_range(&target.span)),
+            })
             .collect()
     })
 }
@@ -375,6 +477,93 @@ fn split_children(
 
 struct DeclaredExpressionAlgebra;
 
+fn declared_unary_operator(
+    operator: &sysml_v2_parser::ast::UnaryOperator,
+) -> DeclaredExpressionOperator {
+    use sysml_v2_parser::ast::UnaryOperator;
+
+    DeclaredExpressionOperator::Unary(match operator {
+        UnaryOperator::Plus => DeclaredUnaryOperator::Plus,
+        UnaryOperator::Minus => DeclaredUnaryOperator::Minus,
+        UnaryOperator::Not => DeclaredUnaryOperator::Not,
+        UnaryOperator::BitNot => DeclaredUnaryOperator::BitNot,
+        UnaryOperator::Other(value) => DeclaredUnaryOperator::Other(value.clone()),
+    })
+}
+
+fn declared_binary_operator(
+    operator: &sysml_v2_parser::ast::BinaryOperator,
+) -> DeclaredExpressionOperator {
+    use sysml_v2_parser::ast::BinaryOperator;
+
+    DeclaredExpressionOperator::Binary(match operator {
+        BinaryOperator::Eq => DeclaredBinaryOperator::Equal,
+        BinaryOperator::Ne => DeclaredBinaryOperator::NotEqual,
+        BinaryOperator::StrictEq => DeclaredBinaryOperator::StrictEqual,
+        BinaryOperator::StrictNe => DeclaredBinaryOperator::StrictNotEqual,
+        BinaryOperator::Lt => DeclaredBinaryOperator::Less,
+        BinaryOperator::Le => DeclaredBinaryOperator::LessOrEqual,
+        BinaryOperator::Gt => DeclaredBinaryOperator::Greater,
+        BinaryOperator::Ge => DeclaredBinaryOperator::GreaterOrEqual,
+        BinaryOperator::Add => DeclaredBinaryOperator::Add,
+        BinaryOperator::Sub => DeclaredBinaryOperator::Subtract,
+        BinaryOperator::Mul => DeclaredBinaryOperator::Multiply,
+        BinaryOperator::Div => DeclaredBinaryOperator::Divide,
+        BinaryOperator::Mod => DeclaredBinaryOperator::Modulo,
+        BinaryOperator::Exp => DeclaredBinaryOperator::Exponent,
+        BinaryOperator::Pow => DeclaredBinaryOperator::Power,
+        BinaryOperator::And => DeclaredBinaryOperator::And,
+        BinaryOperator::Or => DeclaredBinaryOperator::Or,
+        BinaryOperator::Xor => DeclaredBinaryOperator::Xor,
+        BinaryOperator::Implies => DeclaredBinaryOperator::Implies,
+        BinaryOperator::Range => DeclaredBinaryOperator::Range,
+        BinaryOperator::BitOr => DeclaredBinaryOperator::BitOr,
+        BinaryOperator::BitAnd => DeclaredBinaryOperator::BitAnd,
+        BinaryOperator::Other(value) => DeclaredBinaryOperator::Other(value.clone()),
+    })
+}
+
+fn declared_collection_operator(
+    operator: &sysml_v2_parser::ast::CollectionOperator,
+) -> DeclaredExpressionOperator {
+    use sysml_v2_parser::ast::CollectionOperator;
+
+    DeclaredExpressionOperator::Collection(match operator {
+        CollectionOperator::Collect => DeclaredCollectionOperator::Collect,
+        CollectionOperator::Select => DeclaredCollectionOperator::Select,
+        CollectionOperator::SelectOne => DeclaredCollectionOperator::SelectOne,
+        CollectionOperator::Size => DeclaredCollectionOperator::Size,
+        CollectionOperator::IsEmpty => DeclaredCollectionOperator::IsEmpty,
+        CollectionOperator::NotEmpty => DeclaredCollectionOperator::NotEmpty,
+        CollectionOperator::Includes => DeclaredCollectionOperator::Includes,
+        CollectionOperator::Including => DeclaredCollectionOperator::Including,
+        CollectionOperator::Excludes => DeclaredCollectionOperator::Excludes,
+        CollectionOperator::Excluding => DeclaredCollectionOperator::Excluding,
+        CollectionOperator::ExcludingAt => DeclaredCollectionOperator::ExcludingAt,
+        CollectionOperator::ExcludingOnce => DeclaredCollectionOperator::ExcludingOnce,
+        CollectionOperator::Equals => DeclaredCollectionOperator::Equals,
+        CollectionOperator::ForAll => DeclaredCollectionOperator::ForAll,
+        CollectionOperator::Exists => DeclaredCollectionOperator::Exists,
+        CollectionOperator::Sum => DeclaredCollectionOperator::Sum,
+        CollectionOperator::Sort => DeclaredCollectionOperator::Sort,
+        CollectionOperator::Filter => DeclaredCollectionOperator::Filter,
+        CollectionOperator::Reduce => DeclaredCollectionOperator::Reduce,
+        CollectionOperator::Other(value) => DeclaredCollectionOperator::Other(value.clone()),
+    })
+}
+
+fn declared_type_check_operator(
+    kind: &sysml_v2_parser::ast::TypeCheckKind,
+) -> DeclaredExpressionOperator {
+    use sysml_v2_parser::ast::TypeCheckKind;
+
+    DeclaredExpressionOperator::TypeCheck(match kind {
+        TypeCheckKind::Istype => DeclaredTypeCheckOperator::IsType,
+        TypeCheckKind::Hastype => DeclaredTypeCheckOperator::HasType,
+        TypeCheckKind::As => DeclaredTypeCheckOperator::As,
+    })
+}
+
 impl ExpressionAlgebra for DeclaredExpressionAlgebra {
     type Output = DeclaredExpression;
 
@@ -390,7 +579,7 @@ impl ExpressionAlgebra for DeclaredExpressionAlgebra {
         use sysml_v2_parser::ast::Expression as Expr;
         let (subs, arguments) = split_children(children);
         let mut expression = DeclaredExpression {
-            kind: String::new(),
+            kind: DeclaredExpressionKind::Null,
             range: span_to_range(&node.span),
             literal: None,
             reference: None,
@@ -400,118 +589,119 @@ impl ExpressionAlgebra for DeclaredExpressionAlgebra {
         };
         match &node.value {
             Expr::LiteralInteger(value) => {
-                expression.kind = "integerLiteral".into();
-                expression.literal = Some(serde_json::json!(value));
+                expression.kind = DeclaredExpressionKind::IntegerLiteral;
+                expression.literal = Some(DeclaredLiteral::Integer(*value));
             }
             Expr::LiteralReal(value) => {
-                expression.kind = "realLiteral".into();
-                expression.literal = Some(serde_json::json!(value));
+                expression.kind = DeclaredExpressionKind::RealLiteral;
+                expression.literal = Some(DeclaredLiteral::Real(value.clone()));
             }
             Expr::LiteralString(value) => {
-                expression.kind = "stringLiteral".into();
-                expression.literal = Some(serde_json::json!(value));
+                expression.kind = DeclaredExpressionKind::StringLiteral;
+                expression.literal = Some(DeclaredLiteral::String(value.clone()));
             }
             Expr::LiteralBoolean(value) => {
-                expression.kind = "booleanLiteral".into();
-                expression.literal = Some(serde_json::json!(value));
+                expression.kind = DeclaredExpressionKind::BooleanLiteral;
+                expression.literal = Some(DeclaredLiteral::Boolean(*value));
             }
-            Expr::Null => expression.kind = "null".into(),
+            Expr::Null => expression.kind = DeclaredExpressionKind::Null,
             Expr::FeatureRef(value) => {
-                expression.kind = "featureReference".into();
+                expression.kind = DeclaredExpressionKind::FeatureReference;
                 expression.reference = Some(value.clone());
             }
             Expr::FeatureChainRef(value) => {
-                expression.kind = "featureChain".into();
+                expression.kind = DeclaredExpressionKind::FeatureChain;
                 expression.reference = Some(value.segments.join("."));
             }
             Expr::Classification { metaclass } => {
-                expression.kind = "classification".into();
+                expression.kind = DeclaredExpressionKind::Classification;
                 expression.reference = Some(metaclass.clone());
             }
             Expr::MemberAccess(_, member) => {
-                expression.kind = "memberAccess".into();
+                expression.kind = DeclaredExpressionKind::MemberAccess;
                 expression.reference = Some(member.clone());
                 expression.children = subs;
             }
             Expr::Select { selector, .. } => {
-                expression.kind = "select".into();
+                expression.kind = DeclaredExpressionKind::Select;
                 expression.reference = Some(selector.clone());
                 expression.children = subs;
             }
             Expr::Collect { selector, .. } => {
-                expression.kind = "collect".into();
+                expression.kind = DeclaredExpressionKind::Collect;
                 expression.reference = Some(selector.clone());
                 expression.children = subs;
             }
             Expr::MetadataAccess(_) => {
-                expression.kind = "metadataAccess".into();
+                expression.kind = DeclaredExpressionKind::MetadataAccess;
                 expression.children = subs;
             }
             Expr::Parenthesized(_) => {
-                expression.kind = "parenthesized".into();
+                expression.kind = DeclaredExpressionKind::Parenthesized;
                 expression.children = subs;
             }
             Expr::Bracket(_) => {
-                expression.kind = "bracket".into();
+                expression.kind = DeclaredExpressionKind::Bracket;
                 expression.children = subs;
             }
             Expr::UnaryOp { op, .. } => {
-                expression.kind = "unary".into();
-                expression.operator = Some(op.as_str().into());
+                expression.kind = DeclaredExpressionKind::Unary;
+                expression.operator = Some(declared_unary_operator(op));
                 expression.children = subs;
             }
             Expr::BinaryOp { op, .. } => {
-                expression.kind = "binary".into();
-                expression.operator = Some(op.as_str().into());
+                expression.kind = DeclaredExpressionKind::Binary;
+                expression.operator = Some(declared_binary_operator(op));
                 expression.children = subs;
             }
             Expr::Index { .. } => {
-                expression.kind = "index".into();
+                expression.kind = DeclaredExpressionKind::Index;
                 expression.children = subs;
             }
             Expr::LiteralWithUnit { .. } => {
-                expression.kind = "literalWithUnit".into();
+                expression.kind = DeclaredExpressionKind::LiteralWithUnit;
                 expression.children = subs;
             }
             Expr::Tuple(_) => {
-                expression.kind = "tuple".into();
+                expression.kind = DeclaredExpressionKind::Tuple;
                 expression.children = subs;
             }
             Expr::Invocation { .. } => {
-                expression.kind = "invocation".into();
+                expression.kind = DeclaredExpressionKind::Invocation;
                 expression.children = subs;
                 expression.arguments = arguments;
             }
             Expr::Constructor { type_name, .. } => {
-                expression.kind = "constructor".into();
+                expression.kind = DeclaredExpressionKind::Constructor;
                 expression.reference = Some(type_name.clone());
                 expression.arguments = arguments;
             }
             Expr::CollectionOp { op, .. } => {
-                expression.kind = "collectionOperation".into();
-                expression.operator = Some(op.as_str().into());
+                expression.kind = DeclaredExpressionKind::CollectionOperation;
+                expression.operator = Some(declared_collection_operator(op));
                 expression.children = subs;
                 expression.arguments = arguments;
             }
             Expr::MetaCast { metaclass, .. } => {
-                expression.kind = "metaCast".into();
+                expression.kind = DeclaredExpressionKind::MetaCast;
                 expression.reference = Some(metaclass.clone());
                 expression.children = subs;
             }
             Expr::TypeCheck {
                 kind, type_name, ..
             } => {
-                expression.kind = "typeCheck".into();
-                expression.operator = Some(
-                    match kind {
-                        sysml_v2_parser::ast::TypeCheckKind::Istype => "istype",
-                        sysml_v2_parser::ast::TypeCheckKind::Hastype => "hastype",
-                        sysml_v2_parser::ast::TypeCheckKind::As => "as",
-                    }
-                    .into(),
-                );
+                expression.kind = DeclaredExpressionKind::TypeCheck;
+                expression.operator = Some(declared_type_check_operator(kind));
                 expression.reference = Some(type_name.clone());
                 expression.children = subs;
+            }
+            Expr::Conditional { .. } => {
+                expression.kind = DeclaredExpressionKind::Conditional;
+                expression.children = subs;
+            }
+            Expr::Extent { target } => {
+                expression.kind = DeclaredExpressionKind::Extent;
+                expression.reference = Some(target.clone());
             }
         }
         expression
@@ -522,7 +712,7 @@ impl ExpressionAlgebra for DeclaredExpressionAlgebra {
 /// uses the debug renderer; structural children and named arguments remain
 /// explicit for later addressable projection.
 ///
-/// Iterative, not recursive: see [`crate::semantic::expression_fold`] for why.
+/// Iterative, not recursive: see the `semantic::expression_fold` module doc for why.
 pub fn declared_expression(node: &Node<Expression>) -> DeclaredExpression {
     fold_expression(node, &mut DeclaredExpressionAlgebra)
 }
@@ -596,26 +786,19 @@ pub fn identification_name(ident: &Identification) -> String {
         .to_string()
 }
 
-/// Stashes `identification.short_name` as a `"shortName"` attribute when both a short name
-/// and a regular name are present. When short_name is the *only* name, `identification_name`
-/// already uses it as `SemanticNode.name`, so there's nothing extra to capture — without this,
-/// a short name declared alongside a regular name (e.g. `part def <'CB'> ControlBoard;`) was
-/// silently dropped: nothing outside the raw source text ever knew `CB` refers to
-/// `ControlBoard`, so references to `CB` failed to resolve entirely.
-pub fn attach_short_name_attribute(
-    attrs: &mut HashMap<String, serde_json::Value>,
-    identification: &Identification,
-) {
-    if identification.name.is_none() {
-        return;
-    }
-    if let Some(short) = identification
+/// Returns `identification.short_name` when both a short name and a regular name are present.
+/// When short_name is the *only* name, `identification_name` already uses it as
+/// `SemanticNode.name`, so there's nothing extra to capture — without this, a short name
+/// declared alongside a regular name (e.g. `part def <'CB'> ControlBoard;`) was silently
+/// dropped: nothing outside the raw source text ever knew `CB` refers to `ControlBoard`, so
+/// references to `CB` failed to resolve entirely.
+pub fn declared_short_name(identification: &Identification) -> Option<String> {
+    identification.name.as_ref()?;
+    identification
         .short_name
         .as_deref()
         .filter(|s| !s.is_empty())
-    {
-        attrs.insert("shortName".to_string(), serde_json::json!(short));
-    }
+        .map(str::to_string)
 }
 
 #[cfg(test)]
@@ -632,9 +815,7 @@ mod tests {
     #[test]
     fn attaches_short_name_when_both_name_and_short_name_present() {
         let ident = identification(Some("ControlBoard"), Some("CB"));
-        let mut attrs = HashMap::new();
-        attach_short_name_attribute(&mut attrs, &ident);
-        assert_eq!(attrs.get("shortName").and_then(|v| v.as_str()), Some("CB"));
+        assert_eq!(declared_short_name(&ident).as_deref(), Some("CB"));
     }
 
     #[test]
@@ -642,17 +823,13 @@ mod tests {
         // identification_name already uses short_name as the node's primary name in this case,
         // so there is nothing extra to capture.
         let ident = identification(None, Some("CB"));
-        let mut attrs = HashMap::new();
-        attach_short_name_attribute(&mut attrs, &ident);
-        assert!(!attrs.contains_key("shortName"));
+        assert_eq!(declared_short_name(&ident), None);
     }
 
     #[test]
     fn does_not_attach_short_name_when_absent() {
         let ident = identification(Some("ControlBoard"), None);
-        let mut attrs = HashMap::new();
-        attach_short_name_attribute(&mut attrs, &ident);
-        assert!(!attrs.contains_key("shortName"));
+        assert_eq!(declared_short_name(&ident), None);
     }
 
     #[test]
@@ -669,15 +846,55 @@ mod tests {
         let mut depth = 0usize;
         let mut current = &declared;
         loop {
-            match current.kind.as_str() {
-                "parenthesized" => {
+            match current.kind {
+                DeclaredExpressionKind::Parenthesized => {
                     depth += 1;
                     current = &current.children[0];
                 }
-                "integerLiteral" => break,
-                other => panic!("unexpected kind at depth {depth}: {other}"),
+                DeclaredExpressionKind::IntegerLiteral => break,
+                other => panic!("unexpected kind at depth {depth}: {other:?}"),
             }
         }
         assert_eq!(depth, DEPTH);
+    }
+
+    #[test]
+    fn declared_expression_maps_parser_literals_and_operators_to_closed_facts() {
+        use sysml_v2_parser::ast::{BinaryOperator, Node, Span, UnaryOperator};
+
+        let literal = Node::new(Span::dummy(), Expression::LiteralReal("12.5".to_string()));
+        assert!(matches!(
+            &declared_expression(&literal).literal,
+            Some(DeclaredLiteral::Real(value)) if value == "12.5"
+        ));
+
+        let unary = Node::new(
+            Span::dummy(),
+            Expression::UnaryOp {
+                op: UnaryOperator::Not,
+                operand: Box::new(Node::new(Span::dummy(), Expression::LiteralBoolean(true))),
+            },
+        );
+        assert!(matches!(
+            declared_expression(&unary).operator,
+            Some(DeclaredExpressionOperator::Unary(
+                DeclaredUnaryOperator::Not
+            ))
+        ));
+
+        let binary = Node::new(
+            Span::dummy(),
+            Expression::BinaryOp {
+                op: BinaryOperator::And,
+                left: Box::new(Node::new(Span::dummy(), Expression::LiteralBoolean(true))),
+                right: Box::new(Node::new(Span::dummy(), Expression::LiteralBoolean(false))),
+            },
+        );
+        assert!(matches!(
+            declared_expression(&binary).operator,
+            Some(DeclaredExpressionOperator::Binary(
+                DeclaredBinaryOperator::And
+            ))
+        ));
     }
 }

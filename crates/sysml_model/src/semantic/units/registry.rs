@@ -470,8 +470,6 @@ package SIPrefixes {
 
     #[test]
     fn km_graph_carries_conversion_metadata() {
-        use crate::semantic::graph_builder::unit_metadata::UNIT_CONVERSION_KEY;
-
         let content = with_prefixes(
             "attribute <m> metre : LengthUnit;\nattribute <km> kilometre : LengthUnit { :>> unitConversion: ConversionByPrefix { :>> prefix = kilo; :>> referenceUnit = m; } }",
         );
@@ -484,13 +482,12 @@ package SIPrefixes {
             .find(|n| n.name == "kilometre")
             .expect("kilometre");
         let conv = km
-            .attributes
-            .get(UNIT_CONVERSION_KEY)
-            .expect("unitConversion attr");
-        assert_eq!(
-            conv.get("referenceUnit").and_then(|v| v.as_str()),
-            Some("m")
-        );
+            .declared_facts
+            .unit
+            .as_ref()
+            .and_then(|u| u.conversion.as_ref())
+            .expect("unitConversion fact");
+        assert_eq!(conv.reference_unit.as_deref(), Some("m"));
     }
 
     #[test]
@@ -574,8 +571,6 @@ package SIPrefixes {
 
     #[test]
     fn fahrenheit_short_name_materializes_on_graph() {
-        use crate::semantic::graph_builder::unit_metadata::{SHORT_NAME_KEY, UNIT_CONVERSION_KEY};
-
         let content = with_prefixes(
             "attribute <K> kelvin : TemperatureDifferenceUnit;\nattribute <'\u{00B0}F'> 'degree Fahrenheit' : TemperatureDifferenceUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = K; :>> conversionFactor = 5/9; } }",
         );
@@ -588,16 +583,18 @@ package SIPrefixes {
             .find(|n| n.name == "degree Fahrenheit")
             .expect("degree Fahrenheit node");
         assert_eq!(
-            f.attributes.get(SHORT_NAME_KEY).and_then(|v| v.as_str()),
+            f.declared_facts.short_name.as_deref(),
             Some("\u{00B0}F"),
-            "attrs: {:?}",
-            f.attributes
+            "facts: {:?}",
+            f.declared_facts
         );
-        let conv = f.attributes.get(UNIT_CONVERSION_KEY).expect("conv");
-        assert_eq!(
-            conv.get("conversionFactor").and_then(|v| v.as_f64()),
-            Some(5.0 / 9.0)
-        );
+        let conv = f
+            .declared_facts
+            .unit
+            .as_ref()
+            .and_then(|u| u.conversion.as_ref())
+            .expect("conv");
+        assert_eq!(conv.conversion_factor, Some(5.0 / 9.0));
     }
 
     #[test]

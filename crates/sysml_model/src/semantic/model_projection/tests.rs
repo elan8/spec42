@@ -659,12 +659,20 @@ fn canonical_general_view_graph_moves_redefined_parts_into_direct_parts() {
                     .collect(),
             },
         ],
-        edges: vec![GraphEdgeDto {
-            source: "Pkg::SIC".to_string(),
-            target: "Pkg::Stage".to_string(),
-            rel_type: "specializes".to_string(),
-            name: None,
-        }],
+        edges: vec![
+            GraphEdgeDto {
+                source: "Pkg::SIC".to_string(),
+                target: "Pkg::Stage".to_string(),
+                rel_type: "specializes".to_string(),
+                name: None,
+            },
+            GraphEdgeDto {
+                source: "Pkg::SIC::engine-redef".to_string(),
+                target: "Pkg::Stage::engine".to_string(),
+                rel_type: "redefinition".to_string(),
+                name: None,
+            },
+        ],
     };
 
     let canonical = canonical_general_view_graph(&graph, false);
@@ -746,12 +754,20 @@ fn canonical_general_view_graph_moves_redefined_attributes_into_direct_attribute
                 .collect(),
             },
         ],
-        edges: vec![GraphEdgeDto {
-            source: "Pkg::SIC".to_string(),
-            target: "Pkg::Stage".to_string(),
-            rel_type: "specializes".to_string(),
-            name: None,
-        }],
+        edges: vec![
+            GraphEdgeDto {
+                source: "Pkg::SIC".to_string(),
+                target: "Pkg::Stage".to_string(),
+                rel_type: "specializes".to_string(),
+                name: None,
+            },
+            GraphEdgeDto {
+                source: "Pkg::SIC::mass-redef".to_string(),
+                target: "Pkg::Stage::mass".to_string(),
+                rel_type: "redefinition".to_string(),
+                name: None,
+            },
+        ],
     };
 
     let canonical = canonical_general_view_graph(&graph, false);
@@ -938,12 +954,20 @@ fn canonical_general_view_graph_filters_anonymous_redefinition_stubs() {
                     .collect(),
             },
         ],
-        edges: vec![GraphEdgeDto {
-            source: "Pkg::Vehicle".to_string(),
-            target: "Pkg::Vehicle::engines-redef".to_string(),
-            rel_type: "contains".to_string(),
-            name: None,
-        }],
+        edges: vec![
+            GraphEdgeDto {
+                source: "Pkg::Vehicle".to_string(),
+                target: "Pkg::Vehicle::engines-redef".to_string(),
+                rel_type: "contains".to_string(),
+                name: None,
+            },
+            GraphEdgeDto {
+                source: "Pkg::Vehicle::engines-redef".to_string(),
+                target: "Pkg::Vehicle::engines".to_string(),
+                rel_type: "redefinition".to_string(),
+                name: None,
+            },
+        ],
     };
 
     let canonical = canonical_general_view_graph(&graph, false);

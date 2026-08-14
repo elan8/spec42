@@ -40,10 +40,6 @@ Budget violations exit non-zero and fail the nightly job. Budgets are embedded i
 
 Optional grid drill-down in nightly CI: set repository variable `SYSML_POWERSYSTEMS_DIR` to a checkout path on the runner (or mount via self-hosted runner).
 
-See [POWER-SYSTEMS-PERFORMANCE-ANALYSIS.md](./POWER-SYSTEMS-PERFORMANCE-ANALYSIS.md) for findings and improvement plan.
-
-See [ROBOT-VACUUM-PERFORMANCE-ANALYSIS.md](./ROBOT-VACUUM-PERFORMANCE-ANALYSIS.md) for embedding-host cold-path profiling on the robot-vacuum showcase fixture.
-
 ## Enforced Budgets
 
 Budgets are embedded in the Rust test that emits each report (not in this document). The values below reflect the current embedded budgets.
@@ -65,15 +61,4 @@ After `textDocument/didOpen` and `textDocument/didChange`, the kernel still publ
 
 Large workspaces should rely on `spec42.workspace.maxFilesPerPattern` for Model Explorer discovery limits; the debounced diagnostic republish uses whatever the language server has already indexed (opened files plus startup workspace scan).
 
-## Read-only HTTP API
-
-`spec42 api serve` is **stateless**: each request re-parses and re-validates from disk (same engine as `spec42 check`). There is no in-memory cache in phase 1.
-
-| Endpoint | Guidance |
-| --- | --- |
-| `POST /v1/model/summary` | Prefer over `/v1/model/projection` for large workspaces; default `max_nodes` is 500 |
-| `POST /v1/model/projection` | Full semantic graph; can be large — scope `path` to a file or small directory |
-| `GET /v1/elements` | Default `limit` 100, max 5000; always runs a full projection for the scoped `path` |
-| `POST /v1/diagrams/export` | ELK-backed SVG for routed views; comparable cost to `spec42 diagrams export` |
-
-For automation over large trees, prefer scoped paths, `model/summary` with a modest `max_nodes`, or the CLI/MCP surfaces when a one-shot subprocess is acceptable.
+For automation over large trees, prefer scoped paths, `spec42 model-summary` with a modest `--max-nodes`, or a one-shot CLI subprocess.

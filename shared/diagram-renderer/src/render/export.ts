@@ -55,6 +55,16 @@ export function addMarkers(svg: d3.Selection<SVGSVGElement, unknown, null, undef
 
 export function exportSvg(svgNode: SVGSVGElement, bounds: ContentBounds): string {
   const clone = svgNode.cloneNode(true) as SVGSVGElement;
+  for (const element of Array.from(clone.querySelectorAll<SVGElement>("[data-tooltip-title]"))) {
+    const hasTitle = Array.from(element.children)
+      .some((child) => child.tagName.toLowerCase() === "title");
+    if (!hasTitle) {
+      const title = clone.ownerDocument.createElementNS("http://www.w3.org/2000/svg", "title");
+      title.textContent = element.getAttribute("data-tooltip-title") ?? "";
+      element.appendChild(title);
+    }
+    element.removeAttribute("data-tooltip-title");
+  }
   clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
   clone.setAttribute("viewBox", `${bounds.x - 40} ${bounds.y - 40} ${bounds.width + 80} ${bounds.height + 80}`);
   return new XMLSerializer().serializeToString(clone);

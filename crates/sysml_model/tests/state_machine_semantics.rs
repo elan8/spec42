@@ -126,8 +126,9 @@ fn composite_state_machine_exposes_regions() {
 }
 
 #[test]
-fn terminate_state_kind_is_distinct_from_final() {
+fn user_defined_terminate_state_type_does_not_claim_canonical_terminate_semantics() {
     let content = r#"package TerminateDemo {
+    state def Terminate;
     state def Active;
     state def ShutdownMachine {
         state active : Active;
@@ -146,8 +147,36 @@ fn terminate_state_kind_is_distinct_from_final() {
         machine
             .states
             .iter()
-            .any(|state| state.name == "flowEnd" && state.kind == "terminate"),
-        "expected terminate kind for Terminate-typed state; states={:?}",
+            .any(|state| state.name == "flowEnd" && state.kind == "state"),
+        "a user-defined Terminate state type must not claim canonical terminate semantics; states={:?}",
+        machine
+            .states
+            .iter()
+            .map(|state| (&state.name, &state.kind))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn unresolved_terminate_spelling_does_not_classify_a_state_as_terminate() {
+    let content = r#"package TerminateDemo {
+    state def ShutdownMachine {
+        state flowEnd : Terminate;
+    }
+}"#;
+    let doc = workspace_doc("unresolved-terminate.sysml", content);
+    let uri = doc.uri.clone();
+    let (graph, _) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let machine = build_workspace_state_machines(&graph, &[uri])
+        .into_iter()
+        .find(|machine| machine.name == "ShutdownMachine")
+        .expect("ShutdownMachine");
+    assert!(
+        machine
+            .states
+            .iter()
+            .any(|state| state.name == "flowEnd" && state.kind == "state"),
+        "an unresolved Terminate spelling must not masquerade as resolved terminate semantics; states={:?}",
         machine
             .states
             .iter()

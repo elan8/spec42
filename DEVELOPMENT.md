@@ -6,14 +6,19 @@ Guidance for building, testing, and contributing to Spec42.
 
 Spec42 is a Rust workspace plus a VS Code extension.
 
-- `crates/spec42_host` owns the host embedding API: library catalog resolution, engine builder, and immutable snapshot construction (Phase 2).
-- `crates/server` (`spec42`) owns the CLI, LSP binary, MCP binary, read-only HTTP API, and thin adapters over `spec42_host`.
-- `crates/kernel` owns the LSP/runtime host: document lifecycle, workspace orchestration, LSP handlers, validation wiring, DTO assembly, and host adapters.
+- `crates/sysml_model` owns reusable semantic logic: graph construction, cross-document linking, resolution, evaluation, and graph-first visualization helpers.
+- `crates/sysml_diagnostics` owns the semantic diagnostics engine: rule evaluation over the graph built by `sysml_model`.
+- `crates/sysml_tokens` owns SysML v2 semantic tokenization for editor highlighting, neutral over WASM and LSP hosts.
+- `crates/diagram` owns shared diagram projection utilities used by Spec42 and other consumers.
+- `crates/kpar` owns KerML Project Archive (KPAR) read, pack, and validate support.
 - `crates/language_service` owns protocol-neutral editor intelligence: navigation, completion, document outline/folding, workspace symbol search, rename, formatting, and neutral quick-fix edits. Hosts map its DTOs to LSP, HTTP, or Monaco contracts.
-- `crates/semantic_core` owns reusable semantic logic: graph construction, cross-document linking, resolution, evaluation, diagnostics, and graph-first visualization helpers.
+- `crates/workspace` owns the host embedding API: library catalog resolution, engine building, snapshot construction/comparison, and workspace session lifecycle.
+- `crates/workspace_session` owns a protocol-neutral, tokio-actor concurrency wrapper (lock-free reads, superseded-rebuild handling) over embedder-owned session state; currently a standalone scaffold not yet wired into a host.
+- `crates/lsp_server` owns the LSP/runtime host: document lifecycle, workspace orchestration, LSP handlers, validation wiring, DTO assembly, and host adapters.
+- `crates/server` (`spec42`) owns the CLI, LSP binary, and thin adapters over `workspace` and `lsp_server`.
 - `vscode` owns the VS Code client, webviews, tests, packaging, and bundled asset staging.
 
-Keep reusable semantic/model behavior in `semantic_core`; keep editor intelligence that is shared across hosts in `language_service`; keep protocol, filesystem runtime, and editor-specific behavior in `kernel` or the host crate that owns it.
+Keep reusable semantic/model behavior in `sysml_model` (and diagnostics rules in `sysml_diagnostics`); keep editor intelligence that is shared across hosts in `language_service`; keep protocol, filesystem runtime, and editor-specific behavior in `lsp_server` or the host crate that owns it.
 
 ## Language Service Structure
 
@@ -31,7 +36,7 @@ Protocol-neutral editor APIs live in `crates/language_service`.
 
 Headless tests: `crates/language_service/tests/` (`navigation/`, `completion/`, `outline/`, `inmemory_workspace`, `dto_roundtrip`, `dependency_guardrails`).
 
-Design rationale: [docs/adr/0002-language-service-crate.md](docs/adr/0002-language-service-crate.md).
+Protocol-neutral editor intelligence stays in the language-service crate; hosts map its DTOs to LSP/HTTP/Monaco.
 
 ## LSP Server Structure
 
@@ -46,21 +51,6 @@ The LSP implementation lives under `crates/kernel/src/lsp_runtime`.
 - `mod.rs`: `tower-lsp` trait entrypoint that delegates to the modules above
 
 Semantic diagnostics rule evaluation is owned by `semantic_core::semantic::diagnostics`; kernel code maps neutral diagnostics at the LSP boundary.
-
-## HTTP API
-
-Read-only workspace access lives in `crates/server/src/api` and ships as:
-
-```bash
-spec42 api serve --workspace-root ./my-model
-```
-
-- Default bind: `127.0.0.1:3842` (loopback only; use `--allow-remote` for other interfaces).
-- Endpoints mirror CLI/MCP (`/v1/validate`, `/v1/model/summary`, `/v1/doctor`, …).
-- OpenAPI contract: `docs/api/spec42-readonly-v1.openapi.yaml` (served at `GET /openapi.json`).
-- Integration tests: `crates/server/tests/api_http.rs`.
-
-Design rationale: [docs/adr/0001-read-only-systems-modeling-http-api.md](docs/adr/0001-read-only-systems-modeling-http-api.md).
 
 ## Building
 
@@ -80,7 +70,7 @@ The binary is at `target/release/spec42` (Windows: `target/release/spec42.exe`).
 "spec42.serverPath": "c:\\Git\\spec42\\target\\release\\spec42.exe"
 ```
 
-See [docs/engineering/POWER-SYSTEMS-PERFORMANCE-ANALYSIS.md](docs/engineering/POWER-SYSTEMS-PERFORMANCE-ANALYSIS.md) for measured impact.
+See [docs/engineering/PERFORMANCE-GUARDRAILS.md](docs/engineering/PERFORMANCE-GUARDRAILS.md) for nightly budgets and optional power-systems drill-down.
 
 ### Embedded standard library bundle
 
@@ -151,7 +141,7 @@ Cross-repo notes for real-model diagnostic quality live in the parser repo: [`do
 
 - `spec42 check` post-processes diagnostics: deduplication and one root parse error per file (cascades in `relatedInformation`). By default, semantic checks still run on files with parse errors; use `--strict-diagnostics` for the legacy mode that skips semantic checks after a parse error and suppresses shadowed `unresolved_*` warnings.
 - Parser-side cascade suppression and dialect-specific codes come from `sysml-v2-parser`; post-processing lives in `crates/kernel/src/analysis/diagnostics_postprocess.rs`.
-- Corpus regression: set `MBSE_VACUUM_EXAMPLE_DIR` to a checkout of the public vacuum-cleaner example and run `cargo test -p kernel --test lsp_integration mbse_vacuum -- --ignored`. See [docs/engineering/MBSE-VACUUM-CHECK-ANALYSIS.md](docs/engineering/MBSE-VACUUM-CHECK-ANALYSIS.md).
+- Corpus regression: set `MBSE_VACUUM_EXAMPLE_DIR` to a checkout of the public vacuum-cleaner example and run `cargo test -p kernel --test lsp_integration mbse_vacuum -- --ignored`.
 
 ## Workspace indexing limits
 
@@ -176,7 +166,7 @@ Authoritative semantic shaping for diagram payloads lives in `semantic_core` (`c
 | Slim interconnection LSP payload (`ibd` omitted) | `VisualizationBuildOptions::slim_interconnection_payload`; tested in `interconnection_visualization.rs` |
 | `viewCandidates` | `explicit_views::build_view_candidates` |
 
-See [docs/architecture/PREPARE-PIPELINE-OVERLAP.md](docs/architecture/PREPARE-PIPELINE-OVERLAP.md).
+Authoritative shaping stays in the semantic visualization pipeline; the shared renderer does not re-implement it.
 
 ## Running Tests
 
@@ -185,7 +175,7 @@ Spec42 uses two Rust integration layers in CI:
 | Layer | Scope | Typical runtime |
 | --- | --- | --- |
 | **Core (fast path)** | Workspace crates except slow `spec42` integration binaries; `spec42` unit tests; `multi_file_check` | Minutes |
-| **Agent/API surfaces** | CLI, MCP, and HTTP parity/integration tests on real fixtures | Several minutes (stdlib materialization) |
+| **Agent CLI surfaces** | CLI agent-tool integration tests on real fixtures | Several minutes (stdlib materialization) |
 
 ### Rust (core, fast path)
 
@@ -208,33 +198,25 @@ Without embedded stdlib:
 cargo test --workspace --no-default-features
 ```
 
-### Rust (agent/API surfaces)
+### Rust (agent CLI surfaces)
 
-CLI, MCP, and HTTP tests share the same `perform_*` engine and KitchenTimer fixtures. They are **`#[ignore]` by default** so plain `cargo test` stays fast; run them with `--include-ignored` when changing `crates/server` agent or API code:
+CLI agent-tool tests share the same `perform_*` engine and KitchenTimer fixtures. They are **`#[ignore]` by default** so plain `cargo test` stays fast; run them with `--include-ignored` when changing `crates/server` agent CLI code:
 
 ```bash
 cargo test -p spec42 \
-  --test api_http \
-  --test mcp_tools \
   --test cli_ai_tools \
-  --test mcp_protocol \
-  --test mcp_binary \
   --test kitchen_timer_check \
   -- --include-ignored
 ```
 
 | Integration test | Surface |
 | --- | --- |
-| `api_http` | Read-only HTTP API (`spec42 api serve` router) |
-| `mcp_tools` | MCP tool handlers (`spec42_check`, `spec42_doctor`, …) |
-| `mcp_protocol` | MCP JSON-RPC over in-memory transport |
-| `mcp_binary` | `spec42-mcp` stdio binary |
-| `cli_ai_tools` | CLI JSON parity with MCP |
+| `cli_ai_tools` | CLI JSON output for `explain-diagnostic` / `model-summary` |
 | `kitchen_timer_check` | `perform_check` smoke on bundled example |
 | `kpar_stdlib_embed_smoke` | Embedded OMG KPAR stdlib resolves `ScalarValues::Real` |
 | `multi_file_check` | Multi-file workspace import smoke |
 
-CI runs core and agent/API layers as separate jobs (see `.github/workflows/ci.yml`).
+CI runs core and agent CLI layers as separate jobs (see `.github/workflows/ci.yml`).
 
 Focused LSP integration tests:
 
@@ -280,8 +262,7 @@ cargo test -p spec42_host --test incremental_benchmark -- --ignored --nocapture
 The benchmark stays `#[ignore]` in CI (`experimental_incremental_updates` now defaults to
 `true`, so no builder change is needed to measure it). As of 2026-07-13 this benchmark does
 not show a measurable win — the graph patch skips re-parsing but `update_snapshot`'s
-downstream snapshot assembly is not scoped — see
-`docs/engineering/TIER2-UNIFIED-INCREMENTAL-ENGINE-DESIGN.md` for the open follow-up.
+downstream snapshot assembly is not scoped. Follow-ups are tracked in GitHub Issues.
 
 ### Robot vacuum performance analysis (local only)
 
@@ -301,9 +282,9 @@ cargo build -p spec42_host --profile profiling --example profile_robot_vacuum
 target/profiling/examples/profile_robot_vacuum --embedded-libs
 ```
 
-CPU flamegraphs need `kernel.perf_event_paranoid <= 1` (see [ROBOT-VACUUM-PERFORMANCE-ANALYSIS.md](docs/engineering/ROBOT-VACUUM-PERFORMANCE-ANALYSIS.md)).
+CPU flamegraphs need `kernel.perf_event_paranoid <= 1`.
 
-The perf harness uses `ValidationTiming::Deferred` (view-first embedding). Release regression ceilings are enforced in `robot_vacuum_host_phase_performance_report` via `release_perf_thresholds()` (load ≤ 3 s, prepare ≤ 2.5 s, total ≤ 5.5 s). Validation completion scenarios (`validation_eager_at_load`, `validation_deferred_ensure`, `view_then_validation`) are in `robot_vacuum_host_validation_performance_report`. Use a **release** or **profiling** binary for IDE integration — debug builds are ~5.8× slower on the same path (see analysis doc).
+The perf harness uses `ValidationTiming::Deferred` (view-first embedding). Release regression ceilings are enforced in `robot_vacuum_host_phase_performance_report` via `release_perf_thresholds()` (load ≤ 3 s, prepare ≤ 2.5 s, total ≤ 5.5 s). Validation completion scenarios (`validation_eager_at_load`, `validation_deferred_ensure`, `view_then_validation`) are in `robot_vacuum_host_validation_performance_report`. Use a **release** or **profiling** binary for IDE integration — debug builds are much slower on the same path.
 
 ### SysML v2 validation suite
 
@@ -366,29 +347,25 @@ Current report-only budgets are documented in `docs/engineering/PERFORMANCE-GUAR
 
 ## AI assistants
 
-**VS Code extension (Copilot Agent):** requires `engines.vscode` **^1.99.0** for Language Model Tools. Four tools in `vscode/package.json` `contributes.languageModelTools` are registered from `vscode/src/lmTools/` and invoke the same `spec42` binary as the LSP (`check`, `doctor`, `explain-diagnostic`, `model-summary` with `--format json`). No extra MCP config in VS Code for these tools.
+**VS Code extension (Copilot Agent):** requires `engines.vscode` **^1.99.0** for Language Model Tools. Four tools in `vscode/package.json` `contributes.languageModelTools` are registered from `vscode/src/lmTools/` and invoke the same `spec42` binary as the LSP (`check`, `doctor`, `explain-diagnostic`, `model-summary` with `--format json`).
 
-**MCP and HTTP API:** `spec42-mcp` and `spec42 api serve` expose the same validation and semantic projections as the CLI. Setup: [`docs/user/AI-ASSISTANTS.md`](docs/user/AI-ASSISTANTS.md), HTTP design: [`docs/adr/0001-read-only-systems-modeling-http-api.md`](docs/adr/0001-read-only-systems-modeling-http-api.md).
+**Other AI hosts (Copilot, Cursor, …):** use the CLI directly plus a per-host skill/instructions doc. Setup: [`docs/user/AI-ASSISTANTS.md`](docs/user/AI-ASSISTANTS.md).
 
-Tests (see [Running Tests](#running-tests) → agent/API surfaces):
+Tests (see [Running Tests](#running-tests) → agent CLI surfaces):
 
 ```bash
 cargo test -p spec42 \
-  --test api_http \
-  --test mcp_tools \
   --test cli_ai_tools \
-  --test mcp_protocol \
-  --test mcp_binary \
   --test kitchen_timer_check \
   -- --include-ignored
 cd vscode && npm run compile && npm run test:lm-cli-unit
 ```
 
-MCP protocol tests use the `rmcp` client dev-dependency with an in-memory duplex transport; `mcp_binary` exercises `spec42-mcp` via stdio; `cli_ai_tools` and `api_http` assert JSON parity with MCP handlers on the KitchenTimer fixture.
+`cli_ai_tools` asserts CLI JSON output for `explain-diagnostic` / `model-summary` on the KitchenTimer fixture.
 
 ## Validation Pipeline
 
-`spec42 check` and MCP `spec42_check` use the same validation engine as the editor host.
+`spec42 check` uses the same validation engine as the editor host.
 
 Diagnostics are published in two stages:
 
@@ -418,14 +395,14 @@ The OMG standard library is bundled from `sysml.library.kpar` at the pinned SysM
 For local development, `build.rs` prefers, in order (per managed library):
 
 1. `SPEC42_KPAR_LIBRARY_BUNDLE_<ID>` (path to `.kpar`, CI/release; legacy `SPEC42_DOMAIN_LIBRARIES_BUNDLE_ZIP` still maps to domain)
-2. `SPEC42_KPAR_LIBRARY_SOURCE_DIR_<ID>` (pack on the fly with `kpar-pack`)
+2. `SPEC42_KPAR_LIBRARY_SOURCE_DIR_<ID>` (pack on the fly with `spec42 bundle`; the source root must contain its authoritative `.project.json`)
 3. A sibling checkout from `pack.siblingRelative` in the library config (packed when no cached bundle exists)
 4. Cached `.cache/<artifact>` from the library pin
 
 Domain library releases are published from [elan8/sysml-domain-libraries](https://github.com/elan8/sysml-domain-libraries) via the `release-kpar` GitHub Action when a `v*` tag is pushed. Pack locally with:
 
 ```bash
-cargo run -p kpar --bin kpar-pack -- --root ../sysml-domain-libraries --version 0.3.0 --output elan8-domain-libraries-0.3.0.kpar
+cargo run -p server --no-default-features --bin spec42 -- bundle ../sysml-domain-libraries -o elan8-domain-libraries-0.3.0.kpar
 ```
 
 `vscode/.gitignore` ignores `vscode/examples` so duplicate checkouts under `vscode/` are not committed. If you see the same example folders twice in the Spec42 **Examples** view, remove the extra copy under `vscode/examples` and keep the root submodule.
