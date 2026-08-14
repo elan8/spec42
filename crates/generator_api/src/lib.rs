@@ -1,3 +1,5 @@
+#![recursion_limit = "256"]
+
 //! Runtime-neutral contracts used by generator runtimes and other read-only consumers.
 
 mod artifacts;

@@ -1,3 +1,5 @@
+#![recursion_limit = "256"]
+
 //! The only supported consumer facade over Spec42's semantic model implementation.
 //!
 //! [`PublishedModel`] is opaque. Consumers select a cohesive service and receive typed answers or

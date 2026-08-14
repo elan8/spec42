@@ -1,3 +1,5 @@
+#![recursion_limit = "256"]
+
 //! Tokio-actor concurrency wrapper for embedder-owned session state.
 //!
 //! Gives readers a lock-free, always-immediately-available (possibly stale) snapshot via

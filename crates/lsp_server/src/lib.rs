@@ -1,3 +1,5 @@
+#![recursion_limit = "256"]
+
 //! Core library for Spec42 LSP server: semantic model, DTOs, language utilities.
 //! Used by the spec42 and spec42-pro binaries.
 

@@ -345,47 +345,68 @@ impl std::fmt::Debug for IdentityIndex {
 impl IdentityIndex {
     fn build(storage: &SemanticModelStorage) -> Result<Self, ResolutionError> {
         let occurrences = name_occurrences(storage)?;
-        let mut text = Vec::with_capacity(storage.declarations.len());
-        let mut name_paths = Vec::with_capacity(storage.declarations.len());
+        let mut text: Vec<Box<str>> = Vec::with_capacity(storage.declarations.len());
+        let mut name_paths: Vec<Option<usize>> = Vec::with_capacity(storage.declarations.len());
+        let mut name_path_ids = std::collections::HashMap::new();
+        name_path_ids
+            .try_reserve(storage.declarations.len())
+            .map_err(|_| ResolutionError::Capacity)?;
+        let mut name_path_counts: Vec<u32> = Vec::new();
         for index in 0..storage.declarations.len() {
             let id = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
-            text.push(encode_identity(storage, id, &occurrences)?.into_boxed_str());
-            name_paths.push(encode_name_path(storage, id)?);
+            let declaration = storage
+                .declaration(id)
+                .ok_or(ResolutionError::InvalidStorage)?;
+            let document = storage
+                .document(declaration.document)
+                .ok_or(ResolutionError::InvalidStorage)?;
+            let mut identity = if let Some(owner) = declaration.owner {
+                let owner_declaration = storage
+                    .declaration(owner)
+                    .ok_or(ResolutionError::InvalidStorage)?;
+                if owner.index() >= index || owner_declaration.document != declaration.document {
+                    return Err(ResolutionError::InvalidStorage);
+                }
+                text[owner.index()].to_string()
+            } else {
+                let mut identity = String::from(IDENTITY_ENCODING_VERSION);
+                push_identity_field(&mut identity, &document.identity);
+                identity
+            };
+            push_identity_segment(storage, id, &occurrences, &mut identity)?;
+            let name_path = if declaration
+                .owner
+                .is_some_and(|owner| name_paths.get(owner.index()).copied().flatten().is_none())
+            {
+                None
+            } else if let Some(name) = declaration.name {
+                let parent = declaration
+                    .owner
+                    .and_then(|owner| name_paths[owner.index()]);
+                let key = (declaration.document, parent, name);
+                let path = match name_path_ids.get(&key) {
+                    Some(path) => *path,
+                    None => {
+                        let path = name_path_counts.len();
+                        name_path_counts.push(0);
+                        name_path_ids.insert(key, path);
+                        path
+                    }
+                };
+                name_path_counts[path] = name_path_counts[path]
+                    .checked_add(1)
+                    .ok_or(ResolutionError::Capacity)?;
+                Some(path)
+            } else {
+                None
+            };
+            text.push(identity.into_boxed_str());
+            name_paths.push(name_path);
         }
         // A qualified name identifies a declaration only when nothing else in the publication
         // renders the same one -- two same-named siblings of different kinds otherwise share it.
-        let mut name_path_counts: HashTable<(usize, u32)> = HashTable::new();
-        let counting_hash = RandomState::default();
-        for (index, path) in name_paths.iter().enumerate() {
-            let Some(path) = path else { continue };
-            let hash = counting_hash.hash_one(path.as_str());
-            let matches = |candidate: &(usize, u32)| {
-                name_paths[candidate.0].as_deref() == Some(path.as_str())
-            };
-            if let Some(entry) = name_path_counts.find_mut(hash, matches) {
-                entry.1 += 1;
-            } else {
-                let rehash = |candidate: &(usize, u32)| {
-                    counting_hash.hash_one(name_paths[candidate.0].as_deref().unwrap_or_default())
-                };
-                name_path_counts
-                    .try_reserve(1, rehash)
-                    .map_err(|_| ResolutionError::Capacity)?;
-                name_path_counts.insert_unique(hash, (index, 1), rehash);
-            }
-        }
         let shorthand = (0..storage.declarations.len())
-            .map(|index| {
-                let Some(path) = name_paths[index].as_deref() else {
-                    return false;
-                };
-                let hash = counting_hash.hash_one(path);
-                name_path_counts
-                    .find(hash, |candidate| {
-                        name_paths[candidate.0].as_deref() == Some(path)
-                    })
-                    .is_some_and(|entry| entry.1 == 1)
-            })
+            .map(|index| name_paths[index].is_some_and(|path| name_path_counts[path] == 1))
             .collect::<Vec<_>>()
             .into_boxed_slice();
         let mut next = vec![None; text.len()];
@@ -465,30 +486,6 @@ fn push_identity_field(output: &mut String, value: &str) {
 }
 
 /// The ownership chain from `id` up to the document root, ordered leaf-first.
-fn ownership_chain(
-    storage: &SemanticModelStorage,
-    id: DeclarationId,
-) -> Result<Vec<DeclarationId>, ResolutionError> {
-    let mut chain = vec![id];
-    let mut cursor = storage
-        .declaration(id)
-        .ok_or(ResolutionError::InvalidStorage)?
-        .owner;
-    while let Some(current) = cursor {
-        if chain.len() > storage.declarations.len() {
-            // An ownership cycle would otherwise loop forever; the solver reports cycles
-            // separately, so this is a storage-invariant failure rather than a semantic outcome.
-            return Err(ResolutionError::InvalidStorage);
-        }
-        chain.push(current);
-        cursor = storage
-            .declaration(current)
-            .ok_or(ResolutionError::InvalidStorage)?
-            .owner;
-    }
-    Ok(chain)
-}
-
 /// The occurrence ordinal of each named declaration among its identically named siblings of the
 /// same kind, in declaration order.
 ///
@@ -522,96 +519,45 @@ fn name_occurrences(storage: &SemanticModelStorage) -> Result<Box<[u32]>, Resolu
     Ok(occurrences.into_boxed_slice())
 }
 
-fn encode_identity(
+fn push_identity_segment(
     storage: &SemanticModelStorage,
     id: DeclarationId,
     occurrences: &[u32],
-) -> Result<String, ResolutionError> {
-    let declaration = storage
+    output: &mut String,
+) -> Result<(), ResolutionError> {
+    let segment = storage
         .declaration(id)
         .ok_or(ResolutionError::InvalidStorage)?;
-    let chain = ownership_chain(storage, id)?;
-    let mut output = String::from(IDENTITY_ENCODING_VERSION);
-    push_identity_field(
-        &mut output,
-        &storage
-            .document(declaration.document)
-            .ok_or(ResolutionError::InvalidStorage)?
-            .identity,
-    );
-    for current in chain.iter().rev() {
-        let segment = storage
-            .declaration(*current)
-            .ok_or(ResolutionError::InvalidStorage)?;
-        push_identity_field(&mut output, writer::declaration_kind(segment.kind));
-        match segment.name {
-            Some(name) => {
-                output.push('n');
-                push_identity_field(
-                    &mut output,
-                    storage
-                        .symbol(name)
-                        .ok_or(ResolutionError::InvalidStorage)?,
-                );
-                push_identity_field(
-                    &mut output,
-                    &occurrences
-                        .get(current.index())
-                        .ok_or(ResolutionError::InvalidStorage)?
-                        .to_string(),
-                );
-            }
-            None => {
-                output.push('a');
-                push_identity_field(
-                    &mut output,
-                    &segment
-                        .anonymous_ordinal
-                        .ok_or(ResolutionError::InvalidStorage)?
-                        .to_string(),
-                );
-            }
+    push_identity_field(output, writer::declaration_kind(segment.kind));
+    match segment.name {
+        Some(name) => {
+            output.push('n');
+            push_identity_field(
+                output,
+                storage
+                    .symbol(name)
+                    .ok_or(ResolutionError::InvalidStorage)?,
+            );
+            push_identity_field(
+                output,
+                &occurrences
+                    .get(id.index())
+                    .ok_or(ResolutionError::InvalidStorage)?
+                    .to_string(),
+            );
+        }
+        None => {
+            output.push('a');
+            push_identity_field(
+                output,
+                &segment
+                    .anonymous_ordinal
+                    .ok_or(ResolutionError::InvalidStorage)?
+                    .to_string(),
+            );
         }
     }
-    Ok(output)
-}
-
-/// The document and name path of a fully named declaration, or `None` when any segment of its
-/// owner chain is anonymous.
-///
-/// This is what the writer's readable qualified-name shorthand renders, so it is also what has to
-/// be unique before the shorthand may be used.
-fn encode_name_path(
-    storage: &SemanticModelStorage,
-    id: DeclarationId,
-) -> Result<Option<String>, ResolutionError> {
-    let declaration = storage
-        .declaration(id)
-        .ok_or(ResolutionError::InvalidStorage)?;
-    let chain = ownership_chain(storage, id)?;
-    let mut output = String::new();
-    push_identity_field(
-        &mut output,
-        &storage
-            .document(declaration.document)
-            .ok_or(ResolutionError::InvalidStorage)?
-            .identity,
-    );
-    for current in chain.iter().rev() {
-        let segment = storage
-            .declaration(*current)
-            .ok_or(ResolutionError::InvalidStorage)?;
-        let Some(name) = segment.name else {
-            return Ok(None);
-        };
-        push_identity_field(
-            &mut output,
-            storage
-                .symbol(name)
-                .ok_or(ResolutionError::InvalidStorage)?,
-        );
-    }
-    Ok(Some(output))
+    Ok(())
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -643,6 +589,129 @@ struct NameIndex {
     keys: Box<[NameKey]>,
     ranges: Box<[CandidateRange]>,
     candidates: Box<[DeclarationId]>,
+}
+
+/// Publication-owned reverse edges from a resolved target to its authored reference sites.
+///
+/// The declaration occurrence is deliberately not stored here: it has different provenance and
+/// remains an explicit `include_declaration` policy in the query API. Reference ids within each
+/// target range stay in authored canonical order because the CSR is filled in ascending id order.
+#[derive(Debug)]
+struct ReverseReferenceIndex {
+    ranges: Box<[(u32, u32)]>,
+    references: Box<[AuthoredReferenceId]>,
+}
+
+impl ReverseReferenceIndex {
+    fn build(declarations: usize, resolution: &ResolutionResults) -> Result<Self, ResolutionError> {
+        let mut counts = vec![0u32; declarations];
+        for outcome in resolution.outcomes.iter().copied() {
+            if let ResolutionStatus::Resolved(target) = outcome {
+                let count = counts
+                    .get_mut(target.index())
+                    .ok_or(ResolutionError::InvalidStorage)?;
+                *count = count.checked_add(1).ok_or(ResolutionError::Capacity)?;
+            }
+        }
+
+        let mut ranges = Vec::with_capacity(declarations);
+        let mut starts = Vec::with_capacity(declarations);
+        let mut end = 0u32;
+        for count in counts {
+            let start = end;
+            end = end.checked_add(count).ok_or(ResolutionError::Capacity)?;
+            ranges.push((start, end));
+            starts.push(start);
+        }
+        let reference_count = usize::try_from(end).map_err(|_| ResolutionError::Capacity)?;
+        let mut references = vec![AuthoredReferenceId(0); reference_count];
+        for (index, outcome) in resolution.outcomes.iter().copied().enumerate() {
+            let ResolutionStatus::Resolved(target) = outcome else {
+                continue;
+            };
+            let cursor = starts
+                .get_mut(target.index())
+                .ok_or(ResolutionError::InvalidStorage)?;
+            let slot = references
+                .get_mut(*cursor as usize)
+                .ok_or(ResolutionError::InvalidStorage)?;
+            *slot =
+                AuthoredReferenceId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+            *cursor = cursor.checked_add(1).ok_or(ResolutionError::Capacity)?;
+        }
+        Ok(Self {
+            ranges: ranges.into_boxed_slice(),
+            references: references.into_boxed_slice(),
+        })
+    }
+
+    fn references(&self, target: DeclarationId) -> &[AuthoredReferenceId] {
+        let Some(&(start, end)) = self.ranges.get(target.index()) else {
+            return &[];
+        };
+        self.references
+            .get(start as usize..end as usize)
+            .unwrap_or_default()
+    }
+}
+
+/// Effective member enumeration for every lexical scope, including the root scope.
+///
+/// This is the persistent, frequently-enumerated scope-map family: owned, imported and inherited
+/// candidates are merged once at publication. Lookup by a particular name continues to use the
+/// canonical origin-specific indexes so shadowing and ambiguity retain their semantic meaning.
+#[derive(Debug)]
+struct EffectiveScopeIndex {
+    ranges: Box<[(u32, u32)]>,
+    members: Box<[DeclarationId]>,
+}
+
+impl EffectiveScopeIndex {
+    fn build(
+        declarations: usize,
+        direct: &NameIndex,
+        imported: &NameIndex,
+        inherited: &NameIndex,
+    ) -> Result<Self, ResolutionError> {
+        let mut ranges = Vec::with_capacity(declarations.saturating_add(1));
+        let mut members = Vec::new();
+        for slot in 0..=declarations {
+            let owner = if slot == 0 {
+                None
+            } else {
+                Some(DeclarationId::from_index(slot - 1).map_err(|_| ResolutionError::Capacity)?)
+            };
+            let mut scope_members = Vec::new();
+            for index in [direct, imported, inherited] {
+                for (_, candidates) in index.entries_for_owner(owner) {
+                    scope_members.extend_from_slice(candidates);
+                }
+            }
+            scope_members.sort_unstable();
+            scope_members.dedup();
+            let start = u32::try_from(members.len()).map_err(|_| ResolutionError::Capacity)?;
+            members.extend(scope_members);
+            let end = u32::try_from(members.len()).map_err(|_| ResolutionError::Capacity)?;
+            ranges.push((start, end));
+        }
+        Ok(Self {
+            ranges: ranges.into_boxed_slice(),
+            members: members.into_boxed_slice(),
+        })
+    }
+
+    fn members(&self, owner: Option<DeclarationId>) -> &[DeclarationId] {
+        let slot = owner.map_or(0usize, |owner| owner.index().saturating_add(1));
+        let Some(&(start, end)) = self.ranges.get(slot) else {
+            return &[];
+        };
+        let members = self
+            .members
+            .get(start as usize..end as usize)
+            .unwrap_or_default();
+        record_visited_index_entries(members.len());
+        members
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -736,7 +805,7 @@ impl MembershipIndex {
 
 impl NameIndex {
     fn build(mut entries: Vec<(NameKey, DeclarationId)>) -> Result<Self, ResolutionError> {
-        entries.sort_unstable();
+        entries.sort_unstable_by_key(name_entry_sort_key);
         entries.dedup();
 
         let mut keys = Vec::new();
@@ -775,9 +844,11 @@ impl NameIndex {
         let Ok(index) = self.keys.binary_search(&key) else {
             return &[];
         };
-        self.ranges[index]
+        let candidates = self.ranges[index]
             .slice(&self.candidates)
-            .unwrap_or_default()
+            .unwrap_or_default();
+        record_visited_index_entries(candidates.len());
+        candidates
     }
 
     fn entries_for_owner(
@@ -795,6 +866,16 @@ impl NameIndex {
                     .map(|candidates| (key.name, candidates))
             })
     }
+}
+
+/// The tuple's canonical `Ord` encoded as one integer comparison.
+///
+/// `None` sorts before every owner and `Some(u32::MAX)` still fits because the owner occupies 33
+/// bits above the two complete 32-bit name/candidate fields. The encoding is injective, so this is
+/// purely a cheaper sorting representation rather than a hash or a competing identity policy.
+fn name_entry_sort_key((key, candidate): &(NameKey, DeclarationId)) -> u128 {
+    let owner = key.owner.map_or(0, |owner| u128::from(owner.0) + 1);
+    (owner << 64) | (u128::from(key.name.0) << 32) | u128::from(candidate.0)
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -865,6 +946,7 @@ struct ImpliedRelationship {
 struct ResolutionResults {
     outcomes: Box<[ResolutionStatus]>,
     ambiguous_candidates: Box<[DeclarationId]>,
+    inherited_names: NameIndex,
     solver_status: SolverStatus,
     implied_relationships: Box<[ImpliedRelationship]>,
     #[cfg(test)]
@@ -1046,6 +1128,8 @@ pub(crate) struct ResolvedSemanticModel {
     identities: IdentityIndex,
     documents: DocumentIndex,
     memberships: MembershipIndex,
+    reverse_references: ReverseReferenceIndex,
+    effective_scopes: EffectiveScopeIndex,
     facts: inspection::ElementFactIndex,
     resolution: ResolutionResults,
     evaluation: Box<[EvaluationFact]>,
@@ -1236,13 +1320,12 @@ impl ResolvedSemanticModel {
                 locations.push(target.location);
             }
         }
-        for (index, reference) in self.storage.references.iter().enumerate() {
-            let Ok(id) = AuthoredReferenceId::from_index(index) else {
+        let references = self.reverse_references.references(target);
+        record_visited_index_entries(references.len());
+        for id in references {
+            let Some(reference) = self.storage.references.get(id.index()) else {
                 return QueryOutcome::Incomplete;
             };
-            if self.resolution.outcome(id) != Some(ResolutionStatus::Resolved(target)) {
-                continue;
-            }
             let Some(source) = self.storage.declaration(reference.source) else {
                 return QueryOutcome::Incomplete;
             };
@@ -1360,44 +1443,35 @@ impl ResolvedSemanticModel {
         ) {
             return QueryOutcome::Incomplete;
         }
-        let Some(document_id) = self
-            .storage
-            .documents
-            .iter()
-            .position(|candidate| candidate.identity.as_ref() == document)
-            .and_then(|index| DocumentId::from_index(index).ok())
-        else {
+        let Some(document_id) = self.documents.document(&self.storage, document) else {
             return QueryOutcome::Unresolved;
         };
-        let owner = self
-            .storage
-            .declarations
-            .iter()
-            .enumerate()
-            .filter_map(|(index, declaration)| {
-                (declaration.document == document_id
-                    && document_range(&self.storage, document_id, &declaration.span)
-                        .ok()
-                        .is_some_and(|range| range_contains(range, position)))
-                .then(|| DeclarationId::from_index(index).ok())
-                .flatten()
-            })
-            .max_by_key(|id| declaration_depth(&self.storage, *id));
+        let Some(positions) = self.documents.positions(document_id) else {
+            return QueryOutcome::Unresolved;
+        };
+        let owner = positions.spans.innermost_containing(position);
         let mut ids = Vec::new();
-        let mut scopes = Vec::new();
         if let Some(qualifier) = qualifier {
-            scopes.extend(self.storage.declarations.iter().enumerate().filter_map(
-                |(index, declaration)| {
-                    (declaration.name.and_then(|name| self.storage.symbol(name)) == Some(qualifier))
-                        .then(|| DeclarationId::from_index(index).ok())
-                        .flatten()
-                        .map(Some)
-                },
-            ));
+            let scopes = match self.resolve_qualifier_scopes(owner, qualifier) {
+                Ok(scopes) if !scopes.is_empty() => scopes,
+                Ok(_) => return QueryOutcome::Unresolved,
+                Err(_) => return QueryOutcome::Incomplete,
+            };
+            if scopes.len() > 1 {
+                let candidates = scopes
+                    .into_iter()
+                    .map(|scope| {
+                        self.visible_member_records(self.effective_scopes.members(Some(scope)))
+                    })
+                    .collect::<Vec<_>>()
+                    .into_boxed_slice();
+                return QueryOutcome::Ambiguous(candidates);
+            }
+            ids.extend_from_slice(self.effective_scopes.members(Some(scopes[0])));
         } else {
             let mut scope = owner;
             loop {
-                scopes.push(scope);
+                ids.extend_from_slice(self.effective_scopes.members(scope));
                 let Some(current) = scope else {
                     break;
                 };
@@ -1407,17 +1481,71 @@ impl ResolvedSemanticModel {
                     .and_then(|declaration| declaration.owner);
             }
         }
-        for scope in scopes {
-            for (_, candidates) in self.direct_names.entries_for_owner(scope) {
-                ids.extend_from_slice(candidates);
-            }
-            for (_, candidates) in self.effective_imports.entries_for_owner(scope) {
-                ids.extend_from_slice(candidates);
-            }
-            if let Some(scope) = scope {
-                collect_inherited_members(self, scope, &mut ids);
-            }
+        let members = self.visible_member_records(&ids);
+        if recovered {
+            QueryOutcome::Recovered(members)
+        } else if unsupported {
+            QueryOutcome::UnsupportedWith(members)
+        } else {
+            QueryOutcome::Resolved(members)
         }
+    }
+
+    fn resolve_qualifier_scopes(
+        &self,
+        owner: Option<DeclarationId>,
+        qualifier: &str,
+    ) -> Result<Vec<DeclarationId>, ResolutionError> {
+        let Some(segments) = qualifier
+            .split("::")
+            .filter(|segment| !segment.is_empty())
+            .map(|segment| self.storage.symbols.find(segment))
+            .collect::<Option<Vec<_>>>()
+        else {
+            return Ok(Vec::new());
+        };
+        let Some(first) = segments.first().copied() else {
+            return Ok(Vec::new());
+        };
+        let mut candidates = Vec::new();
+        let mut work = ResolutionWork::default();
+        lookup_lexical_into(
+            &self.storage.declarations,
+            &ResolutionIndexes {
+                direct_names: &self.direct_names,
+                exported_names: &self.direct_names,
+                effective_imports: Some(&self.effective_imports),
+                exported_imports: Some(&self.effective_imports),
+                inherited_names: Some(&self.resolution.inherited_names),
+            },
+            owner,
+            first,
+            DeclarationDomain::Any,
+            &mut candidates,
+            &mut work,
+        )?;
+        let mut next = Vec::new();
+        for segment in &segments[1..] {
+            next.clear();
+            for candidate in candidates.iter().copied() {
+                let direct = self.direct_names.candidates(Some(candidate), *segment);
+                if direct.is_empty() {
+                    next.extend_from_slice(
+                        self.effective_imports.candidates(Some(candidate), *segment),
+                    );
+                } else {
+                    next.extend_from_slice(direct);
+                }
+            }
+            next.sort_unstable();
+            next.dedup();
+            std::mem::swap(&mut candidates, &mut next);
+        }
+        Ok(candidates)
+    }
+
+    fn visible_member_records(&self, ids: &[DeclarationId]) -> Box<[VisibleMember]> {
+        let mut ids = ids.to_vec();
         ids.sort_unstable();
         ids.dedup();
         let mut members = ids
@@ -1449,15 +1577,9 @@ impl ResolvedSemanticModel {
                 .then_with(|| a.declaring_document.cmp(&b.declaring_document))
                 .then_with(|| a.declaration_range.cmp(&b.declaration_range))
         });
-        let members = members.into_boxed_slice();
-        if recovered {
-            QueryOutcome::Recovered(members)
-        } else if unsupported {
-            QueryOutcome::UnsupportedWith(members)
-        } else {
-            QueryOutcome::Resolved(members)
-        }
+        members.into_boxed_slice()
     }
+
     fn diagnostic_records(&self) -> Result<Box<[DiagnosticRecord]>, ResolutionError> {
         let mut records = Vec::with_capacity(self.storage.references.len());
         for (index, reference) in self.storage.references.iter().enumerate() {
@@ -1703,18 +1825,6 @@ fn location_order(left: &SourceLocation, right: &SourceLocation) -> std::cmp::Or
         .then_with(|| left.role.cmp(&right.role))
 }
 
-fn declaration_depth(storage: &SemanticModelStorage, mut declaration: DeclarationId) -> usize {
-    let mut depth = 0usize;
-    while let Some(owner) = storage
-        .declaration(declaration)
-        .and_then(|value| value.owner)
-    {
-        depth = depth.saturating_add(1);
-        declaration = owner;
-    }
-    depth
-}
-
 fn declaration_qualified_name(
     storage: &SemanticModelStorage,
     mut declaration: DeclarationId,
@@ -1732,40 +1842,6 @@ fn declaration_qualified_name(
     }
     names.reverse();
     Some(names.join("::"))
-}
-
-fn collect_inherited_members(
-    model: &ResolvedSemanticModel,
-    owner: DeclarationId,
-    output: &mut Vec<DeclarationId>,
-) {
-    let mut owners = vec![owner];
-    let mut cursor = 0;
-    while let Some(current) = owners.get(cursor).copied() {
-        cursor += 1;
-        for (index, reference) in model.storage.references.iter().enumerate() {
-            if reference.source != current
-                || !matches!(
-                    reference.kind,
-                    ReferenceKind::Subclassification | ReferenceKind::FeatureTyping
-                )
-            {
-                continue;
-            }
-            let Ok(id) = AuthoredReferenceId::from_index(index) else {
-                continue;
-            };
-            let Some(ResolutionStatus::Resolved(target)) = model.resolution.outcome(id) else {
-                continue;
-            };
-            if !owners.contains(&target) {
-                owners.push(target);
-            }
-            for (_, candidates) in model.direct_names.entries_for_owner(Some(target)) {
-                output.extend_from_slice(candidates);
-            }
-        }
-    }
 }
 
 impl SemanticModelStorage {
@@ -1798,6 +1874,14 @@ impl SemanticModelStorage {
         let has_evaluation = !evaluation.is_empty();
         let identities = IdentityIndex::build(&self)?;
         let documents = DocumentIndex::build(&self)?;
+        let reverse_references =
+            ReverseReferenceIndex::build(self.declarations.len(), &resolution)?;
+        let effective_scopes = EffectiveScopeIndex::build(
+            self.declarations.len(),
+            &direct_names,
+            &effective_imports,
+            &resolution.inherited_names,
+        )?;
         let facts = inspection::ElementFactIndex::build(&self, &resolution, &evaluation)?;
         Ok(ResolvedSemanticModel {
             storage: self,
@@ -1806,6 +1890,8 @@ impl SemanticModelStorage {
             identities,
             documents,
             memberships,
+            reverse_references,
+            effective_scopes,
             facts,
             resolution,
             evaluation,
@@ -2144,6 +2230,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         SolverStatus::NonConverged
     };
 
+    let mut inherited_names = NameIndex::build(Vec::new())?;
     if converged {
         for index in subclass_slots.iter().copied() {
             work.downstream_evaluations = work
@@ -2294,7 +2381,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         // set, and a specialization cycle is detected explicitly rather than looped forever.
         let (ancestor_closures, cyclic_ancestry) =
             build_ancestor_closures(declarations, references, &outcomes)?;
-        let inherited_names = build_inherited_name_index(&direct_names, &ancestor_closures)?;
+        inherited_names = build_inherited_name_index(&direct_names, &ancestor_closures)?;
 
         for index in typing_slots.iter().copied() {
             work.downstream_evaluations = work
@@ -2368,7 +2455,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         // `inherited_names` above, which does not depend on FeatureTyping at all. Example: `need :
         // Need { attribute :>> status = ...; }` where `status` is owned by `ManagedRequirement`,
         // reached only via `Need -> UserRequirement -> ManagedRequirement`.
-        let inherited_names = extend_inherited_names_with_usage_typing(
+        inherited_names = extend_inherited_names_with_usage_typing(
             &direct_names,
             inherited_names,
             references,
@@ -2510,6 +2597,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         ResolutionResults {
             outcomes: outcomes.into_boxed_slice(),
             ambiguous_candidates: ambiguous_candidates.into_boxed_slice(),
+            inherited_names,
             solver_status,
             implied_relationships,
             #[cfg(test)]
@@ -6168,5 +6256,51 @@ mod tests {
             index.candidates(None, SymbolId(0)),
             &[DeclarationId(1), DeclarationId(2)]
         );
+    }
+
+    #[test]
+    fn packed_name_entry_order_matches_the_canonical_tuple_order() {
+        let entries = vec![
+            (
+                NameKey {
+                    owner: Some(DeclarationId(u32::MAX)),
+                    name: SymbolId(u32::MAX),
+                },
+                DeclarationId(u32::MAX),
+            ),
+            (
+                NameKey {
+                    owner: Some(DeclarationId(0)),
+                    name: SymbolId(u32::MAX),
+                },
+                DeclarationId(0),
+            ),
+            (
+                NameKey {
+                    owner: None,
+                    name: SymbolId(u32::MAX),
+                },
+                DeclarationId(u32::MAX),
+            ),
+            (
+                NameKey {
+                    owner: Some(DeclarationId(0)),
+                    name: SymbolId(0),
+                },
+                DeclarationId(u32::MAX),
+            ),
+            (
+                NameKey {
+                    owner: None,
+                    name: SymbolId(0),
+                },
+                DeclarationId(0),
+            ),
+        ];
+        let mut canonical = entries.clone();
+        canonical.sort_unstable();
+        let mut packed = entries;
+        packed.sort_unstable_by_key(name_entry_sort_key);
+        assert_eq!(packed, canonical);
     }
 }

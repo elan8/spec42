@@ -1,3 +1,5 @@
+#![recursion_limit = "256"]
+
 //! Protocol-neutral workspace build, snapshot, comparison and library management for Spec42.
 
 pub mod cache;

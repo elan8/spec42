@@ -103,6 +103,7 @@ mod tests {
                 source_range: TextRange::new(TextPosition::new(2, 4), TextPosition::new(2, 20)),
                 is_interface_usage: false,
                 interface_type: None,
+                flow: None,
             });
 
         let diagnostics =

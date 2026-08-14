@@ -611,6 +611,32 @@ export async function waitForModelExplorerWorkspaceReady(
   );
 }
 
+/** Wait for one coherent workspace publication containing every expected fixture document. */
+export async function waitForWorkspaceIndexReady(
+  expectedFileCount: number,
+  timeoutMs = extensionServerReadyTimeoutMs
+): Promise<void> {
+  await waitFor(
+    `workspace index with ${expectedFileCount} file(s)`,
+    () => getExtensionDebugState(),
+    (state) => {
+      if (!state || state.serverHealthState !== "ready") {
+        return false;
+      }
+      if (state.modelExplorer?.pendingWorkspaceLoadRunId) {
+        return false;
+      }
+      const indexedFiles =
+        state.lastSemanticIndexReadyWorkspaceFileCount ??
+        state.workspaceIndexSummary?.loadedFiles ??
+        0;
+      return indexedFiles >= expectedFileCount;
+    },
+    timeoutMs,
+    300
+  );
+}
+
 export async function waitForExtensionServerReady(
   timeoutMs = extensionServerReadyTimeoutMs
 ): Promise<void> {

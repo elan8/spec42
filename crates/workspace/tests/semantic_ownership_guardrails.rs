@@ -338,6 +338,9 @@ fn is_excluded(path: &Path) -> bool {
         "component_view.rs",
         // Owns relationship spelling serialization, not a consumer decision.
         "model.rs",
+        // Canonical debug/snapshot serialization of already-typed declared relationship facts.
+        // This renderer never reads the legacy `attributes` projection map.
+        "graph_sexpr.rs",
         // Boundary DTO projection (`project_source_text_attributes`,
         // `project_relationship_target_attributes`, `project_expression_text_attributes`):
         // projects typed facts onto a transport DTO's `attributes` map at construction sites

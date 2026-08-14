@@ -1299,6 +1299,15 @@ mod tests {
         let evaluation = compute_evaluation(&storage, &resolution, EvaluationPolicy::Evaluate);
         let identities = IdentityIndex::build(&storage).unwrap();
         let documents = DocumentIndex::build(&storage).unwrap();
+        let reverse_references =
+            ReverseReferenceIndex::build(storage.declarations.len(), &resolution).unwrap();
+        let effective_scopes = EffectiveScopeIndex::build(
+            storage.declarations.len(),
+            &direct_names,
+            &effective_imports,
+            &resolution.inherited_names,
+        )
+        .unwrap();
         let facts =
             inspection::ElementFactIndex::build(&storage, &resolution, &evaluation).unwrap();
         let model = ResolvedSemanticModel {
@@ -1308,6 +1317,8 @@ mod tests {
             identities,
             documents,
             memberships,
+            reverse_references,
+            effective_scopes,
             facts,
             resolution,
             evaluation,
