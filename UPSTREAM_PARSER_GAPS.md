@@ -601,6 +601,40 @@ found; all 51 fixtures are genuine upstream parser gaps**, grouped into Gaps 15-
   `#<keyword>+ <Name> { ... }` extended-usage shorthand, filed upstream against
   `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
 
+- Gap 40. `metadata def`/`metadata` bodies use a dedicated, much narrower body-element parser
+  (`metadata_body_element`, `src/parser/attribute.rs:1157-1175`, reached via `metadata_body` at
+  `src/parser/attribute.rs:1193`) than every other attribute-shaped body (`attribute def`, `item
+  def`, `part def`, etc., which use `attribute_body_element`, `src/parser/attribute.rs:191-260`).
+  `metadata_body_element`'s alternation is just `doc | attribute_def | attribute_usage |
+  metadata_binding | opaque-capture-fallback` -- it has **no** `ref_decl`, `part_usage`,
+  `item_usage`, `connect_`, or `assert_constraint_member` arms at all, unlike
+  `attribute_body_element`, which added all of these over time (see the "Before opaque capture so
+  these no longer land in `Other`" comments at `src/parser/attribute.rs:238-249`). Confirmed by
+  direct AST inspection at the pinned `cb026cd` checkout: a `ref self : Type :>> Other::self;`
+  member inside an `attribute def { ... }` body parses into a structured `AttributeBodyElement::
+  RefDecl` node (fully resolvable), while the byte-identical member inside a `metadata def { ...
+  }` body falls straight to `AttributeBodyElement::Other` (opaque, unresolvable) via
+  `metadata_body_element`'s fallback arm -- reproduced with a temporary
+  `sysml_v2_parser_next::parse_for_editor_owned` probe from `crates/sysml_resolution` (not
+  committed). This blocks `test/snapshots/sysml.library/metadata.md`'s `MetadataItem`'s `ref self
+  : MetadataItem redefines Metaobject::self, Item::self;` member: it is not a multi-target
+  specialization bug (`MetadataDef.specializes: Option<Node<TypingRelationship>>` and
+  `lower_metadata_def` in `crates/sysml_resolution/src/model.rs:5029-5063` both already handle
+  the `:> Metaobject, Item` multi-target specialization clause correctly, confirmed resolving both
+  targets to separate `Subclassification`/`specialization` references end-to-end -- verified via
+  a `sysml_resolution` unit-test probe), it is that the `ref self : ... redefines ...;` member
+  *inside the metadata def's own body* never reaches `sysml_resolution` as a `RefDecl` node in the
+  first place, so `lower_attribute_body`'s `AttributeBodyElement::Other` arm
+  (`crates/sysml_resolution/src/model.rs:3858-3864`) correctly reports
+  `unsupported_attribute_member` for input it was never given a chance to lower -- there is no
+  `sysml_resolution`-side fix available; the gap is entirely upstream in
+  `metadata_body`/`metadata_body_element`'s narrower grammar. Needs `metadata_body_element` widened
+  to include the same `ref_decl`/`part_usage`/`item_usage`/`connect_`/`assert_constraint_member`
+  arms `attribute_body_element` already has (or `metadata_def`/`metadata_usage` switched to reuse
+  `attribute_body`/`attribute_body_element` directly, if no metadata-specific body semantics
+  require the separate production), filed upstream against
+  `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+
 - Gap 36. KerML `const` end-feature prefix (`const end [1] feature a;` / `const end feature
   b;`, representative fixture: `test/snapshots/kerml/associations.md`, `assoc struct C { ... }`)
   is not recognized as a keyword anywhere in the pinned `cb026cd` checkout: a repo-wide grep of
