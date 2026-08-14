@@ -91,6 +91,18 @@ package 'State Exhibition Example' {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/26_state_exhibition_example.md") (path (named (kind package) (name "State Exhibition Example")) (named (kind part) (name "vehicle")) (anonymous (kind state) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/26_state_exhibition_example.md") (qualified-name "State Exhibition Example::vehicle")))
+    )
+    (declaration (id (node (document "memory://snapshot/26_state_exhibition_example.md") (path (named (kind package) (name "State Exhibition Example")) (named (kind part) (name "vehicle")) (anonymous (kind state) (ordinal 0)) (named (kind parameter) (name "controller")))))
+      (featured-by (node (document "memory://snapshot/26_state_exhibition_example.md") (path (named (kind package) (name "State Exhibition Example")) (named (kind part) (name "vehicle")) (anonymous (kind state) (ordinal 0)))))
+    )
+    (declaration (id (node (document "memory://snapshot/26_state_exhibition_example.md") (path (named (kind package) (name "State Exhibition Example")) (named (kind part) (name "vehicle")) (anonymous (kind state) (ordinal 0)) (named (kind parameter) (name "operatingVehicle")))))
+      (featured-by (node (document "memory://snapshot/26_state_exhibition_example.md") (path (named (kind package) (name "State Exhibition Example")) (named (kind part) (name "vehicle")) (anonymous (kind state) (ordinal 0)))))
+    )
+    (declaration (id (node (document "memory://snapshot/26_state_exhibition_example.md") (qualified-name "State Exhibition Example::vehicle::vehicleController")))
+      (featured-by (node (document "memory://snapshot/26_state_exhibition_example.md") (qualified-name "State Exhibition Example::vehicle")))
+    )
 )
 ~~~
 # NAVIGATION

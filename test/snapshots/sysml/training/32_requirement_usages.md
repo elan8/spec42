@@ -169,6 +169,24 @@ package 'Requirement Usages' {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/32_requirement_usages.md") (path (named (kind package) (name "Requirement Usages")) (named (kind requirement) (name "emptyVehicleMassLimit")) (anonymous (kind attribute) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/32_requirement_usages.md") (qualified-name "Requirement Usages::emptyVehicleMassLimit")))
+    )
+    (declaration (id (node (document "memory://snapshot/32_requirement_usages.md") (path (named (kind package) (name "Requirement Usages")) (named (kind requirement) (name "emptyVehicleMassLimit")) (anonymous (kind assume-constraint) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/32_requirement_usages.md") (qualified-name "Requirement Usages::emptyVehicleMassLimit")))
+    )
+    (declaration (id (node (document "memory://snapshot/32_requirement_usages.md") (qualified-name "Requirement Usages::emptyVehicleMassLimit::vehicle")))
+      (featured-by (node (document "memory://snapshot/32_requirement_usages.md") (qualified-name "Requirement Usages::emptyVehicleMassLimit")))
+    )
+    (declaration (id (node (document "memory://snapshot/32_requirement_usages.md") (path (named (kind package) (name "Requirement Usages")) (named (kind requirement) (name "fullVehicleMassLimit")) (anonymous (kind attribute) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/32_requirement_usages.md") (qualified-name "Requirement Usages::fullVehicleMassLimit")))
+    )
+    (declaration (id (node (document "memory://snapshot/32_requirement_usages.md") (path (named (kind package) (name "Requirement Usages")) (named (kind requirement) (name "fullVehicleMassLimit")) (anonymous (kind assume-constraint) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/32_requirement_usages.md") (qualified-name "Requirement Usages::fullVehicleMassLimit")))
+    )
+    (declaration (id (node (document "memory://snapshot/32_requirement_usages.md") (qualified-name "Requirement Usages::fullVehicleMassLimit::vehicle")))
+      (featured-by (node (document "memory://snapshot/32_requirement_usages.md") (qualified-name "Requirement Usages::fullVehicleMassLimit")))
+    )
 )
 ~~~
 # NAVIGATION

@@ -126,13 +126,23 @@ package 'Control Structures Example' {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/17_control_structures_example.md") (qualified-name "Control Structures Example::AddCharge::charge")))
+      (featured-by (node (document "memory://snapshot/17_control_structures_example.md") (qualified-name "Control Structures Example::AddCharge")))
+    )
+    (declaration (id (node (document "memory://snapshot/17_control_structures_example.md") (path (named (kind package) (name "Control Structures Example")) (named (kind action-def) (name "ChargeBattery")) (anonymous (kind then-continuation) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/17_control_structures_example.md") (qualified-name "Control Structures Example::ChargeBattery")))
+    )
     (declaration (id (node (document "memory://snapshot/17_control_structures_example.md") (qualified-name "Control Structures Example::ChargeBattery::endCharging")))
+      (featured-by (node (document "memory://snapshot/17_control_structures_example.md") (qualified-name "Control Structures Example::ChargeBattery")))
       (type (node (document "memory://snapshot/17_control_structures_example.md") (qualified-name "Control Structures Example::EndCharging")) (provenance authored))
       (effective-type (node (document "memory://snapshot/17_control_structures_example.md") (qualified-name "Control Structures Example::EndCharging")) (source direct))
       (supertype (node (document "memory://snapshot/17_control_structures_example.md") (qualified-name "Control Structures Example::EndCharging")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/17_control_structures_example.md") (qualified-name "Control Structures Example::EndCharging")))
       (subtype (node (document "memory://snapshot/17_control_structures_example.md") (qualified-name "Control Structures Example::ChargeBattery::endCharging")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/17_control_structures_example.md") (qualified-name "Control Structures Example::MonitorBattery::charge")))
+      (featured-by (node (document "memory://snapshot/17_control_structures_example.md") (qualified-name "Control Structures Example::MonitorBattery")))
     )
 )
 ~~~

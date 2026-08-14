@@ -203,6 +203,9 @@ package '13a-Model Containment' {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/13a_model_containment.md") (path (named (kind package) (name "13a-Model Containment")) (named (kind requirement) (name "BodyAndInteriorRequirements")) (anonymous (kind import) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/13a_model_containment.md") (qualified-name "13a-Model Containment::BodyAndInteriorRequirements")))
+    )
 )
 ~~~
 # NAVIGATION

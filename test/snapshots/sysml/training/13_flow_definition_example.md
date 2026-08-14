@@ -123,6 +123,12 @@ package 'Flow Definition Example' {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/13_flow_definition_example.md") (qualified-name "Flow Definition Example::FuelFlow::consumerPort")))
+      (featured-by (node (document "memory://snapshot/13_flow_definition_example.md") (qualified-name "Flow Definition Example::FuelFlow")))
+    )
+    (declaration (id (node (document "memory://snapshot/13_flow_definition_example.md") (qualified-name "Flow Definition Example::FuelFlow::supplierPort")))
+      (featured-by (node (document "memory://snapshot/13_flow_definition_example.md") (qualified-name "Flow Definition Example::FuelFlow")))
+    )
     (declaration (id (node (document "memory://snapshot/13_flow_definition_example.md") (qualified-name "Flow Definition Example::Vehicle")))
       (subtype (node (document "memory://snapshot/13_flow_definition_example.md") (qualified-name "Flow Definition Example::vehicle")) (scopes any))
     )
@@ -130,6 +136,12 @@ package 'Flow Definition Example' {
       (type (node (document "memory://snapshot/13_flow_definition_example.md") (qualified-name "Flow Definition Example::Vehicle")) (provenance authored))
       (effective-type (node (document "memory://snapshot/13_flow_definition_example.md") (qualified-name "Flow Definition Example::Vehicle")) (source direct))
       (supertype (node (document "memory://snapshot/13_flow_definition_example.md") (qualified-name "Flow Definition Example::Vehicle")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/13_flow_definition_example.md") (qualified-name "Flow Definition Example::vehicle::eng")))
+      (featured-by (node (document "memory://snapshot/13_flow_definition_example.md") (qualified-name "Flow Definition Example::vehicle")))
+    )
+    (declaration (id (node (document "memory://snapshot/13_flow_definition_example.md") (qualified-name "Flow Definition Example::vehicle::tankAssy")))
+      (featured-by (node (document "memory://snapshot/13_flow_definition_example.md") (qualified-name "Flow Definition Example::vehicle")))
     )
 )
 ~~~

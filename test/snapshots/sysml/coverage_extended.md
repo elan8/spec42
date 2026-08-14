@@ -96,6 +96,9 @@ package ExtendedExamples {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/coverage_extended.md") (qualified-name "ExtendedExamples::Failure::p")))
+      (featured-by (node (document "memory://snapshot/coverage_extended.md") (path (named (kind package) (name "ExtendedExamples")) (named (kind extended-definition) (name "Failure") (occurrence 2)))))
+    )
 )
 ~~~
 # NAVIGATION

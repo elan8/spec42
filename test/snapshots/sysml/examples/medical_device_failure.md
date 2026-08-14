@@ -92,6 +92,21 @@ package MedicalDeviceFailure {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/medical_device_failure.md") (qualified-name "MedicalDeviceFailure::medicalDevice::battery")))
+      (featured-by (node (document "memory://snapshot/medical_device_failure.md") (qualified-name "MedicalDeviceFailure::medicalDevice")))
+    )
+    (declaration (id (node (document "memory://snapshot/medical_device_failure.md") (qualified-name "MedicalDeviceFailure::medicalDevice::battery::cannotBeCharged")))
+      (featured-by (node (document "memory://snapshot/medical_device_failure.md") (qualified-name "MedicalDeviceFailure::medicalDevice::battery")))
+    )
+    (declaration (id (node (document "memory://snapshot/medical_device_failure.md") (qualified-name "MedicalDeviceFailure::medicalDevice::battery::depleted")))
+      (featured-by (node (document "memory://snapshot/medical_device_failure.md") (qualified-name "MedicalDeviceFailure::medicalDevice::battery")))
+    )
+    (declaration (id (node (document "memory://snapshot/medical_device_failure.md") (qualified-name "MedicalDeviceFailure::medicalDevice::deviceFails")))
+      (featured-by (node (document "memory://snapshot/medical_device_failure.md") (qualified-name "MedicalDeviceFailure::medicalDevice")))
+    )
+    (declaration (id (node (document "memory://snapshot/medical_device_failure.md") (qualified-name "MedicalDeviceFailure::medicalDevice::patient")))
+      (featured-by (node (document "memory://snapshot/medical_device_failure.md") (qualified-name "MedicalDeviceFailure::medicalDevice")))
+    )
 )
 ~~~
 # NAVIGATION

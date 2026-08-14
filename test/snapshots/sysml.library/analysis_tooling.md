@@ -109,6 +109,15 @@ standard library package AnalysisTooling {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/analysis_tooling.md") (qualified-name "AnalysisTooling::ToolExecution::toolName")))
+      (featured-by (node (document "memory://snapshot/analysis_tooling.md") (qualified-name "AnalysisTooling::ToolExecution")))
+    )
+    (declaration (id (node (document "memory://snapshot/analysis_tooling.md") (qualified-name "AnalysisTooling::ToolExecution::uri")))
+      (featured-by (node (document "memory://snapshot/analysis_tooling.md") (qualified-name "AnalysisTooling::ToolExecution")))
+    )
+    (declaration (id (node (document "memory://snapshot/analysis_tooling.md") (qualified-name "AnalysisTooling::ToolVariable::name")))
+      (featured-by (node (document "memory://snapshot/analysis_tooling.md") (qualified-name "AnalysisTooling::ToolVariable")))
+    )
 )
 ~~~
 # NAVIGATION

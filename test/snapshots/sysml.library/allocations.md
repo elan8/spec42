@@ -118,6 +118,12 @@ standard library package Allocations {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/allocations.md") (qualified-name "Allocations::Allocation::source")))
+      (featured-by (node (document "memory://snapshot/allocations.md") (qualified-name "Allocations::Allocation")))
+    )
+    (declaration (id (node (document "memory://snapshot/allocations.md") (qualified-name "Allocations::Allocation::target")))
+      (featured-by (node (document "memory://snapshot/allocations.md") (qualified-name "Allocations::Allocation")))
+    )
 )
 ~~~
 # NAVIGATION

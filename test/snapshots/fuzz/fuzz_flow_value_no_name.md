@@ -68,6 +68,9 @@ package P {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/fuzz_flow_value_no_name.md") (qualified-name "P::vehicle::eng")))
+      (featured-by (node (document "memory://snapshot/fuzz_flow_value_no_name.md") (qualified-name "P::vehicle")))
+    )
 )
 ~~~
 # NAVIGATION

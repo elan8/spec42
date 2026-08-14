@@ -199,6 +199,9 @@ package FeatureAdvancedCoverage {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/coverage_features_advanced.md") (qualified-name "FeatureAdvancedCoverage::fIn::input")))
+      (featured-by (node (document "memory://snapshot/coverage_features_advanced.md") (qualified-name "FeatureAdvancedCoverage::fIn")))
+    )
 )
 ~~~
 # NAVIGATION

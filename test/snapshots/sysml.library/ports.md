@@ -167,6 +167,7 @@ standard library package Ports {
       (subtype (node (document "memory://snapshot/ports.md") (qualified-name "Ports::Port::subports")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/ports.md") (qualified-name "Ports::Port::subports")))
+      (featured-by (node (document "memory://snapshot/ports.md") (qualified-name "Ports::Port")))
       (type (node (document "memory://snapshot/ports.md") (qualified-name "Ports::Port")) (provenance authored))
       (effective-type (node (document "memory://snapshot/ports.md") (qualified-name "Ports::Port")) (source direct))
       (supertype (node (document "memory://snapshot/ports.md") (qualified-name "Ports::Port")) (scopes any))

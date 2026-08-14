@@ -88,6 +88,12 @@ package 'Dependency Example' {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/37_dependency_example.md") (qualified-name "Dependency Example::System Assembly::Computer Subsystem")))
+      (featured-by (node (document "memory://snapshot/37_dependency_example.md") (qualified-name "Dependency Example::System Assembly")))
+    )
+    (declaration (id (node (document "memory://snapshot/37_dependency_example.md") (qualified-name "Dependency Example::System Assembly::Storage Subsystem")))
+      (featured-by (node (document "memory://snapshot/37_dependency_example.md") (qualified-name "Dependency Example::System Assembly")))
+    )
 )
 ~~~
 # NAVIGATION

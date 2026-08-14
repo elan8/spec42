@@ -132,6 +132,21 @@ package RiskMetadataExample {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/risk_metadata_example.md") (qualified-name "RiskMetadataExample::engine4cyl")))
+    )
+    (declaration (id (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/risk_metadata_example.md") (qualified-name "RiskMetadataExample::engine4cyl")))
+    )
+    (declaration (id (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "scheduleRisk")))))
+      (featured-by (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)))))
+    )
+    (declaration (id (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "technicalRisk")))))
+      (featured-by (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)))))
+    )
+    (declaration (id (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "totalRisk")))))
+      (featured-by (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)))))
+    )
 )
 ~~~
 # NAVIGATION

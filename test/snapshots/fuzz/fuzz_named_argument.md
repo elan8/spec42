@@ -84,6 +84,9 @@ package P {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/fuzz_named_argument.md") (qualified-name "P::F::p")))
+      (featured-by (node (document "memory://snapshot/fuzz_named_argument.md") (qualified-name "P::F")))
+    )
 )
 ~~~
 # NAVIGATION

@@ -39,6 +39,12 @@ part def Vehicle {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/parse_part_def_with_body.md") (qualified-name "Vehicle::Engine")))
+      (featured-by (node (document "memory://snapshot/parse_part_def_with_body.md") (qualified-name "Vehicle")))
+    )
+    (declaration (id (node (document "memory://snapshot/parse_part_def_with_body.md") (qualified-name "Vehicle::Wheel")))
+      (featured-by (node (document "memory://snapshot/parse_part_def_with_body.md") (qualified-name "Vehicle")))
+    )
 )
 ~~~
 # NAVIGATION

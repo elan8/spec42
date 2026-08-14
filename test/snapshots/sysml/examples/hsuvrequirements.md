@@ -165,6 +165,33 @@ package HSUVRequirements {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::EcoFriendliness::Emissions")))
+      (featured-by (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::EcoFriendliness")))
+    )
+    (declaration (id (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::Load::Cargo")))
+      (featured-by (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::Load")))
+    )
+    (declaration (id (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::Load::FuelCapacity")))
+      (featured-by (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::Load")))
+    )
+    (declaration (id (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::Load::Passengers")))
+      (featured-by (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::Load")))
+    )
+    (declaration (id (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::Performance::Acceleration")))
+      (featured-by (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::Performance")))
+    )
+    (declaration (id (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::Performance::Braking")))
+      (featured-by (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::Performance")))
+    )
+    (declaration (id (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::Performance::FuelEconomy")))
+      (featured-by (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::Performance")))
+    )
+    (declaration (id (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::Performance::Power")))
+      (featured-by (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::Performance")))
+    )
+    (declaration (id (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::Performance::Range")))
+      (featured-by (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::Performance")))
+    )
 )
 ~~~
 # NAVIGATION

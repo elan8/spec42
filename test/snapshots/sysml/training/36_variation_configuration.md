@@ -117,6 +117,18 @@ package 'Variation Configuration' {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/36_variation_configuration.md") (path (named (kind package) (name "Variation Configuration")) (named (kind part) (name "vehicle4Cyl")) (anonymous (kind part) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/36_variation_configuration.md") (qualified-name "Variation Configuration::vehicle4Cyl")))
+    )
+    (declaration (id (node (document "memory://snapshot/36_variation_configuration.md") (path (named (kind package) (name "Variation Configuration")) (named (kind part) (name "vehicle4Cyl")) (anonymous (kind part) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/36_variation_configuration.md") (qualified-name "Variation Configuration::vehicle4Cyl")))
+    )
+    (declaration (id (node (document "memory://snapshot/36_variation_configuration.md") (path (named (kind package) (name "Variation Configuration")) (named (kind part) (name "vehicle6Cyl")) (anonymous (kind part) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/36_variation_configuration.md") (qualified-name "Variation Configuration::vehicle6Cyl")))
+    )
+    (declaration (id (node (document "memory://snapshot/36_variation_configuration.md") (path (named (kind package) (name "Variation Configuration")) (named (kind part) (name "vehicle6Cyl")) (anonymous (kind part) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/36_variation_configuration.md") (qualified-name "Variation Configuration::vehicle6Cyl")))
+    )
 )
 ~~~
 # NAVIGATION

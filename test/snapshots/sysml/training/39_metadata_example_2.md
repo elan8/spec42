@@ -125,6 +125,33 @@ package 'Metadata Example-2' {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/39_metadata_example_2.md") (qualified-name "Metadata Example-2::computeDynamics::ToolExecution")))
+      (featured-by (node (document "memory://snapshot/39_metadata_example_2.md") (qualified-name "Metadata Example-2::computeDynamics")))
+    )
+    (declaration (id (node (document "memory://snapshot/39_metadata_example_2.md") (qualified-name "Metadata Example-2::computeDynamics::ToolExecution::toolName")))
+      (featured-by (node (document "memory://snapshot/39_metadata_example_2.md") (qualified-name "Metadata Example-2::computeDynamics::ToolExecution")))
+    )
+    (declaration (id (node (document "memory://snapshot/39_metadata_example_2.md") (qualified-name "Metadata Example-2::computeDynamics::ToolExecution::uri")))
+      (featured-by (node (document "memory://snapshot/39_metadata_example_2.md") (qualified-name "Metadata Example-2::computeDynamics::ToolExecution")))
+    )
+    (declaration (id (node (document "memory://snapshot/39_metadata_example_2.md") (qualified-name "Metadata Example-2::computeDynamics::a")))
+      (featured-by (node (document "memory://snapshot/39_metadata_example_2.md") (qualified-name "Metadata Example-2::computeDynamics")))
+    )
+    (declaration (id (node (document "memory://snapshot/39_metadata_example_2.md") (qualified-name "Metadata Example-2::computeDynamics::dt")))
+      (featured-by (node (document "memory://snapshot/39_metadata_example_2.md") (qualified-name "Metadata Example-2::computeDynamics")))
+    )
+    (declaration (id (node (document "memory://snapshot/39_metadata_example_2.md") (qualified-name "Metadata Example-2::computeDynamics::v_in")))
+      (featured-by (node (document "memory://snapshot/39_metadata_example_2.md") (qualified-name "Metadata Example-2::computeDynamics")))
+    )
+    (declaration (id (node (document "memory://snapshot/39_metadata_example_2.md") (qualified-name "Metadata Example-2::computeDynamics::v_out")))
+      (featured-by (node (document "memory://snapshot/39_metadata_example_2.md") (qualified-name "Metadata Example-2::computeDynamics")))
+    )
+    (declaration (id (node (document "memory://snapshot/39_metadata_example_2.md") (qualified-name "Metadata Example-2::computeDynamics::x_in")))
+      (featured-by (node (document "memory://snapshot/39_metadata_example_2.md") (qualified-name "Metadata Example-2::computeDynamics")))
+    )
+    (declaration (id (node (document "memory://snapshot/39_metadata_example_2.md") (qualified-name "Metadata Example-2::computeDynamics::x_out")))
+      (featured-by (node (document "memory://snapshot/39_metadata_example_2.md") (qualified-name "Metadata Example-2::computeDynamics")))
+    )
 )
 ~~~
 # NAVIGATION

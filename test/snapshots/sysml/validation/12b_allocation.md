@@ -82,6 +82,18 @@ package '12b-Allocation' {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/12b_allocation.md") (qualified-name "12b-Allocation::LogicalModel::providePower::generateTorque")))
+      (featured-by (node (document "memory://snapshot/12b_allocation.md") (qualified-name "12b-Allocation::LogicalModel::providePower")))
+    )
+    (declaration (id (node (document "memory://snapshot/12b_allocation.md") (path (named (kind package) (name "12b-Allocation")) (named (kind package) (name "LogicalModel")) (named (kind part) (name "torqueGenerator")) (anonymous (kind perform-action) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/12b_allocation.md") (qualified-name "12b-Allocation::LogicalModel::torqueGenerator")))
+    )
+    (declaration (id (node (document "memory://snapshot/12b_allocation.md") (qualified-name "12b-Allocation::PhysicalModel::powerTrain::engine")))
+      (featured-by (node (document "memory://snapshot/12b_allocation.md") (qualified-name "12b-Allocation::PhysicalModel::powerTrain")))
+    )
+    (declaration (id (node (document "memory://snapshot/12b_allocation.md") (path (named (kind package) (name "12b-Allocation")) (named (kind package) (name "PhysicalModel")) (named (kind part) (name "powerTrain")) (named (kind part) (name "engine")) (anonymous (kind perform-action) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/12b_allocation.md") (qualified-name "12b-Allocation::PhysicalModel::powerTrain::engine")))
+    )
 )
 ~~~
 # NAVIGATION

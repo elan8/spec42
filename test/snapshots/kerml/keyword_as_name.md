@@ -137,6 +137,30 @@ package KeywordAsName {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (path (named (kind package) (name "KeywordAsName")) (named (kind kerml-classifier) (name "Container")) (anonymous (kind part) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::Container")))
+    )
+    (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::IfThenElse::condition")))
+      (featured-by (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::IfThenElse")))
+    )
+    (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::IfThenElse::elseValue")))
+      (featured-by (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::IfThenElse")))
+    )
+    (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::IfThenElse::thenValue")))
+      (featured-by (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::IfThenElse")))
+    )
+    (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::MyStruct::frame")))
+      (featured-by (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::MyStruct")))
+    )
+    (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::MyStruct::type")))
+      (featured-by (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::MyStruct")))
+    )
+    (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::TestBehavior::guardCondition")))
+      (featured-by (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::TestBehavior")))
+    )
+    (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::TestBehavior::whileTest")))
+      (featured-by (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::TestBehavior")))
+    )
 )
 ~~~
 # NAVIGATION

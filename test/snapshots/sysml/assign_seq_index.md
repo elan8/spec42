@@ -116,6 +116,15 @@ package AssignTest {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/assign_seq_index.md") (path (named (kind package) (name "AssignTest")) (named (kind action-def) (name "A")) (anonymous (kind assign) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/assign_seq_index.md") (qualified-name "AssignTest::A")))
+    )
+    (declaration (id (node (document "memory://snapshot/assign_seq_index.md") (path (named (kind package) (name "AssignTest")) (named (kind action-def) (name "A")) (anonymous (kind assign) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/assign_seq_index.md") (qualified-name "AssignTest::A")))
+    )
+    (declaration (id (node (document "memory://snapshot/assign_seq_index.md") (path (named (kind package) (name "AssignTest")) (named (kind action-def) (name "A")) (anonymous (kind assign) (ordinal 2)))))
+      (featured-by (node (document "memory://snapshot/assign_seq_index.md") (qualified-name "AssignTest::A")))
+    )
 )
 ~~~
 # NAVIGATION

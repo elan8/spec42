@@ -107,6 +107,12 @@ package 'Flow Usage Example' {
       (effective-type (node (document "memory://snapshot/13_flow_usage_example.md") (qualified-name "Flow Usage Example::Vehicle")) (source direct))
       (supertype (node (document "memory://snapshot/13_flow_usage_example.md") (qualified-name "Flow Usage Example::Vehicle")) (scopes any))
     )
+    (declaration (id (node (document "memory://snapshot/13_flow_usage_example.md") (qualified-name "Flow Usage Example::vehicle::eng")))
+      (featured-by (node (document "memory://snapshot/13_flow_usage_example.md") (qualified-name "Flow Usage Example::vehicle")))
+    )
+    (declaration (id (node (document "memory://snapshot/13_flow_usage_example.md") (qualified-name "Flow Usage Example::vehicle::tankAssy")))
+      (featured-by (node (document "memory://snapshot/13_flow_usage_example.md") (qualified-name "Flow Usage Example::vehicle")))
+    )
 )
 ~~~
 # NAVIGATION

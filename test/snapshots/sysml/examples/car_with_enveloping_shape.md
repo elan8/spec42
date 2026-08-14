@@ -114,6 +114,18 @@ package CarWithEnvelopingShape {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/car_with_enveloping_shape.md") (qualified-name "CarWithEnvelopingShape::Car::boundingBox")))
+      (featured-by (node (document "memory://snapshot/car_with_enveloping_shape.md") (qualified-name "CarWithEnvelopingShape::Car")))
+    )
+    (declaration (id (node (document "memory://snapshot/car_with_enveloping_shape.md") (path (named (kind package) (name "CarWithEnvelopingShape")) (named (kind part-def) (name "Car")) (named (kind item) (name "boundingBox")) (anonymous (kind attribute) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/car_with_enveloping_shape.md") (qualified-name "CarWithEnvelopingShape::Car::boundingBox")))
+    )
+    (declaration (id (node (document "memory://snapshot/car_with_enveloping_shape.md") (path (named (kind package) (name "CarWithEnvelopingShape")) (named (kind part-def) (name "Car")) (named (kind item) (name "boundingBox")) (anonymous (kind attribute) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/car_with_enveloping_shape.md") (qualified-name "CarWithEnvelopingShape::Car::boundingBox")))
+    )
+    (declaration (id (node (document "memory://snapshot/car_with_enveloping_shape.md") (path (named (kind package) (name "CarWithEnvelopingShape")) (named (kind part-def) (name "Car")) (named (kind item) (name "boundingBox")) (anonymous (kind attribute) (ordinal 2)))))
+      (featured-by (node (document "memory://snapshot/car_with_enveloping_shape.md") (qualified-name "CarWithEnvelopingShape::Car::boundingBox")))
+    )
 )
 ~~~
 # NAVIGATION

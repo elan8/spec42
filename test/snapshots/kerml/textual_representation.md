@@ -106,9 +106,13 @@ package TextualRepresentation {
       (subtype (node (document "memory://snapshot/textual_representation.md") (qualified-name "TextualRepresentation::setX::c")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/textual_representation.md") (qualified-name "TextualRepresentation::setX::c")))
+      (featured-by (node (document "memory://snapshot/textual_representation.md") (qualified-name "TextualRepresentation::setX")))
       (type (node (document "memory://snapshot/textual_representation.md") (qualified-name "TextualRepresentation::C")) (provenance authored))
       (effective-type (node (document "memory://snapshot/textual_representation.md") (qualified-name "TextualRepresentation::C")) (source direct))
       (supertype (node (document "memory://snapshot/textual_representation.md") (qualified-name "TextualRepresentation::C")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/textual_representation.md") (qualified-name "TextualRepresentation::setX::newX")))
+      (featured-by (node (document "memory://snapshot/textual_representation.md") (qualified-name "TextualRepresentation::setX")))
     )
 )
 ~~~

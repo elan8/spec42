@@ -59,9 +59,13 @@ probe nested_declarations.md 2 24
       (subtype (node (document "memory://snapshot/nested_declarations.md") (qualified-name "Outer::Vehicle::engine")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/nested_declarations.md") (qualified-name "Outer::Vehicle::engine")))
+      (featured-by (node (document "memory://snapshot/nested_declarations.md") (qualified-name "Outer::Vehicle")))
       (type (node (document "memory://snapshot/nested_declarations.md") (qualified-name "Outer::Vehicle")) (provenance authored))
       (effective-type (node (document "memory://snapshot/nested_declarations.md") (qualified-name "Outer::Vehicle")) (source direct))
       (supertype (node (document "memory://snapshot/nested_declarations.md") (qualified-name "Outer::Vehicle")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/nested_declarations.md") (qualified-name "Outer::Vehicle::engine::displacement")))
+      (featured-by (node (document "memory://snapshot/nested_declarations.md") (qualified-name "Outer::Vehicle::engine")))
     )
 )
 ~~~

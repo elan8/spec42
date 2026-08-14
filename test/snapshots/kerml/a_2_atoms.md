@@ -93,6 +93,9 @@ package Atoms {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms::AtomMetadata::baseType")))
+      (featured-by (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms::AtomMetadata")))
+    )
 )
 ~~~
 # NAVIGATION

@@ -53,6 +53,12 @@ package P {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/fuzz_transition_no_then.md") (path (named (kind package) (name "P")) (named (kind state-def) (name "S")) (anonymous (kind initial-state) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/fuzz_transition_no_then.md") (qualified-name "P::S")))
+    )
+    (declaration (id (node (document "memory://snapshot/fuzz_transition_no_then.md") (qualified-name "P::S::off")))
+      (featured-by (node (document "memory://snapshot/fuzz_transition_no_then.md") (qualified-name "P::S")))
+    )
 )
 ~~~
 # NAVIGATION

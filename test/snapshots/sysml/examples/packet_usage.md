@@ -129,6 +129,15 @@ package 'Packet Usage' {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/packet_usage.md") (qualified-name "Packet Usage::packet3::special data field")))
+      (featured-by (node (document "memory://snapshot/packet_usage.md") (qualified-name "Packet Usage::packet3")))
+    )
+    (declaration (id (node (document "memory://snapshot/packet_usage.md") (path (named (kind package) (name "Packet Usage")) (named (kind part) (name "packet3")) (named (kind attribute) (name "special data field")) (anonymous (kind attribute) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/packet_usage.md") (qualified-name "Packet Usage::packet3::special data field")))
+    )
+    (declaration (id (node (document "memory://snapshot/packet_usage.md") (path (named (kind package) (name "Packet Usage")) (named (kind part) (name "packet3")) (named (kind attribute) (name "special data field")) (anonymous (kind attribute) (ordinal 0)) (named (kind attribute) (name "special data")))))
+      (featured-by (node (document "memory://snapshot/packet_usage.md") (path (named (kind package) (name "Packet Usage")) (named (kind part) (name "packet3")) (named (kind attribute) (name "special data field")) (anonymous (kind attribute) (ordinal 0)))))
+    )
 )
 ~~~
 # NAVIGATION

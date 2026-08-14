@@ -108,6 +108,9 @@ package 'Individuals and Snapshots Example' {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/28_individuals_and_snapshots_example.md") (path (named (kind package) (name "Individuals and Snapshots Example")) (named (kind part-def) (name "Vehicle_1")) (anonymous (kind succession) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/28_individuals_and_snapshots_example.md") (qualified-name "Individuals and Snapshots Example::Vehicle_1")))
+    )
 )
 ~~~
 # NAVIGATION

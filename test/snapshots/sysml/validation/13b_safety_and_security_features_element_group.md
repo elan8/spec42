@@ -114,6 +114,33 @@ package '13b-Safety and Security Features Element Group' {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group.md") (qualified-name "13b-Safety and Security Features Element Group::vehicle1_c1::bodyAssy")))
+      (featured-by (node (document "memory://snapshot/13b_safety_and_security_features_element_group.md") (qualified-name "13b-Safety and Security Features Element Group::vehicle1_c1")))
+    )
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group.md") (qualified-name "13b-Safety and Security Features Element Group::vehicle1_c1::bodyAssy::body")))
+      (featured-by (node (document "memory://snapshot/13b_safety_and_security_features_element_group.md") (qualified-name "13b-Safety and Security Features Element Group::vehicle1_c1::bodyAssy")))
+    )
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group.md") (qualified-name "13b-Safety and Security Features Element Group::vehicle1_c1::bodyAssy::bumper")))
+      (featured-by (node (document "memory://snapshot/13b_safety_and_security_features_element_group.md") (qualified-name "13b-Safety and Security Features Element Group::vehicle1_c1::bodyAssy")))
+    )
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group.md") (qualified-name "13b-Safety and Security Features Element Group::vehicle1_c1::bodyAssy::keylessEntry")))
+      (featured-by (node (document "memory://snapshot/13b_safety_and_security_features_element_group.md") (qualified-name "13b-Safety and Security Features Element Group::vehicle1_c1::bodyAssy")))
+    )
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group.md") (qualified-name "13b-Safety and Security Features Element Group::vehicle1_c1::interior")))
+      (featured-by (node (document "memory://snapshot/13b_safety_and_security_features_element_group.md") (qualified-name "13b-Safety and Security Features Element Group::vehicle1_c1")))
+    )
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group.md") (qualified-name "13b-Safety and Security Features Element Group::vehicle1_c1::interior::alarm")))
+      (featured-by (node (document "memory://snapshot/13b_safety_and_security_features_element_group.md") (qualified-name "13b-Safety and Security Features Element Group::vehicle1_c1::interior")))
+    )
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group.md") (qualified-name "13b-Safety and Security Features Element Group::vehicle1_c1::interior::driverAirBag")))
+      (featured-by (node (document "memory://snapshot/13b_safety_and_security_features_element_group.md") (qualified-name "13b-Safety and Security Features Element Group::vehicle1_c1::interior")))
+    )
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group.md") (qualified-name "13b-Safety and Security Features Element Group::vehicle1_c1::interior::frontSeat")))
+      (featured-by (node (document "memory://snapshot/13b_safety_and_security_features_element_group.md") (qualified-name "13b-Safety and Security Features Element Group::vehicle1_c1::interior")))
+    )
+    (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group.md") (qualified-name "13b-Safety and Security Features Element Group::vehicle1_c1::interior::seatBelt")))
+      (featured-by (node (document "memory://snapshot/13b_safety_and_security_features_element_group.md") (qualified-name "13b-Safety and Security Features Element Group::vehicle1_c1::interior")))
+    )
 )
 ~~~
 # NAVIGATION

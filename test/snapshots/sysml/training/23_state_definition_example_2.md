@@ -95,6 +95,27 @@ package 'State Definition Example-2' {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/23_state_definition_example_2.md") (path (named (kind package) (name "State Definition Example-2")) (named (kind state-def) (name "VehicleStates")) (anonymous (kind initial-state) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/23_state_definition_example_2.md") (qualified-name "State Definition Example-2::VehicleStates")))
+    )
+    (declaration (id (node (document "memory://snapshot/23_state_definition_example_2.md") (path (named (kind package) (name "State Definition Example-2")) (named (kind state-def) (name "VehicleStates")) (anonymous (kind transition) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/23_state_definition_example_2.md") (qualified-name "State Definition Example-2::VehicleStates")))
+    )
+    (declaration (id (node (document "memory://snapshot/23_state_definition_example_2.md") (path (named (kind package) (name "State Definition Example-2")) (named (kind state-def) (name "VehicleStates")) (anonymous (kind transition) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/23_state_definition_example_2.md") (qualified-name "State Definition Example-2::VehicleStates")))
+    )
+    (declaration (id (node (document "memory://snapshot/23_state_definition_example_2.md") (path (named (kind package) (name "State Definition Example-2")) (named (kind state-def) (name "VehicleStates")) (anonymous (kind transition) (ordinal 2)))))
+      (featured-by (node (document "memory://snapshot/23_state_definition_example_2.md") (qualified-name "State Definition Example-2::VehicleStates")))
+    )
+    (declaration (id (node (document "memory://snapshot/23_state_definition_example_2.md") (qualified-name "State Definition Example-2::VehicleStates::off")))
+      (featured-by (node (document "memory://snapshot/23_state_definition_example_2.md") (qualified-name "State Definition Example-2::VehicleStates")))
+    )
+    (declaration (id (node (document "memory://snapshot/23_state_definition_example_2.md") (qualified-name "State Definition Example-2::VehicleStates::on")))
+      (featured-by (node (document "memory://snapshot/23_state_definition_example_2.md") (qualified-name "State Definition Example-2::VehicleStates")))
+    )
+    (declaration (id (node (document "memory://snapshot/23_state_definition_example_2.md") (qualified-name "State Definition Example-2::VehicleStates::starting")))
+      (featured-by (node (document "memory://snapshot/23_state_definition_example_2.md") (qualified-name "State Definition Example-2::VehicleStates")))
+    )
 )
 ~~~
 # NAVIGATION

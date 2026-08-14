@@ -194,6 +194,27 @@ package ExternalShapeRefExample {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/external_shape_ref_example.md") (qualified-name "ExternalShapeRefExample::ExternalShapeRef::purpose")))
+      (featured-by (node (document "memory://snapshot/external_shape_ref_example.md") (qualified-name "ExternalShapeRefExample::ExternalShapeRef")))
+    )
+    (declaration (id (node (document "memory://snapshot/external_shape_ref_example.md") (qualified-name "ExternalShapeRefExample::ExternalShapeRef::shapeIri")))
+      (featured-by (node (document "memory://snapshot/external_shape_ref_example.md") (qualified-name "ExternalShapeRefExample::ExternalShapeRef")))
+    )
+    (declaration (id (node (document "memory://snapshot/external_shape_ref_example.md") (path (named (kind package) (name "ExternalShapeRefExample")) (named (kind part) (name "myBatteryUnit")) (anonymous (kind item) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/external_shape_ref_example.md") (qualified-name "ExternalShapeRefExample::myBatteryUnit")))
+    )
+    (declaration (id (node (document "memory://snapshot/external_shape_ref_example.md") (qualified-name "ExternalShapeRefExample::myBatteryUnit::envelopingBoxBatteryUnit")))
+      (featured-by (node (document "memory://snapshot/external_shape_ref_example.md") (qualified-name "ExternalShapeRefExample::myBatteryUnit")))
+    )
+    (declaration (id (node (document "memory://snapshot/external_shape_ref_example.md") (path (named (kind package) (name "ExternalShapeRefExample")) (named (kind part) (name "myBatteryUnit")) (named (kind item) (name "envelopingBoxBatteryUnit")) (anonymous (kind attribute) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/external_shape_ref_example.md") (qualified-name "ExternalShapeRefExample::myBatteryUnit::envelopingBoxBatteryUnit")))
+    )
+    (declaration (id (node (document "memory://snapshot/external_shape_ref_example.md") (path (named (kind package) (name "ExternalShapeRefExample")) (named (kind part) (name "myBatteryUnit")) (named (kind item) (name "envelopingBoxBatteryUnit")) (anonymous (kind attribute) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/external_shape_ref_example.md") (qualified-name "ExternalShapeRefExample::myBatteryUnit::envelopingBoxBatteryUnit")))
+    )
+    (declaration (id (node (document "memory://snapshot/external_shape_ref_example.md") (path (named (kind package) (name "ExternalShapeRefExample")) (named (kind part) (name "myBatteryUnit")) (named (kind item) (name "envelopingBoxBatteryUnit")) (anonymous (kind attribute) (ordinal 2)))))
+      (featured-by (node (document "memory://snapshot/external_shape_ref_example.md") (qualified-name "ExternalShapeRefExample::myBatteryUnit::envelopingBoxBatteryUnit")))
+    )
 )
 ~~~
 # NAVIGATION

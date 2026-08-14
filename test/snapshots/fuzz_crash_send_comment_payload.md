@@ -56,6 +56,9 @@ in send// nd port for HTT3prin  pq  for y  // nd port for HTT3prin items { }
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/fuzz_crash_send_comment_payload.md") (qualified-name "P::A::send")))
+      (featured-by (node (document "memory://snapshot/fuzz_crash_send_comment_payload.md") (qualified-name "P::A")))
+    )
 )
 ~~~
 # NAVIGATION

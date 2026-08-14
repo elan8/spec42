@@ -77,6 +77,21 @@ package P {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/fuzz_perform_action_keyword.md") (path (named (kind package) (name "P")) (named (kind action-def) (name "A")) (anonymous (kind for-loop) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/fuzz_perform_action_keyword.md") (qualified-name "P::A")))
+    )
+    (declaration (id (node (document "memory://snapshot/fuzz_perform_action_keyword.md") (path (named (kind package) (name "P")) (named (kind action-def) (name "A")) (anonymous (kind for-loop) (ordinal 0)) (named (kind perform-action) (name "doStuff")))))
+      (featured-by (node (document "memory://snapshot/fuzz_perform_action_keyword.md") (path (named (kind package) (name "P")) (named (kind action-def) (name "A")) (anonymous (kind for-loop) (ordinal 0)))))
+    )
+    (declaration (id (node (document "memory://snapshot/fuzz_perform_action_keyword.md") (path (named (kind package) (name "P")) (named (kind action-def) (name "A")) (anonymous (kind for-loop) (ordinal 0)) (named (kind perform-action) (name "doStuff")) (anonymous (kind for-loop) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/fuzz_perform_action_keyword.md") (path (named (kind package) (name "P")) (named (kind action-def) (name "A")) (anonymous (kind for-loop) (ordinal 0)) (named (kind perform-action) (name "doStuff")))))
+    )
+    (declaration (id (node (document "memory://snapshot/fuzz_perform_action_keyword.md") (path (named (kind package) (name "P")) (named (kind action-def) (name "A")) (anonymous (kind for-loop) (ordinal 0)) (named (kind perform-action) (name "doStuff")) (anonymous (kind for-loop) (ordinal 0)) (named (kind for-loop-variable) (name "y")))))
+      (featured-by (node (document "memory://snapshot/fuzz_perform_action_keyword.md") (path (named (kind package) (name "P")) (named (kind action-def) (name "A")) (anonymous (kind for-loop) (ordinal 0)) (named (kind perform-action) (name "doStuff")) (anonymous (kind for-loop) (ordinal 0)))))
+    )
+    (declaration (id (node (document "memory://snapshot/fuzz_perform_action_keyword.md") (path (named (kind package) (name "P")) (named (kind action-def) (name "A")) (anonymous (kind for-loop) (ordinal 0)) (named (kind for-loop-variable) (name "x")))))
+      (featured-by (node (document "memory://snapshot/fuzz_perform_action_keyword.md") (path (named (kind package) (name "P")) (named (kind action-def) (name "A")) (anonymous (kind for-loop) (ordinal 0)))))
+    )
 )
 ~~~
 # NAVIGATION

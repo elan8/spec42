@@ -177,6 +177,15 @@ package Connectors {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A::binding")))
+      (featured-by (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A")))
+    )
+    (declaration (id (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A::connector")))
+      (featured-by (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A")))
+    )
+    (declaration (id (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A::succession")))
+      (featured-by (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A")))
+    )
 )
 ~~~
 # NAVIGATION

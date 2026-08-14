@@ -124,6 +124,18 @@ package Camera {
       (effective-type (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::Camera")) (source direct))
       (supertype (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::Camera")) (scopes any))
     )
+    (declaration (id (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::autoFocus")))
+      (featured-by (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera")))
+    )
+    (declaration (id (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::imager")))
+      (featured-by (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera")))
+    )
+    (declaration (id (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::photos")))
+      (featured-by (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera")))
+    )
+    (declaration (id (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::scene")))
+      (featured-by (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera")))
+    )
 )
 ~~~
 # NAVIGATION

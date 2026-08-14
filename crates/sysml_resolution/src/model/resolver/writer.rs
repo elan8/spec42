@@ -59,11 +59,13 @@ fn write_types(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fm
         let subtypes = canonical_targets(model, model.types.subtypes(declaration).to_vec());
         let effective_types =
             canonical_targets(model, model.types.effective_types(declaration).to_vec());
+        let featuring = model.types.featuring_type(declaration);
         if !cyclic
             && supertypes.is_empty()
             && direct_types.is_empty()
             && subtypes.is_empty()
             && effective_types.is_empty()
+            && featuring.is_none()
         {
             continue;
         }
@@ -74,6 +76,11 @@ fn write_types(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fm
             write!(output, " (cyclic true)")?;
         }
         writeln!(output)?;
+        if let Some(featuring) = featuring {
+            write!(output, "      (featured-by ")?;
+            write_node_identity(model, featuring, output)?;
+            writeln!(output, ")")?;
+        }
         for (target, provenance) in direct_types {
             write!(output, "      (type ")?;
             write_node_identity(model, target, output)?;

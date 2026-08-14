@@ -99,6 +99,18 @@ abstract part def Container {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "Container::InnerPart")))
+      (featured-by (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "Container")))
+    )
+    (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "Container::InnerPort")))
+      (featured-by (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "Container")))
+    )
+    (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "Container::InnerWeight")))
+      (featured-by (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "Container")))
+    )
+    (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "Container::InnerWidget")))
+      (featured-by (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "Container")))
+    )
 )
 ~~~
 # NAVIGATION

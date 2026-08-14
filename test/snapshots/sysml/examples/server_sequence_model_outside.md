@@ -154,6 +154,33 @@ package ServerSequenceModelOutside {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/server_sequence_model_outside.md") (path (named (kind package) (name "ServerSequenceModelOutside")) (named (kind part-def) (name "PubSubSequenceOutside")) (anonymous (kind part) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/server_sequence_model_outside.md") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside")))
+    )
+    (declaration (id (node (document "memory://snapshot/server_sequence_model_outside.md") (path (named (kind package) (name "ServerSequenceModelOutside")) (named (kind part-def) (name "PubSubSequenceOutside")) (anonymous (kind part) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/server_sequence_model_outside.md") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside")))
+    )
+    (declaration (id (node (document "memory://snapshot/server_sequence_model_outside.md") (path (named (kind package) (name "ServerSequenceModelOutside")) (named (kind part-def) (name "PubSubSequenceOutside")) (anonymous (kind part) (ordinal 2)))))
+      (featured-by (node (document "memory://snapshot/server_sequence_model_outside.md") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside")))
+    )
+    (declaration (id (node (document "memory://snapshot/server_sequence_model_outside.md") (path (named (kind package) (name "ServerSequenceModelOutside")) (named (kind part-def) (name "PubSubSequenceOutside")) (anonymous (kind part) (ordinal 0)) (anonymous (kind occurrence) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/server_sequence_model_outside.md") (path (named (kind package) (name "ServerSequenceModelOutside")) (named (kind part-def) (name "PubSubSequenceOutside")) (anonymous (kind part) (ordinal 0)))))
+    )
+    (declaration (id (node (document "memory://snapshot/server_sequence_model_outside.md") (path (named (kind package) (name "ServerSequenceModelOutside")) (named (kind part-def) (name "PubSubSequenceOutside")) (anonymous (kind part) (ordinal 1)) (anonymous (kind occurrence) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/server_sequence_model_outside.md") (path (named (kind package) (name "ServerSequenceModelOutside")) (named (kind part-def) (name "PubSubSequenceOutside")) (anonymous (kind part) (ordinal 1)))))
+    )
+    (declaration (id (node (document "memory://snapshot/server_sequence_model_outside.md") (path (named (kind package) (name "ServerSequenceModelOutside")) (named (kind part-def) (name "PubSubSequenceOutside")) (anonymous (kind part) (ordinal 1)) (anonymous (kind occurrence) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/server_sequence_model_outside.md") (path (named (kind package) (name "ServerSequenceModelOutside")) (named (kind part-def) (name "PubSubSequenceOutside")) (anonymous (kind part) (ordinal 1)))))
+    )
+    (declaration (id (node (document "memory://snapshot/server_sequence_model_outside.md") (path (named (kind package) (name "ServerSequenceModelOutside")) (named (kind part-def) (name "PubSubSequenceOutside")) (anonymous (kind part) (ordinal 1)) (anonymous (kind occurrence) (ordinal 2)))))
+      (featured-by (node (document "memory://snapshot/server_sequence_model_outside.md") (path (named (kind package) (name "ServerSequenceModelOutside")) (named (kind part-def) (name "PubSubSequenceOutside")) (anonymous (kind part) (ordinal 1)))))
+    )
+    (declaration (id (node (document "memory://snapshot/server_sequence_model_outside.md") (path (named (kind package) (name "ServerSequenceModelOutside")) (named (kind part-def) (name "PubSubSequenceOutside")) (anonymous (kind part) (ordinal 2)) (anonymous (kind occurrence) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/server_sequence_model_outside.md") (path (named (kind package) (name "ServerSequenceModelOutside")) (named (kind part-def) (name "PubSubSequenceOutside")) (anonymous (kind part) (ordinal 2)))))
+    )
+    (declaration (id (node (document "memory://snapshot/server_sequence_model_outside.md") (path (named (kind package) (name "ServerSequenceModelOutside")) (named (kind part-def) (name "PubSubSequenceOutside")) (anonymous (kind part) (ordinal 2)) (anonymous (kind occurrence) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/server_sequence_model_outside.md") (path (named (kind package) (name "ServerSequenceModelOutside")) (named (kind part-def) (name "PubSubSequenceOutside")) (anonymous (kind part) (ordinal 2)))))
+    )
 )
 ~~~
 # NAVIGATION

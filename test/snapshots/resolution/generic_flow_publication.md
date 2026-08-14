@@ -46,6 +46,15 @@ package P { action def ExecuteMission { action validateRoute; action startMissio
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/generic_flow_publication.md") (path (named (kind package) (name "P")) (named (kind action-def) (name "ExecuteMission")) (anonymous (kind succession) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/generic_flow_publication.md") (qualified-name "P::ExecuteMission")))
+    )
+    (declaration (id (node (document "memory://snapshot/generic_flow_publication.md") (qualified-name "P::ExecuteMission::startMission")))
+      (featured-by (node (document "memory://snapshot/generic_flow_publication.md") (qualified-name "P::ExecuteMission")))
+    )
+    (declaration (id (node (document "memory://snapshot/generic_flow_publication.md") (qualified-name "P::ExecuteMission::validateRoute")))
+      (featured-by (node (document "memory://snapshot/generic_flow_publication.md") (qualified-name "P::ExecuteMission")))
+    )
 )
 ~~~
 # NAVIGATION

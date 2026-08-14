@@ -273,6 +273,57 @@ pub(crate) struct TypeIndex {
     subtypes: Rows<(DeclarationId, u8)>,
     /// The types a feature has, directly or inherited along its subsetting/redefinition chain.
     effective_types: Rows<(DeclarationId, EffectiveTypeSource)>,
+    /// The type each declaration is featured by, indexed by declaration ordinal.
+    featuring: Box<[Option<DeclarationId>]>,
+}
+
+/// Whether a declaration is a namespace-like container rather than a KerML `Type`.
+///
+/// Only these five own members without featuring them. Everything else -- every definition, every
+/// usage, every KerML classifier and feature -- is a `Type`, and a member it owns is featured by
+/// it.
+fn is_namespace_like(kind: DeclarationKind) -> bool {
+    matches!(
+        kind,
+        DeclarationKind::Namespace
+            | DeclarationKind::Package
+            | DeclarationKind::LibraryPackage
+            | DeclarationKind::Import
+            | DeclarationKind::Alias
+    )
+}
+
+/// The innermost enclosing type of `declaration`, or `None` for a declaration owned only by
+/// namespaces.
+///
+/// The sibling compiler needs a second rule here: it materializes an inherited copy of every
+/// feature, so a purely implied copy has to walk implied redefinition edges back to the type that
+/// actually declared it. This engine never materializes inherited features -- every declaration in
+/// it was authored where it stands -- so ownership alone is the answer, and adding the walk would
+/// invent a provenance the model does not have.
+fn featuring_owner(
+    storage: &SemanticModelStorage,
+    declaration: DeclarationId,
+) -> Result<Option<DeclarationId>, ResolutionError> {
+    let mut cursor = storage
+        .declaration(declaration)
+        .ok_or(ResolutionError::InvalidStorage)?
+        .owner;
+    let mut visited = 0usize;
+    while let Some(current) = cursor {
+        visited += 1;
+        if visited > storage.declarations.len() {
+            return Err(ResolutionError::InvalidStorage);
+        }
+        let owner = storage
+            .declaration(current)
+            .ok_or(ResolutionError::InvalidStorage)?;
+        if !is_namespace_like(owner.kind) {
+            return Ok(Some(current));
+        }
+        cursor = owner.owner;
+    }
+    Ok(None)
 }
 
 impl TypeIndex {
@@ -347,12 +398,25 @@ impl TypeIndex {
         }
         let effective_types = Rows::build(count, effective)?;
 
+        let mut featuring = Vec::with_capacity(count);
+        for index in 0..count {
+            let declaration =
+                DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+            featuring.push(featuring_owner(storage, declaration)?);
+        }
+
         Ok(Self {
             specialization,
             direct_types,
             subtypes,
             effective_types,
+            featuring: featuring.into_boxed_slice(),
         })
+    }
+
+    /// The type `declaration` is featured by, if any.
+    pub(crate) fn featuring_type(&self, declaration: DeclarationId) -> Option<DeclarationId> {
+        self.featuring.get(declaration.index()).copied().flatten()
     }
 
     pub(crate) fn specialization(&self) -> &SpecializationClosure {

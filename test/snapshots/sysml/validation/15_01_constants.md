@@ -227,6 +227,12 @@ package '15_01-Constants' {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/15_01_constants.md") (path (named (kind package) (name "15_01-Constants")) (named (kind package) (name "Mathematical Constants")) (named (kind attribute-def) (name "e")) (anonymous (kind assert-constraint) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/15_01_constants.md") (qualified-name "15_01-Constants::Mathematical Constants::e")))
+    )
+    (declaration (id (node (document "memory://snapshot/15_01_constants.md") (path (named (kind package) (name "15_01-Constants")) (named (kind package) (name "Mathematical Constants")) (named (kind attribute-def) (name "pi")) (anonymous (kind assert-constraint) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/15_01_constants.md") (qualified-name "15_01-Constants::Mathematical Constants::pi")))
+    )
 )
 ~~~
 # NAVIGATION

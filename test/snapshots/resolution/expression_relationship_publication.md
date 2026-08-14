@@ -46,6 +46,15 @@ package M { part def System { part a; part b; connect a to b; } }
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/expression_relationship_publication.md") (path (named (kind package) (name "M")) (named (kind part-def) (name "System")) (anonymous (kind bare-connect) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/expression_relationship_publication.md") (qualified-name "M::System")))
+    )
+    (declaration (id (node (document "memory://snapshot/expression_relationship_publication.md") (qualified-name "M::System::a")))
+      (featured-by (node (document "memory://snapshot/expression_relationship_publication.md") (qualified-name "M::System")))
+    )
+    (declaration (id (node (document "memory://snapshot/expression_relationship_publication.md") (qualified-name "M::System::b")))
+      (featured-by (node (document "memory://snapshot/expression_relationship_publication.md") (qualified-name "M::System")))
+    )
 )
 ~~~
 # NAVIGATION

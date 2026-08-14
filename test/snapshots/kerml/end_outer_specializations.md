@@ -224,6 +224,33 @@ assoc JustOutsideOf specializes OutsideOf {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/end_outer_specializations.md") (qualified-name "HappensDuring::happensDuring")))
+      (featured-by (node (document "memory://snapshot/end_outer_specializations.md") (qualified-name "HappensDuring")))
+    )
+    (declaration (id (node (document "memory://snapshot/end_outer_specializations.md") (qualified-name "HappensDuring::happensDuring::thatOccurrence")))
+      (featured-by (node (document "memory://snapshot/end_outer_specializations.md") (qualified-name "HappensDuring::happensDuring")))
+    )
+    (declaration (id (node (document "memory://snapshot/end_outer_specializations.md") (qualified-name "HappensDuring::shorterOccurrence")))
+      (featured-by (node (document "memory://snapshot/end_outer_specializations.md") (qualified-name "HappensDuring")))
+    )
+    (declaration (id (node (document "memory://snapshot/end_outer_specializations.md") (path (named (kind kerml-association) (name "JustOutsideOf")) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/end_outer_specializations.md") (qualified-name "JustOutsideOf")))
+    )
+    (declaration (id (node (document "memory://snapshot/end_outer_specializations.md") (path (named (kind kerml-association) (name "JustOutsideOf")) (anonymous (kind kerml-feature) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/end_outer_specializations.md") (qualified-name "JustOutsideOf")))
+    )
+    (declaration (id (node (document "memory://snapshot/end_outer_specializations.md") (qualified-name "PortionOf::portionWithin")))
+      (featured-by (node (document "memory://snapshot/end_outer_specializations.md") (qualified-name "PortionOf")))
+    )
+    (declaration (id (node (document "memory://snapshot/end_outer_specializations.md") (qualified-name "PortionOf::portionWithin::portionedOccurrence")))
+      (featured-by (node (document "memory://snapshot/end_outer_specializations.md") (qualified-name "PortionOf::portionWithin")))
+    )
+    (declaration (id (node (document "memory://snapshot/end_outer_specializations.md") (qualified-name "WithinBoth::withinBoth")))
+      (featured-by (node (document "memory://snapshot/end_outer_specializations.md") (qualified-name "WithinBoth")))
+    )
+    (declaration (id (node (document "memory://snapshot/end_outer_specializations.md") (qualified-name "WithinBoth::withinBoth::thatOccurrence")))
+      (featured-by (node (document "memory://snapshot/end_outer_specializations.md") (qualified-name "WithinBoth::withinBoth")))
+    )
 )
 ~~~
 # NAVIGATION
