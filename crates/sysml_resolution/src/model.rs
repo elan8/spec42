@@ -20,37 +20,40 @@ use sysml_v2_parser_next::{
         AssertConstraintMember, AssignStmt, AttributeBody, AttributeBodyElement, AttributeDef,
         AttributeUsage, BinaryOperator, Bind, BindingConnectorUsage, CalcDef, CalcDefBody,
         CalcDefBodyElement, CalcUsage as ParserCalcUsage, CaseDef, CaseReturnDecl,
-        CaseUsage as ParserCaseUsage, ClassDef, ConcernUsage as ParserConcernUsage, ConnectStmt,
-        ConnectionDef, ConnectionDefBody, ConnectionDefBodyElement, ConnectionEnd,
-        ConnectionUsageMember as ParserConnectionUsage, ConstraintDef, ConstraintDefBody,
-        ConstraintDefBodyElement, ConstraintUsage as ParserConstraintUsage, DefaultReferenceUsage,
-        DefinitionBody, DefinitionBodyElement, DefinitionPrefix, Dependency, DoAction, EndDecl,
+        CaseUsage as ParserCaseUsage, ClassDef, CommentAnnotation,
+        ConcernUsage as ParserConcernUsage, ConnectStmt, ConnectionDef, ConnectionDefBody,
+        ConnectionDefBodyElement, ConnectionEnd, ConnectionUsageMember as ParserConnectionUsage,
+        ConstraintDef, ConstraintDefBody, ConstraintDefBodyElement,
+        ConstraintUsage as ParserConstraintUsage, DefaultReferenceUsage, DefinitionBody,
+        DefinitionBodyElement, DefinitionPrefix, Dependency, DoAction, DocComment, EndDecl,
         EndIdentity, EntryAction, EnumDef, EnumerationBody,
         EnumerationUsage as ParserEnumerationUsage, ExitAction, Expression, ExtendedDefinition,
-        FeatureValue, FinalState, FirstMergeBody, FirstMergeBodyElement, FirstStmt, FlowDef,
-        FlowUsage, ForLoop, FrameMember, IfStmt, Import, ImportShape, InOut, InOutDecl,
-        IncludeUseCase, InterfaceDef, InterfaceDefBody, InterfaceDefBodyElement,
-        InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement, ItemDef,
-        ItemUsage as ParserItemUsage, KermlBindingMember, KermlClassifierDecl, KermlConnectorEnd,
-        KermlConnectorMember, KermlEndMember, KermlFeatureMember, KermlInvariantMember,
-        KermlSuccessionMember, LibraryPackage, Membership, MembershipKind as ParserMembershipKind,
-        MetadataAnnotation, MetadataDef, MetadataUsage as ParserMetadataUsage, NamespaceDecl, Node,
-        OccurrenceBodyElement, OccurrenceDef, OccurrenceUsage as ParserOccurrenceUsage,
-        OccurrenceUsageBody, Package, PackageBody, PackageBodyElement, PartDef, PartDefBody,
-        PartDefBodyElement, PartUsage, PartUsageBody, PartUsageBodyElement,
-        Perform as ParserPerform, PerformBody, PerformBodyElement, PerformInOutBinding, PortBody,
-        PortBodyElement, PortDef, PortDefBody, PortDefBodyElement, PortUsage as ParserPortUsage,
-        PurposeMember, QualifiedIdentification, QualifiedReferenceId, RefBody, RefBodyElement,
-        RefDecl, RelationshipBodyElement, RenderingDef, RenderingDefBody, RenderingDefBodyElement,
-        RenderingUsage as ParserRenderingUsage, RenderingUsageBody, RenderingUsageBodyElement,
-        RequireConstraint, RequireConstraintBody, RequirementActorDecl, RequirementDef,
-        RequirementDefBody, RequirementDefBodyElement, RequirementUsage as ParserRequirementUsage,
-        ReturnDecl, RootElement, Satisfy, SatisfyViewMember, SendPayload, Span, StakeholderMember,
-        StateDef, StateDefBody, StateDefBodyElement, StateUsage as ParserStateUsage, SubjectDecl,
-        SubsettingKind, SubsettingRelationship, TerminateStmt, ThenAction, ThenStmt, ThenTarget,
-        Transition, TransitionAccept, TransitionEffect, TypedParameterMember, UnaryOperator,
-        UseCaseDef, UseCaseDefBody, UseCaseDefBodyElement, UseCaseUsage as ParserUseCaseUsage,
-        VariantTypedUsage, VariantUsage, VerificationCaseDef,
+        FeatureValue, FeatureValueKind as ParserFeatureValueKind, FinalState, FirstMergeBody,
+        FirstMergeBodyElement, FirstStmt, FlowDef, FlowUsage, ForLoop, FrameMember, IfStmt, Import,
+        ImportShape, InOut, InOutDecl, IncludeUseCase, InterfaceDef, InterfaceDefBody,
+        InterfaceDefBodyElement, InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement,
+        ItemDef, ItemUsage as ParserItemUsage, KermlBindingMember, KermlClassifierDecl,
+        KermlConnectorEnd, KermlConnectorMember, KermlEndMember, KermlFeatureMember,
+        KermlInvariantMember, KermlSuccessionMember, LibraryPackage, Membership,
+        MembershipKind as ParserMembershipKind, MetadataAnnotation, MetadataDef,
+        MetadataUsage as ParserMetadataUsage, Multiplicity, NamespaceDecl, Node,
+        OccurrenceBodyElement, OccurrenceDef, OccurrencePortionKind as ParserOccurrencePortionKind,
+        OccurrenceUsage as ParserOccurrenceUsage, OccurrenceUsageBody, Package, PackageBody,
+        PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement, PartUsage, PartUsageBody,
+        PartUsageBodyElement, Perform as ParserPerform, PerformBody, PerformBodyElement,
+        PerformInOutBinding, PortBody, PortBodyElement, PortDef, PortDefBody, PortDefBodyElement,
+        PortUsage as ParserPortUsage, PurposeMember, QualifiedIdentification, QualifiedReferenceId,
+        RefBody, RefBodyElement, RefDecl, RelationshipBodyElement, RenderingDef, RenderingDefBody,
+        RenderingDefBodyElement, RenderingUsage as ParserRenderingUsage, RenderingUsageBody,
+        RenderingUsageBodyElement, RequireConstraint, RequireConstraintBody, RequirementActorDecl,
+        RequirementDef, RequirementDefBody, RequirementDefBodyElement,
+        RequirementUsage as ParserRequirementUsage, ReturnDecl, RootElement, Satisfy,
+        SatisfyViewMember, SendPayload, Span, StakeholderMember, StateDef, StateDefBody,
+        StateDefBodyElement, StateUsage as ParserStateUsage, SubjectDecl, SubsettingKind,
+        SubsettingRelationship, TerminateStmt, TextualRepresentation, ThenAction, ThenStmt,
+        ThenTarget, Transition, TransitionAccept, TransitionEffect, TypedParameterMember,
+        UnaryOperator, UseCaseDef, UseCaseDefBody, UseCaseDefBodyElement,
+        UseCaseUsage as ParserUseCaseUsage, VariantTypedUsage, VariantUsage, VerificationCaseDef,
         VerificationCaseUsage as ParserVerificationCaseUsage, VerifyRequirementMember, ViewBody,
         ViewBodyElement, ViewDef, ViewDefBody, ViewDefBodyElement, ViewUsage as ParserViewUsage,
         ViewpointDef, ViewpointUsage as ParserViewpointUsage, Visibility as ParserVisibility,
@@ -2151,6 +2154,226 @@ enum ParameterDirection {
     InOut,
 }
 
+/// One authored multiplicity bound (`[lower..upper]`).
+///
+/// The parser stores each bound as a full `Expression` (`ast::Multiplicity`), and a bound written
+/// as `*` -- or omitted entirely, as in `[1..*]`'s upper and both of `[*]`'s -- is `None` on that
+/// side. A missing bound in an authored multiplicity is therefore the unbounded bound, which is
+/// why absence and `Unbounded` are the same fact here; a declaration with no `[...]` at all
+/// carries no `MultiplicityRecord` in the first place.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum MultiplicityBound {
+    /// No bound authored on this side: unbounded.
+    Unbounded,
+    /// A bound that folds to a literal integer from literals alone (`[3]`, `[0..4]`).
+    Literal(i64),
+    /// A bound authored as a non-literal expression (`[1..n]`, `[a#(0)]`). Published as an explicit
+    /// non-literal fact -- its effective value needs operand resolution, which this fact family
+    /// deliberately does not perform, and it is never recovered by re-reading authored text.
+    Expression,
+}
+
+/// The authored multiplicity of one declaration (BNF `MultiplicityBounds`).
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct MultiplicityRecord {
+    lower: MultiplicityBound,
+    upper: MultiplicityBound,
+    span: Span,
+}
+
+/// The `snapshot`/`timeslice` portion prefix on an occurrence usage (`ast::OccurrencePortionKind`).
+///
+/// Note the bare `portion` keyword is a separate, unrelated modifier that the pinned parser cannot
+/// express at all (see `UPSTREAM_PARSER_GAPS.md` Gap 17); only the two portion *kinds* below are
+/// reachable, and only on `OccurrenceUsage`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum PortionKind {
+    Snapshot,
+    Timeslice,
+}
+
+/// The closed set of declaration modifier prefixes the pinned parser can express.
+///
+/// Deliberately not a `Vec<String>` of labels: each flag is a typed fact with exactly one parser
+/// field behind it. Modifiers the parser cannot represent at all -- SysML `readonly`, SysML
+/// `variable`, `unique`, and the bare `portion` prefix -- are absent from this set by construction
+/// rather than defaulted to `false`; see `UPSTREAM_PARSER_GAPS.md`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+struct DeclarationModifiers {
+    /// `abstract` (`ast::DefinitionPrefix::Abstract`, or a bare `is_abstract` field).
+    is_abstract: bool,
+    /// `variation` (`ast::DefinitionPrefix::Variation`, or a bare `is_variation` field).
+    variation: bool,
+    /// `individual`.
+    individual: bool,
+    /// `derived`.
+    derived: bool,
+    /// `end` used as a feature prefix (distinct from the `end name : T;` declaration form, which
+    /// is its own `DeclarationKind`).
+    end: bool,
+    /// `ref` used as a feature prefix (distinct from the `ref name : T;` declaration form).
+    reference: bool,
+    /// `constant`.
+    constant: bool,
+    /// `event`.
+    event: bool,
+    /// `standard`, on a library package.
+    standard: bool,
+    /// `all`, the sufficiency prefix.
+    all: bool,
+    /// KerML `composite`.
+    composite: bool,
+    /// KerML `portion` (reachable only through `KermlFeatureMember`).
+    portion: bool,
+    /// KerML `var`.
+    var: bool,
+    /// KerML `member`.
+    member: bool,
+    /// `ordered`, the collection modifier.
+    ordered: bool,
+    /// `nonunique`, the collection modifier.
+    nonunique: bool,
+}
+
+/// The authored presentation-adjacent facts of one declaration, recorded at the point its typed
+/// parser node is lowered.
+///
+/// Held in a dense side table parallel to `SemanticModelStorage::declarations` rather than widened
+/// into `Declaration`, which stays the compact identity/ownership record every resolution index is
+/// built over.
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
+struct DeclarationFacts {
+    /// The `<shortName>` identification prefix, where the owning parser node has the field.
+    short_name: Option<SymbolId>,
+    modifiers: DeclarationModifiers,
+    portion_kind: Option<PortionKind>,
+    direction: Option<ParameterDirection>,
+    multiplicity: Option<MultiplicityRecord>,
+}
+
+impl DeclarationFacts {
+    /// Facts for a declaration with no authored modifier, multiplicity, direction, or short name.
+    ///
+    /// Used both by synthesized anonymous scopes -- `BareConnect`, `Transition`, the state action
+    /// bindings and other declarations the lowering mints to give nested references a lexical
+    /// scope, which have no authored declaration syntax at all -- and by authored declaration
+    /// forms whose parser node carries none of these fields.
+    fn none() -> Self {
+        Self::default()
+    }
+}
+
+/// Which annotation production a `DocumentationRecord` came from.
+///
+/// The parser discards `/** ... */` and `//` as lexer trivia, so only the three keyworded forms
+/// survive into the AST at all.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum AnnotationForm {
+    /// `doc /* ... */` (`ast::DocComment`).
+    Documentation,
+    /// `comment /* ... */` (`ast::CommentAnnotation`).
+    Comment,
+    /// `rep <language> "..." /* ... */` (`ast::TextualRepresentation`).
+    TextualRepresentation,
+}
+
+/// One documentation/comment/textual-representation annotation bound to its annotated declaration.
+///
+/// The parser models these as *sibling* body elements with no parent link, so lowering binds the
+/// annotations at the head of a declaration's own body to that declaration. A declaration may
+/// carry several, which is why this is a table rather than a field on `DeclarationFacts`.
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct DocumentationRecord {
+    declaration: DeclarationId,
+    form: AnnotationForm,
+    locale: Option<SymbolId>,
+    /// The `rep` language string; always `None` for the other two forms.
+    language: Option<SymbolId>,
+    text: SymbolId,
+    span: Span,
+}
+
+/// Whether a feature value binds (`=`) or assigns (`:=`).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum FeatureValueKind {
+    Bind,
+    Assign,
+}
+
+/// The authored feature value of one declaration (`ast::FeatureValue`).
+///
+/// Keeps all five authored spellings distinguishable: `= e`, `:= e`, `default = e`, `default := e`,
+/// and the operator-less `default e`.
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct FeatureValueRecord {
+    declaration: DeclarationId,
+    kind: FeatureValueKind,
+    is_default: bool,
+    has_operator: bool,
+    span: Span,
+}
+
+/// Builds the multiplicity fact for a declaration whose parser node carries a `multiplicity` field.
+///
+/// A declaration with no `[...]` written yields `None`; that is genuinely "no multiplicity
+/// authored", distinct from `[*]`, which yields a record with both bounds `Unbounded`.
+fn multiplicity_facts(multiplicity: Option<&Node<Multiplicity>>) -> Option<MultiplicityRecord> {
+    let multiplicity = multiplicity?;
+    Some(MultiplicityRecord {
+        lower: multiplicity_bound(multiplicity.value.lower.as_deref()),
+        upper: multiplicity_bound(multiplicity.value.upper.as_deref()),
+        span: multiplicity.value.span.clone(),
+    })
+}
+
+fn multiplicity_bound(expression: Option<&Node<Expression>>) -> MultiplicityBound {
+    let Some(expression) = expression else {
+        return MultiplicityBound::Unbounded;
+    };
+    match literal_bound_value(&expression.value) {
+        Some(value) => MultiplicityBound::Literal(value),
+        None => MultiplicityBound::Expression,
+    }
+}
+
+/// Folds a multiplicity bound expression to a literal integer, or reports that it is not one.
+///
+/// Deliberately narrow: only an integer literal (optionally parenthesised) is a literal bound.
+/// Everything else -- a feature reference, an arithmetic expression, an index -- is published as
+/// `MultiplicityBound::Expression` rather than guessed at, because folding it needs operand
+/// resolution this fact family does not perform.
+fn literal_bound_value(expression: &Expression) -> Option<i64> {
+    match expression {
+        Expression::LiteralInteger(value) => Some(*value),
+        Expression::Parenthesized(inner) => literal_bound_value(&inner.value),
+        _ => None,
+    }
+}
+
+/// Splits a `definition_prefix`/`usage_prefix` field into its two independent modifier facts.
+fn definition_prefix_modifiers(prefix: Option<&DefinitionPrefix>) -> (bool, bool) {
+    match prefix {
+        Some(DefinitionPrefix::Abstract) => (true, false),
+        Some(DefinitionPrefix::Variation) => (false, true),
+        None => (false, false),
+    }
+}
+
+fn portion_kind_fact(kind: Option<&ParserOccurrencePortionKind>) -> Option<PortionKind> {
+    match kind? {
+        ParserOccurrencePortionKind::Snapshot => Some(PortionKind::Snapshot),
+        ParserOccurrencePortionKind::Timeslice => Some(PortionKind::Timeslice),
+    }
+}
+
+fn direction_fact(direction: Option<&InOut>) -> Option<ParameterDirection> {
+    match direction? {
+        InOut::In => Some(ParameterDirection::In),
+        InOut::Out => Some(ParameterDirection::Out),
+        InOut::InOut => Some(ParameterDirection::InOut),
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 struct ParserReferenceId {
     document: DocumentId,
@@ -2310,8 +2533,12 @@ struct PendingEvaluationFact {
 struct SemanticModelStorage {
     documents: Box<[CanonicalDocument]>,
     declarations: Box<[Declaration]>,
+    /// Parallel to `declarations`, one entry per `DeclarationId`.
+    declaration_facts: Box<[DeclarationFacts]>,
     memberships: Box<[MembershipRecord]>,
     references: Box<[AuthoredReference]>,
+    documentation: Box<[DocumentationRecord]>,
+    feature_values: Box<[FeatureValueRecord]>,
     unsupported: Box<[UnsupportedRecord]>,
     recovery: Box<[RecoveryRecord]>,
     symbols: SymbolTable,
@@ -2328,6 +2555,10 @@ impl SemanticModelStorage {
         self.declarations.get(id.index())
     }
 
+    fn declaration_facts(&self, id: DeclarationId) -> Option<&DeclarationFacts> {
+        self.declaration_facts.get(id.index())
+    }
+
     fn symbol(&self, id: SymbolId) -> Option<&str> {
         self.symbols.get(id)
     }
@@ -2339,8 +2570,11 @@ struct SemanticModelBuilder {
     document_index: HashTable<DocumentId>,
     document_hash_builder: RandomState,
     declarations: Vec<Declaration>,
+    declaration_facts: Vec<DeclarationFacts>,
     memberships: Vec<MembershipRecord>,
     references: Vec<AuthoredReference>,
+    documentation: Vec<DocumentationRecord>,
+    feature_values: Vec<FeatureValueRecord>,
     unsupported: Vec<UnsupportedRecord>,
     recovery: Vec<RecoveryRecord>,
     evaluation_facts: Vec<PendingEvaluationFact>,
@@ -2416,9 +2650,16 @@ impl SemanticModelBuilder {
             DeclarationKind::Package,
             name,
             Span::dummy(),
+            DeclarationFacts::none(),
         )
     }
 
+    /// Mints one declaration identity and records its authored facts in the same call.
+    ///
+    /// `facts` is a required parameter rather than an optional follow-up so that every present and
+    /// future lowering site has to make an explicit decision about the declaration's modifiers,
+    /// multiplicity, direction, and short name. A site with nothing to record passes
+    /// `DeclarationFacts::none()`; a site that simply forgets does not compile.
     fn push_typed_declaration(
         &mut self,
         document: DocumentId,
@@ -2426,10 +2667,14 @@ impl SemanticModelBuilder {
         kind: DeclarationKind,
         name: Option<SymbolId>,
         span: Span,
+        facts: DeclarationFacts,
     ) -> Result<DeclarationId, ConstructionError> {
         if document.index() >= self.documents.len()
             || owner.is_some_and(|id| id.index() >= self.declarations.len())
             || name.is_some_and(|id| id.index() >= self.symbols.len())
+            || facts
+                .short_name
+                .is_some_and(|id| id.index() >= self.symbols.len())
         {
             return Err(ConstructionError::InvalidIdentity);
         }
@@ -2453,7 +2698,192 @@ impl SemanticModelBuilder {
             kind,
             span,
         });
+        self.declaration_facts.push(facts);
+        debug_assert_eq!(self.declarations.len(), self.declaration_facts.len());
         Ok(id)
+    }
+
+    /// Records one `doc`/`comment`/`rep` annotation against the declaration it annotates.
+    ///
+    /// The parser attaches these as sibling body elements with no parent link, so the binding is
+    /// made by the lowering walk rather than read off the annotated node.
+    fn push_documentation(
+        &mut self,
+        declaration: DeclarationId,
+        form: AnnotationForm,
+        locale: Option<SymbolId>,
+        language: Option<SymbolId>,
+        text: SymbolId,
+        span: Span,
+    ) -> Result<(), ConstructionError> {
+        if declaration.index() >= self.declarations.len()
+            || text.index() >= self.symbols.len()
+            || locale.is_some_and(|id| id.index() >= self.symbols.len())
+            || language.is_some_and(|id| id.index() >= self.symbols.len())
+        {
+            return Err(ConstructionError::InvalidIdentity);
+        }
+        self.documentation.push(DocumentationRecord {
+            declaration,
+            form,
+            locale,
+            language,
+            text,
+            span,
+        });
+        Ok(())
+    }
+
+    /// Interns an optional authored `<shortName>` prefix, treating an empty spelling as absent.
+    fn intern_short_name(
+        &mut self,
+        short_name: Option<&String>,
+    ) -> Result<Option<SymbolId>, ConstructionError> {
+        match short_name {
+            Some(value) => self.intern_declared_name(value),
+            None => Ok(None),
+        }
+    }
+
+    /// Records a `doc /* ... */` body element against the declaration owning that body.
+    ///
+    /// `declaration` is `None` only for a `doc` written at document-root scope, whose annotated
+    /// element is the file root -- an element this model deliberately does not mint a declaration
+    /// for -- so there is nothing to bind it to.
+    fn record_root_doc_comment(
+        &mut self,
+        declaration: Option<DeclarationId>,
+        node: &Node<DocComment>,
+    ) -> Result<(), ConstructionError> {
+        match declaration {
+            Some(declaration) => self.record_doc_comment(declaration, node),
+            None => Ok(()),
+        }
+    }
+
+    /// Root-scope counterpart of `record_comment_annotation`; see `record_root_doc_comment`.
+    fn record_root_comment_annotation(
+        &mut self,
+        declaration: Option<DeclarationId>,
+        node: &Node<CommentAnnotation>,
+    ) -> Result<(), ConstructionError> {
+        match declaration {
+            Some(declaration) => self.record_comment_annotation(declaration, node),
+            None => Ok(()),
+        }
+    }
+
+    /// Root-scope counterpart of `record_textual_representation`; see `record_root_doc_comment`.
+    fn record_root_textual_representation(
+        &mut self,
+        declaration: Option<DeclarationId>,
+        node: &Node<TextualRepresentation>,
+    ) -> Result<(), ConstructionError> {
+        match declaration {
+            Some(declaration) => self.record_textual_representation(declaration, node),
+            None => Ok(()),
+        }
+    }
+
+    /// Records a `doc /* ... */` annotation against the declaration whose body it heads.
+    fn record_doc_comment(
+        &mut self,
+        declaration: DeclarationId,
+        node: &Node<DocComment>,
+    ) -> Result<(), ConstructionError> {
+        let locale = self.intern_short_name(node.value.locale.as_ref())?;
+        let text = self.intern_name(&node.value.text)?;
+        self.push_documentation(
+            declaration,
+            AnnotationForm::Documentation,
+            locale,
+            None,
+            text,
+            node.span.clone(),
+        )
+    }
+
+    /// Records a `comment /* ... */` annotation against the declaration whose body it heads.
+    fn record_comment_annotation(
+        &mut self,
+        declaration: DeclarationId,
+        node: &Node<CommentAnnotation>,
+    ) -> Result<(), ConstructionError> {
+        let locale = self.intern_short_name(node.value.locale.as_ref())?;
+        let text = self.intern_name(&node.value.text)?;
+        self.push_documentation(
+            declaration,
+            AnnotationForm::Comment,
+            locale,
+            None,
+            text,
+            node.span.clone(),
+        )
+    }
+
+    /// Records a `rep <language> "..." /* ... */` annotation against the declaration whose body it
+    /// heads.
+    fn record_textual_representation(
+        &mut self,
+        declaration: DeclarationId,
+        node: &Node<TextualRepresentation>,
+    ) -> Result<(), ConstructionError> {
+        let language = self.intern_declared_name(&node.value.language)?;
+        let text = self.intern_name(&node.value.text)?;
+        self.push_documentation(
+            declaration,
+            AnnotationForm::TextualRepresentation,
+            None,
+            language,
+            text,
+            node.span.clone(),
+        )
+    }
+
+    /// Records the authored spelling of a `FeatureValue` clause.
+    fn record_feature_value(
+        &mut self,
+        declaration: DeclarationId,
+        value: &Node<FeatureValue>,
+    ) -> Result<(), ConstructionError> {
+        let kind = match value.value.kind {
+            ParserFeatureValueKind::Bind => FeatureValueKind::Bind,
+            ParserFeatureValueKind::Assign => FeatureValueKind::Assign,
+        };
+        self.push_feature_value(
+            declaration,
+            kind,
+            value.value.is_default,
+            value.value.has_operator,
+            value.value.span.clone(),
+        )
+    }
+
+    /// Records the authored feature value spelling of one declaration.
+    ///
+    /// The value *expression* itself keeps travelling the existing operand-reference and
+    /// evaluation-classification path; this fact records only which of the five authored spellings
+    /// (`=`, `:=`, `default =`, `default :=`, bare `default`) was written, which no other fact
+    /// preserves.
+    fn push_feature_value(
+        &mut self,
+        declaration: DeclarationId,
+        kind: FeatureValueKind,
+        is_default: bool,
+        has_operator: bool,
+        span: Span,
+    ) -> Result<(), ConstructionError> {
+        if declaration.index() >= self.declarations.len() {
+            return Err(ConstructionError::InvalidIdentity);
+        }
+        self.feature_values.push(FeatureValueRecord {
+            declaration,
+            kind,
+            is_default,
+            has_operator,
+            span,
+        });
+        Ok(())
     }
 
     fn push_membership(
@@ -2760,8 +3190,11 @@ impl SemanticModelBuilder {
         SemanticModelStorage {
             documents: self.documents.into_boxed_slice(),
             declarations: self.declarations.into_boxed_slice(),
+            declaration_facts: self.declaration_facts.into_boxed_slice(),
             memberships: self.memberships.into_boxed_slice(),
             references: self.references.into_boxed_slice(),
+            documentation: self.documentation.into_boxed_slice(),
+            feature_values: self.feature_values.into_boxed_slice(),
             unsupported: self.unsupported.into_boxed_slice(),
             recovery: self.recovery.into_boxed_slice(),
             symbols: self.symbols.freeze(),
@@ -2805,12 +3238,17 @@ impl SemanticModelBuilder {
         node: &Node<Package>,
     ) -> Result<(), ConstructionError> {
         let name = self.simple_name(&node.identification)?;
+        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::Package,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                short_name,
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -2828,12 +3266,21 @@ impl SemanticModelBuilder {
         node: &Node<LibraryPackage>,
     ) -> Result<(), ConstructionError> {
         let name = self.simple_name(&node.identification)?;
+        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::LibraryPackage,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                short_name,
+                modifiers: DeclarationModifiers {
+                    standard: node.is_standard,
+                    ..DeclarationModifiers::default()
+                },
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -2851,12 +3298,17 @@ impl SemanticModelBuilder {
         node: &Node<NamespaceDecl>,
     ) -> Result<(), ConstructionError> {
         let name = self.simple_name(&node.identification)?;
+        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::Namespace,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                short_name,
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -2909,9 +3361,15 @@ impl SemanticModelBuilder {
                     node.span.clone(),
                 );
             }
-            PackageBodyElement::Doc(_)
-            | PackageBodyElement::Comment(_)
-            | PackageBodyElement::TextualRep(_) => {}
+            PackageBodyElement::Doc(node) => {
+                self.record_root_doc_comment(owner, node)?;
+            }
+            PackageBodyElement::Comment(node) => {
+                self.record_root_comment_annotation(owner, node)?;
+            }
+            PackageBodyElement::TextualRep(node) => {
+                self.record_root_textual_representation(owner, node)?;
+            }
             PackageBodyElement::Filter(node) => match owner {
                 Some(declaration) => {
                     self.lower_filter_expression(document, declaration, &node.value.condition)?
@@ -3196,6 +3654,9 @@ impl SemanticModelBuilder {
             DeclarationKind::Import,
             None,
             node.span.clone(),
+            // An import declares no name, modifier, multiplicity, or direction of its own; its
+            // recursive/wildcard/filter facts belong to the authored import reference below.
+            DeclarationFacts::none(),
         )?;
         let membership = &node.value.membership;
         self.push_membership(
@@ -3250,7 +3711,7 @@ impl SemanticModelBuilder {
             import,
         })?;
         if let Some(elements) = &node.value.body_elements {
-            self.lower_relationship_body_elements(document, elements);
+            self.lower_relationship_body_elements(document, Some(declaration), elements)?;
         }
         Ok(())
     }
@@ -3269,12 +3730,25 @@ impl SemanticModelBuilder {
             .filter(|name| !name.is_empty())
             .map(|name| self.intern_name(name))
             .transpose()?;
+        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
+        let (is_abstract, variation) =
+            definition_prefix_modifiers(node.value.definition_prefix.as_ref());
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::PartDefinition,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                short_name,
+                modifiers: DeclarationModifiers {
+                    is_abstract,
+                    variation,
+                    individual: node.value.is_individual,
+                    ..DeclarationModifiers::default()
+                },
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -3448,7 +3922,12 @@ impl SemanticModelBuilder {
                     PartDefBodyElement::Perform(perform) => {
                         self.lower_perform(document, Some(declaration), perform)?;
                     }
-                    PartDefBodyElement::Doc(_) | PartDefBodyElement::Comment(_) => {}
+                    PartDefBodyElement::Doc(node) => {
+                        self.record_doc_comment(declaration, node)?;
+                    }
+                    PartDefBodyElement::Comment(node) => {
+                        self.record_comment_annotation(declaration, node)?;
+                    }
                     PartDefBodyElement::MetadataAnnotation(node) => {
                         self.lower_metadata_annotation(document, declaration, node)?;
                     }
@@ -3547,12 +4026,34 @@ impl SemanticModelBuilder {
         node: &Node<PartUsage>,
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declared_name(&node.value.name)?;
+        let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
+        let (is_abstract, variation) =
+            definition_prefix_modifiers(node.value.usage_prefix.as_ref());
+        let facts = DeclarationFacts {
+            short_name,
+            modifiers: DeclarationModifiers {
+                is_abstract,
+                variation,
+                individual: node.value.is_individual,
+                derived: node.value.is_derived,
+                reference: node.value.is_reference,
+                constant: node.value.is_constant,
+                ordered: node.value.ordered,
+                // `ast::PartUsage` has no `nonunique` field, unlike its sibling usages; see
+                // UPSTREAM_PARSER_GAPS.md.
+                ..DeclarationModifiers::default()
+            },
+            direction: direction_fact(node.value.direction.as_ref()),
+            multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+            ..DeclarationFacts::none()
+        };
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::PartUsage,
             name,
             node.span.clone(),
+            facts,
         )?;
         self.push_membership(
             declaration,
@@ -3563,6 +4064,12 @@ impl SemanticModelBuilder {
             )?,
             node.value.membership.span.clone(),
         )?;
+        // Records the authored value spelling (`=`/`:=`/`default`) for this declaration. The
+        // value expression itself is not lowered here -- expression coverage for this usage
+        // family is unchanged by this fact family.
+        if let Some(feature_value) = &node.value.value {
+            self.record_feature_value(declaration, feature_value)?;
+        }
         if let Some(relationship) = &node.value.typing {
             self.lower_typing_relationship_impl(
                 document,
@@ -3691,7 +4198,9 @@ impl SemanticModelBuilder {
             PartUsageBodyElement::Perform(perform) => {
                 self.lower_perform(document, Some(owner), perform)?;
             }
-            PartUsageBodyElement::Doc(_) => {}
+            PartUsageBodyElement::Doc(node) => {
+                self.record_doc_comment(owner, node)?;
+            }
             PartUsageBodyElement::MetadataAnnotation(node) => {
                 self.lower_metadata_annotation(document, owner, node)?;
             }
@@ -3766,16 +4275,38 @@ impl SemanticModelBuilder {
     /// (doc/comment/textual-rep/metadata/unmodeled-text) and carries no authored reference to
     /// resolve, mirroring the no-op `Doc`/`Comment`/`MetadataAnnotation` handling already used
     /// throughout this module's other body loops; only `Error` needs an explicit recovery fact.
+    /// Walks a `RelationshipBodyElement` body, recording recovery nodes and binding any
+    /// `doc`/`comment`/`rep` annotation to `annotated`.
+    ///
+    /// `annotated` is `None` only where the construct owning the body mints no declaration of its
+    /// own -- a `connect a to b { ... }` statement lowers its ends directly against the enclosing
+    /// declaration -- so there is no element the annotation belongs to and attributing it to the
+    /// enclosing type would misreport it.
     fn lower_relationship_body_elements(
         &mut self,
         document: DocumentId,
+        annotated: Option<DeclarationId>,
         elements: &[Node<RelationshipBodyElement>],
-    ) {
+    ) -> Result<(), ConstructionError> {
         for element in elements {
-            if let RelationshipBodyElement::Error(error) = &element.value {
-                self.push_recovery(document, error.span.clone());
+            match &element.value {
+                RelationshipBodyElement::Error(error) => {
+                    self.push_recovery(document, error.span.clone());
+                }
+                RelationshipBodyElement::Doc(node) => {
+                    self.record_root_doc_comment(annotated, node)?;
+                }
+                RelationshipBodyElement::Comment(node) => {
+                    self.record_root_comment_annotation(annotated, node)?;
+                }
+                RelationshipBodyElement::TextualRep(node) => {
+                    self.record_root_textual_representation(annotated, node)?;
+                }
+                RelationshipBodyElement::MetadataAnnotation(_)
+                | RelationshipBodyElement::Other(_) => {}
             }
         }
+        Ok(())
     }
 
     fn lower_ref_decl(
@@ -3791,6 +4322,18 @@ impl SemanticModelBuilder {
             DeclarationKind::ReferenceUsage,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                modifiers: DeclarationModifiers {
+                    // The `ref` keyword is this declaration's own form, not a prefix modifier on
+                    // some other usage, so `reference` stays false here.
+                    ordered: node.value.ordered,
+                    nonunique: node.value.nonunique,
+                    ..DeclarationModifiers::default()
+                },
+                direction: direction_fact(node.value.direction.as_ref()),
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -3801,6 +4344,12 @@ impl SemanticModelBuilder {
             )?,
             node.value.membership.span.clone(),
         )?;
+        // Records the authored value spelling (`=`/`:=`/`default`) for this declaration. The
+        // value expression itself is not lowered here -- expression coverage for this usage
+        // family is unchanged by this fact family.
+        if let Some(feature_value) = &node.value.value {
+            self.record_feature_value(declaration, feature_value)?;
+        }
         if let Some(relationship) = &node.value.typing {
             self.lower_typing_relationship(document, declaration, relationship)?;
         }
@@ -3816,10 +4365,16 @@ impl SemanticModelBuilder {
                     RefBodyElement::Error(error) => {
                         self.push_recovery(document, error.span.clone());
                     }
-                    RefBodyElement::Doc(_)
-                    | RefBodyElement::Comment(_)
-                    | RefBodyElement::TextualRep(_)
-                    | RefBodyElement::MetadataAnnotation(_) => {}
+                    RefBodyElement::Doc(node) => {
+                        self.record_doc_comment(declaration, node)?;
+                    }
+                    RefBodyElement::Comment(node) => {
+                        self.record_comment_annotation(declaration, node)?;
+                    }
+                    RefBodyElement::TextualRep(node) => {
+                        self.record_textual_representation(declaration, node)?;
+                    }
+                    RefBodyElement::MetadataAnnotation(_) => {}
                     RefBodyElement::Ref(nested) => {
                         self.lower_ref_decl(document, Some(declaration), nested)?;
                     }
@@ -3847,12 +4402,33 @@ impl SemanticModelBuilder {
         node: &Node<AttributeUsage>,
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declared_name(&node.value.name)?;
+        let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
+        let (is_abstract, variation) =
+            definition_prefix_modifiers(node.value.usage_prefix.as_ref());
+        let facts = DeclarationFacts {
+            short_name,
+            modifiers: DeclarationModifiers {
+                is_abstract,
+                variation,
+                derived: node.value.is_derived,
+                end: node.value.is_end,
+                reference: node.value.is_reference,
+                constant: node.value.is_constant,
+                ordered: node.value.ordered,
+                nonunique: node.value.nonunique,
+                ..DeclarationModifiers::default()
+            },
+            direction: direction_fact(node.value.direction.as_ref()),
+            multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+            ..DeclarationFacts::none()
+        };
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::AttributeUsage,
             name,
             node.span.clone(),
+            facts,
         )?;
         self.push_membership(
             declaration,
@@ -3913,6 +4489,7 @@ impl SemanticModelBuilder {
         let Some(feature_value) = value else {
             return Ok(());
         };
+        self.record_feature_value(declaration, feature_value)?;
         let expression = &feature_value.value.expression;
         self.push_evaluation_fact(
             declaration,
@@ -3942,12 +4519,24 @@ impl SemanticModelBuilder {
         node: &Node<AttributeDef>,
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declared_name(&node.value.name)?;
+        let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::AttributeDefinition,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                short_name,
+                modifiers: DeclarationModifiers {
+                    ordered: node.value.ordered,
+                    nonunique: node.value.nonunique,
+                    ..DeclarationModifiers::default()
+                },
+                // `ast::AttributeDef` carries no `multiplicity` field at all, unlike
+                // `AttributeUsage`; see UPSTREAM_PARSER_GAPS.md.
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -3979,7 +4568,9 @@ impl SemanticModelBuilder {
                 AttributeBodyElement::Error(error) => {
                     self.push_recovery(document, error.span.clone());
                 }
-                AttributeBodyElement::Doc(_) => {}
+                AttributeBodyElement::Doc(node) => {
+                    self.record_doc_comment(owner, node)?;
+                }
                 AttributeBodyElement::AttributeDef(attribute) => {
                     self.lower_attribute_def(document, Some(owner), attribute)?;
                 }
@@ -4038,12 +4629,17 @@ impl SemanticModelBuilder {
             .filter(|name| !name.is_empty())
             .map(|name| self.intern_name(name))
             .transpose()?;
+        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::EnumerationDefinition,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                short_name,
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -4081,6 +4677,8 @@ impl SemanticModelBuilder {
             DeclarationKind::EnumerationLiteral,
             name,
             node.span.clone(),
+            // `ast::EnumeratedValue` retains only a name and its span.
+            DeclarationFacts::none(),
         )?;
         self.push_membership(
             declaration,
@@ -4107,6 +4705,14 @@ impl SemanticModelBuilder {
             DeclarationKind::EnumerationUsage,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                modifiers: DeclarationModifiers {
+                    end: node.value.is_end,
+                    ..DeclarationModifiers::default()
+                },
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -4157,12 +4763,21 @@ impl SemanticModelBuilder {
             .filter(|name| !name.is_empty())
             .map(|name| self.intern_name(name))
             .transpose()?;
+        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::ItemDefinition,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                short_name,
+                modifiers: DeclarationModifiers {
+                    individual: node.value.is_individual,
+                    ..DeclarationModifiers::default()
+                },
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -4198,12 +4813,17 @@ impl SemanticModelBuilder {
             .filter(|name| !name.is_empty())
             .map(|name| self.intern_name(name))
             .transpose()?;
+        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::ClassDefinition,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                short_name,
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -4242,12 +4862,23 @@ impl SemanticModelBuilder {
             .filter(|name| !name.is_empty())
             .map(|name| self.intern_name(name))
             .transpose()?;
+        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::KermlClassifier,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                short_name,
+                modifiers: DeclarationModifiers {
+                    is_abstract: node.value.is_abstract,
+                    all: node.value.is_all,
+                    ..DeclarationModifiers::default()
+                },
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -4286,6 +4917,23 @@ impl SemanticModelBuilder {
             DeclarationKind::KermlFeature,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                modifiers: DeclarationModifiers {
+                    is_abstract: node.value.is_abstract,
+                    derived: node.value.is_derived,
+                    end: node.value.is_end,
+                    all: node.value.is_all,
+                    composite: node.value.is_composite,
+                    portion: node.value.is_portion,
+                    var: node.value.is_var,
+                    member: node.value.is_member,
+                    ordered: node.value.ordered,
+                    nonunique: node.value.nonunique,
+                    ..DeclarationModifiers::default()
+                },
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -4306,6 +4954,7 @@ impl SemanticModelBuilder {
             self.lower_subsetting_relationship(document, declaration, relationship)?;
         }
         if let Some(feature_value) = &node.value.value {
+            self.record_feature_value(declaration, feature_value)?;
             let expression = feature_value.value.expression.clone();
             self.push_evaluation_fact(declaration, classify_calc_expression(&expression.value));
             self.lower_calc_expression(document, declaration, family, &expression)?;
@@ -4334,6 +4983,14 @@ impl SemanticModelBuilder {
             DeclarationKind::KermlConnector,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                modifiers: DeclarationModifiers {
+                    all: node.value.is_all,
+                    ..DeclarationModifiers::default()
+                },
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -4420,6 +5077,10 @@ impl SemanticModelBuilder {
             DeclarationKind::KermlBinding,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -4495,6 +5156,14 @@ impl SemanticModelBuilder {
             DeclarationKind::Succession,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                modifiers: DeclarationModifiers {
+                    all: node.value.is_all,
+                    ..DeclarationModifiers::default()
+                },
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -4542,6 +5211,17 @@ impl SemanticModelBuilder {
             DeclarationKind::ParameterUsage,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                modifiers: DeclarationModifiers {
+                    is_abstract: node.value.is_abstract,
+                    ordered: node.value.ordered,
+                    nonunique: node.value.nonunique,
+                    ..DeclarationModifiers::default()
+                },
+                direction: direction_fact(Some(&node.value.direction)),
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -4579,6 +5259,7 @@ impl SemanticModelBuilder {
             self.lower_subsetting_relationship(document, declaration, relationship)?;
         }
         if let Some(feature_value) = &node.value.value {
+            self.record_feature_value(declaration, feature_value)?;
             let expression = feature_value.value.expression.clone();
             self.push_evaluation_fact(declaration, classify_calc_expression(&expression.value));
             self.lower_calc_expression(
@@ -4613,6 +5294,9 @@ impl SemanticModelBuilder {
             DeclarationKind::KermlInvariant,
             name,
             node.span.clone(),
+            // `ast::KermlInvariantMember` carries only `is_negated`, which is an invariant-polarity
+            // fact rather than a declaration modifier, and is already lowered as such.
+            DeclarationFacts::none(),
         )?;
         self.push_membership(
             declaration,
@@ -4649,6 +5333,10 @@ impl SemanticModelBuilder {
             DeclarationKind::KermlEnd,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -4692,6 +5380,10 @@ impl SemanticModelBuilder {
             DeclarationKind::DefaultReferenceUsage,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -4712,6 +5404,7 @@ impl SemanticModelBuilder {
             self.lower_subsetting_relationship(document, declaration, relationship)?;
         }
         if let Some(feature_value) = &node.value.value {
+            self.record_feature_value(declaration, feature_value)?;
             let expression = feature_value.value.expression.clone();
             self.push_evaluation_fact(declaration, classify_calc_expression(&expression.value));
             self.lower_calc_expression(document, declaration, family, &expression)?;
@@ -4732,12 +5425,26 @@ impl SemanticModelBuilder {
         node: &Node<ParserItemUsage>,
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declared_name(&node.value.name)?;
+        let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::ItemUsage,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                short_name,
+                modifiers: DeclarationModifiers {
+                    is_abstract: node.value.is_abstract,
+                    individual: node.value.is_individual,
+                    ordered: node.value.ordered,
+                    nonunique: node.value.nonunique,
+                    ..DeclarationModifiers::default()
+                },
+                direction: direction_fact(node.value.direction.as_ref()),
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -4748,6 +5455,12 @@ impl SemanticModelBuilder {
             )?,
             node.value.membership.span.clone(),
         )?;
+        // Records the authored value spelling (`=`/`:=`/`default`) for this declaration. The
+        // value expression itself is not lowered here -- expression coverage for this usage
+        // family is unchanged by this fact family.
+        if let Some(feature_value) = &node.value.value {
+            self.record_feature_value(declaration, feature_value)?;
+        }
         if let Some(type_name) = node.value.type_name {
             let span = self.documents[document.index()]
                 .parsed
@@ -4802,6 +5515,17 @@ impl SemanticModelBuilder {
             DeclarationKind::ParameterUsage,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                modifiers: DeclarationModifiers {
+                    reference: node.value.is_reference,
+                    ordered: node.value.ordered,
+                    nonunique: node.value.nonunique,
+                    ..DeclarationModifiers::default()
+                },
+                direction: direction_fact(Some(&node.value.direction)),
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -4846,6 +5570,7 @@ impl SemanticModelBuilder {
         // introducing new logic. Previously deferred (`494b0ba6`) pending value-assignment
         // machinery existing at all.
         if let Some(feature_value) = &node.value.value {
+            self.record_feature_value(declaration, feature_value)?;
             let expression = feature_value.value.expression.clone();
             self.push_evaluation_fact(declaration, classify_calc_expression(&expression.value));
             self.lower_calc_expression(document, declaration, family, &expression)?;
@@ -4888,6 +5613,15 @@ impl SemanticModelBuilder {
             DeclarationKind::ParameterUsage,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                modifiers: DeclarationModifiers {
+                    ordered: node.value.ordered,
+                    nonunique: node.value.nonunique,
+                    ..DeclarationModifiers::default()
+                },
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -4914,6 +5648,7 @@ impl SemanticModelBuilder {
             })?;
         }
         if let Some(feature_value) = &node.value.value {
+            self.record_feature_value(declaration, feature_value)?;
             let expression = feature_value.value.expression.clone();
             self.push_evaluation_fact(declaration, classify_calc_expression(&expression.value));
             self.lower_calc_expression(
@@ -4955,6 +5690,10 @@ impl SemanticModelBuilder {
             DeclarationKind::ParameterUsage,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -5003,6 +5742,7 @@ impl SemanticModelBuilder {
             })?;
         }
         if let Some(feature_value) = &node.value.value {
+            self.record_feature_value(declaration, feature_value)?;
             let expression = feature_value.value.expression.clone();
             self.push_evaluation_fact(declaration, classify_calc_expression(&expression.value));
             self.lower_calc_expression(document, declaration, family, &expression)?;
@@ -5029,6 +5769,10 @@ impl SemanticModelBuilder {
             DeclarationKind::SubjectUsage,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -5079,6 +5823,8 @@ impl SemanticModelBuilder {
             DeclarationKind::StakeholderUsage,
             name,
             node.span.clone(),
+            // `ast::StakeholderMember` carries no modifier, multiplicity, direction, or short name.
+            DeclarationFacts::none(),
         )?;
         self.push_membership(
             declaration,
@@ -5177,6 +5923,9 @@ impl SemanticModelBuilder {
             DeclarationKind::RequirementActor,
             name,
             node.span.clone(),
+            // `ast::RequirementActorDecl` has no `multiplicity` field, unlike its `ActorUsage`
+            // sibling; see UPSTREAM_PARSER_GAPS.md.
+            DeclarationFacts::none(),
         )?;
         self.push_membership(
             declaration,
@@ -5223,6 +5972,10 @@ impl SemanticModelBuilder {
             DeclarationKind::CaseActor,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -5273,6 +6026,9 @@ impl SemanticModelBuilder {
             DeclarationKind::Frame,
             name,
             node.span.clone(),
+            // A `frame` member is a purely syntactic named grouping; `ast::FrameMember` carries no
+            // modifier, multiplicity, direction, or short name.
+            DeclarationFacts::none(),
         )?;
         self.push_membership(
             declaration,
@@ -5309,6 +6065,8 @@ impl SemanticModelBuilder {
             DeclarationKind::VerifyRequirement,
             None,
             node.span.clone(),
+            // `ast::VerifyRequirementMember` carries only its redefinition target.
+            DeclarationFacts::none(),
         )?;
         self.push_membership(
             declaration,
@@ -5368,12 +6126,23 @@ impl SemanticModelBuilder {
         node: &Node<ParserPerform>,
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declared_name(&node.value.action_name)?;
+        let (is_abstract, variation) =
+            definition_prefix_modifiers(node.value.usage_prefix.as_ref());
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::PerformActionUsage,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                modifiers: DeclarationModifiers {
+                    is_abstract,
+                    variation,
+                    ..DeclarationModifiers::default()
+                },
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -5381,6 +6150,12 @@ impl SemanticModelBuilder {
             Visibility::Default,
             node.span.clone(),
         )?;
+        // Records the authored value spelling (`=`/`:=`/`default`) for this declaration. The
+        // value expression itself is not lowered here -- expression coverage for this usage
+        // family is unchanged by this fact family.
+        if let Some(feature_value) = &node.value.value {
+            self.record_feature_value(declaration, feature_value)?;
+        }
         if let Some(relationship) = &node.value.typing {
             self.lower_typing_relationship(document, declaration, relationship)?;
         }
@@ -5420,7 +6195,9 @@ impl SemanticModelBuilder {
                 PerformBodyElement::AttributeUsage(attribute) => {
                     self.lower_attribute_usage(document, Some(owner), attribute)?;
                 }
-                PerformBodyElement::Doc(_) => {}
+                PerformBodyElement::Doc(node) => {
+                    self.record_doc_comment(owner, node)?;
+                }
                 PerformBodyElement::Action(element) => {
                     self.lower_action_usage_body_element(document, owner, element)?;
                 }
@@ -5463,6 +6240,10 @@ impl SemanticModelBuilder {
             DeclarationKind::PerformParameterBinding,
             None,
             node.span.clone(),
+            DeclarationFacts {
+                direction: direction_fact(Some(&node.value.direction)),
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -5516,12 +6297,21 @@ impl SemanticModelBuilder {
             .filter(|name| !name.is_empty())
             .map(|name| self.intern_name(name))
             .transpose()?;
+        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::MetadataDefinition,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                short_name,
+                modifiers: DeclarationModifiers {
+                    is_abstract: node.value.is_abstract,
+                    ..DeclarationModifiers::default()
+                },
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -5559,6 +6349,8 @@ impl SemanticModelBuilder {
             DeclarationKind::MetadataUsage,
             name,
             node.span.clone(),
+            // `ast::MetadataUsage` carries no modifier, multiplicity, direction, or short name.
+            DeclarationFacts::none(),
         )?;
         self.push_membership(
             declaration,
@@ -5635,6 +6427,9 @@ impl SemanticModelBuilder {
                 DeclarationKind::MetadataUsage,
                 None,
                 node.span.clone(),
+                // A synthesized scope for the annotation body's members; it has no authored
+                // declaration syntax of its own.
+                DeclarationFacts::none(),
             )?;
             self.push_membership(
                 annotation_scope,
@@ -5667,12 +6462,21 @@ impl SemanticModelBuilder {
             .filter(|name| !name.is_empty())
             .map(|name| self.intern_name(name))
             .transpose()?;
+        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::ActionDefinition,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                short_name,
+                modifiers: DeclarationModifiers {
+                    individual: node.value.is_individual,
+                    ..DeclarationModifiers::default()
+                },
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -5747,7 +6551,12 @@ impl SemanticModelBuilder {
                 ActionDefBodyElement::Perform(perform) => {
                     self.lower_perform(document, Some(owner), perform)?;
                 }
-                ActionDefBodyElement::Doc(_) | ActionDefBodyElement::TextualRep(_) => {}
+                ActionDefBodyElement::Doc(node) => {
+                    self.record_doc_comment(owner, node)?;
+                }
+                ActionDefBodyElement::TextualRep(node) => {
+                    self.record_textual_representation(owner, node)?;
+                }
                 ActionDefBodyElement::MetadataAnnotation(node) => {
                     self.lower_metadata_annotation(document, owner, node)?;
                 }
@@ -5909,6 +6718,17 @@ impl SemanticModelBuilder {
             DeclarationKind::ActionUsage,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                modifiers: DeclarationModifiers {
+                    is_abstract: node.value.is_abstract,
+                    variation: node.value.is_variation,
+                    individual: node.value.is_individual,
+                    reference: node.value.is_reference,
+                    ..DeclarationModifiers::default()
+                },
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -6087,7 +6907,12 @@ impl SemanticModelBuilder {
                     param,
                 )?;
             }
-            ActionUsageBodyElement::Doc(_) | ActionUsageBodyElement::TextualRep(_) => {}
+            ActionUsageBodyElement::Doc(node) => {
+                self.record_doc_comment(owner, node)?;
+            }
+            ActionUsageBodyElement::TextualRep(node) => {
+                self.record_textual_representation(owner, node)?;
+            }
             ActionUsageBodyElement::MetadataAnnotation(node) => {
                 self.lower_metadata_annotation(document, owner, node)?;
             }
@@ -6249,6 +7074,13 @@ impl SemanticModelBuilder {
             DeclarationKind::Succession,
             None,
             node.span.clone(),
+            DeclarationFacts {
+                // The succession feature's own multiplicity (`succession [n] first ... then ...`).
+                // The per-end `first_multiplicity`/`then_multiplicity` belong to the ends, which
+                // are lowered as references rather than declarations, so they are not facts here.
+                multiplicity: multiplicity_facts(node.value.succession_multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -6346,8 +7178,15 @@ impl SemanticModelBuilder {
         operand: &Node<Expression>,
         body: &FirstMergeBody,
     ) -> Result<(), ConstructionError> {
-        let declaration =
-            self.push_typed_declaration(document, Some(owner), decl_kind, None, span.clone())?;
+        // A synthesized control-flow scope with no authored declaration syntax of its own.
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            decl_kind,
+            None,
+            span.clone(),
+            DeclarationFacts::none(),
+        )?;
         self.push_membership(
             declaration,
             MembershipKind::Feature,
@@ -6393,7 +7232,12 @@ impl SemanticModelBuilder {
                     ActionDefBodyElement::ThenAction(then_action) => {
                         self.lower_then_action(document, owner, family, then_action)?;
                     }
-                    ActionDefBodyElement::Doc(_) | ActionDefBodyElement::TextualRep(_) => {}
+                    ActionDefBodyElement::Doc(node) => {
+                        self.record_doc_comment(owner, node)?;
+                    }
+                    ActionDefBodyElement::TextualRep(node) => {
+                        self.record_textual_representation(owner, node)?;
+                    }
                     ActionDefBodyElement::MergeStmt(node) => self.lower_first_merge_stmt(
                         document,
                         owner,
@@ -6501,6 +7345,8 @@ impl SemanticModelBuilder {
                     DeclarationKind::ThenContinuation,
                     None,
                     node.span.clone(),
+                    // A synthesized scope for the `then <feature>` continuation target.
+                    DeclarationFacts::none(),
                 )?;
                 self.push_membership(
                     declaration,
@@ -6546,6 +7392,8 @@ impl SemanticModelBuilder {
             DeclarationKind::Assign,
             None,
             span.clone(),
+            // A synthesized scope for the assignment's target/value references.
+            DeclarationFacts::none(),
         )?;
         self.push_membership(
             declaration,
@@ -6585,8 +7433,15 @@ impl SemanticModelBuilder {
         condition: Option<&Node<Expression>>,
         body: &ActionDefBody,
     ) -> Result<(), ConstructionError> {
-        let declaration =
-            self.push_typed_declaration(document, Some(owner), decl_kind, None, span.clone())?;
+        // A synthesized control-flow scope with no authored declaration syntax of its own.
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            decl_kind,
+            None,
+            span.clone(),
+            DeclarationFacts::none(),
+        )?;
         self.push_membership(
             declaration,
             MembershipKind::Feature,
@@ -6623,6 +7478,8 @@ impl SemanticModelBuilder {
             DeclarationKind::If,
             None,
             span.clone(),
+            // A synthesized scope for the conditional's guard and branches.
+            DeclarationFacts::none(),
         )?;
         self.push_membership(
             declaration,
@@ -6669,6 +7526,8 @@ impl SemanticModelBuilder {
             DeclarationKind::ForLoop,
             None,
             span.clone(),
+            // A synthesized scope owning the loop variable and range expression.
+            DeclarationFacts::none(),
         )?;
         self.push_membership(
             declaration,
@@ -6688,6 +7547,9 @@ impl SemanticModelBuilder {
             DeclarationKind::ForLoopVariable,
             var_name,
             span.clone(),
+            // `ast::ForLoop::var` is a bare `String`; the parser records no type, multiplicity, or
+            // modifier for the loop variable.
+            DeclarationFacts::none(),
         )?;
         self.push_membership(
             var_declaration,
@@ -6788,6 +7650,9 @@ impl SemanticModelBuilder {
             DeclarationKind::Flow,
             None,
             node.span.clone(),
+            // `ast::FlowUsage` carries no modifier, multiplicity, direction, or short name; its
+            // payload/from/to facts are lowered as references.
+            DeclarationFacts::none(),
         )?;
         self.push_membership(
             declaration,
@@ -7314,12 +8179,21 @@ impl SemanticModelBuilder {
             .filter(|name| !name.is_empty())
             .map(|name| self.intern_name(name))
             .transpose()?;
+        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::StateDefinition,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                short_name,
+                modifiers: DeclarationModifiers {
+                    individual: node.value.is_individual,
+                    ..DeclarationModifiers::default()
+                },
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -7364,7 +8238,9 @@ impl SemanticModelBuilder {
                 StateDefBodyElement::RequirementUsage(requirement_usage) => {
                     self.lower_requirement_usage(document, Some(owner), requirement_usage)?;
                 }
-                StateDefBodyElement::Doc(_) => {}
+                StateDefBodyElement::Doc(node) => {
+                    self.record_doc_comment(owner, node)?;
+                }
                 StateDefBodyElement::Entry(entry) => {
                     self.lower_state_entry_action(document, owner, entry)?;
                 }
@@ -7444,6 +8320,8 @@ impl SemanticModelBuilder {
             DeclarationKind::EntryActionBinding,
             None,
             node.span.clone(),
+            // A synthesized scope for the state's entry-action binding reference.
+            DeclarationFacts::none(),
         )?;
         self.push_membership(
             declaration,
@@ -7483,6 +8361,8 @@ impl SemanticModelBuilder {
             DeclarationKind::DoActionBinding,
             None,
             node.span.clone(),
+            // A synthesized scope for the state's do-action binding reference.
+            DeclarationFacts::none(),
         )?;
         self.push_membership(
             declaration,
@@ -7522,6 +8402,8 @@ impl SemanticModelBuilder {
             DeclarationKind::ExitActionBinding,
             None,
             node.span.clone(),
+            // A synthesized scope for the state's exit-action binding reference.
+            DeclarationFacts::none(),
         )?;
         self.push_membership(
             declaration,
@@ -7555,6 +8437,8 @@ impl SemanticModelBuilder {
             DeclarationKind::InitialState,
             None,
             node.span.clone(),
+            // A synthesized scope for the `then <state>` initial-state reference.
+            DeclarationFacts::none(),
         )?;
         self.push_membership(
             declaration,
@@ -7590,6 +8474,8 @@ impl SemanticModelBuilder {
             DeclarationKind::FinalState,
             name,
             node.span.clone(),
+            // `ast::FinalState` carries only its state name.
+            DeclarationFacts::none(),
         )?;
         self.push_membership(
             declaration,
@@ -7657,6 +8543,9 @@ impl SemanticModelBuilder {
             DeclarationKind::Transition,
             name,
             node.span.clone(),
+            // `ast::Transition` carries no modifier, multiplicity, direction, or short name; its
+            // source/target/trigger/guard/effect facts are lowered as references.
+            DeclarationFacts::none(),
         )?;
         self.push_membership(
             declaration,
@@ -7842,6 +8731,9 @@ impl SemanticModelBuilder {
             DeclarationKind::Satisfy,
             None,
             node.span.clone(),
+            // `ast::Satisfy` carries only `is_negated`, a satisfaction-polarity fact rather than a
+            // declaration modifier.
+            DeclarationFacts::none(),
         )?;
         self.push_membership(
             declaration,
@@ -7960,6 +8852,8 @@ impl SemanticModelBuilder {
             DeclarationKind::Allocate,
             None,
             node.span.clone(),
+            // `ast::Allocate` carries only its source/target ends, lowered as references.
+            DeclarationFacts::none(),
         )?;
         self.push_membership(
             declaration,
@@ -8012,6 +8906,8 @@ impl SemanticModelBuilder {
             DeclarationKind::Bind,
             None,
             node.span.clone(),
+            // `ast::Bind` carries only its two bound operands, lowered as references.
+            DeclarationFacts::none(),
         )?;
         self.push_membership(
             declaration,
@@ -8059,6 +8955,10 @@ impl SemanticModelBuilder {
             DeclarationKind::Bind,
             None,
             node.span.clone(),
+            DeclarationFacts {
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -8193,6 +9093,18 @@ impl SemanticModelBuilder {
             DeclarationKind::StateUsage,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                modifiers: DeclarationModifiers {
+                    is_abstract: node.value.is_abstract,
+                    individual: node.value.is_individual,
+                    derived: node.value.is_derived,
+                    reference: node.value.is_reference,
+                    ..DeclarationModifiers::default()
+                },
+                direction: direction_fact(node.value.direction.as_ref()),
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -8234,12 +9146,21 @@ impl SemanticModelBuilder {
             .filter(|name| !name.is_empty())
             .map(|name| self.intern_name(name))
             .transpose()?;
+        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::RequirementDefinition,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                short_name,
+                modifiers: DeclarationModifiers {
+                    is_abstract: node.value.is_abstract,
+                    ..DeclarationModifiers::default()
+                },
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -8267,12 +9188,25 @@ impl SemanticModelBuilder {
         node: &Node<ParserRequirementUsage>,
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declared_name(&node.value.name)?;
+        let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::RequirementUsage,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                short_name,
+                modifiers: DeclarationModifiers {
+                    is_abstract: node.value.is_abstract,
+                    variation: node.value.is_variation,
+                    ..DeclarationModifiers::default()
+                },
+                direction: direction_fact(node.value.direction.as_ref()),
+                // `ast::RequirementUsage` has no `multiplicity` field; see
+                // UPSTREAM_PARSER_GAPS.md.
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -8283,6 +9217,12 @@ impl SemanticModelBuilder {
             )?,
             node.value.membership.span.clone(),
         )?;
+        // Records the authored value spelling (`=`/`:=`/`default`) for this declaration. The
+        // value expression itself is not lowered here -- expression coverage for this usage
+        // family is unchanged by this fact family.
+        if let Some(feature_value) = &node.value.value {
+            self.record_feature_value(declaration, feature_value)?;
+        }
         if let Some(type_name) = node.value.type_name {
             let span = self.documents[document.index()]
                 .parsed
@@ -8367,7 +9307,12 @@ impl SemanticModelBuilder {
                 RequirementDefBodyElement::Constraint(constraint) => {
                     self.lower_constraint_usage(document, Some(owner), constraint)?;
                 }
-                RequirementDefBodyElement::Doc(_) | RequirementDefBodyElement::TextualRep(_) => {}
+                RequirementDefBodyElement::Doc(node) => {
+                    self.record_doc_comment(owner, node)?;
+                }
+                RequirementDefBodyElement::TextualRep(node) => {
+                    self.record_textual_representation(owner, node)?;
+                }
                 RequirementDefBodyElement::MetadataAnnotation(node) => {
                     self.lower_metadata_annotation(document, owner, node)?;
                 }
@@ -8429,12 +9374,17 @@ impl SemanticModelBuilder {
             .filter(|name| !name.is_empty())
             .map(|name| self.intern_name(name))
             .transpose()?;
+        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::ViewpointDefinition,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                short_name,
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -8474,6 +9424,9 @@ impl SemanticModelBuilder {
             DeclarationKind::ViewpointUsage,
             name,
             node.span.clone(),
+            // `ast::ViewpointUsage` carries only name/type/body; see UPSTREAM_PARSER_GAPS.md
+            // Gap 25 for its missing subsets/redefines fields.
+            DeclarationFacts::none(),
         )?;
         self.push_membership(
             declaration,
@@ -8541,8 +9494,15 @@ impl SemanticModelBuilder {
             (DeclarationKind::ConcernUsage, MembershipKind::Feature)
         };
         let name = self.intern_declared_name(&node.value.name)?;
-        let declaration =
-            self.push_typed_declaration(document, owner, kind, name, node.span.clone())?;
+        // `ast::ConcernUsage` carries no modifier, multiplicity, direction, or short name.
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            kind,
+            name,
+            node.span.clone(),
+            DeclarationFacts::none(),
+        )?;
         self.push_membership(
             declaration,
             membership_kind,
@@ -8606,12 +9566,22 @@ impl SemanticModelBuilder {
             .filter(|name| !name.is_empty())
             .map(|name| self.intern_name(name))
             .transpose()?;
+        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::AnalysisCaseDefinition,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                short_name,
+                modifiers: DeclarationModifiers {
+                    is_abstract: node.value.is_abstract,
+                    individual: node.value.is_individual,
+                    ..DeclarationModifiers::default()
+                },
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -8667,12 +9637,21 @@ impl SemanticModelBuilder {
             .filter(|name| !name.is_empty())
             .map(|name| self.intern_name(name))
             .transpose()?;
+        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::CaseDefinition,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                short_name,
+                modifiers: DeclarationModifiers {
+                    is_abstract: node.value.is_abstract,
+                    ..DeclarationModifiers::default()
+                },
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -8713,6 +9692,14 @@ impl SemanticModelBuilder {
             DeclarationKind::AnalysisCaseUsage,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                modifiers: DeclarationModifiers {
+                    is_abstract: node.value.is_abstract,
+                    individual: node.value.is_individual,
+                    ..DeclarationModifiers::default()
+                },
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -8772,6 +9759,13 @@ impl SemanticModelBuilder {
             DeclarationKind::CaseUsage,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                modifiers: DeclarationModifiers {
+                    is_abstract: node.value.is_abstract,
+                    ..DeclarationModifiers::default()
+                },
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -8832,6 +9826,15 @@ impl SemanticModelBuilder {
             DeclarationKind::UseCaseUsage,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                modifiers: DeclarationModifiers {
+                    is_abstract: node.value.is_abstract,
+                    ..DeclarationModifiers::default()
+                },
+                // `ast::UseCaseUsage` has no multiplicity/`nonunique` fields; see
+                // UPSTREAM_PARSER_GAPS.md Gap 28.
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -8885,6 +9888,15 @@ impl SemanticModelBuilder {
             DeclarationKind::VerificationCaseUsage,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                modifiers: DeclarationModifiers {
+                    is_abstract: node.value.is_abstract,
+                    ..DeclarationModifiers::default()
+                },
+                // `ast::VerificationCaseUsage` has no multiplicity/`nonunique` fields; see
+                // UPSTREAM_PARSER_GAPS.md Gap 28.
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -8940,12 +9952,21 @@ impl SemanticModelBuilder {
             .filter(|name| !name.is_empty())
             .map(|name| self.intern_name(name))
             .transpose()?;
+        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::VerificationCaseDefinition,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                short_name,
+                modifiers: DeclarationModifiers {
+                    is_abstract: node.value.is_abstract,
+                    ..DeclarationModifiers::default()
+                },
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -8986,12 +10007,21 @@ impl SemanticModelBuilder {
             .filter(|name| !name.is_empty())
             .map(|name| self.intern_name(name))
             .transpose()?;
+        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::UseCaseDefinition,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                short_name,
+                modifiers: DeclarationModifiers {
+                    is_abstract: node.value.is_abstract,
+                    ..DeclarationModifiers::default()
+                },
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -9058,7 +10088,9 @@ impl SemanticModelBuilder {
                 UseCaseDefBodyElement::SubjectDecl(subject) => {
                     self.lower_subject_decl(document, Some(owner), subject)?;
                 }
-                UseCaseDefBodyElement::Doc(_) => {}
+                UseCaseDefBodyElement::Doc(node) => {
+                    self.record_doc_comment(owner, node)?;
+                }
                 UseCaseDefBodyElement::MetadataAnnotation(node) => {
                     self.lower_metadata_annotation(document, owner, node)?;
                 }
@@ -9161,12 +10193,17 @@ impl SemanticModelBuilder {
             .filter(|name| !name.is_empty())
             .map(|name| self.intern_name(name))
             .transpose()?;
+        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::PortDefinition,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                short_name,
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -9204,7 +10241,9 @@ impl SemanticModelBuilder {
                     PortDefBodyElement::ItemUsage(item_usage) => {
                         self.lower_item_usage(document, Some(declaration), item_usage)?;
                     }
-                    PortDefBodyElement::Doc(_) => {}
+                    PortDefBodyElement::Doc(node) => {
+                        self.record_doc_comment(declaration, node)?;
+                    }
                     PortDefBodyElement::InOutDecl(param) => {
                         self.lower_parameter_declaration(
                             document,
@@ -9240,12 +10279,26 @@ impl SemanticModelBuilder {
         node: &Node<ParserPortUsage>,
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declared_name(&node.value.name)?;
+        let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::PortUsage,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                short_name,
+                modifiers: DeclarationModifiers {
+                    is_abstract: node.value.is_abstract,
+                    individual: node.value.is_individual,
+                    derived: node.value.is_derived,
+                    constant: node.value.is_constant,
+                    ..DeclarationModifiers::default()
+                },
+                direction: direction_fact(node.value.direction.as_ref()),
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -9256,6 +10309,12 @@ impl SemanticModelBuilder {
             )?,
             node.value.membership.span.clone(),
         )?;
+        // Records the authored value spelling (`=`/`:=`/`default`) for this declaration. The
+        // value expression itself is not lowered here -- expression coverage for this usage
+        // family is unchanged by this fact family.
+        if let Some(feature_value) = &node.value.value {
+            self.record_feature_value(declaration, feature_value)?;
+        }
         if let Some(relationship) = &node.value.typing {
             self.lower_typing_relationship(document, declaration, relationship)?;
         }
@@ -9289,7 +10348,9 @@ impl SemanticModelBuilder {
                     PortBodyElement::ItemUsage(item_usage) => {
                         self.lower_item_usage(document, Some(declaration), item_usage)?;
                     }
-                    PortBodyElement::Doc(_) => {}
+                    PortBodyElement::Doc(node) => {
+                        self.record_doc_comment(declaration, node)?;
+                    }
                     PortBodyElement::InOutDecl(param) => {
                         self.lower_parameter_declaration(
                             document,
@@ -9325,12 +10386,21 @@ impl SemanticModelBuilder {
             .filter(|name| !name.is_empty())
             .map(|name| self.intern_name(name))
             .transpose()?;
+        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::ConnectionDefinition,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                short_name,
+                modifiers: DeclarationModifiers {
+                    individual: node.value.is_individual,
+                    ..DeclarationModifiers::default()
+                },
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -9372,6 +10442,10 @@ impl SemanticModelBuilder {
             DeclarationKind::ConnectionUsage,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -9436,7 +10510,9 @@ impl SemanticModelBuilder {
                     ConnectionDefBodyElement::Error(error) => {
                         self.push_recovery(document, error.span.clone());
                     }
-                    ConnectionDefBodyElement::Doc(_) => {}
+                    ConnectionDefBodyElement::Doc(node) => {
+                        self.record_doc_comment(declaration, node)?;
+                    }
                     ConnectionDefBodyElement::EndDecl(end_decl) => {
                         self.lower_end_decl(document, declaration, end_decl)?;
                     }
@@ -9512,6 +10588,10 @@ impl SemanticModelBuilder {
             DeclarationKind::ConnectionUsage,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -9560,7 +10640,9 @@ impl SemanticModelBuilder {
         for end in &node.value.extra_ends {
             self.lower_connector_end(document, owner, end)?;
         }
-        self.lower_relationship_body_elements(document, &node.value.body_elements);
+        // A `connect` statement mints no declaration of its own, so a `doc` in its body has no
+        // element to bind to; see `lower_relationship_body_elements`.
+        self.lower_relationship_body_elements(document, None, &node.value.body_elements)?;
         Ok(())
     }
 
@@ -9645,12 +10727,17 @@ impl SemanticModelBuilder {
             .filter(|name| !name.is_empty())
             .map(|name| self.intern_name(name))
             .transpose()?;
+        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::InterfaceDefinition,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                short_name,
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -9684,7 +10771,9 @@ impl SemanticModelBuilder {
                     InterfaceDefBodyElement::Error(error) => {
                         self.push_recovery(document, error.span.clone());
                     }
-                    InterfaceDefBodyElement::Doc(_) => {}
+                    InterfaceDefBodyElement::Doc(node) => {
+                        self.record_doc_comment(declaration, node)?;
+                    }
                     InterfaceDefBodyElement::EndDecl(end_decl) => {
                         self.lower_end_decl(document, declaration, end_decl)?;
                     }
@@ -9794,6 +10883,10 @@ impl SemanticModelBuilder {
             DeclarationKind::InterfaceUsage,
             name,
             node.span.clone(),
+            // `ast::InterfaceUsage` is an enum of connect/declaration shapes carrying only name,
+            // type, subsets/redefines, and ends -- no modifier, multiplicity, direction, or short
+            // name on either variant.
+            DeclarationFacts::none(),
         )?;
         self.push_membership(
             declaration,
@@ -9830,7 +10923,9 @@ impl SemanticModelBuilder {
         }
         for element in body_elements {
             match &element.value {
-                InterfaceUsageBodyElement::Doc(_) => {}
+                InterfaceUsageBodyElement::Doc(node) => {
+                    self.record_doc_comment(declaration, node)?;
+                }
                 InterfaceUsageBodyElement::EndDecl(end_decl) => {
                     self.lower_end_decl(document, declaration, end_decl)?;
                 }
@@ -9912,12 +11007,17 @@ impl SemanticModelBuilder {
             .filter(|name| !name.is_empty())
             .map(|name| self.intern_name(name))
             .transpose()?;
+        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::ViewDefinition,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                short_name,
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -9949,7 +11049,9 @@ impl SemanticModelBuilder {
                     ViewDefBodyElement::Error(error) => {
                         self.push_recovery(document, error.span.clone());
                     }
-                    ViewDefBodyElement::Doc(_) => {}
+                    ViewDefBodyElement::Doc(node) => {
+                        self.record_doc_comment(declaration, node)?;
+                    }
                     ViewDefBodyElement::MetadataAnnotation(node) => {
                         self.lower_metadata_annotation(document, declaration, node)?;
                     }
@@ -9990,6 +11092,15 @@ impl SemanticModelBuilder {
             DeclarationKind::ViewUsage,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                modifiers: DeclarationModifiers {
+                    ordered: node.value.ordered,
+                    nonunique: node.value.nonunique,
+                    ..DeclarationModifiers::default()
+                },
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -10042,7 +11153,9 @@ impl SemanticModelBuilder {
                     ViewBodyElement::Error(error) => {
                         self.push_recovery(document, error.span.clone());
                     }
-                    ViewBodyElement::Doc(_) => {}
+                    ViewBodyElement::Doc(node) => {
+                        self.record_doc_comment(declaration, node)?;
+                    }
                     ViewBodyElement::Satisfy(node) => {
                         self.lower_view_satisfy(document, declaration, node)?;
                     }
@@ -10085,6 +11198,16 @@ impl SemanticModelBuilder {
             DeclarationKind::RenderingUsage,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                modifiers: DeclarationModifiers {
+                    is_abstract: node.value.is_abstract,
+                    ordered: node.value.ordered,
+                    nonunique: node.value.nonunique,
+                    ..DeclarationModifiers::default()
+                },
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -10095,6 +11218,12 @@ impl SemanticModelBuilder {
             )?,
             node.value.membership.span.clone(),
         )?;
+        // Records the authored value spelling (`=`/`:=`/`default`) for this declaration. The
+        // value expression itself is not lowered here -- expression coverage for this usage
+        // family is unchanged by this fact family.
+        if let Some(feature_value) = &node.value.value {
+            self.record_feature_value(declaration, feature_value)?;
+        }
         if let Some(type_name) = node.value.type_name {
             let span = self.documents[document.index()]
                 .parsed
@@ -10140,7 +11269,9 @@ impl SemanticModelBuilder {
                     RenderingUsageBodyElement::Error(error) => {
                         self.push_recovery(document, error.span.clone());
                     }
-                    RenderingUsageBodyElement::Doc(_) => {}
+                    RenderingUsageBodyElement::Doc(node) => {
+                        self.record_doc_comment(declaration, node)?;
+                    }
                     RenderingUsageBodyElement::ViewUsage(node) => {
                         self.lower_view_usage(document, Some(declaration), node)?;
                     }
@@ -10175,12 +11306,17 @@ impl SemanticModelBuilder {
             .filter(|name| !name.is_empty())
             .map(|name| self.intern_name(name))
             .transpose()?;
+        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::ConstraintDefinition,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                short_name,
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -10224,7 +11360,9 @@ impl SemanticModelBuilder {
                             param,
                         )?;
                     }
-                    ConstraintDefBodyElement::Doc(_) => {}
+                    ConstraintDefBodyElement::Doc(node) => {
+                        self.record_doc_comment(declaration, node)?;
+                    }
                     ConstraintDefBodyElement::Expression(expression) => {
                         self.push_evaluation_fact(
                             declaration,
@@ -10272,6 +11410,9 @@ impl SemanticModelBuilder {
             DeclarationKind::ConstraintUsage,
             name,
             node.span.clone(),
+            // `ast::ConstraintUsage` carries no modifier, multiplicity, direction, or short name;
+            // see UPSTREAM_PARSER_GAPS.md for its missing multiplicity field.
+            DeclarationFacts::none(),
         )?;
         self.push_membership(
             declaration,
@@ -10350,6 +11491,10 @@ impl SemanticModelBuilder {
             DeclarationKind::ConstraintUsage,
             name,
             node.span.clone(),
+            // `ast::AssertConstraintMember` carries only `is_negated`, an assertion-polarity fact
+            // rather than a declaration modifier, and the negated form is routed to the
+            // unsupported diagnostic above.
+            DeclarationFacts::none(),
         )?;
         self.push_membership(
             declaration,
@@ -10426,6 +11571,9 @@ impl SemanticModelBuilder {
             DeclarationKind::ConstraintUsage,
             name,
             node.span.clone(),
+            // `ast::RequireConstraint` carries only `is_assume`/`has_constraint_keyword`, which
+            // select the authored form rather than modify the declaration.
+            DeclarationFacts::none(),
         )?;
         self.push_membership(
             declaration,
@@ -10462,12 +11610,17 @@ impl SemanticModelBuilder {
             .filter(|name| !name.is_empty())
             .map(|name| self.intern_name(name))
             .transpose()?;
+        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::CalcDefinition,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                short_name,
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -10517,7 +11670,9 @@ impl SemanticModelBuilder {
                             param,
                         )?;
                     }
-                    CalcDefBodyElement::Doc(_) => {}
+                    CalcDefBodyElement::Doc(node) => {
+                        self.record_doc_comment(declaration, node)?;
+                    }
                     CalcDefBodyElement::Expression(expression) => {
                         self.push_evaluation_fact(
                             declaration,
@@ -10579,7 +11734,9 @@ impl SemanticModelBuilder {
                     CalcDefBodyElement::Import(node) => {
                         self.lower_import(document, Some(declaration), node)?;
                     }
-                    CalcDefBodyElement::Comment(_) => {}
+                    CalcDefBodyElement::Comment(node) => {
+                        self.record_comment_annotation(declaration, node)?;
+                    }
                     CalcDefBodyElement::AssertConstraint(node) => {
                         self.lower_assert_constraint_member(
                             document,
@@ -10617,12 +11774,19 @@ impl SemanticModelBuilder {
             .filter(|name| !name.is_empty())
             .map(|name| self.intern_name(name))
             .transpose()?;
+        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::CalcUsage,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                short_name,
+                direction: direction_fact(node.value.direction.as_ref()),
+                // `ast::CalcUsage` has no `multiplicity` field; see UPSTREAM_PARSER_GAPS.md.
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -10633,6 +11797,12 @@ impl SemanticModelBuilder {
             )?,
             node.value.membership.span.clone(),
         )?;
+        // Records the authored value spelling (`=`/`:=`/`default`) for this declaration. The
+        // value expression itself is not lowered here -- expression coverage for this usage
+        // family is unchanged by this fact family.
+        if let Some(feature_value) = &node.value.value {
+            self.record_feature_value(declaration, feature_value)?;
+        }
         if let Some(type_name) = node.value.type_name {
             let span = self.documents[document.index()]
                 .parsed
@@ -10688,12 +11858,17 @@ impl SemanticModelBuilder {
             .filter(|name| !name.is_empty())
             .map(|name| self.intern_name(name))
             .transpose()?;
+        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::RenderingDefinition,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                short_name,
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -10715,7 +11890,9 @@ impl SemanticModelBuilder {
                 RenderingDefBodyElement::Error(error) => {
                     self.push_recovery(document, error.span.clone());
                 }
-                RenderingDefBodyElement::Doc(_) => {}
+                RenderingDefBodyElement::Doc(node) => {
+                    self.record_doc_comment(declaration, node)?;
+                }
                 RenderingDefBodyElement::Filter(filter) => {
                     self.lower_filter_expression(document, declaration, &filter.value.condition)?;
                 }
@@ -10755,12 +11932,22 @@ impl SemanticModelBuilder {
             .filter(|name| !name.is_empty())
             .map(|name| self.intern_name(name))
             .transpose()?;
+        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::OccurrenceDefinition,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                short_name,
+                modifiers: DeclarationModifiers {
+                    is_abstract: node.value.is_abstract,
+                    individual: node.value.is_individual,
+                    ..DeclarationModifiers::default()
+                },
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -10782,7 +11969,9 @@ impl SemanticModelBuilder {
                 DefinitionBodyElement::Error(error) => {
                     self.push_recovery(document, error.span.clone());
                 }
-                DefinitionBodyElement::Doc(_) => {}
+                DefinitionBodyElement::Doc(node) => {
+                    self.record_doc_comment(declaration, node)?;
+                }
                 DefinitionBodyElement::OccurrenceMember(member) => {
                     self.lower_occurrence_body_element(document, declaration, member)?;
                 }
@@ -10816,7 +12005,9 @@ impl SemanticModelBuilder {
             OccurrenceBodyElement::Error(error) => {
                 self.push_recovery(document, error.span.clone());
             }
-            OccurrenceBodyElement::Doc(_) => {}
+            OccurrenceBodyElement::Doc(node) => {
+                self.record_doc_comment(owner, node)?;
+            }
             OccurrenceBodyElement::AttributeUsage(attribute) => {
                 self.lower_attribute_usage(document, Some(owner), attribute)?;
             }
@@ -10893,6 +12084,20 @@ impl SemanticModelBuilder {
             DeclarationKind::OccurrenceUsage,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                modifiers: DeclarationModifiers {
+                    is_abstract: node.value.is_abstract,
+                    individual: node.value.is_individual,
+                    reference: node.value.is_reference,
+                    constant: node.value.is_constant,
+                    event: node.value.is_event,
+                    ..DeclarationModifiers::default()
+                },
+                portion_kind: portion_kind_fact(node.value.portion_kind.as_ref()),
+                direction: direction_fact(node.value.direction.as_ref()),
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -10903,6 +12108,12 @@ impl SemanticModelBuilder {
             )?,
             node.value.membership.span.clone(),
         )?;
+        // Records the authored value spelling (`=`/`:=`/`default`) for this declaration. The
+        // value expression itself is not lowered here -- expression coverage for this usage
+        // family is unchanged by this fact family.
+        if let Some(feature_value) = &node.value.value {
+            self.record_feature_value(declaration, feature_value)?;
+        }
         if let Some(type_name) = node.value.type_name {
             let span = self.documents[document.index()]
                 .parsed
@@ -10969,12 +12180,17 @@ impl SemanticModelBuilder {
             .filter(|name| !name.is_empty())
             .map(|name| self.intern_name(name))
             .transpose()?;
+        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::AllocationDefinition,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                short_name,
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -10996,7 +12212,9 @@ impl SemanticModelBuilder {
                 DefinitionBodyElement::Error(error) => {
                     self.push_recovery(document, error.span.clone());
                 }
-                DefinitionBodyElement::Doc(_) => {}
+                DefinitionBodyElement::Doc(node) => {
+                    self.record_doc_comment(declaration, node)?;
+                }
                 DefinitionBodyElement::OccurrenceMember(member) => {
                     self.lower_occurrence_body_element(document, declaration, member)?;
                 }
@@ -11032,12 +12250,17 @@ impl SemanticModelBuilder {
             .filter(|name| !name.is_empty())
             .map(|name| self.intern_name(name))
             .transpose()?;
+        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::FlowDefinition,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                short_name,
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -11059,7 +12282,9 @@ impl SemanticModelBuilder {
                 DefinitionBodyElement::Error(error) => {
                     self.push_recovery(document, error.span.clone());
                 }
-                DefinitionBodyElement::Doc(_) => {}
+                DefinitionBodyElement::Doc(node) => {
+                    self.record_doc_comment(declaration, node)?;
+                }
                 DefinitionBodyElement::OccurrenceMember(member) => {
                     self.lower_occurrence_body_element(document, declaration, member)?;
                 }
@@ -11128,12 +12353,17 @@ impl SemanticModelBuilder {
             .filter(|name| !name.is_empty())
             .map(|name| self.intern_name(name))
             .transpose()?;
+        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::Alias,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                short_name,
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -11159,7 +12389,7 @@ impl SemanticModelBuilder {
             import: None,
         })?;
         if let AliasBody::Brace { elements } = &node.value.body {
-            self.lower_relationship_body_elements(document, elements);
+            self.lower_relationship_body_elements(document, Some(declaration), elements)?;
         }
         Ok(())
     }
@@ -11182,12 +12412,22 @@ impl SemanticModelBuilder {
             .filter(|name| !name.is_empty())
             .map(|name| self.intern_name(name))
             .transpose()?;
+        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::IndividualDefinition,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                short_name,
+                modifiers: DeclarationModifiers {
+                    // `individual def` is this declaration's own form; the `individual` prefix
+                    // modifier belongs to the usages and definitions that carry `is_individual`.
+                    ..DeclarationModifiers::default()
+                },
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -11224,6 +12464,8 @@ impl SemanticModelBuilder {
             DeclarationKind::BareConnect,
             None,
             node.span.clone(),
+            // A synthesized scope giving the bare `connect a to b;` ends a lexical owner.
+            DeclarationFacts::none(),
         )?;
         self.push_membership(
             declaration,
@@ -11264,12 +12506,24 @@ impl SemanticModelBuilder {
             .filter(|name| !name.is_empty())
             .map(|name| self.intern_name(name))
             .transpose()?;
+        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
+        let (is_abstract, variation) =
+            definition_prefix_modifiers(node.value.definition_prefix.as_ref());
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::ExtendedDefinition,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                short_name,
+                modifiers: DeclarationModifiers {
+                    is_abstract,
+                    variation,
+                    ..DeclarationModifiers::default()
+                },
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -11306,12 +12560,22 @@ impl SemanticModelBuilder {
             .filter(|name| !name.is_empty())
             .map(|name| self.intern_name(name))
             .transpose()?;
+        let short_name = self.intern_short_name(
+            node.value
+                .identification
+                .as_ref()
+                .and_then(|identification| identification.short_name.as_ref()),
+        )?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::Dependency,
             name,
             node.span.clone(),
+            DeclarationFacts {
+                short_name,
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -11356,7 +12620,7 @@ impl SemanticModelBuilder {
             })?;
         }
         if let Some(elements) = &node.value.body_elements {
-            self.lower_relationship_body_elements(document, elements);
+            self.lower_relationship_body_elements(document, Some(declaration), elements)?;
         }
         Ok(())
     }
@@ -11860,6 +13124,7 @@ mod tests {
                 DeclarationKind::Package,
                 Some(owner_name),
                 Span::dummy(),
+                DeclarationFacts::none(),
             )
             .unwrap();
         let first = builder
@@ -11869,6 +13134,7 @@ mod tests {
                 DeclarationKind::Import,
                 None,
                 Span::dummy(),
+                DeclarationFacts::none(),
             )
             .unwrap();
         let named = builder.intern_name("Named").unwrap();
@@ -11879,6 +13145,7 @@ mod tests {
                 DeclarationKind::PartUsage,
                 Some(named),
                 Span::dummy(),
+                DeclarationFacts::none(),
             )
             .unwrap();
         let second = builder
@@ -11888,6 +13155,7 @@ mod tests {
                 DeclarationKind::Import,
                 None,
                 Span::dummy(),
+                DeclarationFacts::none(),
             )
             .unwrap();
 

@@ -324,10 +324,178 @@ fn write_declarations(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write
                 visibility(membership.visibility),
             )?;
         }
+        write_declaration_facts(model, DeclarationId(index as u32), output)?;
+        write_documentation(model, DeclarationId(index as u32), output)?;
+        write_feature_values(model, DeclarationId(index as u32), output)?;
         write_authored(model, DeclarationId(index as u32), output)?;
         writeln!(output, ")")?;
     }
     writeln!(output, "  )")
+}
+
+/// Renders the authored short name, modifiers, portion kind, direction, and multiplicity of one
+/// declaration.
+///
+/// Only facts that are actually present are emitted, so a declaration whose parser node carries
+/// none of them renders exactly as it did before this fact family existed.
+fn write_declaration_facts(
+    model: &ResolvedSemanticModel,
+    declaration: DeclarationId,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    let Some(facts) = model.storage.declaration_facts(declaration) else {
+        return Ok(());
+    };
+    let modifiers = declaration_modifier_names(&facts.modifiers);
+    if facts.short_name.is_none()
+        && modifiers.is_empty()
+        && facts.portion_kind.is_none()
+        && facts.direction.is_none()
+        && facts.multiplicity.is_none()
+    {
+        return Ok(());
+    }
+    output.write_str(" (facts")?;
+    if let Some(short_name) = facts.short_name {
+        let text = model.storage.symbol(short_name).ok_or(fmt::Error)?;
+        write!(output, " (short-name {text:?})")?;
+    }
+    if !modifiers.is_empty() {
+        output.write_str(" (modifiers")?;
+        for name in modifiers {
+            write!(output, " {name}")?;
+        }
+        output.write_char(')')?;
+    }
+    if let Some(portion_kind) = facts.portion_kind {
+        write!(output, " (portion {})", portion_kind_name(portion_kind))?;
+    }
+    if let Some(direction) = facts.direction {
+        write!(output, " (direction {})", parameter_direction(direction))?;
+    }
+    if let Some(multiplicity) = &facts.multiplicity {
+        output.write_str(" (multiplicity (lower ")?;
+        write_multiplicity_bound(multiplicity.lower, output)?;
+        output.write_str(") (upper ")?;
+        write_multiplicity_bound(multiplicity.upper, output)?;
+        output.write_str("))")?;
+    }
+    output.write_char(')')
+}
+
+fn write_multiplicity_bound(bound: MultiplicityBound, output: &mut dyn fmt::Write) -> fmt::Result {
+    match bound {
+        MultiplicityBound::Unbounded => output.write_str("unbounded"),
+        MultiplicityBound::Literal(value) => write!(output, "{value}"),
+        MultiplicityBound::Expression => output.write_str("expression"),
+    }
+}
+
+/// The present modifier names in a fixed canonical order, so snapshot output never depends on
+/// field or hash ordering.
+fn declaration_modifier_names(modifiers: &DeclarationModifiers) -> Vec<&'static str> {
+    let candidates = [
+        (modifiers.is_abstract, "abstract"),
+        (modifiers.variation, "variation"),
+        (modifiers.individual, "individual"),
+        (modifiers.derived, "derived"),
+        (modifiers.end, "end"),
+        (modifiers.reference, "reference"),
+        (modifiers.constant, "constant"),
+        (modifiers.event, "event"),
+        (modifiers.standard, "standard"),
+        (modifiers.all, "all"),
+        (modifiers.composite, "composite"),
+        (modifiers.portion, "portion"),
+        (modifiers.var, "var"),
+        (modifiers.member, "member"),
+        (modifiers.ordered, "ordered"),
+        (modifiers.nonunique, "nonunique"),
+    ];
+    candidates
+        .into_iter()
+        .filter_map(|(present, name)| present.then_some(name))
+        .collect()
+}
+
+fn portion_kind_name(kind: PortionKind) -> &'static str {
+    match kind {
+        PortionKind::Snapshot => "snapshot",
+        PortionKind::Timeslice => "timeslice",
+    }
+}
+
+fn annotation_form_name(form: AnnotationForm) -> &'static str {
+    match form {
+        AnnotationForm::Documentation => "doc",
+        AnnotationForm::Comment => "comment",
+        AnnotationForm::TextualRepresentation => "rep",
+    }
+}
+
+/// Renders the `doc`/`comment`/`rep` annotations bound to one declaration, in authored order.
+fn write_documentation(
+    model: &ResolvedSemanticModel,
+    declaration: DeclarationId,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    let mut wrote_header = false;
+    for record in model
+        .storage
+        .documentation
+        .iter()
+        .filter(|record| record.declaration == declaration)
+    {
+        if !wrote_header {
+            output.write_str(" (documentation")?;
+            wrote_header = true;
+        }
+        write!(output, " ({}", annotation_form_name(record.form))?;
+        if let Some(locale) = record.locale {
+            let text = model.storage.symbol(locale).ok_or(fmt::Error)?;
+            write!(output, " (locale {text:?})")?;
+        }
+        if let Some(language) = record.language {
+            let text = model.storage.symbol(language).ok_or(fmt::Error)?;
+            write!(output, " (language {text:?})")?;
+        }
+        let text = model.storage.symbol(record.text).ok_or(fmt::Error)?;
+        write!(output, " (text {text:?}))")?;
+    }
+    if wrote_header {
+        output.write_char(')')?;
+    }
+    Ok(())
+}
+
+/// Renders the authored feature-value spelling(s) of one declaration.
+fn write_feature_values(
+    model: &ResolvedSemanticModel,
+    declaration: DeclarationId,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    for record in model
+        .storage
+        .feature_values
+        .iter()
+        .filter(|record| record.declaration == declaration)
+    {
+        let kind = match record.kind {
+            FeatureValueKind::Bind => "bind",
+            FeatureValueKind::Assign => "assign",
+        };
+        // Deliberately not `(value ...)`: that head is already the evaluation section's computed
+        // value, and this is the authored spelling of the value clause.
+        write!(output, " (feature-value (kind {kind})")?;
+        if record.is_default {
+            output.write_str(" (default true)")?;
+        }
+        if !record.has_operator {
+            output.write_str(" (operator false)")?;
+        }
+        output.write_char(')')?;
+    }
+    Ok(())
 }
 
 fn write_references(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fmt::Result {
@@ -1034,8 +1202,11 @@ mod tests {
         let storage = SemanticModelStorage {
             documents: Box::new([]),
             declarations: Box::new([]),
+            declaration_facts: Box::new([]),
             memberships: Box::new([]),
             references: Box::new([]),
+            documentation: Box::new([]),
+            feature_values: Box::new([]),
             unsupported: Box::new([]),
             recovery: Box::new([]),
             symbols: SymbolTableBuilder::default().freeze(),

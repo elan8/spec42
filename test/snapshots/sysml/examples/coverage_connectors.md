@@ -51,8 +51,8 @@ part def System {
     (declaration (id (node (document "memory://snapshot/coverage_connectors.md") (qualified-name "System"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_connectors.md") (qualified-name "System::a"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "A"))))
     (declaration (id (node (document "memory://snapshot/coverage_connectors.md") (qualified-name "System::b"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "B"))))
-    (declaration (id (node (document "memory://snapshot/coverage_connectors.md") (qualified-name "System::engine"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "A"))))
-    (declaration (id (node (document "memory://snapshot/coverage_connectors.md") (qualified-name "System::myA"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "A"))))
+    (declaration (id (node (document "memory://snapshot/coverage_connectors.md") (qualified-name "System::engine"))) (kind part) (membership (kind feature) (visibility default)) (facts (modifiers reference)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "A"))))
+    (declaration (id (node (document "memory://snapshot/coverage_connectors.md") (qualified-name "System::myA"))) (kind part) (membership (kind feature) (visibility default)) (facts (modifiers individual)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "A"))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/coverage_connectors.md") (qualified-name "System::a"))) (kind featureTyping) (ordinal 0))

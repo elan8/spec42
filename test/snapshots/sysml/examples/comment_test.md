@@ -64,9 +64,9 @@ package CommentTest {
 (semantic-model
   (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:cab89b300cc637b967bd447c61b4cac265bebc1c080a13e79122f6699df11964") (contract-version "parser-owned-resolution-v1"))
   (declarations
-    (declaration (id (node (document "memory://snapshot/comment_test.md") (qualified-name "CommentTest"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/comment_test.md") (qualified-name "CommentTest"))) (kind package) (membership (kind owning) (visibility default)) (documentation (comment (locale "en_US") (text "\n * AAAA\n * BBBB\n *    CCC DDD    \n ")) (doc (locale "en_US") (text " Documentation about Package ")) (comment (text " Named Comment ")) (comment (text " Comment about Comment ")) (comment (text " Documention Comment about Part Def "))))
     (declaration (id (node (document "memory://snapshot/comment_test.md") (qualified-name "CommentTest::A"))) (kind part-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/comment_test.md") (qualified-name "CommentTest::C"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/comment_test.md") (qualified-name "CommentTest::C"))) (kind part-def) (membership (kind owning) (visibility default)) (documentation (doc (text " Documentation in Part Def ")) (comment (text " Comment about Package "))))
   )
   (references
   )

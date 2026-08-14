@@ -91,12 +91,12 @@ package Behaviors {
   (declarations
     (declaration (id (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::A"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::A::b"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "B"))))
-    (declaration (id (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::A::b::x1"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "A::x"))))
-    (declaration (id (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::A::x"))) (kind parameter) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::A::y"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "b::y1"))))
+    (declaration (id (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::A::b"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers composite)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "B"))))
+    (declaration (id (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::A::b::x1"))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "A::x"))))
+    (declaration (id (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::A::x"))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
+    (declaration (id (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::A::y"))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction out)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "b::y1"))))
     (declaration (id (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::B"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "A"))))
-    (declaration (id (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::B::x1"))) (kind parameter) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::B::x1"))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
     (declaration (id (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::C"))) (kind class-def) (membership (kind owning) (visibility default)))
   )
   (references

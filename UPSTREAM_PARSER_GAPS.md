@@ -1168,3 +1168,72 @@ found; all 51 fixtures are genuine upstream parser gaps**, grouped into Gaps 15-
   `Allocate(Node<Allocate>)` variant added to `PackageBodyElement` (and ideally
   `PartDefBodyElement`) with a starter/dispatch arm reusing the existing `allocate` production,
   filed upstream against `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+
+- Gap 52. Three SysML declaration-modifier prefixes have no representation in the pinned parser at
+  all, so the canonical declaration-fact family (`DeclarationModifiers` in
+  `crates/sysml_resolution/src/model.rs`) cannot include them and an element inspector cannot
+  report them: `readonly`, SysML `variable`, and `unique`. Confirmed against `cb026cd` -- the AST
+  design note at `src/ast/membership.rs:32` states they are deliberately out of scope, and there is
+  no token, field, or starter for any of the three anywhere in `src/parser`. (`unique` is
+  especially load-bearing: `ordered`/`nonunique` are both modeled as plain `bool` fields on ~11
+  nodes, so a consumer can distinguish "authored `nonunique`" from "not authored", but it can never
+  distinguish an authored `unique` from the default.) Note this is distinct from Gap 17's bare
+  `portion` prefix, which is likewise unrepresentable in SysML scope; the KerML `portion` prefix
+  *is* reachable via `KermlFeatureMember.is_portion` and is lowered. Needs `readonly`/`variable`/
+  `unique` added as `FeaturePrefix`/`UsagePrefix` fields alongside the existing `derived`/
+  `ordered`/`nonunique` ones, filed upstream against `feat/gh-119-arena-backed-references`
+  (elan8/sysml-v2-parser#121).
+
+- Gap 53. Several usage/definition nodes are missing a `multiplicity`, `nonunique`, or `short_name`
+  field their siblings all carry, so the canonical multiplicity/short-name facts are absent for
+  those declaration kinds rather than merely unwritten. Confirmed by direct field-by-field
+  inspection of `cb026cd`'s `src/ast/` while lowering the declaration-fact family:
+  (a) **no `multiplicity` field**: `AttributeDef` (`structure.rs`; contrast `AttributeUsage`, which
+  has one), `ConstraintUsage` (`view.rs`), `RequirementUsage` (`requirement.rs`), `CalcUsage`
+  (`view.rs`), `RequirementActorDecl` (`requirement.rs`; contrast `ActorUsage`, which has one);
+  (b) **no `nonunique` field**: `PartUsage` (`structure.rs`), which does carry `ordered`;
+  (c) **no `short_name` field**: `ActionUsage`, `OccurrenceUsage`, `ConstraintUsage`, `RefDecl`,
+  `EndDecl`, `ReturnDecl`, `ViewUsage`, so the `<short> name` spelling is dropped for those kinds
+  even though `AttributeUsage`/`PartUsage`/`PortUsage`/`ItemUsage`/`RequirementUsage` all keep it.
+  Each is a one-field addition mirroring an existing sibling, filed upstream against
+  `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+
+- Gap 54. `SubjectDecl.value` is a bare `Option<Node<Expression>>` (`src/ast/requirement.rs:122`)
+  rather than the `Option<Node<FeatureValue>>` every other value-carrying node uses, so the
+  authored value *spelling* is lost for subjects: `subject s = e;`, `subject s := e;`, and
+  `subject s default e;` are indistinguishable once parsed, whereas `FeatureValue`'s
+  `kind`/`is_default`/`has_operator` fields keep all five spellings apart everywhere else. This
+  blocks recording a `FeatureValueRecord` for `DeclarationKind::SubjectUsage` in
+  `crates/sysml_resolution/src/model.rs`; the subject's multiplicity and typing facts are lowered
+  normally. Needs `SubjectDecl.value` widened to `Option<Node<FeatureValue>>`, filed upstream
+  against `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121). See also Gap 35, which
+  tracks `SubjectDecl`'s separate missing `subsets`/`redefines` fields.
+
+- Gap 55. Only the three keyworded annotation productions survive into the AST: `doc /* ... */`
+  (`ast::DocComment`), `comment /* ... */` (`ast::CommentAnnotation`), and
+  `rep <language> "..." /* ... */` (`ast::TextualRepresentation`). Plain `/* ... */`, doc-style
+  `/** ... */`, and `//` line comments are consumed as lexer trivia by `trivia_len`
+  (`src/parser/lex.rs:209-226`, called from `ws_and_comments` at `:196`) and are unreachable from
+  any AST node, so an element inspector can never surface a `/** ... */`-style doc block. Separately,
+  `DocComment.text` is the raw byte slice between `/*` and `*/` (`src/parser/requirement.rs:724-726`)
+  with no leading-`*` stripping and no dedent, so every consumer must normalize it identically or
+  they will disagree. Not necessarily a defect -- keeping trivia out of the AST is a defensible
+  design -- but it is a hard ceiling on documentation fidelity and is recorded here so the
+  limitation is not rediscovered. If `/** ... */` is intended to be an annotation rather than
+  trivia, it needs its own production, filed upstream against
+  `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+
+- Gap 56. `EnumerationBody::Brace { values: Vec<Node<EnumeratedValue>> }`
+  (`src/ast/structure.rs:1539`) holds *only* enumerated values, so an `enum def`'s own body
+  annotations are discarded before they reach the AST: `enum def Color { doc /* ... */ enum red; }`
+  parses with the `doc` element dropped entirely, unlike every sibling body-element enum
+  (`PartDefBodyElement`, `AttributeBodyElement`, `RelationshipBodyElement`, …), all of which carry
+  `Doc`/`Comment`/`TextualRep` variants. Confirmed against `cb026cd` while lowering the
+  documentation fact family: `test/snapshots/documentation_in_bodies.md`'s `enum def Color`
+  authors a doc comment that no fact family can recover, while the `part def`/`attribute def`/
+  `item def`/`part` usage/`alias` docs in the same fixture all lower correctly. The same node also
+  discards each `EnumeratedValue`'s own optional body and `= expr` initializer (`structure.rs:1544`
+  documents this: "Only the name and its span are retained"), so a per-literal doc is unreachable
+  too. Needs `EnumerationBody::Brace` widened to a proper body-element enum carrying at least
+  `Doc`/`Comment`/`TextualRep` alongside the values, filed upstream against
+  `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).

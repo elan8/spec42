@@ -82,7 +82,7 @@ package 'Individuals and Snapshots Example' {
   (declarations
     (declaration (id (node (document "memory://snapshot/28_individuals_and_snapshots_example.md") (qualified-name "Individuals and Snapshots Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/28_individuals_and_snapshots_example.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "Part Definition Example") (import (shape namespace) (recursive false)))))
-    (declaration (id (node (document "memory://snapshot/28_individuals_and_snapshots_example.md") (qualified-name "Individuals and Snapshots Example::Vehicle_1"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Vehicle"))))
+    (declaration (id (node (document "memory://snapshot/28_individuals_and_snapshots_example.md") (qualified-name "Individuals and Snapshots Example::Vehicle_1"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (modifiers individual)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Vehicle"))))
     (declaration (id (node (document "memory://snapshot/28_individuals_and_snapshots_example.md") (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (succession (reference "vehicle_1_t0")) (succession (reference "vehicle_1_t1"))))
   )
   (references

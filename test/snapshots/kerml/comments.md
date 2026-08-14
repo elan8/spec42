@@ -78,9 +78,9 @@ package Comments {
 (semantic-model
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:e8a112900c3b200845c2ff34e7933480efbd2709124e0ca7ae3f8141e9b216d9") (contract-version "parser-owned-resolution-v1"))
   (declarations
-    (declaration (id (node (document "memory://snapshot/comments.md") (qualified-name "Comments"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/comments.md") (qualified-name "Comments"))) (kind package) (membership (kind owning) (visibility default)) (documentation (comment (locale "en_US") (text "\n * AAAA\n * BBBB\n *    CCC DDD    \n ")) (comment (text " Named Comment ")) (comment (text " Other Comment about Comment "))))
     (declaration (id (node (document "memory://snapshot/comments.md") (qualified-name "Comments::A"))) (kind class-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/comments.md") (qualified-name "Comments::C"))) (kind class-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/comments.md") (qualified-name "Comments::C"))) (kind class-def) (membership (kind owning) (visibility default)) (documentation (doc (locale "en_US") (text " Documentation on Class C "))))
   )
   (references
   )

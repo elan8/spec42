@@ -38,7 +38,7 @@ package P {
     (declaration (id (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Base"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Base::mass"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Real"))))
     (declaration (id (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Child"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Base"))))
-    (declaration (id (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Child::mass"))) (kind attribute) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Child::mass"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Base::mass"))) (kind featureTyping) (ordinal 0))
