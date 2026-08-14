@@ -169,9 +169,9 @@ package ExpressionCoverage {
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::h"))) (target (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::items"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::h"))) (kind expressionOperand) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::r"))) (value (kind real) (real 3.14)))
-    (evaluated (declaration (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::s"))) (value (kind string) (value "hello")))
-    (evaluated (declaration (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::seq"))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::r"))) (state literal) (value (kind real) (real 3.14)))
+    (evaluated (declaration (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::s"))) (state literal) (value (kind string) (value "hello")))
+    (evaluated (declaration (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::seq"))) (state non-constant))
   )
 )
 ~~~

@@ -190,7 +190,7 @@ package VehicleRequirementDerivation {
     (relationship (kind typing) (source (node (document "memory://snapshot/vehicle_requirement_derivation.md") (qualified-name "VehicleRequirementDerivation::vehicleMassRequirement"))) (target (node (document "memory://snapshot/vehicle_requirement_derivation.md") (qualified-name "VehicleRequirementDerivation::MassRequirement"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_requirement_derivation.md") (qualified-name "VehicleRequirementDerivation::vehicleMassRequirement"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/vehicle_requirement_derivation.md") (path (named (kind package) (name "VehicleRequirementDerivation")) (named (kind requirement-def) (name "MassRequirement")) (anonymous (kind require-constraint) (ordinal 0)))))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/vehicle_requirement_derivation.md") (path (named (kind package) (name "VehicleRequirementDerivation")) (named (kind requirement-def) (name "MassRequirement")) (anonymous (kind require-constraint) (ordinal 0)))))) (state unresolved-operand))
   )
 )
 ~~~

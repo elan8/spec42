@@ -105,8 +105,8 @@ package '14a-Language Extensions' {
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (named (kind part) (name "part_Y")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "classificationLevel")))))) (target (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel::conf"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (named (kind part) (name "part_Y")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "classificationLevel")))))) (kind expressionOperand) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::part_X::Classified::classificationLevel"))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (named (kind part) (name "part_Y")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "classificationLevel")))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::part_X::Classified::classificationLevel"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (named (kind part) (name "part_Y")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "classificationLevel")))))) (state non-constant))
   )
 )
 ~~~

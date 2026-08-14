@@ -69,8 +69,8 @@ package P {
   (relationships
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/fuzz_perform_action_keyword.md") (path (named (kind package) (name "P")) (named (kind action-def) (name "A")) (anonymous (kind for-loop) (ordinal 0)))))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/fuzz_perform_action_keyword.md") (path (named (kind package) (name "P")) (named (kind action-def) (name "A")) (anonymous (kind for-loop) (ordinal 0)) (named (kind perform-action) (name "doStuff")) (anonymous (kind for-loop) (ordinal 0)))))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/fuzz_perform_action_keyword.md") (path (named (kind package) (name "P")) (named (kind action-def) (name "A")) (anonymous (kind for-loop) (ordinal 0)))))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/fuzz_perform_action_keyword.md") (path (named (kind package) (name "P")) (named (kind action-def) (name "A")) (anonymous (kind for-loop) (ordinal 0)) (named (kind perform-action) (name "doStuff")) (anonymous (kind for-loop) (ordinal 0)))))) (state unresolved-operand))
   )
 )
 ~~~

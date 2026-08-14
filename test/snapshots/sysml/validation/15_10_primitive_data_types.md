@@ -265,8 +265,8 @@ package '15.10-Primitive Data Types' {
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::aperatureDiameter"))) (target (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::DiameterChoice::small"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::aperatureDiameter"))) (kind expressionOperand) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/15_10_primitive_data_types.md") (path (named (kind package) (name "15.10-Primitive Data Types")) (named (kind attribute-def) (name "UnsignedReal")) (anonymous (kind assert-constraint) (ordinal 0)))))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::aperatureDiameter"))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/15_10_primitive_data_types.md") (path (named (kind package) (name "15.10-Primitive Data Types")) (named (kind attribute-def) (name "UnsignedReal")) (anonymous (kind assert-constraint) (ordinal 0)))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::aperatureDiameter"))) (state non-constant))
   )
 )
 ~~~

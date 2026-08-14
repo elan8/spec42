@@ -126,7 +126,7 @@ package IssueMetadataExample {
     (relationship (kind typing) (conjugated true) (source (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::transmission::clutchPort"))) (target (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::DrivePwrPort"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::transmission::clutchPort"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::InterfaceCompatibilityIssue::text"))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::InterfaceCompatibilityIssue::text"))) (state non-constant))
   )
 )
 ~~~

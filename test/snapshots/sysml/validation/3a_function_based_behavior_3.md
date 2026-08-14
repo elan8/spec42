@@ -317,7 +317,7 @@ package '3a-Function-based Behavior-5' {
     (relationship (kind typing) (direction out) (source (node (document "memory://snapshot/3a_function_based_behavior_3.md") (qualified-name "3a-Function-based Behavior-5::Usages::provide power::wheelTorque2"))) (target (node (document "memory://snapshot/3a_function_based_behavior_3.md") (qualified-name "3a-Function-based Behavior-5::Definitions::Torque"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/3a_function_based_behavior_3.md") (qualified-name "3a-Function-based Behavior-5::Usages::provide power::wheelTorque2"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/3a_function_based_behavior_3.md") (path (named (kind package) (name "3a-Function-based Behavior-5")) (named (kind package) (name "Usages")) (named (kind action) (name "provide power")) (anonymous (kind loop) (ordinal 0)) (anonymous (kind action) (ordinal 0)) (named (kind action) (name "generate torque")) (named (kind parameter) (name "fuelCmd")))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/3a_function_based_behavior_3.md") (path (named (kind package) (name "3a-Function-based Behavior-5")) (named (kind package) (name "Usages")) (named (kind action) (name "provide power")) (anonymous (kind loop) (ordinal 0)) (anonymous (kind action) (ordinal 0)) (named (kind action) (name "generate torque")) (named (kind parameter) (name "fuelCmd")))))) (state non-constant))
   )
 )
 ~~~

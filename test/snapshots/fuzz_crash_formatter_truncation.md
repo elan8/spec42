@@ -114,7 +114,7 @@ package MassRollup2 {
     (relationship (kind typing) (source (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::composicomackagteThing"))) (target (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::MassedThing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::composicomackagteThing"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::MassedThing::totalMass"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (qualified-name "MassRollup2::MassedThing::totalMass"))) (state unresolved-operand))
   )
 )
 ~~~

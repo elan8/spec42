@@ -290,12 +290,12 @@ package MetadataTest {
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/metadata_test.md") (path (named (kind package) (name "MetadataTest")) (named (kind kerml-feature) (name "y")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "classificationLevel")))))) (target (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::conf"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/metadata_test.md") (path (named (kind package) (name "MetadataTest")) (named (kind kerml-feature) (name "y")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "classificationLevel")))))) (kind expressionOperand) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::conf"))) (value (kind integer) (integer 1)))
-    (evaluated (declaration (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::secret"))) (value (kind integer) (integer 2)))
-    (evaluated (declaration (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::uncl"))) (value (kind integer) (integer 0)))
-    (evaluated (declaration (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::x"))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::x"))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/metadata_test.md") (path (named (kind package) (name "MetadataTest")) (named (kind kerml-feature) (name "y")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "classificationLevel")))))) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::conf"))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::secret"))) (state literal) (value (kind integer) (integer 2)))
+    (evaluated (declaration (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::uncl"))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::x"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::x"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/metadata_test.md") (path (named (kind package) (name "MetadataTest")) (named (kind kerml-feature) (name "y")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "classificationLevel")))))) (state evaluated) (value (kind integer) (integer 1)))
   )
 )
 ~~~

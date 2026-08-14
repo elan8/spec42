@@ -222,8 +222,8 @@ package Expressions {
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/expressions.md") (qualified-name "Expressions::test2"))) (target (node (document "memory://snapshot/expressions.md") (qualified-name "Expressions::obj2"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/expressions.md") (qualified-name "Expressions::test2"))) (kind expressionOperand) (ordinal 1)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/expressions.md") (qualified-name "Expressions::l"))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/expressions.md") (qualified-name "Expressions::w1"))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/expressions.md") (qualified-name "Expressions::l"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/expressions.md") (qualified-name "Expressions::w1"))) (state non-constant))
   )
 )
 ~~~

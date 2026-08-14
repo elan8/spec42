@@ -543,8 +543,8 @@ standard library package SampledFunctions {
     (relationship (kind invocationCallee) (source (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::interpolateLinear::result"))) (target (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::interpolateLinear::Linear"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::interpolateLinear::result"))) (kind invocationCallee) (ordinal 2)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::Sample::sampling"))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::interpolateLinear::domainValues"))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::Sample::sampling"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::interpolateLinear::domainValues"))) (state non-constant))
   )
 )
 ~~~

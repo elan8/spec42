@@ -868,8 +868,8 @@ standard library package IntegerFunctions {
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/integer_functions.md") (path (named (kind library-package) (name "IntegerFunctions")) (named (kind kerml-function) (name "sum")) (anonymous (kind parameter) (ordinal 0)))))) (target (node (document "memory://snapshot/integer_functions.md") (qualified-name "IntegerFunctions::sum::collection"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/integer_functions.md") (path (named (kind library-package) (name "IntegerFunctions")) (named (kind kerml-function) (name "sum")) (anonymous (kind parameter) (ordinal 0)))))) (kind expressionOperand) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/integer_functions.md") (path (named (kind library-package) (name "IntegerFunctions")) (named (kind kerml-function) (name "product")) (anonymous (kind parameter) (ordinal 0)))))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/integer_functions.md") (path (named (kind library-package) (name "IntegerFunctions")) (named (kind kerml-function) (name "sum")) (anonymous (kind parameter) (ordinal 0)))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/integer_functions.md") (path (named (kind library-package) (name "IntegerFunctions")) (named (kind kerml-function) (name "product")) (anonymous (kind parameter) (ordinal 0)))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/integer_functions.md") (path (named (kind library-package) (name "IntegerFunctions")) (named (kind kerml-function) (name "sum")) (anonymous (kind parameter) (ordinal 0)))))) (state non-constant))
   )
 )
 ~~~

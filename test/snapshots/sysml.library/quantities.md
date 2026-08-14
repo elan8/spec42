@@ -508,7 +508,7 @@ standard library package Quantities {
     (relationship (kind typing) (source (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::vectorQuantities"))) (target (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::VectorQuantityValue"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::vectorQuantities"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::TensorQuantityValue::orderSum"))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::TensorQuantityValue::orderSum"))) (state non-constant))
   )
 )
 ~~~

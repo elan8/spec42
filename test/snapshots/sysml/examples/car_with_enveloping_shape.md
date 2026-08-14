@@ -105,9 +105,9 @@ package CarWithEnvelopingShape {
   (relationships
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/car_with_enveloping_shape.md") (path (named (kind package) (name "CarWithEnvelopingShape")) (named (kind part-def) (name "Car")) (named (kind item) (name "boundingBox")) (anonymous (kind attribute) (ordinal 0)))))) (value (kind quantity) (magnitude (value (kind integer) (integer 4800))) (unit "mm")))
-    (evaluated (declaration (node (document "memory://snapshot/car_with_enveloping_shape.md") (path (named (kind package) (name "CarWithEnvelopingShape")) (named (kind part-def) (name "Car")) (named (kind item) (name "boundingBox")) (anonymous (kind attribute) (ordinal 1)))))) (value (kind quantity) (magnitude (value (kind integer) (integer 1840))) (unit "mm")))
-    (evaluated (declaration (node (document "memory://snapshot/car_with_enveloping_shape.md") (path (named (kind package) (name "CarWithEnvelopingShape")) (named (kind part-def) (name "Car")) (named (kind item) (name "boundingBox")) (anonymous (kind attribute) (ordinal 2)))))) (value (kind quantity) (magnitude (value (kind integer) (integer 1350))) (unit "mm")))
+    (evaluated (declaration (node (document "memory://snapshot/car_with_enveloping_shape.md") (path (named (kind package) (name "CarWithEnvelopingShape")) (named (kind part-def) (name "Car")) (named (kind item) (name "boundingBox")) (anonymous (kind attribute) (ordinal 0)))))) (state literal) (value (kind quantity) (magnitude (value (kind integer) (integer 4800))) (unit "mm")))
+    (evaluated (declaration (node (document "memory://snapshot/car_with_enveloping_shape.md") (path (named (kind package) (name "CarWithEnvelopingShape")) (named (kind part-def) (name "Car")) (named (kind item) (name "boundingBox")) (anonymous (kind attribute) (ordinal 1)))))) (state literal) (value (kind quantity) (magnitude (value (kind integer) (integer 1840))) (unit "mm")))
+    (evaluated (declaration (node (document "memory://snapshot/car_with_enveloping_shape.md") (path (named (kind package) (name "CarWithEnvelopingShape")) (named (kind part-def) (name "Car")) (named (kind item) (name "boundingBox")) (anonymous (kind attribute) (ordinal 2)))))) (state literal) (value (kind quantity) (magnitude (value (kind integer) (integer 1350))) (unit "mm")))
   )
 )
 ~~~

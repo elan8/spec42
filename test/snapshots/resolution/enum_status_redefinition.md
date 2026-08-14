@@ -72,7 +72,7 @@ package Demo {
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/enum_status_redefinition.md") (path (named (kind package) (name "Demo")) (named (kind requirement) (name "need")) (anonymous (kind attribute) (ordinal 0)))))) (target (node (document "memory://snapshot/enum_status_redefinition.md") (qualified-name "Demo::RequirementStatusKind::approved"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/enum_status_redefinition.md") (path (named (kind package) (name "Demo")) (named (kind requirement) (name "need")) (anonymous (kind attribute) (ordinal 0)))))) (kind expressionOperand) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/enum_status_redefinition.md") (path (named (kind package) (name "Demo")) (named (kind requirement) (name "need")) (anonymous (kind attribute) (ordinal 0)))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/enum_status_redefinition.md") (path (named (kind package) (name "Demo")) (named (kind requirement) (name "need")) (anonymous (kind attribute) (ordinal 0)))))) (state non-constant))
   )
 )
 ~~~

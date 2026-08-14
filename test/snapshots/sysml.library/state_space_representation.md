@@ -454,7 +454,7 @@ standard library package StateSpaceRepresentation {
     (relationship (kind specialization) (source (node (document "memory://snapshot/state_space_representation.md") (qualified-name "StateSpaceRepresentation::ZeroCrossingEventDef"))) (target (node (document "memory://snapshot/state_space_representation.md") (qualified-name "StateSpaceRepresentation::StateSpaceEventDef"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/state_space_representation.md") (qualified-name "StateSpaceRepresentation::ZeroCrossingEventDef"))) (kind specialization) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/state_space_representation.md") (qualified-name "StateSpaceRepresentation::StateSpaceDynamics::output"))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/state_space_representation.md") (qualified-name "StateSpaceRepresentation::StateSpaceDynamics::output"))) (state non-constant))
   )
 )
 ~~~

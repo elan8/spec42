@@ -288,7 +288,7 @@ package StateTest {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/state_test.md") (qualified-name "StateTest::s5"))) (target (node (document "memory://snapshot/state_test.md") (qualified-name "StateTest::s4"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/state_test.md") (qualified-name "StateTest::s5"))) (kind subsetting) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/state_test.md") (qualified-name "StateTest::S::T"))) (value (kind boolean) (boolean true)))
+    (evaluated (declaration (node (document "memory://snapshot/state_test.md") (qualified-name "StateTest::S::T"))) (state literal) (value (kind boolean) (boolean true)))
   )
 )
 ~~~

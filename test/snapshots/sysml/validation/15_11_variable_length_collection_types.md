@@ -273,7 +273,7 @@ package '15_11-Variable Length Collection Types' {
     (relationship (kind typing) (source (node (document "memory://snapshot/15_11_variable_length_collection_types.md") (path (named (kind package) (name "15_11-Variable Length Collection Types")) (named (kind attribute-def) (name "OrderedSet<Person>")) (anonymous (kind ref) (ordinal 0)))))) (target (node (document "memory://snapshot/15_11_variable_length_collection_types.md") (qualified-name "15_11-Variable Length Collection Types::Person"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/15_11_variable_length_collection_types.md") (path (named (kind package) (name "15_11-Variable Length Collection Types")) (named (kind attribute-def) (name "OrderedSet<Person>")) (anonymous (kind ref) (ordinal 0)))))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/15_11_variable_length_collection_types.md") (path (named (kind package) (name "15_11-Variable Length Collection Types")) (named (kind attribute-def) (name "Array<Real>[4]")) (anonymous (kind attribute) (ordinal 1)))))) (value (kind integer) (integer 4)))
+    (evaluated (declaration (node (document "memory://snapshot/15_11_variable_length_collection_types.md") (path (named (kind package) (name "15_11-Variable Length Collection Types")) (named (kind attribute-def) (name "Array<Real>[4]")) (anonymous (kind attribute) (ordinal 1)))))) (state literal) (value (kind integer) (integer 4)))
   )
 )
 ~~~

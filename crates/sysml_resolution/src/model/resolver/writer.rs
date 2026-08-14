@@ -585,8 +585,13 @@ fn write_evaluation(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) 
         let fact = &model.evaluation[index];
         write!(output, "    (evaluated (declaration ")?;
         write_node_identity(model, fact.declaration, output)?;
-        write!(output, ") ")?;
-        write_evaluated_value(&fact.outcome, output)?;
+        write!(output, ") (state {})", fact.state.as_str())?;
+        // The value is rendered only where the state carries one, so a failure cannot be mistaken
+        // for a value of some fallback kind.
+        if fact.state.value().is_some() {
+            write!(output, " ")?;
+            write_evaluated_value(&fact.outcome, output)?;
+        }
         writeln!(output, ")")?;
     }
     writeln!(output, "  )")
@@ -1291,7 +1296,7 @@ mod tests {
             &storage.references,
         )
         .unwrap();
-        let evaluation = compute_evaluation(&storage, &resolution);
+        let evaluation = compute_evaluation(&storage, &resolution, EvaluationPolicy::Evaluate);
         let identities = IdentityIndex::build(&storage).unwrap();
         let model = ResolvedSemanticModel {
             storage,

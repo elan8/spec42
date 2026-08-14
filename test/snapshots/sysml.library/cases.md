@@ -290,12 +290,12 @@ standard library package Cases {
     (relationship (kind typing) (source (node (document "memory://snapshot/cases.md") (qualified-name "Cases::cases"))) (target (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/cases.md") (qualified-name "Cases::cases"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case"))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case"))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case"))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case"))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case"))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case"))) (state unresolved-operand))
   )
 )
 ~~~

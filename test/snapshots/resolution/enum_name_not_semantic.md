@@ -60,7 +60,7 @@ package Demo {
     (relationship (kind typing) (source (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::host"))) (target (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::Derived"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::host"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::host::value"))) (value (kind string) (value "approved")))
+    (evaluated (declaration (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::host::value"))) (state literal) (value (kind string) (value "approved")))
   )
 )
 ~~~

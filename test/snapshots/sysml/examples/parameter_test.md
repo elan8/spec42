@@ -122,10 +122,10 @@ package ParameterTest {
     (relationship (kind invocationCallee) (source (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::g"))) (target (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::F"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::g"))) (kind invocationCallee) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::b"))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::c"))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::f"))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::g"))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::b"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::c"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::f"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::g"))) (state non-constant))
   )
 )
 ~~~

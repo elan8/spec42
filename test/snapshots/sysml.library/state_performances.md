@@ -1011,11 +1011,11 @@ standard library package StatePerformances {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance::trigger"))) (target (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance::acceptable"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance::trigger"))) (kind subsetting) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StatePerformance"))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StatePerformance::acceptable::thatSP"))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/state_performances.md") (path (named (kind library-package) (name "StatePerformances")) (named (kind kerml-behavior) (name "StatePerformance")) (named (kind kerml-function) (name "allSubstatePerformances")) (anonymous (kind parameter) (ordinal 0)))))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/state_performances.md") (path (named (kind library-package) (name "StatePerformances")) (named (kind kerml-behavior) (name "StatePerformance")) (named (kind kerml-function) (name "allSubtransitionPerformances")) (anonymous (kind parameter) (ordinal 0)))))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StatePerformance::isTriggerDuring"))) (value (kind boolean) (boolean true)))
+    (evaluated (declaration (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StatePerformance"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StatePerformance::acceptable::thatSP"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/state_performances.md") (path (named (kind library-package) (name "StatePerformances")) (named (kind kerml-behavior) (name "StatePerformance")) (named (kind kerml-function) (name "allSubstatePerformances")) (anonymous (kind parameter) (ordinal 0)))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/state_performances.md") (path (named (kind library-package) (name "StatePerformances")) (named (kind kerml-behavior) (name "StatePerformance")) (named (kind kerml-function) (name "allSubtransitionPerformances")) (anonymous (kind parameter) (ordinal 0)))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StatePerformance::isTriggerDuring"))) (state literal) (value (kind boolean) (boolean true)))
   )
 )
 ~~~

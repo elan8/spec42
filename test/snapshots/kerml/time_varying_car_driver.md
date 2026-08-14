@@ -402,8 +402,8 @@ package TimeVaryingCarDriver {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/time_varying_car_driver.md") (qualified-name "TimeVaryingCarDriver::Car1::transmission"))) (target (node (document "memory://snapshot/time_varying_car_driver.md") (qualified-name "TimeVaryingCarDriver::Car1::carParts"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/time_varying_car_driver.md") (qualified-name "TimeVaryingCarDriver::Car1::transmission"))) (kind subsetting) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/time_varying_car_driver.md") (path (named (kind package) (name "TimeVaryingCarDriver")) (named (kind kerml-structure) (name "Car0")) (named (kind kerml-feature) (name "operated")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (value (kind boolean) (boolean true)))
-    (evaluated (declaration (node (document "memory://snapshot/time_varying_car_driver.md") (path (named (kind package) (name "TimeVaryingCarDriver")) (named (kind kerml-structure) (name "Car1")) (named (kind kerml-feature) (name "operated")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (value (kind boolean) (boolean true)))
+    (evaluated (declaration (node (document "memory://snapshot/time_varying_car_driver.md") (path (named (kind package) (name "TimeVaryingCarDriver")) (named (kind kerml-structure) (name "Car0")) (named (kind kerml-feature) (name "operated")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (state literal) (value (kind boolean) (boolean true)))
+    (evaluated (declaration (node (document "memory://snapshot/time_varying_car_driver.md") (path (named (kind package) (name "TimeVaryingCarDriver")) (named (kind kerml-structure) (name "Car1")) (named (kind kerml-feature) (name "operated")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (state literal) (value (kind boolean) (boolean true)))
   )
 )
 ~~~

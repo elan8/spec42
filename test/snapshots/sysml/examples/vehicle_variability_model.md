@@ -605,8 +605,8 @@ package VehicleVariabilityModel {
     (relationship (kind typing) (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::vehicle::transmission"))) (target (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Transmission"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::vehicle::transmission"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/vehicle_variability_model.md") (path (named (kind package) (name "VehicleVariabilityModel")) (named (kind package) (name "150% Model")) (named (kind package) (name "ActionTree")) (named (kind action) (name "providePowerFamily")) (anonymous (kind assert-constraint) (ordinal 0)))))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/vehicle_variability_model.md") (path (named (kind package) (name "VehicleVariabilityModel")) (named (kind package) (name "150% Model")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicleFamily")) (anonymous (kind assert-constraint) (ordinal 0)))))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/vehicle_variability_model.md") (path (named (kind package) (name "VehicleVariabilityModel")) (named (kind package) (name "150% Model")) (named (kind package) (name "ActionTree")) (named (kind action) (name "providePowerFamily")) (anonymous (kind assert-constraint) (ordinal 0)))))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/vehicle_variability_model.md") (path (named (kind package) (name "VehicleVariabilityModel")) (named (kind package) (name "150% Model")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicleFamily")) (anonymous (kind assert-constraint) (ordinal 0)))))) (state unresolved-operand))
   )
 )
 ~~~

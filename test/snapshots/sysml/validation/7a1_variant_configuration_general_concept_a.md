@@ -292,7 +292,7 @@ package '7a1-Variant Configuration - General Concept-a' {
     (relationship (kind redefinition) (source (node (document "memory://snapshot/7a1_variant_configuration_general_concept_a.md") (path (named (kind package) (name "7a1-Variant Configuration - General Concept-a")) (named (kind part) (name "vehicleConfigA")) (anonymous (kind part) (ordinal 1)) (anonymous (kind part) (ordinal 0)))))) (target (node (document "memory://snapshot/7a1_variant_configuration_general_concept_a.md") (qualified-name "7a1-Variant Configuration - General Concept-a::part5"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/7a1_variant_configuration_general_concept_a.md") (path (named (kind package) (name "7a1-Variant Configuration - General Concept-a")) (named (kind part) (name "vehicleConfigA")) (anonymous (kind part) (ordinal 1)) (anonymous (kind part) (ordinal 0)))))) (kind redefinition) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/7a1_variant_configuration_general_concept_a.md") (path (named (kind package) (name "7a1-Variant Configuration - General Concept-a")) (named (kind part) (name "anyVehicleConfig")) (anonymous (kind assert-constraint) (ordinal 0)))))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/7a1_variant_configuration_general_concept_a.md") (path (named (kind package) (name "7a1-Variant Configuration - General Concept-a")) (named (kind part) (name "anyVehicleConfig")) (anonymous (kind assert-constraint) (ordinal 0)))))) (state unresolved-operand))
   )
 )
 ~~~

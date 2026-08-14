@@ -119,8 +119,8 @@ package VerificationMetadataExample {
     (relationship (kind typing) (source (node (document "memory://snapshot/verification_metadata_example.md") (qualified-name "VerificationMetadataExample::massTests"))) (target (node (document "memory://snapshot/verification_metadata_example.md") (qualified-name "VerificationMetadataExample::MassTest"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/verification_metadata_example.md") (qualified-name "VerificationMetadataExample::massTests"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/verification_metadata_example.md") (path (named (kind package) (name "VerificationMetadataExample")) (named (kind verification) (name "massTests")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "kind")))))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/verification_metadata_example.md") (path (named (kind package) (name "VerificationMetadataExample")) (named (kind verification) (name "massTests")) (named (kind action) (name "weighVehicle")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "kind")))))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/verification_metadata_example.md") (path (named (kind package) (name "VerificationMetadataExample")) (named (kind verification) (name "massTests")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "kind")))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/verification_metadata_example.md") (path (named (kind package) (name "VerificationMetadataExample")) (named (kind verification) (name "massTests")) (named (kind action) (name "weighVehicle")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "kind")))))) (state unresolved-operand))
   )
 )
 ~~~

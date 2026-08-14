@@ -391,7 +391,7 @@ package 'Analysis Case Definition Example' {
     (relationship (kind typing) (source (node (document "memory://snapshot/33_analysis_case_definition_example.md") (qualified-name "Analysis Case Definition Example::Vehicle::fuelEconomy_highway"))) (target (node (document "memory://snapshot/33_analysis_case_definition_example.md") (qualified-name "Analysis Case Definition Example::DistancePerVolumeValue"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/33_analysis_case_definition_example.md") (qualified-name "Analysis Case Definition Example::Vehicle::fuelEconomy_highway"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/33_analysis_case_definition_example.md") (path (named (kind package) (name "Analysis Case Definition Example")) (named (kind analysis-def) (name "FuelEconomyAnalysis")) (named (kind requirement) (name "fuelEconomyAnalysisObjective")) (anonymous (kind require-constraint) (ordinal 0)))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/33_analysis_case_definition_example.md") (path (named (kind package) (name "Analysis Case Definition Example")) (named (kind analysis-def) (name "FuelEconomyAnalysis")) (named (kind requirement) (name "fuelEconomyAnalysisObjective")) (anonymous (kind require-constraint) (ordinal 0)))))) (state non-constant))
   )
 )
 ~~~

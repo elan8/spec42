@@ -158,8 +158,8 @@ behavior TakePicture {
     (relationship (kind typing) (source (node (document "memory://snapshot/take_picture.md") (qualified-name "TakePicture::step2"))) (target (node (document "memory://snapshot/take_picture.md") (qualified-name "TakePicture::Shoot"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/take_picture.md") (qualified-name "TakePicture::step2"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/take_picture.md") (qualified-name "TakePicture"))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/take_picture.md") (qualified-name "TakePicture"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/take_picture.md") (qualified-name "TakePicture"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/take_picture.md") (qualified-name "TakePicture"))) (state unresolved-operand))
   )
 )
 ~~~

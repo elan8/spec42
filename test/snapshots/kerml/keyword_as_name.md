@@ -126,11 +126,11 @@ package KeywordAsName {
   (relationships
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::IfThenElse::condition"))) (value (kind boolean) (boolean true)))
-    (evaluated (declaration (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::IfThenElse::elseValue"))) (value (kind integer) (integer 0)))
-    (evaluated (declaration (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::IfThenElse::thenValue"))) (value (kind integer) (integer 42)))
-    (evaluated (declaration (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::TestBehavior::guardCondition"))) (value (kind boolean) (boolean false)))
-    (evaluated (declaration (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::TestBehavior::whileTest"))) (value (kind boolean) (boolean true)))
+    (evaluated (declaration (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::IfThenElse::condition"))) (state literal) (value (kind boolean) (boolean true)))
+    (evaluated (declaration (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::IfThenElse::elseValue"))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::IfThenElse::thenValue"))) (state literal) (value (kind integer) (integer 42)))
+    (evaluated (declaration (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::TestBehavior::guardCondition"))) (state literal) (value (kind boolean) (boolean false)))
+    (evaluated (declaration (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::TestBehavior::whileTest"))) (state literal) (value (kind boolean) (boolean true)))
   )
 )
 ~~~

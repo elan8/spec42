@@ -340,8 +340,8 @@ standard library package ISQ {
     (relationship (kind typing) (source (node (document "memory://snapshot/isq.md") (qualified-name "ISQ::temperatureDifference"))) (target (node (document "memory://snapshot/isq.md") (qualified-name "ISQ::TemperatureDifferenceValue"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/isq.md") (qualified-name "ISQ::temperatureDifference"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/isq.md") (path (named (kind library-package) (name "ISQ")) (named (kind attribute-def) (name "TemperatureDifferenceUnit")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)))))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/isq.md") (path (named (kind library-package) (name "ISQ")) (named (kind attribute-def) (name "TemperatureDifferenceUnit")) (named (kind attribute) (name "thermodynamicTemperaturePF")) (anonymous (kind attribute) (ordinal 1)))))) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/isq.md") (path (named (kind library-package) (name "ISQ")) (named (kind attribute-def) (name "TemperatureDifferenceUnit")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/isq.md") (path (named (kind library-package) (name "ISQ")) (named (kind attribute-def) (name "TemperatureDifferenceUnit")) (named (kind attribute) (name "thermodynamicTemperaturePF")) (anonymous (kind attribute) (ordinal 1)))))) (state literal) (value (kind integer) (integer 1)))
   )
 )
 ~~~

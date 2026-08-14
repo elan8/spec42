@@ -196,7 +196,7 @@ package '3c-Function-based Behavior-structure mod-1' {
     (relationship (kind typing) (source (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::vehicle-trailer system::vehicle::vehicleFrame::hitch"))) (target (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::HitchBall"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::vehicle-trailer system::vehicle::vehicleFrame::hitch"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (path (named (kind package) (name "3c-Function-based Behavior-structure mod-1")) (named (kind part) (name "vehicle-trailer system")) (anonymous (kind action) (ordinal 0)) (anonymous (kind assign) (ordinal 0)))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (path (named (kind package) (name "3c-Function-based Behavior-structure mod-1")) (named (kind part) (name "vehicle-trailer system")) (anonymous (kind action) (ordinal 0)) (anonymous (kind assign) (ordinal 0)))))) (state non-constant))
   )
 )
 ~~~

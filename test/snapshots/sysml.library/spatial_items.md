@@ -965,9 +965,9 @@ standard library package SpatialItems {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem::subSpatialParts"))) (target (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem::subSpatialItems"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem::subSpatialParts"))) (kind subsetting) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/spatial_items.md") (path (named (kind library-package) (name "SpatialItems")) (named (kind item-def) (name "SpatialItem")) (named (kind item) (name "componentItems")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind attribute) (ordinal 1)))))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem::coordinateFrame"))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem::originPointConstraint"))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/spatial_items.md") (path (named (kind library-package) (name "SpatialItems")) (named (kind item-def) (name "SpatialItem")) (named (kind item) (name "componentItems")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind attribute) (ordinal 1)))))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem::coordinateFrame"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem::originPointConstraint"))) (state non-constant))
   )
 )
 ~~~

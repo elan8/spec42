@@ -395,12 +395,12 @@ standard library package CauseAndEffect {
     (relationship (kind redefinition) (source (node (document "memory://snapshot/cause_and_effect.md") (qualified-name "CauseAndEffect::MulticausationSemanticMetadata::baseType"))) (target (node (document "memory://snapshot/cause_and_effect.md") (qualified-name "CauseAndEffect::MulticausationSemanticMetadata::baseType"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/cause_and_effect.md") (qualified-name "CauseAndEffect::MulticausationSemanticMetadata::baseType"))) (kind redefinition) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/cause_and_effect.md") (qualified-name "CauseAndEffect::CausationMetadata::isNecessary"))) (value (kind boolean) (boolean false)))
-    (evaluated (declaration (node (document "memory://snapshot/cause_and_effect.md") (qualified-name "CauseAndEffect::CausationMetadata::isSufficient"))) (value (kind boolean) (boolean false)))
-    (evaluated (declaration (node (document "memory://snapshot/cause_and_effect.md") (qualified-name "CauseAndEffect::CausationSemanticMetadadata::baseType"))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/cause_and_effect.md") (qualified-name "CauseAndEffect::CauseMetadata::baseType"))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/cause_and_effect.md") (qualified-name "CauseAndEffect::EffectMetadata::baseType"))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/cause_and_effect.md") (qualified-name "CauseAndEffect::MulticausationSemanticMetadata::baseType"))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/cause_and_effect.md") (qualified-name "CauseAndEffect::CausationMetadata::isNecessary"))) (state literal) (value (kind boolean) (boolean false)))
+    (evaluated (declaration (node (document "memory://snapshot/cause_and_effect.md") (qualified-name "CauseAndEffect::CausationMetadata::isSufficient"))) (state literal) (value (kind boolean) (boolean false)))
+    (evaluated (declaration (node (document "memory://snapshot/cause_and_effect.md") (qualified-name "CauseAndEffect::CausationSemanticMetadadata::baseType"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/cause_and_effect.md") (qualified-name "CauseAndEffect::CauseMetadata::baseType"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/cause_and_effect.md") (qualified-name "CauseAndEffect::EffectMetadata::baseType"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/cause_and_effect.md") (qualified-name "CauseAndEffect::MulticausationSemanticMetadata::baseType"))) (state non-constant))
   )
 )
 ~~~

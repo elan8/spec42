@@ -118,9 +118,9 @@ package '15_02-Basic Value Properties' {
     (relationship (kind redefinition) (source (node (document "memory://snapshot/15_02_basic_value_properties.md") (path (named (kind package) (name "15_02-Basic Value Properties")) (named (kind part) (name "frenchTire")) (anonymous (kind attribute) (ordinal 2)))))) (target (node (document "memory://snapshot/15_02_basic_value_properties.md") (qualified-name "15_02-Basic Value Properties::Tire::width"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/15_02_basic_value_properties.md") (path (named (kind package) (name "15_02-Basic Value Properties")) (named (kind part) (name "frenchTire")) (anonymous (kind attribute) (ordinal 2)))))) (kind redefinition) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/15_02_basic_value_properties.md") (path (named (kind package) (name "15_02-Basic Value Properties")) (named (kind part) (name "frenchTire")) (anonymous (kind attribute) (ordinal 0)))))) (value (kind string) (value "Michelin")))
-    (evaluated (declaration (node (document "memory://snapshot/15_02_basic_value_properties.md") (path (named (kind package) (name "15_02-Basic Value Properties")) (named (kind part) (name "frenchTire")) (anonymous (kind attribute) (ordinal 1)))))) (value (kind real) (real 18)))
-    (evaluated (declaration (node (document "memory://snapshot/15_02_basic_value_properties.md") (path (named (kind package) (name "15_02-Basic Value Properties")) (named (kind part) (name "frenchTire")) (anonymous (kind attribute) (ordinal 2)))))) (value (kind integer) (integer 245)))
+    (evaluated (declaration (node (document "memory://snapshot/15_02_basic_value_properties.md") (path (named (kind package) (name "15_02-Basic Value Properties")) (named (kind part) (name "frenchTire")) (anonymous (kind attribute) (ordinal 0)))))) (state literal) (value (kind string) (value "Michelin")))
+    (evaluated (declaration (node (document "memory://snapshot/15_02_basic_value_properties.md") (path (named (kind package) (name "15_02-Basic Value Properties")) (named (kind part) (name "frenchTire")) (anonymous (kind attribute) (ordinal 1)))))) (state literal) (value (kind real) (real 18)))
+    (evaluated (declaration (node (document "memory://snapshot/15_02_basic_value_properties.md") (path (named (kind package) (name "15_02-Basic Value Properties")) (named (kind part) (name "frenchTire")) (anonymous (kind attribute) (ordinal 2)))))) (state literal) (value (kind integer) (integer 245)))
   )
 )
 ~~~

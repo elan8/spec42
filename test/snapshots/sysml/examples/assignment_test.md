@@ -262,11 +262,11 @@ package AssignmentTest {
     (relationship (kind typing) (source (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::a::counting"))) (target (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::Counting"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::a::counting"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::Counter::count"))) (value (kind integer) (integer 0)))
-    (evaluated (declaration (node (document "memory://snapshot/assignment_test.md") (path (named (kind package) (name "AssignmentTest")) (named (kind part-def) (name "Counter")) (named (kind action) (name "decr")) (anonymous (kind assign) (ordinal 0)))))) (value (kind integer) (integer -1)))
-    (evaluated (declaration (node (document "memory://snapshot/assignment_test.md") (path (named (kind package) (name "AssignmentTest")) (named (kind part-def) (name "Counter")) (named (kind action) (name "incr")) (anonymous (kind assign) (ordinal 0)))))) (value (kind integer) (integer 1)))
-    (evaluated (declaration (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::Increment"))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::Increment"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::Counter::count"))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/assignment_test.md") (path (named (kind package) (name "AssignmentTest")) (named (kind part-def) (name "Counter")) (named (kind action) (name "decr")) (anonymous (kind assign) (ordinal 0)))))) (state evaluated) (value (kind integer) (integer -1)))
+    (evaluated (declaration (node (document "memory://snapshot/assignment_test.md") (path (named (kind package) (name "AssignmentTest")) (named (kind part-def) (name "Counter")) (named (kind action) (name "incr")) (anonymous (kind assign) (ordinal 0)))))) (state evaluated) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::Increment"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::Increment"))) (state unresolved-operand))
   )
 )
 ~~~

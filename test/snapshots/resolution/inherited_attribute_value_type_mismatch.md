@@ -64,7 +64,7 @@ package Demo {
     (relationship (kind typing) (source (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::need"))) (target (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::Need"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::need"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::need::status"))) (value (kind string) (value "approved")))
+    (evaluated (declaration (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::need::status"))) (state literal) (value (kind string) (value "approved")))
   )
 )
 ~~~

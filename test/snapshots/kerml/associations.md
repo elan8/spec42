@@ -150,8 +150,8 @@ package Associations {
     (relationship (kind typing) (source (node (document "memory://snapshot/associations.md") (qualified-name "Associations::XY::y"))) (target (node (document "memory://snapshot/associations.md") (qualified-name "Associations::Y"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/associations.md") (qualified-name "Associations::XY::y"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/associations.md") (qualified-name "Associations::C"))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/associations.md") (qualified-name "Associations::C"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/associations.md") (qualified-name "Associations::C"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/associations.md") (qualified-name "Associations::C"))) (state unresolved-operand))
   )
 )
 ~~~

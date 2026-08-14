@@ -119,7 +119,7 @@ package Behaviors {
     (relationship (kind specialization) (source (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::B"))) (target (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::A"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::B"))) (kind specialization) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::A::b::x1"))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::A::b::x1"))) (state non-constant))
   )
 )
 ~~~

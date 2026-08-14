@@ -745,7 +745,7 @@ standard library package Items {
     (relationship (kind typing) (source (node (document "memory://snapshot/items.md") (qualified-name "Items::items"))) (target (node (document "memory://snapshot/items.md") (qualified-name "Items::Item"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/items.md") (qualified-name "Items::items"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::isSolid"))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::isSolid"))) (state non-constant))
   )
 )
 ~~~

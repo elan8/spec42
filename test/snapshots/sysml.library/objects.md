@@ -1179,12 +1179,12 @@ standard library package Objects {
     (relationship (kind typing) (source (node (document "memory://snapshot/objects.md") (qualified-name "Objects::objects"))) (target (node (document "memory://snapshot/objects.md") (qualified-name "Objects::Object"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/objects.md") (qualified-name "Objects::objects"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/objects.md") (path (named (kind library-package) (name "Objects")) (named (kind kerml-structure) (name "Body")) (anonymous (kind kerml-feature) (ordinal 0)))))) (value (kind integer) (integer 3)))
-    (evaluated (declaration (node (document "memory://snapshot/objects.md") (path (named (kind library-package) (name "Objects")) (named (kind kerml-structure) (name "Curve")) (anonymous (kind kerml-feature) (ordinal 0)))))) (value (kind integer) (integer 1)))
-    (evaluated (declaration (node (document "memory://snapshot/objects.md") (path (named (kind library-package) (name "Objects")) (named (kind kerml-structure) (name "Object")) (named (kind kerml-step) (name "ownedPerformances")) (anonymous (kind kerml-feature) (ordinal 0)))))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/objects.md") (path (named (kind library-package) (name "Objects")) (named (kind kerml-structure) (name "Point")) (anonymous (kind kerml-feature) (ordinal 0)))))) (value (kind integer) (integer 0)))
-    (evaluated (declaration (node (document "memory://snapshot/objects.md") (path (named (kind library-package) (name "Objects")) (named (kind kerml-structure) (name "Surface")) (anonymous (kind kerml-feature) (ordinal 0)))))) (value (kind integer) (integer 2)))
-    (evaluated (declaration (node (document "memory://snapshot/objects.md") (qualified-name "Objects::Surface::genus"))) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/objects.md") (path (named (kind library-package) (name "Objects")) (named (kind kerml-structure) (name "Body")) (anonymous (kind kerml-feature) (ordinal 0)))))) (state literal) (value (kind integer) (integer 3)))
+    (evaluated (declaration (node (document "memory://snapshot/objects.md") (path (named (kind library-package) (name "Objects")) (named (kind kerml-structure) (name "Curve")) (anonymous (kind kerml-feature) (ordinal 0)))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/objects.md") (path (named (kind library-package) (name "Objects")) (named (kind kerml-structure) (name "Object")) (named (kind kerml-step) (name "ownedPerformances")) (anonymous (kind kerml-feature) (ordinal 0)))))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/objects.md") (path (named (kind library-package) (name "Objects")) (named (kind kerml-structure) (name "Point")) (anonymous (kind kerml-feature) (ordinal 0)))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/objects.md") (path (named (kind library-package) (name "Objects")) (named (kind kerml-structure) (name "Surface")) (anonymous (kind kerml-feature) (ordinal 0)))))) (state literal) (value (kind integer) (integer 2)))
+    (evaluated (declaration (node (document "memory://snapshot/objects.md") (qualified-name "Objects::Surface::genus"))) (state literal) (value (kind integer) (integer 0)))
   )
 )
 ~~~

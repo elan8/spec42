@@ -186,7 +186,7 @@ standard library package Constraints {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/constraints.md") (qualified-name "Constraints::negatedConstraintChecks"))) (target (node (document "memory://snapshot/constraints.md") (qualified-name "Constraints::constraintChecks"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/constraints.md") (qualified-name "Constraints::negatedConstraintChecks"))) (kind subsetting) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/constraints.md") (qualified-name "Constraints::ConstraintCheck"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/constraints.md") (qualified-name "Constraints::ConstraintCheck"))) (state unresolved-operand))
   )
 )
 ~~~

@@ -115,7 +115,7 @@ package '15_08-Range Restriction' {
     (relationship (kind typing) (source (node (document "memory://snapshot/15_08_range_restriction.md") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue::angle"))) (target (node (document "memory://snapshot/15_08_range_restriction.md") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/15_08_range_restriction.md") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue::angle"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/15_08_range_restriction.md") (path (named (kind package) (name "15_08-Range Restriction")) (named (kind attribute-def) (name "LightBeamTiltAngleValue")) (anonymous (kind assert-constraint) (ordinal 0)))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/15_08_range_restriction.md") (path (named (kind package) (name "15_08-Range Restriction")) (named (kind attribute-def) (name "LightBeamTiltAngleValue")) (anonymous (kind assert-constraint) (ordinal 0)))))) (state non-constant))
   )
 )
 ~~~

@@ -137,10 +137,10 @@ package Inheritance {
     (relationship (kind aliasBinding) (source (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::z"))) (target (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::y::g"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::z"))) (kind aliasBinding) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::y"))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::y"))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::y"))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::y"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::y"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::y"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::y"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::y"))) (state unresolved-operand))
   )
 )
 ~~~

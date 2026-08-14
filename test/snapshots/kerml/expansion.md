@@ -46,7 +46,7 @@ package Expansion {
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/expansion.md") (qualified-name "Expansion::x"))) (target (node (document "memory://snapshot/expansion.md") (qualified-name "Expansion::x"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/expansion.md") (qualified-name "Expansion::x"))) (kind expressionOperand) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/expansion.md") (qualified-name "Expansion::x"))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/expansion.md") (qualified-name "Expansion::x"))) (state non-constant))
   )
 )
 ~~~

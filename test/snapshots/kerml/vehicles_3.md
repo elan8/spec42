@@ -244,11 +244,11 @@ package Vehicles_3 {
     (relationship (kind redefinition) (source (node (document "memory://snapshot/vehicles_3.md") (path (named (kind package) (name "Vehicles_3")) (named (kind kerml-feature) (name "vehicle")) (anonymous (kind kerml-feature) (ordinal 1)))))) (target (node (document "memory://snapshot/vehicles_3.md") (qualified-name "Vehicles_3::transmission"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicles_3.md") (path (named (kind package) (name "Vehicles_3")) (named (kind kerml-feature) (name "vehicle")) (anonymous (kind kerml-feature) (ordinal 1)))))) (kind redefinition) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/vehicles_3.md") (qualified-name "Vehicles_3::e::m"))) (value (kind integer) (integer 100)))
-    (evaluated (declaration (node (document "memory://snapshot/vehicles_3.md") (qualified-name "Vehicles_3::t::m"))) (value (kind integer) (integer 50)))
-    (evaluated (declaration (node (document "memory://snapshot/vehicles_3.md") (path (named (kind package) (name "Vehicles_3")) (named (kind kerml-feature) (name "v")) (anonymous (kind kerml-feature) (ordinal 0)))))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/vehicles_3.md") (path (named (kind package) (name "Vehicles_3")) (named (kind kerml-feature) (name "v")) (anonymous (kind kerml-feature) (ordinal 1)))))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/vehicles_3.md") (qualified-name "Vehicles_3::v::m"))) (value (kind integer) (integer 1000)))
+    (evaluated (declaration (node (document "memory://snapshot/vehicles_3.md") (qualified-name "Vehicles_3::e::m"))) (state literal) (value (kind integer) (integer 100)))
+    (evaluated (declaration (node (document "memory://snapshot/vehicles_3.md") (qualified-name "Vehicles_3::t::m"))) (state literal) (value (kind integer) (integer 50)))
+    (evaluated (declaration (node (document "memory://snapshot/vehicles_3.md") (path (named (kind package) (name "Vehicles_3")) (named (kind kerml-feature) (name "v")) (anonymous (kind kerml-feature) (ordinal 0)))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/vehicles_3.md") (path (named (kind package) (name "Vehicles_3")) (named (kind kerml-feature) (name "v")) (anonymous (kind kerml-feature) (ordinal 1)))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/vehicles_3.md") (qualified-name "Vehicles_3::v::m"))) (state literal) (value (kind integer) (integer 1000)))
   )
 )
 ~~~

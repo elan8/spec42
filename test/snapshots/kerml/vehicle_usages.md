@@ -532,10 +532,10 @@ package VehicleUsages {
     (relationship (kind redefinition) (source (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C3::rearAxleAssembly::rearAxle"))) (target (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C2::rearAxleAssembly::rearAxle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C3::rearAxleAssembly::rearAxle"))) (kind redefinition) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::T1"))) (value (kind real) (real 10)))
-    (evaluated (declaration (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::T2"))) (value (kind real) (real 20)))
-    (evaluated (declaration (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly::frontWheel::lugbolt::tighteningTorque"))) (value (kind real) (real 10)))
-    (evaluated (declaration (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly::rearWheel::lugbolt::tighteningTorque"))) (value (kind real) (real 20)))
+    (evaluated (declaration (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::T1"))) (state literal) (value (kind real) (real 10)))
+    (evaluated (declaration (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::T2"))) (state literal) (value (kind real) (real 20)))
+    (evaluated (declaration (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly::frontWheel::lugbolt::tighteningTorque"))) (state evaluated) (value (kind real) (real 10)))
+    (evaluated (declaration (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly::rearWheel::lugbolt::tighteningTorque"))) (state evaluated) (value (kind real) (real 20)))
   )
 )
 ~~~

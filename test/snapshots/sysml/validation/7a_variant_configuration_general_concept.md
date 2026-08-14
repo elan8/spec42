@@ -195,7 +195,7 @@ package '7a-Variant Configuration - General Concept' {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::vehicleConfigA"))) (target (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::anyVehicleConfig"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::vehicleConfigA"))) (kind subsetting) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (path (named (kind package) (name "7a-Variant Configuration - General Concept")) (named (kind part) (name "anyVehicleConfig")) (anonymous (kind assert-constraint) (ordinal 0)))))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (path (named (kind package) (name "7a-Variant Configuration - General Concept")) (named (kind part) (name "anyVehicleConfig")) (anonymous (kind assert-constraint) (ordinal 0)))))) (state unresolved-operand))
   )
 )
 ~~~

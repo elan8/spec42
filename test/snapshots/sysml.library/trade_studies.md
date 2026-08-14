@@ -395,7 +395,7 @@ standard library package TradeStudies {
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/trade_studies.md") (path (named (kind library-package) (name "TradeStudies")) (named (kind requirement-def) (name "TradeStudyObjective")) (anonymous (kind require-constraint) (ordinal 0)))))) (target (node (document "memory://snapshot/trade_studies.md") (qualified-name "TradeStudies::TradeStudyObjective::best"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/trade_studies.md") (path (named (kind library-package) (name "TradeStudies")) (named (kind requirement-def) (name "TradeStudyObjective")) (anonymous (kind require-constraint) (ordinal 0)))))) (kind expressionOperand) (ordinal 1)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/trade_studies.md") (path (named (kind library-package) (name "TradeStudies")) (named (kind requirement-def) (name "TradeStudyObjective")) (anonymous (kind require-constraint) (ordinal 0)))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/trade_studies.md") (path (named (kind library-package) (name "TradeStudies")) (named (kind requirement-def) (name "TradeStudyObjective")) (anonymous (kind require-constraint) (ordinal 0)))))) (state non-constant))
   )
 )
 ~~~

@@ -83,8 +83,8 @@ package 'State Exhibition Example' {
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/26_state_exhibition_example.md") (path (named (kind package) (name "State Exhibition Example")) (named (kind part) (name "vehicle")) (anonymous (kind state) (ordinal 0)) (named (kind parameter) (name "operatingVehicle")))))) (target (node (document "memory://snapshot/26_state_exhibition_example.md") (qualified-name "State Exhibition Example::vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/26_state_exhibition_example.md") (path (named (kind package) (name "State Exhibition Example")) (named (kind part) (name "vehicle")) (anonymous (kind state) (ordinal 0)) (named (kind parameter) (name "operatingVehicle")))))) (kind expressionOperand) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/26_state_exhibition_example.md") (path (named (kind package) (name "State Exhibition Example")) (named (kind part) (name "vehicle")) (anonymous (kind state) (ordinal 0)) (named (kind parameter) (name "controller")))))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/26_state_exhibition_example.md") (path (named (kind package) (name "State Exhibition Example")) (named (kind part) (name "vehicle")) (anonymous (kind state) (ordinal 0)) (named (kind parameter) (name "operatingVehicle")))))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/26_state_exhibition_example.md") (path (named (kind package) (name "State Exhibition Example")) (named (kind part) (name "vehicle")) (anonymous (kind state) (ordinal 0)) (named (kind parameter) (name "controller")))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/26_state_exhibition_example.md") (path (named (kind package) (name "State Exhibition Example")) (named (kind part) (name "vehicle")) (anonymous (kind state) (ordinal 0)) (named (kind parameter) (name "operatingVehicle")))))) (state non-constant))
   )
 )
 ~~~

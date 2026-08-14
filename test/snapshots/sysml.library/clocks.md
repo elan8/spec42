@@ -516,9 +516,9 @@ standard library package Clocks {
     (relationship (kind redefinition) (source (node (document "memory://snapshot/clocks.md") (qualified-name "Clocks::BasicTimeOf::o"))) (target (node (document "memory://snapshot/clocks.md") (qualified-name "Clocks::TimeOf::o"))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/clocks.md") (qualified-name "Clocks::Clock::timeFlowConstraint"))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/clocks.md") (qualified-name "Clocks::DurationOf::clock"))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/clocks.md") (qualified-name "Clocks::TimeOf::clock"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/clocks.md") (qualified-name "Clocks::Clock::timeFlowConstraint"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/clocks.md") (qualified-name "Clocks::DurationOf::clock"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/clocks.md") (qualified-name "Clocks::TimeOf::clock"))) (state unresolved-operand))
   )
 )
 ~~~

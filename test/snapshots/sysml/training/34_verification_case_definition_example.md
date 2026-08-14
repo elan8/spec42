@@ -254,7 +254,7 @@ package 'Verification Case Definition Example' {
     (relationship (kind typing) (source (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::vehicleMassRequirement::vehicle"))) (target (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::Vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::vehicleMassRequirement::vehicle"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::VehicleMassTest::evaluateData::verdict"))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::VehicleMassTest::evaluateData::verdict"))) (state non-constant))
   )
 )
 ~~~

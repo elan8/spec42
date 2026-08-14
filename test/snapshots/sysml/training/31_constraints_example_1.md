@@ -209,8 +209,8 @@ package 'Constraints Example-1' {
     (relationship (kind typing) (source (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Vehicle::transmission"))) (target (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Engine"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Vehicle::transmission"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::MassConstraint"))) (value (kind unresolved-operand)))
-    (evaluated (declaration (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Vehicle::massConstraint::massLimit"))) (value (kind quantity) (magnitude (value (kind integer) (integer 2500))) (unit "kg")))
+    (evaluated (declaration (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::MassConstraint"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Vehicle::massConstraint::massLimit"))) (state literal) (value (kind quantity) (magnitude (value (kind integer) (integer 2500))) (unit "kg")))
   )
 )
 ~~~

@@ -307,8 +307,8 @@ package '1a-Parts Tree' {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/1a_parts_tree.md") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1::rearAxleAssembly::rearWheel_2"))) (target (node (document "memory://snapshot/1a_parts_tree.md") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1::rearAxleAssembly::rearWheel"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/1a_parts_tree.md") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1::rearAxleAssembly::rearWheel_2"))) (kind subsetting) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/1a_parts_tree.md") (qualified-name "1a-Parts Tree::Usages::vehicle1::mass"))) (value (kind quantity) (magnitude (value (kind integer) (integer 1750))) (unit "kg")))
-    (evaluated (declaration (node (document "memory://snapshot/1a_parts_tree.md") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1::mass"))) (value (kind quantity) (magnitude (value (kind integer) (integer 2000))) (unit "kg")))
+    (evaluated (declaration (node (document "memory://snapshot/1a_parts_tree.md") (qualified-name "1a-Parts Tree::Usages::vehicle1::mass"))) (state literal) (value (kind quantity) (magnitude (value (kind integer) (integer 1750))) (unit "kg")))
+    (evaluated (declaration (node (document "memory://snapshot/1a_parts_tree.md") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1::mass"))) (state literal) (value (kind quantity) (magnitude (value (kind integer) (integer 2000))) (unit "kg")))
   )
 )
 ~~~

@@ -147,7 +147,7 @@ package 'Variation Usages' {
     (relationship (kind variant) (source (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::vehicleFamily::transmission"))) (target (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::automaticTransmission"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::vehicleFamily::transmission"))) (kind variant) (ordinal 1)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/36_variation_usages.md") (path (named (kind package) (name "Variation Usages")) (named (kind part) (name "vehicleFamily")) (anonymous (kind assert-constraint) (ordinal 0)))))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/36_variation_usages.md") (path (named (kind package) (name "Variation Usages")) (named (kind part) (name "vehicleFamily")) (anonymous (kind assert-constraint) (ordinal 0)))))) (state unresolved-operand))
   )
 )
 ~~~

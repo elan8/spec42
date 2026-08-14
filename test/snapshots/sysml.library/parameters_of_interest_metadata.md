@@ -162,8 +162,8 @@ standard library package ParametersOfInterestMetadata {
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/parameters_of_interest_metadata.md") (qualified-name "ParametersOfInterestMetadata::MeasureOfPerformance::baseType"))) (target (node (document "memory://snapshot/parameters_of_interest_metadata.md") (qualified-name "ParametersOfInterestMetadata::measuresOfPerformance"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/parameters_of_interest_metadata.md") (qualified-name "ParametersOfInterestMetadata::MeasureOfPerformance::baseType"))) (kind expressionOperand) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/parameters_of_interest_metadata.md") (qualified-name "ParametersOfInterestMetadata::MeasureOfEffectiveness::baseType"))) (value (kind non-constant)))
-    (evaluated (declaration (node (document "memory://snapshot/parameters_of_interest_metadata.md") (qualified-name "ParametersOfInterestMetadata::MeasureOfPerformance::baseType"))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/parameters_of_interest_metadata.md") (qualified-name "ParametersOfInterestMetadata::MeasureOfEffectiveness::baseType"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/parameters_of_interest_metadata.md") (qualified-name "ParametersOfInterestMetadata::MeasureOfPerformance::baseType"))) (state non-constant))
   )
 )
 ~~~

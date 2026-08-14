@@ -399,7 +399,7 @@ standard library package Interfaces {
     (relationship (kind typing) (direction in) (source (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::excludingOnce::value"))) (target (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::excludingOnce::seq"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::excludingOnce::value"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::excludingOnce"))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::excludingOnce"))) (state non-constant))
   )
 )
 ~~~

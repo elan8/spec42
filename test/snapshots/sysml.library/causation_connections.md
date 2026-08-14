@@ -221,7 +221,7 @@ standard library package CausationConnections {
     (relationship (kind typing) (source (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::multicausations"))) (target (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::Multicausation"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::multicausations"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::Multicausation::disjointCauseEffect"))) (value (kind non-constant)))
+    (evaluated (declaration (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::Multicausation::disjointCauseEffect"))) (state non-constant))
   )
 )
 ~~~

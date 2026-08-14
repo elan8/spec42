@@ -342,7 +342,7 @@ package 'Wheel Package' {
     (relationship (kind typing) (source (node (document "memory://snapshot/wheel_package.md") (qualified-name "Wheel Package::WheelHubAssembly::wheel"))) (target (node (document "memory://snapshot/wheel_package.md") (qualified-name "Wheel Package::WheelAssembly"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/wheel_package.md") (qualified-name "Wheel Package::WheelHubAssembly::wheel"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/wheel_package.md") (qualified-name "Wheel Package::pressure"))) (value (kind unresolved-operand)))
+    (evaluated (declaration (node (document "memory://snapshot/wheel_package.md") (qualified-name "Wheel Package::pressure"))) (state unresolved-operand))
   )
 )
 ~~~

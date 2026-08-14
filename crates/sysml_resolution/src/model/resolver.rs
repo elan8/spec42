@@ -7,7 +7,9 @@
 //! import barrier converges.
 
 use super::element_kind;
+use super::evaluation;
 use super::*;
+use crate::evaluation::{EvaluationPolicy, EvaluationState};
 use crate::{
     NavigationTarget, OccurrenceRole, PublicationCompleteness as PublicCompleteness, QueryOutcome,
     RenameOutcome, SourceLocation, SymbolIdentity, TextPosition, TextRange, VisibleMember,
@@ -626,6 +628,8 @@ impl ResolutionResults {
 struct EvaluationFact {
     declaration: DeclarationId,
     outcome: EvaluatedValue,
+    /// The published projection of `outcome`; see `model::evaluation`.
+    state: EvaluationState,
 }
 
 /// Slice 2 of the constraint/calc expression fact family (see `4ca42166` for slice 1). Runs
@@ -655,7 +659,22 @@ struct EvaluationFact {
 fn compute_evaluation(
     storage: &SemanticModelStorage,
     resolution: &ResolutionResults,
+    policy: EvaluationPolicy,
 ) -> Box<[EvaluationFact]> {
+    if policy == EvaluationPolicy::Skip {
+        // A declared outcome, not an absent one: every element that has an expression reports
+        // that no attempt was made, which a consumer can tell apart from "nothing to evaluate".
+        return storage
+            .evaluation_facts
+            .iter()
+            .filter(|pending| !matches!(pending.shape, ExpressionEvalShape::Unsupported))
+            .map(|pending| EvaluationFact {
+                declaration: pending.declaration,
+                outcome: EvaluatedValue::NotEvaluated,
+                state: EvaluationState::NotRun,
+            })
+            .collect();
+    }
     if resolution.solver_status != SolverStatus::Converged {
         return Box::new([]);
     }
@@ -695,8 +714,11 @@ fn compute_evaluation(
     let mut outcomes: std::collections::BTreeMap<DeclarationId, EvaluatedValue> =
         Default::default();
     for pending in storage.evaluation_facts.iter() {
-        if let ExpressionEvalShape::Literal(value) = &pending.shape {
-            outcomes.insert(pending.declaration, value.clone());
+        match &pending.shape {
+            ExpressionEvalShape::Literal(value) | ExpressionEvalShape::ConstantFolded(value) => {
+                outcomes.insert(pending.declaration, value.clone());
+            }
+            ExpressionEvalShape::HasOperand(_) | ExpressionEvalShape::Unsupported => {}
         }
     }
 
@@ -750,6 +772,7 @@ fn compute_evaluation(
         };
         facts.push(EvaluationFact {
             declaration: pending.declaration,
+            state: evaluation::evaluation_state(&outcome, &pending.shape),
             outcome,
         });
     }
@@ -1453,7 +1476,10 @@ fn collect_inherited_members(
 }
 
 impl SemanticModelStorage {
-    pub(super) fn resolve(self) -> Result<ResolvedSemanticModel, ResolutionError> {
+    pub(super) fn resolve(
+        self,
+        policy: EvaluationPolicy,
+    ) -> Result<ResolvedSemanticModel, ResolutionError> {
         let has_recovery = self
             .documents
             .iter()
@@ -1475,7 +1501,7 @@ impl SemanticModelStorage {
         } else {
             PublicationCompleteness::Complete
         };
-        let evaluation = compute_evaluation(&self, &resolution);
+        let evaluation = compute_evaluation(&self, &resolution, policy);
         let has_evaluation = !evaluation.is_empty();
         let identities = IdentityIndex::build(&self)?;
         Ok(ResolvedSemanticModel {
