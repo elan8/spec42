@@ -2798,6 +2798,72 @@ mod tests {
         );
     }
 
+    /// A type query reads one declaration's row, so its answer is a property of that declaration's
+    /// type structure and nothing else. Growing the model around it must change neither the answer
+    /// nor its size -- if either moved, some part of the query would be reading the whole model.
+    #[test]
+    fn type_query_answers_do_not_grow_with_the_model() {
+        let core = "package P { part def A; part def B :> A; part def C :> B; }";
+        let mut padded =
+            String::from("package P { part def A; part def B :> A; part def C :> B; }");
+        for index in 0..200 {
+            padded.push_str(&format!(" package Q{index} {{ part def U{index}; part def V{index} :> U{index}; part v{index} : V{index}; }}"));
+        }
+
+        let small = publication_for(&[("memory://types.sysml", core)]);
+        let large = publication_for(&[("memory://types.sysml", &padded)]);
+
+        let small_c = symbol_named(&small, "memory://types.sysml", "P::C");
+        let large_c = symbol_named(&large, "memory://types.sysml", "P::C");
+        let small_a = symbol_named(&small, "memory://types.sysml", "P::A");
+        let large_a = symbol_named(&large, "memory://types.sysml", "P::A");
+
+        assert_eq!(
+            symbols(small.all_supertypes(&small_c, SpecializationScope::AnySpecialization)).len(),
+            symbols(large.all_supertypes(&large_c, SpecializationScope::AnySpecialization)).len(),
+            "C's supertypes are C, B and A whatever else the model contains"
+        );
+        assert_eq!(
+            symbols(small.direct_subtypes(&small_a, SpecializationScope::AnySpecialization)).len(),
+            symbols(large.direct_subtypes(&large_a, SpecializationScope::AnySpecialization)).len(),
+            "only B specializes A directly, whatever else the model contains"
+        );
+        assert_eq!(
+            conformance(small.conforms_to(
+                &small_c,
+                &small_a,
+                SpecializationScope::AnySpecialization
+            )),
+            conformance(large.conforms_to(
+                &large_c,
+                &large_a,
+                SpecializationScope::AnySpecialization
+            )),
+            "conformance is a property of the pair, not of the publication's size"
+        );
+    }
+
+    /// The published closure carries only what the model actually specializes. A model with no
+    /// specialization at all publishes no ancestors, so the storage cannot quietly become
+    /// quadratic in declaration count.
+    #[test]
+    fn a_model_without_specialization_publishes_no_supertypes() {
+        let published = publication_for(&[(
+            "memory://types.sysml",
+            "package P { part def A; part def B; part def C; }",
+        )]);
+        for name in ["P::A", "P::B", "P::C"] {
+            let symbol = symbol_named(&published, "memory://types.sysml", name);
+            let supertypes =
+                symbols(published.all_supertypes(&symbol, SpecializationScope::AnySpecialization));
+            assert_eq!(
+                supertypes,
+                vec![symbol.clone()],
+                "{name} should report only itself"
+            );
+        }
+    }
+
     #[test]
     fn an_unknown_identity_is_unresolved_rather_than_empty() {
         let published = publication_for(&[("memory://types.sysml", "package P { part def A; }")]);
