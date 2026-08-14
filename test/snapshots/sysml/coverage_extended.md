@@ -24,33 +24,9 @@ package ExtendedExamples {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unresolved_specializes_reference")
         (source "semantic")
-        (range (start 1 4) (end 1 27))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 2 4) (end 2 35))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 3 4) (end 3 44))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 4 4) (end 4 50))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 5 4) (end 5 38))
+        (range (start 2 30) (end 2 34))
       )
       (diagnostic
         (severity warning)
@@ -88,12 +64,6 @@ package ExtendedExamples {
         (source "parser")
         (range (start 8 15) (end 9 4))
       )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 9 4) (end 9 31))
-      )
     )
   )
 )
@@ -104,8 +74,18 @@ package ExtendedExamples {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:5a5054966a4ceb012f28acf6959cd39d3f34ebe2ff4dcc8d8f5effb32dc90714") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/coverage_extended.md") (qualified-name "ExtendedExamples"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_extended.md") (qualified-name "ExtendedExamples::AbstractFailure"))) (kind extended-definition) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_extended.md") (qualified-name "ExtendedExamples::Failure"))) (kind extended-definition) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_extended.md") (qualified-name "ExtendedExamples::Failure"))) (kind extended-definition) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Base"))))
+    (declaration (id (node (document "memory://snapshot/coverage_extended.md") (qualified-name "ExtendedExamples::Failure"))) (kind extended-definition) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_extended.md") (qualified-name "ExtendedExamples::Failure::p"))) (kind part) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_extended.md") (qualified-name "ExtendedExamples::V"))) (kind extended-definition) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_extended.md") (qualified-name "ExtendedExamples::Vulnerability"))) (kind extended-definition) (membership (kind owning) (visibility default)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/coverage_extended.md") (qualified-name "ExtendedExamples::Failure"))) (kind specialization) (ordinal 0))
+      (authored-target "Base")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -116,5 +96,9 @@ package ExtendedExamples {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/coverage_extended.md") (range (start 2 30) (end 2 34)) (probe (position 2 30))
+    (reference (id (source (node (document "memory://snapshot/coverage_extended.md") (qualified-name "ExtendedExamples::Failure"))) (kind specialization) (ordinal 0) (authored-target "Base")
+      (outcome (status unresolved)))
+  )
 )
 ~~~

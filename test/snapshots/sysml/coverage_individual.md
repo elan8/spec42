@@ -39,12 +39,6 @@ package CoverageIndividual {
   (document "memory://snapshot/coverage_individual.md"
     (diagnostics
       (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 1 1) (end 1 19))
-      )
-      (diagnostic
         (severity error)
         (code "recovered_package_body_element")
         (source "parser")
@@ -66,6 +60,7 @@ package CoverageIndividual {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:cc260e42efc2f0574416b1986958ea8b3cd611f779804213b16cf55f2d510c57") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/coverage_individual.md") (qualified-name "CoverageIndividual"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_individual.md") (qualified-name "CoverageIndividual::D1"))) (kind individual-definition) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_individual.md") (qualified-name "CoverageIndividual::D13"))) (kind analysis-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_individual.md") (qualified-name "CoverageIndividual::D2"))) (kind occurrence-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_individual.md") (qualified-name "CoverageIndividual::D3"))) (kind item-def) (membership (kind owning) (visibility default)))

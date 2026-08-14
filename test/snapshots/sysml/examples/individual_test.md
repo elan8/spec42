@@ -51,18 +51,6 @@ package IndividualTest {
   (document "memory://snapshot/individual_test.md"
     (diagnostics
       (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 1 1) (end 1 20))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 3 18) (end 3 21))
-      )
-      (diagnostic
         (severity error)
         (code "unexpected_keyword_in_scope")
         (source "parser")
@@ -89,6 +77,7 @@ package IndividualTest {
     (declaration (id (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::II1::ii"))) (kind item) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "II1"))))
     (declaration (id (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::II2"))) (kind item-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "I"))))
     (declaration (id (node (document "memory://snapshot/individual_test.md") (anonymous (kind item) (ordinal 0))))) (kind item) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "II2")) (redefinition (reference "i"))))
+    (declaration (id (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::IO1"))) (kind individual-definition) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::IO2"))) (kind occurrence-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::IO2::io"))) (kind occurrence) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "IO1"))))
     (declaration (id (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::IP1"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -125,7 +114,7 @@ package IndividualTest {
       (outcome (status resolved) (target (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::I::i")))))
     (reference (id (source (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::IO2::io"))) (kind featureTyping) (ordinal 0))
       (authored-target "IO1")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::IO1")))))
     (reference (id (source (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::IP1::p"))) (kind featureTyping) (ordinal 0))
       (authored-target "IP1")
       (outcome (status resolved) (target (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::IP1")))))
@@ -151,6 +140,7 @@ package IndividualTest {
     (relationship (kind specialization) (source (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::II2"))) (target (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::I"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::II2"))) (kind specialization) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/individual_test.md") (anonymous (kind item) (ordinal 0))))) (target (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::II2"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/individual_test.md") (anonymous (kind item) (ordinal 0))))) (kind featureTyping) (ordinal 0)))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/individual_test.md") (anonymous (kind item) (ordinal 0))))) (target (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::I::i"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/individual_test.md") (anonymous (kind item) (ordinal 0))))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::IO2::io"))) (target (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::IO1"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::IO2::io"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::IP1::p"))) (target (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::IP1"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::IP1::p"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::IP2"))) (target (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::P"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::IP2"))) (kind specialization) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/individual_test.md") (anonymous (kind part) (ordinal 0))))) (target (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::IP2"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/individual_test.md") (anonymous (kind part) (ordinal 0))))) (kind featureTyping) (ordinal 0)))
@@ -198,7 +188,7 @@ package IndividualTest {
   )
   (query (document "memory://snapshot/individual_test.md") (range (start 3 18) (end 3 21)) (probe (position 3 18))
     (reference (id (source (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::IO2::io"))) (kind featureTyping) (ordinal 0) (authored-target "IO1")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::IO1")))))
   )
   (query (document "memory://snapshot/individual_test.md") (range (start 18 22) (end 18 25)) (probe (position 18 22))
     (reference (id (source (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::IP1::p"))) (kind featureTyping) (ordinal 0) (authored-target "IP1")

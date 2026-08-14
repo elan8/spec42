@@ -871,6 +871,10 @@ fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::If => "if",
         DeclarationKind::ForLoop => "for-loop",
         DeclarationKind::ForLoopVariable => "for-loop-variable",
+        DeclarationKind::Dependency => "dependency",
+        DeclarationKind::ExtendedDefinition => "extended-definition",
+        DeclarationKind::IndividualDefinition => "individual-definition",
+        DeclarationKind::BareConnect => "bare-connect",
     }
 }
 
@@ -946,6 +950,8 @@ fn reference_kind(kind: ReferenceKind) -> &'static str {
         ReferenceKind::PurposeTarget => "purposeTarget",
         ReferenceKind::VerifyRequirementTarget => "verifyRequirementTarget",
         ReferenceKind::AssignTarget => "assignTarget",
+        ReferenceKind::DependencyClient => "dependencyClient",
+        ReferenceKind::DependencySupplier => "dependencySupplier",
     }
 }
 
@@ -1000,6 +1006,8 @@ fn relationship_kind(kind: ReferenceKind) -> Option<&'static str> {
         ReferenceKind::PurposeTarget => Some("purposeTarget"),
         ReferenceKind::VerifyRequirementTarget => Some("verifyRequirementTarget"),
         ReferenceKind::AssignTarget => Some("assignTarget"),
+        ReferenceKind::DependencyClient => Some("dependencyClient"),
+        ReferenceKind::DependencySupplier => Some("dependencySupplier"),
         ReferenceKind::NamespaceImport
         | ReferenceKind::MembershipImport
         | ReferenceKind::FilterImport => None,

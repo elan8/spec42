@@ -814,6 +814,8 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     | ReferenceKind::PurposeTarget
                     | ReferenceKind::VerifyRequirementTarget
                     | ReferenceKind::AssignTarget
+                    | ReferenceKind::DependencyClient
+                    | ReferenceKind::DependencySupplier
             )
             .then_some(index)
         })
@@ -1750,7 +1752,9 @@ fn supported_import_domain(reference: &impl ResolutionReferenceFact) -> Option<D
         | ReferenceKind::StakeholderTarget
         | ReferenceKind::PurposeTarget
         | ReferenceKind::VerifyRequirementTarget
-        | ReferenceKind::AssignTarget => None,
+        | ReferenceKind::AssignTarget
+        | ReferenceKind::DependencyClient
+        | ReferenceKind::DependencySupplier => None,
     }
 }
 
@@ -1949,7 +1953,9 @@ fn build_effective_import_indexes<R: ResolutionReferenceFact>(
             | ReferenceKind::StakeholderTarget
             | ReferenceKind::PurposeTarget
             | ReferenceKind::VerifyRequirementTarget
-            | ReferenceKind::AssignTarget => {}
+            | ReferenceKind::AssignTarget
+            | ReferenceKind::DependencyClient
+            | ReferenceKind::DependencySupplier => {}
         }
     }
     Ok((

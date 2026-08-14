@@ -32,12 +32,6 @@ package Demo {
 (fixture-diagnostics
   (document "memory://snapshot/model_diagnostic_categories.md"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 5 4) (end 5 33))
-      )
     )
   )
 )
@@ -45,9 +39,10 @@ package Demo {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:da0fb148812ffa25232dd185bbc99d7b2a453339523d0bbb99c5adb721dc30b3") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:da0fb148812ffa25232dd185bbc99d7b2a453339523d0bbb99c5adb721dc30b3") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/model_diagnostic_categories.md") (anonymous (kind bare-connect) (ordinal 0))))) (kind bare-connect) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (connectorEnd (reference "controller")) (connectorEnd (reference "sensor"))))
     (declaration (id (node (document "memory://snapshot/model_diagnostic_categories.md") (anonymous (kind perform-action) (ordinal 0))))) (kind perform-action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/model_diagnostic_categories.md") (anonymous (kind satisfy) (ordinal 0))))) (kind satisfy) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (satisfySource (reference "system")) (satisfyTarget (reference "system"))))
     (declaration (id (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::ArchitectureView"))) (kind view-def) (membership (kind owning) (visibility default)))
@@ -63,6 +58,12 @@ package Demo {
     (declaration (id (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::system"))) (kind part) (membership (kind feature) (visibility default)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/model_diagnostic_categories.md") (anonymous (kind bare-connect) (ordinal 0))))) (kind connectorEnd) (ordinal 0))
+      (authored-target "controller")
+      (outcome (status resolved) (target (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::controller")))))
+    (reference (id (source (node (document "memory://snapshot/model_diagnostic_categories.md") (anonymous (kind bare-connect) (ordinal 0))))) (kind connectorEnd) (ordinal 1))
+      (authored-target "sensor")
+      (outcome (status resolved) (target (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::sensor")))))
     (reference (id (source (node (document "memory://snapshot/model_diagnostic_categories.md") (anonymous (kind satisfy) (ordinal 0))))) (kind satisfySource) (ordinal 0))
       (authored-target "system")
       (outcome (status resolved) (target (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::system")))))
@@ -86,6 +87,8 @@ package Demo {
       (outcome (status resolved) (target (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::Sensor")))))
   )
   (relationships
+    (relationship (kind connectorEnd) (source (node (document "memory://snapshot/model_diagnostic_categories.md") (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::controller"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model_diagnostic_categories.md") (anonymous (kind bare-connect) (ordinal 0))))) (kind connectorEnd) (ordinal 0)))
+    (relationship (kind connectorEnd) (source (node (document "memory://snapshot/model_diagnostic_categories.md") (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::sensor"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model_diagnostic_categories.md") (anonymous (kind bare-connect) (ordinal 0))))) (kind connectorEnd) (ordinal 1)))
     (relationship (kind satisfySource) (source (node (document "memory://snapshot/model_diagnostic_categories.md") (anonymous (kind satisfy) (ordinal 0))))) (target (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::system"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model_diagnostic_categories.md") (anonymous (kind satisfy) (ordinal 0))))) (kind satisfySource) (ordinal 0)))
     (relationship (kind satisfyTarget) (source (node (document "memory://snapshot/model_diagnostic_categories.md") (anonymous (kind satisfy) (ordinal 0))))) (target (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::system"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model_diagnostic_categories.md") (anonymous (kind satisfy) (ordinal 0))))) (kind satisfyTarget) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::architecture"))) (target (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::ArchitectureView"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::architecture"))) (kind featureTyping) (ordinal 0)))
@@ -101,6 +104,14 @@ package Demo {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/model_diagnostic_categories.md") (range (start 5 12) (end 5 22)) (probe (position 5 12))
+    (reference (id (source (node (document "memory://snapshot/model_diagnostic_categories.md") (anonymous (kind bare-connect) (ordinal 0))))) (kind connectorEnd) (ordinal 0) (authored-target "controller")
+      (outcome (status resolved) (target (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::controller")))))
+  )
+  (query (document "memory://snapshot/model_diagnostic_categories.md") (range (start 5 26) (end 5 32)) (probe (position 5 26))
+    (reference (id (source (node (document "memory://snapshot/model_diagnostic_categories.md") (anonymous (kind bare-connect) (ordinal 0))))) (kind connectorEnd) (ordinal 1) (authored-target "sensor")
+      (outcome (status resolved) (target (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::sensor")))))
+  )
   (query (document "memory://snapshot/model_diagnostic_categories.md") (range (start 13 12) (end 13 18)) (probe (position 13 12))
     (reference (id (source (node (document "memory://snapshot/model_diagnostic_categories.md") (anonymous (kind satisfy) (ordinal 0))))) (kind satisfySource) (ordinal 0) (authored-target "system")
       (outcome (status resolved) (target (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::system")))))

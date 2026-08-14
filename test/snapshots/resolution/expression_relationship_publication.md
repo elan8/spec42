@@ -12,12 +12,6 @@ package M { part def System { part a; part b; connect a to b; } }
 (fixture-diagnostics
   (document "memory://snapshot/expression_relationship_publication.md"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unsupported_part_definition_member")
-        (source "semantic")
-        (range (start 0 46) (end 0 61))
-      )
     )
   )
 )
@@ -25,16 +19,25 @@ package M { part def System { part a; part b; connect a to b; } }
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:30c1e822853044cbfc7047aefcaddb7a4f69d092dae5e529c4d2a7c33868bf09") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:30c1e822853044cbfc7047aefcaddb7a4f69d092dae5e529c4d2a7c33868bf09") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/expression_relationship_publication.md") (qualified-name "M"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/expression_relationship_publication.md") (qualified-name "M::System"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/expression_relationship_publication.md") (anonymous (kind bare-connect) (ordinal 0))))) (kind bare-connect) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (connectorEnd (reference "a")) (connectorEnd (reference "b"))))
     (declaration (id (node (document "memory://snapshot/expression_relationship_publication.md") (qualified-name "M::System::a"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/expression_relationship_publication.md") (qualified-name "M::System::b"))) (kind part) (membership (kind feature) (visibility default)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/expression_relationship_publication.md") (anonymous (kind bare-connect) (ordinal 0))))) (kind connectorEnd) (ordinal 0))
+      (authored-target "a")
+      (outcome (status resolved) (target (node (document "memory://snapshot/expression_relationship_publication.md") (qualified-name "M::System::a")))))
+    (reference (id (source (node (document "memory://snapshot/expression_relationship_publication.md") (anonymous (kind bare-connect) (ordinal 0))))) (kind connectorEnd) (ordinal 1))
+      (authored-target "b")
+      (outcome (status resolved) (target (node (document "memory://snapshot/expression_relationship_publication.md") (qualified-name "M::System::b")))))
   )
   (relationships
+    (relationship (kind connectorEnd) (source (node (document "memory://snapshot/expression_relationship_publication.md") (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/expression_relationship_publication.md") (qualified-name "M::System::a"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/expression_relationship_publication.md") (anonymous (kind bare-connect) (ordinal 0))))) (kind connectorEnd) (ordinal 0)))
+    (relationship (kind connectorEnd) (source (node (document "memory://snapshot/expression_relationship_publication.md") (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/expression_relationship_publication.md") (qualified-name "M::System::b"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/expression_relationship_publication.md") (anonymous (kind bare-connect) (ordinal 0))))) (kind connectorEnd) (ordinal 1)))
   )
   (evaluation
   )
@@ -43,5 +46,13 @@ package M { part def System { part a; part b; connect a to b; } }
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/expression_relationship_publication.md") (range (start 0 54) (end 0 55)) (probe (position 0 54))
+    (reference (id (source (node (document "memory://snapshot/expression_relationship_publication.md") (anonymous (kind bare-connect) (ordinal 0))))) (kind connectorEnd) (ordinal 0) (authored-target "a")
+      (outcome (status resolved) (target (node (document "memory://snapshot/expression_relationship_publication.md") (qualified-name "M::System::a")))))
+  )
+  (query (document "memory://snapshot/expression_relationship_publication.md") (range (start 0 59) (end 0 60)) (probe (position 0 59))
+    (reference (id (source (node (document "memory://snapshot/expression_relationship_publication.md") (anonymous (kind bare-connect) (ordinal 0))))) (kind connectorEnd) (ordinal 1) (authored-target "b")
+      (outcome (status resolved) (target (node (document "memory://snapshot/expression_relationship_publication.md") (qualified-name "M::System::b")))))
+  )
 )
 ~~~

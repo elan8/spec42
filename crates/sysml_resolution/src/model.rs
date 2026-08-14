@@ -24,16 +24,16 @@ use sysml_v2_parser_next::{
         ConnectionDefBodyElement, ConnectionEnd, ConnectionUsageMember as ParserConnectionUsage,
         ConstraintDef, ConstraintDefBody, ConstraintDefBodyElement,
         ConstraintUsage as ParserConstraintUsage, DefaultReferenceUsage, DefinitionBody,
-        DefinitionBodyElement, DefinitionPrefix, DoAction, EndDecl, EndIdentity, EntryAction,
-        EnumDef, EnumerationBody, EnumerationUsage as ParserEnumerationUsage, ExitAction,
-        Expression, FeatureValue, FirstMergeBody, FirstMergeBodyElement, FirstStmt, FlowDef,
-        FlowUsage, ForLoop, FrameMember, IfStmt, Import, ImportShape, InOut, InOutDecl,
-        IncludeUseCase, InterfaceDef, InterfaceDefBody, InterfaceDefBodyElement,
-        InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement, ItemDef,
-        ItemUsage as ParserItemUsage, KermlBindingMember, KermlClassifierDecl, KermlConnectorEnd,
-        KermlConnectorMember, KermlEndMember, KermlFeatureMember, KermlInvariantMember,
-        LibraryPackage, Membership, MembershipKind as ParserMembershipKind, MetadataAnnotation,
-        MetadataDef, MetadataUsage as ParserMetadataUsage, NamespaceDecl, Node,
+        DefinitionBodyElement, DefinitionPrefix, Dependency, DoAction, EndDecl, EndIdentity,
+        EntryAction, EnumDef, EnumerationBody, EnumerationUsage as ParserEnumerationUsage,
+        ExitAction, Expression, ExtendedDefinition, FeatureValue, FirstMergeBody,
+        FirstMergeBodyElement, FirstStmt, FlowDef, FlowUsage, ForLoop, FrameMember, IfStmt, Import,
+        ImportShape, InOut, InOutDecl, IncludeUseCase, InterfaceDef, InterfaceDefBody,
+        InterfaceDefBodyElement, InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement,
+        ItemDef, ItemUsage as ParserItemUsage, KermlBindingMember, KermlClassifierDecl,
+        KermlConnectorEnd, KermlConnectorMember, KermlEndMember, KermlFeatureMember,
+        KermlInvariantMember, LibraryPackage, Membership, MembershipKind as ParserMembershipKind,
+        MetadataAnnotation, MetadataDef, MetadataUsage as ParserMetadataUsage, NamespaceDecl, Node,
         OccurrenceBodyElement, OccurrenceDef, OccurrenceUsage as ParserOccurrenceUsage,
         OccurrenceUsageBody, Package, PackageBody, PackageBodyElement, PartDef, PartDefBody,
         PartDefBodyElement, PartUsage, PartUsageBody, PartUsageBodyElement,
@@ -725,6 +725,50 @@ enum DeclarationKind {
     /// inference from `range`'s element type is performed; this is reference-resolution scope
     /// only, not execution semantics.
     ForLoopVariable,
+    /// A package/part-def-body-level `dependency` relationship declaration (BNF Dependency,
+    /// `requirement.rs` struct `Dependency`): `dependency` (Identification `from`)? client(s)
+    /// `to` supplier(s) RelationshipBody. Unlike a usage/definition, `Dependency` has no
+    /// `membership: Membership` field of its own (no visibility prefix support), so it is always
+    /// lowered with `MembershipKind::Feature`/`Visibility::Default`, mirroring `lower_satisfy`'s
+    /// anonymous-relationship-declaration shape. Each client and supplier is an independent
+    /// authored reference (`ReferenceKind::DependencyClient`/`DependencySupplier`) resolved
+    /// through the same `DeclarationDomain::Any` lexical lookup as other authored references;
+    /// only reference resolution is modeled, not dependency-specific semantics (e.g. no
+    /// standalone "Dependency" relationship classification beyond the two reference kinds).
+    /// `body_elements` (doc/comment/metadata only, BNF `RelationshipBody`) are walked through the
+    /// shared `lower_relationship_body_elements` helper used by `Import`/`AliasDef`.
+    Dependency,
+    /// `#<keyword>+ def <Name> ...` (BNF ExtendedDefinition, `structure.rs` struct
+    /// `ExtendedDefinition`, UPSTREAM_PARSER_GAPS.md gap #12's short form), e.g. `#scenario def
+    /// DeviceFailure { ... }`. Gap #12 tracked only the parser production landing upstream; this
+    /// is the first `sysml_resolution` lowering attempt. `body: PackageBody` is the exact same
+    /// shape an ordinary `package { ... }` body uses, so its owned members are lowered through
+    /// the shared `lower_package_body` walker (reused verbatim, mirroring `lower_package`/
+    /// `lower_namespace`). An optional `:>` `specializes` clause is lowered like
+    /// `AllocationDefinition`/`ViewDefinition`. The `#`-prefix keyword tags themselves
+    /// (`prefix_keywords`, a metadata-annotation-shaped list) and the `abstract`/`variation`
+    /// `definition_prefix` flag are out of scope, matching every other definition kind's
+    /// established "ownership, specialization, and owned-member structure only" scope boundary.
+    ExtendedDefinition,
+    /// `individual def` (BNF IndividualDef, `structure.rs` struct `IndividualDef`): a type whose
+    /// owned members participate in the shared Subclassification/FeatureTyping
+    /// `DeclarationDomain::Type` fixed point, mirroring `lower_item_def`/`lower_class_def` --
+    /// `IndividualDef`'s `body: AttributeBody` is the exact same shape, so owned members are
+    /// lowered through the existing `lower_attribute_body`. Distinct from the `individual`
+    /// usage-side prefix (`individual occurrence def`/`individual item ...`, already handled
+    /// elsewhere per UPSTREAM_PARSER_GAPS.md gap #7); this is the standalone `individual def
+    /// <Name> [:> <Type>] { ... }` definition form.
+    IndividualDefinition,
+    /// An anonymous connector feature synthesized for a keyword-less bare `connect <from> to
+    /// <to> [:> ...] [:>> ...] { ... }` member (BNF `Connect`, distinct from `ConnectStmt`; see
+    /// `lower_bare_connect`), mirroring `ForLoop`/`EntryActionBinding`'s nested-declaration
+    /// shape: sourced as a child of the enclosing scope so its `from`/`to` connector-end
+    /// references resolve against that scope's own siblings through the same
+    /// `DeclarationDomain::Any` lexical lookup fixed point (which starts one level *above* the
+    /// reference's source declaration, so a bare top-level `connect a to b;` needs this
+    /// intermediate nesting to see `a`/`b` as siblings of the enclosing package/definition, not
+    /// as siblings of itself).
+    BareConnect,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -1137,6 +1181,14 @@ enum ReferenceKind {
     /// `lower_succession_end` `FeatureRef`/`MemberAccess` dispatch every other paired/single-
     /// operand control-flow reference kind uses.
     AssignTarget,
+    /// One `client` operand of a `dependency` relationship declaration (`Dependency.clients`),
+    /// resolved through the same `DeclarationDomain::Any` lexical lookup as `SatisfySource`:
+    /// each client can be any owned feature/type, not just a Type. Sourced at the anonymous
+    /// `DeclarationKind::Dependency` declaration.
+    DependencyClient,
+    /// One `supplier` operand of a `dependency` relationship declaration
+    /// (`Dependency.suppliers`), same shape/scope as `DependencyClient`.
+    DependencySupplier,
 }
 
 /// The computed or explicit outcome of evaluating one supported constraint/calc expression
@@ -2769,11 +2821,9 @@ impl SemanticModelBuilder {
             PackageBodyElement::MetadataDef(node) => {
                 self.lower_metadata_def(document, owner, node)?
             }
-            PackageBodyElement::IndividualDef(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::IndividualDef(node) => {
+                self.lower_individual_def(document, owner, node)?
+            }
             PackageBodyElement::ConstraintDef(node) => {
                 self.lower_constraint_def(document, owner, node)?
             }
@@ -2808,11 +2858,7 @@ impl SemanticModelBuilder {
             PackageBodyElement::OccurrenceUsage(node) => {
                 self.lower_occurrence_usage(document, owner, node)?
             }
-            PackageBodyElement::Dependency(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::Dependency(node) => self.lower_dependency(document, owner, node)?,
             PackageBodyElement::AllocationDef(node) => {
                 self.lower_allocation_def(document, owner, node)?
             }
@@ -2905,11 +2951,17 @@ impl SemanticModelBuilder {
                 UnsupportedFamily::PackageMember,
                 node.span.clone(),
             ),
-            PackageBodyElement::Connect(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::Connect(node) => {
+                if let Some(owner) = owner {
+                    self.lower_bare_connect(document, owner, node)?;
+                } else {
+                    self.push_unsupported(
+                        document,
+                        UnsupportedFamily::PackageMember,
+                        node.span.clone(),
+                    );
+                }
+            }
             PackageBodyElement::DefaultReferenceUsage(node) => self.lower_default_reference_usage(
                 document,
                 owner,
@@ -2972,11 +3024,9 @@ impl SemanticModelBuilder {
                 UnsupportedFamily::PackageMember,
                 node.span.clone(),
             ),
-            PackageBodyElement::ExtendedDefinition(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::ExtendedDefinition(node) => {
+                self.lower_extended_definition(document, owner, node)?
+            }
         }
         Ok(())
     }
@@ -3298,11 +3348,15 @@ impl SemanticModelBuilder {
                             node,
                         )?;
                     }
+                    PartDefBodyElement::Dependency(node) => {
+                        self.lower_dependency(document, Some(declaration), node)?;
+                    }
+                    PartDefBodyElement::Connect(node) => {
+                        self.lower_bare_connect(document, declaration, node)?;
+                    }
                     PartDefBodyElement::Annotation(_)
                     | PartDefBodyElement::MetadataKeywordUsage(_)
-                    | PartDefBodyElement::Dependency(_)
                     | PartDefBodyElement::Other(_)
-                    | PartDefBodyElement::Connect(_)
                     | PartDefBodyElement::FlowUsage(_)
                     | PartDefBodyElement::ExhibitState(_)
                     | PartDefBodyElement::AllocationUsage(_)
@@ -3524,8 +3578,10 @@ impl SemanticModelBuilder {
                             node,
                         )?;
                     }
+                    PartUsageBodyElement::Connect(node) => {
+                        self.lower_bare_connect(document, declaration, node)?;
+                    }
                     PartUsageBodyElement::Annotation(_)
-                    | PartUsageBodyElement::Connect(_)
                     | PartUsageBodyElement::FlowUsage(_)
                     | PartUsageBodyElement::SuccessionUsage(_)
                     | PartUsageBodyElement::MetadataKeywordUsage(_)
@@ -3796,13 +3852,16 @@ impl SemanticModelBuilder {
                 AttributeBodyElement::RefDecl(node) => {
                     self.lower_ref_decl(document, Some(owner), node)?;
                 }
-                AttributeBodyElement::Connect(_)
-                | AttributeBodyElement::MetadataKeywordUsage(_)
-                | AttributeBodyElement::Other(_) => self.push_unsupported(
-                    document,
-                    UnsupportedFamily::AttributeMember,
-                    element.span.clone(),
-                ),
+                AttributeBodyElement::Connect(node) => {
+                    self.lower_bare_connect(document, owner, node)?;
+                }
+                AttributeBodyElement::MetadataKeywordUsage(_) | AttributeBodyElement::Other(_) => {
+                    self.push_unsupported(
+                        document,
+                        UnsupportedFamily::AttributeMember,
+                        element.span.clone(),
+                    )
+                }
             }
         }
         Ok(())
@@ -10104,6 +10163,203 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
+    /// Lowers an `individual def` (BNF IndividualDef), mirroring `lower_item_def`: ownership,
+    /// membership, an optional `:>` specialization relationship, and owned members via the
+    /// shared `lower_attribute_body` walker (`IndividualDef.body: AttributeBody` is the same
+    /// shape `ItemDef`/`ClassDef` use).
+    fn lower_individual_def(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<sysml_v2_parser_next::ast::IndividualDef>,
+    ) -> Result<(), ConstructionError> {
+        let name = node
+            .value
+            .identification
+            .name
+            .as_deref()
+            .filter(|name| !name.is_empty())
+            .map(|name| self.intern_name(name))
+            .transpose()?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::IndividualDefinition,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Owning,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::OwningMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(relationship) = &node.value.specializes {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        self.lower_attribute_body(document, declaration, &node.value.body)
+    }
+
+    /// Lowers a keyword-less bare `connect <from> to <to> [:> <subsets>] [:>> <redefines>]
+    /// { ... }` connector member (BNF `Connect`, `structure.rs` struct `Connect`, distinct from
+    /// the `connect ... to ...;` sub-clause of an already-dispatched connector production modeled
+    /// by `ConnectStmt`/`lower_connect_stmt`), e.g. a top-level `connect a to b;` package member.
+    /// Sourced directly at the enclosing `owner` declaration (no separate declaration is
+    /// synthesized), mirroring `lower_connect_stmt`'s anonymous shape: `from`/`to` resolve
+    /// through the shared `lower_connector_end` walker, and an optional `:>`/`:>>` `subsets`/
+    /// `redefines` clause resolves through the shared `lower_subsetting_relationship` helper.
+    fn lower_bare_connect(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        node: &Node<sysml_v2_parser_next::ast::Connect>,
+    ) -> Result<(), ConstructionError> {
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::BareConnect,
+            None,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span.clone(),
+        )?;
+        self.lower_connector_end(document, declaration, &node.value.from)?;
+        self.lower_connector_end(document, declaration, &node.value.to)?;
+        if let Some(relationship) = &node.value.subsets {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.redefines {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        Ok(())
+    }
+
+    /// Lowers a `#<keyword>+ def <Name> ...` short-form definition (BNF ExtendedDefinition),
+    /// mirroring `lower_package`: ownership, membership, an optional `:>` specialization
+    /// relationship, and owned members through the same `lower_package_body` walker `body:
+    /// PackageBody` shares with an ordinary `package { ... }`. `ExtendedDefinition` has no
+    /// `Membership` node of its own (unlike `Package`, which also lowers with a synthesized
+    /// `Owning`/`Default` membership for the same reason -- see `lower_package`), so membership is
+    /// synthesized identically. The `#`-prefix keyword tags and `abstract`/`variation` prefix are
+    /// out of scope; see `DeclarationKind::ExtendedDefinition`'s doc comment.
+    fn lower_extended_definition(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<ExtendedDefinition>,
+    ) -> Result<(), ConstructionError> {
+        let name = node
+            .value
+            .identification
+            .name
+            .as_deref()
+            .filter(|name| !name.is_empty())
+            .map(|name| self.intern_name(name))
+            .transpose()?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::ExtendedDefinition,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Owning,
+            Visibility::Default,
+            node.span.clone(),
+        )?;
+        if let Some(relationship) = &node.value.specializes {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        self.lower_package_body(document, Some(declaration), &node.value.body)
+    }
+
+    /// Lowers a `dependency` relationship declaration (BNF Dependency), mirroring `lower_satisfy`:
+    /// an anonymous (or optionally named, via `Identification`) `DeclarationKind::Dependency`
+    /// feature owned by the enclosing scope, with each `client`/`supplier` operand resolved as
+    /// its own authored `ReferenceKind::DependencyClient`/`DependencySupplier` reference. Unlike
+    /// `AliasDef`/`Import`, `Dependency` has no `membership: Membership` field of its own, so
+    /// membership is always synthesized as `MembershipKind::Feature`/`Visibility::Default` at the
+    /// declaration's own span (matching `lower_satisfy`'s anonymous-relationship shape).
+    /// `body_elements` (doc/comment/metadata only) are walked through the same
+    /// `lower_relationship_body_elements` helper `AliasDef`/`Import` use.
+    fn lower_dependency(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<Dependency>,
+    ) -> Result<(), ConstructionError> {
+        let name = node
+            .value
+            .identification
+            .as_ref()
+            .and_then(|identification| identification.name.as_deref())
+            .filter(|name| !name.is_empty())
+            .map(|name| self.intern_name(name))
+            .transpose()?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::Dependency,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span.clone(),
+        )?;
+        for target in node.value.clients.iter().copied() {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(target)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span
+                .clone();
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::DependencyClient,
+                document,
+                local: target,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
+        for target in node.value.suppliers.iter().copied() {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(target)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span
+                .clone();
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::DependencySupplier,
+                document,
+                local: target,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
+        if let Some(elements) = &node.value.body_elements {
+            self.lower_relationship_body_elements(document, elements);
+        }
+        Ok(())
+    }
+
     fn lower_typing_relationship(
         &mut self,
         document: DocumentId,
@@ -13661,6 +13917,117 @@ mod tests {
                 "(kind aliasBinding) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::P::po\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::P::porig\")))"
             ),
             "expected po's alias binding to porig to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn dependency_lowers_clients_and_suppliers() {
+        // `PackageBodyElement::Dependency` dispatches into the new `lower_dependency`: each
+        // client/supplier is resolved as its own authored reference.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpart a;\n\
+             \tpart b;\n\
+             \tdependency Use from a to b;\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(kind dependency)"),
+            "expected a dependency declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains("(kind dependencyClient)")
+                && output.contains(
+                    "(target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::a\")))"
+                ),
+            "expected a's dependencyClient reference to resolve, got:\n{output}"
+        );
+        assert!(
+            output.contains("(kind dependencySupplier)")
+                && output.contains(
+                    "(target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::b\")))"
+                ),
+            "expected b's dependencySupplier reference to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn extended_definition_lowers_owned_members_and_specialization() {
+        // `PackageBodyElement::ExtendedDefinition` dispatches into the new
+        // `lower_extended_definition`, reusing `lower_package_body` for `#<keyword> def`'s
+        // owned members and `lower_typing_relationship` for its `:>` clause.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpart def Base;\n\
+             \t#scenario def Failure :> Base {\n\
+             \t\tattribute cause : Boolean;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::Failure\"))) (kind extended-definition)"),
+            "expected an extended-definition declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::Failure::cause\"))) (kind attribute-def)"),
+            "expected Failure's nested attribute usage declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind specialization) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Failure\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
+            ),
+            "expected Failure's specialization reference to Base to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn individual_def_lowers_to_a_declaration_with_specialization() {
+        // `PackageBodyElement::IndividualDef` dispatches into the new `lower_individual_def`,
+        // mirroring `lower_item_def`/`lower_class_def`.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpart def Base;\n\
+             \tindividual def Widget :> Base {\n\
+             \t\tattribute mass : Real;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::Widget\"))) (kind individual-definition)"),
+            "expected an individual-definition declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::Widget::mass\"))) (kind attribute)"),
+            "expected Widget's nested attribute usage declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind specialization) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Widget\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
+            ),
+            "expected Widget's specialization reference to Base to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn bare_connect_at_package_scope_resolves_ends() {
+        // `PackageBodyElement::Connect` (the keyword-less `Connect` struct, distinct from
+        // `ConnectStmt`) dispatches into the new `lower_bare_connect`.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpart a;\n\
+             \tpart b;\n\
+             \tconnect a to b;\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(kind connectorEnd)")
+                && output.contains(
+                    "(target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::a\")))"
+                )
+                && output.contains(
+                    "(target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::b\")))"
+                ),
+            "expected both connector ends to resolve, got:\n{output}"
         );
     }
 
