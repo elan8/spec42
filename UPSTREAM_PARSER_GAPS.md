@@ -83,6 +83,14 @@ entry should carry enough detail to file/update an upstream issue against
   `ATTRIBUTE_BODY_STARTERS` with a nested-body-aware `feature_decl`/`kerml_feature_decl` dispatch
   arm, filed upstream against `feat/gh-119-arena-backed-references`
   (elan8/sysml-v2-parser#121).
+  **Re-verified against `cb026cd` (this pass):** still accurate -- `ATTRIBUTE_BODY_STARTERS`
+  (`src/parser/attribute.rs:28-49`) has no `b"feature"`/`b"member"` entry, and
+  `attribute_body_element`'s `alt` list (`src/parser/attribute.rs:191-259`) has no arm dispatching
+  to `feature_decl`/`kerml_feature_decl`; `test/snapshots/kerml/behaviors.md`'s nested
+  `in x1 = A::x;` (an inner member of a bare `feature`-led block) and every other fixture listed
+  above still reports `unrecognized_declaration_in_scope`. Citation line numbers unchanged from the
+  `0757de13` write-up (`src/parser/attribute.rs:28-49`, `src/parser/diagnostics.rs`,
+  `src/parser/lex.rs:407-520` all still resolve to the same regions in `cb026cd`).
 
 - Gap 16. Bare `connector`-keyword-led members (as opposed to the `connect` alias) are unrecognized
   inside attribute bodies, part-definition bodies, and even package bodies. Root cause: the
@@ -99,6 +107,11 @@ entry should carry enough detail to file/update an upstream issue against
   `test/snapshots/sysml/examples/coverage_connectors.md`. Needs `b"connector"` added alongside
   `b"connect"` in the relevant starter tables and dispatched to the same `Connector` production,
   filed upstream against `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+  **Re-verified against `cb026cd` (this pass):** still accurate -- `ATTRIBUTE_BODY_STARTERS`
+  (`src/parser/attribute.rs:28-49`) has no `b"connector"` entry and `attribute_body_element`'s `alt`
+  list has no connector-decl arm; `test/snapshots/kerml/connectors.md`,
+  `test/snapshots/kerml/time_varying_car_driver.md`'s `var connector drive from engine to
+  transmission;`, and the other fixtures above still report `unrecognized_declaration_in_scope`.
 
 - Gap 17. `portion` is not a reserved keyword or a registered body-member starter anywhere in the
   pinned `0757de13` checkout: `SYSML_RESERVED_KEYWORDS` (`src/parser/lex.rs:407-520`) has no
@@ -112,6 +125,10 @@ entry should carry enough detail to file/update an upstream issue against
   `time_varying_features.md`, `time_varying_features_enhanced.md`. Needs a `portion` keyword/
   production (KerML `Portion` usage prefix) added to the grammar, filed upstream against
   `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+  **Re-verified against `cb026cd` (this pass):** still accurate -- `grep -rn portion
+  src/parser` in the `cb026cd` checkout still surfaces only `OccurrencePortionKind::{Snapshot,
+  Timeslice}`, no bare `portion` keyword production; `SYSML_RESERVED_KEYWORDS`
+  (`src/parser/lex.rs:407-...`) still has no `"portion"` entry.
 
 - Gap 18. `var`-keyword-led members are unrecognized wherever they appear (all observed instances
   are nested in attribute/behavior bodies). Root cause: neither `ATTRIBUTE_BODY_STARTERS`
@@ -140,6 +157,10 @@ entry should carry enough detail to file/update an upstream issue against
   `vehicles_1.md`, `vehicles_2.md`, `vehicles_3.md`. Needs `composite` added as a
   `FeaturePrefix`/`UsagePrefix` starter, filed upstream against
   `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+  **Re-verified against `cb026cd` (this pass):** still accurate -- no `b"composite"` entry in
+  `ATTRIBUTE_BODY_STARTERS` (`src/parser/attribute.rs:28-49`) or the `grammar_scope!`
+  `PACKAGE_BODY_GRAMMAR` table (`src/parser/grammar_scope.rs`); `test/snapshots/kerml/features.md`
+  and the other fixtures above still report `unrecognized_declaration_in_scope`.
 
 - Gap 20. `step`-keyword-led action-step members are unrecognized when nested inside an attribute
   body, even though `step` is an accepted starter in other (action-scoped) body productions
@@ -174,6 +195,11 @@ entry should carry enough detail to file/update an upstream issue against
   `test/snapshots/kerml/scoping.md`. Needs `class` added to `ATTRIBUTE_BODY_STARTERS` with dispatch
   to the existing `class`-definition production, filed upstream against
   `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+  **Re-verified against `cb026cd` (this pass):** still accurate -- `ATTRIBUTE_BODY_STARTERS`
+  (`src/parser/attribute.rs:28-49`) has no `b"class"` entry and `attribute_body_element`'s `alt`
+  list has no classifier-decl arm; the fixtures above still report
+  `unrecognized_declaration_in_scope`. See also Gap 38 (new, this pass), which generalizes this
+  same missing-dispatch pattern to `struct` and the rest of the classifier-keyword family.
 
 - Gap 22. Several KerML explicit-relationship-declaration keywords have no `PackageBody` grammar
   production at all in the pinned `0757de13` checkout, unlike sibling relationship keywords
@@ -193,6 +219,11 @@ entry should carry enough detail to file/update an upstream issue against
   `subset`/`featuring`/`disjoining`/`specialization`/`inverse` package-body-member productions
   added alongside the existing `typing`/`redefinition` ones, filed upstream against
   `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+  **Re-verified against `cb026cd` (this pass):** still accurate -- `grep -n
+  '"type"\|"subset"\|"featuring"\|"disjoining"\|"specialization"\|"inverse"'
+  src/parser/grammar_scope.rs` finds no entries for these keywords;
+  `test/snapshots/kerml/coverage_relationships.md`'s `type B;` and the other fixtures above still
+  report `unrecognized_declaration_in_scope`.
 
 - Gap 23. Bare `name;` / `name = expr;` / `name : Type;` members with **no leading keyword at all**
   (the "implicit feature" shorthand) are only dispatched in scopes that explicitly wire
@@ -215,6 +246,12 @@ entry should carry enough detail to file/update an upstream issue against
   extended to package/relationship/metadata body scopes (or an explicit decision that it is
   intentionally attribute-body-only, documented upstream), filed upstream against
   `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+  **Re-verified against `cb026cd` (this pass):** still accurate -- `attribute_feature_binding`/
+  `redefinition_feature_binding` (`src/parser/attribute.rs:440-503`) remain wired only into
+  `attribute_body_element`; package-body/relationship-body/metadata-body dispatch (`grammar_scope.rs`,
+  `RELATIONSHIP_BODY_STARTERS` in `src/parser/lex.rs:170`, `METADATA_BODY_STARTERS` in
+  `src/parser/attribute.rs:69-80`) still has no bare-name-shorthand arm; the fixtures above still
+  report `unrecognized_declaration_in_scope`.
 
 - Gap 24. Two additional single-file constructs share the same `unrecognized_declaration_in_scope`
   mechanism but are too narrow to merit their own numbered upstream issue on their own; recorded
@@ -407,6 +444,18 @@ entry should carry enough detail to file/update an upstream issue against
   `subject_decl_inner` taught to parse `:>>` as an alternative to `:`, filed upstream against
   `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
 
+**Re-verification pass note (this pass, against `cb026cd`):** Gaps 15-24 were re-checked by
+grepping the current `cb026cd` checkout for the same starter tables/productions cited in each
+entry's original write-up; every one of the 10 gaps (15, 16, 17, 18, 19, 20, 21, 22, 23, 24) is
+still fully reproducible -- none have been resolved upstream since the earlier `0757de13`-era
+write-up. All cited line ranges (`src/parser/attribute.rs:28-49`, `src/parser/attribute.rs:191-259`,
+`src/parser/lex.rs:170`, `src/parser/lex.rs:407-...`, `src/parser/grammar_scope.rs`) still resolve
+to the same regions in `cb026cd`, so no citation-line corrections were needed. The parser now reaches
+further into previously-blocked content (58 fixtures now carry at least one
+`unrecognized_declaration_in_scope (source "parser")` diagnostic, up from the ~51 at the
+Gap 15-24 baseline, for 222 total occurrences), surfacing three new distinct root causes catalogued
+below as Gaps 37-39.
+
 ## False-positive check (spec42-side surfacing bug?)
 Traced end-to-end for a diverse sample (Gap 15's `feature` case, Gap 17's `portion` case, Gap 22's
 `type`/`subset` case, and Gap 23's bare-identifier case) plus a repo-wide search:
@@ -478,6 +527,79 @@ found; all 51 fixtures are genuine upstream parser gaps**, grouped into Gaps 15-
   `sysml_resolution` (commit `422e2216`), not a parser gap.
 - Enum definitions (`enum def`, `EnumeratedValue`) — investigated, typed AST already exposes
   stable per-literal identity/spans. Fixed entirely in `sysml_resolution` (commit `99d5ea39`).
+
+- Gap 37. `Dependency`'s optional `RelationshipBody` (BNF: `dependency` DependencyDeclaration
+  (`;` | `{` doc/comment/rep/metadata* `}`)) rejects any owned member other than
+  `doc`/`comment`/`rep`/`@` metadata annotations -- an ordinary nested `feature` member inside the
+  braced form is unrecognized, even though the identical unbodied `dependency ... ;` statement (and
+  every other `dependency` shape) parses and lowers correctly. Root cause: in the `cb026cd`
+  checkout, `relationship_body_annotations` (`src/parser/body.rs:24-51`) drives
+  `parse_structured_brace_members` off `RELATIONSHIP_BODY_STARTERS`
+  (`src/parser/lex.rs:170`: `&[b"doc", b"comment", b"rep", b"@"]`) -- no `b"feature"` (or any other
+  member-starter) entry -- so a `feature e;` member nested inside a `dependency ... { }` body falls
+  straight through to `unrecognized_declaration_in_scope`. Confirmed empirically against
+  `test/snapshots/kerml/dependencies.md`: the file's two unbodied `dependency` statements
+  (`dependency Use from 'Application Layer' to 'Service Layer';` and
+  `dependency from 'Service Layer' to 'Data Layer';`) both resolve fully in the `# SMG` block (two
+  `(kind dependency)` declarations with resolved `dependencyClient`/`dependencySupplier`
+  references), but the third, bodied statement (`dependency z to x, y { feature e; }`) produces the
+  file's sole `unrecognized_declaration_in_scope` diagnostic and never gets a third dependency
+  declaration in the `# SMG` output at all -- the whole bodied statement is dropped, not merely its
+  `feature e;` member. Blocks `test/snapshots/kerml/dependencies.md`. Needs `RELATIONSHIP_BODY_STARTERS`
+  widened with member-starter entries (`feature` at minimum, mirroring the owned-member support the
+  BNF's `ownedRelatedElement*` implies for a KerML `RelationshipBody`), filed upstream against
+  `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+
+- Gap 38. Nested classifier-keyword declarations *other than* `class` (e.g. `struct`, and by the
+  same mechanism `classifier`/`metaclass`/`behavior`/`interaction`/`predicate`/`multiplicity`/
+  `subclassifier`) are unrecognized when they appear inside another type's attribute/structured
+  body -- the same gap class as Gap 21 (`class`), but for the rest of the classifier-keyword family
+  Gap 21's fix (as literally worded, "`class` added to `ATTRIBUTE_BODY_STARTERS`") would not cover.
+  Root cause: `attribute_body_element` (`src/parser/attribute.rs:191-259`) dispatches a fixed `alt`
+  list of productions -- `doc_comment`, `attribute_def`, `attribute_usage`,
+  `value_keyword_binding`, `attribute_feature_binding`, `occurrence_usage`, `timeslice_usage`,
+  `snapshot_usage`, `connect_`, `metadata_keyword_usage`, `metadata_keyword_prefix`,
+  `assert_constraint_member`, `ref_decl`, `part_usage`, `item_usage`, and finally the opaque
+  `capture_opaque_member(ATTRIBUTE_OPAQUE_STARTERS)` fallback -- none of which reach
+  `classifier_decl`/`kerml_classifier_decl` (the productions that already handle `struct`/
+  `classifier`/etc. at package-body scope, `src/parser/package.rs:925-937`: starters
+  `&[b"class", b"classifier", b"struct", b"structure", b"subclassifier"]`), and
+  `ATTRIBUTE_BODY_STARTERS`/`ATTRIBUTE_OPAQUE_STARTERS` (`src/parser/attribute.rs:28-67`) have no
+  `b"struct"`/`b"classifier"`/etc. entry either, so a nested `struct Car1_ { ... }` falls through to
+  `unrecognized_declaration_in_scope` the same way nested `class` did before Gap 21 was filed.
+  Confirmed against the pinned `cb026cd` checkout by direct inspection of
+  `attribute_body_element`'s alternative list (no classifier-decl arm present) and empirically via
+  `test/snapshots/kerml/time_varying_car_driver.md`, whose `struct Car1_ { ... }` (nested directly
+  inside the enclosing `part`/occurrence body) produces `unrecognized_declaration_in_scope` spanning
+  the entire `struct Car1_ { ... }` block. Blocks `test/snapshots/kerml/time_varying_car_driver.md`.
+  Needs `struct`/`classifier`/`metaclass`/`behavior`/`interaction`/`predicate`/`multiplicity`/
+  `subclassifier` added to `ATTRIBUTE_BODY_STARTERS` with dispatch to the existing
+  `classifier_decl`/`kerml_classifier_decl` production (the same fix shape as Gap 21, generalized to
+  the rest of the keyword family), filed upstream against `feat/gh-119-arena-backed-references`
+  (elan8/sysml-v2-parser#121).
+
+- Gap 39. The bare `#<keyword>+ <Name> { ... }` extended-usage shorthand (a `#`-prefixed metadata
+  tag directly prefixing a plain named member with a body, but with **no** `def`/other declaration
+  keyword at all) has no grammar production -- only the `def`-suffixed sibling,
+  `ExtendedDefinition` (`#<keyword>+ 'def' <Name> ...`, SysML BNF/§8.2.2.27, resolved upstream for
+  spec42 as Gap 12), is supported. Root cause: `extended_definition_inner`
+  (`src/parser/metadata_annotation.rs:177-207`) parses `many1` extended-definition prefix tags via
+  `extended_definition_prefix_tag` (`src/parser/metadata_annotation.rs:140-163`) and then requires a
+  literal `'def'` token before the name (per the doc comment at
+  `src/parser/metadata_annotation.rs:164`: "`DefinitionExtensionKeyword+ 'def' DefinitionDeclaration
+  ..."); there is no alternative production anywhere in `src/parser` that accepts one-or-more `#tag`
+  prefixes directly followed by a bare name and brace body with no `def` keyword. Confirmed against
+  the pinned `cb026cd` checkout: `test/snapshots/sysml/examples/ahfcore_lib.md`'s
+  `#clouddd ArrowheadCore{ ... }` (a `#`-tagged bare-name usage with a multi-member body, structurally
+  parallel to the `#service port def Authorisation { ... }` forms elsewhere in the same file that
+  *do* parse because they include `port def`) produces a single `unrecognized_declaration_in_scope`
+  diagnostic whose range spans from that statement through effectively the rest of the file
+  (`(range (start 22 10) (end 54 0))`), i.e. the missing `def` causes the whole remainder of the
+  package body to fall into unrecovered error-token consumption rather than a single per-statement
+  diagnostic. Blocks `test/snapshots/sysml/examples/ahfcore_lib.md`. Needs a new grammar production
+  (or `extended_definition` widened with an optional-`def` branch) covering the bare
+  `#<keyword>+ <Name> { ... }` extended-usage shorthand, filed upstream against
+  `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
 
 - Gap 36. KerML `const` end-feature prefix (`const end [1] feature a;` / `const end feature
   b;`, representative fixture: `test/snapshots/kerml/associations.md`, `assoc struct C { ... }`)
