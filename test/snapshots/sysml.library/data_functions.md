@@ -122,12 +122,6 @@ standard library package DataFunctions {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_calc_definition_member")
-        (source "semantic")
-        (range (start 15 24) (end 15 30))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 18 31) (end 18 40))
@@ -463,7 +457,7 @@ standard library package DataFunctions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:1a0f4d2fc5439d6d8e940fd6b02ffc4716a4da0d6f6a7a66dedb1d6371902567") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:1a0f4d2fc5439d6d8e940fd6b02ffc4716a4da0d6f6a7a66dedb1d6371902567") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/data_functions.md") (qualified-name "DataFunctions"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/data_functions.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Base::DataValue") (import (shape membership) (recursive false)))))
@@ -514,7 +508,7 @@ standard library package DataFunctions {
     (declaration (id (node (document "memory://snapshot/data_functions.md") (qualified-name "DataFunctions::==::x"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "DataValue") (direction in))))
     (declaration (id (node (document "memory://snapshot/data_functions.md") (qualified-name "DataFunctions::==::y"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "DataValue") (direction in))))
     (declaration (id (node (document "memory://snapshot/data_functions.md") (qualified-name "DataFunctions::==="))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "BaseFunctions::==="))))
-    (declaration (id (node (document "memory://snapshot/data_functions.md") (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Boolean"))))
+    (declaration (id (node (document "memory://snapshot/data_functions.md") (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Boolean")) (expressionOperand (reference "x")) (expressionOperand (reference "y"))))
     (declaration (id (node (document "memory://snapshot/data_functions.md") (qualified-name "DataFunctions::===::x"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "DataValue") (direction in))))
     (declaration (id (node (document "memory://snapshot/data_functions.md") (qualified-name "DataFunctions::===::y"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "DataValue") (direction in))))
     (declaration (id (node (document "memory://snapshot/data_functions.md") (qualified-name "DataFunctions::>"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
@@ -670,6 +664,12 @@ standard library package DataFunctions {
     (reference (id (source (node (document "memory://snapshot/data_functions.md") (anonymous (kind parameter) (ordinal 0))))) (kind featureTyping) (ordinal 0))
       (authored-target "Boolean")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/data_functions.md") (anonymous (kind parameter) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
+      (authored-target "x")
+      (outcome (status resolved) (target (node (document "memory://snapshot/data_functions.md") (qualified-name "DataFunctions::===::x")))))
+    (reference (id (source (node (document "memory://snapshot/data_functions.md") (anonymous (kind parameter) (ordinal 0))))) (kind expressionOperand) (ordinal 1))
+      (authored-target "y")
+      (outcome (status resolved) (target (node (document "memory://snapshot/data_functions.md") (qualified-name "DataFunctions::===::y")))))
     (reference (id (source (node (document "memory://snapshot/data_functions.md") (qualified-name "DataFunctions::===::x"))) (kind featureTyping) (ordinal 0))
       (authored-target "DataValue")
       (outcome (status unresolved)))
@@ -753,6 +753,8 @@ standard library package DataFunctions {
       (outcome (status unresolved)))
   )
   (relationships
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/data_functions.md") (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/data_functions.md") (qualified-name "DataFunctions::===::x"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/data_functions.md") (anonymous (kind parameter) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/data_functions.md") (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/data_functions.md") (qualified-name "DataFunctions::===::y"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/data_functions.md") (anonymous (kind parameter) (ordinal 0))))) (kind expressionOperand) (ordinal 1)))
   )
   (evaluation
   )
@@ -916,6 +918,14 @@ standard library package DataFunctions {
   (query (document "memory://snapshot/data_functions.md") (range (start 15 11) (end 15 18)) (probe (position 15 11))
     (reference (id (source (node (document "memory://snapshot/data_functions.md") (anonymous (kind parameter) (ordinal 0))))) (kind featureTyping) (ordinal 0) (authored-target "Boolean")
       (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/data_functions.md") (range (start 15 24) (end 15 25)) (probe (position 15 24))
+    (reference (id (source (node (document "memory://snapshot/data_functions.md") (anonymous (kind parameter) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "x")
+      (outcome (status resolved) (target (node (document "memory://snapshot/data_functions.md") (qualified-name "DataFunctions::===::x")))))
+  )
+  (query (document "memory://snapshot/data_functions.md") (range (start 15 29) (end 15 30)) (probe (position 15 29))
+    (reference (id (source (node (document "memory://snapshot/data_functions.md") (anonymous (kind parameter) (ordinal 0))))) (kind expressionOperand) (ordinal 1) (authored-target "y")
+      (outcome (status resolved) (target (node (document "memory://snapshot/data_functions.md") (qualified-name "DataFunctions::===::y")))))
   )
   (query (document "memory://snapshot/data_functions.md") (range (start 14 56) (end 14 65)) (probe (position 14 56))
     (reference (id (source (node (document "memory://snapshot/data_functions.md") (qualified-name "DataFunctions::===::x"))) (kind featureTyping) (ordinal 0) (authored-target "DataValue")

@@ -135,12 +135,6 @@ package ExpressionCoverage {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 20 19) (end 20 37))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
         (range (start 22 26) (end 22 42))
       )
     )

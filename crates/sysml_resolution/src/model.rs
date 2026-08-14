@@ -33,8 +33,8 @@ use sysml_v2_parser_next::{
         InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement, ItemDef,
         ItemUsage as ParserItemUsage, KermlBindingMember, KermlClassifierDecl, KermlConnectorEnd,
         KermlConnectorMember, KermlEndMember, KermlFeatureMember, KermlInvariantMember,
-        LibraryPackage, Membership, MembershipKind as ParserMembershipKind, MetadataAnnotation,
-        MetadataDef, MetadataUsage as ParserMetadataUsage, NamespaceDecl, Node,
+        KermlSuccessionMember, LibraryPackage, Membership, MembershipKind as ParserMembershipKind,
+        MetadataAnnotation, MetadataDef, MetadataUsage as ParserMetadataUsage, NamespaceDecl, Node,
         OccurrenceBodyElement, OccurrenceDef, OccurrenceUsage as ParserOccurrenceUsage,
         OccurrenceUsageBody, Package, PackageBody, PackageBodyElement, PartDef, PartDefBody,
         PartDefBodyElement, PartUsage, PartUsageBody, PartUsageBodyElement,
@@ -47,10 +47,10 @@ use sysml_v2_parser_next::{
         ReturnDecl, RootElement, Satisfy, SatisfyViewMember, SendPayload, Span, StakeholderMember,
         StateDef, StateDefBody, StateDefBodyElement, StateUsage as ParserStateUsage, SubjectDecl,
         SubsettingKind, SubsettingRelationship, TerminateStmt, ThenAction, ThenStmt, ThenTarget,
-        Transition, TransitionAccept, TransitionEffect, UnaryOperator, UseCaseDef, UseCaseDefBody,
-        UseCaseDefBodyElement, VariantTypedUsage, VariantUsage, VerificationCaseDef,
-        VerifyRequirementMember, ViewBody, ViewBodyElement, ViewDef, ViewDefBody,
-        ViewDefBodyElement, ViewUsage as ParserViewUsage, ViewpointDef,
+        Transition, TransitionAccept, TransitionEffect, TypedParameterMember, UnaryOperator,
+        UseCaseDef, UseCaseDefBody, UseCaseDefBodyElement, VariantTypedUsage, VariantUsage,
+        VerificationCaseDef, VerifyRequirementMember, ViewBody, ViewBodyElement, ViewDef,
+        ViewDefBody, ViewDefBodyElement, ViewUsage as ParserViewUsage, ViewpointDef,
         Visibility as ParserVisibility,
     },
     ParseError, ParsedDocument,
@@ -1409,20 +1409,25 @@ fn fold_literal_comparison(
         }
     }
     let result = match (left, right) {
+        // KerML's strict-identity `===`/`!==` (`StrictEq`/`StrictNe`) fold identically to
+        // `==`/`!=` for the already-literal-scalar operands this fold ever sees -- there is no
+        // separate "same object identity, different value" case to distinguish once both sides
+        // are already-folded constants, so treating them as ordinary equality/inequality is exact,
+        // not an approximation.
         (EvaluatedValue::Boolean(left), EvaluatedValue::Boolean(right)) => match op {
-            BinaryOperator::Eq => Some(left == right),
-            BinaryOperator::Ne => Some(left != right),
+            BinaryOperator::Eq | BinaryOperator::StrictEq => Some(left == right),
+            BinaryOperator::Ne | BinaryOperator::StrictNe => Some(left != right),
             _ => None,
         },
         (EvaluatedValue::String(left), EvaluatedValue::String(right)) => match op {
-            BinaryOperator::Eq => Some(left == right),
-            BinaryOperator::Ne => Some(left != right),
+            BinaryOperator::Eq | BinaryOperator::StrictEq => Some(left == right),
+            BinaryOperator::Ne | BinaryOperator::StrictNe => Some(left != right),
             _ => None,
         },
         (left, right) => match (as_f64(left), as_f64(right)) {
             (Some(left), Some(right)) => Some(match op {
-                BinaryOperator::Eq => left == right,
-                BinaryOperator::Ne => left != right,
+                BinaryOperator::Eq | BinaryOperator::StrictEq => left == right,
+                BinaryOperator::Ne | BinaryOperator::StrictNe => left != right,
                 BinaryOperator::Lt => left < right,
                 BinaryOperator::Le => left <= right,
                 BinaryOperator::Gt => left > right,
@@ -1564,11 +1569,12 @@ fn fold_logical(op: BinaryOperator, left: EvaluatedValue, right: EvaluatedValue)
         }
         (EvaluatedValue::Boolean(left), EvaluatedValue::Boolean(right)) => {
             EvaluatedValue::Boolean(match op {
-                // `BitAnd` is KerML's single-`&` spelling of boolean conjunction in a constraint/
-                // invariant boolean expression (see `is_logical_operator`'s doc comment) -- not a
-                // bitwise operator here, so it folds identically to `And`.
+                // `BitAnd`/`BitOr` are KerML's single-`&`/single-`|` spellings of boolean
+                // conjunction/disjunction in a constraint/invariant boolean expression (see
+                // `is_logical_operator`'s doc comment) -- not bitwise operators here, so they fold
+                // identically to `And`/`Or`.
                 BinaryOperator::And | BinaryOperator::BitAnd => left && right,
-                BinaryOperator::Or => left || right,
+                BinaryOperator::Or | BinaryOperator::BitOr => left || right,
                 // `Xor`/`Implies` share `And`/`Or`'s Boolean/Boolean truth-table shape exactly --
                 // no new failure state, just a different two-operand boolean combination.
                 BinaryOperator::Xor => left != right,
@@ -1936,15 +1942,22 @@ fn classify_calc_expression(node: &Expression) -> ExpressionEvalShape {
     }
 }
 
-/// Whether a `BinaryOperator` is one of the six boolean comparison operators
-/// (`lower_constraint_expression`'s supported `BinaryOp` shape): `==`, `!=`, `<`, `<=`, `>`, `>=`.
-/// KerML's strict-identity `===`/`!==` (`StrictEq`/`StrictNe`) are deliberately excluded from this
-/// narrow slice.
+/// Whether a `BinaryOperator` is one of the eight boolean comparison operators
+/// (`lower_constraint_expression`'s supported `BinaryOp` shape): `==`, `!=`, `<`, `<=`, `>`, `>=`,
+/// and KerML's strict-identity `===`/`!==` (`StrictEq`/`StrictNe`). The latter two were originally
+/// deliberately excluded from this predicate, but real-corpus evidence (exhaustive
+/// `unsupported_calc_definition_member` audit, e.g. Kernel Function Library `BaseFunctions.kerml`'s
+/// `function '!=='{ ... return : Boolean[1] = not (x === y); }`) shows they appear alongside the
+/// other six comparisons in ordinary reference-resolution contexts identically -- this pipeline only
+/// ever recurses into a comparison's operands to resolve references, it does not evaluate strict vs.
+/// non-strict identity semantics differently, so there is no reason to keep them unsupported.
 fn is_comparison_operator(op: &BinaryOperator) -> bool {
     matches!(
         op,
         BinaryOperator::Eq
             | BinaryOperator::Ne
+            | BinaryOperator::StrictEq
+            | BinaryOperator::StrictNe
             | BinaryOperator::Lt
             | BinaryOperator::Le
             | BinaryOperator::Gt
@@ -1954,14 +1967,17 @@ fn is_comparison_operator(op: &BinaryOperator) -> bool {
 
 /// Whether a `BinaryOperator` is one of the boolean-combination operators
 /// `classify_constraint_node`/`lower_constraint_expression`'s logical `BinaryOp` shape supports:
-/// `and`, `or`, `xor`, `implies`, and KerML's single-ampersand `&` spelling of conjunction
-/// (`BinaryOperator::BitAnd`, `BinaryOperator::from_token("&")`). Per the KerML textual notation
-/// (§8.2.7 invariants), `&` is the ordinary boolean-and connective in a constraint/invariant
-/// boolean expression -- e.g. `sysml.library/trig_functions.md`'s `-1.0 <= that & that <= 1.0` and
-/// `sysml.library/state_performances.md`'s `accT == accableT & incomingTransferSort(...)` -- not a
-/// bitwise/set operator; the parser's own `BinaryOperator::from_token` has no distinct "boolean and"
-/// token for `&`, only the shared `BitAnd` classification, so this predicate (and `fold_logical`,
-/// which treats it identically to `And`) is where that context-dependent meaning is recovered.
+/// `and`, `or`, `xor`, `implies`, KerML's single-ampersand `&` spelling of conjunction
+/// (`BinaryOperator::BitAnd`, `BinaryOperator::from_token("&")`), and its single-pipe `|` spelling
+/// of disjunction (`BinaryOperator::BitOr`, `BinaryOperator::from_token("|")`). Per the KerML
+/// textual notation (§8.2.7 invariants), `&`/`|` are the ordinary boolean-and/-or connectives in a
+/// constraint/invariant boolean expression -- e.g. `sysml.library/trig_functions.md`'s `-1.0 <=
+/// that & that <= 1.0` and `sysml.library/state_performances.md`'s `accT == accableT &
+/// incomingTransferSort(...)` for `&`, and `sysml.library/state_performances.md`'s `accableT ==
+/// accT | incomingTransferSort(accT, accableT)` for `|` -- not a bitwise/set operator; the parser's
+/// own `BinaryOperator::from_token` has no distinct "boolean and"/"boolean or" token for `&`/`|`,
+/// only the shared `BitAnd`/`BitOr` classification, so this predicate (and `fold_logical`, which
+/// treats them identically to `And`/`Or`) is where that context-dependent meaning is recovered.
 /// `xor`/`implies` share `and`/`or`'s exact Boolean/Boolean two-operand truth-table shape
 /// (`fold_logical`), so widening this predicate is the whole of their support -- no new `EvalNode`
 /// variant or failure state needed.
@@ -1973,6 +1989,7 @@ fn is_logical_operator(op: &BinaryOperator) -> bool {
             | BinaryOperator::Xor
             | BinaryOperator::Implies
             | BinaryOperator::BitAnd
+            | BinaryOperator::BitOr
     )
 }
 
@@ -2006,6 +2023,19 @@ fn is_arithmetic_operator(op: &BinaryOperator) -> bool {
             | BinaryOperator::Pow
             | BinaryOperator::Exp
     )
+}
+
+/// Whether a `BinaryOperator` is the KerML range-construction operator `..` (`Range`, e.g.
+/// `(1..size(x))->forAll {...}`, Kernel Function Library `SequenceFunctions.kerml`) or the
+/// null-coalescing operator `??` (`NullCoalesce`, e.g. `collection->reduce '+' ?? zero`, Kernel
+/// Function Library `DataFunctions.kerml`/`NumericalFunctions.kerml`). Neither is arithmetic,
+/// comparison, or logical in the sense `is_arithmetic_operator`/`is_comparison_operator`/
+/// `is_logical_operator` model, but both are ordinary two-operand expression shapes for this
+/// pipeline's reference-resolution-only purposes (no evaluation folding is attempted for either),
+/// so they share this narrow, purpose-specific predicate rather than being folded into one of the
+/// other three.
+fn is_range_or_coalesce_operator(op: &BinaryOperator) -> bool {
+    matches!(op, BinaryOperator::Range | BinaryOperator::NullCoalesce)
 }
 
 /// Flattens a dotted `Expression::MemberAccess` chain (`a.b.c`, parsed as nested
@@ -4385,6 +4415,126 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
+    /// Lowers a KerML succession member (`KermlSuccessionMember`), e.g. `succession p_before_d
+    /// first [1] paint then [1] dry;` (Kernel Semantic Library `ControlPerformances.kerml`, KerML
+    /// Spec Annex A-3-6-Sequences). Structurally the keyword-full sibling of `KermlBindingMember`
+    /// (same `KermlConnectorEnd`-shaped `first`/`then` operands, same absent `body`/`membership`
+    /// shape difference from `KermlConnectorMember`) -- reuses `lower_kerml_binding_operand`
+    /// verbatim for both ends, tagged `ReferenceKind::Succession` (the same kind
+    /// `lower_first_stmt`'s `FirstStmt` uses for its own `first`/`then` operands) rather than
+    /// `BindSource`/`BindTarget`, since this is a succession relationship, not a binding. `is_all`
+    /// (`all` sufficiency) and the succession's own `multiplicity` are not modeled as distinct
+    /// facts here, mirroring `KermlConnectorMember`/`KermlBindingMember`'s own unmodeled
+    /// end-level `multiplicity`/`references`.
+    fn lower_kerml_succession_member(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        node: &Node<KermlSuccessionMember>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declared_name(&node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::Succession,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span.clone(),
+        )?;
+        self.lower_kerml_binding_operand(
+            document,
+            declaration,
+            ReferenceKind::Succession,
+            &node.value.first,
+        )?;
+        self.lower_kerml_binding_operand(
+            document,
+            declaration,
+            ReferenceKind::Succession,
+            &node.value.then,
+        )?;
+        Ok(())
+    }
+
+    /// Lowers a KerML kinded parameter member (`TypedParameterMember`), e.g. `in expr
+    /// thenValue[0..1] { return : Anything[0..*] ordered nonunique; }` or `in bool onOccurrence =
+    /// changeSignal.signalCondition;` (Kernel Function/Semantic Libraries, `CalcDefBodyElement`'s
+    /// distinct kind-keyword sibling of `InOutDecl`). Mirrors `lower_parameter_declaration`'s
+    /// shape exactly (declared name folding to `None` for the redefinition-only anonymous form,
+    /// a direction-tagged `FeatureTyping` reference, a `redefines` relationship, and `= expr`
+    /// value evaluation through `lower_calc_expression`), plus recurses into `body` -- the same
+    /// `CalcDefBody` shape `lower_calc_def_body` already walks for nested parameters/`return`
+    /// declarations -- which `InOutDecl` has no field for at all. `kind` (`expr`/`bool`/
+    /// `feature`/`calc`/`step`), `is_abstract`, `multiplicity`, `ordered`, and `nonunique` are not
+    /// modeled as distinct facts here, mirroring `lower_parameter_declaration`'s own unmodeled
+    /// `InOutDecl.ordered`/`InOutDecl.nonunique`.
+    fn lower_typed_parameter_member(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        node: &Node<TypedParameterMember>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declared_name(&node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::ParameterUsage,
+            name,
+            node.span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span.clone(),
+        )?;
+        if let Some(type_name) = node.value.type_name {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(type_name)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span
+                .clone();
+            let direction = Some(match node.value.direction {
+                InOut::In => ParameterDirection::In,
+                InOut::Out => ParameterDirection::Out,
+                InOut::InOut => ParameterDirection::InOut,
+            });
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::FeatureTyping,
+                document,
+                local: type_name,
+                flags: RelationshipFlags {
+                    direction,
+                    ..RelationshipFlags::default()
+                },
+                span,
+                import: None,
+            })?;
+        }
+        if let Some(relationship) = &node.value.redefines {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(feature_value) = &node.value.value {
+            let expression = feature_value.value.expression.clone();
+            self.push_evaluation_fact(declaration, classify_calc_expression(&expression.value));
+            self.lower_calc_expression(
+                document,
+                declaration,
+                UnsupportedFamily::CalcDefinitionMember,
+                &expression,
+            )?;
+        }
+        self.lower_calc_def_body(document, declaration, &node.value.body)
+    }
+
     /// Lowers a KerML invariant member (`KermlInvariantMember`), e.g. `inv unitBound { -1.0 <=
     /// that & that <= 1.0 }` or the anonymous `inv { isClosed == true }` (KerML Spec §8.2.7, gap:
     /// previously entirely unlowered -- see `DeclarationKind::KermlInvariant`). Its body shares
@@ -6726,7 +6876,8 @@ impl SemanticModelBuilder {
             Expression::BinaryOp { op, left, right }
                 if is_comparison_operator(op)
                     || is_arithmetic_operator(op)
-                    || is_logical_operator(op) =>
+                    || is_logical_operator(op)
+                    || is_range_or_coalesce_operator(op) =>
             {
                 self.lower_constraint_expression(document, declaration, family, left)?;
                 self.lower_constraint_expression(document, declaration, family, right)
@@ -6761,6 +6912,15 @@ impl SemanticModelBuilder {
             Expression::UnaryOp { op, operand } if is_unary_operator(op) => {
                 self.lower_constraint_expression(document, declaration, family, operand)
             }
+            Expression::Conditional {
+                test,
+                then_expr,
+                else_expr,
+            } => {
+                self.lower_constraint_expression(document, declaration, family, test)?;
+                self.lower_constraint_expression(document, declaration, family, then_expr)?;
+                self.lower_constraint_expression(document, declaration, family, else_expr)
+            }
             Expression::TypeCheck {
                 operand, type_name, ..
             } => {
@@ -6781,21 +6941,30 @@ impl SemanticModelBuilder {
     }
 
     /// Lowers a `calc def`/`calc` usage body's formula expression (slice 1 of the constraint/calc
-    /// expression fact family, extended by slice 4 for arithmetic). Calc bodies are typically
-    /// arithmetic-result formulas rather than boolean comparisons, so comparison-operator support
-    /// (`lower_constraint_expression`'s `BinaryOp` arm) deliberately does not apply here; this slice
-    /// supports the minimal leaf shapes -- a literal, a feature/feature-chain reference (resolved
-    /// as an `ExpressionOperand` reference exactly like `lower_constraint_expression`), a
-    /// parenthesized wrapper -- plus (slice 4) an arithmetic `BinaryOp` (`Add`/`Sub`/`Mul`/`Div`/
-    /// `Mod`, see `is_arithmetic_operator`; `Exp`/`Pow` deliberately excluded, see
-    /// `is_arithmetic_operator`'s doc comment) whose operands are recursed into just like
-    /// `lower_constraint_expression`'s comparison arm. Also supports `Expression::Invocation`/
+    /// expression fact family, extended by slice 4 for arithmetic). Originally scoped to
+    /// arithmetic-only `BinaryOp` support on the theory that calc bodies are typically
+    /// arithmetic-result formulas rather than boolean comparisons -- but the exhaustive
+    /// `unsupported_calc_definition_member` audit found this premise false for a large share of
+    /// the real corpus (Kernel Function Library equality/comparison functions like
+    /// `BaseFunctions.kerml`'s `return : Boolean[1] = not (x == y);`, KerML `inv { ... }`
+    /// boolean-invariant bodies reusing this same `CalcDefBody`/`lower_calc_def_body` walker per
+    /// `KermlInvariantMember`, etc.), so comparison/logical `BinaryOp` support now matches
+    /// `lower_constraint_expression`'s `BinaryOp` arm exactly (`is_comparison_operator`/
+    /// `is_logical_operator`, alongside `is_arithmetic_operator`'s `Add`/`Sub`/`Mul`/`Div`/`Mod`/
+    /// `Exp`/`Pow`). This slice supports the minimal leaf shapes -- a literal, a feature/
+    /// feature-chain reference (resolved as an `ExpressionOperand` reference exactly like
+    /// `lower_constraint_expression`), a parenthesized wrapper -- plus every comparison/
+    /// arithmetic/logical `BinaryOp` whose operands are recursed into just like
+    /// `lower_constraint_expression`'s own `BinaryOp` arm. Also supports `Expression::Invocation`/
     /// `Expression::Constructor` (e.g. `sum(partMasses)`, `new PusherOutput(pusherForce)`),
     /// exactly like `lower_constraint_expression`'s own Invocation/Constructor arm: reference
     /// resolution only, never evaluation. Also supports a unary `-`/`not` `UnaryOp` (see
-    /// `is_unary_operator`), recursing into its single operand exactly like `Parenthesized`.
-    /// `Exp`/`Pow` and every other expression shape stay unsupported, falling through to the
-    /// existing `unsupported_calc_definition_member` diagnostic, unchanged from prior behavior.
+    /// `is_unary_operator`), recursing into its single operand exactly like `Parenthesized`, and a
+    /// `Conditional` (`if <test> ? <then> else <else>`), recursing into all three sub-expressions
+    /// reference-resolution-only exactly like `Tuple`'s multi-operand shape (no evaluation of
+    /// which branch is taken). Every other expression shape stays unsupported, falling through to
+    /// the existing `unsupported_calc_definition_member` diagnostic, unchanged from prior
+    /// behavior.
     fn lower_calc_expression(
         &mut self,
         document: DocumentId,
@@ -6849,7 +7018,12 @@ impl SemanticModelBuilder {
             Expression::Parenthesized(inner) => {
                 self.lower_calc_expression(document, declaration, family, inner)
             }
-            Expression::BinaryOp { op, left, right } if is_arithmetic_operator(op) => {
+            Expression::BinaryOp { op, left, right }
+                if is_arithmetic_operator(op)
+                    || is_comparison_operator(op)
+                    || is_logical_operator(op)
+                    || is_range_or_coalesce_operator(op) =>
+            {
                 self.lower_calc_expression(document, declaration, family, left)?;
                 self.lower_calc_expression(document, declaration, family, right)
             }
@@ -6882,6 +7056,15 @@ impl SemanticModelBuilder {
             }
             Expression::UnaryOp { op, operand } if is_unary_operator(op) => {
                 self.lower_calc_expression(document, declaration, family, operand)
+            }
+            Expression::Conditional {
+                test,
+                then_expr,
+                else_expr,
+            } => {
+                self.lower_calc_expression(document, declaration, family, test)?;
+                self.lower_calc_expression(document, declaration, family, then_expr)?;
+                self.lower_calc_expression(document, declaration, family, else_expr)
             }
             Expression::TypeCheck {
                 operand, type_name, ..
@@ -10080,15 +10263,24 @@ impl SemanticModelBuilder {
                     CalcDefBodyElement::EndMember(node) => {
                         self.lower_kerml_end_member(document, declaration, node)?;
                     }
-                    CalcDefBodyElement::TypedParameter(_)
-                    | CalcDefBodyElement::Succession(_)
-                    | CalcDefBodyElement::Import(_)
-                    | CalcDefBodyElement::Comment(_)
-                    | CalcDefBodyElement::AssertConstraint(_) => self.push_unsupported(
-                        document,
-                        UnsupportedFamily::CalcDefinitionMember,
-                        element.span.clone(),
-                    ),
+                    CalcDefBodyElement::TypedParameter(node) => {
+                        self.lower_typed_parameter_member(document, declaration, node)?;
+                    }
+                    CalcDefBodyElement::Succession(node) => {
+                        self.lower_kerml_succession_member(document, declaration, node)?;
+                    }
+                    CalcDefBodyElement::Import(node) => {
+                        self.lower_import(document, Some(declaration), node)?;
+                    }
+                    CalcDefBodyElement::Comment(_) => {}
+                    CalcDefBodyElement::AssertConstraint(node) => {
+                        self.lower_assert_constraint_member(
+                            document,
+                            declaration,
+                            UnsupportedFamily::CalcDefinitionMember,
+                            node,
+                        )?;
+                    }
                 }
             }
         }
@@ -14401,6 +14593,228 @@ mod tests {
                 "(kind typing) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Outer::rollup\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Outer::Inner\")))"
             ),
             "expected the nested calc usage's typing reference to Inner to resolve, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn kerml_succession_member_lowers_first_and_then_ends() {
+        // `CalcDefBodyElement::Succession` (`KermlSuccessionMember`) was previously
+        // unconditionally unsupported despite `lower_kerml_binding_operand` already existing to
+        // lower its identical `KermlConnectorEnd`-shaped operands (see the exhaustive
+        // `unsupported_calc_definition_member` audit's `a_3_6_sequences.md`/
+        // `a_3_7_decisions_and_merges.md` KerML Spec Annex A fixtures).
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tbehavior Manufacture {\n\
+             \t\tstep paint : Paint;\n\
+             \t\tstep dry : Dry;\n\
+             \t\tsuccession p_before_d first paint then dry;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output
+                .contains("(qualified-name \"Demo::Manufacture::p_before_d\"))) (kind succession)"),
+            "expected a succession declaration for p_before_d, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind succession) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Manufacture::p_before_d\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Manufacture::paint\")))"
+            ),
+            "expected p_before_d's first end to resolve to paint, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind succession) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Manufacture::p_before_d\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Manufacture::dry\")))"
+            ),
+            "expected p_before_d's then end to resolve to dry, got:\n{output}"
+        );
+        assert!(
+            !output.contains("unsupported_calc_definition_member"),
+            "expected no unsupported_calc_definition_member diagnostic, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn calc_def_body_typed_parameter_member_lowers_typing_and_value() {
+        // `CalcDefBodyElement::TypedParameter` (`TypedParameterMember`) was previously
+        // unconditionally unsupported; mirrors `lower_parameter_declaration`'s shape (a
+        // direction-tagged `FeatureTyping` reference plus `= expr` value evaluation), e.g. Kernel
+        // Function Library `ControlFunctions.kerml`'s `in bool onOccurrence = ...;`.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tcalc def C {\n\
+             \t\tin a : Boolean;\n\
+             \t\tin expr p : Boolean = a;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::C::p\"))) (kind parameter)"),
+            "expected a parameter declaration for p, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind featureTyping) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::C::p\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Boolean\")))"
+            ) || output.contains("(authored-target \"Boolean\")\n      (outcome (status unresolved))"),
+            "expected p's featureTyping reference to Boolean, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind expressionOperand) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::C::p\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::C::a\")))"
+            ),
+            "expected p's value expression to resolve its operand a, got:\n{output}"
+        );
+        assert!(
+            !output.contains("unsupported_calc_definition_member"),
+            "expected no unsupported_calc_definition_member diagnostic, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn calc_def_body_typed_parameter_member_redefines_and_nested_body() {
+        // The anonymous redefinition-only form (`in bool redefines onOccurrence { ... }`, Kernel
+        // Semantic Library `Observation.kerml`) folds its empty `name` to `None` (mirroring
+        // `lower_return_decl`'s identical `ReturnDecl.name` handling) and recurses into its own
+        // nested `CalcDefBody` (a field `InOutDecl` has no equivalent for at all).
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tcalc def C {\n\
+             \t\tin a : Boolean;\n\
+             \t\tin bool redefines a {\n\
+             \t\t\treturn : Boolean;\n\
+             \t\t}\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind redefinition) (source (node (document \"memory://test/enum.sysml\") (anonymous (kind parameter) (ordinal 0))))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::C::a\")))"
+            ),
+            "expected the anonymous parameter's redefines to resolve to a, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference \"Boolean\"))))"
+            ),
+            "expected the nested anonymous return declaration (typed `: Boolean`, no direction/\
+             redefines) to lower too, got:\n{output}"
+        );
+        assert!(
+            !output.contains("unsupported_calc_definition_member"),
+            "expected no unsupported_calc_definition_member diagnostic, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn calc_def_body_assert_constraint_member_lowers_to_a_declaration() {
+        // `CalcDefBodyElement::AssertConstraint` was previously unconditionally unsupported
+        // despite `lower_assert_constraint_member` already existing (wired for
+        // `ConstraintDefBodyElement`/case-family bodies) -- pure mechanical dispatch wiring, same
+        // shape as `9_6cbf` originally added it for. Real-corpus site: Kernel Semantic Library
+        // `ScalarValues.kerml`.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tcalc def C {\n\
+             \t\tin a : Boolean;\n\
+             \t\tassert constraint check : Boolean {\n\
+             \t\t\ta\n\
+             \t\t}\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(qualified-name \"Demo::C::check\"))) (kind constraint)"),
+            "expected an assert-constraint declaration for check, got:\n{output}"
+        );
+        assert!(
+            !output.contains("unsupported_calc_definition_member"),
+            "expected no unsupported_calc_definition_member diagnostic, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn calc_def_body_import_member_lowers_its_target() {
+        // `CalcDefBodyElement::Import` was previously unconditionally unsupported despite
+        // `lower_import` already accepting an `Option<DeclarationId>` owner -- pure mechanical
+        // dispatch wiring. Real-corpus site: Kernel Function/Semantic Libraries' `private import
+        // ...;`/`comment`-adjacent members inside a `calc def`/KerML classifier body.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpackage Other {\n\
+             \t\tattribute def X;\n\
+             \t}\n\
+             \tcalc def C {\n\
+             \t\tprivate import Other::*;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(kind import)"),
+            "expected an import declaration owned by C, got:\n{output}"
+        );
+        assert!(
+            !output.contains("unsupported_calc_definition_member"),
+            "expected no unsupported_calc_definition_member diagnostic, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn calc_def_body_comment_member_is_ignored() {
+        // `CalcDefBodyElement::Comment` mirrors `PartDefBodyElement::Comment`/
+        // `PackageBodyElement::Comment`'s existing inert no-op treatment (like `Doc`) rather than
+        // being unconditionally unsupported.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tcalc def C {\n\
+             \t\tcomment /* a note about C */\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            !output.contains("unsupported_calc_definition_member"),
+            "expected no unsupported_calc_definition_member diagnostic, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn lower_calc_expression_supports_comparison_logical_and_conditional_operators() {
+        // `lower_calc_expression`'s `BinaryOp` arm was originally arithmetic-only; the exhaustive
+        // `unsupported_calc_definition_member` audit found real-corpus calc-body formulas
+        // routinely use comparison/logical operators too (e.g. Kernel Function Library
+        // `BaseFunctions.kerml`'s `return : Boolean[1] = not (x == y);`), plus the `Conditional`
+        // (`if <test> ? <then> else <else>`) expression shape, previously unhandled entirely.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tcalc def C {\n\
+             \t\tin a : Boolean;\n\
+             \t\tin b : Boolean;\n\
+             \t\tin c : Boolean;\n\
+             \t\treturn : Boolean = if (a == b and not c) ? a else b;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind expressionOperand) (source (node (document \"memory://test/enum.sysml\") (anonymous (kind parameter) (ordinal 0))))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::C::a\")))"
+            ),
+            "expected the return's conditional expression to resolve its operand a, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind expressionOperand) (source (node (document \"memory://test/enum.sysml\") (anonymous (kind parameter) (ordinal 0))))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::C::b\")))"
+            ),
+            "expected the return's conditional expression to resolve its operand b, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind expressionOperand) (source (node (document \"memory://test/enum.sysml\") (anonymous (kind parameter) (ordinal 0))))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::C::c\")))"
+            ),
+            "expected the return's conditional expression to resolve its operand c, got:\n{output}"
+        );
+        assert!(
+            !output.contains("unsupported_calc_definition_member"),
+            "expected no unsupported_calc_definition_member diagnostic, got:\n{output}"
         );
     }
 

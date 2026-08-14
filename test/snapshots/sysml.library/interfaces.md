@@ -168,9 +168,9 @@ standard library package Interfaces {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_attribute_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 28 51) (end 28 63))
+        (range (start 28 54) (end 28 58))
       )
       (diagnostic
         (severity warning)
@@ -269,7 +269,7 @@ standard library package Interfaces {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:d6d9003112ba8ccb2d20b49c088947a95fa9449a7658ba20dd58f05186fc0ca2") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d6d9003112ba8ccb2d20b49c088947a95fa9449a7658ba20dd58f05186fc0ca2") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/interfaces.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Connections::Connection") (import (shape membership) (recursive false)))))
@@ -292,7 +292,7 @@ standard library package Interfaces {
     (declaration (id (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::Interface::::thisParticipant"))) (kind ref) (membership (kind feature) (visibility protected)) (authored (membership (kind feature) (visibility protected)) (relationships (redefinition (reference "self"))))
     (declaration (id (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::binaryInterfaces"))) (kind interface-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "interfaces")) (specialization (reference "binaryConnections"))))
     (declaration (id (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::excludingOnce"))) (kind calc-def) (membership (kind owning) (visibility private)) (authored (membership (kind owning) (visibility private)) (relationships (expressionOperand (reference "seq")) (expressionOperand (reference "position"))))
-    (declaration (id (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::excludingOnce::position"))) (kind attribute) (membership (kind feature) (visibility private)) (authored (membership (kind feature) (visibility private)) (relationships (featureTyping (reference "Natural"))))
+    (declaration (id (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::excludingOnce::position"))) (kind attribute) (membership (kind feature) (visibility private)) (authored (membership (kind feature) (visibility private)) (relationships (featureTyping (reference "Natural")) (expressionOperand (reference "seq")) (invocationCallee (reference "size"))))
     (declaration (id (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::excludingOnce::seq"))) (kind parameter) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::excludingOnce::value"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "seq") (direction in))))
     (declaration (id (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::interfaces"))) (kind interface-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "connections"))))
@@ -379,6 +379,12 @@ standard library package Interfaces {
     (reference (id (source (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::excludingOnce::position"))) (kind featureTyping) (ordinal 0))
       (authored-target "Natural")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::excludingOnce::position"))) (kind expressionOperand) (ordinal 0))
+      (authored-target "seq")
+      (outcome (status resolved) (target (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::excludingOnce::seq")))))
+    (reference (id (source (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::excludingOnce::position"))) (kind invocationCallee) (ordinal 0))
+      (authored-target "size")
+      (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::excludingOnce::value"))) (kind featureTyping) (ordinal 0))
       (authored-target "seq")
       (outcome (status resolved) (target (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::excludingOnce::seq")))))
@@ -389,6 +395,7 @@ standard library package Interfaces {
   (relationships
     (relationship (kind specialization) (source (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::BinaryInterface"))) (target (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::Interface"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::BinaryInterface"))) (kind specialization) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::binaryInterfaces"))) (target (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::interfaces"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::binaryInterfaces"))) (kind specialization) (ordinal 0)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::excludingOnce::position"))) (target (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::excludingOnce::seq"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::excludingOnce::position"))) (kind expressionOperand) (ordinal 0)))
     (relationship (kind typing) (direction in) (source (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::excludingOnce::value"))) (target (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::excludingOnce::seq"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::excludingOnce::value"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
@@ -505,6 +512,14 @@ standard library package Interfaces {
   )
   (query (document "memory://snapshot/interfaces.md") (range (start 28 37) (end 28 44)) (probe (position 28 37))
     (reference (id (source (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::excludingOnce::position"))) (kind featureTyping) (ordinal 0) (authored-target "Natural")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/interfaces.md") (range (start 28 59) (end 28 62)) (probe (position 28 59))
+    (reference (id (source (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::excludingOnce::position"))) (kind expressionOperand) (ordinal 0) (authored-target "seq")
+      (outcome (status resolved) (target (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::excludingOnce::seq")))))
+  )
+  (query (document "memory://snapshot/interfaces.md") (range (start 28 54) (end 28 58)) (probe (position 28 54))
+    (reference (id (source (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::excludingOnce::position"))) (kind invocationCallee) (ordinal 0) (authored-target "size")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/interfaces.md") (range (start 26 23) (end 26 26)) (probe (position 26 23))

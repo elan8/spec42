@@ -273,12 +273,6 @@ package '10d-Dynamics Analysis' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_analysis_case_definition_member")
-        (source "semantic")
-        (range (start 64 12) (end 64 37))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 67 8) (end 67 12))
@@ -314,7 +308,7 @@ package '10d-Dynamics Analysis' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:b8a004d4f36b6d521f47dcd9903ed6d85e2078c8499ee37938a622a8002aa61b") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b8a004d4f36b6d521f47dcd9903ed6d85e2078c8499ee37938a622a8002aa61b") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/10d_dynamics_analysis.md") (qualified-name "10d-Dynamics Analysis"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/10d_dynamics_analysis.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ISQ") (import (shape namespace) (recursive false)))))
@@ -325,7 +319,7 @@ package '10d-Dynamics Analysis' {
     (declaration (id (node (document "memory://snapshot/10d_dynamics_analysis.md") (anonymous (kind import) (ordinal 3))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Natural") (import (shape membership) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/10d_dynamics_analysis.md") (anonymous (kind import) (ordinal 4))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "SequenceFunctions") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/10d_dynamics_analysis.md") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis"))) (kind analysis-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/10d_dynamics_analysis.md") (anonymous (kind for-loop) (ordinal 0))))) (kind for-loop) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/10d_dynamics_analysis.md") (anonymous (kind for-loop) (ordinal 0))))) (kind for-loop) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "powerProfile"))))
     (declaration (id (node (document "memory://snapshot/10d_dynamics_analysis.md") (anonymous (kind assign) (ordinal 0))))) (kind assign) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "dynamics::x_out")) (assignTarget (reference "position"))))
     (declaration (id (node (document "memory://snapshot/10d_dynamics_analysis.md") (anonymous (kind assign) (ordinal 1))))) (kind assign) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "dynamics::v_out")) (assignTarget (reference "speed"))))
     (declaration (id (node (document "memory://snapshot/10d_dynamics_analysis.md") (anonymous (kind assign) (ordinal 2))))) (kind assign) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "accelerationProfile")) (memberAccessOperand (reference "dynamics::a_out")) (assignTarget (reference "accelerationProfile"))))
@@ -392,6 +386,9 @@ package '10d-Dynamics Analysis' {
     (reference (id (source (node (document "memory://snapshot/10d_dynamics_analysis.md") (anonymous (kind import) (ordinal 3))))) (kind membershipImport) (ordinal 0))
       (authored-target "ScalarValues::Natural")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/10d_dynamics_analysis.md") (anonymous (kind for-loop) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
+      (authored-target "powerProfile")
+      (outcome (status resolved) (target (node (document "memory://snapshot/10d_dynamics_analysis.md") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis::powerProfile")))))
     (reference (id (source (node (document "memory://snapshot/10d_dynamics_analysis.md") (anonymous (kind assign) (ordinal 2))))) (kind expressionOperand) (ordinal 0))
       (authored-target "accelerationProfile")
       (outcome (status resolved) (target (node (document "memory://snapshot/10d_dynamics_analysis.md") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis::accelerationProfile")))))
@@ -598,6 +595,7 @@ package '10d-Dynamics Analysis' {
       (outcome (status unresolved)))
   )
   (relationships
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/10d_dynamics_analysis.md") (anonymous (kind for-loop) (ordinal 0))))) (target (node (document "memory://snapshot/10d_dynamics_analysis.md") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis::powerProfile"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/10d_dynamics_analysis.md") (anonymous (kind for-loop) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/10d_dynamics_analysis.md") (anonymous (kind assign) (ordinal 2))))) (target (node (document "memory://snapshot/10d_dynamics_analysis.md") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis::accelerationProfile"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/10d_dynamics_analysis.md") (anonymous (kind assign) (ordinal 2))))) (kind expressionOperand) (ordinal 0)))
     (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/10d_dynamics_analysis.md") (anonymous (kind assign) (ordinal 0))))) (target (node (document "memory://snapshot/10d_dynamics_analysis.md") (qualified-name "10d-Dynamics Analysis::DynamicsModel::StraightLineDynamics::x_out"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/10d_dynamics_analysis.md") (anonymous (kind assign) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0)))
     (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/10d_dynamics_analysis.md") (anonymous (kind assign) (ordinal 1))))) (target (node (document "memory://snapshot/10d_dynamics_analysis.md") (qualified-name "10d-Dynamics Analysis::DynamicsModel::StraightLineDynamics::v_out"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/10d_dynamics_analysis.md") (anonymous (kind assign) (ordinal 1))))) (kind memberAccessOperand) (ordinal 0)))
@@ -678,6 +676,10 @@ package '10d-Dynamics Analysis' {
   (query (document "memory://snapshot/10d_dynamics_analysis.md") (range (start 50 17) (end 50 38)) (probe (position 50 17))
     (reference (id (source (node (document "memory://snapshot/10d_dynamics_analysis.md") (anonymous (kind import) (ordinal 3))))) (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Natural")
       (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/10d_dynamics_analysis.md") (range (start 64 15) (end 64 27)) (probe (position 64 15))
+    (reference (id (source (node (document "memory://snapshot/10d_dynamics_analysis.md") (anonymous (kind for-loop) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "powerProfile")
+      (outcome (status resolved) (target (node (document "memory://snapshot/10d_dynamics_analysis.md") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis::powerProfile")))))
   )
   (query (document "memory://snapshot/10d_dynamics_analysis.md") (range (start 74 39) (end 74 58)) (probe (position 74 39))
     (reference (id (source (node (document "memory://snapshot/10d_dynamics_analysis.md") (anonymous (kind assign) (ordinal 2))))) (kind expressionOperand) (ordinal 0) (authored-target "accelerationProfile")

@@ -550,6 +550,21 @@ entry should carry enough detail to file/update an upstream issue against
   variant) in the upstream parser before `sysml_resolution` can resolve it as a structural
   self-reference rather than an ordinary lexical lookup, filed upstream against
   `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+  **Update (exhaustive `unsupported_calc_definition_member` audit, this pass):** after widening
+  `lower_calc_expression`'s `BinaryOp` support to match `lower_constraint_expression`
+  (comparison/logical/range/coalesce operators, plus a new `Expression::Conditional` arm on both
+  -- see `crates/sysml_resolution/src/model.rs`) and wiring the previously-undispatched
+  `CalcDefBodyElement::{Succession,TypedParameter,Import,Comment,AssertConstraint}` variants,
+  199 baseline occurrences dropped to 11, and all 11 residual ones trace to this exact gap in one
+  further manifestation not previously called out explicitly: `(that as Occurrence).member`
+  (`sysml.library/occurrences.md`, `performances.md`, `state_performances.md`) is an
+  `Expression::MemberAccess` whose `base` is an `Expression::TypeCheck` (the `as` cast) wrapping a
+  `that` `FeatureRef`, not a `FeatureRef`/`FeatureChainRef` directly -- `flatten_member_access_chain`
+  correctly declines it (its root is a `TypeCheck`, not a reference), so the whole member-access
+  chain falls through to the existing unsupported diagnostic rather than partially resolving `.member`
+  while leaving `that` itself unresolved. This is the same root cause as the bare `that` case above,
+  not a distinct gap -- no `sysml_resolution` change can unblock it without the same upstream
+  `SYSML_RESERVED_KEYWORDS`/`Expression::ImplicitThat` fix.
 
 - Gap 42. `StateDefBodyElement`/`RequirementDefBodyElement` (`src/ast/behavior.rs`,
   `src/ast/requirement.rs`) are closed enums covering only a small, hand-picked subset of the

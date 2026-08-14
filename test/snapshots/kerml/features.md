@@ -187,9 +187,9 @@ package Features {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_calc_definition_member")
+        (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 33 9) (end 33 36))
+        (range (start 33 31) (end 33 35))
       )
       (diagnostic
         (severity error)
@@ -252,6 +252,7 @@ package Features {
     (declaration (id (node (document "memory://snapshot/features.md") (qualified-name "Features::RegisteredAsset"))) (kind class-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/features.md") (qualified-name "Features::Tanks"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/features.md") (qualified-name "Features::Tanks::fuelInPort"))) (kind kerml-feature) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/features.md") (qualified-name "Features::Tanks::fuelInPort::fuelFlow"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Fuel") (direction in))))
     (declaration (id (node (document "memory://snapshot/features.md") (qualified-name "Features::Vehicle"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "RegisteredAsset"))))
     (declaration (id (node (document "memory://snapshot/features.md") (anonymous (kind kerml-binding) (ordinal 0))))) (kind kerml-binding) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (bindSource (reference "vin")) (bindTarget (reference "v::vin"))))
     (declaration (id (node (document "memory://snapshot/features.md") (anonymous (kind kerml-binding) (ordinal 1))))) (kind kerml-binding) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (bindSource (reference "x")) (bindTarget (reference "vin"))))
@@ -271,6 +272,9 @@ package Features {
     (declaration (id (node (document "memory://snapshot/features.md") (qualified-name "Features::z"))) (kind kerml-feature) (membership (kind feature) (visibility default)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/features.md") (qualified-name "Features::Tanks::fuelInPort::fuelFlow"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Fuel")
+      (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/features.md") (qualified-name "Features::Vehicle"))) (kind specialization) (ordinal 0))
       (authored-target "RegisteredAsset")
       (outcome (status resolved) (target (node (document "memory://snapshot/features.md") (qualified-name "Features::RegisteredAsset")))))
@@ -344,6 +348,10 @@ package Features {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/features.md") (range (start 33 31) (end 33 35)) (probe (position 33 31))
+    (reference (id (source (node (document "memory://snapshot/features.md") (qualified-name "Features::Tanks::fuelInPort::fuelFlow"))) (kind featureTyping) (ordinal 0) (authored-target "Fuel")
+      (outcome (status unresolved)))
+  )
   (query (document "memory://snapshot/features.md") (range (start 55 26) (end 55 41)) (probe (position 55 26))
     (reference (id (source (node (document "memory://snapshot/features.md") (qualified-name "Features::Vehicle"))) (kind specialization) (ordinal 0) (authored-target "RegisteredAsset")
       (outcome (status resolved) (target (node (document "memory://snapshot/features.md") (qualified-name "Features::RegisteredAsset")))))

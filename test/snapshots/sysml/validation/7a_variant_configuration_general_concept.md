@@ -90,9 +90,9 @@ package '7a-Variant Configuration - General Concept' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_constraint_definition_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 36 17) (end 37 13))
+        (range (start 36 17) (end 36 39))
       )
       (diagnostic
         (severity warning)
@@ -131,7 +131,7 @@ package '7a-Variant Configuration - General Concept' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:c612a9f55e435f84c0eb2e66ae18f1c8ec4581460065123c2c30ee0a7d47859e") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:c612a9f55e435f84c0eb2e66ae18f1c8ec4581460065123c2c30ee0a7d47859e") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -139,7 +139,7 @@ package '7a-Variant Configuration - General Concept' {
     (declaration (id (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (anonymous (kind part) (ordinal 0))))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "subsystemA"))))
     (declaration (id (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (anonymous (kind part) (ordinal 1))))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "subsystemB"))))
     (declaration (id (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::anyVehicleConfig"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Vehicle"))))
-    (declaration (id (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (anonymous (kind constraint) (ordinal 0))))) (kind constraint) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "subsystemA")) (expressionOperand (reference "subsystemB::subsystem3"))))
+    (declaration (id (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (anonymous (kind constraint) (ordinal 0))))) (kind constraint) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "subsystemA")) (expressionOperand (reference "subsystemA::subsystem2")) (expressionOperand (reference "subsystemB")) (expressionOperand (reference "subsystemB::subsystem3"))))
     (declaration (id (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::anyVehicleConfig::subsystemA"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::anyVehicleConfig::subsystemB"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::part1"))) (kind part) (membership (kind feature) (visibility default)))
@@ -169,6 +169,12 @@ package '7a-Variant Configuration - General Concept' {
       (authored-target "subsystemA")
       (outcome (status resolved) (target (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::anyVehicleConfig::subsystemA")))))
     (reference (id (source (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 1))
+      (authored-target "subsystemA::subsystem2")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 2))
+      (authored-target "subsystemB")
+      (outcome (status resolved) (target (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::anyVehicleConfig::subsystemB")))))
+    (reference (id (source (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 3))
       (authored-target "subsystemB::subsystem3")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::vehicleConfigA"))) (kind subsetting) (ordinal 0))
@@ -185,9 +191,11 @@ package '7a-Variant Configuration - General Concept' {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::VehicleConfigB"))) (target (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::anyVehicleConfig"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::VehicleConfigB"))) (kind subsetting) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::anyVehicleConfig"))) (target (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::Vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::anyVehicleConfig"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (anonymous (kind constraint) (ordinal 0))))) (target (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::anyVehicleConfig::subsystemA"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (anonymous (kind constraint) (ordinal 0))))) (target (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::anyVehicleConfig::subsystemB"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 2)))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::vehicleConfigA"))) (target (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::anyVehicleConfig"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::vehicleConfigA"))) (kind subsetting) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (anonymous (kind constraint) (ordinal 0))))) (value (kind unresolved-operand)))
   )
 )
 ~~~
@@ -214,8 +222,16 @@ package '7a-Variant Configuration - General Concept' {
     (reference (id (source (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "subsystemA")
       (outcome (status resolved) (target (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::anyVehicleConfig::subsystemA")))))
   )
+  (query (document "memory://snapshot/7a_variant_configuration_general_concept.md") (range (start 36 17) (end 36 39)) (probe (position 36 17))
+    (reference (id (source (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 1) (authored-target "subsystemA::subsystem2")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/7a_variant_configuration_general_concept.md") (range (start 37 3) (end 37 13)) (probe (position 37 3))
+    (reference (id (source (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 2) (authored-target "subsystemB")
+      (outcome (status resolved) (target (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::anyVehicleConfig::subsystemB")))))
+  )
   (query (document "memory://snapshot/7a_variant_configuration_general_concept.md") (range (start 37 17) (end 37 39)) (probe (position 37 17))
-    (reference (id (source (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 1) (authored-target "subsystemB::subsystem3")
+    (reference (id (source (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (anonymous (kind constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 3) (authored-target "subsystemB::subsystem3")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/7a_variant_configuration_general_concept.md") (range (start 42 24) (end 42 40)) (probe (position 42 24))

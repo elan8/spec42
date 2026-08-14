@@ -70,9 +70,9 @@ package VerificationTest {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_verification_case_definition_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 20 28) (end 20 36))
+        (range (start 20 28) (end 20 31))
       )
       (diagnostic
         (severity warning)
@@ -111,7 +111,7 @@ package VerificationTest {
     (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::R"))) (kind requirement-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::V"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::V::m"))) (kind default-reference) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ScalarValues::Integer"))))
-    (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase"))) (kind verification-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (invocationCallee (reference "VerificationCases::PassIf"))))
+    (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase"))) (kind verification-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (memberAccessOperand (reference "v::m")) (invocationCallee (reference "VerificationCases::PassIf"))))
     (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase::objective"))) (kind requirement) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase::v"))) (kind subject) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "V"))))
     (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationPlan"))) (kind verification-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (expressionOperand (reference "verification")) (expressionOperand (reference "verificationCase"))))
@@ -125,6 +125,9 @@ package VerificationTest {
   (references
     (reference (id (source (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::V::m"))) (kind featureTyping) (ordinal 0))
       (authored-target "ScalarValues::Integer")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase"))) (kind memberAccessOperand) (ordinal 0))
+      (authored-target "v::m")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase"))) (kind invocationCallee) (ordinal 0))
       (authored-target "VerificationCases::PassIf")
@@ -169,6 +172,10 @@ package VerificationTest {
 (navigation
   (query (document "memory://snapshot/verification_test.md") (range (start 3 6) (end 3 27)) (probe (position 3 6))
     (reference (id (source (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::V::m"))) (kind featureTyping) (ordinal 0) (authored-target "ScalarValues::Integer")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/verification_test.md") (range (start 20 28) (end 20 31)) (probe (position 20 28))
+    (reference (id (source (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase"))) (kind memberAccessOperand) (ordinal 0) (authored-target "v::m")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/verification_test.md") (range (start 20 2) (end 20 27)) (probe (position 20 2))

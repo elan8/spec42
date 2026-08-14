@@ -45,36 +45,6 @@ package KeywordAsName {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_calc_definition_member")
-        (source "semantic")
-        (range (start 3 2) (end 3 31))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_calc_definition_member")
-        (source "semantic")
-        (range (start 4 2) (end 4 32))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_calc_definition_member")
-        (source "semantic")
-        (range (start 5 2) (end 5 31))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_calc_definition_member")
-        (source "semantic")
-        (range (start 10 2) (end 10 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_calc_definition_member")
-        (source "semantic")
-        (range (start 11 2) (end 11 34))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 15 1) (end 15 25))
@@ -122,16 +92,21 @@ package KeywordAsName {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:00159580b8a880f642649626ab8582199534da466003ec034252e9ff802726fd") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:00159580b8a880f642649626ab8582199534da466003ec034252e9ff802726fd") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::Container"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (anonymous (kind part) (ordinal 0))))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "SpatialFrame"))))
     (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::IfThenElse"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::IfThenElse::condition"))) (kind parameter) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::IfThenElse::elseValue"))) (kind parameter) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::IfThenElse::thenValue"))) (kind parameter) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::MyStruct"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::MyStruct::frame"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "SpatialFrame") (direction in))))
     (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::MyStruct::type"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "SpatialFrame") (direction in))))
     (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::TestBehavior"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::TestBehavior::guardCondition"))) (kind parameter) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::TestBehavior::whileTest"))) (kind parameter) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::multiplicity"))) (kind alias) (membership (kind alias) (visibility default)) (authored (membership (kind alias) (visibility default)) (relationships (aliasBinding (reference "SpatialFrame"))))
   )
   (references
@@ -151,6 +126,11 @@ package KeywordAsName {
   (relationships
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::IfThenElse::condition"))) (value (kind boolean) (boolean true)))
+    (evaluated (declaration (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::IfThenElse::elseValue"))) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::IfThenElse::thenValue"))) (value (kind integer) (integer 42)))
+    (evaluated (declaration (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::TestBehavior::guardCondition"))) (value (kind boolean) (boolean false)))
+    (evaluated (declaration (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::TestBehavior::whileTest"))) (value (kind boolean) (boolean true)))
   )
 )
 ~~~

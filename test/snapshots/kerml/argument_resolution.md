@@ -35,12 +35,6 @@ package ArgumentResolutionBug {
         (range (start 2 2) (end 3 1))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_calc_definition_member")
-        (source "semantic")
-        (range (start 6 2) (end 6 15))
-      )
-      (diagnostic
         (severity error)
         (code "recovered_calc_body_element")
         (source "parser")
@@ -76,6 +70,7 @@ package ArgumentResolutionBug {
     (declaration (id (node (document "memory://snapshot/argument_resolution.md") (qualified-name "ArgumentResolutionBug"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/argument_resolution.md") (qualified-name "ArgumentResolutionBug::A"))) (kind class-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/argument_resolution.md") (qualified-name "ArgumentResolutionBug::B"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/argument_resolution.md") (qualified-name "ArgumentResolutionBug::B::x"))) (kind parameter) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/argument_resolution.md") (qualified-name "ArgumentResolutionBug::C"))) (kind class-def) (membership (kind owning) (visibility default)))
   )
   (references
