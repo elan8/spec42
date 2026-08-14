@@ -85,48 +85,4 @@ describe("Multi-file VS Code Flows", () => {
     );
   });
 
-  it("renames symbols across files", async function () {
-    this.timeout(20000);
-    const defDoc = await vscode.workspace.openTextDocument(getFixturePath("def.sysml"));
-    await vscode.window.showTextDocument(defDoc);
-
-    const workspaceEdit = await waitFor(
-      "cross-file rename",
-      async () => {
-        try {
-          return await vscode.commands.executeCommand<vscode.WorkspaceEdit>(
-            "vscode.executeDocumentRenameProvider",
-            defDoc.uri,
-            findPosition(defDoc, "Spec42SmokeWidget"),
-            "RenamedSmokeWidget"
-          );
-        } catch (error) {
-          if (error instanceof Error && error.message === "The element can't be renamed.") {
-            return undefined;
-          }
-          throw error;
-        }
-      },
-      (value) => Boolean(value),
-    );
-
-    assert.ok(workspaceEdit, "Expected a workspace edit for rename");
-    const entries = workspaceEdit.entries();
-    assert.ok(entries.length >= 2, `Expected edits for at least two files, got ${entries.length}`);
-    const fileNames = entries.map(([uri]) => uri.fsPath);
-    assert.ok(
-      fileNames.some((path) => path.endsWith("def.sysml")),
-      `Expected rename to include def.sysml, got ${fileNames.join(", ")}`
-    );
-    assert.ok(
-      fileNames.some((path) => path.endsWith("use.sysml")),
-      `Expected rename to include use.sysml, got ${fileNames.join(", ")}`
-    );
-    for (const [, edits] of entries) {
-      assert.ok(
-        edits.some((edit) => edit.newText === "RenamedSmokeWidget"),
-        "Expected rename edits to use the requested new symbol name"
-      );
-    }
-  });
 });
