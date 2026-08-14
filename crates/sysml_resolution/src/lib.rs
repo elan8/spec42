@@ -733,6 +733,47 @@ mod tests {
         );
     }
 
+    /// A `Transition`'s own `accept at <expr>`/`accept when <expr>`/`accept after <expr>` time
+    /// trigger (`TransitionAccept::TimeTrigger`) previously fell through to
+    /// `unsupported_state_definition_member` unconditionally. It now mirrors
+    /// `lower_then_accept`'s `TimeTrigger` arm, lowering the trigger expression through the
+    /// general constraint-expression dispatch (picking up `MemberAccess` chains like
+    /// `vehicle.maintenanceTime`, not just bare `FeatureRef` names).
+    #[test]
+    fn transition_time_trigger_resolves_member_access_operand() {
+        let sexpr = semantic_sexpr_for(
+            "package P { part def Vehicle { attribute maintenanceTime; } state def S { in vehicle : Vehicle; state a; state b; accept at vehicle.maintenanceTime then b; } }",
+        );
+        assert!(
+            sexpr.contains("(kind memberAccessOperand)"),
+            "expected a memberAccessOperand reference for `vehicle.maintenanceTime`, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("unsupported_state_definition_member"),
+            "did not expect unsupported_state_definition_member, got: {sexpr}"
+        );
+    }
+
+    /// `RequirementDefBodyElement::VariantUsage` (a bare `variant <name>;` member inside a
+    /// `requirement def`/usage body, e.g. inside a `variation`-flavored requirement choice) was
+    /// unconditionally unsupported even though `lower_variant_usage` is already shared by
+    /// `part def`/`part usage` bodies for the identical AST node. Wires the existing lowering
+    /// into the requirement-shaped body walker.
+    #[test]
+    fn requirement_def_variant_usage_resolves() {
+        let sexpr = semantic_sexpr_for(
+            "package P { requirement def R1; requirement def R2; requirement def choice { variant R1; variant R2; } }",
+        );
+        assert!(
+            sexpr.contains("(kind variant)"),
+            "expected a variant reference, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("unsupported_requirement_definition_member"),
+            "did not expect unsupported_requirement_definition_member, got: {sexpr}"
+        );
+    }
+
     /// The `then send new S() to b;` continuation shorthand is a genuine parser gap (see
     /// UPSTREAM_PARSER_GAPS.md Gap 30, `ThenTarget` has no `Send` variant): the parser itself
     /// cannot represent it as a distinguishable `ThenAction` target, so it falls to parser-level

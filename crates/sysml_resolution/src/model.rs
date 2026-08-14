@@ -7098,7 +7098,22 @@ impl SemanticModelBuilder {
                     expression,
                 )?;
             }
-            Some(TransitionAccept::Payload(_, _)) | Some(TransitionAccept::TimeTrigger(_, _)) => {
+            Some(TransitionAccept::TimeTrigger(_kind, expression)) => {
+                // Mirrors `lower_then_accept`'s `TimeTrigger` arm: the `at`/`when`/`after`
+                // trigger expression (e.g. `accept at vehicle.maintenanceTime`) is lowered
+                // through the general constraint-expression dispatch (`FeatureRef`/
+                // `MemberAccess`/`Invocation`/`Constructor`), the same as a `Transition`'s
+                // `guard` clause, rather than `lower_transition_end`'s narrower reference-only
+                // dispatch (which `Shorthand` above uses for a bare accepted-signal name). The
+                // `TriggerKind` (`at`/`when`/`after`) distinction is not yet represented.
+                self.lower_constraint_expression(
+                    document,
+                    declaration,
+                    UnsupportedFamily::StateDefinitionMember,
+                    expression,
+                )?;
+            }
+            Some(TransitionAccept::Payload(_, _)) => {
                 self.push_unsupported(
                     document,
                     UnsupportedFamily::StateDefinitionMember,
@@ -7775,10 +7790,12 @@ impl SemanticModelBuilder {
                 RequirementDefBodyElement::Frame(frame) => {
                     self.lower_frame_member(document, owner, unsupported, frame)?;
                 }
+                RequirementDefBodyElement::VariantUsage(node) => {
+                    self.lower_variant_usage(document, owner, unsupported, node)?;
+                }
                 RequirementDefBodyElement::Other(_)
                 | RequirementDefBodyElement::Annotation(_)
                 | RequirementDefBodyElement::MetadataKeywordUsage(_)
-                | RequirementDefBodyElement::VariantUsage(_)
                 | RequirementDefBodyElement::RequireConstraint(_) => {
                     self.push_unsupported(document, unsupported, element.span.clone())
                 }
