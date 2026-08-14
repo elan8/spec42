@@ -1263,4 +1263,200 @@ mod tests {
             "did not expect unsupported_analysis_case_definition_member, got: {sexpr}"
         );
     }
+
+    /// `PerformBodyElement::Action` (an anonymous `perform action { ... }`'s own body, e.g. the
+    /// OMG spec Annex A vehicle model's `perform action startVehicle { action turnVehicleOn send
+    /// ... via ...; }`) was unconditionally unsupported despite wrapping the exact same
+    /// `ActionUsageBodyElement` shape `lower_action_usage_body` already dispatches -- wires it
+    /// through the shared `lower_action_usage_body_element` dispatcher.
+    #[test]
+    fn perform_action_body_element_dispatches_nested_action_usage() {
+        let sexpr = semantic_sexpr_for(
+            "package P { part def Driver { port p1; } part part0 { perform action startVehicle { action turnVehicleOn send ignitionCmd via driver.p1 { in ignitionCmd:IgnitionCmd; } } } }",
+        );
+        assert!(
+            sexpr.contains("(kind action)"),
+            "expected a nested action-usage declaration inside the perform body, got: {sexpr}"
+        );
+        assert!(
+            sexpr.contains("(kind memberAccessOperand)"),
+            "expected the send-usage's dotted `via driver.p1` clause to resolve as memberAccessOperand, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("unsupported_action_usage_member"),
+            "did not expect unsupported_action_usage_member, got: {sexpr}"
+        );
+    }
+
+    /// `PerformBodyElement::InOut` (BNF `PerformInOutBinding`, the `in`/`out <target> = <value>;`
+    /// parameter-argument-binding shorthand used when invoking a nested `perform action`, e.g.
+    /// `perform action dynamics : StraightLineDynamics { in power = vehiclePower; }`) was
+    /// unconditionally unsupported -- wires it via `lower_perform_inout_binding`.
+    #[test]
+    fn perform_inout_binding_resolves_target_and_value() {
+        let sexpr = semantic_sexpr_for(
+            "package P { action def A { in power; perform action dynamics : A { in power = vehiclePower; } } action def Outer { attribute vehiclePower; } }",
+        );
+        assert!(
+            sexpr.contains("(kind perform-parameter-binding)"),
+            "expected an anonymous perform-parameter-binding declaration, got: {sexpr}"
+        );
+        assert!(
+            sexpr.contains("(kind performParameterTarget)"),
+            "expected the `in power` target to resolve as performParameterTarget, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("unsupported_action_usage_member"),
+            "did not expect unsupported_action_usage_member, got: {sexpr}"
+        );
+    }
+
+    /// `PerformBodyElement::AttributeUsage` (an `in`/`out attribute` usage directly inside a
+    /// `perform` body, BNF §6 G6) was unconditionally unsupported despite being a fully typed
+    /// `AttributeUsage` node -- wires it through the already-existing `lower_attribute_usage`.
+    #[test]
+    fn perform_body_attribute_usage_lowers() {
+        let sexpr = semantic_sexpr_for(
+            "package P { part def Vehicle { attribute mass; } part v : Vehicle; action def A { perform action doIt { in attribute mass :> v.mass; } } }",
+        );
+        assert!(
+            sexpr.contains("(kind attribute)"),
+            "expected an attribute declaration inside the perform body, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("unsupported_action_usage_member"),
+            "did not expect unsupported_action_usage_member, got: {sexpr}"
+        );
+    }
+
+    /// `lower_succession_end` (used for `AssignTarget` among others) handled `Expression::
+    /// MemberAccess` but not the sibling `Expression::FeatureChainRef` shape the parser actually
+    /// produces for a dotted assign target (e.g. `assign a.b := 1;`), mirroring the fix already
+    /// applied to `lower_satisfy_operand`.
+    #[test]
+    fn assign_target_dotted_feature_chain_resolves() {
+        let sexpr = semantic_sexpr_for(
+            "package P { part def A { part def B { attribute count; } part b : B; } action def Act { part a : A; assign a.b.count := 1; } }",
+        );
+        assert!(
+            sexpr.contains("(kind memberAccessOperand)"),
+            "expected the dotted assign target to resolve as memberAccessOperand, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("unsupported_action_definition_member"),
+            "did not expect unsupported_action_definition_member, got: {sexpr}"
+        );
+    }
+
+    /// `Expression::Index` (`base#(index)`, e.g. `assign x := seq#(i);`) had no arm in
+    /// `lower_constraint_expression`, so both the base and index sub-expressions fell through to
+    /// unsupported. Recurses into both, mirroring `Tuple`/`CollectionOp`.
+    #[test]
+    fn assign_value_index_expression_resolves() {
+        let sexpr = semantic_sexpr_for(
+            "package P { action def Act { attribute seq; attribute i; assign x := seq#(i); } }",
+        );
+        assert!(
+            sexpr.matches("(kind expressionOperand)").count() >= 2,
+            "expected both the index base and index expression to resolve as expressionOperand references, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("unsupported_action_definition_member"),
+            "did not expect unsupported_action_definition_member, got: {sexpr}"
+        );
+    }
+
+    /// `Expression::Null` (KerML `null`) had no arm in `lower_constraint_expression`, so `assign x
+    /// := null;` fell through to unsupported even though it needs no reference resolution at all,
+    /// mirroring the existing literal arms.
+    #[test]
+    fn assign_value_null_literal_is_supported() {
+        let sexpr = semantic_sexpr_for("package P { action def Act { assign x := null; } }");
+        assert!(
+            sexpr.contains("(kind assign)"),
+            "expected an assign declaration, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("unsupported_action_definition_member"),
+            "did not expect unsupported_action_definition_member, got: {sexpr}"
+        );
+    }
+
+    /// `variant perform doX;` (BNF `VariantTypedUsage::Perform`, inside a `variation perform
+    /// action ... { ... }` body) was unconditionally unsupported both because `PerformBodyElement::
+    /// Variant` was never dispatched and because `lower_variant_usage` treated every typed variant
+    /// as out of scope; `Perform` now delegates to the already-existing `lower_perform`.
+    #[test]
+    fn variant_perform_lowers_as_perform_action_usage() {
+        let sexpr = semantic_sexpr_for(
+            "package P { action def Act { action doX; variation perform action doXorY { variant perform doX; } } }",
+        );
+        assert!(
+            sexpr.contains("(kind perform-action)"),
+            "expected a perform-action declaration for the variant, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("unsupported_action_usage_member"),
+            "did not expect unsupported_action_usage_member, got: {sexpr}"
+        );
+    }
+
+    /// `flow of <payload> from <a> to <b>;` (the payload-first anonymous flow shorthand, BNF §6
+    /// G12) was unconditionally unsupported purely because `payload.is_some()` was treated the
+    /// same as a genuinely out-of-scope named/typed flow -- widens `lower_flow_usage` to resolve
+    /// the payload's type as a new `FlowPayloadType` reference alongside `FlowSource`/
+    /// `FlowTarget`.
+    #[test]
+    fn flow_usage_with_payload_only_resolves() {
+        let sexpr = semantic_sexpr_for(
+            "package P { item def Exposure; action def Focus { out xrsl: Exposure; } action def Shoot { in xsf: Exposure; } action takePicture { action focus: Focus; action shoot: Shoot; flow of Exposure from focus.xrsl to shoot.xsf; } }",
+        );
+        assert!(
+            sexpr.contains("(kind flow)"),
+            "expected a flow declaration, got: {sexpr}"
+        );
+        assert!(
+            sexpr.contains("(kind flowPayloadType)"),
+            "expected the payload type to resolve as flowPayloadType, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("unsupported_action_usage_member"),
+            "did not expect unsupported_action_usage_member, got: {sexpr}"
+        );
+    }
+
+    /// `Bind.body_elements` (a `bind a = b { ... }` statement's optional braced body) is typed the
+    /// same `Vec<Node<PartUsageBodyElement>>` `PartUsageBody` uses, but every element was
+    /// unconditionally flagged unsupported rather than dispatched through the shared
+    /// `lower_part_usage_body_element` -- confirmed against the Systems Library's `bind start =
+    /// done { doc /* ... */ }` shape (`Systems Library/Actions.sysml`): a `doc` comment nested in a
+    /// bind body must be silently ignored, not reported.
+    #[test]
+    fn bind_body_doc_comment_is_ignored() {
+        let sexpr = semantic_sexpr_for(
+            r#"package P { action def Act { first start; then done; bind start = done { doc /* note */ } } }"#,
+        );
+        assert!(
+            !sexpr.contains("unsupported_action_definition_member"),
+            "did not expect unsupported_action_definition_member for a doc comment in a bind body, got: {sexpr}"
+        );
+    }
+
+    /// Same as `bind_body_doc_comment_is_ignored`, but for real (non-`doc`) content: a nested
+    /// `part` usage inside a `bind ... { ... }` body must lower as its own `part` declaration
+    /// through the shared `lower_part_usage_body_element`.
+    #[test]
+    fn bind_body_nested_part_usage_lowers() {
+        let sexpr = semantic_sexpr_for(
+            "package P { part def Widget; action def Act { first start; then done; bind start = done { part w : Widget; } } }",
+        );
+        assert!(
+            sexpr.contains("(kind part)"),
+            "expected a nested part declaration inside the bind body, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("unsupported_action_definition_member"),
+            "did not expect unsupported_action_definition_member, got: {sexpr}"
+        );
+    }
 }

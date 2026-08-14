@@ -248,7 +248,7 @@ standard library package SampledFunctions {
         (severity warning)
         (code "unsupported_attribute_member")
         (source "semantic")
-        (range (start 102 3) (end 102 85))
+        (range (start 102 4) (end 102 25))
       )
       (diagnostic
         (severity warning)

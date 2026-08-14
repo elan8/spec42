@@ -706,6 +706,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     | ReferenceKind::AcceptPayloadType
                     | ReferenceKind::TypeCheckTarget
                     | ReferenceKind::MetaCastTarget
+                    | ReferenceKind::FlowPayloadType
             )
             .then_some(index)
         })
@@ -816,6 +817,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     | ReferenceKind::AssignTarget
                     | ReferenceKind::DependencyClient
                     | ReferenceKind::DependencySupplier
+                    | ReferenceKind::PerformParameterTarget
             )
             .then_some(index)
         })
@@ -1754,7 +1756,9 @@ fn supported_import_domain(reference: &impl ResolutionReferenceFact) -> Option<D
         | ReferenceKind::VerifyRequirementTarget
         | ReferenceKind::AssignTarget
         | ReferenceKind::DependencyClient
-        | ReferenceKind::DependencySupplier => None,
+        | ReferenceKind::DependencySupplier
+        | ReferenceKind::PerformParameterTarget
+        | ReferenceKind::FlowPayloadType => None,
     }
 }
 
@@ -1955,7 +1959,9 @@ fn build_effective_import_indexes<R: ResolutionReferenceFact>(
             | ReferenceKind::VerifyRequirementTarget
             | ReferenceKind::AssignTarget
             | ReferenceKind::DependencyClient
-            | ReferenceKind::DependencySupplier => {}
+            | ReferenceKind::DependencySupplier
+            | ReferenceKind::PerformParameterTarget
+            | ReferenceKind::FlowPayloadType => {}
         }
     }
     Ok((

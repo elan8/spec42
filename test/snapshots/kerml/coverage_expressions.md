@@ -61,12 +61,6 @@ package ExpressionCoverage {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 7 16) (end 7 20))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_grammar_form")
         (source "parser")
         (range (start 8 4) (end 8 20))
@@ -94,12 +88,6 @@ package ExpressionCoverage {
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 11 4) (end 11 27))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 12 16) (end 12 25))
       )
       (diagnostic
         (severity warning)
@@ -167,7 +155,7 @@ package ExpressionCoverage {
     (declaration (id (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::all_v"))) (kind default-reference) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::cond"))) (kind default-reference) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::h"))) (kind default-reference) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::h"))) (kind default-reference) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "items"))))
     (declaration (id (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::items"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Item"))))
     (declaration (id (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::meta_access"))) (kind default-reference) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::n"))) (kind default-reference) (membership (kind feature) (visibility default)))
@@ -176,11 +164,15 @@ package ExpressionCoverage {
     (declaration (id (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::seq"))) (kind default-reference) (membership (kind feature) (visibility default)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::h"))) (kind expressionOperand) (ordinal 0))
+      (authored-target "items")
+      (outcome (status resolved) (target (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::items")))))
     (reference (id (source (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::items"))) (kind featureTyping) (ordinal 0))
       (authored-target "Item")
       (outcome (status unresolved)))
   )
   (relationships
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::h"))) (target (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::items"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::h"))) (kind expressionOperand) (ordinal 0)))
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::r"))) (value (kind real) (real 3.14)))
@@ -192,6 +184,10 @@ package ExpressionCoverage {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/coverage_expressions.md") (range (start 12 16) (end 12 21)) (probe (position 12 16))
+    (reference (id (source (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::h"))) (kind expressionOperand) (ordinal 0) (authored-target "items")
+      (outcome (status resolved) (target (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::items")))))
+  )
   (query (document "memory://snapshot/coverage_expressions.md") (range (start 10 20) (end 10 24)) (probe (position 10 20))
     (reference (id (source (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::items"))) (kind featureTyping) (ordinal 0) (authored-target "Item")
       (outcome (status unresolved)))

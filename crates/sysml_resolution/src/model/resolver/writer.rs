@@ -877,6 +877,7 @@ fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::ExtendedDefinition => "extended-definition",
         DeclarationKind::IndividualDefinition => "individual-definition",
         DeclarationKind::BareConnect => "bare-connect",
+        DeclarationKind::PerformParameterBinding => "perform-parameter-binding",
     }
 }
 
@@ -954,6 +955,8 @@ fn reference_kind(kind: ReferenceKind) -> &'static str {
         ReferenceKind::AssignTarget => "assignTarget",
         ReferenceKind::DependencyClient => "dependencyClient",
         ReferenceKind::DependencySupplier => "dependencySupplier",
+        ReferenceKind::PerformParameterTarget => "performParameterTarget",
+        ReferenceKind::FlowPayloadType => "flowPayloadType",
     }
 }
 
@@ -1010,6 +1013,8 @@ fn relationship_kind(kind: ReferenceKind) -> Option<&'static str> {
         ReferenceKind::AssignTarget => Some("assignTarget"),
         ReferenceKind::DependencyClient => Some("dependencyClient"),
         ReferenceKind::DependencySupplier => Some("dependencySupplier"),
+        ReferenceKind::PerformParameterTarget => Some("performParameterTarget"),
+        ReferenceKind::FlowPayloadType => Some("flowPayloadType"),
         ReferenceKind::NamespaceImport
         | ReferenceKind::MembershipImport
         | ReferenceKind::FilterImport => None,

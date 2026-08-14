@@ -243,9 +243,9 @@ package '5-State-based Behavior-2' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_action_usage_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 116 4) (end 116 37))
+        (range (start 116 7) (end 116 14))
       )
       (diagnostic
         (severity warning)
@@ -266,7 +266,7 @@ package '5-State-based Behavior-2' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:b1a801b7ba6e36db59716ec7a7128bd96dc2bb2cd703e6134f568f98b2d02621") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:b1a801b7ba6e36db59716ec7a7128bd96dc2bb2cd703e6134f568f98b2d02621") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/5_state_based_behavior_2.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
@@ -326,6 +326,7 @@ package '5-State-based Behavior-2' {
     (declaration (id (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "VehicleA"))))
     (declaration (id (node (document "memory://snapshot/5_state_based_behavior_2.md") (anonymous (kind perform-action) (ordinal 0))))) (kind perform-action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "VehicleA::provide power"))))
     (declaration (id (node (document "memory://snapshot/5_state_based_behavior_2.md") (anonymous (kind state) (ordinal 0))))) (kind state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "VehicleA::vehicle states"))))
+    (declaration (id (node (document "memory://snapshot/5_state_based_behavior_2.md") (anonymous (kind perform-parameter-binding) (ordinal 0))))) (kind perform-parameter-binding) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "fuelCmdPort::fuelCmd")) (performParameterTarget (reference "fuelCmd"))))
     (declaration (id (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::Tmax"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "TemperatureValue"))))
     (declaration (id (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::brake pedal depressed"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Boolean"))))
     (declaration (id (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::fuelCmdPort"))) (kind port) (membership (kind feature) (visibility default)))
@@ -458,6 +459,12 @@ package '5-State-based Behavior-2' {
     (reference (id (source (node (document "memory://snapshot/5_state_based_behavior_2.md") (anonymous (kind state) (ordinal 0))))) (kind redefinition) (ordinal 0))
       (authored-target "VehicleA::vehicle states")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/5_state_based_behavior_2.md") (anonymous (kind perform-parameter-binding) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
+      (authored-target "fuelCmdPort::fuelCmd")
+      (outcome (status resolved) (target (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::fuelCmdPort::fuelCmd")))))
+    (reference (id (source (node (document "memory://snapshot/5_state_based_behavior_2.md") (anonymous (kind perform-parameter-binding) (ordinal 0))))) (kind performParameterTarget) (ordinal 0))
+      (authored-target "fuelCmd")
+      (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::Tmax"))) (kind featureTyping) (ordinal 0))
       (authored-target "TemperatureValue")
       (outcome (status unresolved)))
@@ -508,9 +515,11 @@ package '5-State-based Behavior-2' {
     (relationship (kind exitActionBinding) (source (node (document "memory://snapshot/5_state_based_behavior_2.md") (anonymous (kind exit-action-binding) (ordinal 0))))) (target (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Usages::apply parking brake"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/5_state_based_behavior_2.md") (anonymous (kind exit-action-binding) (ordinal 0))))) (kind exitActionBinding) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1"))) (target (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/5_state_based_behavior_2.md") (anonymous (kind perform-action) (ordinal 0))))) (target (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Definitions::VehicleA::provide power"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/5_state_based_behavior_2.md") (anonymous (kind perform-action) (ordinal 0))))) (kind redefinition) (ordinal 0)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/5_state_based_behavior_2.md") (anonymous (kind perform-parameter-binding) (ordinal 0))))) (target (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::fuelCmdPort::fuelCmd"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/5_state_based_behavior_2.md") (anonymous (kind perform-parameter-binding) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::vehicleController"))) (target (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Definitions::VehicleController"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::vehicleController"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/5_state_based_behavior_2.md") (anonymous (kind perform-parameter-binding) (ordinal 0))))) (value (kind non-constant)))
   )
 )
 ~~~
@@ -679,6 +688,14 @@ package '5-State-based Behavior-2' {
   )
   (query (document "memory://snapshot/5_state_based_behavior_2.md") (range (start 119 32) (end 119 58)) (probe (position 119 32))
     (reference (id (source (node (document "memory://snapshot/5_state_based_behavior_2.md") (anonymous (kind state) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "VehicleA::vehicle states")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/5_state_based_behavior_2.md") (range (start 116 17) (end 116 36)) (probe (position 116 17))
+    (reference (id (source (node (document "memory://snapshot/5_state_based_behavior_2.md") (anonymous (kind perform-parameter-binding) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "fuelCmdPort::fuelCmd")
+      (outcome (status resolved) (target (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::fuelCmdPort::fuelCmd")))))
+  )
+  (query (document "memory://snapshot/5_state_based_behavior_2.md") (range (start 116 7) (end 116 14)) (probe (position 116 7))
+    (reference (id (source (node (document "memory://snapshot/5_state_based_behavior_2.md") (anonymous (kind perform-parameter-binding) (ordinal 0))))) (kind performParameterTarget) (ordinal 0) (authored-target "fuelCmd")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/5_state_based_behavior_2.md") (range (start 113 19) (end 113 35)) (probe (position 113 19))

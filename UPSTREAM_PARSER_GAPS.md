@@ -681,6 +681,59 @@ entry should carry enough detail to file/update an upstream issue against
   variant wired to the existing `actor_decl` production, filed upstream against
   `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
 
+- Gap 47. The canonical anonymous flow-usage shorthand `flow from <a> to <b>;` (no declared name,
+  no `: Type`, no `of <payload>` clause -- OMG spec Annex A's own preferred spelling, e.g.
+  `test/snapshots/sysml/training/14_action_definition_example.md`'s `flow from focus.image to
+  shoot.image;`) misparses its own `from` keyword as the flow's declared *name*, rather than
+  recognizing the statement as anonymous. Found exhaustively auditing
+  `unsupported_action_usage_member`/`unsupported_action_definition_member` across the full corpus
+  (this pass, against `cb026cd`): `flow_usage_member`'s dispatch (`src/parser/flow.rs:221-256`)
+  tries `name(peek)` first for any input not starting with `of`, then disambiguates the anonymous
+  form from the named form by checking whether the token *after* the parsed name starts with `.`
+  or the `to` keyword (`is_anonymous = fragment.starts_with(b".") ||
+  starts_with_keyword(fragment, b"to")`, `src/parser/flow.rs:237-247`) -- but for `flow from
+  focus.image to shoot.image;`, `name()` first greedily consumes the identifier `from` itself
+  (`from` is absent from `SYSML_RESERVED_KEYWORDS`, `src/parser/lex.rs:407-...`, so it lexes as an
+  ordinary identifier), leaving ` focus.image to shoot.image;` as the post-name remainder -- which
+  starts with neither `.` nor `to`, so `is_anonymous` is `false` and the whole statement is routed
+  to `flow_usage_named` instead. That production then re-parses starting from `from`, producing
+  `FlowUsage { name: Some("from"), from: Some(FeatureRef(focus.image)), to:
+  Some(FeatureRef(shoot.image)), .. }` -- confirmed via a direct `sysml_v2_parser_next::
+  parse_for_editor` AST dump (temporary `crates/sysml_resolution/examples/dump_action_ast.rs`,
+  removed after use) against a minimal `action def Foo { flow from focus.image to shoot.image; }`
+  repro, with zero parse errors reported (the statement "successfully" parses to the wrong shape,
+  it does not fail visibly). The identical `succession flow` keyword pair (`kind:
+  FlowUsageKind::SuccessionFlow`) shares the exact same `flow_usage_member` dispatch and
+  misparses identically (`test/snapshots/sysml/training/14_action_succession_example_2.md`'s
+  `succession flow from focus.image to shoot.image;`). This is a *silent* misparse, not a rejection
+  -- `sysml_resolution`'s `lower_flow_usage` cannot tell a real declared name (e.g. `flow
+  generateToAmplify from a to b;`, which parses correctly since `generateToAmplify` is not `from`)
+  apart from this artifact using only the typed AST (both are an ordinary non-empty `Option<String>`
+  `name` field), so it cannot safely accept named `FlowUsage`s at all without risking silently
+  synthesizing a spurious declaration literally named `from` for the (far more common in the corpus)
+  anonymous form -- string-matching the literal value `"from"` would be exactly the
+  "reconstruct semantics from spelling" anti-pattern this codebase has consistently avoided (see
+  Gap 41's `that` write-up). `lower_flow_usage` (`crates/sysml_resolution/src/model.rs`) was
+  widened this pass to accept the unambiguous *payload*-bearing anonymous form (`flow of <payload>
+  from <a> to <b>;`, e.g. `test/snapshots/sysml/examples/picture_taking.md`'s `flow of Exposure
+  from focus.xrsl to shoot.xsf;`, which does not hit this ambiguity since `of` is checked before the
+  name-dispatch branch, `src/parser/flow.rs:234-236`) but conservatively continues to defer every
+  `name.is_some()` case -- both the misparsed `from`-named statements and genuinely-named flows
+  alike -- pending an upstream fix. Confirmed blocking (misparsed `from`-named form only, all
+  verified via the same probe): `test/snapshots/sysml/training/14_action_definition_example.md`,
+  `14_action_shorthand_example.md`, `14_action_succession_example_1.md`,
+  `14_action_succession_example_2.md`, `15_action_decomposition.md`,
+  `16_conditional_succession_example_1.md`, `16_conditional_succession_example_2.md`,
+  `17_fork_join_example.md`, `17_merge_example.md`, `21_messaging_example.md`,
+  `21_messaging_with_ports.md`, and `test/snapshots/sysml/examples/flashlight_example.md`'s two
+  *genuinely*-named `succession flow onOffCmdFlow from ...;`/`succession flow lightFlow from ...;`
+  statements (real names, not the misparse, but withheld for the same reason). Needs
+  `flow_usage_member`'s anonymous-vs-named disambiguation (`src/parser/flow.rs:237-247`) taught to
+  also treat a post-name remainder starting with the `from` keyword as anonymous (mirroring the
+  existing `.`/`to` checks), or `from`/`to` added to `SYSML_RESERVED_KEYWORDS` so `name()` itself
+  refuses to consume them, filed upstream against `feat/gh-119-arena-backed-references`
+  (elan8/sysml-v2-parser#121).
+
 **Re-verification pass note (this pass, against `cb026cd`):** Gaps 15-24 were re-checked by
 grepping the current `cb026cd` checkout for the same starter tables/productions cited in each
 entry's original write-up; every one of the 10 gaps (15, 16, 17, 18, 19, 20, 21, 22, 23, 24) is

@@ -272,12 +272,6 @@ standard library package StatePerformances {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_calc_definition_member")
-        (source "semantic")
-        (range (start 47 69) (end 47 73))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 54 2) (end 54 9))
