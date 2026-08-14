@@ -287,7 +287,7 @@ package VehicleUsages {
   (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d4be45bd61d1cb232eb9686b40df25058196ae41734ca466b6646780276eadef") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages"))) (kind package) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * Example usages of elements from the vehicle definitions model.\n\t "))))
-    (declaration (id (node (document "memory://snapshot/vehicle_usages.md") (path (name "VehicleUsages") (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "VehicleDefinitions") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/vehicle_usages.md") (path (named (kind package) (name "VehicleUsages")) (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "VehicleDefinitions") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::T1"))) (kind default-reference) (membership (kind feature) (visibility default)) (feature-value (kind bind)))
     (declaration (id (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::T2"))) (kind default-reference) (membership (kind feature) (visibility default)) (feature-value (kind bind)))
     (declaration (id (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::narrowRimWheel"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (documentation (doc (text " Narrow-rim wheel configuration with 4 to 5 lugbolts. "))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Wheel"))))
@@ -335,7 +335,7 @@ package VehicleUsages {
     (declaration (id (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::wideRimWheel::lugbolt"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers composite) (multiplicity (lower 4) (upper 6))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Lugbolt"))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/vehicle_usages.md") (path (name "VehicleUsages") (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/vehicle_usages.md") (path (named (kind package) (name "VehicleUsages")) (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0))
       (authored-target "VehicleDefinitions")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::narrowRimWheel"))) (kind featureTyping) (ordinal 0))
@@ -543,7 +543,7 @@ package VehicleUsages {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/vehicle_usages.md") (range (start 6 16) (end 6 37)) (probe (position 6 16))
-    (reference (id (source (node (document "memory://snapshot/vehicle_usages.md") (path (name "VehicleUsages") (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0) (authored-target "VehicleDefinitions")
+    (reference (id (source (node (document "memory://snapshot/vehicle_usages.md") (path (named (kind package) (name "VehicleUsages")) (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0) (authored-target "VehicleDefinitions")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/vehicle_usages.md") (range (start 15 25) (end 15 30)) (probe (position 15 25))

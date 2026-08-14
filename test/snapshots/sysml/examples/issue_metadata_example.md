@@ -75,7 +75,7 @@ package IssueMetadataExample {
   (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:1b24c1df4f1ad4fa471fe0f15f1e03d3dede52d870327dac9d788a320880294a") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/issue_metadata_example.md") (path (name "IssueMetadataExample") (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ModelingMetadata::Issue") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/issue_metadata_example.md") (path (named (kind package) (name "IssueMetadataExample")) (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ModelingMetadata::Issue") (import (shape membership) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::ClutchPort"))) (kind port-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::DrivePwrPort"))) (kind port-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::EngineToTransmissionInterface"))) (kind interface-def) (membership (kind owning) (visibility default)))
@@ -90,7 +90,7 @@ package IssueMetadataExample {
     (declaration (id (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::transmission::clutchPort"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "DrivePwrPort") (conjugated true))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/issue_metadata_example.md") (path (name "IssueMetadataExample") (anonymous (kind import) (ordinal 0)))))) (kind membershipImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/issue_metadata_example.md") (path (named (kind package) (name "IssueMetadataExample")) (anonymous (kind import) (ordinal 0)))))) (kind membershipImport) (ordinal 0))
       (authored-target "ModelingMetadata::Issue")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::EngineToTransmissionInterface::p1"))) (kind featureTyping) (ordinal 0))
@@ -134,7 +134,7 @@ package IssueMetadataExample {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/issue_metadata_example.md") (range (start 1 16) (end 1 39)) (probe (position 1 16))
-    (reference (id (source (node (document "memory://snapshot/issue_metadata_example.md") (path (name "IssueMetadataExample") (anonymous (kind import) (ordinal 0)))))) (kind membershipImport) (ordinal 0) (authored-target "ModelingMetadata::Issue")
+    (reference (id (source (node (document "memory://snapshot/issue_metadata_example.md") (path (named (kind package) (name "IssueMetadataExample")) (anonymous (kind import) (ordinal 0)))))) (kind membershipImport) (ordinal 0) (authored-target "ModelingMetadata::Issue")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/issue_metadata_example.md") (range (start 13 15) (end 13 27)) (probe (position 13 15))

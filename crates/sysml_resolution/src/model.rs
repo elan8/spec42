@@ -212,7 +212,7 @@ enum DeclarationKind {
     /// Analysis-case-specific semantics (subject binding, objective, result parameter binding to
     /// a calc/action) are out of scope here; only ownership, specialization, and owned-member
     /// structure are lowered. `analysis` usage lowering follows below, in
-    /// `DeclarationKind::AnalysisCaseUsage` (UPSTREAM_PARSER_GAPS.md #5 was resolved upstream in
+    /// `DeclarationKind::AnalysisCaseUsage` (planning/UPSTREAM_PARSER_GAPS.md #5 was resolved upstream in
     /// `0757de13`: `AnalysisCaseUsage` now carries `subsets`/`redefines` fields with full parity
     /// to `RequirementUsage`).
     AnalysisCaseDefinition,
@@ -234,7 +234,7 @@ enum DeclarationKind {
     /// (`DeclarationKind::InterfaceUsage`) is deferred: `ast::InterfaceUsage`'s three variants
     /// (`TypedConnect`/`Connection`/`Declaration`) carry only a bare `interface_type:
     /// Option<QualifiedReferenceId>` with no `subsets`/`redefines` fields at all, unlike the
-    /// structurally analogous `ConnectionUsageMember` (see UPSTREAM_PARSER_GAPS.md #6). Interface-
+    /// structurally analogous `ConnectionUsageMember` (see planning/UPSTREAM_PARSER_GAPS.md #6). Interface-
     /// specific semantics beyond declaration/typing/ends (flow/protocol constraints) are out of
     /// scope here.
     InterfaceDefinition,
@@ -250,7 +250,7 @@ enum DeclarationKind {
     /// Option<Node<SubsettingRelationship>>` field at all (only `type_name`/`redefines`), unlike
     /// the structurally analogous `OccurrenceUsage`/`StateUsage`/`PortUsage`, so a bare `view v
     /// :> Base { ... }` subsetting clause parses successfully but is silently dropped before it
-    /// reaches the typed AST (see UPSTREAM_PARSER_GAPS.md #8; confirmed real usage in
+    /// reaches the typed AST (see planning/UPSTREAM_PARSER_GAPS.md #8; confirmed real usage in
     /// `test/snapshots/sysml/validation/11b_safety_and_security_feature_views.md`'s
     /// `view vehicleMandatorySafetyFeatureView :> vehicleSafetyFeatureView { ... }`).
     ViewDefinition,
@@ -259,7 +259,7 @@ enum DeclarationKind {
     /// `UseCaseDefBody`/`UseCaseDefBodyElement` shape). Case-specific semantics (subject binding,
     /// objective, first-succession/return structure) are out of scope here; only ownership,
     /// specialization, and owned-member structure are lowered. `case` usage lowering follows
-    /// below, in `DeclarationKind::CaseUsage` (UPSTREAM_PARSER_GAPS.md #5 was resolved upstream
+    /// below, in `DeclarationKind::CaseUsage` (planning/UPSTREAM_PARSER_GAPS.md #5 was resolved upstream
     /// in `0757de13`: `CaseUsage` now carries `subsets`/`redefines` fields with full parity to
     /// `RequirementUsage`).
     CaseDefinition,
@@ -277,7 +277,7 @@ enum DeclarationKind {
     /// `AnalysisCaseUsage`, `VerificationCaseUsage` still has no `subsets`/`redefines` field at
     /// all (not just a stale "dropped" bug) -- only `name`/`type_name`/`is_abstract`/body are
     /// lowered; a header-level `:>`/`:>>` clause still fails to parse into this node at all
-    /// (falls to raw-text recovery instead, per UPSTREAM_PARSER_GAPS.md's `AllocationUsage`/
+    /// (falls to raw-text recovery instead, per planning/UPSTREAM_PARSER_GAPS.md's `AllocationUsage`/
     /// `FlowUsage`/`ViewpointUsage` gap class).
     VerificationCaseDefinition,
     /// `use case def` (BNF UseCaseDefinition): a type whose owned members are attribute usages
@@ -299,7 +299,7 @@ enum DeclarationKind {
     /// of scope for this slice and fall through to `RequirementDefinitionMember` diagnostics
     /// alongside the other unmodeled `RequirementDefBody` members. `viewpoint` usage lowering
     /// (`DeclarationKind::ViewpointUsage`): `ast::ViewpointUsage` still has only `type_name` (bare
-    /// `QualifiedReferenceId`), no `subsets`/`redefines` fields at all (UPSTREAM_PARSER_GAPS.md
+    /// `QualifiedReferenceId`), no `subsets`/`redefines` fields at all (planning/UPSTREAM_PARSER_GAPS.md
     /// #25, still open) -- so only `name`/`type_name`/body are lowered; a header-level `:>` clause
     /// still fails to parse into this node at all.
     ViewpointDefinition,
@@ -314,7 +314,7 @@ enum DeclarationKind {
     /// `RenderingDefinitionMember` diagnostic. `rendering` usage lowering
     /// (`DeclarationKind::RenderingUsage`): `ast::RenderingUsage` now carries full
     /// `subsets`/`redefines`/`ordered`/`nonunique`/`value` field parity with `ViewUsage`
-    /// (UPSTREAM_PARSER_GAPS.md #26, resolved upstream in `cb026cd`) and is lowered the same way.
+    /// (planning/UPSTREAM_PARSER_GAPS.md #26, resolved upstream in `cb026cd`) and is lowered the same way.
     RenderingDefinition,
     /// `allocation def` (BNF AllocationDefinition): a type whose owned members share
     /// `DefinitionBody`/`OccurrenceBodyElement` with `OccurrenceDefinition`, mirroring
@@ -346,14 +346,14 @@ enum DeclarationKind {
     /// A package/definition/usage-level `view` feature member (BNF ViewUsage), mirroring
     /// `lower_analysis_case_usage`: ownership, membership, a `:` typing target, and
     /// `subsets`/`redefines` subsetting relationships. Resolved upstream in `0757de13`
-    /// (UPSTREAM_PARSER_GAPS.md #8): `ViewUsage` previously had no `subsets` field to lower this
+    /// (planning/UPSTREAM_PARSER_GAPS.md #8): `ViewUsage` previously had no `subsets` field to lower this
     /// relationship from. View-specific body members remain out of scope, sharing
     /// `UnsupportedFamily::ViewDefinitionMember` with the `def` form's body walker.
     ViewUsage,
     /// A package/definition/usage-level `rendering` feature member (BNF RenderingUsage),
     /// mirroring `lower_view_usage`: ownership, membership, a `:` typing target, and
     /// `subsets`/`redefines` subsetting relationships (`ast::RenderingUsage` now carries full
-    /// field parity, UPSTREAM_PARSER_GAPS.md #26, resolved upstream in `cb026cd`). The body
+    /// field parity, planning/UPSTREAM_PARSER_GAPS.md #26, resolved upstream in `cb026cd`). The body
     /// (`RenderingUsageBody`) recurses into nested `view`/`rendering` usage members via
     /// `lower_view_usage`/`lower_rendering_usage` themselves; anything else stays
     /// `UnsupportedFamily::PackageMember`.
@@ -374,14 +374,14 @@ enum DeclarationKind {
     /// mirroring `lower_viewpoint_def`: ownership, membership, an optional `:` typing target, and
     /// owned-member structure via the shared `lower_requirement_shaped_body` walker
     /// `viewpoint def`/`requirement def` use. `ast::ViewpointUsage` has no `subsets`/`redefines`
-    /// field at all (UPSTREAM_PARSER_GAPS.md #25, still open), so a header-level `:>` clause still
+    /// field at all (planning/UPSTREAM_PARSER_GAPS.md #25, still open), so a header-level `:>` clause still
     /// fails to parse into this node.
     ViewpointUsage,
     /// A package/definition/usage-level `interface` feature member (BNF InterfaceUsage),
     /// mirroring `lower_interface_def`: ownership, membership, an optional `:` typing target,
     /// `subsets`/`redefines` subsetting relationships, and connector-end structure (`connect`/
     /// `end`) via the same `ReferenceKind::ConnectorEnd` machinery `interface def` uses. Resolved
-    /// upstream in `0757de13` (UPSTREAM_PARSER_GAPS.md #6): all three `InterfaceUsage` variants
+    /// upstream in `0757de13` (planning/UPSTREAM_PARSER_GAPS.md #6): all three `InterfaceUsage` variants
     /// now carry `subsets`/`redefines` fields with full parity to `ConnectionUsageMember`.
     /// Interface-specific semantics beyond declaration/typing/ends are out of scope, sharing
     /// `UnsupportedFamily::InterfaceDefinitionMember` with the `def` form's body walker.
@@ -396,7 +396,7 @@ enum DeclarationKind {
     /// A package/definition/usage-level `constraint` feature member (BNF ConstraintUsage),
     /// mirroring `lower_analysis_case_usage`: ownership, membership, a `:` typing target, and
     /// `subsets`/`redefines` subsetting relationships. Resolved upstream in `0757de13`
-    /// (UPSTREAM_PARSER_GAPS.md #4): `ConstraintUsage` previously had no `subsets`/`redefines`
+    /// (planning/UPSTREAM_PARSER_GAPS.md #4): `ConstraintUsage` previously had no `subsets`/`redefines`
     /// fields at all.
     ConstraintUsage,
     /// `concern def` (BNF ConcernDefinition, Clause 8.2.2.11): a type whose owned members share
@@ -404,19 +404,19 @@ enum DeclarationKind {
     /// `lower_viewpoint_def`. The parser models both `concern def` and `concern` under a single
     /// `ast::requirement::ConcernUsage` struct discriminated by `is_definition`, rather than a
     /// distinct `ConcernDef` type -- see that struct's doc comment. Genuinely new: previously
-    /// blocked entirely (UPSTREAM_PARSER_GAPS.md #9: no `specializes`/`subsets`/`redefines` field
+    /// blocked entirely (planning/UPSTREAM_PARSER_GAPS.md #9: no `specializes`/`subsets`/`redefines` field
     /// at all). Stakeholder/subject-binding semantics are out of scope, sharing
     /// `UnsupportedFamily::RequirementDefinitionMember` with `requirement def`/`viewpoint def`.
     ConcernDefinition,
     /// A package/definition/usage-level `concern` feature member (BNF ConcernUsage), mirroring
     /// `lower_requirement_usage`: ownership, membership, a `:` typing target, and
     /// `subsets`/`redefines` subsetting relationships. Resolved upstream in `0757de13`
-    /// (UPSTREAM_PARSER_GAPS.md #9).
+    /// (planning/UPSTREAM_PARSER_GAPS.md #9).
     ConcernUsage,
     /// `calc def` (BNF CalculationDefinition, Clause 8.2.2.14): a type whose owned members
     /// participate in the shared Subclassification/FeatureTyping `DeclarationDomain::Type` fixed
     /// point, mirroring `lower_view_def`/`lower_action_def`. Resolved upstream in `0757de13`
-    /// (UPSTREAM_PARSER_GAPS.md #3): `CalcDef` previously dropped its parsed `:>` specialization
+    /// (planning/UPSTREAM_PARSER_GAPS.md #3): `CalcDef` previously dropped its parsed `:>` specialization
     /// clause; it now carries `specializes: Option<Node<TypingRelationship>>` with full parity to
     /// `ActionDef`/`ViewDef`. Genuinely new: `calc def`/`calc usage` lowering was never attempted
     /// before this gap was resolved. Calculation-expression body content, `in`/`out`/`return`
@@ -432,7 +432,7 @@ enum DeclarationKind {
     CalcUsage,
     /// KerML `class def` (BNF ClassDefinition): a type whose owned members participate in the
     /// shared Subclassification/FeatureTyping `DeclarationDomain::Type` fixed point, mirroring
-    /// `lower_item_def`. Resolved upstream in `0757de13` (UPSTREAM_PARSER_GAPS.md #2): `ClassDef`
+    /// `lower_item_def`. Resolved upstream in `0757de13` (planning/UPSTREAM_PARSER_GAPS.md #2): `ClassDef`
     /// previously had unparsed `:>` specialization inside the body; it now carries a typed
     /// `specializes: Option<Node<TypingRelationship>>` plus a plain `AttributeBody`, exactly the
     /// same shape `ItemDef` has. There is no separate KerML "class usage" form in the grammar --
@@ -489,7 +489,7 @@ enum DeclarationKind {
     /// `requirement vehicleSpecification`. Structurally a plain typed feature declaration --
     /// name plus an optional `FeatureTyping` reference to the declared type -- mirroring
     /// `lower_parameter_declaration`'s shape but without a direction fact. Per
-    /// RESOLUTION_LAYER_DESIGN.md §5.4, `Subject` is a derived case-level relationship projected
+    /// planning/RESOLUTION_LAYER_DESIGN.md §5.4, `Subject` is a derived case-level relationship projected
     /// from this ordinary `FeatureTyping` fact by a later query-layer owner, not a distinct
     /// authored reference kind here; multiplicity and the bare `subject = expr;`/`subject;`
     /// shorthand forms are left unlowered, matching `ParameterUsage`'s scope.
@@ -602,7 +602,7 @@ enum DeclarationKind {
     /// `FlowTarget` references sourced at this new declaration (not at `owner` directly), so
     /// multiple `flow ...;` statements in the same body stay distinguishable. Deliberately narrow:
     /// a named/typed flow usage or def (`flow f : T { ... }`) and the `of <payload>` clause remain
-    /// out of scope (see UPSTREAM_PARSER_GAPS.md #28's `subsets`/`redefines`/typed-end gap) --
+    /// out of scope (see planning/UPSTREAM_PARSER_GAPS.md #28's `subsets`/`redefines`/typed-end gap) --
     /// only the bare two-operand statement form's `from`/`to` references are resolved here.
     Flow,
     /// A `stakeholder` member found in a requirement/viewpoint def body (BNF `StakeholderMember`,
@@ -797,7 +797,7 @@ enum DeclarationKind {
     /// shared `lower_relationship_body_elements` helper used by `Import`/`AliasDef`.
     Dependency,
     /// `#<keyword>+ def <Name> ...` (BNF ExtendedDefinition, `structure.rs` struct
-    /// `ExtendedDefinition`, UPSTREAM_PARSER_GAPS.md gap #12's short form), e.g. `#scenario def
+    /// `ExtendedDefinition`, planning/UPSTREAM_PARSER_GAPS.md gap #12's short form), e.g. `#scenario def
     /// DeviceFailure { ... }`. Gap #12 tracked only the parser production landing upstream; this
     /// is the first `sysml_resolution` lowering attempt. `body: PackageBody` is the exact same
     /// shape an ordinary `package { ... }` body uses, so its owned members are lowered through
@@ -814,7 +814,7 @@ enum DeclarationKind {
     /// `IndividualDef`'s `body: AttributeBody` is the exact same shape, so owned members are
     /// lowered through the existing `lower_attribute_body`. Distinct from the `individual`
     /// usage-side prefix (`individual occurrence def`/`individual item ...`, already handled
-    /// elsewhere per UPSTREAM_PARSER_GAPS.md gap #7); this is the standalone `individual def
+    /// elsewhere per planning/UPSTREAM_PARSER_GAPS.md gap #7); this is the standalone `individual def
     /// <Name> [:> <Type>] { ... }` definition form.
     IndividualDefinition,
     /// An anonymous connector feature synthesized for a keyword-less bare `connect <from> to
@@ -873,7 +873,7 @@ enum ReferenceKind {
     Intersects,
     /// The authored target of an `alias X for Y;` member (`AliasDef::target`), resolved through
     /// the same lexical lookup fixed point as every other authored reference kind. Named
-    /// `AliasBinding` to match RESOLUTION_LAYER_DESIGN.md's "alias binding" vocabulary (section
+    /// `AliasBinding` to match planning/RESOLUTION_LAYER_DESIGN.md's "alias binding" vocabulary (section
     /// 10.1) rather than inventing new terminology.
     AliasBinding,
     /// The authored target of a connector end (`ConnectStmt`'s `from`/`to`/extra ends, or a bare
@@ -1161,7 +1161,7 @@ enum ReferenceKind {
     /// The authored `to <target>` clause of a standalone `send`-suffixed action usage
     /// (`ast::ActionUsage.to`, e.g. `action snd2 send via this to aa.target;`), same shape and
     /// scope as `AcceptVia`. The `then send <expr> to <target>;` shorthand form is a distinct AST
-    /// shape (`ThenTarget` has no `Send` variant at all -- see UPSTREAM_PARSER_GAPS.md) and is not
+    /// shape (`ThenTarget` has no `Send` variant at all -- see planning/UPSTREAM_PARSER_GAPS.md) and is not
     /// covered by this kind.
     SendTarget,
     /// The optional typed-payload type reference of a `TransitionAccept::Payload` trigger
@@ -1311,7 +1311,7 @@ pub(crate) enum EvaluatedValue {
     /// references upstream either). The magnitude is boxed so it stays exactly the `Boolean`/
     /// `Integer`/`Real`/`String` variant the wrapped literal would have folded to on its own --
     /// this is a widen, not a new numeric type, matching the minimal-but-honest posture of not
-    /// fabricating a richer "physical quantity" concept `RESOLUTION_LAYER_DESIGN.md` never
+    /// fabricating a richer "physical quantity" concept `planning/RESOLUTION_LAYER_DESIGN.md` never
     /// anticipates. `fold_literal_comparison`/`fold_arithmetic`/`fold_unary` do not special-case
     /// this variant: their generic numeric-widening fallback (`as_f64`) does not match it, so any
     /// operation involving a `Quantity` conservatively folds to `NonConstant` rather than silently
@@ -2184,7 +2184,7 @@ struct MultiplicityRecord {
 /// The `snapshot`/`timeslice` portion prefix on an occurrence usage (`ast::OccurrencePortionKind`).
 ///
 /// Note the bare `portion` keyword is a separate, unrelated modifier that the pinned parser cannot
-/// express at all (see `UPSTREAM_PARSER_GAPS.md` Gap 17); only the two portion *kinds* below are
+/// express at all (see `planning/UPSTREAM_PARSER_GAPS.md` Gap 17); only the two portion *kinds* below are
 /// reachable, and only on `OccurrenceUsage`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum PortionKind {
@@ -2197,7 +2197,7 @@ enum PortionKind {
 /// Deliberately not a `Vec<String>` of labels: each flag is a typed fact with exactly one parser
 /// field behind it. Modifiers the parser cannot represent at all -- SysML `readonly`, SysML
 /// `variable`, `unique`, and the bare `portion` prefix -- are absent from this set by construction
-/// rather than defaulted to `false`; see `UPSTREAM_PARSER_GAPS.md`.
+/// rather than defaulted to `false`; see `planning/UPSTREAM_PARSER_GAPS.md`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 struct DeclarationModifiers {
     /// `abstract` (`ast::DefinitionPrefix::Abstract`, or a bare `is_abstract` field).
@@ -4040,7 +4040,7 @@ impl SemanticModelBuilder {
                 constant: node.value.is_constant,
                 ordered: node.value.ordered,
                 // `ast::PartUsage` has no `nonunique` field, unlike its sibling usages; see
-                // UPSTREAM_PARSER_GAPS.md.
+                // planning/UPSTREAM_PARSER_GAPS.md.
                 ..DeclarationModifiers::default()
             },
             direction: direction_fact(node.value.direction.as_ref()),
@@ -4534,7 +4534,7 @@ impl SemanticModelBuilder {
                     ..DeclarationModifiers::default()
                 },
                 // `ast::AttributeDef` carries no `multiplicity` field at all, unlike
-                // `AttributeUsage`; see UPSTREAM_PARSER_GAPS.md.
+                // `AttributeUsage`; see planning/UPSTREAM_PARSER_GAPS.md.
                 ..DeclarationFacts::none()
             },
         )?;
@@ -5924,7 +5924,7 @@ impl SemanticModelBuilder {
             name,
             node.span.clone(),
             // `ast::RequirementActorDecl` has no `multiplicity` field, unlike its `ActorUsage`
-            // sibling; see UPSTREAM_PARSER_GAPS.md.
+            // sibling; see planning/UPSTREAM_PARSER_GAPS.md.
             DeclarationFacts::none(),
         )?;
         self.push_membership(
@@ -7621,12 +7621,12 @@ impl SemanticModelBuilder {
     /// `Expression::MemberAccess`, exactly like `Bind`'s own operands), and the optional `of
     /// <payload>` clause's type resolved as a `FlowPayloadType` reference (mirroring
     /// `AcceptPayloadType`). A `: Type` clause on the flow itself (`type_name`) is a structurally
-    /// distinct declaration form already tracked as deferred (see UPSTREAM_PARSER_GAPS.md #28) and
+    /// distinct declaration form already tracked as deferred (see planning/UPSTREAM_PARSER_GAPS.md #28) and
     /// stays unsupported. A *named* flow (`node.value.name.is_some()`) also stays unsupported even
     /// though genuinely named flows (e.g. `flow generateToAmplify from a to b;`) parse and resolve
     /// just as well as the anonymous form -- the parser cannot distinguish a real declared name
     /// from the canonical `flow from <a> to <b>;` shorthand misparsing its own `from` keyword as
-    /// the name (see UPSTREAM_PARSER_GAPS.md #47), so treating every non-empty `name` as authored
+    /// the name (see planning/UPSTREAM_PARSER_GAPS.md #47), so treating every non-empty `name` as authored
     /// risks silently synthesizing a spurious `from`-named declaration for the far more common
     /// anonymous form; conservatively deferring the whole `name.is_some()` case avoids that.
     fn lower_flow_usage(
@@ -8215,7 +8215,7 @@ impl SemanticModelBuilder {
     /// bindings, `then`/`final` state markers, `ref` bindings, and transitions are all lowered.
     /// `StateDefBodyElement` is a closed enum with no variant for the general
     /// action/attribute/constraint/succession usage-member zoo other definition bodies support
-    /// (see UPSTREAM_PARSER_GAPS.md #42), so those fall through to
+    /// (see planning/UPSTREAM_PARSER_GAPS.md #42), so those fall through to
     /// `unsupported_state_definition_member` via `Other`/parse-recovery, not through a dedicated
     /// arm here.
     fn lower_state_def_body(
@@ -9204,7 +9204,7 @@ impl SemanticModelBuilder {
                 },
                 direction: direction_fact(node.value.direction.as_ref()),
                 // `ast::RequirementUsage` has no `multiplicity` field; see
-                // UPSTREAM_PARSER_GAPS.md.
+                // planning/UPSTREAM_PARSER_GAPS.md.
                 ..DeclarationFacts::none()
             },
         )?;
@@ -9409,7 +9409,7 @@ impl SemanticModelBuilder {
     /// Lowers a package/definition/usage-level `viewpoint` feature member (BNF ViewpointUsage),
     /// mirroring `lower_viewpoint_def`: ownership, membership, a `:` typing target, and owned
     /// members via the same shared `lower_requirement_shaped_body` walker. `ast::ViewpointUsage`
-    /// has no `subsets`/`redefines` field at all (UPSTREAM_PARSER_GAPS.md #25, still open), so
+    /// has no `subsets`/`redefines` field at all (planning/UPSTREAM_PARSER_GAPS.md #25, still open), so
     /// only `name`/`type_name` are lowered as facts.
     fn lower_viewpoint_usage(
         &mut self,
@@ -9424,7 +9424,7 @@ impl SemanticModelBuilder {
             DeclarationKind::ViewpointUsage,
             name,
             node.span.clone(),
-            // `ast::ViewpointUsage` carries only name/type/body; see UPSTREAM_PARSER_GAPS.md
+            // `ast::ViewpointUsage` carries only name/type/body; see planning/UPSTREAM_PARSER_GAPS.md
             // Gap 25 for its missing subsets/redefines fields.
             DeclarationFacts::none(),
         )?;
@@ -9474,7 +9474,7 @@ impl SemanticModelBuilder {
     /// `Redefinition`) regardless of `is_definition`. The parser folds both textual forms into
     /// this single struct (see `ast::requirement::ConcernUsage`'s doc comment) rather than a
     /// distinct `ConcernDef` type. Genuinely new: previously blocked entirely
-    /// (UPSTREAM_PARSER_GAPS.md #9), resolved upstream in `0757de13`. Stakeholder/subject-binding
+    /// (planning/UPSTREAM_PARSER_GAPS.md #9), resolved upstream in `0757de13`. Stakeholder/subject-binding
     /// semantics are out of scope, sharing `UnsupportedFamily::RequirementDefinitionMember` with
     /// `requirement def`/`viewpoint def`.
     fn lower_concern_usage(
@@ -9549,7 +9549,7 @@ impl SemanticModelBuilder {
     /// attribute/nested members via the shared `UseCaseDefBody`. Analysis-case-specific semantics
     /// (subject binding, objective, result parameter binding) are explicitly out of scope;
     /// unrecognized body elements (including nested `analysis` usages -- see
-    /// UPSTREAM_PARSER_GAPS.md #5) fall through to `unsupported_analysis_case_definition_member`.
+    /// planning/UPSTREAM_PARSER_GAPS.md #5) fall through to `unsupported_analysis_case_definition_member`.
     /// `analysis` usage lowering itself is deferred entirely (same doc entry): `AnalysisCaseUsage`
     /// silently drops parsed `:>`/`:>>` clauses, unlike `AnalysisCaseDef`.
     fn lower_analysis_case_def(
@@ -9621,7 +9621,7 @@ impl SemanticModelBuilder {
     /// members via the shared `UseCaseDefBody`. Case-specific semantics (subject binding,
     /// objective, first-succession/return structure) are explicitly out of scope; unrecognized
     /// body elements fall through to `unsupported_case_definition_member`. `case` usage lowering
-    /// is deferred entirely (UPSTREAM_PARSER_GAPS.md #5): `CaseUsage` silently drops parsed
+    /// is deferred entirely (planning/UPSTREAM_PARSER_GAPS.md #5): `CaseUsage` silently drops parsed
     /// `:>`/`:>>` clauses, unlike `CaseDef`.
     fn lower_case_def(
         &mut self,
@@ -9677,7 +9677,7 @@ impl SemanticModelBuilder {
     /// AnalysisCaseUsage), mirroring `lower_requirement_usage`: ownership, membership, a `:`
     /// typing target (bare `QualifiedReferenceId`, pushed as a `FeatureTyping` reference), and
     /// `subsets`/`redefines` subsetting relationships. Resolved upstream in `0757de13`
-    /// (UPSTREAM_PARSER_GAPS.md #5): `AnalysisCaseUsage` previously had no typed field to lower
+    /// (planning/UPSTREAM_PARSER_GAPS.md #5): `AnalysisCaseUsage` previously had no typed field to lower
     /// these relationships from.
     fn lower_analysis_case_usage(
         &mut self,
@@ -9744,7 +9744,7 @@ impl SemanticModelBuilder {
 
     /// Lowers a package/definition/usage-level `case` feature member (BNF CaseUsage), mirroring
     /// `lower_analysis_case_usage` (shares the same field shape). Resolved upstream in `0757de13`
-    /// (UPSTREAM_PARSER_GAPS.md #5): `CaseUsage` previously had no typed field to lower
+    /// (planning/UPSTREAM_PARSER_GAPS.md #5): `CaseUsage` previously had no typed field to lower
     /// `subsets`/`redefines` from.
     fn lower_case_usage(
         &mut self,
@@ -9832,7 +9832,7 @@ impl SemanticModelBuilder {
                     ..DeclarationModifiers::default()
                 },
                 // `ast::UseCaseUsage` has no multiplicity/`nonunique` fields; see
-                // UPSTREAM_PARSER_GAPS.md Gap 28.
+                // planning/UPSTREAM_PARSER_GAPS.md Gap 28.
                 ..DeclarationFacts::none()
             },
         )?;
@@ -9894,7 +9894,7 @@ impl SemanticModelBuilder {
                     ..DeclarationModifiers::default()
                 },
                 // `ast::VerificationCaseUsage` has no multiplicity/`nonunique` fields; see
-                // UPSTREAM_PARSER_GAPS.md Gap 28.
+                // planning/UPSTREAM_PARSER_GAPS.md Gap 28.
                 ..DeclarationFacts::none()
             },
         )?;
@@ -9991,7 +9991,7 @@ impl SemanticModelBuilder {
     /// Lowers a `use case def` (BNF UseCaseDefinition), mirroring `lower_case_def`. Use-case-
     /// specific semantics (actor/include structure) are explicitly out of scope; unrecognized
     /// body elements fall through to `unsupported_use_case_definition_member`. `use case` usage
-    /// lowering is deferred entirely (UPSTREAM_PARSER_GAPS.md #5): `UseCaseUsage` silently drops
+    /// lowering is deferred entirely (planning/UPSTREAM_PARSER_GAPS.md #5): `UseCaseUsage` silently drops
     /// parsed `:>`/`:>>` clauses, unlike `UseCaseDef`.
     fn lower_use_case_def(
         &mut self,
@@ -10712,7 +10712,7 @@ impl SemanticModelBuilder {
     /// connector-end structure via `lower_interface_body`, reusing the same `end`/`connect`
     /// `ReferenceKind::ConnectorEnd` machinery `lower_connection_def` uses (interface ends are
     /// semantically the same kind of fact). `interface` usage lowering is deferred -- see
-    /// `DeclarationKind::InterfaceDefinition`'s doc comment and UPSTREAM_PARSER_GAPS.md #6.
+    /// `DeclarationKind::InterfaceDefinition`'s doc comment and planning/UPSTREAM_PARSER_GAPS.md #6.
     fn lower_interface_def(
         &mut self,
         document: DocumentId,
@@ -10817,7 +10817,7 @@ impl SemanticModelBuilder {
     /// `subsets`/`redefines` subsetting relationships, and connector-end structure (`connect`
     /// endpoints via `lower_interface_connector_expression`, reusing the same
     /// `ReferenceKind::ConnectorEnd` machinery `interface def`/`connection` usage use). Resolved
-    /// upstream in `0757de13` (UPSTREAM_PARSER_GAPS.md #6).
+    /// upstream in `0757de13` (planning/UPSTREAM_PARSER_GAPS.md #6).
     fn lower_interface_usage(
         &mut self,
         document: DocumentId,
@@ -10992,7 +10992,7 @@ impl SemanticModelBuilder {
     /// membership, an optional `:>` specialization relationship (participates in the shared
     /// Subclassification/FeatureTyping `DeclarationDomain::Type` fixed point). View-specific
     /// body members (`render`, `filter`) are out of scope -- see `DeclarationKind::ViewDefinition`'s
-    /// doc comment and UPSTREAM_PARSER_GAPS.md #8.
+    /// doc comment and planning/UPSTREAM_PARSER_GAPS.md #8.
     fn lower_view_def(
         &mut self,
         document: DocumentId,
@@ -11077,7 +11077,7 @@ impl SemanticModelBuilder {
     /// Lowers a package/definition/usage-level `view` feature member (BNF ViewUsage), mirroring
     /// `lower_analysis_case_usage`: ownership, membership, a `:` typing target, and
     /// `subsets`/`redefines` subsetting relationships. Resolved upstream in `0757de13`
-    /// (UPSTREAM_PARSER_GAPS.md #8): `ViewUsage` previously had no `subsets` field. Multiplicity
+    /// (planning/UPSTREAM_PARSER_GAPS.md #8): `ViewUsage` previously had no `subsets` field. Multiplicity
     /// and view-specific body members (`render`/`filter`) are out of scope for this slice.
     fn lower_view_usage(
         &mut self,
@@ -11182,7 +11182,7 @@ impl SemanticModelBuilder {
     /// Lowers a package/definition/usage-level `rendering` feature member (BNF RenderingUsage),
     /// mirroring `lower_view_usage`: ownership, membership, a `:` typing target, and
     /// `subsets`/`redefines` subsetting relationships. `ast::RenderingUsage` now carries full
-    /// field parity with `ViewUsage` (UPSTREAM_PARSER_GAPS.md #26, resolved upstream in
+    /// field parity with `ViewUsage` (planning/UPSTREAM_PARSER_GAPS.md #26, resolved upstream in
     /// `cb026cd`) -- `is_abstract`/`multiplicity`/`ordered`/`nonunique`/`value` are not modeled as
     /// distinct facts here (see `DeclarationKind::RenderingUsage`).
     fn lower_rendering_usage(
@@ -11395,7 +11395,7 @@ impl SemanticModelBuilder {
     /// Lowers a package/definition/usage-level `constraint` feature member (BNF
     /// ConstraintUsage), mirroring `lower_analysis_case_usage`: ownership, membership, a `:`
     /// typing target, and `subsets`/`redefines` subsetting relationships. Resolved upstream in
-    /// `0757de13` (UPSTREAM_PARSER_GAPS.md #4): `ConstraintUsage` previously had no
+    /// `0757de13` (planning/UPSTREAM_PARSER_GAPS.md #4): `ConstraintUsage` previously had no
     /// `subsets`/`redefines` fields at all.
     fn lower_constraint_usage(
         &mut self,
@@ -11411,7 +11411,7 @@ impl SemanticModelBuilder {
             name,
             node.span.clone(),
             // `ast::ConstraintUsage` carries no modifier, multiplicity, direction, or short name;
-            // see UPSTREAM_PARSER_GAPS.md for its missing multiplicity field.
+            // see planning/UPSTREAM_PARSER_GAPS.md for its missing multiplicity field.
             DeclarationFacts::none(),
         )?;
         self.push_membership(
@@ -11543,7 +11543,7 @@ impl SemanticModelBuilder {
     /// plain `String` in both roles (declared name vs. reference target), not a
     /// `QualifiedReferenceId`, so the reference-shorthand role cannot participate in the shared
     /// lexical-lookup reference machinery every other reference in this crate goes through (see
-    /// UPSTREAM_PARSER_GAPS.md #44). Likewise `require constraint <name> : <Type>;` / `require
+    /// planning/UPSTREAM_PARSER_GAPS.md #44). Likewise `require constraint <name> : <Type>;` / `require
     /// constraint <name> :>> <target>;` (a `:`/`:>>` clause after the name) fails to parse as
     /// `RequireConstraint` at all upstream (no field for either), so those never reach this
     /// function in the first place.
@@ -11593,7 +11593,7 @@ impl SemanticModelBuilder {
     /// Lowers a `calc def` (BNF CalculationDefinition), mirroring `lower_action_def`: ownership,
     /// membership, an optional `:>` specialization relationship participating in the shared
     /// `DeclarationDomain::Type` fixed point. Resolved upstream in `0757de13`
-    /// (UPSTREAM_PARSER_GAPS.md #3): `CalcDef` previously dropped its parsed `:>` clause.
+    /// (planning/UPSTREAM_PARSER_GAPS.md #3): `CalcDef` previously dropped its parsed `:>` clause.
     /// Calculation-expression body content is out of scope and falls through to
     /// `UnsupportedFamily::CalcDefinitionMember`.
     fn lower_calc_def(
@@ -11784,7 +11784,7 @@ impl SemanticModelBuilder {
             DeclarationFacts {
                 short_name,
                 direction: direction_fact(node.value.direction.as_ref()),
-                // `ast::CalcUsage` has no `multiplicity` field; see UPSTREAM_PARSER_GAPS.md.
+                // `ast::CalcUsage` has no `multiplicity` field; see planning/UPSTREAM_PARSER_GAPS.md.
                 ..DeclarationFacts::none()
             },
         )?;
@@ -13660,7 +13660,7 @@ mod tests {
 
     #[test]
     fn constraint_usage_typed_by_a_constraint_def_resolves() {
-        // UPSTREAM_PARSER_GAPS.md #4 was resolved upstream in `0757de13`: `ConstraintUsage` now
+        // planning/UPSTREAM_PARSER_GAPS.md #4 was resolved upstream in `0757de13`: `ConstraintUsage` now
         // carries `subsets`/`redefines` fields.
         let output = build_semantic_sexpr(
             "package Demo {\n\
@@ -14531,7 +14531,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (path (name \"Demo\") (name \"Calc\") (anonymous (kind parameter) (ordinal 0)))))) (value (kind integer) (integer 5)))"
+                 (path (named (kind package) (name \"Demo\")) (named (kind calc-def) (name \"Calc\")) (anonymous (kind parameter) (ordinal 0)))))) (value (kind integer) (integer 5)))"
             ),
             "expected `return : Type = 2 + 3;` to fold to a published Integer(5) evaluation fact \
              on the anonymous return declaration, got:\n{output}"
@@ -14696,7 +14696,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (path (name \"Demo\") (name \"Vehicle\") (name \"seatBelt\") (anonymous (kind metadata) (ordinal 0)) (name \"isMandatory\"))))) (value (kind \
+                 (path (named (kind package) (name \"Demo\")) (named (kind part-def) (name \"Vehicle\")) (named (kind part) (name \"seatBelt\")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name \"isMandatory\")))))) (value (kind \
                  boolean) (boolean true)))"
             ),
             "expected `isMandatory = true;` inside `@Safety{{...}}` to publish its own \
@@ -14833,7 +14833,7 @@ mod tests {
 
     #[test]
     fn concern_def_lowers_to_a_declaration() {
-        // UPSTREAM_PARSER_GAPS.md #9 was resolved upstream in `0757de13`: `ConcernUsage`
+        // planning/UPSTREAM_PARSER_GAPS.md #9 was resolved upstream in `0757de13`: `ConcernUsage`
         // (which models both `concern def` and `concern` textual forms) now carries a
         // `type_name`/`subsets`/`redefines` field at all, previously entirely blocked.
         let output = build_semantic_sexpr(
@@ -14891,7 +14891,7 @@ mod tests {
 
     #[test]
     fn calc_def_lowers_to_a_declaration() {
-        // UPSTREAM_PARSER_GAPS.md #3 was resolved upstream in `0757de13`: `CalcDef` now carries a
+        // planning/UPSTREAM_PARSER_GAPS.md #3 was resolved upstream in `0757de13`: `CalcDef` now carries a
         // `specializes` field. `calc def`/`calc` usage are only reachable inside a part body in
         // the typed AST (`calc_usage` is not dispatched at package level).
         let output = build_semantic_sexpr(
@@ -14979,7 +14979,7 @@ mod tests {
 
     #[test]
     fn view_usage_typed_by_a_view_def_resolves() {
-        // UPSTREAM_PARSER_GAPS.md #8 was resolved upstream in `0757de13`: `ViewUsage` now carries
+        // planning/UPSTREAM_PARSER_GAPS.md #8 was resolved upstream in `0757de13`: `ViewUsage` now carries
         // a `subsets` field, so `view` usage lowering is no longer deferred.
         let output = build_semantic_sexpr(
             "package Demo {\n\
@@ -15027,7 +15027,7 @@ mod tests {
 
     #[test]
     fn rendering_usage_typed_and_subsetting_resolve() {
-        // UPSTREAM_PARSER_GAPS.md #26 was resolved upstream in `cb026cd`: `RenderingUsage` now
+        // planning/UPSTREAM_PARSER_GAPS.md #26 was resolved upstream in `cb026cd`: `RenderingUsage` now
         // carries `subsets`/`redefines` fields (full parity with `ViewUsage`), so package-level
         // `rendering` usage lowering (previously unconditionally `unsupported_package_member`) is
         // no longer deferred.
@@ -15063,7 +15063,7 @@ mod tests {
         // `UseCaseUsage`/`VerificationCaseUsage` were previously unconditionally
         // `unsupported_package_member` at package scope even for the plain `use case <name> :
         // <Type> { ... }` header shape that needs no `subsets`/`redefines`/multiplicity field
-        // (still missing upstream, UPSTREAM_PARSER_GAPS.md's Gap 25/27/28 gap class).
+        // (still missing upstream, planning/UPSTREAM_PARSER_GAPS.md's Gap 25/27/28 gap class).
         let output = build_semantic_sexpr(
             "package Demo {\n\
              \tuse case def UC;\n\
@@ -15093,7 +15093,7 @@ mod tests {
     #[test]
     fn viewpoint_usage_at_package_scope_resolves() {
         // `ViewpointUsage` was previously unconditionally `unsupported_package_member`.
-        // `ast::ViewpointUsage` still has no `subsets`/`redefines` field (UPSTREAM_PARSER_GAPS.md
+        // `ast::ViewpointUsage` still has no `subsets`/`redefines` field (planning/UPSTREAM_PARSER_GAPS.md
         // #25, still open), so only the plain `viewpoint <name>[: <Type>]` header shape lowers.
         let output = build_semantic_sexpr(
             "package Demo {\n\
@@ -15117,7 +15117,7 @@ mod tests {
 
     #[test]
     fn interface_usage_declaration_typed_by_an_interface_def_resolves() {
-        // UPSTREAM_PARSER_GAPS.md #6 was resolved upstream in `0757de13`: all three
+        // planning/UPSTREAM_PARSER_GAPS.md #6 was resolved upstream in `0757de13`: all three
         // `InterfaceUsage` variants now carry `subsets`/`redefines` fields. Nested in a `part def`
         // body: `part/body.rs` tries `interface_usage` before `interface_def_required`, so a bare
         // `interface i : I;` (no `connect`) unambiguously parses as `InterfaceUsage::Declaration`
@@ -15299,7 +15299,7 @@ mod tests {
 
     #[test]
     fn analysis_case_usage_nested_in_an_analysis_def_body_lowers_to_a_declaration() {
-        // UPSTREAM_PARSER_GAPS.md #5 was resolved upstream in `0757de13`: `AnalysisCaseUsage` now
+        // planning/UPSTREAM_PARSER_GAPS.md #5 was resolved upstream in `0757de13`: `AnalysisCaseUsage` now
         // carries `subsets`/`redefines` fields with full parity to `RequirementUsage`, so a nested
         // `analysis` usage inside an `analysis def` body must lower as its own `analysis`
         // declaration with its `:` typing target resolved, not fall through to
@@ -15362,7 +15362,7 @@ mod tests {
 
     #[test]
     fn case_usage_lowers_to_a_declaration_with_its_subsetting_resolved() {
-        // UPSTREAM_PARSER_GAPS.md #5 was resolved upstream in `0757de13`: `CaseUsage` now carries
+        // planning/UPSTREAM_PARSER_GAPS.md #5 was resolved upstream in `0757de13`: `CaseUsage` now carries
         // `subsets`/`redefines` fields with full parity to `RequirementUsage`.
         let output = build_semantic_sexpr(
             "package Demo {\n\
@@ -15689,7 +15689,7 @@ mod tests {
         // no type to reference), but the declaration/membership shell is not skipped. Mirrors
         // `sysml.library/interfaces.md`'s `excludingOnce` calc's `in seq[1..*] nonunique ordered;`
         // line minus the `nonunique`/`ordered` collection modifiers, which the pinned parser
-        // cannot parse at all yet (see UPSTREAM_PARSER_GAPS.md Gap 31) and are out of scope here.
+        // cannot parse at all yet (see planning/UPSTREAM_PARSER_GAPS.md Gap 31) and are out of scope here.
         let output = build_semantic_sexpr(
             "package Demo {\n\
              \tcalc def ExcludingOnce {\n\
@@ -15711,7 +15711,7 @@ mod tests {
     fn calc_def_parameter_typed_via_colon_gt_shorthand_resolves_as_feature_typing() {
         // `in value :> seq;` on a *named* `InOutDecl` folds the `:>` prefix into `type_name` via
         // the same `qualified_reference` parse as a plain `:` (verified directly against the
-        // pinned parser checkout's `in_out_decl_inner`, see UPSTREAM_PARSER_GAPS.md Gap 31) --
+        // pinned parser checkout's `in_out_decl_inner`, see planning/UPSTREAM_PARSER_GAPS.md Gap 31) --
         // it never reaches `ast::InOutDecl::redefines`. So this resolves as an ordinary
         // `FeatureTyping` reference to `seq`, not a `Subsetting` reference.
         let output = build_semantic_sexpr(
@@ -15881,7 +15881,7 @@ mod tests {
         );
         assert!(
             output.contains(
-                "(kind redefinition) (source (node (document \"memory://test/enum.sysml\") (path (name \"Demo\") (name \"SystemView\") (anonymous (kind stakeholder) (ordinal 0)))))"
+                "(kind redefinition) (source (node (document \"memory://test/enum.sysml\") (path (named (kind package) (name \"Demo\")) (named (kind viewpoint-def) (name \"SystemView\")) (anonymous (kind stakeholder) (ordinal 0)))))"
             ),
             "expected a redefinition reference sourced at the anonymous stakeholder declaration, got:\n{output}"
         );
@@ -16403,13 +16403,13 @@ mod tests {
         );
         assert!(
             output.contains(
-                "(kind redefinition) (source (node (document \"memory://test/enum.sysml\") (path (name \"Demo\") (name \"C\") (anonymous (kind parameter) (ordinal 0)))))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::C::a\")))"
+                "(kind redefinition) (source (node (document \"memory://test/enum.sysml\") (path (named (kind package) (name \"Demo\")) (named (kind calc-def) (name \"C\")) (anonymous (kind parameter) (ordinal 0)))))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::C::a\")))"
             ),
             "expected the anonymous parameter's redefines to resolve to a, got:\n{output}"
         );
         assert!(
             output.contains(
-                "(path (name \"Demo\") (name \"C\") (anonymous (kind parameter) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference \"Boolean\"))))"
+                "(path (named (kind package) (name \"Demo\")) (named (kind calc-def) (name \"C\")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference \"Boolean\"))))"
             ),
             "expected the nested anonymous return declaration (typed `: Boolean`, no direction/\
              redefines) to lower too, got:\n{output}"
@@ -16510,19 +16510,19 @@ mod tests {
         );
         assert!(
             output.contains(
-                "(kind expressionOperand) (source (node (document \"memory://test/enum.sysml\") (path (name \"Demo\") (name \"C\") (anonymous (kind parameter) (ordinal 0)))))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::C::a\")))"
+                "(kind expressionOperand) (source (node (document \"memory://test/enum.sysml\") (path (named (kind package) (name \"Demo\")) (named (kind calc-def) (name \"C\")) (anonymous (kind parameter) (ordinal 0)))))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::C::a\")))"
             ),
             "expected the return's conditional expression to resolve its operand a, got:\n{output}"
         );
         assert!(
             output.contains(
-                "(kind expressionOperand) (source (node (document \"memory://test/enum.sysml\") (path (name \"Demo\") (name \"C\") (anonymous (kind parameter) (ordinal 0)))))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::C::b\")))"
+                "(kind expressionOperand) (source (node (document \"memory://test/enum.sysml\") (path (named (kind package) (name \"Demo\")) (named (kind calc-def) (name \"C\")) (anonymous (kind parameter) (ordinal 0)))))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::C::b\")))"
             ),
             "expected the return's conditional expression to resolve its operand b, got:\n{output}"
         );
         assert!(
             output.contains(
-                "(kind expressionOperand) (source (node (document \"memory://test/enum.sysml\") (path (name \"Demo\") (name \"C\") (anonymous (kind parameter) (ordinal 0)))))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::C::c\")))"
+                "(kind expressionOperand) (source (node (document \"memory://test/enum.sysml\") (path (named (kind package) (name \"Demo\")) (named (kind calc-def) (name \"C\")) (anonymous (kind parameter) (ordinal 0)))))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::C::c\")))"
             ),
             "expected the return's conditional expression to resolve its operand c, got:\n{output}"
         );

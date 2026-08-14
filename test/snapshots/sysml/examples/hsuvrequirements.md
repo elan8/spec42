@@ -120,7 +120,7 @@ package HSUVRequirements {
   (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:948714410cc75c33af9644e717b00a4beef1e32d9e18c99ddb981d9f85c39d15") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/hsuvrequirements.md") (path (name "HSUVRequirements") (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Requirements") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/hsuvrequirements.md") (path (named (kind package) (name "HSUVRequirements")) (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Requirements") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::EcoFriendliness"))) (kind requirement) (membership (kind feature) (visibility default)) (facts (short-name "UR1.2")) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "PerformanceRequirementCheck"))))
     (declaration (id (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::EcoFriendliness::Emissions"))) (kind requirement) (membership (kind feature) (visibility default)) (facts (short-name "URI1.2.1")) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "PerformanceRequirementCheck"))))
     (declaration (id (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::Ergonomics"))) (kind requirement) (membership (kind feature) (visibility default)) (facts (short-name "UR1.4")))
@@ -137,7 +137,7 @@ package HSUVRequirements {
     (declaration (id (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::Performance::Range"))) (kind requirement) (membership (kind feature) (visibility default)))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/hsuvrequirements.md") (path (name "HSUVRequirements") (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/hsuvrequirements.md") (path (named (kind package) (name "HSUVRequirements")) (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0))
       (authored-target "Requirements")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements::EcoFriendliness"))) (kind featureTyping) (ordinal 0))
@@ -166,7 +166,7 @@ package HSUVRequirements {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/hsuvrequirements.md") (range (start 1 16) (end 1 31)) (probe (position 1 16))
-    (reference (id (source (node (document "memory://snapshot/hsuvrequirements.md") (path (name "HSUVRequirements") (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0) (authored-target "Requirements")
+    (reference (id (source (node (document "memory://snapshot/hsuvrequirements.md") (path (named (kind package) (name "HSUVRequirements")) (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0) (authored-target "Requirements")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/hsuvrequirements.md") (range (start 10 40) (end 10 67)) (probe (position 10 40))

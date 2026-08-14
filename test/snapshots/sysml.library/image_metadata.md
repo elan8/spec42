@@ -129,7 +129,7 @@ standard library package ImageMetadata {
   (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:2b83cf119754d6bc9559e41ab3d581375d06e0eb4db5deaf119afeb46265bdf4") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/image_metadata.md") (qualified-name "ImageMetadata"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package provides attributive data and metadata to allow a model element to be\n\t * annotated with an image to be used in its graphical rendering or as a marker to\n\t * adorn graphical or textual renderings.\n\t "))))
-    (declaration (id (node (document "memory://snapshot/image_metadata.md") (path (name "ImageMetadata") (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::String") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/image_metadata.md") (path (named (kind library-package) (name "ImageMetadata")) (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::String") (import (shape membership) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/image_metadata.md") (qualified-name "ImageMetadata::Icon"))) (kind metadata-def) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t\t * Icon metadata can be used to annotate a model element with an image to be used\n\t\t * to show render the element on a diagram and/or a small image to be used as an\n\t\t * adornment on a graphical or textual rendering. Alternatively, another metadata\n\t\t * definition can be annotated with an Icon to indicate that any model element \n\t\t * annotated by the containing metadata can be rendered according to the Icon.\n\t\t "))))
     (declaration (id (node (document "memory://snapshot/image_metadata.md") (qualified-name "ImageMetadata::Icon::fullImage"))) (kind attribute) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 0) (upper 1))) (documentation (doc (text "\n\t\t\t * A full-sized image that can be used to render the annotated element on a\n\t\t\t * graphical view, potentially as an alternative to its standard rendering.\n\t\t\t "))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Image"))))
     (declaration (id (node (document "memory://snapshot/image_metadata.md") (qualified-name "ImageMetadata::Icon::smallImage"))) (kind attribute) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 0) (upper 1))) (documentation (doc (text "\n\t\t\t * A smaller image that can be used as an adornment on the graphical rendering\n\t\t\t * of the annotated element or as a marker in a textual rendering.\n\t\t\t "))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Image"))))
@@ -140,7 +140,7 @@ standard library package ImageMetadata {
     (declaration (id (node (document "memory://snapshot/image_metadata.md") (qualified-name "ImageMetadata::Image::type"))) (kind attribute) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 0) (upper 1))) (documentation (doc (text "\n\t\t\t * The MIME type according to which the content should be interpreted.\n\t\t\t "))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "String"))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/image_metadata.md") (path (name "ImageMetadata") (anonymous (kind import) (ordinal 0)))))) (kind membershipImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/image_metadata.md") (path (named (kind library-package) (name "ImageMetadata")) (anonymous (kind import) (ordinal 0)))))) (kind membershipImport) (ordinal 0))
       (authored-target "ScalarValues::String")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/image_metadata.md") (qualified-name "ImageMetadata::Icon::fullImage"))) (kind featureTyping) (ordinal 0))
@@ -174,7 +174,7 @@ standard library package ImageMetadata {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/image_metadata.md") (range (start 8 16) (end 8 36)) (probe (position 8 16))
-    (reference (id (source (node (document "memory://snapshot/image_metadata.md") (path (name "ImageMetadata") (anonymous (kind import) (ordinal 0)))))) (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::String")
+    (reference (id (source (node (document "memory://snapshot/image_metadata.md") (path (named (kind library-package) (name "ImageMetadata")) (anonymous (kind import) (ordinal 0)))))) (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::String")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/image_metadata.md") (range (start 60 24) (end 60 29)) (probe (position 60 24))

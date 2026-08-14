@@ -90,7 +90,7 @@ package RequirementDerivationExample {
   (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:e00e38e159b585f6e741150124d3440eddb44bad743def4b6355a75f1b0e1fd5") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/requirement_derivation_example.md") (qualified-name "RequirementDerivationExample"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/requirement_derivation_example.md") (path (name "RequirementDerivationExample") (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "RequirementDerivation") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/requirement_derivation_example.md") (path (named (kind package) (name "RequirementDerivationExample")) (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "RequirementDerivation") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/requirement_derivation_example.md") (qualified-name "RequirementDerivationExample::Req1"))) (kind requirement-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/requirement_derivation_example.md") (qualified-name "RequirementDerivationExample::Req1_1"))) (kind requirement-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/requirement_derivation_example.md") (qualified-name "RequirementDerivationExample::Req1_2"))) (kind requirement-def) (membership (kind owning) (visibility default)))
@@ -108,7 +108,7 @@ package RequirementDerivationExample {
     (declaration (id (node (document "memory://snapshot/requirement_derivation_example.md") (qualified-name "RequirementDerivationExample::system::sub2"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Subsystem2"))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/requirement_derivation_example.md") (path (name "RequirementDerivationExample") (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/requirement_derivation_example.md") (path (named (kind package) (name "RequirementDerivationExample")) (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0))
       (authored-target "RequirementDerivation")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/requirement_derivation_example.md") (qualified-name "RequirementDerivationExample::Req1_Derivation::r1"))) (kind featureTyping) (ordinal 0))
@@ -146,7 +146,7 @@ package RequirementDerivationExample {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/requirement_derivation_example.md") (range (start 1 16) (end 1 40)) (probe (position 1 16))
-    (reference (id (source (node (document "memory://snapshot/requirement_derivation_example.md") (path (name "RequirementDerivationExample") (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0) (authored-target "RequirementDerivation")
+    (reference (id (source (node (document "memory://snapshot/requirement_derivation_example.md") (path (named (kind package) (name "RequirementDerivationExample")) (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0) (authored-target "RequirementDerivation")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/requirement_derivation_example.md") (range (start 9 21) (end 9 25)) (probe (position 9 21))

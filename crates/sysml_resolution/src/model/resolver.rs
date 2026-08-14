@@ -35,19 +35,42 @@ const IDENTITY_ENCODING_VERSION: &str = "element/v1";
 /// Canonical structural identity for every declaration, plus the lookup index over it.
 ///
 /// An identity is the owning document followed by the ordered scope path from that document's
-/// root. A named path segment is the authored name; an anonymous segment is the declaration's kind
-/// together with its owner-local ordinal.
+/// root. Every segment carries the declaration's kind, plus either its authored name -- with an
+/// occurrence ordinal distinguishing identically named siblings -- or, when the declaration is
+/// anonymous, its owner-local ordinal.
 ///
-/// Including the whole owner chain is what makes an anonymous declaration's identity unique:
-/// anonymous ordinals are allocated per `(document, owner, kind)`, so an identity that named only
-/// the kind and ordinal could not tell two same-kind anonymous declarations under different owners
-/// apart. A path whose segments are all named can still match more than one declaration when the
-/// source authors two identically named siblings; that stays an explicit ambiguous outcome rather
-/// than an arbitrary pick, which is why the index resolves to a chain and not to a single answer.
+/// The shape follows the two reference implementations, which converged on it independently:
+///
+/// - The OMG Pilot's `Element::path()` (`Element_path_InvocationDelegate`) returns the qualified
+///   name when there is one and otherwise the owner's path plus a positional index; its
+///   `qualifiedName` derivation (`Element_qualifiedName_SettingDelegate`) yields null for an
+///   unnamed element, for any element under an unnamed ancestor, and for every same-named sibling
+///   after the first. The occurrence ordinal below is that last clause.
+/// - The sibling `sysml-compiler`'s `buildStablePath` writes `[tag][name | '#' + sibling_index]`
+///   per level from the root, hashing the result into a UUIDv5. The kind on every segment is that
+///   tag.
+///
+/// Both are needed, and each covers a case the other does not. Without the kind, a `metadata def
+/// SafetyFeature` and the `metadata SafetyFeature about ...` annotating it collide. Without the
+/// occurrence ordinal, a source that authors two identically named siblings leaves the second one
+/// unaddressable. Together they make the identity total: every declaration has one, and no two
+/// share one.
+///
+/// The spec calls for exactly this much and no more -- `Element::elementId` is "set by tooling",
+/// and `Element::path()` is "a unique location description in containment structure".
 struct IdentityIndex {
     /// One canonical identity string per `DeclarationId`, parallel to `storage.declarations`.
     text: Box<[Box<str>]>,
-    /// Lowest-numbered declaration for each distinct identity.
+    /// Each declaration's ordinal among its identically named, same-kind siblings.
+    occurrences: Box<[u32]>,
+    /// Whether this declaration's identity is recoverable from its qualified name alone, so the
+    /// writer may use the readable shorthand: every segment named, every occurrence ordinal zero,
+    /// and no other declaration in the publication sharing the same document and name path.
+    shorthand: Box<[bool]>,
+    /// Head of each distinct identity's declaration chain.
+    ///
+    /// Retained even though the identity is total, so a storage invariant broken elsewhere
+    /// surfaces as an explicit ambiguous outcome rather than an arbitrary pick.
     heads: HashTable<DeclarationId>,
     hash_builder: RandomState,
     /// Next declaration sharing this one's identity, in ascending `DeclarationId` order.
@@ -67,11 +90,50 @@ impl std::fmt::Debug for IdentityIndex {
 
 impl IdentityIndex {
     fn build(storage: &SemanticModelStorage) -> Result<Self, ResolutionError> {
+        let occurrences = name_occurrences(storage)?;
         let mut text = Vec::with_capacity(storage.declarations.len());
+        let mut name_paths = Vec::with_capacity(storage.declarations.len());
         for index in 0..storage.declarations.len() {
             let id = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
-            text.push(encode_identity(storage, id)?.into_boxed_str());
+            text.push(encode_identity(storage, id, &occurrences)?.into_boxed_str());
+            name_paths.push(encode_name_path(storage, id)?);
         }
+        // A qualified name identifies a declaration only when nothing else in the publication
+        // renders the same one -- two same-named siblings of different kinds otherwise share it.
+        let mut name_path_counts: HashTable<(usize, u32)> = HashTable::new();
+        let counting_hash = RandomState::default();
+        for (index, path) in name_paths.iter().enumerate() {
+            let Some(path) = path else { continue };
+            let hash = counting_hash.hash_one(path.as_str());
+            let matches = |candidate: &(usize, u32)| {
+                name_paths[candidate.0].as_deref() == Some(path.as_str())
+            };
+            if let Some(entry) = name_path_counts.find_mut(hash, matches) {
+                entry.1 += 1;
+            } else {
+                let rehash = |candidate: &(usize, u32)| {
+                    counting_hash.hash_one(name_paths[candidate.0].as_deref().unwrap_or_default())
+                };
+                name_path_counts
+                    .try_reserve(1, rehash)
+                    .map_err(|_| ResolutionError::Capacity)?;
+                name_path_counts.insert_unique(hash, (index, 1), rehash);
+            }
+        }
+        let shorthand = (0..storage.declarations.len())
+            .map(|index| {
+                let Some(path) = name_paths[index].as_deref() else {
+                    return false;
+                };
+                let hash = counting_hash.hash_one(path);
+                name_path_counts
+                    .find(hash, |candidate| {
+                        name_paths[candidate.0].as_deref() == Some(path)
+                    })
+                    .is_some_and(|entry| entry.1 == 1)
+            })
+            .collect::<Vec<_>>()
+            .into_boxed_slice();
         let mut next = vec![None; text.len()];
         let hash_builder = RandomState::default();
         let mut heads: HashTable<DeclarationId> = HashTable::new();
@@ -96,10 +158,22 @@ impl IdentityIndex {
         }
         Ok(Self {
             text: text.into_boxed_slice(),
+            occurrences,
+            shorthand,
             heads,
             hash_builder,
             next: next.into_boxed_slice(),
         })
+    }
+
+    /// Whether the writer may identify this declaration by qualified name alone.
+    fn allows_qualified_name_shorthand(&self, id: DeclarationId) -> bool {
+        self.shorthand.get(id.index()).copied().unwrap_or(false)
+    }
+
+    /// This declaration's ordinal among its identically named, same-kind siblings.
+    fn name_occurrence(&self, id: DeclarationId) -> Option<u32> {
+        self.occurrences.get(id.index()).copied()
     }
 
     fn identity(&self, id: DeclarationId) -> Option<&str> {
@@ -136,15 +210,16 @@ fn push_identity_field(output: &mut String, value: &str) {
     output.push_str(value);
 }
 
-fn encode_identity(
+/// The ownership chain from `id` up to the document root, ordered leaf-first.
+fn ownership_chain(
     storage: &SemanticModelStorage,
     id: DeclarationId,
-) -> Result<String, ResolutionError> {
-    let declaration = storage
-        .declaration(id)
-        .ok_or(ResolutionError::InvalidStorage)?;
+) -> Result<Vec<DeclarationId>, ResolutionError> {
     let mut chain = vec![id];
-    let mut cursor = declaration.owner;
+    let mut cursor = storage
+        .declaration(id)
+        .ok_or(ResolutionError::InvalidStorage)?
+        .owner;
     while let Some(current) = cursor {
         if chain.len() > storage.declarations.len() {
             // An ownership cycle would otherwise loop forever; the solver reports cycles
@@ -157,6 +232,51 @@ fn encode_identity(
             .ok_or(ResolutionError::InvalidStorage)?
             .owner;
     }
+    Ok(chain)
+}
+
+/// The occurrence ordinal of each named declaration among its identically named siblings of the
+/// same kind, in declaration order.
+///
+/// Zero for the overwhelmingly common case of a name that is unique in its scope, so a later
+/// duplicate never disturbs the identity of the declaration that was already there. This mirrors
+/// the Pilot, whose `qualifiedName` stays valid for the first same-named member and falls through
+/// to a positional path for the rest.
+fn name_occurrences(storage: &SemanticModelStorage) -> Result<Box<[u32]>, ResolutionError> {
+    let mut seen: BTreeMap<(DocumentId, Option<DeclarationId>, DeclarationKind, SymbolId), u32> =
+        BTreeMap::new();
+    let mut occurrences = Vec::with_capacity(storage.declarations.len());
+    for declaration in storage.declarations.iter() {
+        let occurrence = match declaration.name {
+            Some(name) => {
+                let slot = seen
+                    .entry((
+                        declaration.document,
+                        declaration.owner,
+                        declaration.kind,
+                        name,
+                    ))
+                    .or_insert(0);
+                let value = *slot;
+                *slot = slot.checked_add(1).ok_or(ResolutionError::Capacity)?;
+                value
+            }
+            None => 0,
+        };
+        occurrences.push(occurrence);
+    }
+    Ok(occurrences.into_boxed_slice())
+}
+
+fn encode_identity(
+    storage: &SemanticModelStorage,
+    id: DeclarationId,
+    occurrences: &[u32],
+) -> Result<String, ResolutionError> {
+    let declaration = storage
+        .declaration(id)
+        .ok_or(ResolutionError::InvalidStorage)?;
+    let chain = ownership_chain(storage, id)?;
     let mut output = String::from(IDENTITY_ENCODING_VERSION);
     push_identity_field(
         &mut output,
@@ -169,6 +289,7 @@ fn encode_identity(
         let segment = storage
             .declaration(*current)
             .ok_or(ResolutionError::InvalidStorage)?;
+        push_identity_field(&mut output, writer::declaration_kind(segment.kind));
         match segment.name {
             Some(name) => {
                 output.push('n');
@@ -178,10 +299,16 @@ fn encode_identity(
                         .symbol(name)
                         .ok_or(ResolutionError::InvalidStorage)?,
                 );
+                push_identity_field(
+                    &mut output,
+                    &occurrences
+                        .get(current.index())
+                        .ok_or(ResolutionError::InvalidStorage)?
+                        .to_string(),
+                );
             }
             None => {
                 output.push('a');
-                push_identity_field(&mut output, writer::declaration_kind(segment.kind));
                 push_identity_field(
                     &mut output,
                     &segment
@@ -193,6 +320,44 @@ fn encode_identity(
         }
     }
     Ok(output)
+}
+
+/// The document and name path of a fully named declaration, or `None` when any segment of its
+/// owner chain is anonymous.
+///
+/// This is what the writer's readable qualified-name shorthand renders, so it is also what has to
+/// be unique before the shorthand may be used.
+fn encode_name_path(
+    storage: &SemanticModelStorage,
+    id: DeclarationId,
+) -> Result<Option<String>, ResolutionError> {
+    let declaration = storage
+        .declaration(id)
+        .ok_or(ResolutionError::InvalidStorage)?;
+    let chain = ownership_chain(storage, id)?;
+    let mut output = String::new();
+    push_identity_field(
+        &mut output,
+        &storage
+            .document(declaration.document)
+            .ok_or(ResolutionError::InvalidStorage)?
+            .identity,
+    );
+    for current in chain.iter().rev() {
+        let segment = storage
+            .declaration(*current)
+            .ok_or(ResolutionError::InvalidStorage)?;
+        let Some(name) = segment.name else {
+            return Ok(None);
+        };
+        push_identity_field(
+            &mut output,
+            storage
+                .symbol(name)
+                .ok_or(ResolutionError::InvalidStorage)?,
+        );
+    }
+    Ok(Some(output))
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -1869,7 +2034,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
 
         // A redefinition/subsetting reference owned by a *usage* (not a def/type) cannot reach its
         // target through the usage's own ancestor closure -- a plain usage has no Subclassification
-        // ancestors of its own. Instead, per RESOLUTION_LAYER_DESIGN.md, the target must be reached
+        // ancestors of its own. Instead, per planning/RESOLUTION_LAYER_DESIGN.md, the target must be reached
         // by first following the usage's own settled `FeatureTyping` reference to its type, then
         // searching that type's directly-owned members and its already-computed ancestor closure
         // (built above from Subclassification, independently of this step). This is why it runs
@@ -2155,7 +2320,7 @@ fn detect_cyclic_alias_bindings<R: ResolutionReferenceFact>(
 /// authored reference (for example a `FeatureTyping` on `device : DeviceAlias`) resolves to an
 /// alias declaration, this follows that alias's own resolved `AliasBinding` chain -- transitively,
 /// through alias-of-alias -- to the ultimate non-alias target and publishes an `implied` (per
-/// RESOLUTION_LAYER_DESIGN.md's provenance vocabulary) relationship of the *same* reference kind
+/// planning/RESOLUTION_LAYER_DESIGN.md's provenance vocabulary) relationship of the *same* reference kind
 /// straight from the original source to that ultimate target. This makes aliasing "transparent"
 /// for downstream typing without weakening or replacing the alias's own authored `AliasBinding`
 /// fact, which remains published as its own (authored-provenance) reference/relationship. A cycle
@@ -2759,7 +2924,7 @@ fn resolve_reference<R: ResolutionReferenceFact>(
         // When the first segment is also the last (a plain unqualified reference), the winning
         // precedence tier's candidates *are* the final resolution target, so domain compatibility
         // is applied per tier below (an incompatible-domain local binding still shadows a
-        // compatible outer/imported one; see RESOLUTION_LAYER_DESIGN.md section 11.1). When more
+        // compatible outer/imported one; see planning/RESOLUTION_LAYER_DESIGN.md section 11.1). When more
         // segments follow, this first segment denotes an intermediate namespace/type owner, not
         // the reference's final target, so no domain filtering applies here: `Any` accepts
         // everything and the tier logic degrades to plain name-presence shadowing.
@@ -2829,7 +2994,7 @@ fn resolve_reference<R: ResolutionReferenceFact>(
 
 /// Walks the enclosing-namespace chain from `owner` outward. At each level, owned members take
 /// precedence over inherited (ancestor-scoped) members, which take precedence over imports, per
-/// the scope-origin precedence in `RESOLUTION_LAYER_DESIGN.md` section 6 ("owned members, then
+/// the scope-origin precedence in `planning/RESOLUTION_LAYER_DESIGN.md` section 6 ("owned members, then
 /// inherited/general members, then imports"). `inherited_names` is `None` for reference kinds that
 /// do not read inherited scope (for example Subclassification itself).
 ///
@@ -5601,7 +5766,7 @@ mod tests {
     fn local_feature_shadows_an_incompatible_imported_type_of_the_same_name() {
         // C::T (a PartUsage feature) is domain-incompatible as a FeatureTyping target, but it is
         // still owned directly by C, the reference's enclosing namespace, so per
-        // RESOLUTION_LAYER_DESIGN.md section 11.1 it must shadow the imported, domain-compatible
+        // planning/RESOLUTION_LAYER_DESIGN.md section 11.1 it must shadow the imported, domain-compatible
         // A::T rather than being silently discarded in favor of the import or left Unresolved.
         let fixture = local_shadow_fixture(false);
         let (_, _, resolution) = resolve_fixture(&fixture);

@@ -82,7 +82,7 @@ package Camera {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:9d3da3c4c2b2ce9785a4a68af1284a0f6a44e27c4e7d3fc7108f8423d0a23caa") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/17_camera.md") (path (name "Camera") (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Action Decomposition") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/17_camera.md") (path (named (kind package) (name "Camera")) (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Action Decomposition") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::Camera"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::FocusingSubsystem"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::ImagingSubsystem"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -93,7 +93,7 @@ package Camera {
     (declaration (id (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::scene"))) (kind ref) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Scene"))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/17_camera.md") (path (name "Camera") (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/17_camera.md") (path (named (kind package) (name "Camera")) (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0))
       (authored-target "Action Decomposition")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera"))) (kind featureTyping) (ordinal 0))
@@ -117,7 +117,7 @@ package Camera {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/17_camera.md") (range (start 1 16) (end 1 41)) (probe (position 1 16))
-    (reference (id (source (node (document "memory://snapshot/17_camera.md") (path (name "Camera") (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0) (authored-target "Action Decomposition")
+    (reference (id (source (node (document "memory://snapshot/17_camera.md") (path (named (kind package) (name "Camera")) (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0) (authored-target "Action Decomposition")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/17_camera.md") (range (start 7 15) (end 7 21)) (probe (position 7 15))

@@ -184,8 +184,8 @@ standard library package Links {
   (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:b5f6d75a4656d8c2b313762c8a63f37565f3a289fbeb71a44521d403bf2328c5") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/links.md") (qualified-name "Links"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n     * This package defines associations and features that are related to the typing of links.\n     "))))
-    (declaration (id (node (document "memory://snapshot/links.md") (path (name "Links") (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Base::Anything") (import (shape membership) (recursive false)))))
-    (declaration (id (node (document "memory://snapshot/links.md") (path (name "Links") (anonymous (kind import) (ordinal 1)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Base::things") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/links.md") (path (named (kind library-package) (name "Links")) (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Base::Anything") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/links.md") (path (named (kind library-package) (name "Links")) (anonymous (kind import) (ordinal 1)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Base::things") (import (shape membership) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/links.md") (qualified-name "Links::BinaryLink"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (facts (modifiers all)) (documentation (doc (text "\n         * BinaryLink is the most general binary association between exactly two things, \n         * nominally directed from source to target.\n         "))) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Link"))))
     (declaration (id (node (document "memory://snapshot/links.md") (qualified-name "Links::BinaryLink::participant"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers ordered nonunique) (multiplicity (lower 2) (upper 2))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Anything")) (redefinition (reference "Link::participant"))))
     (declaration (id (node (document "memory://snapshot/links.md") (qualified-name "Links::BinaryLink::source"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end) (multiplicity (lower 1) (upper 1))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Anything")) (subsetting (reference "participant"))))
@@ -203,10 +203,10 @@ standard library package Links {
     (declaration (id (node (document "memory://snapshot/links.md") (qualified-name "Links::selfLinks::thisThing"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Anything")) (redefinition (reference "SelfLink::thisThing")) (redefinition (reference "binaryLinks::source"))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/links.md") (path (name "Links") (anonymous (kind import) (ordinal 0)))))) (kind membershipImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/links.md") (path (named (kind library-package) (name "Links")) (anonymous (kind import) (ordinal 0)))))) (kind membershipImport) (ordinal 0))
       (authored-target "Base::Anything")
       (outcome (status unresolved)))
-    (reference (id (source (node (document "memory://snapshot/links.md") (path (name "Links") (anonymous (kind import) (ordinal 1)))))) (kind membershipImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/links.md") (path (named (kind library-package) (name "Links")) (anonymous (kind import) (ordinal 1)))))) (kind membershipImport) (ordinal 0))
       (authored-target "Base::things")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/links.md") (qualified-name "Links::BinaryLink"))) (kind specialization) (ordinal 0))
@@ -318,11 +318,11 @@ standard library package Links {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/links.md") (range (start 6 19) (end 6 33)) (probe (position 6 19))
-    (reference (id (source (node (document "memory://snapshot/links.md") (path (name "Links") (anonymous (kind import) (ordinal 0)))))) (kind membershipImport) (ordinal 0) (authored-target "Base::Anything")
+    (reference (id (source (node (document "memory://snapshot/links.md") (path (named (kind library-package) (name "Links")) (anonymous (kind import) (ordinal 0)))))) (kind membershipImport) (ordinal 0) (authored-target "Base::Anything")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/links.md") (range (start 7 19) (end 7 31)) (probe (position 7 19))
-    (reference (id (source (node (document "memory://snapshot/links.md") (path (name "Links") (anonymous (kind import) (ordinal 1)))))) (kind membershipImport) (ordinal 0) (authored-target "Base::things")
+    (reference (id (source (node (document "memory://snapshot/links.md") (path (named (kind library-package) (name "Links")) (anonymous (kind import) (ordinal 1)))))) (kind membershipImport) (ordinal 0) (authored-target "Base::things")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/links.md") (range (start 18 37) (end 18 41)) (probe (position 18 37))

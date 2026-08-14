@@ -111,7 +111,7 @@ package 'Message Payload Example' {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:d260b826265ab857599c63a4b4eba9dbb18c5a3f20a1d3be4f8e49cb5de2625b") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/27_message_payload_example.md") (qualified-name "Message Payload Example"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/27_message_payload_example.md") (path (name "Message Payload Example") (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Event Occurrence Example") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/27_message_payload_example.md") (path (named (kind package) (name "Message Payload Example")) (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Event Occurrence Example") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/27_message_payload_example.md") (qualified-name "Message Payload Example::CruiseControlInteraction"))) (kind occurrence-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/27_message_payload_example.md") (qualified-name "Message Payload Example::EngineController"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/27_message_payload_example.md") (qualified-name "Message Payload Example::FuelCommand"))) (kind item-def) (membership (kind owning) (visibility default)))
@@ -124,7 +124,7 @@ package 'Message Payload Example' {
     (declaration (id (node (document "memory://snapshot/27_message_payload_example.md") (qualified-name "Message Payload Example::vehicle1::engineController::fuelCommandReceived"))) (kind occurrence) (membership (kind feature) (visibility default)) (facts (modifiers event)))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/27_message_payload_example.md") (path (name "Message Payload Example") (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/27_message_payload_example.md") (path (named (kind package) (name "Message Payload Example")) (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0))
       (authored-target "Event Occurrence Example")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/27_message_payload_example.md") (qualified-name "Message Payload Example::FuelCommand::fuelFlow"))) (kind featureTyping) (ordinal 0))
@@ -148,7 +148,7 @@ package 'Message Payload Example' {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/27_message_payload_example.md") (range (start 1 16) (end 1 45)) (probe (position 1 16))
-    (reference (id (source (node (document "memory://snapshot/27_message_payload_example.md") (path (name "Message Payload Example") (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0) (authored-target "Event Occurrence Example")
+    (reference (id (source (node (document "memory://snapshot/27_message_payload_example.md") (path (named (kind package) (name "Message Payload Example")) (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0) (authored-target "Event Occurrence Example")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/27_message_payload_example.md") (range (start 6 23) (end 6 41)) (probe (position 6 23))

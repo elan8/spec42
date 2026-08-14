@@ -75,8 +75,8 @@ package RationaleMetadataExample {
   (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:d01bfaf810b2a5c38ae883317559c9d569344f0bc03a62597b15ca3236333e55") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (path (name "RationaleMetadataExample") (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ModelingMetadata::Rationale") (import (shape membership) (recursive false)))))
-    (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (path (name "RationaleMetadataExample") (anonymous (kind import) (ordinal 1)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "TradeStudies") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (path (named (kind package) (name "RationaleMetadataExample")) (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ModelingMetadata::Rationale") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (path (named (kind package) (name "RationaleMetadataExample")) (anonymous (kind import) (ordinal 1)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "TradeStudies") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engine"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engine4cyl"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "engine"))))
     (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engine6cyl"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "engine"))))
@@ -87,10 +87,10 @@ package RationaleMetadataExample {
     (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineTradeOffAnalysis::selectedEngine"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "engine"))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/rationale_metadata_example.md") (path (name "RationaleMetadataExample") (anonymous (kind import) (ordinal 1)))))) (kind namespaceImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/rationale_metadata_example.md") (path (named (kind package) (name "RationaleMetadataExample")) (anonymous (kind import) (ordinal 1)))))) (kind namespaceImport) (ordinal 0))
       (authored-target "TradeStudies")
       (outcome (status unresolved)))
-    (reference (id (source (node (document "memory://snapshot/rationale_metadata_example.md") (path (name "RationaleMetadataExample") (anonymous (kind import) (ordinal 0)))))) (kind membershipImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/rationale_metadata_example.md") (path (named (kind package) (name "RationaleMetadataExample")) (anonymous (kind import) (ordinal 0)))))) (kind membershipImport) (ordinal 0))
       (authored-target "ModelingMetadata::Rationale")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engine4cyl"))) (kind subsetting) (ordinal 0))
@@ -128,11 +128,11 @@ package RationaleMetadataExample {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/rationale_metadata_example.md") (range (start 15 19) (end 15 34)) (probe (position 15 19))
-    (reference (id (source (node (document "memory://snapshot/rationale_metadata_example.md") (path (name "RationaleMetadataExample") (anonymous (kind import) (ordinal 1)))))) (kind namespaceImport) (ordinal 0) (authored-target "TradeStudies")
+    (reference (id (source (node (document "memory://snapshot/rationale_metadata_example.md") (path (named (kind package) (name "RationaleMetadataExample")) (anonymous (kind import) (ordinal 1)))))) (kind namespaceImport) (ordinal 0) (authored-target "TradeStudies")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/rationale_metadata_example.md") (range (start 1 16) (end 1 43)) (probe (position 1 16))
-    (reference (id (source (node (document "memory://snapshot/rationale_metadata_example.md") (path (name "RationaleMetadataExample") (anonymous (kind import) (ordinal 0)))))) (kind membershipImport) (ordinal 0) (authored-target "ModelingMetadata::Rationale")
+    (reference (id (source (node (document "memory://snapshot/rationale_metadata_example.md") (path (named (kind package) (name "RationaleMetadataExample")) (anonymous (kind import) (ordinal 0)))))) (kind membershipImport) (ordinal 0) (authored-target "ModelingMetadata::Rationale")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/rationale_metadata_example.md") (range (start 7 23) (end 7 29)) (probe (position 7 23))

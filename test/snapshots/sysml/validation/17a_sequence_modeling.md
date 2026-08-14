@@ -99,8 +99,8 @@ package '17a-Sequence-Modeling' {
   (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:6f93bf8222ffb0e2c2803463390d3a9df629177b0fd342257f1e66351b65a74b") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/17a_sequence_modeling.md") (qualified-name "17a-Sequence-Modeling"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/17a_sequence_modeling.md") (path (name "17a-Sequence-Modeling") (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
-    (declaration (id (node (document "memory://snapshot/17a_sequence_modeling.md") (path (name "17a-Sequence-Modeling") (anonymous (kind import) (ordinal 1)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "PayloadDefinitions") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/17a_sequence_modeling.md") (path (named (kind package) (name "17a-Sequence-Modeling")) (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/17a_sequence_modeling.md") (path (named (kind package) (name "17a-Sequence-Modeling")) (anonymous (kind import) (ordinal 1)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "PayloadDefinitions") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/17a_sequence_modeling.md") (qualified-name "17a-Sequence-Modeling::PayloadDefinitions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/17a_sequence_modeling.md") (qualified-name "17a-Sequence-Modeling::PayloadDefinitions::Deliver"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/17a_sequence_modeling.md") (qualified-name "17a-Sequence-Modeling::PayloadDefinitions::Deliver::publication"))) (kind ref) (membership (kind feature) (visibility default)))
@@ -122,10 +122,10 @@ package '17a-Sequence-Modeling' {
     (declaration (id (node (document "memory://snapshot/17a_sequence_modeling.md") (qualified-name "17a-Sequence-Modeling::PubSubSequence::server::subscribe_target_event"))) (kind occurrence) (membership (kind feature) (visibility default)) (facts (modifiers event)))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/17a_sequence_modeling.md") (path (name "17a-Sequence-Modeling") (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/17a_sequence_modeling.md") (path (named (kind package) (name "17a-Sequence-Modeling")) (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0))
       (authored-target "ScalarValues")
       (outcome (status unresolved)))
-    (reference (id (source (node (document "memory://snapshot/17a_sequence_modeling.md") (path (name "17a-Sequence-Modeling") (anonymous (kind import) (ordinal 1)))))) (kind namespaceImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/17a_sequence_modeling.md") (path (named (kind package) (name "17a-Sequence-Modeling")) (anonymous (kind import) (ordinal 1)))))) (kind namespaceImport) (ordinal 0))
       (authored-target "PayloadDefinitions")
       (outcome (status resolved) (target (node (document "memory://snapshot/17a_sequence_modeling.md") (qualified-name "17a-Sequence-Modeling::PayloadDefinitions")))))
     (reference (id (source (node (document "memory://snapshot/17a_sequence_modeling.md") (qualified-name "17a-Sequence-Modeling::PayloadDefinitions::Publish::topic"))) (kind featureTyping) (ordinal 0))
@@ -145,11 +145,11 @@ package '17a-Sequence-Modeling' {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/17a_sequence_modeling.md") (range (start 1 16) (end 1 31)) (probe (position 1 16))
-    (reference (id (source (node (document "memory://snapshot/17a_sequence_modeling.md") (path (name "17a-Sequence-Modeling") (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues")
+    (reference (id (source (node (document "memory://snapshot/17a_sequence_modeling.md") (path (named (kind package) (name "17a-Sequence-Modeling")) (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/17a_sequence_modeling.md") (range (start 2 16) (end 2 37)) (probe (position 2 16))
-    (reference (id (source (node (document "memory://snapshot/17a_sequence_modeling.md") (path (name "17a-Sequence-Modeling") (anonymous (kind import) (ordinal 1)))))) (kind namespaceImport) (ordinal 0) (authored-target "PayloadDefinitions")
+    (reference (id (source (node (document "memory://snapshot/17a_sequence_modeling.md") (path (named (kind package) (name "17a-Sequence-Modeling")) (anonymous (kind import) (ordinal 1)))))) (kind namespaceImport) (ordinal 0) (authored-target "PayloadDefinitions")
       (outcome (status resolved) (target (node (document "memory://snapshot/17a_sequence_modeling.md") (qualified-name "17a-Sequence-Modeling::PayloadDefinitions")))))
   )
   (query (document "memory://snapshot/17a_sequence_modeling.md") (range (start 11 21) (end 11 27)) (probe (position 11 21))
