@@ -87,17 +87,16 @@ describe("Multi-file VS Code Flows", () => {
 
   it("renames symbols across files", async function () {
     this.timeout(20000);
-    const defDoc = await vscode.workspace.openTextDocument(getFixturePath("def.sysml"));
-    await vscode.window.showTextDocument(defDoc);
-    await waitForLanguageServerReady(defDoc);
+    const useDoc = await vscode.workspace.openTextDocument(getFixturePath("use.sysml"));
+    await vscode.window.showTextDocument(useDoc);
 
     const workspaceEdit = await waitFor(
       "cross-file rename",
       () =>
         vscode.commands.executeCommand<vscode.WorkspaceEdit>(
           "vscode.executeDocumentRenameProvider",
-          defDoc.uri,
-          findPosition(defDoc, "Widget"),
+          useDoc.uri,
+          findPosition(useDoc, "Widget"),
           "RenamedWidget"
         ),
       (value) => Boolean(value),
