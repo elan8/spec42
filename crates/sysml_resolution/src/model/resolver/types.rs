@@ -170,15 +170,15 @@ impl SpecializationClosure {
         resolution: &ResolutionResults,
     ) -> Result<Self, ResolutionError> {
         let count = storage.declarations.len();
-        let mut direct: Vec<BTreeMap<DeclarationId, u8>> = vec![BTreeMap::new(); count];
+        let mut direct: Vec<Vec<(DeclarationId, u8)>> = vec![Vec::new(); count];
         let mut record = |source: DeclarationId,
                           target: DeclarationId,
                           scopes: u8|
          -> Result<(), ResolutionError> {
-            let slot = direct
+            direct
                 .get_mut(source.index())
-                .ok_or(ResolutionError::InvalidStorage)?;
-            *slot.entry(target).or_insert(0) |= scopes;
+                .ok_or(ResolutionError::InvalidStorage)?
+                .push((target, scopes));
             Ok(())
         };
 
@@ -204,6 +204,9 @@ impl SpecializationClosure {
             record(relationship.source, relationship.target, scopes)?;
         }
 
+        for row in &mut direct {
+            merge_scopes(row);
+        }
         let closure = saturate(&direct, count)?;
 
         let mut ranges = Vec::with_capacity(count);
@@ -491,36 +494,57 @@ pub(crate) fn scopes_of(bits: u8) -> impl Iterator<Item = SpecializationScope> {
 /// A path's scopes are the intersection of its edges' scopes, so a pair already present under a
 /// wider scope can still gain a narrower one on a later pass; the loop therefore continues while
 /// scope bits change, not only while pairs appear.
+///
+/// Rows are sorted vectors rather than maps, and each pass rebuilds the next row from scratch
+/// rather than copying the previous one forward. Carrying a per-declaration map across passes cost
+/// a deep clone of every ancestor set on every pass -- for the standard library that was the
+/// single most expensive step of the whole publication barrier.
 fn saturate(
-    direct: &[BTreeMap<DeclarationId, u8>],
+    direct: &[Vec<(DeclarationId, u8)>],
     count: usize,
-) -> Result<Vec<BTreeMap<DeclarationId, u8>>, ResolutionError> {
+) -> Result<Vec<Vec<(DeclarationId, u8)>>, ResolutionError> {
     let mut closure = direct.to_vec();
-    let mut next = closure.clone();
+    let mut next: Vec<Vec<(DeclarationId, u8)>> = vec![Vec::new(); count];
     let pass_limit = count.checked_add(1).ok_or(ResolutionError::Capacity)?;
     for _ in 0..pass_limit {
         let mut changed = false;
-        for (index, parents) in direct.iter().enumerate() {
-            for (parent, parent_scopes) in parents {
-                for (ancestor, ancestor_scopes) in
-                    std::iter::once((parent, parent_scopes)).chain(closure[parent.index()].iter())
-                {
+        for index in 0..count {
+            let row = &mut next[index];
+            row.clear();
+            for (parent, parent_scopes) in &direct[index] {
+                row.push((*parent, *parent_scopes));
+                for (ancestor, ancestor_scopes) in &closure[parent.index()] {
                     let scopes = parent_scopes & ancestor_scopes;
-                    if scopes == 0 {
-                        continue;
-                    }
-                    let slot = next[index].entry(*ancestor).or_insert(0);
-                    if *slot | scopes != *slot {
-                        *slot |= scopes;
-                        changed = true;
+                    if scopes != 0 {
+                        row.push((*ancestor, scopes));
                     }
                 }
             }
+            merge_scopes(row);
+            if *row != closure[index] {
+                changed = true;
+            }
         }
+        std::mem::swap(&mut closure, &mut next);
         if !changed {
             break;
         }
-        closure.clone_from(&next);
     }
-    Ok(next)
+    Ok(closure)
+}
+
+/// Sorts one row and folds repeated ancestors into a single entry carrying every scope that
+/// reaches it.
+fn merge_scopes(row: &mut Vec<(DeclarationId, u8)>) {
+    row.sort_unstable();
+    let mut written = 0usize;
+    for read in 0..row.len() {
+        if written > 0 && row[written - 1].0 == row[read].0 {
+            row[written - 1].1 |= row[read].1;
+            continue;
+        }
+        row[written] = row[read];
+        written += 1;
+    }
+    row.truncate(written);
 }
