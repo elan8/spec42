@@ -3,14 +3,15 @@
 use std::fmt;
 
 pub use sysml_resolution::{
-    AnnotationForm, AuthoredValue, BuildMeasurements, Documentation, ElementInspection,
-    ElementInspectionAt, ElementKind, ElementModifier, ElementRelationship, EvaluatedScalar,
-    EvaluationFailure, EvaluationState, FeatureDirection, MembershipFacts, MembershipKind,
-    MembershipRole, MultiplicityBound, MultiplicityFacts, NavigationTarget, OccurrenceRole,
-    PortionKind, PublicationCompleteness, QueryOutcome, ReferenceAt, RelationshipProvenance,
-    RelationshipTarget, RenameOutcome, RequirementConstraintKind, SourceLocation,
-    StateSubactionKind, SymbolEntry, SymbolIdentity, TextPosition, TextRange, ValueKind,
-    Visibility, VisibilityProvenance, VisibleMember,
+    AnnotationForm, AuthoredValue, BuildMeasurements, Conformance, ConformanceObstacle,
+    Documentation, EffectiveType, EffectiveTypeOrigin, ElementInspection, ElementInspectionAt,
+    ElementKind, ElementModifier, ElementRelationship, EvaluatedScalar, EvaluationFailure,
+    EvaluationState, FeatureDirection, MembershipFacts, MembershipKind, MembershipRole,
+    MultiplicityBound, MultiplicityFacts, NavigationTarget, OccurrenceRole, PortionKind,
+    PublicationCompleteness, QueryOutcome, ReferenceAt, RelationshipProvenance, RelationshipTarget,
+    RenameOutcome, RequirementConstraintKind, SourceLocation, SpecializationScope,
+    StateSubactionKind, SubsettingConformance, SymbolEntry, SymbolIdentity, TextPosition,
+    TextRange, TypeReference, ValueKind, Visibility, VisibilityProvenance, VisibleMember,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -172,6 +173,90 @@ impl PublishedModel {
 
     pub fn inspection(&self) -> InspectionQueries<'_> {
         InspectionQueries { model: &self.inner }
+    }
+
+    pub fn types(&self) -> TypeQueries<'_> {
+        TypeQueries { model: &self.inner }
+    }
+}
+
+/// Direct types, supertypes, subtypes, effective types, featuring types and conformance.
+///
+/// Every answer is read from facts the publication settled before it became visible; none of these
+/// calls traverses the model, and repeating one cannot change what it returns.
+pub struct TypeQueries<'a> {
+    model: &'a sysml_resolution::PublishedResolution,
+}
+
+impl TypeQueries<'_> {
+    /// The types a feature declares.
+    pub fn direct_types(&self, symbol: &SymbolIdentity) -> QueryOutcome<Box<[TypeReference]>> {
+        self.model.direct_types(symbol)
+    }
+
+    /// The types a feature has, directly or inherited along its subsetting/redefinition chain.
+    pub fn effective_types(&self, symbol: &SymbolIdentity) -> QueryOutcome<Box<[EffectiveType]>> {
+        self.model.effective_types(symbol)
+    }
+
+    /// The supertypes one specialization edge away.
+    pub fn direct_supertypes(
+        &self,
+        symbol: &SymbolIdentity,
+        scope: SpecializationScope,
+    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+        self.model.direct_supertypes(symbol, scope)
+    }
+
+    /// Every supertype, reflexively including `symbol` itself, as the Pilot's `allSupertypes` does.
+    pub fn all_supertypes(
+        &self,
+        symbol: &SymbolIdentity,
+        scope: SpecializationScope,
+    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+        self.model.all_supertypes(symbol, scope)
+    }
+
+    /// The declarations one specialization edge below `symbol`.
+    pub fn direct_subtypes(
+        &self,
+        symbol: &SymbolIdentity,
+        scope: SpecializationScope,
+    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+        self.model.direct_subtypes(symbol, scope)
+    }
+
+    /// The type that features `symbol`, if any.
+    pub fn featuring_type(&self, symbol: &SymbolIdentity) -> QueryOutcome<Option<SymbolIdentity>> {
+        self.model.featuring_type(symbol)
+    }
+
+    /// Whether `specific` conforms to `general` (KerML §8.4.3.2).
+    pub fn conforms_to(
+        &self,
+        specific: &SymbolIdentity,
+        general: &SymbolIdentity,
+        scope: SpecializationScope,
+    ) -> QueryOutcome<Conformance> {
+        self.model.conforms_to(specific, general, scope)
+    }
+
+    /// Whether the specific feature's types conform to the general feature's (KerML §7.4.12).
+    pub fn feature_typing_conforms(
+        &self,
+        specific: &SymbolIdentity,
+        general: &SymbolIdentity,
+    ) -> QueryOutcome<Conformance> {
+        self.model.feature_typing_conforms(specific, general)
+    }
+
+    /// Both halves of the subsetting rule (KerML §8.4.3.4), reported separately.
+    pub fn subsetting_conforms(
+        &self,
+        subsetting: &SymbolIdentity,
+        subsetted: &SymbolIdentity,
+    ) -> QueryOutcome<SubsettingConformance> {
+        self.model.subsetting_conforms(subsetting, subsetted)
     }
 }
 

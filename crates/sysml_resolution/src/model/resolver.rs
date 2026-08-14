@@ -11,8 +11,10 @@ use super::evaluation;
 use super::*;
 use crate::evaluation::{EvaluationPolicy, EvaluationState};
 use crate::{
-    NavigationTarget, OccurrenceRole, PublicationCompleteness as PublicCompleteness, QueryOutcome,
-    RenameOutcome, SourceLocation, SymbolIdentity, TextPosition, TextRange, VisibleMember,
+    Conformance, ConformanceObstacle, EffectiveType, EffectiveTypeOrigin, NavigationTarget,
+    OccurrenceRole, PublicationCompleteness as PublicCompleteness, QueryOutcome,
+    RelationshipProvenance, RenameOutcome, SourceLocation, SpecializationScope,
+    SubsettingConformance, SymbolIdentity, TextPosition, TextRange, TypeReference, VisibleMember,
 };
 
 mod inspection;
@@ -1659,6 +1661,335 @@ impl ResolvedSemanticModel {
 
     pub(crate) fn write_types_sexpr(&self, output: &mut dyn std::fmt::Write) -> std::fmt::Result {
         writer::write_types_only(self, output)
+    }
+
+    /// Resolves one published identity to the single declaration it names.
+    ///
+    /// Every type query needs this, and every one of them owes the caller the same three explicit
+    /// answers: the publication did not converge, the identity names nothing, or it names several
+    /// identically authored siblings and choosing between them would be a guess.
+    fn single_declaration<T>(
+        &self,
+        symbol: &SymbolIdentity,
+    ) -> Result<DeclarationId, QueryOutcome<T>> {
+        if matches!(
+            self.metadata.completeness,
+            PublicationCompleteness::NonConverged
+        ) {
+            return Err(QueryOutcome::Incomplete);
+        }
+        let mut candidates = self.identity_declarations(symbol);
+        if candidates.len() > 1 {
+            return Err(QueryOutcome::Unresolved);
+        }
+        candidates.pop().ok_or(QueryOutcome::Unresolved)
+    }
+
+    fn symbols(&self, declarations: impl Iterator<Item = DeclarationId>) -> Box<[SymbolIdentity]> {
+        let mut symbols = declarations
+            .filter_map(|id| self.symbol_identity(id))
+            .collect::<Vec<_>>();
+        symbols.sort();
+        symbols.dedup();
+        symbols.into_boxed_slice()
+    }
+
+    pub(crate) fn direct_types(
+        &self,
+        symbol: &SymbolIdentity,
+    ) -> QueryOutcome<Box<[TypeReference]>> {
+        let declaration = match self.single_declaration(symbol) {
+            Ok(declaration) => declaration,
+            Err(outcome) => return outcome,
+        };
+        let mut types = self
+            .types
+            .direct_types(declaration)
+            .iter()
+            .filter_map(|(target, provenance)| {
+                Some(TypeReference {
+                    symbol: self.symbol_identity(*target)?,
+                    provenance: match provenance {
+                        types::FactProvenance::Authored => RelationshipProvenance::Authored,
+                        types::FactProvenance::Implied => RelationshipProvenance::Implied,
+                    },
+                })
+            })
+            .collect::<Vec<_>>();
+        types.sort_by(|left, right| left.symbol.cmp(&right.symbol));
+        self.resolved_outcome(types.into_boxed_slice())
+    }
+
+    pub(crate) fn effective_types(
+        &self,
+        symbol: &SymbolIdentity,
+    ) -> QueryOutcome<Box<[EffectiveType]>> {
+        let declaration = match self.single_declaration(symbol) {
+            Ok(declaration) => declaration,
+            Err(outcome) => return outcome,
+        };
+        let mut types = self
+            .types
+            .effective_types(declaration)
+            .iter()
+            .filter_map(|(target, source)| {
+                Some(EffectiveType {
+                    symbol: self.symbol_identity(*target)?,
+                    origin: match source {
+                        types::EffectiveTypeSource::Direct => EffectiveTypeOrigin::Direct,
+                        types::EffectiveTypeSource::Inherited(from) => {
+                            EffectiveTypeOrigin::Inherited(self.symbol_identity(*from)?)
+                        }
+                    },
+                })
+            })
+            .collect::<Vec<_>>();
+        types.sort_by(|left, right| left.symbol.cmp(&right.symbol));
+        self.resolved_outcome(types.into_boxed_slice())
+    }
+
+    pub(crate) fn direct_supertypes(
+        &self,
+        symbol: &SymbolIdentity,
+        scope: SpecializationScope,
+    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+        let declaration = match self.single_declaration(symbol) {
+            Ok(declaration) => declaration,
+            Err(outcome) => return outcome,
+        };
+        let bit = internal_scope(scope);
+        let symbols = self.symbols(
+            self.types
+                .supertypes(declaration)
+                .iter()
+                .filter(|(_, scopes)| types::scopes_of(*scopes).any(|candidate| candidate == bit))
+                .map(|(target, _)| *target),
+        );
+        self.resolved_outcome(symbols)
+    }
+
+    /// Every supertype of `symbol`, including `symbol` itself.
+    ///
+    /// Reflexive, matching the Pilot's `allSupertypes() = OrderedSet{self}->closure(supertypes)`.
+    /// A caller that wants the strict set removes itself; a caller that expected reflexivity and
+    /// did not get it would silently answer "does not conform" for a type against itself.
+    pub(crate) fn all_supertypes(
+        &self,
+        symbol: &SymbolIdentity,
+        scope: SpecializationScope,
+    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+        let declaration = match self.single_declaration(symbol) {
+            Ok(declaration) => declaration,
+            Err(outcome) => return outcome,
+        };
+        let bit = internal_scope(scope);
+        let symbols = self.symbols(
+            std::iter::once(declaration).chain(
+                self.types
+                    .specialization()
+                    .scoped_ancestors(declaration)
+                    .filter(move |(_, scopes)| scopes.contains(&bit))
+                    .map(|(ancestor, _)| ancestor),
+            ),
+        );
+        self.resolved_outcome(symbols)
+    }
+
+    pub(crate) fn direct_subtypes(
+        &self,
+        symbol: &SymbolIdentity,
+        scope: SpecializationScope,
+    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+        let declaration = match self.single_declaration(symbol) {
+            Ok(declaration) => declaration,
+            Err(outcome) => return outcome,
+        };
+        let bit = internal_scope(scope);
+        let symbols = self.symbols(
+            self.types
+                .subtypes(declaration)
+                .iter()
+                .filter(|(_, scopes)| types::scopes_of(*scopes).any(|candidate| candidate == bit))
+                .map(|(source, _)| *source),
+        );
+        self.resolved_outcome(symbols)
+    }
+
+    pub(crate) fn featuring_type(
+        &self,
+        symbol: &SymbolIdentity,
+    ) -> QueryOutcome<Option<SymbolIdentity>> {
+        let declaration = match self.single_declaration(symbol) {
+            Ok(declaration) => declaration,
+            Err(outcome) => return outcome,
+        };
+        let featuring = self
+            .types
+            .featuring_type(declaration)
+            .and_then(|owner| self.symbol_identity(owner));
+        self.resolved_outcome(featuring)
+    }
+
+    pub(crate) fn conforms_to(
+        &self,
+        specific: &SymbolIdentity,
+        general: &SymbolIdentity,
+        scope: SpecializationScope,
+    ) -> QueryOutcome<Conformance> {
+        let specific = match self.single_declaration(specific) {
+            Ok(declaration) => declaration,
+            Err(outcome) => return outcome,
+        };
+        let general = match self.single_declaration(general) {
+            Ok(declaration) => declaration,
+            Err(outcome) => return outcome,
+        };
+        self.resolved_outcome(self.conformance(specific, general, scope))
+    }
+
+    fn conformance(
+        &self,
+        specific: DeclarationId,
+        general: DeclarationId,
+        scope: SpecializationScope,
+    ) -> Conformance {
+        if specific == general {
+            return Conformance::Conforms;
+        }
+        // A declaration that reaches itself has a malformed hierarchy. Its closure is still
+        // complete, so an answer could be produced -- but producing one would turn a modelling
+        // error into a published semantic fact, which is exactly what the explicit-state rule
+        // exists to prevent.
+        if self.types.specialization().is_cyclic(specific) {
+            return Conformance::Indeterminate(ConformanceObstacle::CyclicSpecialization);
+        }
+        if self
+            .types
+            .specialization()
+            .reaches(specific, general, internal_scope(scope))
+        {
+            Conformance::Conforms
+        } else {
+            Conformance::DoesNotConform
+        }
+    }
+
+    /// KerML §7.4.12: every type of the general feature must be conformed to by some type of the
+    /// specific feature.
+    ///
+    /// An untyped side conforms: a feature that declares no typing of its own takes the other's,
+    /// so there is nothing to violate. Effective types are used rather than declared ones, so a
+    /// feature that inherits its typing along a redefinition chain is not mistaken for untyped.
+    pub(crate) fn feature_typing_conforms(
+        &self,
+        specific: &SymbolIdentity,
+        general: &SymbolIdentity,
+    ) -> QueryOutcome<Conformance> {
+        let specific = match self.single_declaration(specific) {
+            Ok(declaration) => declaration,
+            Err(outcome) => return outcome,
+        };
+        let general = match self.single_declaration(general) {
+            Ok(declaration) => declaration,
+            Err(outcome) => return outcome,
+        };
+        self.resolved_outcome(self.typing_conformance(specific, general))
+    }
+
+    fn typing_conformance(&self, specific: DeclarationId, general: DeclarationId) -> Conformance {
+        // The specific side contributes only the typings it does not owe to the general side.
+        // Counting an inherited typing would make the rule vacuous: every redefining feature
+        // inherits the redefined feature's type, so that type would always be there to satisfy
+        // the check, and a feature retyped to something unrelated would still pass.
+        let specific_types = self
+            .types
+            .effective_types(specific)
+            .iter()
+            .filter(|(_, source)| match source {
+                types::EffectiveTypeSource::Direct => true,
+                types::EffectiveTypeSource::Inherited(from) => {
+                    *from != general
+                        && !self.types.specialization().reaches(
+                            *from,
+                            general,
+                            types::SpecializationScope::FeatureSpecialization,
+                        )
+                }
+            })
+            .map(|(target, _)| *target)
+            .collect::<Vec<_>>();
+        let general_types = self.types.effective_types(general);
+        if specific_types.is_empty() || general_types.is_empty() {
+            return Conformance::Conforms;
+        }
+        let mut obstacle = None;
+        for (general_type, _) in general_types {
+            let mut satisfied = false;
+            for specific_type in &specific_types {
+                match self.conformance(
+                    *specific_type,
+                    *general_type,
+                    SpecializationScope::AnySpecialization,
+                ) {
+                    Conformance::Conforms => {
+                        satisfied = true;
+                        break;
+                    }
+                    Conformance::Indeterminate(reason) => obstacle = Some(reason),
+                    Conformance::DoesNotConform => {}
+                }
+            }
+            if !satisfied {
+                // An unanswerable pair cannot be reported as a violation: the rule was never
+                // evaluated for it.
+                return match obstacle {
+                    Some(reason) => Conformance::Indeterminate(reason),
+                    None => Conformance::DoesNotConform,
+                };
+            }
+        }
+        Conformance::Conforms
+    }
+
+    /// KerML §8.4.3.4, with its two halves kept apart.
+    pub(crate) fn subsetting_conforms(
+        &self,
+        subsetting: &SymbolIdentity,
+        subsetted: &SymbolIdentity,
+    ) -> QueryOutcome<SubsettingConformance> {
+        let subsetting = match self.single_declaration(subsetting) {
+            Ok(declaration) => declaration,
+            Err(outcome) => return outcome,
+        };
+        let subsetted = match self.single_declaration(subsetted) {
+            Ok(declaration) => declaration,
+            Err(outcome) => return outcome,
+        };
+        // A feature owned only by namespaces has no featuring type, so the domain half of the rule
+        // has nothing to compare and cannot be violated.
+        let featuring = match (
+            self.types.featuring_type(subsetting),
+            self.types.featuring_type(subsetted),
+        ) {
+            (Some(specific), Some(general)) => {
+                self.conformance(specific, general, SpecializationScope::AnySpecialization)
+            }
+            _ => Conformance::Conforms,
+        };
+        self.resolved_outcome(SubsettingConformance {
+            featuring,
+            types: self.typing_conformance(subsetting, subsetted),
+        })
+    }
+}
+
+fn internal_scope(scope: SpecializationScope) -> types::SpecializationScope {
+    match scope {
+        SpecializationScope::AnySpecialization => types::SpecializationScope::AnySpecialization,
+        SpecializationScope::Subclassification => types::SpecializationScope::Subclassification,
+        SpecializationScope::FeatureSpecialization => {
+            types::SpecializationScope::FeatureSpecialization
+        }
     }
 }
 

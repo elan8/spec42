@@ -240,6 +240,22 @@ impl SpecializationClosure {
             .map(|(ancestor, scopes)| (*ancestor, scopes_of(*scopes).collect()))
     }
 
+    /// Whether `specific` reaches `general` through specialization within `scope`.
+    ///
+    /// Strict: the transitive relation only. Reflexivity is applied by the query service, which
+    /// owns the published conformance contract.
+    pub(crate) fn reaches(
+        &self,
+        specific: DeclarationId,
+        general: DeclarationId,
+        scope: SpecializationScope,
+    ) -> bool {
+        let entries = self.entries(specific);
+        entries
+            .binary_search_by_key(&general, |(ancestor, _)| *ancestor)
+            .is_ok_and(|found| entries[found].1 & scope.bit() != 0)
+    }
+
     /// Whether `declaration` reaches itself through specialization.
     pub(crate) fn is_cyclic(&self, declaration: DeclarationId) -> bool {
         self.cyclic
@@ -264,6 +280,10 @@ pub(crate) struct TypeIndex {
     specialization: SpecializationClosure,
     /// Resolved `FeatureTyping` targets per feature, with provenance.
     direct_types: Rows<(DeclarationId, FactProvenance)>,
+    /// Direct supertypes per declaration: the specialization edges it declares, tagged with the
+    /// scopes each edge belongs to. The transitive answer lives in the closure; this is the one
+    /// hop a type hierarchy view expands at a time.
+    supertypes: Rows<(DeclarationId, u8)>,
     /// Direct specializers per declaration: the reverse of the direct specialization edges, tagged
     /// with the scopes each edge belongs to.
     ///
@@ -335,12 +355,14 @@ impl TypeIndex {
         let specialization = SpecializationClosure::build(storage, resolution)?;
 
         let mut direct_types = Vec::new();
+        let mut supertypes = Vec::new();
         let mut subtypes = Vec::new();
         let mut edge = |source: DeclarationId,
                         target: DeclarationId,
                         kind: ReferenceKind,
                         provenance: FactProvenance| {
             if let Some(scopes) = edge_scopes(kind) {
+                supertypes.push((source, (target, scopes)));
                 subtypes.push((target, (source, scopes)));
             }
             if kind == ReferenceKind::FeatureTyping {
@@ -370,6 +392,7 @@ impl TypeIndex {
         }
 
         let direct_types = Rows::build(count, direct_types)?;
+        let supertypes = Rows::build(count, supertypes)?;
         let subtypes = Rows::build(count, subtypes)?;
 
         // Effective typing walks the feature-specialization chain and collects what each feature
@@ -408,6 +431,7 @@ impl TypeIndex {
         Ok(Self {
             specialization,
             direct_types,
+            supertypes,
             subtypes,
             effective_types,
             featuring: featuring.into_boxed_slice(),
@@ -428,6 +452,11 @@ impl TypeIndex {
         declaration: DeclarationId,
     ) -> &[(DeclarationId, FactProvenance)] {
         self.direct_types.row(declaration)
+    }
+
+    /// Declarations `declaration` directly specializes, with the scopes of each edge.
+    pub(crate) fn supertypes(&self, declaration: DeclarationId) -> &[(DeclarationId, u8)] {
+        self.supertypes.row(declaration)
     }
 
     /// Declarations that directly specialize `declaration`, with the scopes of each edge.

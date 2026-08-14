@@ -13,6 +13,7 @@ mod element_kind;
 mod evaluation;
 mod inspection;
 mod model;
+mod type_query;
 
 pub use element_kind::{
     ElementKind, MembershipRole, RequirementConstraintKind, StateSubactionKind,
@@ -23,6 +24,10 @@ pub use inspection::{
     ElementModifier, ElementRelationship, FeatureDirection, MembershipFacts, MembershipKind,
     MultiplicityBound, MultiplicityFacts, PortionKind, ReferenceAt, RelationshipProvenance,
     RelationshipTarget, SymbolEntry, ValueKind, Visibility, VisibilityProvenance,
+};
+pub use type_query::{
+    Conformance, ConformanceObstacle, EffectiveType, EffectiveTypeOrigin, SpecializationScope,
+    SubsettingConformance, TypeReference,
 };
 
 use model::resolver::ResolvedSemanticModel;
@@ -390,6 +395,76 @@ impl PublishedResolution {
     /// Every element declared in one document, in source order.
     pub fn document_symbols(&self, document: &str) -> QueryOutcome<Box<[SymbolEntry]>> {
         self.model.document_symbols(document)
+    }
+
+    /// The types a feature declares.
+    pub fn direct_types(&self, symbol: &SymbolIdentity) -> QueryOutcome<Box<[TypeReference]>> {
+        self.model.direct_types(symbol)
+    }
+
+    /// The types a feature has, directly or inherited along its subsetting/redefinition chain.
+    pub fn effective_types(&self, symbol: &SymbolIdentity) -> QueryOutcome<Box<[EffectiveType]>> {
+        self.model.effective_types(symbol)
+    }
+
+    /// The supertypes one specialization edge away.
+    pub fn direct_supertypes(
+        &self,
+        symbol: &SymbolIdentity,
+        scope: SpecializationScope,
+    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+        self.model.direct_supertypes(symbol, scope)
+    }
+
+    /// Every supertype, reflexively including `symbol` itself.
+    pub fn all_supertypes(
+        &self,
+        symbol: &SymbolIdentity,
+        scope: SpecializationScope,
+    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+        self.model.all_supertypes(symbol, scope)
+    }
+
+    /// The declarations one specialization edge below `symbol`.
+    pub fn direct_subtypes(
+        &self,
+        symbol: &SymbolIdentity,
+        scope: SpecializationScope,
+    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+        self.model.direct_subtypes(symbol, scope)
+    }
+
+    /// The type that features `symbol`, if any.
+    pub fn featuring_type(&self, symbol: &SymbolIdentity) -> QueryOutcome<Option<SymbolIdentity>> {
+        self.model.featuring_type(symbol)
+    }
+
+    /// Whether `specific` conforms to `general` (KerML §8.4.3.2), reflexively and transitively.
+    pub fn conforms_to(
+        &self,
+        specific: &SymbolIdentity,
+        general: &SymbolIdentity,
+        scope: SpecializationScope,
+    ) -> QueryOutcome<Conformance> {
+        self.model.conforms_to(specific, general, scope)
+    }
+
+    /// Whether the specific feature's types conform to the general feature's (KerML §7.4.12).
+    pub fn feature_typing_conforms(
+        &self,
+        specific: &SymbolIdentity,
+        general: &SymbolIdentity,
+    ) -> QueryOutcome<Conformance> {
+        self.model.feature_typing_conforms(specific, general)
+    }
+
+    /// Both halves of the subsetting rule (KerML §8.4.3.4), reported separately.
+    pub fn subsetting_conforms(
+        &self,
+        subsetting: &SymbolIdentity,
+        subsetted: &SymbolIdentity,
+    ) -> QueryOutcome<SubsettingConformance> {
+        self.model.subsetting_conforms(subsetting, subsetted)
     }
 }
 
@@ -2494,6 +2569,254 @@ mod tests {
         assert!(
             sexpr.contains(r#"(named (kind metadata) (name "Safety"))"#),
             "expected the metadata usage's kind in its identity, got: {sexpr}"
+        );
+    }
+
+    // --- Type queries -------------------------------------------------------------------------
+    //
+    // The `# TYPES` snapshot section already shows the published facts these queries read. What it
+    // cannot show is the rules layered over them: reflexivity, scope selection, what a cycle does
+    // to an answer, and the two conformance rules' treatment of untyped and unrelated features.
+
+    fn symbol_named(
+        published: &PublishedResolution,
+        document: &str,
+        qualified: &str,
+    ) -> SymbolIdentity {
+        match published.document_symbols(document) {
+            QueryOutcome::Resolved(entries)
+            | QueryOutcome::Recovered(entries)
+            | QueryOutcome::UnsupportedWith(entries) => entries
+                .iter()
+                .find(|entry| entry.qualified_name.as_ref() == qualified)
+                .unwrap_or_else(|| panic!("no declaration named {qualified}"))
+                .identity
+                .clone(),
+            other => panic!("expected document symbols, got: {other:?}"),
+        }
+    }
+
+    fn conformance(outcome: QueryOutcome<Conformance>) -> Conformance {
+        match outcome {
+            QueryOutcome::Resolved(value)
+            | QueryOutcome::Recovered(value)
+            | QueryOutcome::UnsupportedWith(value) => value,
+            other => panic!("expected a settled conformance answer, got: {other:?}"),
+        }
+    }
+
+    fn symbols(outcome: QueryOutcome<Box<[SymbolIdentity]>>) -> Vec<SymbolIdentity> {
+        match outcome {
+            QueryOutcome::Resolved(values)
+            | QueryOutcome::Recovered(values)
+            | QueryOutcome::UnsupportedWith(values) => values.into_vec(),
+            other => panic!("expected settled symbols, got: {other:?}"),
+        }
+    }
+
+    #[test]
+    fn conformance_is_reflexive_and_transitive() {
+        let published = publication_for(&[(
+            "memory://types.sysml",
+            "package P { part def A; part def B :> A; part def C :> B; }",
+        )]);
+        let a = symbol_named(&published, "memory://types.sysml", "P::A");
+        let c = symbol_named(&published, "memory://types.sysml", "P::C");
+
+        assert_eq!(
+            conformance(published.conforms_to(&a, &a, SpecializationScope::AnySpecialization)),
+            Conformance::Conforms,
+            "a type conforms to itself"
+        );
+        assert_eq!(
+            conformance(published.conforms_to(&c, &a, SpecializationScope::AnySpecialization)),
+            Conformance::Conforms,
+            "C :> B :> A conforms through the chain"
+        );
+        assert_eq!(
+            conformance(published.conforms_to(&a, &c, SpecializationScope::AnySpecialization)),
+            Conformance::DoesNotConform,
+            "conformance is directional"
+        );
+    }
+
+    #[test]
+    fn all_supertypes_includes_the_type_itself() {
+        let published = publication_for(&[(
+            "memory://types.sysml",
+            "package P { part def A; part def B :> A; }",
+        )]);
+        let a = symbol_named(&published, "memory://types.sysml", "P::A");
+        let b = symbol_named(&published, "memory://types.sysml", "P::B");
+
+        let supertypes =
+            symbols(published.all_supertypes(&b, SpecializationScope::AnySpecialization));
+        assert!(
+            supertypes.contains(&b) && supertypes.contains(&a),
+            "the Pilot's allSupertypes is reflexive, got: {supertypes:?}"
+        );
+    }
+
+    /// A feature reaches its type through `FeatureTyping`, which is a `Specialization` but not a
+    /// `Subclassification`. Asking in the narrower scope must not return it.
+    #[test]
+    fn specialization_scope_selects_which_paths_count() {
+        let published = publication_for(&[(
+            "memory://types.sysml",
+            "package P { part def A; part def B :> A; part b : B; }",
+        )]);
+        let a = symbol_named(&published, "memory://types.sysml", "P::A");
+        let b = symbol_named(&published, "memory://types.sysml", "P::B");
+        let usage = symbol_named(&published, "memory://types.sysml", "P::b");
+
+        assert_eq!(
+            conformance(published.conforms_to(&usage, &a, SpecializationScope::AnySpecialization)),
+            Conformance::Conforms,
+            "the usage reaches A through its typing"
+        );
+        assert_eq!(
+            conformance(published.conforms_to(&usage, &a, SpecializationScope::Subclassification)),
+            Conformance::DoesNotConform,
+            "a typing edge is not classifier generalization"
+        );
+        assert_eq!(
+            conformance(published.conforms_to(&b, &a, SpecializationScope::Subclassification)),
+            Conformance::Conforms,
+            "`:>` between part defs is classifier generalization"
+        );
+    }
+
+    #[test]
+    fn a_cyclic_hierarchy_yields_no_conformance_answer() {
+        let published = publication_for(&[(
+            "memory://types.sysml",
+            "package P { part def A :> B; part def B :> A; part def C; }",
+        )]);
+        let a = symbol_named(&published, "memory://types.sysml", "P::A");
+        let c = symbol_named(&published, "memory://types.sysml", "P::C");
+
+        assert_eq!(
+            conformance(published.conforms_to(&a, &c, SpecializationScope::AnySpecialization)),
+            Conformance::Indeterminate(ConformanceObstacle::CyclicSpecialization),
+            "a malformed hierarchy must not produce a published conformance fact"
+        );
+        assert_eq!(
+            conformance(published.conforms_to(&a, &a, SpecializationScope::AnySpecialization)),
+            Conformance::Conforms,
+            "reflexivity holds even inside a cycle"
+        );
+    }
+
+    #[test]
+    fn direct_subtypes_reports_the_reverse_edge() {
+        let published = publication_for(&[(
+            "memory://types.sysml",
+            "package P { part def A; part def B :> A; part def C :> A; }",
+        )]);
+        let a = symbol_named(&published, "memory://types.sysml", "P::A");
+        let b = symbol_named(&published, "memory://types.sysml", "P::B");
+        let c = symbol_named(&published, "memory://types.sysml", "P::C");
+
+        let subtypes =
+            symbols(published.direct_subtypes(&a, SpecializationScope::Subclassification));
+        assert!(
+            subtypes.contains(&b) && subtypes.contains(&c) && subtypes.len() == 2,
+            "expected both direct specializers, got: {subtypes:?}"
+        );
+    }
+
+    #[test]
+    fn an_untyped_feature_conforms_because_it_inherits_the_typing() {
+        let published = publication_for(&[(
+            "memory://types.sysml",
+            "package P { part def T; part def A { part x : T; } part def B :> A { part y :>> x; } }",
+        )]);
+        let general = symbol_named(&published, "memory://types.sysml", "P::A::x");
+        let specific = symbol_named(&published, "memory://types.sysml", "P::B::y");
+
+        assert_eq!(
+            conformance(published.feature_typing_conforms(&specific, &general)),
+            Conformance::Conforms,
+            "a redefinition that declares no typing takes the redefined feature's"
+        );
+        let effective = match published.effective_types(&specific) {
+            QueryOutcome::Resolved(types)
+            | QueryOutcome::Recovered(types)
+            | QueryOutcome::UnsupportedWith(types) => types,
+            other => panic!("expected settled effective types, got: {other:?}"),
+        };
+        assert!(
+            effective
+                .iter()
+                .any(|entry| matches!(entry.origin, EffectiveTypeOrigin::Inherited(_))),
+            "the inherited typing must keep the feature it came from, got: {effective:?}"
+        );
+    }
+
+    #[test]
+    fn feature_typing_conformance_rejects_an_unrelated_type() {
+        let published = publication_for(&[(
+            "memory://types.sysml",
+            "package P { part def T; part def U; part def A { part x : T; } part def B :> A { part y : U :>> x; } }",
+        )]);
+        let general = symbol_named(&published, "memory://types.sysml", "P::A::x");
+        let specific = symbol_named(&published, "memory://types.sysml", "P::B::y");
+
+        assert_eq!(
+            conformance(published.feature_typing_conforms(&specific, &general)),
+            Conformance::DoesNotConform,
+            "U neither is nor specializes T"
+        );
+    }
+
+    /// KerML §8.4.3.4 has two halves, and a consumer reporting a violation has to say which one
+    /// failed. Here the types conform and the featuring types do not.
+    #[test]
+    fn subsetting_conformance_reports_its_halves_separately() {
+        let published = publication_for(&[(
+            "memory://types.sysml",
+            "package P { part def T; part def A { part x : T; } part def U { part y : T subsets x; } }",
+        )]);
+        let subsetting = symbol_named(&published, "memory://types.sysml", "P::U::y");
+        let subsetted = symbol_named(&published, "memory://types.sysml", "P::A::x");
+
+        let outcome = match published.subsetting_conforms(&subsetting, &subsetted) {
+            QueryOutcome::Resolved(value)
+            | QueryOutcome::Recovered(value)
+            | QueryOutcome::UnsupportedWith(value) => value,
+            other => panic!("expected a settled subsetting answer, got: {other:?}"),
+        };
+        assert_eq!(
+            outcome.types,
+            Conformance::Conforms,
+            "both features are typed by T"
+        );
+        assert_eq!(
+            outcome.featuring,
+            Conformance::DoesNotConform,
+            "U does not specialize A, so it cannot subset A's feature"
+        );
+    }
+
+    #[test]
+    fn an_unknown_identity_is_unresolved_rather_than_empty() {
+        let published = publication_for(&[("memory://types.sysml", "package P { part def A; }")]);
+        let a = symbol_named(&published, "memory://types.sysml", "P::A");
+        let missing = SymbolIdentity("no-such-declaration".into());
+
+        assert!(
+            matches!(
+                published.direct_supertypes(&missing, SpecializationScope::AnySpecialization),
+                QueryOutcome::Unresolved
+            ),
+            "an identity that names nothing must not answer with an empty supertype list"
+        );
+        assert!(
+            matches!(
+                published.conforms_to(&a, &missing, SpecializationScope::AnySpecialization),
+                QueryOutcome::Unresolved
+            ),
+            "conformance against an unknown identity is unanswerable, not false"
         );
     }
 }
