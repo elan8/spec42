@@ -582,7 +582,11 @@ fn write_element(
     indent: &str,
     inspection: &ElementInspection,
 ) -> fmt::Result {
-    writeln!(output, "{indent}(element (kind {:?})", inspection.kind.as_str())?;
+    writeln!(
+        output,
+        "{indent}(element (kind {:?})",
+        inspection.kind.as_str()
+    )?;
     if let Some(role) = inspection.role {
         writeln!(output, "{indent}  (role {:?})", role.as_str())?;
     }
@@ -623,7 +627,11 @@ fn write_element(
         writeln!(output, "{indent}  (portion {})", portion_name(portion))?;
     }
     if let Some(direction) = inspection.direction {
-        writeln!(output, "{indent}  (direction {})", direction_name(direction))?;
+        writeln!(
+            output,
+            "{indent}  (direction {})",
+            direction_name(direction)
+        )?;
     }
     if let Some(value) = inspection.value {
         writeln!(

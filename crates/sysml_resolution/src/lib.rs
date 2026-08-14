@@ -19,8 +19,8 @@ pub use evaluation::{EvaluatedScalar, EvaluationFailure, EvaluationPolicy, Evalu
 pub use inspection::{
     AnnotationForm, AuthoredValue, Documentation, ElementInspection, ElementInspectionAt,
     ElementModifier, ElementRelationship, FeatureDirection, MembershipFacts, MembershipKind,
-    MultiplicityBound, MultiplicityFacts, PortionKind, RelationshipProvenance, RelationshipTarget,
-    ReferenceAt, SymbolEntry, ValueKind, Visibility, VisibilityProvenance,
+    MultiplicityBound, MultiplicityFacts, PortionKind, ReferenceAt, RelationshipProvenance,
+    RelationshipTarget, SymbolEntry, ValueKind, Visibility, VisibilityProvenance,
 };
 
 use model::resolver::ResolvedSemanticModel;
@@ -2136,7 +2136,11 @@ mod tests {
     /// A scan and an index return the same answer, so only the measurement separates them.
     #[test]
     fn inspection_cost_is_independent_of_the_rest_of_the_workspace() {
-        let small = inspect_at_cost(&[("memory://i.sysml", PROBED)], "memory://i.sysml", ": Wheel");
+        let small = inspect_at_cost(
+            &[("memory://i.sysml", PROBED)],
+            "memory://i.sysml",
+            ": Wheel",
+        );
         let large_source = format!("package Other {{\n{}}}\n", padding(500));
         let large = inspect_at_cost(
             &[
@@ -2159,7 +2163,11 @@ mod tests {
         let thin = format!("package Before {{\n{}}}\n{PROBED}", padding(1));
         let fat = format!("package Before {{\n{}}}\n{PROBED}", padding(500));
         assert_eq!(
-            inspect_at_cost(&[("memory://i.sysml", &thin)], "memory://i.sysml", ": Wheel"),
+            inspect_at_cost(
+                &[("memory://i.sysml", &thin)],
+                "memory://i.sysml",
+                ": Wheel"
+            ),
             inspect_at_cost(&[("memory://i.sysml", &fat)], "memory://i.sysml", ": Wheel"),
             "499 extra members of an earlier package were visited rather than skipped"
         );
@@ -2172,7 +2180,11 @@ mod tests {
         let thin = format!("{PROBED}\npackage After {{\n{}}}\n", padding(1));
         let fat = format!("{PROBED}\npackage After {{\n{}}}\n", padding(500));
         assert_eq!(
-            inspect_at_cost(&[("memory://i.sysml", &thin)], "memory://i.sysml", ": Wheel"),
+            inspect_at_cost(
+                &[("memory://i.sysml", &thin)],
+                "memory://i.sysml",
+                ": Wheel"
+            ),
             inspect_at_cost(&[("memory://i.sysml", &fat)], "memory://i.sysml", ": Wheel"),
             "declarations beginning after the position were visited"
         );

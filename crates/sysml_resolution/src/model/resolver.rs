@@ -88,7 +88,9 @@ impl SpanTree {
                 .last()
                 .is_some_and(|ancestor| entries[*ancestor].0.end <= range.start)
             {
-                let ancestor = open.pop().expect("the stack was just observed to be non-empty");
+                let ancestor = open
+                    .pop()
+                    .expect("the stack was just observed to be non-empty");
                 subtree_end[ancestor] = index as u32;
             }
             open.push(index);

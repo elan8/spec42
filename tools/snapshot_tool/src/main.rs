@@ -591,12 +591,9 @@ mod tests {
     fn parity_covers_every_owned_section() {
         let mut parallel = owned_sections("same");
         parallel.editor_queries = "different".to_string();
-        let error = ensure_strategy_parity(
-            Path::new("fixture.md"),
-            &owned_sections("same"),
-            &parallel,
-        )
-        .expect_err("a differing editor-query section must fail parity");
+        let error =
+            ensure_strategy_parity(Path::new("fixture.md"), &owned_sections("same"), &parallel)
+                .expect_err("a differing editor-query section must fail parity");
         assert!(error.contains("editor-query outputs differ"));
     }
 
