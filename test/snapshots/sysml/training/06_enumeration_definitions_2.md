@@ -83,8 +83,8 @@ package 'Enumeration Definitions-2' {
   (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d0145d2f5251b644319fef2f379abcca21d2c4061201f2a805154b28f0b64957") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/06_enumeration_definitions_2.md") (qualified-name "Enumeration Definitions-2"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/06_enumeration_definitions_2.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
-    (declaration (id (node (document "memory://snapshot/06_enumeration_definitions_2.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Enumeration Definitions-1") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/06_enumeration_definitions_2.md") (path (named (kind package) (name "Enumeration Definitions-2")) (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/06_enumeration_definitions_2.md") (path (named (kind package) (name "Enumeration Definitions-2")) (anonymous (kind import) (ordinal 1)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Enumeration Definitions-1") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/06_enumeration_definitions_2.md") (qualified-name "Enumeration Definitions-2::ClassificationKind"))) (kind enum-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "ClassificationLevel"))))
     (declaration (id (node (document "memory://snapshot/06_enumeration_definitions_2.md") (qualified-name "Enumeration Definitions-2::ClassificationKind::confidential"))) (kind enum-literal) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/06_enumeration_definitions_2.md") (qualified-name "Enumeration Definitions-2::ClassificationKind::secret"))) (kind enum-literal) (membership (kind feature) (visibility default)))
@@ -100,10 +100,10 @@ package 'Enumeration Definitions-2' {
     (declaration (id (node (document "memory://snapshot/06_enumeration_definitions_2.md") (qualified-name "Enumeration Definitions-2::GradePoints::F"))) (kind enum-literal) (membership (kind feature) (visibility default)))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/06_enumeration_definitions_2.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/06_enumeration_definitions_2.md") (path (named (kind package) (name "Enumeration Definitions-2")) (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0))
       (authored-target "ScalarValues")
       (outcome (status unresolved)))
-    (reference (id (source (node (document "memory://snapshot/06_enumeration_definitions_2.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/06_enumeration_definitions_2.md") (path (named (kind package) (name "Enumeration Definitions-2")) (anonymous (kind import) (ordinal 1)))))) (kind namespaceImport) (ordinal 0))
       (authored-target "Enumeration Definitions-1")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/06_enumeration_definitions_2.md") (qualified-name "Enumeration Definitions-2::ClassificationKind"))) (kind specialization) (ordinal 0))
@@ -130,11 +130,11 @@ package 'Enumeration Definitions-2' {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/06_enumeration_definitions_2.md") (range (start 1 16) (end 1 31)) (probe (position 1 16))
-    (reference (id (source (node (document "memory://snapshot/06_enumeration_definitions_2.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues")
+    (reference (id (source (node (document "memory://snapshot/06_enumeration_definitions_2.md") (path (named (kind package) (name "Enumeration Definitions-2")) (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/06_enumeration_definitions_2.md") (range (start 2 16) (end 2 46)) (probe (position 2 16))
-    (reference (id (source (node (document "memory://snapshot/06_enumeration_definitions_2.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0) (authored-target "Enumeration Definitions-1")
+    (reference (id (source (node (document "memory://snapshot/06_enumeration_definitions_2.md") (path (named (kind package) (name "Enumeration Definitions-2")) (anonymous (kind import) (ordinal 1)))))) (kind namespaceImport) (ordinal 0) (authored-target "Enumeration Definitions-1")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/06_enumeration_definitions_2.md") (range (start 9 41) (end 9 60)) (probe (position 9 41))

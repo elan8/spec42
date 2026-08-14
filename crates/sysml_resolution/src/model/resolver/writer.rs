@@ -790,18 +790,70 @@ fn write_node_identity(
     let declaration = model.storage.declaration(id).ok_or(fmt::Error)?;
     write!(output, "(node (document ")?;
     write_quoted(output, document_identity(model, declaration.document))?;
-    if declaration.name.is_some() {
+    if model.identities.allows_qualified_name_shorthand(id) {
+        // The readable shorthand, used only where the qualified name recovers the whole identity:
+        // every segment named, no same-named sibling, and nothing else rendering the same name.
         output.write_str(") (qualified-name ")?;
         write_declaration_name(model, id, output)?;
     } else {
-        write!(
-            output,
-            ") (anonymous (kind {}) (ordinal {}))",
-            declaration_kind(declaration.kind),
-            declaration.anonymous_ordinal.ok_or(fmt::Error)?,
-        )?;
+        output.write_str(") ")?;
+        write_declaration_path(model, id, output)?;
     }
     output.write_str("))")
+}
+
+/// Renders the explicit root-to-leaf scope path used whenever the qualified name alone would not
+/// recover the identity.
+///
+/// Every segment carries its kind, matching the identity encoding: a `metadata def X` and the
+/// `metadata X about ...` annotating it are distinct elements sharing one name, and only the kind
+/// separates them.
+fn write_declaration_path(
+    model: &ResolvedSemanticModel,
+    id: DeclarationId,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    let mut chain = vec![id];
+    let mut cursor = model.storage.declaration(id).ok_or(fmt::Error)?.owner;
+    while let Some(current) = cursor {
+        if chain.len() > model.storage.declarations.len() {
+            return Err(fmt::Error);
+        }
+        chain.push(current);
+        cursor = model.storage.declaration(current).ok_or(fmt::Error)?.owner;
+    }
+    output.write_str("(path")?;
+    for current in chain.iter().rev() {
+        let declaration = model.storage.declaration(*current).ok_or(fmt::Error)?;
+        match declaration.name {
+            Some(name) => {
+                write!(
+                    output,
+                    " (named (kind {}) (name ",
+                    declaration_kind(declaration.kind)
+                )?;
+                write_quoted(output, model.storage.symbol(name).ok_or(fmt::Error)?)?;
+                output.write_char(')')?;
+                let occurrence = model
+                    .identities
+                    .name_occurrence(*current)
+                    .ok_or(fmt::Error)?;
+                if occurrence > 0 {
+                    // Only a same-named sibling after the first carries this, so a later duplicate
+                    // never disturbs the identity already published for the original.
+                    write!(output, " (occurrence {occurrence})")?;
+                }
+                output.write_char(')')?;
+            }
+            None => write!(
+                output,
+                " (anonymous (kind {}) (ordinal {}))",
+                declaration_kind(declaration.kind),
+                declaration.anonymous_ordinal.ok_or(fmt::Error)?,
+            )?,
+        }
+    }
+    output.write_char(')')
 }
 
 fn write_declaration_name_body(
@@ -952,7 +1004,7 @@ fn parameter_direction(direction: ParameterDirection) -> &'static str {
     }
 }
 
-fn declaration_kind(kind: DeclarationKind) -> &'static str {
+pub(super) fn declaration_kind(kind: DeclarationKind) -> &'static str {
     match kind {
         DeclarationKind::Namespace => "namespace",
         DeclarationKind::Package => "package",
@@ -1221,10 +1273,12 @@ mod tests {
         )
         .unwrap();
         let evaluation = compute_evaluation(&storage, &resolution);
+        let identities = IdentityIndex::build(&storage).unwrap();
         let model = ResolvedSemanticModel {
             storage,
             direct_names,
             effective_imports,
+            identities,
             resolution,
             evaluation,
             metadata: PublicationMetadata {

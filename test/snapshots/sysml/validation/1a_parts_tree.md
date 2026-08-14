@@ -170,7 +170,7 @@ package '1a-Parts Tree' {
   (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:1d065cf8f178a7b346286e07981ccda27e7bc28a0a8c39dbb86d123417ba9106") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/1a_parts_tree.md") (qualified-name "1a-Parts Tree"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/1a_parts_tree.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "SI::kg") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/1a_parts_tree.md") (path (named (kind package) (name "1a-Parts Tree")) (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "SI::kg") (import (shape membership) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/1a_parts_tree.md") (qualified-name "1a-Parts Tree::Definitions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/1a_parts_tree.md") (qualified-name "1a-Parts Tree::Definitions::Axle"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/1a_parts_tree.md") (qualified-name "1a-Parts Tree::Definitions::Axle::mass"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "ISQ::mass"))))
@@ -181,7 +181,7 @@ package '1a-Parts Tree' {
     (declaration (id (node (document "memory://snapshot/1a_parts_tree.md") (qualified-name "1a-Parts Tree::Definitions::Vehicle::mass"))) (kind attribute) (membership (kind feature) (visibility default)) (documentation (doc (text "\n\t\t\t * The 'mass' attribute property is declared here to be a \n\t\t\t * specialization (subset) of the general 'mass' quantity \n\t\t\t * from the 'ISQ' (International System of Quantities) \n\t\t\t * library model.\n\t\t\t "))) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "ISQ::mass"))))
     (declaration (id (node (document "memory://snapshot/1a_parts_tree.md") (qualified-name "1a-Parts Tree::Definitions::Wheel"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/1a_parts_tree.md") (qualified-name "1a-Parts Tree::Usages"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/1a_parts_tree.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Definitions") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/1a_parts_tree.md") (path (named (kind package) (name "1a-Parts Tree")) (named (kind package) (name "Usages")) (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Definitions") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/1a_parts_tree.md") (qualified-name "1a-Parts Tree::Usages::vehicle1"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Vehicle"))))
     (declaration (id (node (document "memory://snapshot/1a_parts_tree.md") (qualified-name "1a-Parts Tree::Usages::vehicle1::frontAxleAssembly"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "AxleAssembly"))))
     (declaration (id (node (document "memory://snapshot/1a_parts_tree.md") (qualified-name "1a-Parts Tree::Usages::vehicle1::frontAxleAssembly::frontAxle"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Axle"))))
@@ -204,7 +204,7 @@ package '1a-Parts Tree' {
     (declaration (id (node (document "memory://snapshot/1a_parts_tree.md") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1::rearAxleAssembly::rearWheel_2"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "rearWheel"))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/1a_parts_tree.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/1a_parts_tree.md") (path (named (kind package) (name "1a-Parts Tree")) (anonymous (kind import) (ordinal 0)))))) (kind membershipImport) (ordinal 0))
       (authored-target "SI::kg")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/1a_parts_tree.md") (qualified-name "1a-Parts Tree::Definitions::Axle::mass"))) (kind subsetting) (ordinal 0))
@@ -219,7 +219,7 @@ package '1a-Parts Tree' {
     (reference (id (source (node (document "memory://snapshot/1a_parts_tree.md") (qualified-name "1a-Parts Tree::Definitions::Vehicle::mass"))) (kind subsetting) (ordinal 0))
       (authored-target "ISQ::mass")
       (outcome (status unresolved)))
-    (reference (id (source (node (document "memory://snapshot/1a_parts_tree.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/1a_parts_tree.md") (path (named (kind package) (name "1a-Parts Tree")) (named (kind package) (name "Usages")) (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0))
       (authored-target "Definitions")
       (outcome (status resolved) (target (node (document "memory://snapshot/1a_parts_tree.md") (qualified-name "1a-Parts Tree::Definitions")))))
     (reference (id (source (node (document "memory://snapshot/1a_parts_tree.md") (qualified-name "1a-Parts Tree::Usages::vehicle1"))) (kind featureTyping) (ordinal 0))
@@ -316,7 +316,7 @@ package '1a-Parts Tree' {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/1a_parts_tree.md") (range (start 1 16) (end 1 22)) (probe (position 1 16))
-    (reference (id (source (node (document "memory://snapshot/1a_parts_tree.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "SI::kg")
+    (reference (id (source (node (document "memory://snapshot/1a_parts_tree.md") (path (named (kind package) (name "1a-Parts Tree")) (anonymous (kind import) (ordinal 0)))))) (kind membershipImport) (ordinal 0) (authored-target "SI::kg")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/1a_parts_tree.md") (range (start 17 21) (end 17 30)) (probe (position 17 21))
@@ -336,7 +336,7 @@ package '1a-Parts Tree' {
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/1a_parts_tree.md") (range (start 26 17) (end 26 31)) (probe (position 26 17))
-    (reference (id (source (node (document "memory://snapshot/1a_parts_tree.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "Definitions")
+    (reference (id (source (node (document "memory://snapshot/1a_parts_tree.md") (path (named (kind package) (name "1a-Parts Tree")) (named (kind package) (name "Usages")) (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0) (authored-target "Definitions")
       (outcome (status resolved) (target (node (document "memory://snapshot/1a_parts_tree.md") (qualified-name "1a-Parts Tree::Definitions")))))
   )
   (query (document "memory://snapshot/1a_parts_tree.md") (range (start 33 17) (end 33 24)) (probe (position 33 17))

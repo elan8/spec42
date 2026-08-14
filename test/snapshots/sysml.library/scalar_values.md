@@ -55,7 +55,7 @@ standard library package ScalarValues {
   (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:2da3f0f882de2304c481cc3bc44d33be9421f90ab98191373b36d093aa90d5bf") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/scalar_values.md") (qualified-name "ScalarValues"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package contains a basic set of primitive scalar (non-collection) data types. \n\t * These include Boolean and String types and a hierarchy of concrete Number types, from \n\t * the most general type of Complex numbers to the most specific type of Positive integers.</p>\n\t "))))
-    (declaration (id (node (document "memory://snapshot/scalar_values.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Base::DataValue") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/scalar_values.md") (path (named (kind library-package) (name "ScalarValues")) (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Base::DataValue") (import (shape membership) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/scalar_values.md") (qualified-name "ScalarValues::Boolean"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "ScalarValue"))))
     (declaration (id (node (document "memory://snapshot/scalar_values.md") (qualified-name "ScalarValues::Complex"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Number"))))
     (declaration (id (node (document "memory://snapshot/scalar_values.md") (qualified-name "ScalarValues::Integer"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Rational"))))
@@ -69,7 +69,7 @@ standard library package ScalarValues {
     (declaration (id (node (document "memory://snapshot/scalar_values.md") (qualified-name "ScalarValues::String"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "ScalarValue"))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/scalar_values.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/scalar_values.md") (path (named (kind library-package) (name "ScalarValues")) (anonymous (kind import) (ordinal 0)))))) (kind membershipImport) (ordinal 0))
       (authored-target "Base::DataValue")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/scalar_values.md") (qualified-name "ScalarValues::Boolean"))) (kind specialization) (ordinal 0))
@@ -126,7 +126,7 @@ standard library package ScalarValues {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/scalar_values.md") (range (start 7 19) (end 7 34)) (probe (position 7 19))
-    (reference (id (source (node (document "memory://snapshot/scalar_values.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "Base::DataValue")
+    (reference (id (source (node (document "memory://snapshot/scalar_values.md") (path (named (kind library-package) (name "ScalarValues")) (anonymous (kind import) (ordinal 0)))))) (kind membershipImport) (ordinal 0) (authored-target "Base::DataValue")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/scalar_values.md") (range (start 10 33) (end 10 44)) (probe (position 10 33))

@@ -31,11 +31,11 @@ package Expansion {
   (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:dd4a691d1574584940080c79df61d3840e0ad0de94c68b9950ca3720f8d52ba1") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/expansion.md") (qualified-name "Expansion"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/expansion.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ControlFunctions::select") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/expansion.md") (path (named (kind package) (name "Expansion")) (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ControlFunctions::select") (import (shape membership) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/expansion.md") (qualified-name "Expansion::x"))) (kind default-reference) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "x"))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/expansion.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/expansion.md") (path (named (kind package) (name "Expansion")) (anonymous (kind import) (ordinal 0)))))) (kind membershipImport) (ordinal 0))
       (authored-target "ControlFunctions::select")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/expansion.md") (qualified-name "Expansion::x"))) (kind expressionOperand) (ordinal 0))
@@ -54,7 +54,7 @@ package Expansion {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/expansion.md") (range (start 1 16) (end 1 40)) (probe (position 1 16))
-    (reference (id (source (node (document "memory://snapshot/expansion.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "ControlFunctions::select")
+    (reference (id (source (node (document "memory://snapshot/expansion.md") (path (named (kind package) (name "Expansion")) (anonymous (kind import) (ordinal 0)))))) (kind membershipImport) (ordinal 0) (authored-target "ControlFunctions::select")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/expansion.md") (range (start 2 13) (end 2 14)) (probe (position 2 13))

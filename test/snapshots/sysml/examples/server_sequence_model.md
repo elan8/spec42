@@ -99,8 +99,8 @@ package ServerSequenceModel {
   (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:10e2c026b87621ea23aad2f7289cbc8b21677f436208e8b51cc479dc47d20465") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/server_sequence_model.md") (qualified-name "ServerSequenceModel"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/server_sequence_model.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::String") (import (shape membership) (recursive false)))))
-    (declaration (id (node (document "memory://snapshot/server_sequence_model.md") (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "SignalDefinitions") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/server_sequence_model.md") (path (named (kind package) (name "ServerSequenceModel")) (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::String") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/server_sequence_model.md") (path (named (kind package) (name "ServerSequenceModel")) (anonymous (kind import) (ordinal 1)))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "SignalDefinitions") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/server_sequence_model.md") (qualified-name "ServerSequenceModel::PubSubSequence"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/server_sequence_model.md") (qualified-name "ServerSequenceModel::PubSubSequence::consumer"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/server_sequence_model.md") (qualified-name "ServerSequenceModel::PubSubSequence::consumer::deliver_target_event"))) (kind occurrence) (membership (kind feature) (visibility default)) (facts (modifiers event)))
@@ -122,10 +122,10 @@ package ServerSequenceModel {
     (declaration (id (node (document "memory://snapshot/server_sequence_model.md") (qualified-name "ServerSequenceModel::SignalDefinitions::Subscribe::topic"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "String"))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/server_sequence_model.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/server_sequence_model.md") (path (named (kind package) (name "ServerSequenceModel")) (anonymous (kind import) (ordinal 1)))))) (kind namespaceImport) (ordinal 0))
       (authored-target "SignalDefinitions")
       (outcome (status resolved) (target (node (document "memory://snapshot/server_sequence_model.md") (qualified-name "ServerSequenceModel::SignalDefinitions")))))
-    (reference (id (source (node (document "memory://snapshot/server_sequence_model.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/server_sequence_model.md") (path (named (kind package) (name "ServerSequenceModel")) (anonymous (kind import) (ordinal 0)))))) (kind membershipImport) (ordinal 0))
       (authored-target "ScalarValues::String")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/server_sequence_model.md") (qualified-name "ServerSequenceModel::SignalDefinitions::Publish::topic"))) (kind featureTyping) (ordinal 0))
@@ -145,11 +145,11 @@ package ServerSequenceModel {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/server_sequence_model.md") (range (start 2 15) (end 2 35)) (probe (position 2 15))
-    (reference (id (source (node (document "memory://snapshot/server_sequence_model.md") (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0) (authored-target "SignalDefinitions")
+    (reference (id (source (node (document "memory://snapshot/server_sequence_model.md") (path (named (kind package) (name "ServerSequenceModel")) (anonymous (kind import) (ordinal 1)))))) (kind namespaceImport) (ordinal 0) (authored-target "SignalDefinitions")
       (outcome (status resolved) (target (node (document "memory://snapshot/server_sequence_model.md") (qualified-name "ServerSequenceModel::SignalDefinitions")))))
   )
   (query (document "memory://snapshot/server_sequence_model.md") (range (start 1 16) (end 1 36)) (probe (position 1 16))
-    (reference (id (source (node (document "memory://snapshot/server_sequence_model.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::String")
+    (reference (id (source (node (document "memory://snapshot/server_sequence_model.md") (path (named (kind package) (name "ServerSequenceModel")) (anonymous (kind import) (ordinal 0)))))) (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::String")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/server_sequence_model.md") (range (start 11 21) (end 11 27)) (probe (position 11 21))

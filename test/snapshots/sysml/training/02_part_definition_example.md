@@ -65,7 +65,7 @@ package 'Part Definition Example' {
   (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:acdb51406f99c0c590ae7188a5528530f6059abf3d66f527e8fb367a820d8898") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/02_part_definition_example.md") (qualified-name "Part Definition Example"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/02_part_definition_example.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/02_part_definition_example.md") (path (named (kind package) (name "Part Definition Example")) (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/02_part_definition_example.md") (qualified-name "Part Definition Example::Engine"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/02_part_definition_example.md") (qualified-name "Part Definition Example::Person"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/02_part_definition_example.md") (qualified-name "Part Definition Example::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -78,7 +78,7 @@ package 'Part Definition Example' {
     (declaration (id (node (document "memory://snapshot/02_part_definition_example.md") (qualified-name "Part Definition Example::VehicleStatus::gearSetting"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Integer"))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/02_part_definition_example.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/02_part_definition_example.md") (path (named (kind package) (name "Part Definition Example")) (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0))
       (authored-target "ScalarValues")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/02_part_definition_example.md") (qualified-name "Part Definition Example::Vehicle::driver"))) (kind featureTyping) (ordinal 0))
@@ -113,7 +113,7 @@ package 'Part Definition Example' {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/02_part_definition_example.md") (range (start 1 16) (end 1 31)) (probe (position 1 16))
-    (reference (id (source (node (document "memory://snapshot/02_part_definition_example.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues")
+    (reference (id (source (node (document "memory://snapshot/02_part_definition_example.md") (path (named (kind package) (name "Part Definition Example")) (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/02_part_definition_example.md") (range (start 9 20) (end 9 26)) (probe (position 9 20))

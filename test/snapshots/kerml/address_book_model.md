@@ -51,7 +51,7 @@ package AddressBookModel {
 (semantic-model
   (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:297623dea97756fce5b300d3ecd783d69afb6e05da22e957fa27559f2600c782") (contract-version "parser-owned-resolution-v1"))
   (declarations
-    (declaration (id (node (document "memory://snapshot/address_book_model.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/address_book_model.md") (path (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/address_book_model.md") (qualified-name "AddressBookModel"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/address_book_model.md") (qualified-name "AddressBookModel::AddressBook"))) (kind class-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/address_book_model.md") (qualified-name "AddressBookModel::AddressBook::entries"))) (kind attribute) (membership (kind feature) (visibility default)) (facts (multiplicity (lower unbounded) (upper unbounded))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Entry"))))
@@ -60,7 +60,7 @@ package AddressBookModel {
     (declaration (id (node (document "memory://snapshot/address_book_model.md") (qualified-name "AddressBookModel::Entry::name"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "String"))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/address_book_model.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/address_book_model.md") (path (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0))
       (authored-target "ScalarValues")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/address_book_model.md") (qualified-name "AddressBookModel::AddressBook::entries"))) (kind featureTyping) (ordinal 0))
@@ -84,7 +84,7 @@ package AddressBookModel {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/address_book_model.md") (range (start 0 15) (end 0 30)) (probe (position 0 15))
-    (reference (id (source (node (document "memory://snapshot/address_book_model.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues")
+    (reference (id (source (node (document "memory://snapshot/address_book_model.md") (path (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/address_book_model.md") (range (start 9 11) (end 9 16)) (probe (position 9 11))

@@ -47,15 +47,15 @@ part def Camera {
   (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:34a79bdb4b0822dc0d09cf0a11f9f27d7aeec66e8ea5ea2088896cf56d4c1122") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/camera.md") (qualified-name "Camera"))) (kind part-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/camera.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "PictureTaking") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/camera.md") (path (named (kind part-def) (name "Camera")) (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "PictureTaking") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/camera.md") (qualified-name "Camera::focusingSubsystem"))) (kind part) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/camera.md") (anonymous (kind perform-action) (ordinal 0))))) (kind perform-action) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/camera.md") (path (named (kind part-def) (name "Camera")) (named (kind part) (name "focusingSubsystem")) (anonymous (kind perform-action) (ordinal 0)))))) (kind perform-action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/camera.md") (qualified-name "Camera::imagingSubsystem"))) (kind part) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/camera.md") (anonymous (kind perform-action) (ordinal 0))))) (kind perform-action) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/camera.md") (path (named (kind part-def) (name "Camera")) (named (kind part) (name "imagingSubsystem")) (anonymous (kind perform-action) (ordinal 0)))))) (kind perform-action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/camera.md") (qualified-name "Camera::takePicture"))) (kind perform-action) (membership (kind feature) (visibility default)) (facts (multiplicity (lower unbounded) (upper unbounded))) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "PictureTaking::takePicture"))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/camera.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/camera.md") (path (named (kind part-def) (name "Camera")) (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0))
       (authored-target "PictureTaking")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/camera.md") (qualified-name "Camera::takePicture"))) (kind subsetting) (ordinal 0))
@@ -72,7 +72,7 @@ part def Camera {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/camera.md") (range (start 1 16) (end 1 32)) (probe (position 1 16))
-    (reference (id (source (node (document "memory://snapshot/camera.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "PictureTaking")
+    (reference (id (source (node (document "memory://snapshot/camera.md") (path (named (kind part-def) (name "Camera")) (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0) (authored-target "PictureTaking")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/camera.md") (range (start 3 34) (end 3 60)) (probe (position 3 34))

@@ -102,7 +102,7 @@ standard library package ParametersOfInterestMetadata {
   (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:9787f65a0bc35b112f6a4ec8bf67450b966abb3973717527b90a926fc3114536") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/parameters_of_interest_metadata.md") (qualified-name "ParametersOfInterestMetadata"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package contains definitions of metadata to identify key parameters of interest,\n\t * including measures of effectiveness (MOE) and other key measures of performance (MOP).\n\t "))))
-    (declaration (id (node (document "memory://snapshot/parameters_of_interest_metadata.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Metaobjects::SemanticMetadata") (import (shape membership) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/parameters_of_interest_metadata.md") (path (named (kind library-package) (name "ParametersOfInterestMetadata")) (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Metaobjects::SemanticMetadata") (import (shape membership) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/parameters_of_interest_metadata.md") (qualified-name "ParametersOfInterestMetadata::MeasureOfEffectiveness"))) (kind metadata-def) (membership (kind owning) (visibility default)) (facts (short-name "moe")) (documentation (doc (text "\n\t \t * MeasureOfEffectiveness is semantic metadata for identifying an attribute as a\n\t \t * measure of effectiveness.\n\t \t "))) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "SemanticMetadata"))))
     (declaration (id (node (document "memory://snapshot/parameters_of_interest_metadata.md") (qualified-name "ParametersOfInterestMetadata::MeasureOfEffectiveness::annotatedElement"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "SysML::Usage")) (redefinition (reference "annotatedElement"))))
     (declaration (id (node (document "memory://snapshot/parameters_of_interest_metadata.md") (qualified-name "ParametersOfInterestMetadata::MeasureOfEffectiveness::baseType"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "baseType")) (expressionOperand (reference "measuresOfEffectiveness")) (metaCastTarget (reference "SysML::Usage"))))
@@ -113,7 +113,7 @@ standard library package ParametersOfInterestMetadata {
     (declaration (id (node (document "memory://snapshot/parameters_of_interest_metadata.md") (qualified-name "ParametersOfInterestMetadata::measuresOfPerformance"))) (kind attribute-def) (membership (kind owning) (visibility default)) (facts (modifiers nonunique)) (documentation (doc (text " Base feature for attributes that are measures of performance. "))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/parameters_of_interest_metadata.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/parameters_of_interest_metadata.md") (path (named (kind library-package) (name "ParametersOfInterestMetadata")) (anonymous (kind import) (ordinal 0)))))) (kind membershipImport) (ordinal 0))
       (authored-target "Metaobjects::SemanticMetadata")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/parameters_of_interest_metadata.md") (qualified-name "ParametersOfInterestMetadata::MeasureOfEffectiveness"))) (kind specialization) (ordinal 0))
@@ -171,7 +171,7 @@ standard library package ParametersOfInterestMetadata {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/parameters_of_interest_metadata.md") (range (start 7 17) (end 7 46)) (probe (position 7 17))
-    (reference (id (source (node (document "memory://snapshot/parameters_of_interest_metadata.md") (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "Metaobjects::SemanticMetadata")
+    (reference (id (source (node (document "memory://snapshot/parameters_of_interest_metadata.md") (path (named (kind library-package) (name "ParametersOfInterestMetadata")) (anonymous (kind import) (ordinal 0)))))) (kind membershipImport) (ordinal 0) (authored-target "Metaobjects::SemanticMetadata")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/parameters_of_interest_metadata.md") (range (start 17 47) (end 17 63)) (probe (position 17 47))

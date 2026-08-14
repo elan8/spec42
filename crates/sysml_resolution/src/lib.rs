@@ -433,7 +433,7 @@ mod tests {
 
     /// A nested `item` usage inside an `attribute def` body (BNF
     /// `AttributeBodyElement::ItemUsage`, resolved upstream in `0757de13` --
-    /// UPSTREAM_PARSER_GAPS.md #11) must lower as its own `item` declaration via the
+    /// planning/UPSTREAM_PARSER_GAPS.md #11) must lower as its own `item` declaration via the
     /// already-existing `lower_item_usage`, not fall through to `unsupported_attribute_member`.
     #[test]
     fn nested_item_usage_inside_attribute_def_body_lowers_as_item() {
@@ -865,7 +865,7 @@ mod tests {
 
     /// A standalone `action <name> send via <source> to <target>;` action-usage shorthand (an
     /// `ActionUsage` with `send`/`via`/`to` all set on the usage itself, distinct from the
-    /// `then send ...;` continuation form blocked by UPSTREAM_PARSER_GAPS.md Gap 30) must resolve
+    /// `then send ...;` continuation form blocked by planning/UPSTREAM_PARSER_GAPS.md Gap 30) must resolve
     /// its `via`/`to` operands, mirroring satisfy/allocate/bind's two-operand pattern via
     /// `lower_satisfy_operand`.
     #[test]
@@ -952,7 +952,7 @@ mod tests {
     /// A bare `require;`-less-constraint shorthand (`has_constraint_keyword == false`, e.g.
     /// `require someExistingConstraint;`) references an existing constraint by a plain `String`
     /// name rather than declaring one -- the typed AST gives no `QualifiedReferenceId` to resolve
-    /// through the shared lexical-lookup machinery (UPSTREAM_PARSER_GAPS.md #44), so it must stay
+    /// through the shared lexical-lookup machinery (planning/UPSTREAM_PARSER_GAPS.md #44), so it must stay
     /// an explicit unsupported diagnostic rather than being silently dropped or guessed at.
     #[test]
     fn require_shorthand_reference_without_constraint_keyword_stays_unsupported() {
@@ -1010,7 +1010,7 @@ mod tests {
     }
 
     /// The `then send new S() to b;` continuation shorthand is a genuine parser gap (see
-    /// UPSTREAM_PARSER_GAPS.md Gap 30, `ThenTarget` has no `Send` variant): the parser itself
+    /// planning/UPSTREAM_PARSER_GAPS.md Gap 30, `ThenTarget` has no `Send` variant): the parser itself
     /// cannot represent it as a distinguishable `ThenAction` target, so it falls to parser-level
     /// recovery rather than admitting a typed node `sysml_resolution` could silently mis-resolve.
     #[test]
@@ -1193,7 +1193,7 @@ mod tests {
             "did not expect unsupported_action_definition_member, got: {sexpr}"
         );
         assert!(
-            sexpr.contains("(qualified-name \"P::A::::y\")"),
+            sexpr.contains("(path (named (kind package) (name \"P\")) (named (kind action-def) (name \"A\")) (anonymous (kind while) (ordinal 0)) (named (kind action) (name \"y\")))"),
             "expected the nested `action y;` body member to be lowered, got: {sexpr}"
         );
     }
@@ -1230,8 +1230,11 @@ mod tests {
             "did not expect unsupported_action_definition_member, got: {sexpr}"
         );
         assert!(
-            sexpr.contains("(qualified-name \"P::A::::y\")")
-                && sexpr.contains("(qualified-name \"P::A::::z\")"),
+            sexpr.contains(
+                "(path (named (kind package) (name \"P\")) (named (kind action-def) (name \"A\")) (anonymous (kind if) (ordinal 0)) (named (kind action) (name \"y\")))"
+            ) && sexpr.contains(
+                "(path (named (kind package) (name \"P\")) (named (kind action-def) (name \"A\")) (anonymous (kind if) (ordinal 0)) (named (kind action) (name \"z\")))"
+            ),
             "expected both the then and else branch body members to be lowered, got: {sexpr}"
         );
     }
@@ -1781,6 +1784,148 @@ mod tests {
         assert!(
             !sexpr.contains("(feature-value "),
             "expected no feature-value block, got: {sexpr}"
+        );
+    }
+
+    // --- Canonical element identity ---------------------------------------------------------
+
+    fn publication_for(sources: &[(&str, &str)]) -> PublishedResolution {
+        let request = BuildRequest::new(
+            sources
+                .iter()
+                .map(|(identity, source)| {
+                    SourceInput::new(*identity, source.to_string(), SourceKind::Workspace)
+                })
+                .collect(),
+            ConstructionSchedule::Sequential,
+            "contract-v1",
+        )
+        .unwrap();
+        build(request).unwrap()
+    }
+
+    fn target_symbol(
+        published: &PublishedResolution,
+        document: &str,
+        line: u32,
+        character: u32,
+    ) -> SymbolIdentity {
+        match published.target_at(document, TextPosition { line, character }) {
+            QueryOutcome::Resolved(target) => target.symbol,
+            other => panic!("expected a resolved navigation target, got: {other:?}"),
+        }
+    }
+
+    /// Anonymous ordinals are allocated per `(document, owner, kind)`, so an identity that named
+    /// only the kind and ordinal could not tell two same-kind anonymous declarations under
+    /// different owners apart. The identity spells out the owner chain for exactly this reason.
+    #[test]
+    fn anonymous_declarations_under_different_owners_get_distinct_identities() {
+        let sexpr = semantic_sexpr_for(
+            "package P { action def A { action x; if x { action y; } else { action z; } } action def B { action x; if x { action y; } else { action z; } } }",
+        );
+        assert!(
+            sexpr.contains(r#"(path (named (kind package) (name "P")) (named (kind action-def) (name "A")) (anonymous (kind if) (ordinal 0)))"#),
+            "expected the if-scope under A to carry its owner in its identity, got: {sexpr}"
+        );
+        assert!(
+            sexpr.contains(r#"(path (named (kind package) (name "P")) (named (kind action-def) (name "B")) (anonymous (kind if) (ordinal 0)))"#),
+            "expected the if-scope under B to carry its owner in its identity, got: {sexpr}"
+        );
+    }
+
+    /// A named declaration whose owner chain passes through an anonymous scope cannot be
+    /// identified by a qualified name alone -- the anonymous owner contributes no name segment --
+    /// so it renders the explicit path form instead.
+    #[test]
+    fn a_named_declaration_under_an_anonymous_owner_renders_an_explicit_path() {
+        let sexpr = semantic_sexpr_for(
+            "package P { action def A { action x; if x { action y; } else { action z; } } }",
+        );
+        assert!(
+            sexpr.contains(
+                r#"(path (named (kind package) (name "P")) (named (kind action-def) (name "A")) (anonymous (kind if) (ordinal 0)) (named (kind action) (name "y")))"#
+            ),
+            "expected the branch member to render an explicit path, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains(r#"(qualified-name "P::A::::y")"#),
+            "expected no ambiguous empty-segment qualified name, got: {sexpr}"
+        );
+    }
+
+    /// The identity is structural, so editing an unrelated document cannot change it. A dense
+    /// storage ordinal would shift as soon as any earlier document gained a declaration.
+    #[test]
+    fn element_identity_survives_an_edit_to_an_unrelated_document() {
+        let before = publication_for(&[
+            ("memory://a.sysml", "package A { part def Wheel; }"),
+            ("memory://b.sysml", "package B { part def Engine; }"),
+        ]);
+        let after = publication_for(&[
+            (
+                "memory://a.sysml",
+                "package A { part def Wheel; part def Axle; part def Frame; }",
+            ),
+            ("memory://b.sysml", "package B { part def Engine; }"),
+        ]);
+
+        let engine_before = target_symbol(&before, "memory://b.sysml", 0, 21);
+        let engine_after = target_symbol(&after, "memory://b.sysml", 0, 21);
+        assert_eq!(
+            engine_before, engine_after,
+            "expected an unrelated document's edit to leave this element's identity unchanged"
+        );
+    }
+
+    /// Two identically named siblings of the same kind are distinguished by an occurrence ordinal,
+    /// so each remains addressable. The Pilot does the same: its `qualifiedName` derivation yields
+    /// null for every same-named member after the first, and `path()` then falls through to a
+    /// positional form.
+    ///
+    /// The first occurrence keeps the plain name, so authoring a duplicate later never disturbs
+    /// the identity already published for the declaration that was there first.
+    #[test]
+    fn duplicate_sibling_names_stay_separately_addressable() {
+        let published = publication_for(&[(
+            "memory://dup.sysml",
+            "package P { part def Failure; part def Failure; }",
+        )]);
+
+        let first = target_symbol(&published, "memory://dup.sysml", 0, 21);
+        let second = target_symbol(&published, "memory://dup.sysml", 0, 39);
+        assert_ne!(
+            first, second,
+            "expected identically named siblings to carry distinct identities"
+        );
+
+        for symbol in [&first, &second] {
+            match published.references(symbol, true) {
+                QueryOutcome::Resolved(locations) => assert_eq!(
+                    locations.len(),
+                    1,
+                    "expected each sibling to resolve to its own declaration site"
+                ),
+                other => panic!("expected a resolved references outcome, got: {other:?}"),
+            }
+        }
+    }
+
+    /// A name shared by siblings of *different* kinds needs no occurrence ordinal -- the kind on
+    /// every path segment already separates them. This is the sibling `sysml-compiler`'s tag byte:
+    /// `metadata def X` and the `metadata X about ...` annotating it are distinct elements.
+    #[test]
+    fn same_name_different_kind_siblings_are_separated_by_kind() {
+        let sexpr = semantic_sexpr_for(
+            "package P { part def Vehicle; metadata def Safety; metadata Safety about Vehicle; }",
+        );
+        assert!(
+            sexpr.contains(r#"(named (kind metadata-def) (name "Safety"))"#),
+            "expected the metadata definition's kind in its identity, got: {sexpr}"
+        );
+        assert!(
+            sexpr.contains(r#"(named (kind metadata) (name "Safety"))"#),
+            "expected the metadata usage's kind in its identity, got: {sexpr}"
         );
     }
 }

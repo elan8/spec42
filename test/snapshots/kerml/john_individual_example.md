@@ -226,7 +226,7 @@ package JohnIndividualExample {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:56855a5c0d68c6f385b02c5c364523e96d510c33f0f8f978afc28b02bedfd9fe") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/john_individual_example.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Objects") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/john_individual_example.md") (path (named (kind package) (name "JohnIndividualExample")) (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Objects") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::Country"))) (kind class-def) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t\t  This is the class of countries, each of which may have at most one\n\t\t  president.\n\t\t"))) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Object"))))
     (declaration (id (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::John"))) (kind class-def) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t\t  This is the class of the specific (individual) person who is John.\n\t\t  There is at most one such person.\n\t\t"))) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Person"))))
     (declaration (id (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::JohnAsPresident"))) (kind class-def) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t\t  This is the class of time slices of John's life in which he is\n\t\t  a president.\n\t\t"))) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "John")) (specialization (reference "President"))))
@@ -236,7 +236,7 @@ package JohnIndividualExample {
     (declaration (id (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::UnitedStatesWithJohnAsPresident"))) (kind class-def) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t\t  This is the class of time slices of the United States during\n\t\t  which John is president of the United States.\n\t\t"))) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "UnitedStates"))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/john_individual_example.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/john_individual_example.md") (path (named (kind package) (name "JohnIndividualExample")) (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0))
       (authored-target "Objects")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::Country"))) (kind specialization) (ordinal 0))
@@ -280,7 +280,7 @@ package JohnIndividualExample {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/john_individual_example.md") (range (start 1 16) (end 1 26)) (probe (position 1 16))
-    (reference (id (source (node (document "memory://snapshot/john_individual_example.md") (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "Objects")
+    (reference (id (source (node (document "memory://snapshot/john_individual_example.md") (path (named (kind package) (name "JohnIndividualExample")) (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0) (authored-target "Objects")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/john_individual_example.md") (range (start 62 27) (end 62 33)) (probe (position 62 27))
