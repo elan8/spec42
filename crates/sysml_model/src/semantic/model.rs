@@ -1188,7 +1188,7 @@ pub struct DeclaredSemanticFacts {
     pub transition_endpoints: Option<TransitionEndpointFacts>,
     /// Authored short name (e.g. `part def <'CB'> ControlBoard;`), present only when a short
     /// name is declared alongside a regular name. When short_name is the *only* name,
-    /// [`ast_util::identification_name`] already uses it as [`SemanticNode::name`], so there is
+    /// `ast_util::identification_name` already uses it as [`SemanticNode::name`], so there is
     /// nothing extra to capture here.
     #[serde(default)]
     pub short_name: Option<String>,

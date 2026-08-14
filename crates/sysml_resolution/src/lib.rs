@@ -1,3 +1,5 @@
+#![recursion_limit = "256"]
+
 //! Opaque parser-owned semantic construction and batch resolution.
 //!
 //! Syntax documents, dense IDs, semantic storage, solver state, and indexes remain private. The

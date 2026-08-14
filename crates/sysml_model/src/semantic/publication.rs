@@ -1614,7 +1614,7 @@ fn navigation_interval_order(range: &TextRange) -> (u32, u32, u32, u32) {
 
 /// A source reference outcome owned by the resolution phase for diagnostics.
 ///
-/// This is intentionally not a clone of [`ResolutionFact`]: diagnostic consumers receive the
+/// This is intentionally not a clone of the private `ResolutionFact`: diagnostic consumers receive the
 /// source range and classification they need, but cannot inspect resolver storage or rebuild a
 /// graph from a collection of general-purpose facts.
 #[derive(Debug, Clone)]
@@ -3390,7 +3390,7 @@ pub enum SemanticCompleteness {
 /// The graph's own publication identity, phase, and completeness — `SemanticPublication` from
 /// `planning/UNIFY_CACHE_PLAN.md` §4.3 and the required resolution for the `SemanticPublication` contract.
 ///
-/// Every [`SemanticGraph`](crate::semantic::graph::SemanticGraph) carries one. It answers, without
+/// Every [`SemanticGraph`] carries one. It answers, without
 /// inspecting graph content: which exact source root produced this graph
 /// ([`Self::root_digest`]), how far construction progressed ([`Self::phase`]), and whether that
 /// construction was complete ([`Self::completeness`]). [`Self::is_storage_eligible`] is the single

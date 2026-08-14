@@ -237,7 +237,7 @@ impl SemanticGraph {
     }
 
     /// Wraps already-constructed graph data as a handle, e.g. after directly building or
-    /// mutating a [`SemanticGraphData`] (such as [`SemanticGraphData::into_data`]'s inverse).
+    /// mutating a [`SemanticGraphData`] (as the inverse of [`Self::into_data`], for example).
     pub fn from_data(data: SemanticGraphData) -> Self {
         SemanticGraph(Arc::new(data))
     }
@@ -511,7 +511,7 @@ impl SemanticGraph {
     /// Requires both [`SemanticPublication::is_storage_eligible`] (phase == settled/evaluated,
     /// completeness == complete) **and** `evaluation_publication == Complete`. The two are kept
     /// in lockstep by construction -- `publication`'s phase only ever reaches
-    /// [`SemanticPhase::SettledEvaluated`] at the same pipeline barrier that sets
+    /// `SemanticPhase::SettledEvaluated` at the same pipeline barrier that sets
     /// `evaluation_publication` to `Complete`, and [`Self::invalidate_evaluation_facts`] retreats
     /// both together -- but this predicate checks both explicitly rather than trusting that
     /// invariant silently, so a future caller that only mutates one of the two cannot

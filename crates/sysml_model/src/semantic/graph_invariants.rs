@@ -33,7 +33,7 @@
 //! # Iterative expression walking
 //!
 //! `DeclaredExpression` can be arbitrarily deep and already carries a custom iterative `Drop` to
-//! avoid stack overflow on adversarial nesting (`model.rs`). [`expression_depth_and_count`] mirrors
+//! avoid stack overflow on adversarial nesting (`model.rs`). `expression_depth_and_count` mirrors
 //! that iterative worklist pattern: it walks with an explicit heap-allocated stack rather than
 //! recursion, so a validator run over hostile input cannot itself reintroduce the stack-overflow
 //! risk `Drop` was written to avoid.
