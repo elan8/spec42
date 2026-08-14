@@ -78,7 +78,7 @@ package '3c-Function-based Behavior-structure mod-1' {
         (severity warning)
         (code "unsupported_action_usage_member")
         (source "semantic")
-        (range (start 37 4) (end 37 71))
+        (range (start 37 11) (end 37 48))
       )
       (diagnostic
         (severity warning)
@@ -96,7 +96,13 @@ package '3c-Function-based Behavior-structure mod-1' {
         (severity warning)
         (code "unsupported_action_usage_member")
         (source "semantic")
-        (range (start 47 4) (end 47 57))
+        (range (start 47 11) (end 47 48))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_action_usage_member")
+        (source "semantic")
+        (range (start 47 52) (end 47 56))
       )
     )
   )
@@ -105,7 +111,7 @@ package '3c-Function-based Behavior-structure mod-1' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:5526f47e9b32b58cd837b68bfc57df4612be954e840133ac1a4d2032043d5f10") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:5526f47e9b32b58cd837b68bfc57df4612be954e840133ac1a4d2032043d5f10") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::HitchBall"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -119,6 +125,8 @@ package '3c-Function-based Behavior-structure mod-1' {
     (declaration (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::VehicleFrame"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::vehicle-trailer system"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (anonymous (kind action) (ordinal 0))))) (kind action) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (anonymous (kind assign) (ordinal 0))))) (kind assign) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (invocationCallee (reference "TrailerHitch"))))
+    (declaration (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (anonymous (kind assign) (ordinal 1))))) (kind assign) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::vehicle-trailer system::::connect trailer to vehicle"))) (kind action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::vehicle-trailer system::::destroy connection of trailer to vehicle"))) (kind action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "OccurrenceFunctions::destroy"))))
     (declaration (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::vehicle-trailer system::::destroy connection of trailer to vehicle::occ"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "vehicle-trailer system::trailerHitch"))))
@@ -138,6 +146,9 @@ package '3c-Function-based Behavior-structure mod-1' {
     (reference (id (source (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::TrailerHitch::hitch"))) (kind featureTyping) (ordinal 0))
       (authored-target "HitchBall")
       (outcome (status resolved) (target (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::HitchBall")))))
+    (reference (id (source (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (anonymous (kind assign) (ordinal 0))))) (kind invocationCallee) (ordinal 0))
+      (authored-target "TrailerHitch")
+      (outcome (status resolved) (target (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::TrailerHitch")))))
     (reference (id (source (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::vehicle-trailer system::::destroy connection of trailer to vehicle"))) (kind featureTyping) (ordinal 0))
       (authored-target "OccurrenceFunctions::destroy")
       (outcome (status unresolved)))
@@ -175,6 +186,7 @@ package '3c-Function-based Behavior-structure mod-1' {
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::TrailerHitch::coupler"))) (target (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::TrailerCoupler"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::TrailerHitch::coupler"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::TrailerHitch::hitch"))) (target (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::HitchBall"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::TrailerHitch::hitch"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind invocationCallee) (source (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (anonymous (kind assign) (ordinal 0))))) (target (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::TrailerHitch"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (anonymous (kind assign) (ordinal 0))))) (kind invocationCallee) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::vehicle-trailer system::trailer"))) (target (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::Trailer"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::vehicle-trailer system::trailer"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::vehicle-trailer system::trailer::trailerFrame"))) (target (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::TrailerFrame"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::vehicle-trailer system::trailer::trailerFrame"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::vehicle-trailer system::trailer::trailerFrame::coupler"))) (target (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::TrailerCoupler"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::vehicle-trailer system::trailer::trailerFrame::coupler"))) (kind featureTyping) (ordinal 0)))
@@ -184,6 +196,7 @@ package '3c-Function-based Behavior-structure mod-1' {
     (relationship (kind typing) (source (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::vehicle-trailer system::vehicle::vehicleFrame::hitch"))) (target (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::HitchBall"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::vehicle-trailer system::vehicle::vehicleFrame::hitch"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (anonymous (kind assign) (ordinal 0))))) (value (kind non-constant)))
   )
 )
 ~~~
@@ -197,6 +210,10 @@ package '3c-Function-based Behavior-structure mod-1' {
   (query (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (range (start 12 14) (end 12 23)) (probe (position 12 14))
     (reference (id (source (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::TrailerHitch::hitch"))) (kind featureTyping) (ordinal 0) (authored-target "HitchBall")
       (outcome (status resolved) (target (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::HitchBall")))))
+  )
+  (query (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (range (start 37 56) (end 37 68)) (probe (position 37 56))
+    (reference (id (source (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (anonymous (kind assign) (ordinal 0))))) (kind invocationCallee) (ordinal 0) (authored-target "TrailerHitch")
+      (outcome (status resolved) (target (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::TrailerHitch")))))
   )
   (query (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (range (start 41 4) (end 41 32)) (probe (position 41 4))
     (reference (id (source (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::vehicle-trailer system::::destroy connection of trailer to vehicle"))) (kind featureTyping) (ordinal 0) (authored-target "OccurrenceFunctions::destroy")

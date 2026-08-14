@@ -17,8 +17,8 @@ use sysml_v2_parser_next::{
         ActionDef, ActionDefBody, ActionDefBodyElement, ActionUsage as ParserActionUsage,
         ActionUsageBody, ActionUsageBodyElement, AliasBody, AliasDef, Allocate, AllocationDef,
         AnalysisCaseDef, AnalysisCaseUsage as ParserAnalysisCaseUsage, AssertConstraintMember,
-        AttributeBody, AttributeBodyElement, AttributeDef, AttributeUsage, BinaryOperator, Bind,
-        BindingConnectorUsage, CalcDef, CalcDefBody, CalcDefBodyElement,
+        AssignStmt, AttributeBody, AttributeBodyElement, AttributeDef, AttributeUsage,
+        BinaryOperator, Bind, BindingConnectorUsage, CalcDef, CalcDefBody, CalcDefBodyElement,
         CalcUsage as ParserCalcUsage, CaseDef, CaseUsage as ParserCaseUsage, ClassDef,
         ConcernUsage as ParserConcernUsage, ConnectStmt, ConnectionDef, ConnectionDefBody,
         ConnectionDefBodyElement, ConnectionEnd, ConnectionUsageMember as ParserConnectionUsage,
@@ -27,8 +27,8 @@ use sysml_v2_parser_next::{
         DefinitionBodyElement, DefinitionPrefix, DoAction, EndDecl, EndIdentity, EntryAction,
         EnumDef, EnumerationBody, EnumerationUsage as ParserEnumerationUsage, ExitAction,
         Expression, FeatureValue, FirstMergeBody, FirstMergeBodyElement, FirstStmt, FlowDef,
-        FlowUsage, FrameMember, Import, ImportShape, InOut, InOutDecl, IncludeUseCase,
-        InterfaceDef, InterfaceDefBody, InterfaceDefBodyElement,
+        FlowUsage, ForLoop, FrameMember, IfStmt, Import, ImportShape, InOut, InOutDecl,
+        IncludeUseCase, InterfaceDef, InterfaceDefBody, InterfaceDefBodyElement,
         InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement, ItemDef,
         ItemUsage as ParserItemUsage, KermlBindingMember, KermlClassifierDecl, KermlConnectorEnd,
         KermlConnectorMember, KermlEndMember, KermlFeatureMember, KermlInvariantMember,
@@ -668,6 +668,63 @@ enum DeclarationKind {
     /// the existing `lower_kerml_feature_member` (itself owned by this end declaration, not the
     /// enclosing `assoc`/type). The end's own multiplicity is not modeled as a distinct fact here.
     KermlEnd,
+    /// An anonymous feature synthesized for an `assign <target> := <value>;` reassignment
+    /// statement (BNF `AssignStmt`, `ast::AssignStmt`, `is_then` covering both the plain and
+    /// `then assign ...;` spellings) found in an action def/usage body, mirroring `Bind`'s
+    /// "statement, not a new named usage" nested-declaration shape: owned by the enclosing action
+    /// def/usage declaration, so the `AssignTarget` reference and the value expression's own
+    /// operand references are distinguishable per-statement even though the statement introduces
+    /// no name of its own. The `lhs` target is lowered as a `ReferenceKind::AssignTarget`
+    /// reference through the same `DeclarationDomain::Any` lexical lookup `Succession`/
+    /// `ThenTarget` use (an existing sibling feature, not just a Type); the `rhs` value is lowered
+    /// through the shared `lower_value_assignment`-style `classify_constraint_expression`/
+    /// `lower_constraint_expression` pipeline, publishing its own evaluation fact exactly like an
+    /// attribute default value.
+    Assign,
+    /// An anonymous feature synthesized for a `while <condition> { ... }` loop control node (BNF
+    /// `WhileStmt`, `ast::WhileStmt`) found in an action def/usage body. Owned by the enclosing
+    /// action def/usage declaration, mirroring `Decide`/`Merge`'s nested-declaration shape: the
+    /// required boolean `condition` is lowered through the same `classify_constraint_expression`/
+    /// `lower_constraint_expression` machinery already used for `decide`'s branch guards/
+    /// transition guards/filter conditions (not `lower_succession_end`'s narrow feature-reference
+    /// shape, since a loop condition is a genuine boolean expression, not a control-node
+    /// reference). The body's nested statements recurse through the same `lower_action_def_body`
+    /// dispatch this variant is itself reached from (bodies are typed `ActionDefBody` regardless
+    /// of whether the enclosing action is a def or a usage), owned by this `While` declaration so
+    /// nested action usages/parameters stay scoped to the loop, mirroring `Decide`/`Fork`'s own
+    /// braced-body scope shift.
+    While,
+    /// An anonymous feature synthesized for a bare `loop { ... }` control node (BNF `LoopStmt`,
+    /// `ast::LoopStmt` -- a `while` with no condition), same shape and scope as `While` minus the
+    /// condition: only the body recurses.
+    Loop,
+    /// An anonymous feature synthesized for an `if <condition> { ... } (else { ... })?` control
+    /// node (BNF `IfStmt`, `ast::IfStmt`) found in an action def/usage body, same condition
+    /// handling as `While`. Both `then_body` and `else_body` (when present) recurse through the
+    /// same `lower_action_def_body` dispatch, owned by this one `If` declaration -- branch bodies
+    /// are not distinguished from one another as separate declaration scopes, mirroring how
+    /// `Decide`'s own braced body is a single undifferentiated scope.
+    If,
+    /// An anonymous feature synthesized for a `for <var> in <range> { ... }` loop control node
+    /// (BNF `ForLoop`, `ast::ForLoop`) found in an action def/usage body. Owned by the enclosing
+    /// action def/usage declaration, mirroring `While`/`Decide`'s nested-declaration shape: the
+    /// `range` collection expression is lowered through the same `classify_constraint_expression`/
+    /// `lower_constraint_expression` machinery as `While`'s condition (sourced at this `ForLoop`
+    /// declaration, not the loop variable, since the range is evaluated once per loop, not once
+    /// per iteration binding). The body recurses through `lower_action_def_body`, owned by this
+    /// `ForLoop` declaration so the loop variable declared alongside it is a visible sibling
+    /// through the shared `DeclarationDomain::Any` lexical lookup every reference inside the body
+    /// already uses.
+    ForLoop,
+    /// The loop variable declared by a `for <var> in <range> { ... }` statement (`ForLoop.var`,
+    /// a bare `String` -- the parser records no type or multiplicity for it), e.g. `for i in
+    /// 1..10 { ... }`'s `i`. Lowered as a named feature owned by the enclosing `DeclarationKind::
+    /// ForLoop` declaration (a sibling of the loop body's own members, not the body's owner
+    /// itself), introducing a binding with no reference of its own -- mirroring `InOutDecl`'s
+    /// "the name introduces a binding, it does not reference one" scope boundary. No type
+    /// inference from `range`'s element type is performed; this is reference-resolution scope
+    /// only, not execution semantics.
+    ForLoopVariable,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -1072,6 +1129,14 @@ enum ReferenceKind {
     /// The `:>>` redefinition spelling (`VerifyRequirementMember.redefines`) reuses the existing
     /// generic `ReferenceKind::Redefinition` instead of this kind.
     VerifyRequirementTarget,
+    /// The `lhs` target of an `assign <target> := <value>;` reassignment statement (BNF
+    /// `AssignStmt.lhs`), resolved through the same `DeclarationDomain::Any` lexical lookup as
+    /// `Succession`/`ThenTarget`: the reassigned target can be any owned sibling feature, not just
+    /// a Type. Sourced at an anonymous `DeclarationKind::Assign` feature owned by the enclosing
+    /// action def/usage declaration, mirroring `Bind`'s nested-declaration shape, through the same
+    /// `lower_succession_end` `FeatureRef`/`MemberAccess` dispatch every other paired/single-
+    /// operand control-flow reference kind uses.
+    AssignTarget,
 }
 
 /// The computed or explicit outcome of evaluating one supported constraint/calc expression
@@ -5221,13 +5286,47 @@ impl SemanticModelBuilder {
                         node,
                     )?;
                 }
+                ActionDefBodyElement::WhileStmt(node) => self.lower_while_or_loop_stmt(
+                    document,
+                    owner,
+                    UnsupportedFamily::ActionDefinitionMember,
+                    DeclarationKind::While,
+                    node.span.clone(),
+                    Some(&node.value.condition),
+                    &node.value.body,
+                )?,
+                ActionDefBodyElement::LoopStmt(node) => self.lower_while_or_loop_stmt(
+                    document,
+                    owner,
+                    UnsupportedFamily::ActionDefinitionMember,
+                    DeclarationKind::Loop,
+                    node.span.clone(),
+                    None,
+                    &node.value.body,
+                )?,
+                ActionDefBodyElement::IfStmt(node) => self.lower_if_stmt(
+                    document,
+                    owner,
+                    UnsupportedFamily::ActionDefinitionMember,
+                    node.span.clone(),
+                    &node.value,
+                )?,
+                ActionDefBodyElement::Assign(node) => self.lower_assign_stmt(
+                    document,
+                    owner,
+                    UnsupportedFamily::ActionDefinitionMember,
+                    node.span.clone(),
+                    &node.value,
+                )?,
+                ActionDefBodyElement::ForLoop(node) => self.lower_for_loop(
+                    document,
+                    owner,
+                    UnsupportedFamily::ActionDefinitionMember,
+                    node.span.clone(),
+                    &node.value,
+                )?,
                 ActionDefBodyElement::Annotation(_)
                 | ActionDefBodyElement::MetadataKeywordUsage(_)
-                | ActionDefBodyElement::WhileStmt(_)
-                | ActionDefBodyElement::LoopStmt(_)
-                | ActionDefBodyElement::IfStmt(_)
-                | ActionDefBodyElement::Assign(_)
-                | ActionDefBodyElement::ForLoop(_)
                 | ActionDefBodyElement::Decl(_) => self.push_unsupported(
                     document,
                     UnsupportedFamily::ActionDefinitionMember,
@@ -5504,13 +5603,47 @@ impl SemanticModelBuilder {
                         node,
                     )?;
                 }
+                ActionUsageBodyElement::WhileStmt(node) => self.lower_while_or_loop_stmt(
+                    document,
+                    owner,
+                    UnsupportedFamily::ActionUsageMember,
+                    DeclarationKind::While,
+                    node.span.clone(),
+                    Some(&node.value.condition),
+                    &node.value.body,
+                )?,
+                ActionUsageBodyElement::LoopStmt(node) => self.lower_while_or_loop_stmt(
+                    document,
+                    owner,
+                    UnsupportedFamily::ActionUsageMember,
+                    DeclarationKind::Loop,
+                    node.span.clone(),
+                    None,
+                    &node.value.body,
+                )?,
+                ActionUsageBodyElement::IfStmt(node) => self.lower_if_stmt(
+                    document,
+                    owner,
+                    UnsupportedFamily::ActionUsageMember,
+                    node.span.clone(),
+                    &node.value,
+                )?,
+                ActionUsageBodyElement::Assign(node) => self.lower_assign_stmt(
+                    document,
+                    owner,
+                    UnsupportedFamily::ActionUsageMember,
+                    node.span.clone(),
+                    &node.value,
+                )?,
+                ActionUsageBodyElement::ForLoop(node) => self.lower_for_loop(
+                    document,
+                    owner,
+                    UnsupportedFamily::ActionUsageMember,
+                    node.span.clone(),
+                    &node.value,
+                )?,
                 ActionUsageBodyElement::Annotation(_)
                 | ActionUsageBodyElement::MetadataKeywordUsage(_)
-                | ActionUsageBodyElement::WhileStmt(_)
-                | ActionUsageBodyElement::LoopStmt(_)
-                | ActionUsageBodyElement::IfStmt(_)
-                | ActionUsageBodyElement::Assign(_)
-                | ActionUsageBodyElement::ForLoop(_)
                 | ActionUsageBodyElement::Decl(_)
                 | ActionUsageBodyElement::VariantUsage(_) => self.push_unsupported(
                     document,
@@ -5812,6 +5945,181 @@ impl SemanticModelBuilder {
             }
         }
         Ok(())
+    }
+
+    /// Lowers an `assign <target> := <value>;` reassignment statement (BNF `AssignStmt`, `ast::
+    /// AssignStmt`; `is_then` is not modeled as a distinct fact -- both the plain and `then assign
+    /// ...;` spellings resolve identically) as its own anonymous `DeclarationKind::Assign` feature
+    /// owned by `owner`, mirroring `lower_bind`'s "statement, not a new named usage" shape: `lhs`
+    /// is lowered as an `AssignTarget` reference through the exact `lower_succession_end` `FeatureRef`/
+    /// `MemberAccess` dispatch every other paired/single-operand control-flow reference kind uses,
+    /// and `rhs` is lowered through the shared value-assignment pipeline (`classify_constraint_
+    /// expression`/`lower_constraint_expression`), publishing its own evaluation fact exactly like
+    /// an attribute default value.
+    fn lower_assign_stmt(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        family: UnsupportedFamily,
+        span: Span,
+        node: &AssignStmt,
+    ) -> Result<(), ConstructionError> {
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::Assign,
+            None,
+            span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            span,
+        )?;
+        self.lower_succession_end(
+            document,
+            declaration,
+            family,
+            ReferenceKind::AssignTarget,
+            &node.lhs,
+        )?;
+        self.push_evaluation_fact(declaration, classify_constraint_expression(&node.rhs.value));
+        self.lower_constraint_expression(document, declaration, family, &node.rhs)
+    }
+
+    /// Lowers a `while <condition> { ... }` (BNF `WhileStmt`) or bare `loop { ... }` (BNF
+    /// `LoopStmt`, no condition) control node as its own anonymous nested-declaration feature
+    /// owned by `owner`, mirroring `lower_first_merge_stmt`'s shape: an optional boolean
+    /// `condition` is lowered through the same `classify_constraint_expression`/
+    /// `lower_constraint_expression` machinery already used for `decide`'s branch guards/
+    /// transition guards/filter conditions (a loop condition is a genuine boolean expression, not
+    /// a control-node reference, unlike `decide`/`merge`/`fork`/`join`'s own operand), and the
+    /// body's nested statements recurse through `lower_action_def_body` -- the same dispatch this
+    /// helper is itself reached from, since a nested body is always typed `ActionDefBody`
+    /// regardless of whether the enclosing action is a def or a usage.
+    #[allow(clippy::too_many_arguments)]
+    fn lower_while_or_loop_stmt(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        family: UnsupportedFamily,
+        decl_kind: DeclarationKind,
+        span: Span,
+        condition: Option<&Node<Expression>>,
+        body: &ActionDefBody,
+    ) -> Result<(), ConstructionError> {
+        let declaration =
+            self.push_typed_declaration(document, Some(owner), decl_kind, None, span.clone())?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            span,
+        )?;
+        if let Some(condition) = condition {
+            self.push_evaluation_fact(
+                declaration,
+                classify_constraint_expression(&condition.value),
+            );
+            self.lower_constraint_expression(document, declaration, family, condition)?;
+        }
+        self.lower_action_def_body(document, declaration, body)
+    }
+
+    /// Lowers an `if <condition> { ... } (else { ... })?` control node (BNF `IfStmt`) as its own
+    /// anonymous nested-declaration feature owned by `owner`, same condition handling as
+    /// `lower_while_or_loop_stmt`. Both `then_body` and `else_body` (when present) recurse through
+    /// `lower_action_def_body`, owned by this one `If` declaration -- branch bodies are not
+    /// distinguished from one another as separate declaration scopes, mirroring how `decide`'s own
+    /// braced body is a single undifferentiated scope.
+    fn lower_if_stmt(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        family: UnsupportedFamily,
+        span: Span,
+        node: &IfStmt,
+    ) -> Result<(), ConstructionError> {
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::If,
+            None,
+            span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            span,
+        )?;
+        self.push_evaluation_fact(
+            declaration,
+            classify_constraint_expression(&node.condition.value),
+        );
+        self.lower_constraint_expression(document, declaration, family, &node.condition)?;
+        self.lower_action_def_body(document, declaration, &node.then_body)?;
+        if let Some(else_body) = &node.else_body {
+            self.lower_action_def_body(document, declaration, else_body)?;
+        }
+        Ok(())
+    }
+
+    /// Lowers a `for <var> in <range> { ... }` loop control node (BNF `ForLoop`) as its own
+    /// anonymous `DeclarationKind::ForLoop` nested-declaration feature owned by `owner`, mirroring
+    /// `lower_while_or_loop_stmt`'s shape: the `range` collection expression is lowered through
+    /// the same `classify_constraint_expression`/`lower_constraint_expression` machinery as
+    /// `while`'s condition, sourced at this `ForLoop` declaration (the range is evaluated once per
+    /// loop, not once per iteration binding). `var` (a bare, untyped `String` -- the parser
+    /// records no type/multiplicity for it) is lowered as a named `DeclarationKind::
+    /// ForLoopVariable` feature owned by this same `ForLoop` declaration -- introducing a binding,
+    /// not a reference, mirroring `InOutDecl`'s own scope boundary -- so it is a visible sibling
+    /// through the shared `DeclarationDomain::Any` lexical lookup the body's own statements use.
+    /// The body then recurses through `lower_action_def_body`, owned by this `ForLoop`
+    /// declaration. No type inference from `range`'s element type is performed; this is
+    /// reference-resolution scope only, not iteration-execution semantics.
+    fn lower_for_loop(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        family: UnsupportedFamily,
+        span: Span,
+        node: &ForLoop,
+    ) -> Result<(), ConstructionError> {
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::ForLoop,
+            None,
+            span.clone(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            span.clone(),
+        )?;
+        self.push_evaluation_fact(
+            declaration,
+            classify_constraint_expression(&node.range.value),
+        );
+        self.lower_constraint_expression(document, declaration, family, &node.range)?;
+        let var_name = self.intern_declared_name(&node.var)?;
+        let var_declaration = self.push_typed_declaration(
+            document,
+            Some(declaration),
+            DeclarationKind::ForLoopVariable,
+            var_name,
+            span.clone(),
+        )?;
+        self.push_membership(
+            var_declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            span,
+        )?;
+        self.lower_action_def_body(document, declaration, &node.body)
     }
 
     /// Lowers a `then accept ...;` shorthand trigger (BNF `ThenTarget::Accept`, `ast::

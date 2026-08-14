@@ -858,4 +858,132 @@ mod tests {
             "did not expect unsupported_action_definition_member, got: {sexpr}"
         );
     }
+
+    /// An `assign <target> := <value>;` reassignment statement must lower as an anonymous
+    /// `assign` declaration whose `lhs` resolves as an `assignTarget` reference to its sibling
+    /// action and whose `rhs` value expression resolves/evaluates, not fall through to
+    /// `unsupported_action_definition_member`.
+    #[test]
+    fn assign_stmt_target_and_value_resolve() {
+        let sexpr = semantic_sexpr_for("package P { action def A { action x; assign x := 5; } }");
+        assert!(
+            sexpr.contains("(kind assign)"),
+            "expected an assign declaration, got: {sexpr}"
+        );
+        assert!(
+            sexpr.contains("(kind assignTarget)"),
+            "expected an assignTarget relationship kind, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("unsupported_action_definition_member"),
+            "did not expect unsupported_action_definition_member, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("(status unresolved)"),
+            "expected the assign target to resolve to its sibling action, got: {sexpr}"
+        );
+    }
+
+    /// An `assign` statement whose value expression references an unresolvable operand must
+    /// still publish the target/value references, staying explicitly unresolved rather than
+    /// silently dropped.
+    #[test]
+    fn assign_stmt_unresolvable_target_stays_unresolved() {
+        let sexpr = semantic_sexpr_for("package P { action def A { assign missing := 5; } }");
+        assert!(
+            sexpr.contains("(kind assignTarget)"),
+            "expected an assignTarget reference to be authored, got: {sexpr}"
+        );
+        assert!(
+            sexpr.contains("(status unresolved)"),
+            "expected the unresolvable assign target to remain explicitly unresolved, got: {sexpr}"
+        );
+    }
+
+    /// A `while <condition> { ... }` loop must lower as an anonymous `while` declaration whose
+    /// condition resolves its operand and whose nested body recurses back into the same action-
+    /// body-element dispatch (a nested `action x;` usage must be reachable), not fall through to
+    /// `unsupported_action_definition_member`.
+    #[test]
+    fn while_stmt_condition_and_body_resolve() {
+        let sexpr =
+            semantic_sexpr_for("package P { action def A { action x; while x { action y; } } }");
+        assert!(
+            sexpr.contains("(kind while)"),
+            "expected a while declaration, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("unsupported_action_definition_member"),
+            "did not expect unsupported_action_definition_member, got: {sexpr}"
+        );
+        assert!(
+            sexpr.contains("(qualified-name \"P::A::::y\")"),
+            "expected the nested `action y;` body member to be lowered, got: {sexpr}"
+        );
+    }
+
+    /// A bare `loop { ... }` (no condition) must lower as an anonymous `loop` declaration whose
+    /// body recurses, not fall through to `unsupported_action_definition_member`.
+    #[test]
+    fn loop_stmt_body_resolves() {
+        let sexpr = semantic_sexpr_for("package P { action def A { loop { action y; } } }");
+        assert!(
+            sexpr.contains("(kind loop)"),
+            "expected a loop declaration, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("unsupported_action_definition_member"),
+            "did not expect unsupported_action_definition_member, got: {sexpr}"
+        );
+    }
+
+    /// An `if <condition> { ... } else { ... }` control node must lower as an anonymous `if`
+    /// declaration whose condition resolves and whose then/else bodies both recurse, not fall
+    /// through to `unsupported_action_definition_member`.
+    #[test]
+    fn if_stmt_condition_and_both_branches_resolve() {
+        let sexpr = semantic_sexpr_for(
+            "package P { action def A { action x; if x { action y; } else { action z; } } }",
+        );
+        assert!(
+            sexpr.contains("(kind if)"),
+            "expected an if declaration, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("unsupported_action_definition_member"),
+            "did not expect unsupported_action_definition_member, got: {sexpr}"
+        );
+        assert!(
+            sexpr.contains("(qualified-name \"P::A::::y\")")
+                && sexpr.contains("(qualified-name \"P::A::::z\")"),
+            "expected both the then and else branch body members to be lowered, got: {sexpr}"
+        );
+    }
+
+    /// A `for <var> in <range> { ... }` loop must lower as an anonymous `forLoop` declaration
+    /// whose range expression resolves, whose loop variable is declared as a named
+    /// `forLoopVariable` sibling, and whose body recurses, not fall through to
+    /// `unsupported_action_definition_member`.
+    #[test]
+    fn for_loop_range_variable_and_body_resolve() {
+        let sexpr = semantic_sexpr_for(
+            "package P { action def A { action items; for i in items { action y; } } }",
+        );
+        assert!(
+            sexpr.contains("(kind for-loop)"),
+            "expected a for-loop declaration, got: {sexpr}"
+        );
+        assert!(
+            sexpr.contains("(kind for-loop-variable)"),
+            "expected a for-loop-variable declaration for `i`, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("unsupported_action_definition_member"),
+            "did not expect unsupported_action_definition_member, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("(status unresolved)"),
+            "expected the for-loop range `items` to resolve to its sibling action, got: {sexpr}"
+        );
+    }
 }

@@ -813,6 +813,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     | ReferenceKind::StakeholderTarget
                     | ReferenceKind::PurposeTarget
                     | ReferenceKind::VerifyRequirementTarget
+                    | ReferenceKind::AssignTarget
             )
             .then_some(index)
         })
@@ -1748,7 +1749,8 @@ fn supported_import_domain(reference: &impl ResolutionReferenceFact) -> Option<D
         | ReferenceKind::MetaCastTarget
         | ReferenceKind::StakeholderTarget
         | ReferenceKind::PurposeTarget
-        | ReferenceKind::VerifyRequirementTarget => None,
+        | ReferenceKind::VerifyRequirementTarget
+        | ReferenceKind::AssignTarget => None,
     }
 }
 
@@ -1946,7 +1948,8 @@ fn build_effective_import_indexes<R: ResolutionReferenceFact>(
             | ReferenceKind::MetaCastTarget
             | ReferenceKind::StakeholderTarget
             | ReferenceKind::PurposeTarget
-            | ReferenceKind::VerifyRequirementTarget => {}
+            | ReferenceKind::VerifyRequirementTarget
+            | ReferenceKind::AssignTarget => {}
         }
     }
     Ok((

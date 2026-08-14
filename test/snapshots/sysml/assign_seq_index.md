@@ -20,21 +20,39 @@ package AssignTest {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_action_definition_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 2 8) (end 2 28))
+        (range (start 2 15) (end 2 16))
       )
       (diagnostic
         (severity warning)
         (code "unsupported_action_definition_member")
         (source "semantic")
-        (range (start 3 8) (end 3 35))
+        (range (start 2 20) (end 2 27))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 3 15) (end 3 20))
       )
       (diagnostic
         (severity warning)
         (code "unsupported_action_definition_member")
         (source "semantic")
-        (range (start 4 8) (end 4 32))
+        (range (start 3 24) (end 3 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_action_definition_member")
+        (source "semantic")
+        (range (start 4 15) (end 4 18))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_action_definition_member")
+        (source "semantic")
+        (range (start 4 22) (end 4 31))
       )
     )
   )
@@ -47,8 +65,17 @@ package AssignTest {
   (declarations
     (declaration (id (node (document "memory://snapshot/assign_seq_index.md") (qualified-name "AssignTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/assign_seq_index.md") (qualified-name "AssignTest::A"))) (kind action-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/assign_seq_index.md") (anonymous (kind assign) (ordinal 0))))) (kind assign) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (assignTarget (reference "x"))))
+    (declaration (id (node (document "memory://snapshot/assign_seq_index.md") (anonymous (kind assign) (ordinal 1))))) (kind assign) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (assignTarget (reference "var"))))
+    (declaration (id (node (document "memory://snapshot/assign_seq_index.md") (anonymous (kind assign) (ordinal 2))))) (kind assign) (membership (kind feature) (visibility default)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/assign_seq_index.md") (anonymous (kind assign) (ordinal 0))))) (kind assignTarget) (ordinal 0))
+      (authored-target "x")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/assign_seq_index.md") (anonymous (kind assign) (ordinal 1))))) (kind assignTarget) (ordinal 0))
+      (authored-target "var")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -59,5 +86,13 @@ package AssignTest {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/assign_seq_index.md") (range (start 2 15) (end 2 16)) (probe (position 2 15))
+    (reference (id (source (node (document "memory://snapshot/assign_seq_index.md") (anonymous (kind assign) (ordinal 0))))) (kind assignTarget) (ordinal 0) (authored-target "x")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/assign_seq_index.md") (range (start 3 15) (end 3 20)) (probe (position 3 15))
+    (reference (id (source (node (document "memory://snapshot/assign_seq_index.md") (anonymous (kind assign) (ordinal 1))))) (kind assignTarget) (ordinal 0) (authored-target "var")
+      (outcome (status unresolved)))
+  )
 )
 ~~~

@@ -318,6 +318,31 @@ entry should carry enough detail to file/update an upstream issue against
   variant added to `ThenTarget`, mirroring `Merge`/`Fork`/`Decide`'s own dedicated variants, filed
   upstream against `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
 
+- Gap 33. `ActionBodyDecl` (`src/ast/behavior.rs`) is a raw/opaque textual fallback (`{ keyword:
+  String, text: String }`, no name/typing/value fields) for `attribute`/`calc`/`event` declarations
+  -- and a nested `action def ...`'s own name -- found directly inside an action def/usage body
+  (BNF `ActionDefBodyElement::Decl`/`ActionUsageBodyElement::Decl`), e.g. `attribute mass = 5;`
+  written as a sibling of ordinary action-body statements rather than at package/part/attribute-def
+  scope. Verified directly against the pinned `cb026cd` checkout while investigating action-body
+  imperative-statement resolution (`Decl`/`Assign`/`If`/`While`/`Loop`/`ForLoop` audit): `struct
+  ActionBodyDecl { pub keyword: String, pub text: String }` (`behavior.rs:499-502`), produced by
+  `action_body_decl` (`src/parser/action.rs:1376-1405`, which only recognizes the `attribute`/
+  `calc`/`event` keywords and captures everything up to the terminating `;`/`{` as an unparsed
+  `text` blob via `take_until_terminator`) and by `nested_action_def_decl`
+  (`src/parser/action.rs:1352-1374`, which fully parses a nested `action def ...` via the ordinary
+  `action_def` production but then deliberately discards the parsed result, keeping only
+  `keyword: "action"` and `text: format!("def {name}")` -- the comment there reads "Kept as a
+  lightweight Decl so we do not bump AST shape for this recovery/parity fix; Spec42 already ignores
+  `Decl`"). Unlike every other body-decl-shaped construct this branch's audit found adequate
+  (`DefaultReferenceUsage`, `InOutDecl`, etc.), there are no structured fields here at all to lower
+  -- no declared name to intern, no typing/value expression to resolve, nothing but an opaque
+  string. Left routed through the existing `unsupported_action_definition_member`/
+  `unsupported_action_usage_member` fallback (unchanged from prior behavior). Needs `ActionBodyDecl`
+  widened to a real typed node (or `ActionDefBodyElement::Decl` retired in favor of dispatching
+  `attribute`/`calc`/`event`/nested `action def` through their own already-typed AST productions,
+  the way every other action-body-element variant does), filed upstream against
+  `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+
 ## False-positive check (spec42-side surfacing bug?)
 Traced end-to-end for a diverse sample (Gap 15's `feature` case, Gap 17's `portion` case, Gap 22's
 `type`/`subset` case, and Gap 23's bare-identifier case) plus a repo-wide search:

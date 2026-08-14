@@ -865,6 +865,12 @@ fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::KermlBinding => "kerml-binding",
         DeclarationKind::KermlInvariant => "kerml-invariant",
         DeclarationKind::KermlEnd => "kerml-end",
+        DeclarationKind::Assign => "assign",
+        DeclarationKind::While => "while",
+        DeclarationKind::Loop => "loop",
+        DeclarationKind::If => "if",
+        DeclarationKind::ForLoop => "for-loop",
+        DeclarationKind::ForLoopVariable => "for-loop-variable",
     }
 }
 
@@ -939,6 +945,7 @@ fn reference_kind(kind: ReferenceKind) -> &'static str {
         ReferenceKind::StakeholderTarget => "stakeholderTarget",
         ReferenceKind::PurposeTarget => "purposeTarget",
         ReferenceKind::VerifyRequirementTarget => "verifyRequirementTarget",
+        ReferenceKind::AssignTarget => "assignTarget",
     }
 }
 
@@ -992,6 +999,7 @@ fn relationship_kind(kind: ReferenceKind) -> Option<&'static str> {
         ReferenceKind::StakeholderTarget => Some("stakeholderTarget"),
         ReferenceKind::PurposeTarget => Some("purposeTarget"),
         ReferenceKind::VerifyRequirementTarget => Some("verifyRequirementTarget"),
+        ReferenceKind::AssignTarget => Some("assignTarget"),
         ReferenceKind::NamespaceImport
         | ReferenceKind::MembershipImport
         | ReferenceKind::FilterImport => None,
