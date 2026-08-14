@@ -358,6 +358,55 @@ entry should carry enough detail to file/update an upstream issue against
   the way every other action-body-element variant does), filed upstream against
   `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
 
+- Gap 34. `UseCaseDefBodyElement` (`src/ast/requirement.rs`) has no production for the full
+  `ref use case <name> : <Type> :>> <target>;` declaration form (BNF `ReferenceUsage` with the
+  `use case` feature-kind keyword and an explicit type, as used pervasively by
+  `Systems Library/UseCases`, e.g. `ref use case self : UseCase :>> Case::self;`). Verified
+  directly against the pinned `cb026cd` checkout while investigating `test/snapshots/sysml.
+  library/use_cases.md`'s residual `unsupported_use_case_definition_member` diagnostics: the enum
+  (`requirement.rs:604-646`) carries only two `ref`-shaped variants -- `RefRedefinition(Node<
+  RefRedefinition>)`, produced by `ref_redefinition`/`ref_redefinition_inner`
+  (`src/parser/usecase.rs:171-195`), which parses only the bare shorthand `ref :>> <target> { ...
+  }` (no `use case` keyword, no name, no explicit type, and a mandatory *braced body* rather than
+  a `;` terminator) -- and no `Ref(Node<RefDecl>)` variant at all (the shape `1773ae40` wired for
+  the other 9 body-element sites). `use_case_def_body_element`'s alternative list
+  (`src/parser/usecase.rs:520-602`) has no production that accepts `ref` followed by `use case`,
+  a name, `:`, a type, `:>>`, a target, and `;`; the whole statement fails every alternative and
+  falls through to token-level error recovery, which is exactly the fine-grained per-word
+  `unsupported_use_case_definition_member` diagnostic spray observed at `use_cases.md`'s `ref use
+  case self : UseCase :>> Case::self;` and `ref use case start: UseCase :>> start { ... }` lines
+  (5 diagnostics per statement, one per token, rather than one diagnostic for the whole line as
+  seen for other genuinely-unsupported single statements). This is not the `1773ae40`-style
+  "add the missing `RefDecl` dispatch arm" mechanical gap it first appears to be -- there is no
+  `RefDecl` node reachable from `UseCaseDefBodyElement` to dispatch; the AST simply cannot
+  represent this construct. Needs either a new typed variant (e.g. `RefUseCaseUsage(Node<
+  RefDecl>)` or similar) added to `UseCaseDefBodyElement` with a parser production for the full
+  `ref use case <name> : <Type> [:>> <target>];` form, or `ref_redefinition` widened to also
+  accept the named/typed spelling, filed upstream against `feat/gh-119-arena-backed-references`
+  (elan8/sysml-v2-parser#121).
+
+- Gap 35. `SubjectDecl` (`src/ast/requirement.rs:118-123`) has no `redefines` field and its parser
+  production, `subject_decl_inner` (`src/parser/requirement.rs:482-558`), only recognizes a
+  literal `:` before the type reference -- there is no alternative branch or field for a `:>>`
+  redefinition spelling. Verified directly against the pinned `cb026cd` checkout while
+  investigating `test/snapshots/sysml.library/use_cases.md`'s `subject subj :>> Case::subj;`
+  (shared `subject` grammar used identically by requirement/concern/case-family bodies, e.g.
+  `RequirementDefBodyElement::SubjectDecl`/`UseCaseDefBodyElement::SubjectDecl`, both routed
+  through the same `subject_decl` parser function): with `:>>` following the name, `type_name`'s
+  `opt(preceded(tag(":"), ...))` matches the leading `:` of `:>>`, leaving `>> Case::subj;` for
+  `qualified_reference`, which fails and backtracks to `None`; the subsequent `;`/brace check then
+  fails on the still-unconsumed `:>>`, so `subject_decl_inner` fails outright and the whole
+  statement falls through to whole-line error recovery (a single
+  `unsupported_use_case_definition_member` diagnostic spanning the full `subject subj :>> Case::
+  subj;` line). This contradicts the original hypothesis that `sysml_resolution`'s
+  `lower_subject_declaration` (`18c2c201`) merely fails to read an existing `redefines` field --
+  no such field exists on `SubjectDecl`, and the parser cannot parse `:>>` here at all (unlike
+  every sibling declaration kind -- `ActorRedefinitionAssignment`, `RefDecl`, etc. -- which do
+  carry dedicated `redefines`/`:>>` support). Needs `SubjectDecl` widened with a `redefines:
+  Option<Node<SubsettingRelationship>>` field (mirroring `RefDecl`/other declaration kinds) and
+  `subject_decl_inner` taught to parse `:>>` as an alternative to `:`, filed upstream against
+  `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+
 ## False-positive check (spec42-side surfacing bug?)
 Traced end-to-end for a diverse sample (Gap 15's `feature` case, Gap 17's `portion` case, Gap 22's
 `type`/`subset` case, and Gap 23's bare-identifier case) plus a repo-wide search:
