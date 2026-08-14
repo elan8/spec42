@@ -14316,6 +14316,44 @@ mod tests {
     }
 
     #[test]
+    fn ref_decl_resolves_combined_redefines_and_subsets_references_independently() {
+        // GH-51: a single `ref` can carry both an explicit `:>>` redefines clause and a `:>`
+        // subsets clause at once, e.g. `ref requirement originalRequirement[1] :>>
+        // originalRequirements :> participant { ... }` (Systems Library `Domain Libraries/
+        // Requirement Derivation/DerivationConnections.sysml`). `lower_ref_decl` already checks
+        // `node.value.redefines` and `node.value.subsets` as two independent `if let`s (not an
+        // `if`/`else if`), so both references are expected to resolve independently -- this test
+        // locks that in.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \trequirement def Req {\n\
+             \t\trequirement participant;\n\
+             \t\trequirement original;\n\
+             \t}\n\
+             \tconnection def C :> Req {\n\
+             \t\tref requirement r :>> original :> participant;\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains("(kind redefinition)"),
+            "expected a redefinition relationship kind for the ref's `:>>` clause, got:\n{output}"
+        );
+        assert!(
+            output.contains("(kind subsetting)"),
+            "expected a subsetting relationship kind for the ref's `:>` clause, got:\n{output}"
+        );
+        assert!(
+            output.contains("(authored-target \"original\")"),
+            "expected the ref's redefines target to be authored, got:\n{output}"
+        );
+        assert!(
+            output.contains("(authored-target \"participant\")"),
+            "expected the ref's subsets target to be authored, got:\n{output}"
+        );
+    }
+
+    #[test]
     fn ref_decl_with_an_unresolvable_typing_target_stays_explicitly_unresolved() {
         let output = build_semantic_sexpr(
             "package Demo {\n\
