@@ -130,11 +130,11 @@ package Scoping {
     (declaration (id (node (document "memory://snapshot/scoping.md") (qualified-name "Scoping::P1::P2"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/scoping.md") (qualified-name "Scoping::P1::P2::A"))) (kind class-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/scoping.md") (qualified-name "Scoping::P1::P2::P3"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/scoping.md") (qualified-name "Scoping::P1::P2::P3::B"))) (kind class-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "A"))))
+    (declaration (id (node (document "memory://snapshot/scoping.md") (qualified-name "Scoping::P1::P2::P3::B"))) (kind class-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "A")))))
     (declaration (id (node (document "memory://snapshot/scoping.md") (qualified-name "Scoping::P1::P4"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/scoping.md") (qualified-name "Scoping::P1::P4::C"))) (kind class-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Objects::Object"))))
-    (declaration (id (node (document "memory://snapshot/scoping.md") (qualified-name "Scoping::P1::P4::D"))) (kind class-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "$::Objects::Object"))))
-    (declaration (id (node (document "memory://snapshot/scoping.md") (qualified-name "Scoping::P1::P4::E"))) (kind class-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "$::Objects::Object"))))
+    (declaration (id (node (document "memory://snapshot/scoping.md") (qualified-name "Scoping::P1::P4::C"))) (kind class-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Objects::Object")))))
+    (declaration (id (node (document "memory://snapshot/scoping.md") (qualified-name "Scoping::P1::P4::D"))) (kind class-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "$::Objects::Object")))))
+    (declaration (id (node (document "memory://snapshot/scoping.md") (qualified-name "Scoping::P1::P4::E"))) (kind class-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "$::Objects::Object")))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/scoping.md") (qualified-name "Scoping::P1::P2::P3::B"))) (kind specialization) (ordinal 0))
@@ -158,24 +158,45 @@ package Scoping {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/scoping.md") (qualified-name "Scoping::P1::Objects::Object")))
+      (subtype (node (document "memory://snapshot/scoping.md") (qualified-name "Scoping::P1::P4::C")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/scoping.md") (qualified-name "Scoping::P1::P2::A")))
+      (subtype (node (document "memory://snapshot/scoping.md") (qualified-name "Scoping::P1::P2::P3::B")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/scoping.md") (qualified-name "Scoping::P1::P2::P3::B")))
+      (supertype (node (document "memory://snapshot/scoping.md") (qualified-name "Scoping::P1::P2::A")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/scoping.md") (qualified-name "Scoping::P1::P4::C")))
+      (supertype (node (document "memory://snapshot/scoping.md") (qualified-name "Scoping::P1::Objects::Object")) (scopes any subclassification))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/scoping.md") (range (start 10 27) (end 10 28)) (probe (position 10 27))
     (reference (id (source (node (document "memory://snapshot/scoping.md") (qualified-name "Scoping::P1::P2::P3::B"))) (kind specialization) (ordinal 0) (authored-target "A")
       (outcome (status resolved) (target (node (document "memory://snapshot/scoping.md") (qualified-name "Scoping::P1::P2::A")))))
+    )
   )
   (query (document "memory://snapshot/scoping.md") (range (start 28 23) (end 28 38)) (probe (position 28 23))
     (reference (id (source (node (document "memory://snapshot/scoping.md") (qualified-name "Scoping::P1::P4::C"))) (kind specialization) (ordinal 0) (authored-target "Objects::Object")
       (outcome (status resolved) (target (node (document "memory://snapshot/scoping.md") (qualified-name "Scoping::P1::Objects::Object")))))
+    )
   )
   (query (document "memory://snapshot/scoping.md") (range (start 31 23) (end 31 43)) (probe (position 31 23))
     (reference (id (source (node (document "memory://snapshot/scoping.md") (qualified-name "Scoping::P1::P4::D"))) (kind specialization) (ordinal 0) (authored-target "$::Objects::Object")
       (outcome (status unresolved)))
+    )
   )
   (query (document "memory://snapshot/scoping.md") (range (start 34 23) (end 34 41)) (probe (position 34 23))
     (reference (id (source (node (document "memory://snapshot/scoping.md") (qualified-name "Scoping::P1::P4::E"))) (kind specialization) (ordinal 0) (authored-target "$::Objects::Object")
       (outcome (status unresolved)))
+    )
   )
 )
 ~~~

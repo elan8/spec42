@@ -29,6 +29,138 @@ pub(super) fn write_navigation_only(
     write_navigation(model, output)
 }
 
+pub(super) fn write_types_only(
+    model: &ResolvedSemanticModel,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    write_types(model, output)
+}
+
+/// Renders the settled specialization closure of each projected declaration.
+///
+/// A declaration with no transitive supertype and no cycle contributes nothing, so this section
+/// stays proportional to the type structure a fixture actually authors rather than to its
+/// declaration count. Each supertype carries the scopes whose paths reach it, which is what makes
+/// one closure answer both the Pilot's all-subkinds reading and the narrower classifier-only one.
+fn write_types(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fmt::Result {
+    writeln!(output, "(types")?;
+    for index in canonical_declaration_indices(model) {
+        let declaration = DeclarationId(index as u32);
+        let cyclic = model.types.specialization().is_cyclic(declaration);
+        let supertypes = canonical_targets(
+            model,
+            model
+                .types
+                .specialization()
+                .scoped_ancestors(declaration)
+                .collect(),
+        );
+        let direct_types = canonical_targets(model, model.types.direct_types(declaration).to_vec());
+        let subtypes = canonical_targets(model, model.types.subtypes(declaration).to_vec());
+        let effective_types =
+            canonical_targets(model, model.types.effective_types(declaration).to_vec());
+        let featuring = model.types.featuring_type(declaration);
+        if !cyclic
+            && supertypes.is_empty()
+            && direct_types.is_empty()
+            && subtypes.is_empty()
+            && effective_types.is_empty()
+            && featuring.is_none()
+        {
+            continue;
+        }
+        write!(output, "    (declaration (id ")?;
+        write_node_identity(model, declaration, output)?;
+        write!(output, ")")?;
+        if cyclic {
+            write!(output, " (cyclic true)")?;
+        }
+        writeln!(output)?;
+        if let Some(featuring) = featuring {
+            write!(output, "      (featured-by ")?;
+            write_node_identity(model, featuring, output)?;
+            writeln!(output, ")")?;
+        }
+        for (target, provenance) in direct_types {
+            write!(output, "      (type ")?;
+            write_node_identity(model, target, output)?;
+            writeln!(output, " (provenance {}))", fact_provenance(provenance))?;
+        }
+        for (target, source) in effective_types {
+            write!(output, "      (effective-type ")?;
+            write_node_identity(model, target, output)?;
+            match source {
+                types::EffectiveTypeSource::Direct => write!(output, " (source direct)")?,
+                types::EffectiveTypeSource::Inherited(from) => {
+                    write!(output, " (source inherited) (from ")?;
+                    write_node_identity(model, from, output)?;
+                    write!(output, ")")?;
+                }
+            }
+            writeln!(output, ")")?;
+        }
+        for (ancestor, scopes) in supertypes {
+            write!(output, "      (supertype ")?;
+            write_node_identity(model, ancestor, output)?;
+            write_scopes(output, scopes.into_iter())?;
+            writeln!(output, ")")?;
+        }
+        for (subtype, scopes) in subtypes {
+            write!(output, "      (subtype ")?;
+            write_node_identity(model, subtype, output)?;
+            write_scopes(output, types::scopes_of(scopes))?;
+            writeln!(output, ")")?;
+        }
+        writeln!(output, "    )")?;
+    }
+    write!(output, ")")
+}
+
+/// Orders target-carrying entries by document identity then declaration path, the same key every
+/// other owned projection sorts by, so rendering never exposes storage order.
+fn canonical_targets<T>(
+    model: &ResolvedSemanticModel,
+    mut entries: Vec<(DeclarationId, T)>,
+) -> Vec<(DeclarationId, T)> {
+    entries.sort_by_key(|(target, _)| {
+        (
+            model
+                .storage
+                .declaration(*target)
+                .map(|declaration| document_identity(model, declaration.document).to_string())
+                .unwrap_or_else(|| "<invalid-document>".to_string()),
+            declaration_path_key(model, *target),
+        )
+    });
+    entries
+}
+
+fn write_scopes(
+    output: &mut dyn fmt::Write,
+    scopes: impl Iterator<Item = types::SpecializationScope>,
+) -> fmt::Result {
+    write!(output, " (scopes")?;
+    for scope in scopes {
+        write!(output, " {}", specialization_scope(scope))?;
+    }
+    output.write_char(')')
+}
+
+fn fact_provenance(provenance: types::FactProvenance) -> &'static str {
+    match provenance {
+        types::FactProvenance::Authored => "authored",
+        types::FactProvenance::Implied => "implied",
+    }
+}
+
+fn specialization_scope(scope: types::SpecializationScope) -> &'static str {
+    match scope {
+        types::SpecializationScope::AnySpecialization => "any",
+        types::SpecializationScope::Subclassification => "subclassification",
+        types::SpecializationScope::FeatureSpecialization => "feature",
+    }
+}
+
 pub(super) fn write_diagnostics(
     model: &ResolvedSemanticModel,
     output: &mut dyn fmt::Write,
@@ -301,7 +433,46 @@ fn write_metadata(
     write_quoted(output, &source_digest.to_string())?;
     write!(output, ") (contract-version ")?;
     write_quoted(output, semantic_contract_version)?;
-    writeln!(output, "))")
+    write!(output, ")")?;
+    write_admitted_sources(model, output)?;
+    writeln!(output, ")")
+}
+
+/// Reports the non-workspace sources this publication admitted.
+///
+/// Emitted only when the publication admitted one, so a workspace-only build renders exactly as it
+/// did before libraries could be admitted. Without it, admission would be visible only through an
+/// opaque source digest, and a projection scoped to workspace documents would look identical
+/// whether or not a library took part in resolution.
+fn write_admitted_sources(
+    model: &ResolvedSemanticModel,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    let mut standard_library = 0usize;
+    let mut library = 0usize;
+    let mut external = 0usize;
+    for document in model.storage.documents.iter() {
+        match document.role {
+            SourceRole::Workspace => {}
+            SourceRole::StandardLibrary => standard_library += 1,
+            SourceRole::Library => library += 1,
+            SourceRole::External => external += 1,
+        }
+    }
+    if standard_library == 0 && library == 0 && external == 0 {
+        return Ok(());
+    }
+    output.write_str(" (admitted")?;
+    if standard_library > 0 {
+        write!(output, " (standard-library {standard_library})")?;
+    }
+    if library > 0 {
+        write!(output, " (library {library})")?;
+    }
+    if external > 0 {
+        write!(output, " (external {external})")?;
+    }
+    output.write_char(')')
 }
 
 fn write_declarations(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fmt::Result {
@@ -558,8 +729,12 @@ fn write_relationships(model: &ResolvedSemanticModel, output: &mut dyn fmt::Writ
             reference.ordinal,
         )?;
     }
-    let mut implied: Vec<&ImpliedRelationship> =
-        model.resolution.implied_relationships.iter().collect();
+    let mut implied: Vec<&ImpliedRelationship> = model
+        .resolution
+        .implied_relationships
+        .iter()
+        .filter(|relationship| is_projected_declaration(model, relationship.source))
+        .collect();
     implied.sort_by_key(|relationship| {
         (
             declaration_path_key(model, relationship.source),
@@ -624,7 +799,9 @@ fn write_evaluated_value(value: &EvaluatedValue, output: &mut dyn fmt::Write) ->
 }
 
 fn canonical_evaluation_indices(model: &ResolvedSemanticModel) -> Vec<usize> {
-    let mut indices = (0..model.evaluation.len()).collect::<Vec<_>>();
+    let mut indices = (0..model.evaluation.len())
+        .filter(|index| is_projected_declaration(model, model.evaluation[*index].declaration))
+        .collect::<Vec<_>>();
     indices.sort_by(|left, right| {
         let left_fact = &model.evaluation[*left];
         let right_fact = &model.evaluation[*right];
@@ -679,7 +856,9 @@ fn write_navigation(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) 
         write_reference_path(model, reference.path, output)?;
         write!(output, ")\n      ")?;
         write_outcome(model, id, output)?;
-        writeln!(output, ")\n  )")?;
+        // Closes `(id`, then `(reference`, then `(query`. The last one was missing, so every
+        // rendered query left its element open.
+        writeln!(output, ")\n    )\n  )")?;
     }
     write!(output, ")")
 }
@@ -757,7 +936,10 @@ fn write_authored(
         }
         output.write_char(')')?;
     }
-    output.write_str(")")
+    // Closes `(relationships` and then `(authored`. Only the first was emitted before, so the
+    // declaration's own closer was consumed by `(authored` and every declaration carrying
+    // authored facts left its element open.
+    output.write_str("))")
 }
 
 fn write_import(import: AuthoredImportFacts, output: &mut dyn fmt::Write) -> fmt::Result {
@@ -800,11 +982,15 @@ fn write_node_identity(
         // every segment named, no same-named sibling, and nothing else rendering the same name.
         output.write_str(") (qualified-name ")?;
         write_declaration_name(model, id, output)?;
+        output.write_char(')')?;
     } else {
+        // `write_declaration_path` closes its own `(path ...)`, so only the node itself is left
+        // open here. Closing both forms with one shared `))` emitted an extra paren for every
+        // explicit path and left the section unbalanced.
         output.write_str(") ")?;
         write_declaration_path(model, id, output)?;
     }
-    output.write_str("))")
+    output.write_char(')')
 }
 
 /// Renders the explicit root-to-leaf scope path used whenever the qualified name alone would not
@@ -916,8 +1102,31 @@ fn write_escaped(output: &mut dyn fmt::Write, value: &str) -> fmt::Result {
     Ok(())
 }
 
+/// Whether one document's facts belong in an owner-defined projection.
+///
+/// Projections report the authored workspace. A library is admitted so that workspace references
+/// resolve against it, not so that every publication renders the whole standard library; a
+/// consumer that wants library content projected admits it as a workspace source, exactly as the
+/// library snapshot corpus does. This is a rendering scope, never an admission or resolution
+/// filter -- library declarations, references and outcomes are all still fully published.
+fn is_projected_document(model: &ResolvedSemanticModel, document: DocumentId) -> bool {
+    model
+        .storage
+        .document(document)
+        .is_some_and(|document| document.role == SourceRole::Workspace)
+}
+
+fn is_projected_declaration(model: &ResolvedSemanticModel, declaration: DeclarationId) -> bool {
+    model
+        .storage
+        .declaration(declaration)
+        .is_some_and(|declaration| is_projected_document(model, declaration.document))
+}
+
 fn canonical_document_indices(model: &ResolvedSemanticModel) -> Vec<usize> {
-    let mut indices = (0..model.storage.documents.len()).collect::<Vec<_>>();
+    let mut indices = (0..model.storage.documents.len())
+        .filter(|index| is_projected_document(model, DocumentId(*index as u32)))
+        .collect::<Vec<_>>();
     indices.sort_by(|left, right| {
         model.storage.documents[*left]
             .identity
@@ -928,7 +1137,9 @@ fn canonical_document_indices(model: &ResolvedSemanticModel) -> Vec<usize> {
 }
 
 fn canonical_declaration_indices(model: &ResolvedSemanticModel) -> Vec<usize> {
-    let mut indices = (0..model.storage.declarations.len()).collect::<Vec<_>>();
+    let mut indices = (0..model.storage.declarations.len())
+        .filter(|index| is_projected_declaration(model, DeclarationId(*index as u32)))
+        .collect::<Vec<_>>();
     indices.sort_by(|left, right| {
         let left_declaration = &model.storage.declarations[*left];
         let right_declaration = &model.storage.declarations[*right];
@@ -944,7 +1155,9 @@ fn canonical_declaration_indices(model: &ResolvedSemanticModel) -> Vec<usize> {
 }
 
 fn canonical_reference_indices(model: &ResolvedSemanticModel) -> Vec<usize> {
-    let mut indices = (0..model.storage.references.len()).collect::<Vec<_>>();
+    let mut indices = (0..model.storage.references.len())
+        .filter(|index| is_projected_declaration(model, model.storage.references[*index].source))
+        .collect::<Vec<_>>();
     indices.sort_by(|left, right| {
         let left_reference = &model.storage.references[*left];
         let right_reference = &model.storage.references[*right];
@@ -1294,6 +1507,7 @@ mod tests {
             &storage.memberships,
             &storage.paths,
             &storage.references,
+            None,
         )
         .unwrap();
         let evaluation = compute_evaluation(&storage, &resolution, EvaluationPolicy::Evaluate);
@@ -1310,6 +1524,7 @@ mod tests {
         .unwrap();
         let facts =
             inspection::ElementFactIndex::build(&storage, &resolution, &evaluation).unwrap();
+        let type_facts = types::TypeIndex::build(&storage, &resolution).unwrap();
         let model = ResolvedSemanticModel {
             storage,
             direct_names,
@@ -1320,6 +1535,7 @@ mod tests {
             reverse_references,
             effective_scopes,
             facts,
+            types: type_facts,
             resolution,
             evaluation,
             metadata: PublicationMetadata {

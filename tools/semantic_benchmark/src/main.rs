@@ -8,7 +8,7 @@ use std::time::{Duration, Instant};
 use clap::{Parser, ValueEnum};
 use serde::Serialize;
 use sysml_query::resolved_slice::{
-    build_measured, BuildRequest, ConstructionStrategy, SourceDocument, SourceKind,
+    build_measured, BuildRequest, ConstructionStrategy, LibraryStratum, SourceDocument, SourceKind,
 };
 
 #[derive(Debug, Parser)]
@@ -29,6 +29,24 @@ struct Cli {
     /// Emit pretty JSON to this path instead of stdout.
     #[arg(long)]
     output: Option<PathBuf>,
+    /// Admit the checked-in standard-library corpus alongside the selected workspace documents.
+    ///
+    /// The selection then measures what a real editor build costs: a small workspace resolved
+    /// against the whole library, rather than the workspace alone.
+    #[arg(long, value_enum, default_value_t = Libraries::None)]
+    libraries: Libraries,
+    /// Reuse one settled library stratum across iterations instead of resolving it every time.
+    ///
+    /// This is what an editor session does: the library is parsed and solved once when the session
+    /// opens, and each edit rebuilds only the workspace against it.
+    #[arg(long, requires = "libraries")]
+    reuse_library: bool,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]
+enum Libraries {
+    None,
+    Standard,
 }
 
 #[derive(Debug, Clone, Copy, ValueEnum)]
@@ -51,6 +69,8 @@ struct CorpusFacts {
     snapshots: usize,
     documents: usize,
     source_bytes: usize,
+    library_documents: usize,
+    library_source_bytes: usize,
 }
 
 #[derive(Debug, Serialize)]
@@ -102,15 +122,46 @@ fn main() -> Result<(), String> {
     if documents.is_empty() {
         return Err("snapshot selection contains no SOURCE documents".into());
     }
+    let library_documents = match cli.libraries {
+        Libraries::None => Vec::new(),
+        Libraries::Standard => load_corpus(&root.join(STANDARD_LIBRARY_DIRECTORY), None)?.1,
+    };
     let facts = CorpusFacts {
         snapshots: snapshot_count,
         documents: documents.len(),
         source_bytes: documents.iter().map(|document| document.text.len()).sum(),
+        library_documents: library_documents.len(),
+        library_source_bytes: library_documents
+            .iter()
+            .map(|document| document.text.len())
+            .sum(),
+    };
+    let library_documents_for_request = if cli.reuse_library {
+        Vec::new()
+    } else {
+        library_documents.iter().collect::<Vec<_>>()
+    };
+    let stratum = if cli.reuse_library {
+        let sources = library_documents
+            .iter()
+            .map(|document| {
+                SourceDocument::from_memory_path(
+                    "semantic-benchmark",
+                    &format!("{STANDARD_LIBRARY_DIRECTORY}/{}", document.identity),
+                    document.text.clone(),
+                    SourceKind::StandardLibrary,
+                )
+                .map_err(|error| format!("{}: {error}", document.identity))
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        Some(LibraryStratum::build(sources).map_err(|error| format!("library stratum: {error}"))?)
+    } else {
+        None
     };
     let mut samples = Vec::with_capacity(cli.iterations);
     for _ in 0..cli.iterations {
         let request_started = Instant::now();
-        let sources = documents
+        let mut sources = documents
             .iter()
             .map(|document| {
                 SourceDocument::from_memory_path(
@@ -122,12 +173,26 @@ fn main() -> Result<(), String> {
                 .map_err(|error| format!("{}: {error}", document.identity))
             })
             .collect::<Result<Vec<_>, _>>()?;
+        for document in &library_documents_for_request {
+            sources.push(
+                SourceDocument::from_memory_path(
+                    "semantic-benchmark",
+                    &format!("{STANDARD_LIBRARY_DIRECTORY}/{}", document.identity),
+                    document.text.clone(),
+                    SourceKind::StandardLibrary,
+                )
+                .map_err(|error| format!("{}: {error}", document.identity))?,
+            );
+        }
         let strategy = match cli.schedule {
             Schedule::Sequential => ConstructionStrategy::Sequential,
             Schedule::Parallel => ConstructionStrategy::Parallel,
         };
-        let request = BuildRequest::resolved(sources, strategy)
-            .map_err(|error| format!("prepare build: {error}"))?;
+        let request = match &stratum {
+            Some(stratum) => BuildRequest::resolved_with_library(sources, strategy, stratum),
+            None => BuildRequest::resolved(sources, strategy),
+        }
+        .map_err(|error| format!("prepare build: {error}"))?;
         let request_preparation_ns = nanos(request_started.elapsed());
         let build_started = Instant::now();
         let (model, measured) =
@@ -180,6 +245,9 @@ fn main() -> Result<(), String> {
     }
     Ok(())
 }
+
+/// Where the checked-in standard-library corpus lives, relative to the snapshot root.
+const STANDARD_LIBRARY_DIRECTORY: &str = "sysml.library";
 
 fn load_corpus(root: &Path, filter: Option<&str>) -> Result<(usize, Vec<CorpusDocument>), String> {
     let mut paths = Vec::new();

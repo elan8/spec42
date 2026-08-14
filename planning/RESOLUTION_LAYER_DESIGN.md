@@ -784,6 +784,42 @@ whose answer requires resolution. It does not seed references with graph-wide fa
 results from a prior model identity. Pre-resolved immutable library products may be seeded only
 after their complete identity and invariants are verified.
 
+#### 5.5.1 Library admission and the settled library stratum
+
+Every host admits the whole configured library set. There is no import-closure pre-pass and no
+per-host switch, because two hosts that admit different library sets do not have the same semantic
+model, and the closure would have to run before the imports that decide it are resolved.
+
+Sources are admitted library-first, so the library occupies a contiguous prefix of the dense
+declaration and authored-reference domains. That prefix is identical in a library-only build and in
+any workspace build admitting the same library, because lowering is per-document. It is what makes
+a settled library reusable at all.
+
+A settled stratum carries the library's parsed documents and its authored-reference outcomes, and
+is admitted through `BuildRequest::with_library`. Its outcomes are installed before the first
+solver pass, and its references are excluded from every slot list, so no pass re-evaluates them;
+every pass still reads them when it rebuilds the name, import and inheritance indexes.
+
+Reuse is conditional and the condition is published with the stratum. Global-root lookup is the one
+channel through which a workspace declaration can change what a library reference resolves to, and
+it is reachable in exactly two ways:
+
+1. a workspace root declares a name the library also declares at its root, which can shadow or make
+   ambiguous a lookup the library already settled; or
+2. a workspace root declares a name that is the first segment of a reference the library-only build
+   left unresolved or ambiguous, which the workspace could newly answer.
+
+The stratum carries both name sets; the check walks the workspace's top-level declarations. Either
+hit discards the seed and the publication solves everything from scratch. A publication built with
+a stratum must be observably identical to one built without it, and that parity — over facts, type
+answers and diagnostics — is the test that guards the reuse.
+
+The publication identity commits the library's manifest entries alongside the workspace's, so the
+same workspace built against two library versions can never claim one identity.
+
+The stratum is in-process only. Persisting one to disk stays behind
+`planning/ROUNDTRIP_SEMGRAPH_PREREQS.md`.
+
 The solver fingerprints the complete ordered working state. An immediately repeated state with no
 pending required reference is convergence. A previously seen non-adjacent state is an oscillation.
 An unchanged state that still contains required `Pending` values is a dependency deadlock. The

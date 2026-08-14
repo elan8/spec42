@@ -11,11 +11,14 @@ use super::evaluation;
 use super::*;
 use crate::evaluation::{EvaluationPolicy, EvaluationState};
 use crate::{
-    NavigationTarget, OccurrenceRole, PublicationCompleteness as PublicCompleteness, QueryOutcome,
-    RenameOutcome, SourceLocation, SymbolIdentity, TextPosition, TextRange, VisibleMember,
+    Conformance, ConformanceObstacle, EffectiveType, EffectiveTypeOrigin, NavigationTarget,
+    OccurrenceRole, PublicationCompleteness as PublicCompleteness, QueryOutcome,
+    RelationshipProvenance, RenameOutcome, SourceLocation, SpecializationScope,
+    SubsettingConformance, SymbolIdentity, TextPosition, TextRange, TypeReference, VisibleMember,
 };
 
 mod inspection;
+mod types;
 pub(crate) mod writer;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -1131,6 +1134,7 @@ pub(crate) struct ResolvedSemanticModel {
     reverse_references: ReverseReferenceIndex,
     effective_scopes: EffectiveScopeIndex,
     facts: inspection::ElementFactIndex,
+    types: types::TypeIndex,
     resolution: ResolutionResults,
     evaluation: Box<[EvaluationFact]>,
     metadata: PublicationMetadata,
@@ -1654,6 +1658,339 @@ impl ResolvedSemanticModel {
     ) -> std::fmt::Result {
         writer::write_diagnostics(self, output)
     }
+
+    pub(crate) fn write_types_sexpr(&self, output: &mut dyn std::fmt::Write) -> std::fmt::Result {
+        writer::write_types_only(self, output)
+    }
+
+    /// Resolves one published identity to the single declaration it names.
+    ///
+    /// Every type query needs this, and every one of them owes the caller the same three explicit
+    /// answers: the publication did not converge, the identity names nothing, or it names several
+    /// identically authored siblings and choosing between them would be a guess.
+    fn single_declaration<T>(
+        &self,
+        symbol: &SymbolIdentity,
+    ) -> Result<DeclarationId, QueryOutcome<T>> {
+        if matches!(
+            self.metadata.completeness,
+            PublicationCompleteness::NonConverged
+        ) {
+            return Err(QueryOutcome::Incomplete);
+        }
+        let mut candidates = self.identity_declarations(symbol);
+        if candidates.len() > 1 {
+            return Err(QueryOutcome::Unresolved);
+        }
+        candidates.pop().ok_or(QueryOutcome::Unresolved)
+    }
+
+    fn symbols(&self, declarations: impl Iterator<Item = DeclarationId>) -> Box<[SymbolIdentity]> {
+        let mut symbols = declarations
+            .filter_map(|id| self.symbol_identity(id))
+            .collect::<Vec<_>>();
+        symbols.sort();
+        symbols.dedup();
+        symbols.into_boxed_slice()
+    }
+
+    pub(crate) fn direct_types(
+        &self,
+        symbol: &SymbolIdentity,
+    ) -> QueryOutcome<Box<[TypeReference]>> {
+        let declaration = match self.single_declaration(symbol) {
+            Ok(declaration) => declaration,
+            Err(outcome) => return outcome,
+        };
+        let mut types = self
+            .types
+            .direct_types(declaration)
+            .iter()
+            .filter_map(|(target, provenance)| {
+                Some(TypeReference {
+                    symbol: self.symbol_identity(*target)?,
+                    provenance: match provenance {
+                        types::FactProvenance::Authored => RelationshipProvenance::Authored,
+                        types::FactProvenance::Implied => RelationshipProvenance::Implied,
+                    },
+                })
+            })
+            .collect::<Vec<_>>();
+        types.sort_by(|left, right| left.symbol.cmp(&right.symbol));
+        self.resolved_outcome(types.into_boxed_slice())
+    }
+
+    pub(crate) fn effective_types(
+        &self,
+        symbol: &SymbolIdentity,
+    ) -> QueryOutcome<Box<[EffectiveType]>> {
+        let declaration = match self.single_declaration(symbol) {
+            Ok(declaration) => declaration,
+            Err(outcome) => return outcome,
+        };
+        let mut types = self
+            .types
+            .effective_types(declaration)
+            .iter()
+            .filter_map(|(target, source)| {
+                Some(EffectiveType {
+                    symbol: self.symbol_identity(*target)?,
+                    origin: match source {
+                        types::EffectiveTypeSource::Direct => EffectiveTypeOrigin::Direct,
+                        types::EffectiveTypeSource::Inherited(from) => {
+                            EffectiveTypeOrigin::Inherited(self.symbol_identity(*from)?)
+                        }
+                    },
+                })
+            })
+            .collect::<Vec<_>>();
+        types.sort_by(|left, right| left.symbol.cmp(&right.symbol));
+        self.resolved_outcome(types.into_boxed_slice())
+    }
+
+    pub(crate) fn direct_supertypes(
+        &self,
+        symbol: &SymbolIdentity,
+        scope: SpecializationScope,
+    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+        let declaration = match self.single_declaration(symbol) {
+            Ok(declaration) => declaration,
+            Err(outcome) => return outcome,
+        };
+        let bit = internal_scope(scope);
+        let symbols = self.symbols(
+            self.types
+                .supertypes(declaration)
+                .iter()
+                .filter(|(_, scopes)| types::scopes_of(*scopes).any(|candidate| candidate == bit))
+                .map(|(target, _)| *target),
+        );
+        self.resolved_outcome(symbols)
+    }
+
+    /// Every supertype of `symbol`, including `symbol` itself.
+    ///
+    /// Reflexive, matching the Pilot's `allSupertypes() = OrderedSet{self}->closure(supertypes)`.
+    /// A caller that wants the strict set removes itself; a caller that expected reflexivity and
+    /// did not get it would silently answer "does not conform" for a type against itself.
+    pub(crate) fn all_supertypes(
+        &self,
+        symbol: &SymbolIdentity,
+        scope: SpecializationScope,
+    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+        let declaration = match self.single_declaration(symbol) {
+            Ok(declaration) => declaration,
+            Err(outcome) => return outcome,
+        };
+        let bit = internal_scope(scope);
+        let symbols = self.symbols(
+            std::iter::once(declaration).chain(
+                self.types
+                    .specialization()
+                    .scoped_ancestors(declaration)
+                    .filter(move |(_, scopes)| scopes.contains(&bit))
+                    .map(|(ancestor, _)| ancestor),
+            ),
+        );
+        self.resolved_outcome(symbols)
+    }
+
+    pub(crate) fn direct_subtypes(
+        &self,
+        symbol: &SymbolIdentity,
+        scope: SpecializationScope,
+    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+        let declaration = match self.single_declaration(symbol) {
+            Ok(declaration) => declaration,
+            Err(outcome) => return outcome,
+        };
+        let bit = internal_scope(scope);
+        let symbols = self.symbols(
+            self.types
+                .subtypes(declaration)
+                .iter()
+                .filter(|(_, scopes)| types::scopes_of(*scopes).any(|candidate| candidate == bit))
+                .map(|(source, _)| *source),
+        );
+        self.resolved_outcome(symbols)
+    }
+
+    pub(crate) fn featuring_type(
+        &self,
+        symbol: &SymbolIdentity,
+    ) -> QueryOutcome<Option<SymbolIdentity>> {
+        let declaration = match self.single_declaration(symbol) {
+            Ok(declaration) => declaration,
+            Err(outcome) => return outcome,
+        };
+        let featuring = self
+            .types
+            .featuring_type(declaration)
+            .and_then(|owner| self.symbol_identity(owner));
+        self.resolved_outcome(featuring)
+    }
+
+    pub(crate) fn conforms_to(
+        &self,
+        specific: &SymbolIdentity,
+        general: &SymbolIdentity,
+        scope: SpecializationScope,
+    ) -> QueryOutcome<Conformance> {
+        let specific = match self.single_declaration(specific) {
+            Ok(declaration) => declaration,
+            Err(outcome) => return outcome,
+        };
+        let general = match self.single_declaration(general) {
+            Ok(declaration) => declaration,
+            Err(outcome) => return outcome,
+        };
+        self.resolved_outcome(self.conformance(specific, general, scope))
+    }
+
+    fn conformance(
+        &self,
+        specific: DeclarationId,
+        general: DeclarationId,
+        scope: SpecializationScope,
+    ) -> Conformance {
+        if specific == general {
+            return Conformance::Conforms;
+        }
+        // A declaration that reaches itself has a malformed hierarchy. Its closure is still
+        // complete, so an answer could be produced -- but producing one would turn a modelling
+        // error into a published semantic fact, which is exactly what the explicit-state rule
+        // exists to prevent.
+        if self.types.specialization().is_cyclic(specific) {
+            return Conformance::Indeterminate(ConformanceObstacle::CyclicSpecialization);
+        }
+        if self
+            .types
+            .specialization()
+            .reaches(specific, general, internal_scope(scope))
+        {
+            Conformance::Conforms
+        } else {
+            Conformance::DoesNotConform
+        }
+    }
+
+    /// KerML §7.4.12: every type of the general feature must be conformed to by some type of the
+    /// specific feature.
+    ///
+    /// An untyped side conforms: a feature that declares no typing of its own takes the other's,
+    /// so there is nothing to violate. Effective types are used rather than declared ones, so a
+    /// feature that inherits its typing along a redefinition chain is not mistaken for untyped.
+    pub(crate) fn feature_typing_conforms(
+        &self,
+        specific: &SymbolIdentity,
+        general: &SymbolIdentity,
+    ) -> QueryOutcome<Conformance> {
+        let specific = match self.single_declaration(specific) {
+            Ok(declaration) => declaration,
+            Err(outcome) => return outcome,
+        };
+        let general = match self.single_declaration(general) {
+            Ok(declaration) => declaration,
+            Err(outcome) => return outcome,
+        };
+        self.resolved_outcome(self.typing_conformance(specific, general))
+    }
+
+    fn typing_conformance(&self, specific: DeclarationId, general: DeclarationId) -> Conformance {
+        // The specific side contributes only the typings it does not owe to the general side.
+        // Counting an inherited typing would make the rule vacuous: every redefining feature
+        // inherits the redefined feature's type, so that type would always be there to satisfy
+        // the check, and a feature retyped to something unrelated would still pass.
+        let specific_types = self
+            .types
+            .effective_types(specific)
+            .iter()
+            .filter(|(_, source)| match source {
+                types::EffectiveTypeSource::Direct => true,
+                types::EffectiveTypeSource::Inherited(from) => {
+                    *from != general
+                        && !self.types.specialization().reaches(
+                            *from,
+                            general,
+                            types::SpecializationScope::FeatureSpecialization,
+                        )
+                }
+            })
+            .map(|(target, _)| *target)
+            .collect::<Vec<_>>();
+        let general_types = self.types.effective_types(general);
+        if specific_types.is_empty() || general_types.is_empty() {
+            return Conformance::Conforms;
+        }
+        let mut obstacle = None;
+        for (general_type, _) in general_types {
+            let mut satisfied = false;
+            for specific_type in &specific_types {
+                match self.conformance(
+                    *specific_type,
+                    *general_type,
+                    SpecializationScope::AnySpecialization,
+                ) {
+                    Conformance::Conforms => {
+                        satisfied = true;
+                        break;
+                    }
+                    Conformance::Indeterminate(reason) => obstacle = Some(reason),
+                    Conformance::DoesNotConform => {}
+                }
+            }
+            if !satisfied {
+                // An unanswerable pair cannot be reported as a violation: the rule was never
+                // evaluated for it.
+                return match obstacle {
+                    Some(reason) => Conformance::Indeterminate(reason),
+                    None => Conformance::DoesNotConform,
+                };
+            }
+        }
+        Conformance::Conforms
+    }
+
+    /// KerML §8.4.3.4, with its two halves kept apart.
+    pub(crate) fn subsetting_conforms(
+        &self,
+        subsetting: &SymbolIdentity,
+        subsetted: &SymbolIdentity,
+    ) -> QueryOutcome<SubsettingConformance> {
+        let subsetting = match self.single_declaration(subsetting) {
+            Ok(declaration) => declaration,
+            Err(outcome) => return outcome,
+        };
+        let subsetted = match self.single_declaration(subsetted) {
+            Ok(declaration) => declaration,
+            Err(outcome) => return outcome,
+        };
+        // A feature owned only by namespaces has no featuring type, so the domain half of the rule
+        // has nothing to compare and cannot be violated.
+        let featuring = match (
+            self.types.featuring_type(subsetting),
+            self.types.featuring_type(subsetted),
+        ) {
+            (Some(specific), Some(general)) => {
+                self.conformance(specific, general, SpecializationScope::AnySpecialization)
+            }
+            _ => Conformance::Conforms,
+        };
+        self.resolved_outcome(SubsettingConformance {
+            featuring,
+            types: self.typing_conformance(subsetting, subsetted),
+        })
+    }
+}
+
+fn internal_scope(scope: SpecializationScope) -> types::SpecializationScope {
+    match scope {
+        SpecializationScope::AnySpecialization => types::SpecializationScope::AnySpecialization,
+        SpecializationScope::Subclassification => types::SpecializationScope::Subclassification,
+        SpecializationScope::FeatureSpecialization => {
+            types::SpecializationScope::FeatureSpecialization
+        }
+    }
 }
 
 fn document_range(
@@ -1844,10 +2181,144 @@ fn declaration_qualified_name(
     Some(names.join("::"))
 }
 
+/// What a settled library build hands to the publications that follow it.
+///
+/// The outcomes are indexed by authored-reference ordinal. That is only meaningful because sources
+/// are admitted library-first and lowering is per-document: the library's declarations and
+/// references occupy exactly the same dense prefix in a workspace build as they did in the build
+/// that settled them.
+///
+/// The two name sets are the evidence for whether reusing those outcomes is sound at all. See
+/// [`SettledLibrary::admits`].
+#[derive(Debug)]
+pub(crate) struct SettledLibrary {
+    outcomes: Box<[ResolutionStatus]>,
+    /// Names declared at the library's own root, which a workspace declaration must not shadow or
+    /// duplicate.
+    root_names: std::collections::BTreeSet<Box<str>>,
+    /// First path segments of every library reference the library-only build left unresolved or
+    /// ambiguous. A workspace root with one of these names could newly satisfy -- or newly make
+    /// ambiguous -- a reference whose outcome is about to be reused.
+    unsettled_roots: std::collections::BTreeSet<Box<str>>,
+}
+
+impl SettledLibrary {
+    /// Whether these outcomes may be reused for a publication containing `storage`.
+    ///
+    /// Global-root lookup is the one channel through which a workspace declaration can change what
+    /// a library reference resolves to, and it is reachable in exactly two ways: a workspace root
+    /// sharing a library root's name, or a workspace root answering a lookup the library itself
+    /// left unsettled. Both are name comparisons over the roots, so the check costs a walk of the
+    /// workspace's top-level declarations rather than a re-solve.
+    fn admits(&self, storage: &SemanticModelStorage) -> bool {
+        if self.outcomes.len() > storage.references.len() {
+            return false;
+        }
+        // The prefix must still be the library's. If lowering ever stopped putting library
+        // documents first, seeding would silently answer for the wrong references.
+        for reference in storage.references.iter().take(self.outcomes.len()) {
+            let Some(declaration) = storage.declaration(reference.source) else {
+                return false;
+            };
+            let Some(document) = storage.document(declaration.document) else {
+                return false;
+            };
+            if document.role == SourceRole::Workspace {
+                return false;
+            }
+        }
+        for (index, declaration) in storage.declarations.iter().enumerate() {
+            if declaration.owner.is_some() {
+                continue;
+            }
+            let Some(document) = storage.document(declaration.document) else {
+                return false;
+            };
+            if document.role != SourceRole::Workspace {
+                continue;
+            }
+            let Some(name) = declaration.name.and_then(|name| storage.symbol(name)) else {
+                continue;
+            };
+            if self.root_names.contains(name) || self.unsettled_roots.contains(name) {
+                let _ = index;
+                return false;
+            }
+        }
+        true
+    }
+}
+
+impl ResolvedSemanticModel {
+    /// Everything a later publication needs to reuse this one as a library.
+    ///
+    /// The parsed documents come out by reference-counted handle rather than by copy, so reuse
+    /// shares one parse of the library across every publication built against it.
+    pub(crate) fn prepared_library(
+        &self,
+    ) -> Result<super::PreparedLibrary, super::CoordinatorError> {
+        let documents = self
+            .storage
+            .documents
+            .iter()
+            .map(|document| super::PreparedDocument {
+                identity: document.identity.clone(),
+                role: document.role,
+                parsed: Arc::clone(&document.parsed),
+                parse_errors: document.parse_errors.to_vec(),
+            })
+            .collect();
+        Ok(super::PreparedLibrary {
+            documents,
+            settled: self
+                .settled_library()
+                .map_err(|_| super::CoordinatorError::ConstructionFailed)?,
+        })
+    }
+
+    /// The reusable settled state of a library-only publication.
+    pub(super) fn settled_library(&self) -> Result<SettledLibrary, ResolutionError> {
+        let mut root_names = std::collections::BTreeSet::new();
+        for declaration in self.storage.declarations.iter() {
+            if declaration.owner.is_some() {
+                continue;
+            }
+            if let Some(name) = declaration.name.and_then(|name| self.storage.symbol(name)) {
+                root_names.insert(name.into());
+            }
+        }
+        let mut unsettled_roots = std::collections::BTreeSet::new();
+        for (index, reference) in self.storage.references.iter().enumerate() {
+            let id =
+                AuthoredReferenceId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+            let settled = matches!(
+                self.resolution.outcome(id),
+                Some(ResolutionStatus::Resolved(_)) | Some(ResolutionStatus::Unsupported)
+            );
+            if settled {
+                continue;
+            }
+            let Some((segments, _)) = self.storage.paths.get(reference.path) else {
+                continue;
+            };
+            let Some(first) = segments.first().and_then(|id| self.storage.symbol(*id)) else {
+                continue;
+            };
+            unsettled_roots.insert(first.into());
+        }
+        Ok(SettledLibrary {
+            outcomes: self.resolution.outcomes.clone(),
+            root_names,
+            unsettled_roots,
+        })
+    }
+}
+
 impl SemanticModelStorage {
     pub(super) fn resolve(
         self,
         policy: EvaluationPolicy,
+        library: Option<&SettledLibrary>,
     ) -> Result<ResolvedSemanticModel, ResolutionError> {
         let has_recovery = self
             .documents
@@ -1855,11 +2326,15 @@ impl SemanticModelStorage {
             .any(|document| !document.parse_errors.is_empty())
             || !self.recovery.is_empty();
         let has_unsupported = !self.unsupported.is_empty();
+        let seed = library
+            .filter(|library| library.admits(&self))
+            .map(|library| library.outcomes.as_ref());
         let (direct_names, effective_imports, memberships, resolution) = resolve_dense(
             &self.declarations,
             &self.memberships,
             &self.paths,
             &self.references,
+            seed,
         )?;
         let completeness = if has_recovery {
             PublicationCompleteness::ParseRecovery
@@ -1883,6 +2358,11 @@ impl SemanticModelStorage {
             &resolution.inherited_names,
         )?;
         let facts = inspection::ElementFactIndex::build(&self, &resolution, &evaluation)?;
+        // A barrier product, not a solver family: every type fact here is derived from settled
+        // outcomes and feeds nothing back into scope, imports or inheritance. The resolver's own
+        // ancestor closure for inherited names stays separate and unchanged -- widening that one
+        // would silently change name resolution.
+        let type_facts = types::TypeIndex::build(&self, &resolution)?;
         Ok(ResolvedSemanticModel {
             storage: self,
             direct_names,
@@ -1893,6 +2373,7 @@ impl SemanticModelStorage {
             reverse_references,
             effective_scopes,
             facts,
+            types: type_facts,
             resolution,
             evaluation,
             metadata: PublicationMetadata {
@@ -1934,6 +2415,7 @@ fn resolve_dense<R: ResolutionReferenceFact>(
     memberships: &[MembershipRecord],
     paths: &SymbolPathArena,
     references: &[R],
+    seed: Option<&[ResolutionStatus]>,
 ) -> Result<(NameIndex, NameIndex, MembershipIndex, ResolutionResults), ResolutionError> {
     let supported_import_count = references
         .iter()
@@ -1948,7 +2430,14 @@ fn resolve_dense<R: ResolutionReferenceFact>(
         .and_then(|limit| limit.checked_add(1))
         .ok_or(ResolutionError::Capacity)?
         .max(1);
-    resolve_dense_with_limit(declarations, memberships, paths, references, pass_limit)
+    resolve_dense_with_limit(
+        declarations,
+        memberships,
+        paths,
+        references,
+        pass_limit,
+        seed,
+    )
 }
 
 fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
@@ -1957,15 +2446,25 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     paths: &SymbolPathArena,
     references: &[R],
     pass_limit: usize,
+    seed: Option<&[ResolutionStatus]>,
 ) -> Result<(NameIndex, NameIndex, MembershipIndex, ResolutionResults), ResolutionError> {
     let membership_records = memberships;
     let memberships = MembershipIndex::build(declarations, memberships)?;
     let direct_names = build_direct_name_index(declarations, None)?;
     let exported_names = build_direct_name_index(declarations, Some(&memberships))?;
     let mut outcomes = vec![ResolutionStatus::Unsupported; references.len()];
+    // A settled library's outcomes are installed before the first pass and its references are then
+    // left out of every slot list below, so no pass re-evaluates them. They are still *read* --
+    // by the name, import and inheritance indexes each pass rebuilds -- which is what makes the
+    // workspace resolve against a library that is already settled rather than against nothing.
+    let settled = seed.map_or(0, <[ResolutionStatus]>::len);
+    if let Some(seed) = seed {
+        outcomes[..settled].copy_from_slice(seed);
+    }
     let import_slots: Vec<usize> = references
         .iter()
         .enumerate()
+        .filter(|(index, _)| *index >= settled)
         .filter_map(|(index, reference)| supported_import_domain(reference).map(|_| index))
         .collect();
     // Subclassification is resolved first because the ancestor-scoped inherited-member lookup used
@@ -1975,6 +2474,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     let subclass_slots: Vec<usize> = references
         .iter()
         .enumerate()
+        .filter(|(index, _)| *index >= settled)
         .filter_map(|(index, reference)| {
             (reference.kind() == ReferenceKind::Subclassification).then_some(index)
         })
@@ -1982,6 +2482,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     let typing_slots: Vec<usize> = references
         .iter()
         .enumerate()
+        .filter(|(index, _)| *index >= settled)
         .filter_map(|(index, reference)| {
             (reference.kind() == ReferenceKind::FeatureTyping).then_some(index)
         })
@@ -2005,6 +2506,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     let metadata_annotation_slots: Vec<usize> = references
         .iter()
         .enumerate()
+        .filter(|(index, _)| *index >= settled)
         .filter_map(|(index, reference)| {
             matches!(
                 reference.kind(),
@@ -2029,6 +2531,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     let subsetting_slots: Vec<usize> = references
         .iter()
         .enumerate()
+        .filter(|(index, _)| *index >= settled)
         .filter_map(|(index, reference)| {
             (reference.kind() == ReferenceKind::Subsetting).then_some(index)
         })
@@ -2036,6 +2539,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     let redefinition_slots: Vec<usize> = references
         .iter()
         .enumerate()
+        .filter(|(index, _)| *index >= settled)
         .filter_map(|(index, reference)| {
             (reference.kind() == ReferenceKind::Redefinition).then_some(index)
         })
@@ -2047,6 +2551,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     let alias_slots: Vec<usize> = references
         .iter()
         .enumerate()
+        .filter(|(index, _)| *index >= settled)
         .filter_map(|(index, reference)| {
             (reference.kind() == ReferenceKind::AliasBinding).then_some(index)
         })
@@ -2058,6 +2563,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     let connector_end_slots: Vec<usize> = references
         .iter()
         .enumerate()
+        .filter(|(index, _)| *index >= settled)
         .filter_map(|(index, reference)| {
             (reference.kind() == ReferenceKind::ConnectorEnd).then_some(index)
         })
@@ -2069,6 +2575,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     let succession_slots: Vec<usize> = references
         .iter()
         .enumerate()
+        .filter(|(index, _)| *index >= settled)
         .filter_map(|(index, reference)| {
             (reference.kind() == ReferenceKind::Succession).then_some(index)
         })
@@ -2088,6 +2595,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     let state_binding_slots: Vec<usize> = references
         .iter()
         .enumerate()
+        .filter(|(index, _)| *index >= settled)
         .filter_map(|(index, reference)| {
             matches!(
                 reference.kind(),
@@ -2139,6 +2647,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     let member_access_slots: Vec<usize> = references
         .iter()
         .enumerate()
+        .filter(|(index, _)| *index >= settled)
         .filter_map(|(index, reference)| {
             (reference.kind() == ReferenceKind::MemberAccessOperand).then_some(index)
         })
@@ -3122,6 +3631,24 @@ impl DeclarationDomain {
                     | DeclarationKind::ConcernDefinition
                     | DeclarationKind::CalcDefinition
                     | DeclarationKind::ClassDefinition
+                    // The KerML type metaclasses. Every one of these is a `Type` in the
+                    // metamodel, so each is a legitimate FeatureTyping/Subclassification target;
+                    // without them no reference into the KerML kernel libraries can resolve, and
+                    // `attribute mass : ScalarValues::Real` fails against a `datatype` that is
+                    // right there in the admitted standard library. `KermlMultiplicity` is
+                    // deliberately absent: `Multiplicity <: Feature`, and this domain admits
+                    // definition-like types only, exactly as it already excludes SysML usages.
+                    | DeclarationKind::KermlClassifier
+                    | DeclarationKind::KermlClass
+                    | DeclarationKind::KermlStructure
+                    | DeclarationKind::KermlAssociation
+                    | DeclarationKind::KermlAssociationStructure
+                    | DeclarationKind::KermlDataType
+                    | DeclarationKind::KermlMetaclass
+                    | DeclarationKind::KermlBehavior
+                    | DeclarationKind::KermlFunction
+                    | DeclarationKind::KermlPredicate
+                    | DeclarationKind::KermlInteraction
                     | DeclarationKind::Alias
             ),
         }
@@ -3754,6 +4281,7 @@ mod tests {
             &fixture.memberships,
             &fixture.paths,
             &fixture.references,
+            None,
         )
         .unwrap()
     }
@@ -5607,6 +6135,7 @@ mod tests {
             &fixture.paths,
             &fixture.references,
             1,
+            None,
         )
         .unwrap();
         assert_eq!(resolution.solver_status, SolverStatus::NonConverged);

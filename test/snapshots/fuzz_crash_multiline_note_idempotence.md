@@ -56,6 +56,11 @@ er E specializes C intersects A, B;
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

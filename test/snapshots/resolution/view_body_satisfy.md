@@ -31,7 +31,7 @@ package ViewCoverage {
     (declaration (id (node (document "memory://snapshot/view_body_satisfy.md") (qualified-name "ViewCoverage"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/view_body_satisfy.md") (qualified-name "ViewCoverage::ArchitectureView"))) (kind view-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/view_body_satisfy.md") (qualified-name "ViewCoverage::ArchitectureViewpoint"))) (kind viewpoint-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/view_body_satisfy.md") (qualified-name "ViewCoverage::architecture"))) (kind view) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ArchitectureView")) (satisfyViewpoint (reference "ArchitectureViewpoint"))))
+    (declaration (id (node (document "memory://snapshot/view_body_satisfy.md") (qualified-name "ViewCoverage::architecture"))) (kind view) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ArchitectureView")) (satisfyViewpoint (reference "ArchitectureViewpoint")))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/view_body_satisfy.md") (qualified-name "ViewCoverage::architecture"))) (kind featureTyping) (ordinal 0))
@@ -49,16 +49,31 @@ package ViewCoverage {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/view_body_satisfy.md") (qualified-name "ViewCoverage::ArchitectureView")))
+      (subtype (node (document "memory://snapshot/view_body_satisfy.md") (qualified-name "ViewCoverage::architecture")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/view_body_satisfy.md") (qualified-name "ViewCoverage::architecture")))
+      (type (node (document "memory://snapshot/view_body_satisfy.md") (qualified-name "ViewCoverage::ArchitectureView")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/view_body_satisfy.md") (qualified-name "ViewCoverage::ArchitectureView")) (source direct))
+      (supertype (node (document "memory://snapshot/view_body_satisfy.md") (qualified-name "ViewCoverage::ArchitectureView")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/view_body_satisfy.md") (range (start 3 24) (end 3 40)) (probe (position 3 24))
     (reference (id (source (node (document "memory://snapshot/view_body_satisfy.md") (qualified-name "ViewCoverage::architecture"))) (kind featureTyping) (ordinal 0) (authored-target "ArchitectureView")
       (outcome (status resolved) (target (node (document "memory://snapshot/view_body_satisfy.md") (qualified-name "ViewCoverage::ArchitectureView")))))
+    )
   )
   (query (document "memory://snapshot/view_body_satisfy.md") (range (start 4 16) (end 4 37)) (probe (position 4 16))
     (reference (id (source (node (document "memory://snapshot/view_body_satisfy.md") (qualified-name "ViewCoverage::architecture"))) (kind satisfyViewpoint) (ordinal 0) (authored-target "ArchitectureViewpoint")
       (outcome (status resolved) (target (node (document "memory://snapshot/view_body_satisfy.md") (qualified-name "ViewCoverage::ArchitectureViewpoint")))))
+    )
   )
 )
 ~~~

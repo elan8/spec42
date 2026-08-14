@@ -40,7 +40,7 @@ package 'αβ' {
   (declarations
     (declaration (id (node (document "memory://snapshot/unicode_identifiers.md") (qualified-name "αβ"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/unicode_identifiers.md") (qualified-name "αβ::é"))) (kind class-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/unicode_identifiers.md") (qualified-name "αβ::Ω"))) (kind class-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Pkg::β"))))
+    (declaration (id (node (document "memory://snapshot/unicode_identifiers.md") (qualified-name "αβ::Ω"))) (kind class-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Pkg::β")))))
     (declaration (id (node (document "memory://snapshot/unicode_identifiers.md") (qualified-name "αβ::漢字"))) (kind class-def) (membership (kind owning) (visibility default)))
   )
   (references
@@ -54,12 +54,18 @@ package 'αβ' {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/unicode_identifiers.md") (range (start 4 18) (end 4 27)) (probe (position 4 18))
     (reference (id (source (node (document "memory://snapshot/unicode_identifiers.md") (qualified-name "αβ::Ω"))) (kind specialization) (ordinal 0) (authored-target "Pkg::β")
       (outcome (status unresolved)))
+    )
   )
 )
 ~~~

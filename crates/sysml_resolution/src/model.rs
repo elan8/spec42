@@ -15,6 +15,7 @@ use std::{
 use hashbrown::HashTable;
 
 use crate::evaluation::EvaluationPolicy;
+use source_identity::SourceRole;
 use sysml_v2_parser_next::{
     ast::{
         ActionDef, ActionDefBody, ActionDefBodyElement, ActionUsage as ParserActionUsage,
@@ -2577,6 +2578,11 @@ struct RecoveryRecord {
 #[derive(Debug)]
 struct CanonicalDocument {
     identity: Box<str>,
+    /// The role this source plays in the build, carried through from the admitted
+    /// [`OwnedSourceRecord`]. Library sources participate in one semantic system with workspace
+    /// sources, so this is never an admission filter; it is what lets owner-defined projections
+    /// report the authored workspace without also reporting the whole standard library.
+    role: SourceRole,
     parsed: Arc<ParsedDocument>,
     parse_errors: Box<[ParseError]>,
 }
@@ -2691,6 +2697,7 @@ impl SemanticModelBuilder {
     fn admit_document(
         &mut self,
         identity: impl Into<Box<str>>,
+        role: SourceRole,
         parsed: Arc<ParsedDocument>,
         parse_errors: Vec<ParseError>,
     ) -> Result<DocumentId, ConstructionError> {
@@ -2718,6 +2725,7 @@ impl SemanticModelBuilder {
             .map_err(|_| ConstructionError::Capacity)?;
         self.documents.push(CanonicalDocument {
             identity,
+            role,
             parsed,
             parse_errors: parse_errors.into_boxed_slice(),
         });
@@ -13046,6 +13054,7 @@ impl SymbolTableBuilder {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct OwnedSourceRecord {
     pub(crate) identity: Box<str>,
+    pub(crate) role: SourceRole,
     pub(crate) content: String,
 }
 
@@ -13061,6 +13070,25 @@ pub(crate) enum CoordinatorError {
     ConstructionFailed,
 }
 
+/// A library that has already been parsed and solved, ready to be reused by later publications.
+///
+/// Holds the parsed documents rather than their text, so a workspace build pays neither the
+/// library's parse nor its solve. Lowering still runs: it is per-document and cheap, and rerunning
+/// it keeps every dense identity assigned by exactly the same code path as an unseeded build.
+#[derive(Debug)]
+pub(crate) struct PreparedLibrary {
+    pub(crate) documents: Vec<PreparedDocument>,
+    pub(crate) settled: resolver::SettledLibrary,
+}
+
+#[derive(Debug)]
+pub(crate) struct PreparedDocument {
+    pub(crate) identity: Box<str>,
+    pub(crate) role: SourceRole,
+    pub(crate) parsed: Arc<ParsedDocument>,
+    pub(crate) parse_errors: Vec<ParseError>,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct SemanticModelBuildCoordinator;
 
@@ -13072,21 +13100,39 @@ pub(crate) struct BuildPhaseDurations {
 }
 
 impl SemanticModelBuildCoordinator {
-    pub(crate) fn build_measured(
+    pub(crate) fn build_measured_with_library(
         mut sources: Vec<OwnedSourceRecord>,
         schedule: BuildSchedule,
         policy: EvaluationPolicy,
+        library: Option<&PreparedLibrary>,
     ) -> Result<(resolver::ResolvedSemanticModel, BuildPhaseDurations), CoordinatorError> {
-        sources.sort_unstable_by(|left, right| left.identity.cmp(&right.identity));
-        if sources
-            .windows(2)
-            .any(|pair| pair[0].identity == pair[1].identity)
-        {
+        // Library sources are ordered ahead of workspace sources so that the dense declaration
+        // domain assigns them a contiguous prefix. Rendered output is sorted independently by
+        // document identity, so this affects storage order only. Duplicate detection therefore
+        // compares identities across the whole set, not within one role.
+        sources.sort_unstable_by(|left, right| {
+            source_admission_rank(left.role)
+                .cmp(&source_admission_rank(right.role))
+                .then_with(|| left.identity.cmp(&right.identity))
+        });
+        let mut identities = sources
+            .iter()
+            .map(|source| source.identity.as_ref())
+            .chain(
+                library
+                    .into_iter()
+                    .flat_map(|library| library.documents.iter())
+                    .map(|document| document.identity.as_ref()),
+            )
+            .collect::<Vec<_>>();
+        identities.sort_unstable();
+        if identities.windows(2).any(|pair| pair[0] == pair[1]) {
             return Err(CoordinatorError::DuplicateSourceIdentity);
         }
 
         let parse_started = Instant::now();
-        let parsed = match schedule {
+        let parsed: Vec<(Box<str>, SourceRole, sysml_v2_parser_next::ParseResult)> = match schedule
+        {
             BuildSchedule::Sequential => sources
                 .into_iter()
                 .map(Self::parse_source)
@@ -13104,9 +13150,23 @@ impl SemanticModelBuildCoordinator {
         let lowering_started = Instant::now();
         let mut builder = SemanticModelBuilder::default();
         let mut documents = Vec::with_capacity(parsed.len());
-        for (identity, parsed) in parsed {
+        // The prepared library is admitted first and in its own recorded order, so its
+        // declarations and references land on exactly the dense prefix its settled outcomes were
+        // recorded against.
+        for document in library.into_iter().flat_map(|library| &library.documents) {
+            let admitted = builder
+                .admit_document(
+                    document.identity.clone(),
+                    document.role,
+                    Arc::clone(&document.parsed),
+                    document.parse_errors.clone(),
+                )
+                .map_err(|_| CoordinatorError::DuplicateSourceIdentity)?;
+            documents.push(admitted);
+        }
+        for (identity, role, parsed) in parsed {
             let document = builder
-                .admit_document(identity, Arc::new(parsed.document), parsed.errors)
+                .admit_document(identity, role, Arc::new(parsed.document), parsed.errors)
                 .map_err(|_| CoordinatorError::DuplicateSourceIdentity)?;
             documents.push(document);
         }
@@ -13119,7 +13179,7 @@ impl SemanticModelBuildCoordinator {
         let lowering = lowering_started.elapsed();
         let resolution_started = Instant::now();
         let model = storage
-            .resolve(policy)
+            .resolve(policy, library.map(|library| &library.settled))
             .map_err(|_| CoordinatorError::ConstructionFailed)?;
         let resolution = resolution_started.elapsed();
         Ok((
@@ -13134,11 +13194,26 @@ impl SemanticModelBuildCoordinator {
 
     fn parse_source(
         source: OwnedSourceRecord,
-    ) -> Result<(Box<str>, sysml_v2_parser_next::ParseResult), CoordinatorError> {
+    ) -> Result<(Box<str>, SourceRole, sysml_v2_parser_next::ParseResult), CoordinatorError> {
         Ok((
             source.identity,
+            source.role,
             sysml_v2_parser_next::parse_for_editor_owned(source.content),
         ))
+    }
+}
+
+/// Storage order for admitted sources: every library role precedes workspace sources.
+///
+/// This is a construction-order policy, not a semantic one. It exists so a library-only build and
+/// a workspace-plus-library build assign the same declaration ids to the same library
+/// declarations, which is the precondition for reusing a solved library stratum.
+fn source_admission_rank(role: SourceRole) -> u8 {
+    match role {
+        SourceRole::StandardLibrary => 0,
+        SourceRole::Library => 1,
+        SourceRole::External => 2,
+        SourceRole::Workspace => 3,
     }
 }
 
@@ -13166,7 +13241,7 @@ mod tests {
         let mut builder = SemanticModelBuilder::default();
         let parsed = empty_document();
         let document = builder
-            .admit_document("model", parsed.clone(), Vec::new())
+            .admit_document("model", SourceRole::Workspace, parsed.clone(), Vec::new())
             .unwrap();
         let first_name = builder.intern_name("Vehicle").unwrap();
         let second_name = builder.intern_name("Vehicle").unwrap();
@@ -13228,14 +13303,19 @@ mod tests {
         let mut builder = SemanticModelBuilder::default();
         for index in 0..256 {
             builder
-                .admit_document(format!("model-{index}"), parsed.clone(), Vec::new())
+                .admit_document(
+                    format!("model-{index}"),
+                    SourceRole::Workspace,
+                    parsed.clone(),
+                    Vec::new(),
+                )
                 .unwrap();
         }
         let before = builder.documents.len();
 
         assert_eq!(
             builder
-                .admit_document("model-0", parsed, Vec::new())
+                .admit_document("model-0", SourceRole::Workspace, parsed, Vec::new())
                 .unwrap_err(),
             ConstructionError::DuplicateDocumentIdentity
         );
@@ -13246,7 +13326,9 @@ mod tests {
     fn anonymous_ordinals_are_owner_local_and_ignore_named_declarations() {
         let parsed = empty_document();
         let mut builder = SemanticModelBuilder::default();
-        let document = builder.admit_document("model", parsed, Vec::new()).unwrap();
+        let document = builder
+            .admit_document("model", SourceRole::Workspace, parsed, Vec::new())
+            .unwrap();
         let owner_name = builder.intern_name("Owner").unwrap();
         let owner = builder
             .push_typed_declaration(
@@ -14662,7 +14744,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (path (named (kind package) (name \"Demo\")) (named (kind calc-def) (name \"Calc\")) (anonymous (kind parameter) (ordinal 0)))))) (state evaluated) (value (kind integer) (integer 5)))"
+                 (path (named (kind package) (name \"Demo\")) (named (kind calc-def) (name \"Calc\")) (anonymous (kind parameter) (ordinal 0))))) (state evaluated) (value (kind integer) (integer 5)))"
             ),
             "expected `return : Type = 2 + 3;` to fold to a published Integer(5) evaluation fact \
              on the anonymous return declaration, got:\n{output}"
@@ -14827,7 +14909,7 @@ mod tests {
         assert!(
             output.contains(
                 "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-                 (path (named (kind package) (name \"Demo\")) (named (kind part-def) (name \"Vehicle\")) (named (kind part) (name \"seatBelt\")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name \"isMandatory\")))))) (state literal) (value (kind \
+                 (path (named (kind package) (name \"Demo\")) (named (kind part-def) (name \"Vehicle\")) (named (kind part) (name \"seatBelt\")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name \"isMandatory\"))))) (state literal) (value (kind \
                  boolean) (boolean true)))"
             ),
             "expected `isMandatory = true;` inside `@Safety{{...}}` to publish its own \
@@ -16012,7 +16094,7 @@ mod tests {
         );
         assert!(
             output.contains(
-                "(kind redefinition) (source (node (document \"memory://test/enum.sysml\") (path (named (kind package) (name \"Demo\")) (named (kind viewpoint-def) (name \"SystemView\")) (anonymous (kind stakeholder) (ordinal 0)))))"
+                "(kind redefinition) (source (node (document \"memory://test/enum.sysml\") (path (named (kind package) (name \"Demo\")) (named (kind viewpoint-def) (name \"SystemView\")) (anonymous (kind stakeholder) (ordinal 0))))"
             ),
             "expected a redefinition reference sourced at the anonymous stakeholder declaration, got:\n{output}"
         );
@@ -16597,13 +16679,13 @@ mod tests {
         );
         assert!(
             output.contains(
-                "(kind redefinition) (source (node (document \"memory://test/enum.sysml\") (path (named (kind package) (name \"Demo\")) (named (kind calc-def) (name \"C\")) (anonymous (kind parameter) (ordinal 0)))))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::C::a\")))"
+                "(kind redefinition) (source (node (document \"memory://test/enum.sysml\") (path (named (kind package) (name \"Demo\")) (named (kind calc-def) (name \"C\")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::C::a\")))"
             ),
             "expected the anonymous parameter's redefines to resolve to a, got:\n{output}"
         );
         assert!(
             output.contains(
-                "(path (named (kind package) (name \"Demo\")) (named (kind calc-def) (name \"C\")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference \"Boolean\"))))"
+                "(path (named (kind package) (name \"Demo\")) (named (kind calc-def) (name \"C\")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference \"Boolean\"))))"
             ),
             "expected the nested anonymous return declaration (typed `: Boolean`, no direction/\
              redefines) to lower too, got:\n{output}"
@@ -16704,19 +16786,19 @@ mod tests {
         );
         assert!(
             output.contains(
-                "(kind expressionOperand) (source (node (document \"memory://test/enum.sysml\") (path (named (kind package) (name \"Demo\")) (named (kind calc-def) (name \"C\")) (anonymous (kind parameter) (ordinal 0)))))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::C::a\")))"
+                "(kind expressionOperand) (source (node (document \"memory://test/enum.sysml\") (path (named (kind package) (name \"Demo\")) (named (kind calc-def) (name \"C\")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::C::a\")))"
             ),
             "expected the return's conditional expression to resolve its operand a, got:\n{output}"
         );
         assert!(
             output.contains(
-                "(kind expressionOperand) (source (node (document \"memory://test/enum.sysml\") (path (named (kind package) (name \"Demo\")) (named (kind calc-def) (name \"C\")) (anonymous (kind parameter) (ordinal 0)))))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::C::b\")))"
+                "(kind expressionOperand) (source (node (document \"memory://test/enum.sysml\") (path (named (kind package) (name \"Demo\")) (named (kind calc-def) (name \"C\")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::C::b\")))"
             ),
             "expected the return's conditional expression to resolve its operand b, got:\n{output}"
         );
         assert!(
             output.contains(
-                "(kind expressionOperand) (source (node (document \"memory://test/enum.sysml\") (path (named (kind package) (name \"Demo\")) (named (kind calc-def) (name \"C\")) (anonymous (kind parameter) (ordinal 0)))))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::C::c\")))"
+                "(kind expressionOperand) (source (node (document \"memory://test/enum.sysml\") (path (named (kind package) (name \"Demo\")) (named (kind calc-def) (name \"C\")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::C::c\")))"
             ),
             "expected the return's conditional expression to resolve its operand c, got:\n{output}"
         );

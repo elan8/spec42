@@ -52,6 +52,11 @@ perform action doS : Dff {     for y // ndent g {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -13,6 +13,7 @@ mod element_kind;
 mod evaluation;
 mod inspection;
 mod model;
+mod type_query;
 
 pub use element_kind::{
     ElementKind, MembershipRole, RequirementConstraintKind, StateSubactionKind,
@@ -23,6 +24,10 @@ pub use inspection::{
     ElementModifier, ElementRelationship, FeatureDirection, MembershipFacts, MembershipKind,
     MultiplicityBound, MultiplicityFacts, PortionKind, ReferenceAt, RelationshipProvenance,
     RelationshipTarget, SymbolEntry, ValueKind, Visibility, VisibilityProvenance,
+};
+pub use type_query::{
+    Conformance, ConformanceObstacle, EffectiveType, EffectiveTypeOrigin, SpecializationScope,
+    SubsettingConformance, TypeReference,
 };
 
 use model::resolver::ResolvedSemanticModel;
@@ -180,8 +185,91 @@ pub struct BuildRequest {
     sources: Vec<SourceInput>,
     schedule: ConstructionSchedule,
     policy: EvaluationPolicy,
+    library: Option<std::sync::Arc<LibraryStratum>>,
     identity: PublicationIdentity,
 }
+
+fn manifest_entry(source: &SourceInput) -> SourceManifestEntry {
+    SourceManifestEntry {
+        uri: source.identity.to_string(),
+        path_hint: None,
+        role: source_role(source.kind),
+        content_digest: source.content_digest,
+        byte_len: source.content.len() as u64,
+        library_root_slot: None,
+        relative_path: None,
+    }
+}
+
+/// A library that has been parsed and solved once, ready to be reused.
+///
+/// Building one costs a full publication. Reusing it costs neither the library's parse nor its
+/// solve, so a workspace publication pays for the workspace. Share it behind the `Arc` the build
+/// request takes; it is immutable and safe to use from any number of concurrent builds.
+///
+/// Reuse is conditional, not assumed. If a workspace declaration could change what a library
+/// reference resolves to -- by declaring a root the library also declares, or one that answers a
+/// lookup the library left unsettled -- the settled outcomes are discarded and that publication
+/// solves everything from scratch. The result is identical either way; only the cost differs.
+#[derive(Debug)]
+pub struct LibraryStratum {
+    prepared: model::PreparedLibrary,
+    manifest_entries: Vec<SourceManifestEntry>,
+    identities: std::collections::BTreeSet<Box<str>>,
+}
+
+// SAFETY: the same invariant `PublishedResolution` states. A stratum is fully constructed before
+// it is shared and exposes only shared reads; its parsed documents own immutable source and AST
+// storage whose only interior mutation is `OnceLock`-backed source line indexing. The auto-trait
+// solver overflows on the parser's deeply recursive owned AST enum, so the boundary states this
+// rather than deriving it.
+unsafe impl Send for LibraryStratum {}
+unsafe impl Sync for LibraryStratum {}
+
+impl LibraryStratum {
+    fn contains(&self, identity: &str) -> bool {
+        self.identities.contains(identity)
+    }
+
+    /// How many documents this stratum admits.
+    pub fn document_count(&self) -> usize {
+        self.prepared.documents.len()
+    }
+}
+
+/// Parses and solves `sources` once so later publications can reuse the result.
+///
+/// The sources are the library's own; a workspace document admitted here would become part of the
+/// stratum and be reused by every publication built against it.
+pub fn build_library_stratum(sources: Vec<SourceInput>) -> Result<LibraryStratum, BuildFailure> {
+    let request = BuildRequest::new(
+        sources,
+        ConstructionSchedule::Parallel,
+        LIBRARY_STRATUM_CONTRACT,
+    )?;
+    let manifest_entries = request.sources.iter().map(manifest_entry).collect();
+    let identities = request
+        .sources
+        .iter()
+        .map(|source| source.identity.clone())
+        .collect();
+    let published = build(request)?;
+    let prepared = published
+        .model
+        .prepared_library()
+        .map_err(|_| BuildFailure::ConstructionFailed)?;
+    Ok(LibraryStratum {
+        prepared,
+        manifest_entries,
+        identities,
+    })
+}
+
+/// The contract version a stratum build is recorded under.
+///
+/// Never reaches a publication identity: `BuildRequest::with_library` recomputes the digest from
+/// the merged manifest and keeps the caller's own contract version.
+const LIBRARY_STRATUM_CONTRACT: &str = "library-stratum";
 
 impl BuildRequest {
     pub fn new(
@@ -197,28 +285,45 @@ impl BuildRequest {
             return Err(BuildFailure::DuplicateSourceIdentity);
         }
         let semantic_contract_version = semantic_contract_version.into();
-        let entries = sources
-            .iter()
-            .map(|source| SourceManifestEntry {
-                uri: source.identity.to_string(),
-                path_hint: None,
-                role: source_role(source.kind),
-                content_digest: source.content_digest,
-                byte_len: source.content.len() as u64,
-                library_root_slot: None,
-                relative_path: None,
-            })
-            .collect();
+        let entries = sources.iter().map(manifest_entry).collect();
         let source_digest = SourceManifest::new(entries, Vec::new()).root_digest();
         Ok(Self {
             sources,
             schedule,
             policy: EvaluationPolicy::default(),
+            library: None,
             identity: PublicationIdentity {
                 source_digest,
                 semantic_contract_version,
             },
         })
+    }
+
+    /// Builds against a library that has already been parsed and solved.
+    ///
+    /// `sources` carries only the workspace documents; the library's own documents come from the
+    /// stratum and are admitted ahead of them. The publication's identity still commits every
+    /// admitted source, library included, so a workspace built against two different library
+    /// versions can never share an identity.
+    pub fn with_library(
+        sources: Vec<SourceInput>,
+        schedule: ConstructionSchedule,
+        semantic_contract_version: impl Into<Box<str>>,
+        library: std::sync::Arc<LibraryStratum>,
+    ) -> Result<Self, BuildFailure> {
+        let mut request = Self::new(sources, schedule, semantic_contract_version)?;
+        if request
+            .sources
+            .iter()
+            .any(|source| library.contains(source.identity.as_ref()))
+        {
+            return Err(BuildFailure::DuplicateSourceIdentity);
+        }
+        let mut entries = library.manifest_entries.clone();
+        entries.extend(request.sources.iter().map(manifest_entry));
+        request.identity.source_digest = SourceManifest::new(entries, Vec::new()).root_digest();
+        request.library = Some(library);
+        Ok(request)
     }
 
     /// Sets whether this build evaluates constant expressions.
@@ -295,16 +400,20 @@ pub fn build_measured(
         .into_iter()
         .map(|source| OwnedSourceRecord {
             identity: source.identity,
+            role: source_role(source.kind),
             content: source.content,
         })
         .collect();
-    let (model, measurements) =
-        SemanticModelBuildCoordinator::build_measured(sources, schedule, request.policy).map_err(
-            |error| match error {
-                CoordinatorError::DuplicateSourceIdentity => BuildFailure::DuplicateSourceIdentity,
-                CoordinatorError::ConstructionFailed => BuildFailure::ConstructionFailed,
-            },
-        )?;
+    let (model, measurements) = SemanticModelBuildCoordinator::build_measured_with_library(
+        sources,
+        schedule,
+        request.policy,
+        request.library.as_deref().map(|library| &library.prepared),
+    )
+    .map_err(|error| match error {
+        CoordinatorError::DuplicateSourceIdentity => BuildFailure::DuplicateSourceIdentity,
+        CoordinatorError::ConstructionFailed => BuildFailure::ConstructionFailed,
+    })?;
     Ok((
         PublishedResolution {
             identity: request.identity,
@@ -390,6 +499,76 @@ impl PublishedResolution {
     pub fn document_symbols(&self, document: &str) -> QueryOutcome<Box<[SymbolEntry]>> {
         self.model.document_symbols(document)
     }
+
+    /// The types a feature declares.
+    pub fn direct_types(&self, symbol: &SymbolIdentity) -> QueryOutcome<Box<[TypeReference]>> {
+        self.model.direct_types(symbol)
+    }
+
+    /// The types a feature has, directly or inherited along its subsetting/redefinition chain.
+    pub fn effective_types(&self, symbol: &SymbolIdentity) -> QueryOutcome<Box<[EffectiveType]>> {
+        self.model.effective_types(symbol)
+    }
+
+    /// The supertypes one specialization edge away.
+    pub fn direct_supertypes(
+        &self,
+        symbol: &SymbolIdentity,
+        scope: SpecializationScope,
+    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+        self.model.direct_supertypes(symbol, scope)
+    }
+
+    /// Every supertype, reflexively including `symbol` itself.
+    pub fn all_supertypes(
+        &self,
+        symbol: &SymbolIdentity,
+        scope: SpecializationScope,
+    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+        self.model.all_supertypes(symbol, scope)
+    }
+
+    /// The declarations one specialization edge below `symbol`.
+    pub fn direct_subtypes(
+        &self,
+        symbol: &SymbolIdentity,
+        scope: SpecializationScope,
+    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+        self.model.direct_subtypes(symbol, scope)
+    }
+
+    /// The type that features `symbol`, if any.
+    pub fn featuring_type(&self, symbol: &SymbolIdentity) -> QueryOutcome<Option<SymbolIdentity>> {
+        self.model.featuring_type(symbol)
+    }
+
+    /// Whether `specific` conforms to `general` (KerML §8.4.3.2), reflexively and transitively.
+    pub fn conforms_to(
+        &self,
+        specific: &SymbolIdentity,
+        general: &SymbolIdentity,
+        scope: SpecializationScope,
+    ) -> QueryOutcome<Conformance> {
+        self.model.conforms_to(specific, general, scope)
+    }
+
+    /// Whether the specific feature's types conform to the general feature's (KerML §7.4.12).
+    pub fn feature_typing_conforms(
+        &self,
+        specific: &SymbolIdentity,
+        general: &SymbolIdentity,
+    ) -> QueryOutcome<Conformance> {
+        self.model.feature_typing_conforms(specific, general)
+    }
+
+    /// Both halves of the subsetting rule (KerML §8.4.3.4), reported separately.
+    pub fn subsetting_conforms(
+        &self,
+        subsetting: &SymbolIdentity,
+        subsetted: &SymbolIdentity,
+    ) -> QueryOutcome<SubsettingConformance> {
+        self.model.subsetting_conforms(subsetting, subsetted)
+    }
 }
 
 pub struct DebugQueries<'a> {
@@ -412,6 +591,10 @@ impl DebugQueries<'_> {
 
     pub fn write_navigation_sexpr(&self, output: &mut dyn fmt::Write) -> fmt::Result {
         self.model.write_navigation_sexpr(output)
+    }
+
+    pub fn write_types_sexpr(&self, output: &mut dyn fmt::Write) -> fmt::Result {
+        self.model.write_types_sexpr(output)
     }
 }
 
@@ -2489,6 +2672,507 @@ mod tests {
         assert!(
             sexpr.contains(r#"(named (kind metadata) (name "Safety"))"#),
             "expected the metadata usage's kind in its identity, got: {sexpr}"
+        );
+    }
+
+    // --- Type queries -------------------------------------------------------------------------
+    //
+    // The `# TYPES` snapshot section already shows the published facts these queries read. What it
+    // cannot show is the rules layered over them: reflexivity, scope selection, what a cycle does
+    // to an answer, and the two conformance rules' treatment of untyped and unrelated features.
+
+    fn symbol_named(
+        published: &PublishedResolution,
+        document: &str,
+        qualified: &str,
+    ) -> SymbolIdentity {
+        match published.document_symbols(document) {
+            QueryOutcome::Resolved(entries)
+            | QueryOutcome::Recovered(entries)
+            | QueryOutcome::UnsupportedWith(entries) => entries
+                .iter()
+                .find(|entry| entry.qualified_name.as_ref() == qualified)
+                .unwrap_or_else(|| panic!("no declaration named {qualified}"))
+                .identity
+                .clone(),
+            other => panic!("expected document symbols, got: {other:?}"),
+        }
+    }
+
+    fn conformance(outcome: QueryOutcome<Conformance>) -> Conformance {
+        match outcome {
+            QueryOutcome::Resolved(value)
+            | QueryOutcome::Recovered(value)
+            | QueryOutcome::UnsupportedWith(value) => value,
+            other => panic!("expected a settled conformance answer, got: {other:?}"),
+        }
+    }
+
+    fn symbols(outcome: QueryOutcome<Box<[SymbolIdentity]>>) -> Vec<SymbolIdentity> {
+        match outcome {
+            QueryOutcome::Resolved(values)
+            | QueryOutcome::Recovered(values)
+            | QueryOutcome::UnsupportedWith(values) => values.into_vec(),
+            other => panic!("expected settled symbols, got: {other:?}"),
+        }
+    }
+
+    #[test]
+    fn conformance_is_reflexive_and_transitive() {
+        let published = publication_for(&[(
+            "memory://types.sysml",
+            "package P { part def A; part def B :> A; part def C :> B; }",
+        )]);
+        let a = symbol_named(&published, "memory://types.sysml", "P::A");
+        let c = symbol_named(&published, "memory://types.sysml", "P::C");
+
+        assert_eq!(
+            conformance(published.conforms_to(&a, &a, SpecializationScope::AnySpecialization)),
+            Conformance::Conforms,
+            "a type conforms to itself"
+        );
+        assert_eq!(
+            conformance(published.conforms_to(&c, &a, SpecializationScope::AnySpecialization)),
+            Conformance::Conforms,
+            "C :> B :> A conforms through the chain"
+        );
+        assert_eq!(
+            conformance(published.conforms_to(&a, &c, SpecializationScope::AnySpecialization)),
+            Conformance::DoesNotConform,
+            "conformance is directional"
+        );
+    }
+
+    #[test]
+    fn all_supertypes_includes_the_type_itself() {
+        let published = publication_for(&[(
+            "memory://types.sysml",
+            "package P { part def A; part def B :> A; }",
+        )]);
+        let a = symbol_named(&published, "memory://types.sysml", "P::A");
+        let b = symbol_named(&published, "memory://types.sysml", "P::B");
+
+        let supertypes =
+            symbols(published.all_supertypes(&b, SpecializationScope::AnySpecialization));
+        assert!(
+            supertypes.contains(&b) && supertypes.contains(&a),
+            "the Pilot's allSupertypes is reflexive, got: {supertypes:?}"
+        );
+    }
+
+    /// A feature reaches its type through `FeatureTyping`, which is a `Specialization` but not a
+    /// `Subclassification`. Asking in the narrower scope must not return it.
+    #[test]
+    fn specialization_scope_selects_which_paths_count() {
+        let published = publication_for(&[(
+            "memory://types.sysml",
+            "package P { part def A; part def B :> A; part b : B; }",
+        )]);
+        let a = symbol_named(&published, "memory://types.sysml", "P::A");
+        let b = symbol_named(&published, "memory://types.sysml", "P::B");
+        let usage = symbol_named(&published, "memory://types.sysml", "P::b");
+
+        assert_eq!(
+            conformance(published.conforms_to(&usage, &a, SpecializationScope::AnySpecialization)),
+            Conformance::Conforms,
+            "the usage reaches A through its typing"
+        );
+        assert_eq!(
+            conformance(published.conforms_to(&usage, &a, SpecializationScope::Subclassification)),
+            Conformance::DoesNotConform,
+            "a typing edge is not classifier generalization"
+        );
+        assert_eq!(
+            conformance(published.conforms_to(&b, &a, SpecializationScope::Subclassification)),
+            Conformance::Conforms,
+            "`:>` between part defs is classifier generalization"
+        );
+    }
+
+    #[test]
+    fn a_cyclic_hierarchy_yields_no_conformance_answer() {
+        let published = publication_for(&[(
+            "memory://types.sysml",
+            "package P { part def A :> B; part def B :> A; part def C; }",
+        )]);
+        let a = symbol_named(&published, "memory://types.sysml", "P::A");
+        let c = symbol_named(&published, "memory://types.sysml", "P::C");
+
+        assert_eq!(
+            conformance(published.conforms_to(&a, &c, SpecializationScope::AnySpecialization)),
+            Conformance::Indeterminate(ConformanceObstacle::CyclicSpecialization),
+            "a malformed hierarchy must not produce a published conformance fact"
+        );
+        assert_eq!(
+            conformance(published.conforms_to(&a, &a, SpecializationScope::AnySpecialization)),
+            Conformance::Conforms,
+            "reflexivity holds even inside a cycle"
+        );
+    }
+
+    #[test]
+    fn direct_subtypes_reports_the_reverse_edge() {
+        let published = publication_for(&[(
+            "memory://types.sysml",
+            "package P { part def A; part def B :> A; part def C :> A; }",
+        )]);
+        let a = symbol_named(&published, "memory://types.sysml", "P::A");
+        let b = symbol_named(&published, "memory://types.sysml", "P::B");
+        let c = symbol_named(&published, "memory://types.sysml", "P::C");
+
+        let subtypes =
+            symbols(published.direct_subtypes(&a, SpecializationScope::Subclassification));
+        assert!(
+            subtypes.contains(&b) && subtypes.contains(&c) && subtypes.len() == 2,
+            "expected both direct specializers, got: {subtypes:?}"
+        );
+    }
+
+    #[test]
+    fn an_untyped_feature_conforms_because_it_inherits_the_typing() {
+        let published = publication_for(&[(
+            "memory://types.sysml",
+            "package P { part def T; part def A { part x : T; } part def B :> A { part y :>> x; } }",
+        )]);
+        let general = symbol_named(&published, "memory://types.sysml", "P::A::x");
+        let specific = symbol_named(&published, "memory://types.sysml", "P::B::y");
+
+        assert_eq!(
+            conformance(published.feature_typing_conforms(&specific, &general)),
+            Conformance::Conforms,
+            "a redefinition that declares no typing takes the redefined feature's"
+        );
+        let effective = match published.effective_types(&specific) {
+            QueryOutcome::Resolved(types)
+            | QueryOutcome::Recovered(types)
+            | QueryOutcome::UnsupportedWith(types) => types,
+            other => panic!("expected settled effective types, got: {other:?}"),
+        };
+        assert!(
+            effective
+                .iter()
+                .any(|entry| matches!(entry.origin, EffectiveTypeOrigin::Inherited(_))),
+            "the inherited typing must keep the feature it came from, got: {effective:?}"
+        );
+    }
+
+    #[test]
+    fn feature_typing_conformance_rejects_an_unrelated_type() {
+        let published = publication_for(&[(
+            "memory://types.sysml",
+            "package P { part def T; part def U; part def A { part x : T; } part def B :> A { part y : U :>> x; } }",
+        )]);
+        let general = symbol_named(&published, "memory://types.sysml", "P::A::x");
+        let specific = symbol_named(&published, "memory://types.sysml", "P::B::y");
+
+        assert_eq!(
+            conformance(published.feature_typing_conforms(&specific, &general)),
+            Conformance::DoesNotConform,
+            "U neither is nor specializes T"
+        );
+    }
+
+    /// KerML §8.4.3.4 has two halves, and a consumer reporting a violation has to say which one
+    /// failed. Here the types conform and the featuring types do not.
+    #[test]
+    fn subsetting_conformance_reports_its_halves_separately() {
+        let published = publication_for(&[(
+            "memory://types.sysml",
+            "package P { part def T; part def A { part x : T; } part def U { part y : T subsets x; } }",
+        )]);
+        let subsetting = symbol_named(&published, "memory://types.sysml", "P::U::y");
+        let subsetted = symbol_named(&published, "memory://types.sysml", "P::A::x");
+
+        let outcome = match published.subsetting_conforms(&subsetting, &subsetted) {
+            QueryOutcome::Resolved(value)
+            | QueryOutcome::Recovered(value)
+            | QueryOutcome::UnsupportedWith(value) => value,
+            other => panic!("expected a settled subsetting answer, got: {other:?}"),
+        };
+        assert_eq!(
+            outcome.types,
+            Conformance::Conforms,
+            "both features are typed by T"
+        );
+        assert_eq!(
+            outcome.featuring,
+            Conformance::DoesNotConform,
+            "U does not specialize A, so it cannot subset A's feature"
+        );
+    }
+
+    /// A type query reads one declaration's row, so its answer is a property of that declaration's
+    /// type structure and nothing else. Growing the model around it must change neither the answer
+    /// nor its size -- if either moved, some part of the query would be reading the whole model.
+    #[test]
+    fn type_query_answers_do_not_grow_with_the_model() {
+        let core = "package P { part def A; part def B :> A; part def C :> B; }";
+        let mut padded =
+            String::from("package P { part def A; part def B :> A; part def C :> B; }");
+        for index in 0..200 {
+            padded.push_str(&format!(" package Q{index} {{ part def U{index}; part def V{index} :> U{index}; part v{index} : V{index}; }}"));
+        }
+
+        let small = publication_for(&[("memory://types.sysml", core)]);
+        let large = publication_for(&[("memory://types.sysml", &padded)]);
+
+        let small_c = symbol_named(&small, "memory://types.sysml", "P::C");
+        let large_c = symbol_named(&large, "memory://types.sysml", "P::C");
+        let small_a = symbol_named(&small, "memory://types.sysml", "P::A");
+        let large_a = symbol_named(&large, "memory://types.sysml", "P::A");
+
+        assert_eq!(
+            symbols(small.all_supertypes(&small_c, SpecializationScope::AnySpecialization)).len(),
+            symbols(large.all_supertypes(&large_c, SpecializationScope::AnySpecialization)).len(),
+            "C's supertypes are C, B and A whatever else the model contains"
+        );
+        assert_eq!(
+            symbols(small.direct_subtypes(&small_a, SpecializationScope::AnySpecialization)).len(),
+            symbols(large.direct_subtypes(&large_a, SpecializationScope::AnySpecialization)).len(),
+            "only B specializes A directly, whatever else the model contains"
+        );
+        assert_eq!(
+            conformance(small.conforms_to(
+                &small_c,
+                &small_a,
+                SpecializationScope::AnySpecialization
+            )),
+            conformance(large.conforms_to(
+                &large_c,
+                &large_a,
+                SpecializationScope::AnySpecialization
+            )),
+            "conformance is a property of the pair, not of the publication's size"
+        );
+    }
+
+    /// The published closure carries only what the model actually specializes. A model with no
+    /// specialization at all publishes no ancestors, so the storage cannot quietly become
+    /// quadratic in declaration count.
+    #[test]
+    fn a_model_without_specialization_publishes_no_supertypes() {
+        let published = publication_for(&[(
+            "memory://types.sysml",
+            "package P { part def A; part def B; part def C; }",
+        )]);
+        for name in ["P::A", "P::B", "P::C"] {
+            let symbol = symbol_named(&published, "memory://types.sysml", name);
+            let supertypes =
+                symbols(published.all_supertypes(&symbol, SpecializationScope::AnySpecialization));
+            assert_eq!(
+                supertypes,
+                vec![symbol.clone()],
+                "{name} should report only itself"
+            );
+        }
+    }
+
+    // --- Reusing a settled library --------------------------------------------------------------
+
+    const LIBRARY_SOURCE: &str = "standard library package Lib { part def Base; part def Wheel :> Base; attribute def Mass; }";
+
+    fn library_stratum() -> std::sync::Arc<LibraryStratum> {
+        std::sync::Arc::new(
+            build_library_stratum(vec![SourceInput::new(
+                "memory://lib.sysml",
+                LIBRARY_SOURCE.to_string(),
+                SourceKind::StandardLibrary,
+            )])
+            .expect("library stratum"),
+        )
+    }
+
+    fn seeded_and_unseeded(workspace: &str) -> (String, String) {
+        let seeded = build(
+            BuildRequest::with_library(
+                vec![SourceInput::new(
+                    "memory://workspace.sysml",
+                    workspace.to_string(),
+                    SourceKind::Workspace,
+                )],
+                ConstructionSchedule::Sequential,
+                "contract-v1",
+                library_stratum(),
+            )
+            .expect("seeded request"),
+        )
+        .expect("seeded build");
+        let unseeded = build(
+            BuildRequest::new(
+                vec![
+                    SourceInput::new(
+                        "memory://workspace.sysml",
+                        workspace.to_string(),
+                        SourceKind::Workspace,
+                    ),
+                    SourceInput::new(
+                        "memory://lib.sysml",
+                        LIBRARY_SOURCE.to_string(),
+                        SourceKind::StandardLibrary,
+                    ),
+                ],
+                ConstructionSchedule::Sequential,
+                "contract-v1",
+            )
+            .expect("unseeded request"),
+        )
+        .expect("unseeded build");
+        let render = |published: &PublishedResolution| {
+            let mut semantic = String::new();
+            published
+                .debug()
+                .write_semantic_sexpr(&mut semantic)
+                .expect("semantic");
+            let mut types = String::new();
+            published
+                .debug()
+                .write_types_sexpr(&mut types)
+                .expect("types");
+            let mut diagnostics = String::new();
+            published
+                .debug()
+                .write_diagnostics_sexpr(&mut diagnostics)
+                .expect("diagnostics");
+            format!("{semantic}\n{types}\n{diagnostics}")
+        };
+        (render(&seeded), render(&unseeded))
+    }
+
+    /// Reusing settled outcomes is an optimisation, so it has to be invisible. Everything the
+    /// publication owns -- facts, type answers and diagnostics -- must come out identical.
+    #[test]
+    fn a_seeded_publication_matches_an_unseeded_one() {
+        let (seeded, unseeded) = seeded_and_unseeded(
+            "package W { part def Car :> Lib::Wheel; attribute m : Lib::Mass; }",
+        );
+        assert_eq!(
+            seeded, unseeded,
+            "a workspace built against a settled library must publish what a full build does"
+        );
+        assert!(
+            seeded.contains("Lib::Base"),
+            "the workspace should reach the library's own supertypes, got: {seeded}"
+        );
+    }
+
+    /// A workspace root sharing a library root's name is the one way a workspace declaration can
+    /// change what a library reference resolves to. The guard has to notice and fall back, and the
+    /// fallback has to be invisible too.
+    #[test]
+    fn a_workspace_root_colliding_with_the_library_falls_back_to_a_full_solve() {
+        let (seeded, unseeded) = seeded_and_unseeded(
+            "package Lib { part def Intruder; } package W { part def Car :> Lib::Wheel; }",
+        );
+        assert_eq!(
+            seeded, unseeded,
+            "a colliding workspace root must not be answered from stale library outcomes"
+        );
+    }
+
+    /// The library leaves `Missing` unresolved. A workspace that then declares a root by that name
+    /// would newly satisfy the library's own reference, so its outcomes cannot be reused.
+    #[test]
+    fn a_workspace_root_answering_an_unsettled_library_reference_falls_back() {
+        let library = std::sync::Arc::new(
+            build_library_stratum(vec![SourceInput::new(
+                "memory://lib.sysml",
+                "standard library package Lib { part def Wheel :> Missing; }".to_string(),
+                SourceKind::StandardLibrary,
+            )])
+            .expect("library stratum"),
+        );
+        let workspace = "part def Missing;";
+        let seeded = build(
+            BuildRequest::with_library(
+                vec![SourceInput::new(
+                    "memory://workspace.sysml",
+                    workspace.to_string(),
+                    SourceKind::Workspace,
+                )],
+                ConstructionSchedule::Sequential,
+                "contract-v1",
+                library,
+            )
+            .expect("seeded request"),
+        )
+        .expect("seeded build");
+        // The projection reports workspace documents, so the library's own reference is not in it.
+        // Its outcome is observable through the reverse type edge instead: if the stratum's
+        // unresolved outcome had been reused, nothing would specialize `Missing`.
+        let missing = symbol_named(&seeded, "memory://workspace.sysml", "Missing");
+        let subtypes =
+            symbols(seeded.direct_subtypes(&missing, SpecializationScope::Subclassification));
+        assert_eq!(
+            subtypes.len(),
+            1,
+            "the library's reference must resolve against the workspace root rather than staying \
+             unresolved from the stratum, got: {subtypes:?}"
+        );
+    }
+
+    #[test]
+    fn a_library_document_cannot_be_admitted_twice() {
+        let error = BuildRequest::with_library(
+            vec![SourceInput::new(
+                "memory://lib.sysml",
+                LIBRARY_SOURCE.to_string(),
+                SourceKind::Workspace,
+            )],
+            ConstructionSchedule::Sequential,
+            "contract-v1",
+            library_stratum(),
+        )
+        .expect_err("a source already in the stratum must be rejected");
+        assert_eq!(error, BuildFailure::DuplicateSourceIdentity);
+    }
+
+    /// The identity has to commit the library, or the same workspace built against two different
+    /// library versions would claim the same publication identity.
+    #[test]
+    fn the_library_participates_in_the_publication_identity() {
+        let workspace = || {
+            vec![SourceInput::new(
+                "memory://workspace.sysml",
+                "package W { part def Car; }".to_string(),
+                SourceKind::Workspace,
+            )]
+        };
+        let with_library = BuildRequest::with_library(
+            workspace(),
+            ConstructionSchedule::Sequential,
+            "contract-v1",
+            library_stratum(),
+        )
+        .expect("seeded request");
+        let without =
+            BuildRequest::new(workspace(), ConstructionSchedule::Sequential, "contract-v1")
+                .expect("plain request");
+        assert_ne!(
+            with_library.identity().source_digest,
+            without.identity().source_digest,
+            "admitting a library must change the publication identity"
+        );
+    }
+
+    #[test]
+    fn an_unknown_identity_is_unresolved_rather_than_empty() {
+        let published = publication_for(&[("memory://types.sysml", "package P { part def A; }")]);
+        let a = symbol_named(&published, "memory://types.sysml", "P::A");
+        let missing = SymbolIdentity("no-such-declaration".into());
+
+        assert!(
+            matches!(
+                published.direct_supertypes(&missing, SpecializationScope::AnySpecialization),
+                QueryOutcome::Unresolved
+            ),
+            "an identity that names nothing must not answer with an empty supertype list"
+        );
+        assert!(
+            matches!(
+                published.conforms_to(&a, &missing, SpecializationScope::AnySpecialization),
+                QueryOutcome::Unresolved
+            ),
+            "conformance against an unknown identity is unanswerable, not false"
         );
     }
 }

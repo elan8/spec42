@@ -43,6 +43,11 @@ package MyPkg { }; in newX : Real;
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

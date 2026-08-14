@@ -120,18 +120,18 @@ package VehicleTanks {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:2bc16b5623fe75da617e955786ee67d632a845045ffce0ce0f382e2fb7652435") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/vehicle_tanks.md") (qualified-name "VehicleTanks"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/vehicle_tanks.md") (path (named (kind package) (name "VehicleTanks")) (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false)))))
-    (declaration (id (node (document "memory://snapshot/vehicle_tanks.md") (path (named (kind package) (name "VehicleTanks")) (anonymous (kind import) (ordinal 1)))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "RealFunctions") (import (shape namespace) (recursive false)))))
+    (declaration (id (node (document "memory://snapshot/vehicle_tanks.md") (path (named (kind package) (name "VehicleTanks")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))
+    (declaration (id (node (document "memory://snapshot/vehicle_tanks.md") (path (named (kind package) (name "VehicleTanks")) (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "RealFunctions") (import (shape namespace) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/vehicle_tanks.md") (qualified-name "VehicleTanks::Tank"))) (kind class-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/vehicle_tanks.md") (qualified-name "VehicleTanks::V6Engine"))) (kind class-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/vehicle_tanks.md") (qualified-name "VehicleTanks::Vehicle"))) (kind class-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/vehicle_tanks.md") (qualified-name "VehicleTanks::Vehicle1"))) (kind class-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Vehicle"))))
+    (declaration (id (node (document "memory://snapshot/vehicle_tanks.md") (qualified-name "VehicleTanks::Vehicle1"))) (kind class-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Vehicle")))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/vehicle_tanks.md") (path (named (kind package) (name "VehicleTanks")) (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/vehicle_tanks.md") (path (named (kind package) (name "VehicleTanks")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
       (authored-target "ScalarValues")
       (outcome (status unresolved)))
-    (reference (id (source (node (document "memory://snapshot/vehicle_tanks.md") (path (named (kind package) (name "VehicleTanks")) (anonymous (kind import) (ordinal 1)))))) (kind namespaceImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/vehicle_tanks.md") (path (named (kind package) (name "VehicleTanks")) (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0))
       (authored-target "RealFunctions")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/vehicle_tanks.md") (qualified-name "VehicleTanks::Vehicle1"))) (kind specialization) (ordinal 0))
@@ -145,20 +145,34 @@ package VehicleTanks {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/vehicle_tanks.md") (qualified-name "VehicleTanks::Vehicle")))
+      (subtype (node (document "memory://snapshot/vehicle_tanks.md") (qualified-name "VehicleTanks::Vehicle1")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/vehicle_tanks.md") (qualified-name "VehicleTanks::Vehicle1")))
+      (supertype (node (document "memory://snapshot/vehicle_tanks.md") (qualified-name "VehicleTanks::Vehicle")) (scopes any subclassification))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/vehicle_tanks.md") (range (start 1 16) (end 1 31)) (probe (position 1 16))
-    (reference (id (source (node (document "memory://snapshot/vehicle_tanks.md") (path (named (kind package) (name "VehicleTanks")) (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues")
+    (reference (id (source (node (document "memory://snapshot/vehicle_tanks.md") (path (named (kind package) (name "VehicleTanks")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues")
       (outcome (status unresolved)))
+    )
   )
   (query (document "memory://snapshot/vehicle_tanks.md") (range (start 2 16) (end 2 32)) (probe (position 2 16))
-    (reference (id (source (node (document "memory://snapshot/vehicle_tanks.md") (path (named (kind package) (name "VehicleTanks")) (anonymous (kind import) (ordinal 1)))))) (kind namespaceImport) (ordinal 0) (authored-target "RealFunctions")
+    (reference (id (source (node (document "memory://snapshot/vehicle_tanks.md") (path (named (kind package) (name "VehicleTanks")) (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0) (authored-target "RealFunctions")
       (outcome (status unresolved)))
+    )
   )
   (query (document "memory://snapshot/vehicle_tanks.md") (range (start 16 28) (end 16 35)) (probe (position 16 28))
     (reference (id (source (node (document "memory://snapshot/vehicle_tanks.md") (qualified-name "VehicleTanks::Vehicle1"))) (kind specialization) (ordinal 0) (authored-target "Vehicle")
       (outcome (status resolved) (target (node (document "memory://snapshot/vehicle_tanks.md") (qualified-name "VehicleTanks::Vehicle")))))
+    )
   )
 )
 ~~~

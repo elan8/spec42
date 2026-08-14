@@ -38,11 +38,11 @@ package QualifiedNameImportTest {
     (declaration (id (node (document "memory://snapshot/qualified_name_import_test.md") (qualified-name "QualifiedNameImportTest::P1::A"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/qualified_name_import_test.md") (qualified-name "QualifiedNameImportTest::P2"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/qualified_name_import_test.md") (qualified-name "QualifiedNameImportTest::P2::P2a"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/qualified_name_import_test.md") (path (named (kind package) (name "QualifiedNameImportTest")) (named (kind package) (name "P2")) (named (kind package) (name "P2a")) (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "P1") (import (shape namespace) (recursive false)))))
-    (declaration (id (node (document "memory://snapshot/qualified_name_import_test.md") (qualified-name "QualifiedNameImportTest::P2::x"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "P2a::A"))))
+    (declaration (id (node (document "memory://snapshot/qualified_name_import_test.md") (path (named (kind package) (name "QualifiedNameImportTest")) (named (kind package) (name "P2")) (named (kind package) (name "P2a")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "P1") (import (shape namespace) (recursive false))))))
+    (declaration (id (node (document "memory://snapshot/qualified_name_import_test.md") (qualified-name "QualifiedNameImportTest::P2::x"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "P2a::A")))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/qualified_name_import_test.md") (path (named (kind package) (name "QualifiedNameImportTest")) (named (kind package) (name "P2")) (named (kind package) (name "P2a")) (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/qualified_name_import_test.md") (path (named (kind package) (name "QualifiedNameImportTest")) (named (kind package) (name "P2")) (named (kind package) (name "P2a")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
       (authored-target "P1")
       (outcome (status resolved) (target (node (document "memory://snapshot/qualified_name_import_test.md") (qualified-name "QualifiedNameImportTest::P1")))))
     (reference (id (source (node (document "memory://snapshot/qualified_name_import_test.md") (qualified-name "QualifiedNameImportTest::P2::x"))) (kind featureTyping) (ordinal 0))
@@ -56,16 +56,31 @@ package QualifiedNameImportTest {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/qualified_name_import_test.md") (qualified-name "QualifiedNameImportTest::P1::A")))
+      (subtype (node (document "memory://snapshot/qualified_name_import_test.md") (qualified-name "QualifiedNameImportTest::P2::x")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/qualified_name_import_test.md") (qualified-name "QualifiedNameImportTest::P2::x")))
+      (type (node (document "memory://snapshot/qualified_name_import_test.md") (qualified-name "QualifiedNameImportTest::P1::A")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/qualified_name_import_test.md") (qualified-name "QualifiedNameImportTest::P1::A")) (source direct))
+      (supertype (node (document "memory://snapshot/qualified_name_import_test.md") (qualified-name "QualifiedNameImportTest::P1::A")) (scopes any))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/qualified_name_import_test.md") (range (start 6 17) (end 6 22)) (probe (position 6 17))
-    (reference (id (source (node (document "memory://snapshot/qualified_name_import_test.md") (path (named (kind package) (name "QualifiedNameImportTest")) (named (kind package) (name "P2")) (named (kind package) (name "P2a")) (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0) (authored-target "P1")
+    (reference (id (source (node (document "memory://snapshot/qualified_name_import_test.md") (path (named (kind package) (name "QualifiedNameImportTest")) (named (kind package) (name "P2")) (named (kind package) (name "P2a")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "P1")
       (outcome (status resolved) (target (node (document "memory://snapshot/qualified_name_import_test.md") (qualified-name "QualifiedNameImportTest::P1")))))
+    )
   )
   (query (document "memory://snapshot/qualified_name_import_test.md") (range (start 10 10) (end 10 16)) (probe (position 10 10))
     (reference (id (source (node (document "memory://snapshot/qualified_name_import_test.md") (qualified-name "QualifiedNameImportTest::P2::x"))) (kind featureTyping) (ordinal 0) (authored-target "P2a::A")
       (outcome (status resolved) (target (node (document "memory://snapshot/qualified_name_import_test.md") (qualified-name "QualifiedNameImportTest::P1::A")))))
+    )
   )
 )
 ~~~

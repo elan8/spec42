@@ -52,15 +52,15 @@ probe ambiguous_import_candidates.md 5 18
     (declaration (id (node (document "memory://snapshot/ambiguous_import_candidates.md") (qualified-name "B"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/ambiguous_import_candidates.md") (qualified-name "B::Thing"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/ambiguous_import_candidates.md") (qualified-name "Use"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/ambiguous_import_candidates.md") (path (named (kind package) (name "Use")) (anonymous (kind import) (ordinal 0)))))) (kind import) (membership (kind import) (visibility default)) (authored (membership (kind import) (visibility default)) (relationships (namespaceImport (reference "A") (import (shape namespace) (recursive false)))))
-    (declaration (id (node (document "memory://snapshot/ambiguous_import_candidates.md") (path (named (kind package) (name "Use")) (anonymous (kind import) (ordinal 1)))))) (kind import) (membership (kind import) (visibility default)) (authored (membership (kind import) (visibility default)) (relationships (namespaceImport (reference "B") (import (shape namespace) (recursive false)))))
-    (declaration (id (node (document "memory://snapshot/ambiguous_import_candidates.md") (qualified-name "Use::usage"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing"))))
+    (declaration (id (node (document "memory://snapshot/ambiguous_import_candidates.md") (path (named (kind package) (name "Use")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility default)) (authored (membership (kind import) (visibility default)) (relationships (namespaceImport (reference "A") (import (shape namespace) (recursive false))))))
+    (declaration (id (node (document "memory://snapshot/ambiguous_import_candidates.md") (path (named (kind package) (name "Use")) (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility default)) (authored (membership (kind import) (visibility default)) (relationships (namespaceImport (reference "B") (import (shape namespace) (recursive false))))))
+    (declaration (id (node (document "memory://snapshot/ambiguous_import_candidates.md") (qualified-name "Use::usage"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/ambiguous_import_candidates.md") (path (named (kind package) (name "Use")) (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/ambiguous_import_candidates.md") (path (named (kind package) (name "Use")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
       (authored-target "A")
       (outcome (status resolved) (target (node (document "memory://snapshot/ambiguous_import_candidates.md") (qualified-name "A")))))
-    (reference (id (source (node (document "memory://snapshot/ambiguous_import_candidates.md") (path (named (kind package) (name "Use")) (anonymous (kind import) (ordinal 1)))))) (kind namespaceImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/ambiguous_import_candidates.md") (path (named (kind package) (name "Use")) (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0))
       (authored-target "B")
       (outcome (status resolved) (target (node (document "memory://snapshot/ambiguous_import_candidates.md") (qualified-name "B")))))
     (reference (id (source (node (document "memory://snapshot/ambiguous_import_candidates.md") (qualified-name "Use::usage"))) (kind featureTyping) (ordinal 0))
@@ -73,20 +73,28 @@ probe ambiguous_import_candidates.md 5 18
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/ambiguous_import_candidates.md") (range (start 3 11) (end 3 15)) (probe (position 3 11))
-    (reference (id (source (node (document "memory://snapshot/ambiguous_import_candidates.md") (path (named (kind package) (name "Use")) (anonymous (kind import) (ordinal 0)))))) (kind namespaceImport) (ordinal 0) (authored-target "A")
+    (reference (id (source (node (document "memory://snapshot/ambiguous_import_candidates.md") (path (named (kind package) (name "Use")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "A")
       (outcome (status resolved) (target (node (document "memory://snapshot/ambiguous_import_candidates.md") (qualified-name "A")))))
+    )
   )
   (query (document "memory://snapshot/ambiguous_import_candidates.md") (range (start 4 11) (end 4 15)) (probe (position 4 11))
-    (reference (id (source (node (document "memory://snapshot/ambiguous_import_candidates.md") (path (named (kind package) (name "Use")) (anonymous (kind import) (ordinal 1)))))) (kind namespaceImport) (ordinal 0) (authored-target "B")
+    (reference (id (source (node (document "memory://snapshot/ambiguous_import_candidates.md") (path (named (kind package) (name "Use")) (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0) (authored-target "B")
       (outcome (status resolved) (target (node (document "memory://snapshot/ambiguous_import_candidates.md") (qualified-name "B")))))
+    )
   )
   (query (document "memory://snapshot/ambiguous_import_candidates.md") (range (start 5 17) (end 5 22)) (probe (position 5 17))
     (reference (id (source (node (document "memory://snapshot/ambiguous_import_candidates.md") (qualified-name "Use::usage"))) (kind featureTyping) (ordinal 0) (authored-target "Thing")
       (outcome (status ambiguous) (candidates (node (document "memory://snapshot/ambiguous_import_candidates.md") (qualified-name "A::Thing")) (node (document "memory://snapshot/ambiguous_import_candidates.md") (qualified-name "B::Thing")))))
+    )
   )
 )
 ~~~
@@ -95,7 +103,7 @@ probe ambiguous_import_candidates.md 5 18
 (editor-queries
   (probe (document "memory://snapshot/ambiguous_import_candidates.md") (position 5 18)
     (target (status ambiguous) (candidates (candidate (name "Thing") (location (document "memory://snapshot/ambiguous_import_candidates.md") (range (start 0 21) (end 0 26)) (role Declaration))) (candidate (name "Thing") (location (document "memory://snapshot/ambiguous_import_candidates.md") (range (start 1 21) (end 1 26)) (role Declaration)))))
-    (rename (status ambiguous) (candidates 2)))
+    (rename (status ambiguous) (candidates 2))
     (visible-members (candidates (member (name "A") (qualified-name "A") (kind "Package")) (member (name "B") (qualified-name "B") (kind "Package")) (member (name "Thing") (qualified-name "A::Thing") (kind "PartDefinition")) (member (name "Thing") (qualified-name "B::Thing") (kind "PartDefinition")) (member (name "Use") (qualified-name "Use") (kind "Package")) (member (name "usage") (qualified-name "Use::usage") (kind "PartUsage"))))
     (inspection
       (status resolved)

@@ -3,14 +3,15 @@
 use std::fmt;
 
 pub use sysml_resolution::{
-    AnnotationForm, AuthoredValue, BuildMeasurements, Documentation, ElementInspection,
-    ElementInspectionAt, ElementKind, ElementModifier, ElementRelationship, EvaluatedScalar,
-    EvaluationFailure, EvaluationState, FeatureDirection, MembershipFacts, MembershipKind,
-    MembershipRole, MultiplicityBound, MultiplicityFacts, NavigationTarget, OccurrenceRole,
-    PortionKind, PublicationCompleteness, QueryOutcome, ReferenceAt, RelationshipProvenance,
-    RelationshipTarget, RenameOutcome, RequirementConstraintKind, SourceLocation,
-    StateSubactionKind, SymbolEntry, SymbolIdentity, TextPosition, TextRange, ValueKind,
-    Visibility, VisibilityProvenance, VisibleMember,
+    AnnotationForm, AuthoredValue, BuildMeasurements, Conformance, ConformanceObstacle,
+    Documentation, EffectiveType, EffectiveTypeOrigin, ElementInspection, ElementInspectionAt,
+    ElementKind, ElementModifier, ElementRelationship, EvaluatedScalar, EvaluationFailure,
+    EvaluationState, FeatureDirection, MembershipFacts, MembershipKind, MembershipRole,
+    MultiplicityBound, MultiplicityFacts, NavigationTarget, OccurrenceRole, PortionKind,
+    PublicationCompleteness, QueryOutcome, ReferenceAt, RelationshipProvenance, RelationshipTarget,
+    RenameOutcome, RequirementConstraintKind, SourceLocation, SpecializationScope,
+    StateSubactionKind, SubsettingConformance, SymbolEntry, SymbolIdentity, TextPosition,
+    TextRange, TypeReference, ValueKind, Visibility, VisibilityProvenance, VisibleMember,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -110,6 +111,60 @@ impl BuildRequest {
         .map(|inner| Self { inner })
         .map_err(BuildError)
     }
+
+    /// Builds `sources` against a library that has already been parsed and solved.
+    ///
+    /// `sources` carries only the workspace documents; the library's come from the stratum.
+    pub fn resolved_with_library(
+        sources: Vec<SourceDocument>,
+        construction: ConstructionStrategy,
+        library: &LibraryStratum,
+    ) -> Result<Self, BuildError> {
+        let schedule = match construction {
+            ConstructionStrategy::Sequential => sysml_resolution::ConstructionSchedule::Sequential,
+            ConstructionStrategy::Parallel => sysml_resolution::ConstructionSchedule::Parallel,
+        };
+        sysml_resolution::BuildRequest::with_library(
+            sources.into_iter().map(|source| source.inner).collect(),
+            schedule,
+            "parser-owned-resolution-v1",
+            library.handle(),
+        )
+        .map(|inner| Self { inner })
+        .map_err(BuildError)
+    }
+}
+
+/// A library parsed and solved once, reusable by any number of later publications.
+///
+/// Build it from the library's own sources when a session opens, then hand it to every workspace
+/// build. Reuse is conditional: a workspace that could change what a library reference resolves to
+/// gets a full solve instead, so the published result never depends on whether a stratum was
+/// supplied.
+#[derive(Debug)]
+pub struct LibraryStratum {
+    inner: std::sync::Arc<sysml_resolution::LibraryStratum>,
+}
+
+impl LibraryStratum {
+    pub fn build(sources: Vec<SourceDocument>) -> Result<Self, BuildError> {
+        sysml_resolution::build_library_stratum(
+            sources.into_iter().map(|source| source.inner).collect(),
+        )
+        .map(|inner| Self {
+            inner: std::sync::Arc::new(inner),
+        })
+        .map_err(BuildError)
+    }
+
+    /// How many documents this stratum admits.
+    pub fn document_count(&self) -> usize {
+        self.inner.document_count()
+    }
+
+    fn handle(&self) -> std::sync::Arc<sysml_resolution::LibraryStratum> {
+        std::sync::Arc::clone(&self.inner)
+    }
 }
 
 /// Opaque published semantic state. Share it behind `Arc`; do not duplicate its owner.
@@ -172,6 +227,90 @@ impl PublishedModel {
 
     pub fn inspection(&self) -> InspectionQueries<'_> {
         InspectionQueries { model: &self.inner }
+    }
+
+    pub fn types(&self) -> TypeQueries<'_> {
+        TypeQueries { model: &self.inner }
+    }
+}
+
+/// Direct types, supertypes, subtypes, effective types, featuring types and conformance.
+///
+/// Every answer is read from facts the publication settled before it became visible; none of these
+/// calls traverses the model, and repeating one cannot change what it returns.
+pub struct TypeQueries<'a> {
+    model: &'a sysml_resolution::PublishedResolution,
+}
+
+impl TypeQueries<'_> {
+    /// The types a feature declares.
+    pub fn direct_types(&self, symbol: &SymbolIdentity) -> QueryOutcome<Box<[TypeReference]>> {
+        self.model.direct_types(symbol)
+    }
+
+    /// The types a feature has, directly or inherited along its subsetting/redefinition chain.
+    pub fn effective_types(&self, symbol: &SymbolIdentity) -> QueryOutcome<Box<[EffectiveType]>> {
+        self.model.effective_types(symbol)
+    }
+
+    /// The supertypes one specialization edge away.
+    pub fn direct_supertypes(
+        &self,
+        symbol: &SymbolIdentity,
+        scope: SpecializationScope,
+    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+        self.model.direct_supertypes(symbol, scope)
+    }
+
+    /// Every supertype, reflexively including `symbol` itself, as the Pilot's `allSupertypes` does.
+    pub fn all_supertypes(
+        &self,
+        symbol: &SymbolIdentity,
+        scope: SpecializationScope,
+    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+        self.model.all_supertypes(symbol, scope)
+    }
+
+    /// The declarations one specialization edge below `symbol`.
+    pub fn direct_subtypes(
+        &self,
+        symbol: &SymbolIdentity,
+        scope: SpecializationScope,
+    ) -> QueryOutcome<Box<[SymbolIdentity]>> {
+        self.model.direct_subtypes(symbol, scope)
+    }
+
+    /// The type that features `symbol`, if any.
+    pub fn featuring_type(&self, symbol: &SymbolIdentity) -> QueryOutcome<Option<SymbolIdentity>> {
+        self.model.featuring_type(symbol)
+    }
+
+    /// Whether `specific` conforms to `general` (KerML §8.4.3.2).
+    pub fn conforms_to(
+        &self,
+        specific: &SymbolIdentity,
+        general: &SymbolIdentity,
+        scope: SpecializationScope,
+    ) -> QueryOutcome<Conformance> {
+        self.model.conforms_to(specific, general, scope)
+    }
+
+    /// Whether the specific feature's types conform to the general feature's (KerML §7.4.12).
+    pub fn feature_typing_conforms(
+        &self,
+        specific: &SymbolIdentity,
+        general: &SymbolIdentity,
+    ) -> QueryOutcome<Conformance> {
+        self.model.feature_typing_conforms(specific, general)
+    }
+
+    /// Both halves of the subsetting rule (KerML §8.4.3.4), reported separately.
+    pub fn subsetting_conforms(
+        &self,
+        subsetting: &SymbolIdentity,
+        subsetted: &SymbolIdentity,
+    ) -> QueryOutcome<SubsettingConformance> {
+        self.model.subsetting_conforms(subsetting, subsetted)
     }
 }
 
@@ -290,6 +429,10 @@ impl DebugQueries<'_> {
 
     pub fn write_navigation_sexpr(&self, output: &mut dyn fmt::Write) -> fmt::Result {
         self.model.debug().write_navigation_sexpr(output)
+    }
+
+    pub fn write_types_sexpr(&self, output: &mut dyn fmt::Write) -> fmt::Result {
+        self.model.debug().write_types_sexpr(output)
     }
 
     pub fn write_editor_queries_sexpr(
@@ -483,8 +626,9 @@ fn write_rename_outcome(output: &mut dyn fmt::Write, outcome: &RenameOutcome) ->
             }
             write!(output, ")")?;
         }
+        // No trailing `)` here: the shared `writeln!` below closes `(rename` for every arm.
         RenameOutcome::Ambiguous(targets) => {
-            write!(output, "(status ambiguous) (candidates {}))", targets.len())?
+            write!(output, "(status ambiguous) (candidates {})", targets.len())?
         }
         RenameOutcome::InvalidName => write!(output, "(status invalid-name)")?,
         RenameOutcome::Unresolved => write!(output, "(status unresolved)")?,

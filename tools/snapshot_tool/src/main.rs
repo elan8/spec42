@@ -4,9 +4,15 @@
 //! builds the immutable semantic model, renders each owned derived section, and either reports
 //! stale files (`check`) or rewrites them (`update`). It is intentionally a binary rather than a
 //! Rust test: review happens through the normal `git diff` of the Markdown files.
+//!
+//! A fixture may admit the standard library by declaring `libraries=standard` in its META block.
+//! The library sources are then admitted as `StandardLibrary`-role documents, so the fixture's
+//! references resolve against them while the owned projections keep reporting only the fixture's
+//! own authored documents.
 
 use std::fs;
 use std::path::{Path, PathBuf};
+use std::sync::OnceLock;
 
 use clap::{Parser, Subcommand};
 use rayon::prelude::*;
@@ -45,6 +51,87 @@ struct SourceDocument {
     text: String,
 }
 
+/// Which libraries a fixture admits alongside its authored `SOURCE` documents.
+///
+/// A closed set with no default beyond `None`: an unrecognised `libraries` value is an error, so a
+/// typo cannot silently produce a workspace-only publication that looks like a library-admitting
+/// one.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum LibrarySelection {
+    None,
+    Standard,
+}
+
+/// The directory of the checked-in standard-library corpus, relative to the snapshot root.
+///
+/// The runner cannot reach the packaged KPAR standard library: `workspace` depends on
+/// `sysml_model`, which is outside this binary's enforced dependency closure. The library fixtures
+/// already carry the same pinned library text in their own `SOURCE` sections, so they are the
+/// admission input as well as fixtures in their own right.
+const STANDARD_LIBRARY_DIRECTORY: &str = "sysml.library";
+
+/// Lazily loaded library sources, shared by every fixture that admits them.
+struct LibraryCorpus {
+    root: PathBuf,
+    standard: OnceLock<Result<Vec<QuerySourceDocument>, String>>,
+}
+
+impl LibraryCorpus {
+    fn new(root: PathBuf) -> Self {
+        Self {
+            root,
+            standard: OnceLock::new(),
+        }
+    }
+
+    fn sources(&self, selection: LibrarySelection) -> Result<&[QuerySourceDocument], String> {
+        match selection {
+            LibrarySelection::None => Ok(&[]),
+            LibrarySelection::Standard => self
+                .standard
+                .get_or_init(|| load_standard_library(&self.root))
+                .as_deref()
+                .map_err(|error| error.clone()),
+        }
+    }
+}
+
+fn load_standard_library(root: &Path) -> Result<Vec<QuerySourceDocument>, String> {
+    let directory = root.join(STANDARD_LIBRARY_DIRECTORY);
+    let mut paths = Vec::new();
+    visit_markdown(&directory, &mut paths)?;
+    paths.sort();
+    if paths.is_empty() {
+        return Err(format!(
+            "no standard-library fixtures found under {}",
+            directory.display()
+        ));
+    }
+    let mut sources = Vec::with_capacity(paths.len());
+    for path in paths {
+        let fallback_name = path
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("library.md");
+        let text = fs::read_to_string(&path)
+            .map_err(|error| format!("{}: read failed: {error}", path.display()))?;
+        let documents = parse_source_documents(&text, fallback_name)?;
+        for document in documents {
+            let name = format!("{STANDARD_LIBRARY_DIRECTORY}/{}", document.name);
+            sources.push(
+                QuerySourceDocument::from_memory_path(
+                    "snapshot",
+                    &name,
+                    document.text,
+                    SourceKind::StandardLibrary,
+                )
+                .map_err(|error| format!("{}: invalid library source: {error}", path.display()))?,
+            );
+        }
+    }
+    Ok(sources)
+}
+
 fn main() -> Result<(), String> {
     let cli = Cli::parse();
     let paths = snapshot_paths(&cli.root, cli.fixture.as_deref())?;
@@ -54,6 +141,7 @@ fn main() -> Result<(), String> {
             cli.root.display()
         ));
     }
+    let libraries = LibraryCorpus::new(cli.root.clone());
 
     // Rayon uses its bounded global worker pool; fixture work is isolated and writes happen only
     // after every worker has completed, in deterministic path order.
@@ -61,7 +149,7 @@ fn main() -> Result<(), String> {
         .par_iter()
         .map(|path| FixtureWorkResult {
             path: path.clone(),
-            result: evaluate_fixture(path),
+            result: evaluate_fixture(path, &libraries),
         })
         .collect();
     sort_work_results(&mut results);
@@ -117,11 +205,11 @@ fn sort_work_results(results: &mut [FixtureWorkResult]) {
     results.sort_by(|left, right| left.path.cmp(&right.path));
 }
 
-fn evaluate_fixture(path: &Path) -> Result<FixtureOutcome, String> {
+fn evaluate_fixture(path: &Path, libraries: &LibraryCorpus) -> Result<FixtureOutcome, String> {
     let bytes = fs::read(path).map_err(|error| format!("read failed: {error}"))?;
     let original =
         String::from_utf8(bytes).map_err(|error| format!("snapshot is not UTF-8: {error}"))?;
-    let updated = regenerate_snapshot(&original, path)?;
+    let updated = regenerate_snapshot(&original, path, libraries)?;
     Ok(if updated == original {
         FixtureOutcome::Clean
     } else {
@@ -174,13 +262,18 @@ fn visit_markdown(directory: &Path, paths: &mut Vec<PathBuf>) -> Result<(), Stri
     Ok(())
 }
 
-fn regenerate_snapshot(fixture: &str, path: &Path) -> Result<String, String> {
+fn regenerate_snapshot(
+    fixture: &str,
+    path: &Path,
+    libraries: &LibraryCorpus,
+) -> Result<String, String> {
     let fallback_name = path
         .file_name()
         .and_then(|name| name.to_str())
         .unwrap_or("snapshot.md");
     let documents = parse_source_documents(fixture, fallback_name)?;
-    let source_documents = documents
+    let selection = parse_library_selection(fixture, fallback_name)?;
+    let mut source_documents = documents
         .iter()
         .map(|document| {
             QuerySourceDocument::from_memory_path(
@@ -192,6 +285,7 @@ fn regenerate_snapshot(fixture: &str, path: &Path) -> Result<String, String> {
         })
         .collect::<Result<Vec<_>, _>>()
         .map_err(|error| format!("{}: invalid source: {error}", path.display()))?;
+    source_documents.extend_from_slice(libraries.sources(selection)?);
     let probes = parse_editor_probes(fixture, &documents, fallback_name)?;
     let sequential = render_owned_sections(
         build_model(&source_documents, ConstructionStrategy::Sequential, path)?,
@@ -206,10 +300,14 @@ fn regenerate_snapshot(fixture: &str, path: &Path) -> Result<String, String> {
         &probes,
     )?;
     ensure_strategy_parity(path, &sequential, &parallel)?;
+    ensure_sections_balanced(&sequential)
+        .map_err(|error| format!("{}: {error}", path.display()))?;
 
     let fixture = replace_or_insert_section(fixture, "SMG", &sequential.smg)
         .ok_or_else(|| format!("{}: missing SOURCE/SMG section", path.display()))?;
     let fixture = replace_or_insert_section(&fixture, "DIAGNOSTICS", &sequential.diagnostics)
+        .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?;
+    let fixture = replace_or_insert_section(&fixture, "TYPES", &sequential.types)
         .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?;
     let fixture = replace_or_insert_section(&fixture, "NAVIGATION", &sequential.navigation)
         .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?;
@@ -224,6 +322,7 @@ fn regenerate_snapshot(fixture: &str, path: &Path) -> Result<String, String> {
 
 struct OwnedSections {
     smg: String,
+    types: String,
     diagnostics: String,
     navigation: String,
     editor_queries: String,
@@ -250,6 +349,11 @@ fn render_owned_sections(
     // completeness, evaluation state, and all owned facts; diagnostics includes canonical order.
     let smg = render_semantic_model(&model)?;
     let diagnostics = render_diagnostics(&model, documents, source_documents)?;
+    let mut types = String::new();
+    model
+        .debug()
+        .write_types_sexpr(&mut types)
+        .map_err(|error| format!("type rendering failed: {error}"))?;
     let mut navigation = String::new();
     model
         .debug()
@@ -262,10 +366,57 @@ fn render_owned_sections(
         .map_err(|error| format!("editor-query rendering failed: {error}"))?;
     Ok(OwnedSections {
         smg,
+        types,
         diagnostics,
         navigation,
         editor_queries,
     })
+}
+
+/// Rejects an owned section whose S-expression does not close.
+///
+/// These sections are a contract, not decoration: a reader that parses them has to be able to.
+/// Three separate producers had drifted out of balance without any check noticing, because a
+/// snapshot only ever had to match its own previous text. Parentheses inside quoted strings are
+/// content, not structure, so the scan tracks quoting.
+fn ensure_balanced(name: &str, text: &str) -> Result<(), String> {
+    let mut depth = 0i64;
+    let mut quoted = false;
+    let mut escaped = false;
+    for character in text.chars() {
+        if quoted {
+            match character {
+                _ if escaped => escaped = false,
+                '\\' => escaped = true,
+                '"' => quoted = false,
+                _ => {}
+            }
+            continue;
+        }
+        match character {
+            '"' => quoted = true,
+            '(' => depth += 1,
+            ')' => {
+                depth -= 1;
+                if depth < 0 {
+                    return Err(format!("{name} section closes more elements than it opens"));
+                }
+            }
+            _ => {}
+        }
+    }
+    if depth != 0 {
+        return Err(format!("{name} section leaves {depth} element(s) open"));
+    }
+    Ok(())
+}
+
+fn ensure_sections_balanced(sections: &OwnedSections) -> Result<(), String> {
+    ensure_balanced("SMG", &sections.smg)?;
+    ensure_balanced("TYPES", &sections.types)?;
+    ensure_balanced("DIAGNOSTICS", &sections.diagnostics)?;
+    ensure_balanced("NAVIGATION", &sections.navigation)?;
+    ensure_balanced("EDITOR RESULTS", &sections.editor_queries)
 }
 
 fn ensure_strategy_parity(
@@ -282,6 +433,12 @@ fn ensure_strategy_parity(
     if sequential.diagnostics != parallel.diagnostics {
         return Err(format!(
             "{}: sequential and parallel diagnostics outputs differ",
+            path.display()
+        ));
+    }
+    if sequential.types != parallel.types {
+        return Err(format!(
+            "{}: sequential and parallel type outputs differ",
             path.display()
         ));
     }
@@ -357,6 +514,38 @@ fn parse_source_documents(
             }]
         })
         .ok_or_else(|| format!("{fallback_name}: malformed SOURCE fence"))
+}
+
+/// Reads the fixture's `libraries` META key.
+///
+/// Absent means workspace-only, which is what every fixture authored before libraries could be
+/// admitted means. A present-but-unrecognised value is rejected rather than treated as absent.
+fn parse_library_selection(fixture: &str, fallback_name: &str) -> Result<LibrarySelection, String> {
+    let Some(section) = raw_section(fixture, "META") else {
+        return Ok(LibrarySelection::None);
+    };
+    let Some((text, _)) = fenced_block(section) else {
+        return Err(format!("{fallback_name}: malformed META fence"));
+    };
+    let mut selection = LibrarySelection::None;
+    for line in text.lines() {
+        let Some((key, value)) = line.split_once('=') else {
+            continue;
+        };
+        if key.trim() != "libraries" {
+            continue;
+        }
+        selection = match value.trim() {
+            "none" => LibrarySelection::None,
+            "standard" => LibrarySelection::Standard,
+            other => {
+                return Err(format!(
+                    "{fallback_name}: unknown META libraries value {other:?} (expected \"none\" or \"standard\")"
+                ))
+            }
+        };
+    }
+    Ok(selection)
 }
 
 fn parse_editor_probes(
@@ -451,6 +640,7 @@ const SECTION_ORDER: &[&str] = &[
     "EDITOR QUERIES",
     "DIAGNOSTICS",
     "SMG",
+    "TYPES",
     "NAVIGATION",
     "EDITOR RESULTS",
 ];
@@ -568,6 +758,7 @@ mod tests {
     fn owned_sections(smg: &str) -> OwnedSections {
         OwnedSections {
             smg: smg.to_string(),
+            types: "same".to_string(),
             diagnostics: "same".to_string(),
             navigation: "same".to_string(),
             editor_queries: "same".to_string(),

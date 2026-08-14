@@ -81,6 +81,14 @@ package ArgumentResolutionBug {
   )
 )
 ~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/argument_resolution.md") (qualified-name "ArgumentResolutionBug::B::x")))
+      (featured-by (node (document "memory://snapshot/argument_resolution.md") (qualified-name "ArgumentResolutionBug::B")))
+    )
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
