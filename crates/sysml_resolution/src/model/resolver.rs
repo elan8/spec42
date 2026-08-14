@@ -6,13 +6,14 @@
 //! an individual lookup. Downstream reference families read the frozen effective index after the
 //! import barrier converges.
 
+use super::element_kind;
 use super::*;
 use crate::{
     NavigationTarget, OccurrenceRole, PublicationCompleteness as PublicCompleteness, QueryOutcome,
     RenameOutcome, SourceLocation, SymbolIdentity, TextPosition, TextRange, VisibleMember,
 };
 
-mod writer;
+pub(crate) mod writer;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum ResolutionError {
@@ -30,7 +31,7 @@ struct NameKey {
 ///
 /// The encoding is opaque to consumers, but it is compared for equality across builds of the same
 /// sources, so a change to its shape has to be a deliberate, visible one.
-const IDENTITY_ENCODING_VERSION: &str = "element/v1";
+pub(crate) const IDENTITY_ENCODING_VERSION: &str = "element/v1";
 
 /// Canonical structural identity for every declaration, plus the lookup index over it.
 ///
@@ -1178,7 +1179,8 @@ impl ResolvedSemanticModel {
                 Some(VisibleMember {
                     symbol: target.symbol,
                     name: target.name,
-                    kind: format!("{:?}", declaration.kind).into_boxed_str(),
+                    kind: element_kind::element_kind(declaration.kind),
+                    role: element_kind::membership_role(declaration.kind),
                     qualified_name: qualified_name.into_boxed_str(),
                     container_name,
                     declaring_document: target.location.document,

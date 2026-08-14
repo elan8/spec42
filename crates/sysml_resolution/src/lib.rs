@@ -7,7 +7,10 @@ use std::fmt;
 
 use source_identity::{ContentDigest, RootDigest, SourceManifest, SourceManifestEntry, SourceRole};
 
+mod element_kind;
 mod model;
+
+pub use element_kind::{ElementKind, MembershipRole, StateSubactionKind};
 
 use model::resolver::ResolvedSemanticModel;
 use model::{BuildSchedule, CoordinatorError, OwnedSourceRecord, SemanticModelBuildCoordinator};
@@ -108,7 +111,10 @@ pub enum RenameOutcome {
 pub struct VisibleMember {
     pub symbol: SymbolIdentity,
     pub name: Box<str>,
-    pub kind: Box<str>,
+    pub kind: ElementKind,
+    /// The role this member plays in its owner, where the OMG carries that on the owning
+    /// membership rather than on the element; `None` for an ordinary member.
+    pub role: Option<MembershipRole>,
     pub qualified_name: Box<str>,
     pub container_name: Option<Box<str>>,
     pub declaring_document: Box<str>,

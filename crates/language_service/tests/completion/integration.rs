@@ -291,3 +291,47 @@ fn complete_cross_file_includes_workspace_symbols() {
         labels
     );
 }
+
+/// The completion item's icon must reflect what the symbol actually is.
+///
+/// This assertion did not exist before the element kind became a typed enum, which is how
+/// `element_kind_to_completion_kind` came to be called with a raw `"PartDefinition"` while
+/// matching display labels such as `"part def"`: no arm ever fired and every item was rendered as
+/// `Reference`.
+#[test]
+fn complete_labels_each_symbol_with_its_own_item_kind() {
+    let path = "item_kinds.sysml";
+    let content = r#"package P {
+    part def Lorry;
+    attribute def Load;
+    action def Launch;
+    part p: L
+}"#;
+    let workspace = single_doc(path, content);
+    let items = complete(&workspace, path, position_at(4, 13))
+        .map(|result| result.items)
+        .unwrap_or_default();
+
+    let kind_of = |label: &str| {
+        items
+            .iter()
+            .find(|item| item.label == label)
+            .unwrap_or_else(|| {
+                let labels = items.iter().map(|item| &item.label).collect::<Vec<_>>();
+                panic!("expected {label} among {labels:?}")
+            })
+            .kind
+    };
+
+    assert_eq!(kind_of("Lorry"), Some(CompletionItemKindDto::Class));
+    assert_eq!(kind_of("Load"), Some(CompletionItemKindDto::Property));
+    assert_eq!(kind_of("Launch"), Some(CompletionItemKindDto::Function));
+    assert!(
+        items
+            .iter()
+            .filter(|item| item.kind != Some(CompletionItemKindDto::Keyword)
+                && item.kind != Some(CompletionItemKindDto::Snippet))
+            .any(|item| item.kind != Some(CompletionItemKindDto::Reference)),
+        "every model symbol fell through to Reference, which is the bug this test exists for"
+    );
+}

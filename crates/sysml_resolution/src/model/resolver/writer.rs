@@ -1004,7 +1004,7 @@ fn parameter_direction(direction: ParameterDirection) -> &'static str {
     }
 }
 
-pub(super) fn declaration_kind(kind: DeclarationKind) -> &'static str {
+pub(crate) fn declaration_kind(kind: DeclarationKind) -> &'static str {
     match kind {
         DeclarationKind::Namespace => "namespace",
         DeclarationKind::Package => "package",
@@ -1084,7 +1084,23 @@ pub(super) fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::CaseActor => "case-actor",
         DeclarationKind::Frame => "frame",
         DeclarationKind::VerifyRequirement => "verify-requirement",
+        // One name per KerML metaclass; see `DeclarationKind`'s own doc comments for why the
+        // keyword spellings are distinct metaclasses rather than one bucket.
         DeclarationKind::KermlClassifier => "kerml-classifier",
+        DeclarationKind::KermlClass => "kerml-class",
+        DeclarationKind::KermlStructure => "kerml-structure",
+        DeclarationKind::KermlAssociation => "kerml-association",
+        DeclarationKind::KermlAssociationStructure => "kerml-association-structure",
+        DeclarationKind::KermlDataType => "kerml-datatype",
+        DeclarationKind::KermlMetaclass => "kerml-metaclass",
+        DeclarationKind::KermlBehavior => "kerml-behavior",
+        DeclarationKind::KermlFunction => "kerml-function",
+        DeclarationKind::KermlPredicate => "kerml-predicate",
+        DeclarationKind::KermlInteraction => "kerml-interaction",
+        DeclarationKind::KermlMultiplicity => "kerml-multiplicity",
+        DeclarationKind::KermlStep => "kerml-step",
+        DeclarationKind::KermlExpression => "kerml-expression",
+        DeclarationKind::KermlBooleanExpression => "kerml-boolean-expression",
         DeclarationKind::KermlFeature => "kerml-feature",
         DeclarationKind::DefaultReferenceUsage => "default-reference",
         DeclarationKind::KermlConnector => "kerml-connector",

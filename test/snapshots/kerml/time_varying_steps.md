@@ -148,9 +148,9 @@ package TimeVaryingSteps {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:0a36bc093b26843f7d8032d2797a7a2ea4143a798a653afffca0b1b0a908c3be") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/time_varying_steps.md") (qualified-name "TimeVaryingSteps"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/time_varying_steps.md") (qualified-name "TimeVaryingSteps::Camera"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/time_varying_steps.md") (qualified-name "TimeVaryingSteps::MultiCamera"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/time_varying_steps.md") (qualified-name "TimeVaryingSteps::TakePicture"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/time_varying_steps.md") (qualified-name "TimeVaryingSteps::Camera"))) (kind kerml-structure) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/time_varying_steps.md") (qualified-name "TimeVaryingSteps::MultiCamera"))) (kind kerml-structure) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/time_varying_steps.md") (qualified-name "TimeVaryingSteps::TakePicture"))) (kind kerml-behavior) (membership (kind owning) (visibility default)))
   )
   (references
   )
