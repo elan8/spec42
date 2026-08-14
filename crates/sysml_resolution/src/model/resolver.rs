@@ -345,12 +345,50 @@ impl std::fmt::Debug for IdentityIndex {
 impl IdentityIndex {
     fn build(storage: &SemanticModelStorage) -> Result<Self, ResolutionError> {
         let occurrences = name_occurrences(storage)?;
-        let mut text = Vec::with_capacity(storage.declarations.len());
-        let mut name_paths = Vec::with_capacity(storage.declarations.len());
+        let mut text: Vec<Box<str>> = Vec::with_capacity(storage.declarations.len());
+        let mut name_paths: Vec<Option<String>> = Vec::with_capacity(storage.declarations.len());
         for index in 0..storage.declarations.len() {
             let id = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
-            text.push(encode_identity(storage, id, &occurrences)?.into_boxed_str());
-            name_paths.push(encode_name_path(storage, id)?);
+            let declaration = storage
+                .declaration(id)
+                .ok_or(ResolutionError::InvalidStorage)?;
+            let document = storage
+                .document(declaration.document)
+                .ok_or(ResolutionError::InvalidStorage)?;
+            let (mut identity, mut name_path) = if let Some(owner) = declaration.owner {
+                let owner_declaration = storage
+                    .declaration(owner)
+                    .ok_or(ResolutionError::InvalidStorage)?;
+                if owner.index() >= index || owner_declaration.document != declaration.document {
+                    return Err(ResolutionError::InvalidStorage);
+                }
+                (
+                    text[owner.index()].to_string(),
+                    name_paths[owner.index()].clone(),
+                )
+            } else {
+                let mut identity = String::from(IDENTITY_ENCODING_VERSION);
+                push_identity_field(&mut identity, &document.identity);
+                let mut name_path = String::new();
+                push_identity_field(&mut name_path, &document.identity);
+                (identity, Some(name_path))
+            };
+            push_identity_segment(storage, id, &occurrences, &mut identity)?;
+            match declaration.name {
+                Some(name) => {
+                    if let Some(path) = name_path.as_mut() {
+                        push_identity_field(
+                            path,
+                            storage
+                                .symbol(name)
+                                .ok_or(ResolutionError::InvalidStorage)?,
+                        );
+                    }
+                }
+                None => name_path = None,
+            }
+            text.push(identity.into_boxed_str());
+            name_paths.push(name_path);
         }
         // A qualified name identifies a declaration only when nothing else in the publication
         // renders the same one -- two same-named siblings of different kinds otherwise share it.
@@ -465,30 +503,6 @@ fn push_identity_field(output: &mut String, value: &str) {
 }
 
 /// The ownership chain from `id` up to the document root, ordered leaf-first.
-fn ownership_chain(
-    storage: &SemanticModelStorage,
-    id: DeclarationId,
-) -> Result<Vec<DeclarationId>, ResolutionError> {
-    let mut chain = vec![id];
-    let mut cursor = storage
-        .declaration(id)
-        .ok_or(ResolutionError::InvalidStorage)?
-        .owner;
-    while let Some(current) = cursor {
-        if chain.len() > storage.declarations.len() {
-            // An ownership cycle would otherwise loop forever; the solver reports cycles
-            // separately, so this is a storage-invariant failure rather than a semantic outcome.
-            return Err(ResolutionError::InvalidStorage);
-        }
-        chain.push(current);
-        cursor = storage
-            .declaration(current)
-            .ok_or(ResolutionError::InvalidStorage)?
-            .owner;
-    }
-    Ok(chain)
-}
-
 /// The occurrence ordinal of each named declaration among its identically named siblings of the
 /// same kind, in declaration order.
 ///
@@ -522,96 +536,45 @@ fn name_occurrences(storage: &SemanticModelStorage) -> Result<Box<[u32]>, Resolu
     Ok(occurrences.into_boxed_slice())
 }
 
-fn encode_identity(
+fn push_identity_segment(
     storage: &SemanticModelStorage,
     id: DeclarationId,
     occurrences: &[u32],
-) -> Result<String, ResolutionError> {
-    let declaration = storage
+    output: &mut String,
+) -> Result<(), ResolutionError> {
+    let segment = storage
         .declaration(id)
         .ok_or(ResolutionError::InvalidStorage)?;
-    let chain = ownership_chain(storage, id)?;
-    let mut output = String::from(IDENTITY_ENCODING_VERSION);
-    push_identity_field(
-        &mut output,
-        &storage
-            .document(declaration.document)
-            .ok_or(ResolutionError::InvalidStorage)?
-            .identity,
-    );
-    for current in chain.iter().rev() {
-        let segment = storage
-            .declaration(*current)
-            .ok_or(ResolutionError::InvalidStorage)?;
-        push_identity_field(&mut output, writer::declaration_kind(segment.kind));
-        match segment.name {
-            Some(name) => {
-                output.push('n');
-                push_identity_field(
-                    &mut output,
-                    storage
-                        .symbol(name)
-                        .ok_or(ResolutionError::InvalidStorage)?,
-                );
-                push_identity_field(
-                    &mut output,
-                    &occurrences
-                        .get(current.index())
-                        .ok_or(ResolutionError::InvalidStorage)?
-                        .to_string(),
-                );
-            }
-            None => {
-                output.push('a');
-                push_identity_field(
-                    &mut output,
-                    &segment
-                        .anonymous_ordinal
-                        .ok_or(ResolutionError::InvalidStorage)?
-                        .to_string(),
-                );
-            }
+    push_identity_field(output, writer::declaration_kind(segment.kind));
+    match segment.name {
+        Some(name) => {
+            output.push('n');
+            push_identity_field(
+                output,
+                storage
+                    .symbol(name)
+                    .ok_or(ResolutionError::InvalidStorage)?,
+            );
+            push_identity_field(
+                output,
+                &occurrences
+                    .get(id.index())
+                    .ok_or(ResolutionError::InvalidStorage)?
+                    .to_string(),
+            );
+        }
+        None => {
+            output.push('a');
+            push_identity_field(
+                output,
+                &segment
+                    .anonymous_ordinal
+                    .ok_or(ResolutionError::InvalidStorage)?
+                    .to_string(),
+            );
         }
     }
-    Ok(output)
-}
-
-/// The document and name path of a fully named declaration, or `None` when any segment of its
-/// owner chain is anonymous.
-///
-/// This is what the writer's readable qualified-name shorthand renders, so it is also what has to
-/// be unique before the shorthand may be used.
-fn encode_name_path(
-    storage: &SemanticModelStorage,
-    id: DeclarationId,
-) -> Result<Option<String>, ResolutionError> {
-    let declaration = storage
-        .declaration(id)
-        .ok_or(ResolutionError::InvalidStorage)?;
-    let chain = ownership_chain(storage, id)?;
-    let mut output = String::new();
-    push_identity_field(
-        &mut output,
-        &storage
-            .document(declaration.document)
-            .ok_or(ResolutionError::InvalidStorage)?
-            .identity,
-    );
-    for current in chain.iter().rev() {
-        let segment = storage
-            .declaration(*current)
-            .ok_or(ResolutionError::InvalidStorage)?;
-        let Some(name) = segment.name else {
-            return Ok(None);
-        };
-        push_identity_field(
-            &mut output,
-            storage
-                .symbol(name)
-                .ok_or(ResolutionError::InvalidStorage)?,
-        );
-    }
-    Ok(Some(output))
+    Ok(())
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
