@@ -215,7 +215,7 @@ package 'Analysis Case Definition Example' {
         (severity warning)
         (code "unsupported_constraint_definition_member")
         (source "semantic")
-        (range (start 58 4) (end 69 5))
+        (range (start 58 5) (end 58 24))
       )
       (diagnostic
         (severity warning)

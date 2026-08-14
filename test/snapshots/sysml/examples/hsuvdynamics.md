@@ -361,7 +361,7 @@ package HSUVDynamics {
         (severity warning)
         (code "unsupported_constraint_definition_member")
         (source "semantic")
-        (range (start 28 2) (end 28 88))
+        (range (start 28 3) (end 28 15))
       )
       (diagnostic
         (severity warning)
@@ -421,7 +421,7 @@ package HSUVDynamics {
         (severity warning)
         (code "unsupported_constraint_definition_member")
         (source "semantic")
-        (range (start 36 2) (end 36 88))
+        (range (start 36 3) (end 36 15))
       )
       (diagnostic
         (severity warning)

@@ -100,12 +100,6 @@ standard library package DerivationConnections {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_constraint_definition_member")
-        (source "semantic")
-        (range (start 45 3) (end 45 53))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 55 3) (end 55 29))
@@ -129,7 +123,7 @@ standard library package DerivationConnections {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:0700fa018a384b209497b8eb9d4814bd1732cd26b24f5e034d2d3fe1d87b9fce") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:0700fa018a384b209497b8eb9d4814bd1732cd26b24f5e034d2d3fe1d87b9fce") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/derivation_connections.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "SequenceFunctions::excludes") (import (shape membership) (recursive false)))))
@@ -137,7 +131,7 @@ standard library package DerivationConnections {
     (declaration (id (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::Derivation"))) (kind connection-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/derivation_connections.md") (anonymous (kind ref) (ordinal 0))))) (kind ref) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "participant")) (redefinition (reference "derivedRequirements"))))
     (declaration (id (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::Derivation::originalImpliesDerived"))) (kind constraint) (membership (kind feature) (visibility private)) (authored (membership (kind feature) (visibility private)) (relationships (memberAccessOperand (reference "originalRequirement::result")) (memberAccessOperand (reference "derivedRequirements::result")) (invocationCallee (reference "allTrue"))))
-    (declaration (id (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::Derivation::originalNotDerived"))) (kind constraint) (membership (kind feature) (visibility private)))
+    (declaration (id (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::Derivation::originalNotDerived"))) (kind constraint) (membership (kind feature) (visibility private)) (authored (membership (kind feature) (visibility private)) (relationships (expressionOperand (reference "derivedRequirements")) (expressionOperand (reference "originalRequirement"))))
     (declaration (id (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::Derivation::originalRequirement"))) (kind ref) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "participant")) (redefinition (reference "originalRequirements"))))
     (declaration (id (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::derivations"))) (kind connection-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "Derivation"))))
     (declaration (id (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::derivedRequirements"))) (kind requirement) (membership (kind feature) (visibility default)))
@@ -165,6 +159,12 @@ standard library package DerivationConnections {
     (reference (id (source (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::Derivation::originalImpliesDerived"))) (kind invocationCallee) (ordinal 0))
       (authored-target "allTrue")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::Derivation::originalNotDerived"))) (kind expressionOperand) (ordinal 0))
+      (authored-target "derivedRequirements")
+      (outcome (status resolved) (target (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::derivedRequirements")))))
+    (reference (id (source (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::Derivation::originalNotDerived"))) (kind expressionOperand) (ordinal 1))
+      (authored-target "originalRequirement")
+      (outcome (status resolved) (target (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::Derivation::originalRequirement")))))
     (reference (id (source (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::Derivation::originalRequirement"))) (kind subsetting) (ordinal 0))
       (authored-target "participant")
       (outcome (status unresolved)))
@@ -177,10 +177,13 @@ standard library package DerivationConnections {
   )
   (relationships
     (relationship (kind redefinition) (source (node (document "memory://snapshot/derivation_connections.md") (anonymous (kind ref) (ordinal 0))))) (target (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::derivedRequirements"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/derivation_connections.md") (anonymous (kind ref) (ordinal 0))))) (kind redefinition) (ordinal 0)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::Derivation::originalNotDerived"))) (target (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::derivedRequirements"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::Derivation::originalNotDerived"))) (kind expressionOperand) (ordinal 0)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::Derivation::originalNotDerived"))) (target (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::Derivation::originalRequirement"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::Derivation::originalNotDerived"))) (kind expressionOperand) (ordinal 1)))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::Derivation::originalRequirement"))) (target (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::originalRequirements"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::Derivation::originalRequirement"))) (kind redefinition) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::derivations"))) (target (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::Derivation"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::derivations"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::Derivation::originalNotDerived"))) (value (kind non-constant)))
   )
 )
 ~~~
@@ -214,6 +217,14 @@ standard library package DerivationConnections {
   (query (document "memory://snapshot/derivation_connections.md") (range (start 55 38) (end 55 45)) (probe (position 55 38))
     (reference (id (source (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::Derivation::originalImpliesDerived"))) (kind invocationCallee) (ordinal 0) (authored-target "allTrue")
       (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/derivation_connections.md") (range (start 45 3) (end 45 22)) (probe (position 45 3))
+    (reference (id (source (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::Derivation::originalNotDerived"))) (kind expressionOperand) (ordinal 0) (authored-target "derivedRequirements")
+      (outcome (status resolved) (target (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::derivedRequirements")))))
+  )
+  (query (document "memory://snapshot/derivation_connections.md") (range (start 45 33) (end 45 52)) (probe (position 45 33))
+    (reference (id (source (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::Derivation::originalNotDerived"))) (kind expressionOperand) (ordinal 1) (authored-target "originalRequirement")
+      (outcome (status resolved) (target (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::Derivation::originalRequirement")))))
   )
   (query (document "memory://snapshot/derivation_connections.md") (range (start 35 69) (end 35 80)) (probe (position 35 69))
     (reference (id (source (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::Derivation::originalRequirement"))) (kind subsetting) (ordinal 0) (authored-target "participant")

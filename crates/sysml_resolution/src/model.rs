@@ -1597,6 +1597,14 @@ fn classify_constraint_node(node: &Expression, ordinal: &mut u32) -> Option<Eval
             }
             Some(EvalNode::Invocation(children))
         }
+        Expression::CollectionOp { base, args, .. } => {
+            let mut children = Vec::with_capacity(args.len() + 1);
+            children.push(classify_constraint_node(&base.value, ordinal)?);
+            for arg in args {
+                children.push(classify_constraint_node(&arg.value, ordinal)?);
+            }
+            Some(EvalNode::Invocation(children))
+        }
         Expression::Tuple(items) => {
             let mut children = Vec::with_capacity(items.len());
             for item in items {
@@ -1660,6 +1668,14 @@ fn classify_calc_node(node: &Expression, ordinal: &mut u32) -> Option<EvalNode> 
         }
         Expression::Constructor { args, .. } => {
             let mut children = Vec::with_capacity(args.len());
+            for arg in args {
+                children.push(classify_calc_node(&arg.value, ordinal)?);
+            }
+            Some(EvalNode::Invocation(children))
+        }
+        Expression::CollectionOp { base, args, .. } => {
+            let mut children = Vec::with_capacity(args.len() + 1);
+            children.push(classify_calc_node(&base.value, ordinal)?);
             for arg in args {
                 children.push(classify_calc_node(&arg.value, ordinal)?);
             }
@@ -6347,6 +6363,13 @@ impl SemanticModelBuilder {
                 }
                 Ok(())
             }
+            Expression::CollectionOp { base, args, .. } => {
+                self.lower_constraint_expression(document, declaration, family, base)?;
+                for arg in args {
+                    self.lower_constraint_expression(document, declaration, family, &arg.value)?;
+                }
+                Ok(())
+            }
             Expression::Tuple(items) => {
                 for item in items {
                     self.lower_constraint_expression(document, declaration, family, item)?;
@@ -6452,6 +6475,13 @@ impl SemanticModelBuilder {
             }
             Expression::Constructor { type_name, args } => {
                 self.push_invocation_callee_reference(document, declaration, *type_name)?;
+                for arg in args {
+                    self.lower_calc_expression(document, declaration, family, &arg.value)?;
+                }
+                Ok(())
+            }
+            Expression::CollectionOp { base, args, .. } => {
+                self.lower_calc_expression(document, declaration, family, base)?;
                 for arg in args {
                     self.lower_calc_expression(document, declaration, family, &arg.value)?;
                 }
@@ -6595,6 +6625,13 @@ impl SemanticModelBuilder {
             }
             Expression::Constructor { type_name, args } => {
                 self.push_invocation_callee_reference(document, declaration, *type_name)?;
+                for arg in args {
+                    self.lower_filter_expression(document, declaration, &arg.value)?;
+                }
+                Ok(())
+            }
+            Expression::CollectionOp { base, args, .. } => {
+                self.lower_filter_expression(document, declaration, base)?;
                 for arg in args {
                     self.lower_filter_expression(document, declaration, &arg.value)?;
                 }
@@ -11393,6 +11430,58 @@ mod tests {
             ),
             "expected a resolved but non-literal operand `x` to publish NonConstant rather than \
              a fabricated boolean, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn constraint_collection_op_arrow_invocation_resolves_base_and_argument_operands() {
+        // `x->excludes(y)` (KerML `->` collection-operator invocation, e.g.
+        // `derivedRequirements->excludes(originalRequirement)` in the Systems Library). The base
+        // (`x`) and the argument (`y`) are both plain feature references and resolve exactly like
+        // `Expression::Invocation`'s operands; the operator name (`excludes`) itself is a fixed
+        // `CollectionOperator` enum value with no `QualifiedReferenceId` in the parser AST, so it
+        // is never pushed as a reference.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpart def P {\n\
+             \t\tattribute x : ScalarValues::Integer;\n\
+             \t\tattribute y : ScalarValues::Integer;\n\
+             \t\tassert constraint { x->excludes(y) }\n\
+             \t}\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(kind expressionOperand) (ordinal 0))\n      (authored-target \"x\")\n      (outcome (status resolved) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::P::x\")))))"
+            ),
+            "expected `x` (the collection-op base) to resolve to the sibling attribute \
+             declaration, got:\n{output}"
+        );
+        assert!(
+            output.contains(
+                "(kind expressionOperand) (ordinal 1))\n      (authored-target \"y\")\n      (outcome (status resolved) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::P::y\")))))"
+            ),
+            "expected `y` (the collection-op argument) to resolve to the sibling attribute \
+             declaration, got:\n{output}"
+        );
+    }
+
+    #[test]
+    fn constraint_collection_op_arrow_invocation_evaluates_to_non_constant() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tattribute x : ScalarValues::Integer;\n\
+             \tattribute y : ScalarValues::Integer;\n\
+             \tconstraint def C { x->excludes(y) }\n\
+             }\n",
+        );
+        assert!(
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::C\"))) (value (kind non-constant)))"
+            ),
+            "expected `x->excludes(y)` to publish NonConstant, matching `Invocation`'s own \
+             evaluation shape, got:\n{output}"
         );
     }
 

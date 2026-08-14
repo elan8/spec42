@@ -87,9 +87,9 @@ package '15_05-Unification of Expression and Constraint Definition' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_constraint_definition_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 8 2) (end 10 3))
+        (range (start 8 2) (end 8 11))
       )
       (diagnostic
         (severity warning)
@@ -140,7 +140,7 @@ package '15_05-Unification of Expression and Constraint Definition' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:4e0e75715f7b7e9981466f3e551d5424bb7ddfc87d0548631bbd8c29dc97f32a") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:4e0e75715f7b7e9981466f3e551d5424bb7ddfc87d0548631bbd8c29dc97f32a") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (qualified-name "15_05-Unification of Expression and Constraint Definition"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "15_03-Value Expression") (import (shape namespace) (recursive false)))))
@@ -148,7 +148,7 @@ package '15_05-Unification of Expression and Constraint Definition' {
     (declaration (id (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (anonymous (kind import) (ordinal 2))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "SI") (import (shape namespace) (recursive false)))))
     (declaration (id (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (qualified-name "15_05-Unification of Expression and Constraint Definition::DiscBrakeAssy"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (qualified-name "15_05-Unification of Expression and Constraint Definition::DiscBrakeAssy::radius"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "LengthValue"))))
-    (declaration (id (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (qualified-name "15_05-Unification of Expression and Constraint Definition::DiscBrakeConstraint"))) (kind constraint-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (qualified-name "15_05-Unification of Expression and Constraint Definition::DiscBrakeConstraint"))) (kind constraint-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (expressionOperand (reference "wheelAssy"))))
     (declaration (id (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (qualified-name "15_05-Unification of Expression and Constraint Definition::DiscBrakeConstraint::wheelAssy"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "WheelAssy") (direction in))))
     (declaration (id (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (qualified-name "15_05-Unification of Expression and Constraint Definition::DiscBrakeFitConstraint_Alt"))) (kind constraint-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (memberAccessOperand (reference "discBrakeAssy::radius")) (memberAccessOperand (reference "wheel::outerDiameter"))))
     (declaration (id (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (qualified-name "15_05-Unification of Expression and Constraint Definition::DiscBrakeFitConstraint_Alt::discBrakeAssy"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "DiscBrakeAssy") (direction in))))
@@ -178,6 +178,9 @@ package '15_05-Unification of Expression and Constraint Definition' {
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (qualified-name "15_05-Unification of Expression and Constraint Definition::DiscBrakeAssy::radius"))) (kind featureTyping) (ordinal 0))
       (authored-target "LengthValue")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (qualified-name "15_05-Unification of Expression and Constraint Definition::DiscBrakeConstraint"))) (kind expressionOperand) (ordinal 0))
+      (authored-target "wheelAssy")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (qualified-name "15_05-Unification of Expression and Constraint Definition::DiscBrakeConstraint::wheelAssy"))) (kind featureTyping) (ordinal 0))
       (authored-target "WheelAssy")
@@ -238,6 +241,7 @@ package '15_05-Unification of Expression and Constraint Definition' {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (qualified-name "15_05-Unification of Expression and Constraint Definition::DiscBrakeAssy::radius"))) (value (kind quantity) (magnitude (value (kind integer) (integer 95))) (unit "mm")))
+    (evaluated (declaration (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (qualified-name "15_05-Unification of Expression and Constraint Definition::DiscBrakeConstraint"))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (qualified-name "15_05-Unification of Expression and Constraint Definition::Vehicle_2::discBrakeConstraint::wheelAssy"))) (value (kind non-constant)))
     (evaluated (declaration (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (qualified-name "15_05-Unification of Expression and Constraint Definition::Vehicle_2::length"))) (value (kind quantity) (magnitude (value (kind real) (real 4.82))) (unit "m")))
     (evaluated (declaration (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (qualified-name "15_05-Unification of Expression and Constraint Definition::Vehicle_2::mass"))) (value (kind quantity) (magnitude (value (kind integer) (integer 1200))) (unit "kg")))
@@ -263,6 +267,10 @@ package '15_05-Unification of Expression and Constraint Definition' {
   )
   (query (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (range (start 53 21) (end 53 32)) (probe (position 53 21))
     (reference (id (source (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (qualified-name "15_05-Unification of Expression and Constraint Definition::DiscBrakeAssy::radius"))) (kind featureTyping) (ordinal 0) (authored-target "LengthValue")
+      (outcome (status unresolved)))
+  )
+  (query (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (range (start 8 2) (end 8 11)) (probe (position 8 2))
+    (reference (id (source (node (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (qualified-name "15_05-Unification of Expression and Constraint Definition::DiscBrakeConstraint"))) (kind expressionOperand) (ordinal 0) (authored-target "wheelAssy")
       (outcome (status unresolved)))
   )
   (query (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md") (range (start 6 17) (end 6 26)) (probe (position 6 17))

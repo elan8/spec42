@@ -1262,7 +1262,7 @@ standard library package ShapeItems {
         (severity warning)
         (code "unsupported_constraint_definition_member")
         (source "semantic")
-        (range (start 152 22) (end 155 61))
+        (range (start 152 23) (end 152 37))
       )
       (diagnostic
         (severity warning)
@@ -3416,7 +3416,7 @@ standard library package ShapeItems {
         (severity warning)
         (code "unsupported_constraint_definition_member")
         (source "semantic")
-        (range (start 855 22) (end 859 57))
+        (range (start 855 23) (end 855 36))
       )
       (diagnostic
         (severity warning)
