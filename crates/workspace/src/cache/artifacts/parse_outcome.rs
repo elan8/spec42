@@ -1,4 +1,4 @@
-//! `ParseOutcome` cache artifact (`UNIFY_CACHE_PLAN.md` §6.2).
+//! `ParseOutcome` cache artifact (`planning/UNIFY_CACHE_PLAN.md` §6.2).
 //!
 //! Key inputs: the raw [`ContentDigest`] of the source text; the [`ParseMode`]; the parser
 //! package/AST version (`sysml_v2_parser::PARSE_AST_VERSION`); the parse diagnostic schema and

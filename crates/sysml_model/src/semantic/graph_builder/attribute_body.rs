@@ -127,7 +127,7 @@ pub(super) fn build_from_attribute_body(
                 // *implied* graph edge by `relationships::link_subsetting_family_edges_for_node`,
                 // not recorded here as a second declared fact -- `DeclaredRelationshipTarget` has
                 // no provenance field, so writing it here would make an entailed relationship
-                // look authored (`UNIFY_CACHE_PROGRESS.md` chunk G, `AGENTS.md` "One semantic
+                // look authored (`planning/UNIFY_CACHE_PROGRESS.md` B9, `AGENTS.md` "One semantic
                 // system").
                 if let Some(node) = g.get_node_mut(&node_id) {
                     node.declared_facts.unit = unit_metadata::attribute_usage_unit_facts(value);

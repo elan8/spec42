@@ -1,5 +1,5 @@
 //! Cache-import invariant validator for [`crate::semantic::graph::SemanticGraphData`]
-//! (`ROUNDTRIP_SEMGRAPH_PREREQS.md` B7).
+//! (the graph-invariant contract).
 //!
 //! This module is the single owner of graph-invariant validation. Nothing else in the crate
 //! should hand-roll a second ad hoc consistency check over the semantic graph: a new invariant
@@ -8,11 +8,10 @@
 //!
 //! # Why this exists
 //!
-//! A decoded cache payload is local but not trusted semantic input (`ROUNDTRIP_SEMGRAPH_PREREQS.md`
+//! A decoded cache payload is local but not trusted semantic input (`planning/ROUNDTRIP_SEMGRAPH_PREREQS.md`
 //! B10): corruption, a crash between commit and enforcement, partial writes, and another local
-//! process can all produce a structurally-decodable-but-incoherent graph. Before B7, deserialization
-//! trusted graph content and simply populated maps from it (`SemanticGraphData::rebuild_derived_indexes`
-//! in `graph.rs`). This module is what a cache decoder runs *before* any of that content is treated
+//! process can all produce a structurally-decodable-but-incoherent graph. This module is what a
+//! cache decoder runs *before* any decoded content is treated
 //! as authoritative or published to a consumer.
 //!
 //! # Cache miss, not a model diagnostic
@@ -59,7 +58,7 @@ use source_identity::SourceRole;
 
 /// Which containment/publication policy applies to the graph being validated.
 ///
-/// `ROUNDTRIP_SEMGRAPH_PREREQS.md` B7 requires artifact-specific containment rules rather than a
+/// the graph-invariant contract requires artifact-specific containment rules rather than a
 /// global relaxation: a deliberately extracted library subgraph may omit a workspace parent, but a
 /// full workspace graph may not.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -76,7 +75,7 @@ pub enum GraphArtifactKind {
 }
 
 /// Explicit, injectable resource bounds for [`validate_graph_invariants`]
-/// (`ROUNDTRIP_SEMGRAPH_PREREQS.md` B10). Production callers use [`GraphInvariantLimits::default`];
+/// (the edge-construction ownership contract0). Production callers use [`GraphInvariantLimits::default`];
 /// tests inject small values to exercise the boundary cases without building huge fixtures.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct GraphInvariantLimits {
@@ -139,7 +138,7 @@ pub enum ReferenceSite {
     EdgeEndpoint,
 }
 
-/// Every rejection this validator can produce. One variant per `ROUNDTRIP_SEMGRAPH_PREREQS.md` B7
+/// Every rejection this validator can produce. One variant per the graph-invariant contract
 /// category. This type carries no source range, diagnostic code, or severity: it is a cache-import
 /// failure, never a user-facing model diagnostic (see the module doc comment).
 #[derive(Debug, Clone, PartialEq, thiserror::Error)]
@@ -214,21 +213,21 @@ pub enum GraphInvariantError {
 }
 
 /// The single cache-import validator owned by the semantic layer
-/// (`ROUNDTRIP_SEMGRAPH_PREREQS.md` B7, `UNIFY_CACHE_PLAN.md` §7.5). Rejects the graph on the
+/// (the graph-invariant contract, `planning/UNIFY_CACHE_PLAN.md` §7.5). Rejects the graph on the
 /// first invariant violation found; callers treat any `Err` as
 /// `workspace::cache::api::CacheMissReason::InvariantFailure`, never as a model diagnostic.
 ///
 /// This validates the *runtime* graph (`SemanticGraphData`) directly, independent of any cache
 /// record encoding, so it can run both immediately after a fresh full/incremental build and again
 /// after a future `SemanticGraphRecordV1` decoder reconstructs a runtime graph from bytes
-/// (`ROUNDTRIP_SEMGRAPH_PREREQS.md` §5 import flow steps 3 and 6 both call this same function).
+/// (`planning/ROUNDTRIP_SEMGRAPH_PREREQS.md` §5 import flow steps 3 and 6 both call this same function).
 pub fn validate_graph_invariants(
     data: &SemanticGraphData,
     artifact: GraphArtifactKind,
     limits: &GraphInvariantLimits,
 ) -> Result<(), GraphInvariantError> {
     // --- Resource limits first: cheap counts, and refuses to do further O(n) work over an
-    // oversized structure (ROUNDTRIP_SEMGRAPH_PREREQS.md B10). ---
+    // oversized structure (planning/ROUNDTRIP_SEMGRAPH_PREREQS.md B10). ---
     check_count(
         data.graph.node_count(),
         limits.max_nodes,
@@ -292,7 +291,7 @@ pub fn validate_graph_invariants(
             check_string(declared_name, node, limits)?;
         }
 
-        // Iterative expression bounds (ROUNDTRIP_SEMGRAPH_PREREQS.md B10): every DeclaredExpression
+        // Iterative expression bounds (planning/ROUNDTRIP_SEMGRAPH_PREREQS.md B10): every DeclaredExpression
         // root reachable from this node is walked with an explicit stack, never recursion.
         if let Some(value) = &node.declared_facts.feature_value {
             check_expression(&node.id, &value.expression, limits)?;
@@ -531,7 +530,7 @@ fn check_evaluation_facts_finite(
 }
 
 /// Walks a `DeclaredExpression` tree with an explicit heap stack (never recursion), mirroring
-/// `DeclaredExpression`'s own custom iterative `Drop` (`ROUNDTRIP_SEMGRAPH_PREREQS.md` B10): a
+/// `DeclaredExpression`'s own custom iterative `Drop` (the edge-construction ownership contract0): a
 /// recursive validator over adversarially deep input would reintroduce exactly the stack-overflow
 /// risk that `Drop` impl exists to avoid. Returns as soon as either bound is exceeded.
 fn check_expression(

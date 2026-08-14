@@ -25,7 +25,7 @@ mod calc_constraint_def;
 mod definition_body;
 pub(crate) mod expressions;
 mod flow_usage;
-mod interface_def;
+pub(crate) mod interface_def;
 mod kerml_library;
 mod metadata_def;
 mod metadata_keyword;

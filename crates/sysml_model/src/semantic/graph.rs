@@ -33,7 +33,7 @@ fn deserialize_url<'de, D: Deserializer<'de>>(d: D) -> Result<Url, D::Error> {
 }
 
 /// Inserts `id` into `ids` at its canonical `NodeId` order position
-/// (`ROUNDTRIP_SEMGRAPH_PREREQS.md` §6: normalized URI, then qualified name).
+/// (`planning/ROUNDTRIP_SEMGRAPH_PREREQS.md` §6: normalized URI, then qualified name).
 ///
 /// Every mutation site that appends to a `node_ids_by_qualified_name` bucket
 /// (`add_node_and_recurse`, `merge_inner`, `insert_workspace_node`, `register_short_name_alias`)
@@ -89,7 +89,7 @@ pub struct SemanticGraphData {
     #[serde(default)]
     pub standard_library_uris: HashSet<Url>,
     /// The complete normalized Workspace/StandardLibrary/Library/External classification for
-    /// every admitted source URI (`ROUNDTRIP_SEMGRAPH_PREREQS.md` B3's "complete normalized
+    /// every admitted source URI (the canonical source-ordering contract's "complete normalized
     /// source-origin map"). Reuses `source_identity::SourceRole` rather than defining a second
     /// enum. `standard_library_uris` above remains the fast-path set consulted by universal
     /// standard-library relationship resolution; this map is the superset classification that
@@ -175,8 +175,8 @@ pub struct SemanticGraphData {
     /// called from [`SemanticGraphData::rebuild_derived_indexes`] after deserialization.
     #[serde(skip)]
     pub cross_document_edges_by_source_uri: HashMap<Url, Vec<(NodeId, NodeId, RelationshipKind)>>,
-    /// The graph's own publication identity, phase, and completeness (`ROUNDTRIP_SEMGRAPH_PREREQS.md`
-    /// B4, `UNIFY_CACHE_PLAN.md` §4.3). Stamped with a real source root and completeness by the
+    /// The graph's own publication identity, phase, and completeness (`planning/ROUNDTRIP_SEMGRAPH_PREREQS.md`
+    /// B4, `planning/UNIFY_CACHE_PLAN.md` §4.3). Stamped with a real source root and completeness by the
     /// pipeline entry points that own document enumeration
     /// ([`crate::semantic::pipeline::build_and_link_graph`],
     /// [`crate::semantic::pipeline::build_and_link_graph_parallel`]); advanced through
@@ -506,7 +506,7 @@ impl SemanticGraph {
     }
 
     /// The single typed predicate for whether this graph may be accepted into persistent cache
-    /// storage (`ROUNDTRIP_SEMGRAPH_PREREQS.md` B4, `UNIFY_CACHE_PLAN.md` §4.3).
+    /// storage (the `SemanticPublication` contract, `planning/UNIFY_CACHE_PLAN.md` §4.3).
     ///
     /// Requires both [`SemanticPublication::is_storage_eligible`] (phase == settled/evaluated,
     /// completeness == complete) **and** `evaluation_publication == Complete`. The two are kept

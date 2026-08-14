@@ -3,8 +3,6 @@
 Status: implementation handoff
 Audience: maintainers of `sysml_model`, `workspace`, `sysml_diagnostics`, `language_service`,
 `lsp_server`, and the unified semantic cache
-Answers: `RESOLUTION_LAYER_INVESTIGATION.md`
-Target base: `upstream/main` (`09ef5c4e` at the time of investigation)
 
 ## 1. Decision summary
 
@@ -299,8 +297,8 @@ correct whole-model case and makes that solver fast.
 - Expression/member-chain resolution is not silently folded into plain relationship lookup.
   Its first lexical segment must eventually use the same namespace-scope owner, but its
   type-directed continuation remains a distinct typed query.
-- This work does not canonicalize `nodes_by_uri`, change presentation ordering, or rework B1 edge
-  construction ownership, B3 `NodeId` ordering, or B4 publication identity.
+- This work does not canonicalize `nodes_by_uri`, change presentation ordering, or rework existing
+  edge construction ownership, canonical `NodeId` ordering, or publication identity.
 - Corpus fixtures are not updated merely to preserve current output. Every changed fixture needs a
   Pilot/spec citation and an explicit correction classification.
 
@@ -721,10 +719,9 @@ ordinal preserves repeated authored clauses even if two clauses resolve to the s
 - `Unresolved` contributes no resolved relationship but remains an explicit published fact.
 - `Ambiguous` contributes no resolved relationship and retains all distinct candidates.
 
-Candidates are deduplicated by `NodeId` and ordered by the B3 `NodeId::Ord` policy. On upstream
-before B3 is integrated, the resolver uses the same explicit comparator: normalized URI, then
-qualified name. Request evaluation and published facts are ordered by source `NodeId`, reference
-kind discriminant, and authored ordinal.
+Candidates are deduplicated by `NodeId` and ordered by the canonical `NodeId::Ord` policy:
+normalized URI, then qualified name. Request evaluation and published facts are ordered by source
+`NodeId`, reference kind discriminant, and authored ordinal.
 
 This contract subsumes the current `resolve_subsetting_family_target` gap. The subsetting family
 cannot silently select the first qualified-name bucket entry.
@@ -1181,12 +1178,9 @@ because consumers depend on their completed contract.
 
 - Run focused resolver, relationship, diagnostics, language-service, LSP, workspace, and corpus
   tests while iterating.
-- Run the broader workspace suite and clippy. Preserve the accepted 22 pre-existing
-  `snapshot_single_build` failures; do not weaken them.
-- Land upstream only after the acceptance criteria below pass.
-- Merge the landed upstream change into `integration/unified-cache`, resolve B1/B3/B4 integration
-  against the new resolution state, bump the semantic contract, and then resume cache artifact
-  design and parity work.
+- Run the broader workspace suite and clippy.
+- Land only after the acceptance criteria below pass, then bump the semantic contract and resume
+  cache artifact work.
 
 ## 11. Verification and acceptance
 

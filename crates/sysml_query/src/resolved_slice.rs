@@ -3,8 +3,9 @@
 use std::fmt;
 
 pub use sysml_resolution::{
-    NavigationTarget, OccurrenceRole, PublicationCompleteness, QueryOutcome, RenameOutcome,
-    SourceLocation, SymbolIdentity, TextPosition, TextRange, VisibleMember,
+    ElementKind, MembershipRole, NavigationTarget, OccurrenceRole, PublicationCompleteness,
+    QueryOutcome, RenameOutcome, SourceLocation, StateSubactionKind, SymbolIdentity, TextPosition,
+    TextRange, VisibleMember,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -412,9 +413,15 @@ fn write_members_outcome(
             for value in values.iter() {
                 write!(
                     output,
-                    " (member (name {:?}) (qualified-name {:?}) (kind {:?}))",
-                    value.name, value.qualified_name, value.kind
+                    " (member (name {:?}) (qualified-name {:?}) (kind {:?})",
+                    value.name,
+                    value.qualified_name,
+                    value.kind.as_str()
                 )?;
+                if let Some(role) = value.role {
+                    write!(output, " (role {:?})", role.as_str())?;
+                }
+                write!(output, ")")?;
             }
             write!(output, ")")?;
         }

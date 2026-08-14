@@ -1,17 +1,17 @@
-//! Test-only canonical graph-state equivalence oracle (`ROUNDTRIP_SEMGRAPH_PREREQS.md` B11).
+//! Test-only canonical graph-state equivalence oracle (the `GraphStateFingerprint` contract).
 //!
 //! [`crate::semantic::graph_sexpr`]'s `to_semantic_sexpr()` is the human-readable semantic
 //! parity oracle and is deliberately left untouched by this module: it intentionally excludes
 //! source ranges, document paths, and publication/construction-ownership state (see its own doc
-//! comment and B11's problem statement). [`GraphStateFingerprint`] is the complementary
+//! comment). [`GraphStateFingerprint`] is the complementary
 //! machine-comparable oracle that *does* cover those fields -- every authoritative record field
-//! listed in `ROUNDTRIP_SEMGRAPH_PREREQS.md` §2.2: node identity/kind/names/URI/range/parent/
+//! listed in `planning/ROUNDTRIP_SEMGRAPH_PREREQS.md` §2.2: node identity/kind/names/URI/range/parent/
 //! typed facts, edges with endpoint identity/kind/provenance/construction owner/connect-flow
 //! detail, source roles, pending relationships, effective/derived/evaluation facts and
 //! evaluation publication, and the graph's own [`SemanticPublication`].
 //!
 //! This is deliberately `#[cfg(test)]`-only. It is an oracle for differential tests, not a
-//! second persistence path: `ROUNDTRIP_SEMGRAPH_PREREQS.md` B5 forbids a competing runtime
+//! second persistence path: `planning/ROUNDTRIP_SEMGRAPH_PREREQS.md` B5 forbids a competing runtime
 //! serialization authority alongside the eventual `SemanticGraphRecordV1`, and this type is
 //! never constructed outside `cargo test`.
 //!
@@ -81,7 +81,7 @@ impl From<&RelationshipProvenance> for RelationshipProvenanceKey {
 /// The complete, canonically ordered fingerprint of one graph's authoritative state.
 #[derive(Debug, Clone, PartialEq)]
 pub struct GraphStateFingerprint {
-    /// Sorted by [`NodeId`]'s canonical `Ord` (`ROUNDTRIP_SEMGRAPH_PREREQS.md` §6).
+    /// Sorted by [`NodeId`]'s canonical `Ord` (`planning/ROUNDTRIP_SEMGRAPH_PREREQS.md` §6).
     pub nodes: Vec<NodeFingerprint>,
     /// Sorted by `(source, target, kind_debug, ...)`, i.e. `EdgeFingerprint`'s derived `Ord`,
     /// which starts with endpoint `NodeId`s.
@@ -257,7 +257,7 @@ impl GraphStateFingerprint {
     /// `patch_graph_for_document_scoped` never set `root_digest`/`completeness` themselves,
     /// that is the owning workspace layer's job (see `pipeline::build_and_link_graph`'s own
     /// `graph.publication = SemanticPublication::new(...)` call, which raw per-document patch
-    /// calls deliberately do not replicate). B4's own identity/phase/completeness contract is
+    /// calls deliberately do not replicate). Publication identity/phase/completeness is
     /// tested directly in `publication.rs`; this neutralization exists solely so this suite's
     /// determinism assertions are not a false negative about publication-stamping, which is out
     /// of scope for these particular comparisons.
@@ -269,10 +269,10 @@ impl GraphStateFingerprint {
     }
 }
 
-// --- B11 differential test suites ---
+// --- Differential test suites ---
 //
 // Neither `GraphStateFingerprint` nor `to_semantic_sexpr()` alone proves observable behavior
-// (`ROUNDTRIP_SEMGRAPH_PREREQS.md` B11's own required resolution). These suites are the actual
+// (the `GraphStateFingerprint` contract own required resolution). These suites are the actual
 // deliverable: (a) determinism, (b) sensitivity, (c) post-edit differential parity, (d) public
 // query/S-expression differential parity.
 #[cfg(test)]
@@ -374,7 +374,7 @@ mod tests {
 
     // --- (b) Sensitivity suite ---
     //
-    // A fingerprint that never differs proves nothing (B11's own warning): each case below
+    // A fingerprint that never differs proves nothing: each case below
     // perturbs exactly one authoritative field and asserts the fingerprint changes.
 
     #[test]

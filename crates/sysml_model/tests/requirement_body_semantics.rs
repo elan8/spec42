@@ -185,7 +185,10 @@ fn standalone_verification_graph_links_objective_verified_requirement_to_case() 
 }"#;
     let parsed = sysml_v2_parser::parse(source).expect("parse");
     let uri = url::Url::parse("file:///verification.sysml").expect("uri");
-    let graph = sysml_model::build_graph_from_doc(&parsed, &uri);
+    // The case-subject edge is derived by the linking pass, not by construction; the assertion
+    // below still guards the "exactly one" part, which is what this test is for.
+    let mut graph = sysml_model::build_graph_from_doc(&parsed, &uri);
+    sysml_model::link_workspace_relationships(&mut graph);
 
     let case_subject_edges: Vec<_> = graph
         .edges_for_uri_as_strings(&uri)
@@ -319,7 +322,7 @@ fn requirement_require_constraint_stays_on_analysis_constraints_attr() {
     let _ = uri;
 }
 
-/// Regression for `UNIFY_CACHE_PROGRESS.md` chunk E: a require constraint's aggregated typed
+/// Regression for `planning/UNIFY_CACHE_PROGRESS.md` B9: a require constraint's aggregated typed
 /// `DeclaredAnalysisConstraint` fact -- not a JSON `analysisConstraints` attribute -- drives the
 /// `requirement_constraint_invalid_membership` diagnostic, for both a firing (missing parameter
 /// type) and non-firing (fully typed parameter) case, with a stable code/severity/range.

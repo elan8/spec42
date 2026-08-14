@@ -11,9 +11,12 @@ use crate::semantic::ast_util::{
     connection_end_expression, declared_multiplicity, span_to_range, subsetting_target,
 };
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::model::{DeclaredFeatureProperties, ElementKind, NodeId, RelationshipKind};
+use crate::semantic::model::{
+    ConstructionOwner, DeclaredFeatureProperties, ElementKind, NodeId, RelationshipKind,
+    SemanticEdge,
+};
 use crate::semantic::relationships::{
-    add_edge_if_both_exist, add_typing_edge_if_exists, try_wire_derivation_connection,
+    add_semantic_edge_once, add_typing_edge_if_exists, try_wire_derivation_connection,
 };
 
 use super::expressions;
@@ -21,6 +24,7 @@ use super::{
     add_node_and_recurse, attach_declared_subsetting_family, attach_feature_properties,
     qualified_name_for_node,
 };
+use crate::semantic::resolution::naming::normalize_for_lookup;
 use crate::semantic::resolution::resolve_expression_endpoint_qualified;
 
 pub(super) fn add_end_decl(
@@ -130,7 +134,7 @@ fn maybe_add_derivation_edge(g: &mut SemanticGraph, uri: &Url, parent_id: &NodeI
     try_wire_derivation_connection(g, uri, parent_id);
 }
 
-pub(super) fn add_connection_edges_from_end_typing(
+pub(crate) fn add_connection_edges_from_end_typing(
     g: &mut SemanticGraph,
     uri: &Url,
     parent_id: &NodeId,
@@ -177,9 +181,27 @@ pub(super) fn add_connection_edges_from_end_typing(
     }
 
     // Binary connections emit one edge; n-ary connections use the first end as hub.
+    //
+    // Inserted once per pair: this runs during construction *and* again after the workspace
+    // merge, because a per-document build cannot resolve an end whose path walks a typing edge
+    // that only exists once every document has been merged. The second run is what makes
+    // `end producer ::> sensor.reading;` reach `Sensor::reading`.
     let source = end_targets[0].clone();
     for target in end_targets.into_iter().skip(1) {
-        let _ = add_edge_if_both_exist(g, uri, &source, &target, RelationshipKind::Connection);
+        let source_id = NodeId::new(uri, normalize_for_lookup(&source));
+        let target_id = NodeId::new(uri, normalize_for_lookup(&target));
+        if g.get_node(&source_id).is_none() || g.get_node(&target_id).is_none() {
+            continue;
+        }
+        let _ = add_semantic_edge_once(
+            g,
+            &source_id,
+            &target_id,
+            SemanticEdge::plain(
+                RelationshipKind::Connection,
+                ConstructionOwner::DocumentConstruction,
+            ),
+        );
     }
 }
 

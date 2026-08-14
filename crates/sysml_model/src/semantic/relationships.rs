@@ -135,14 +135,14 @@ pub(crate) fn record_declared_relationship_target(
 /// Prefers a direct qualified-name hit, then inherited-member resolution via the owner.
 ///
 /// `g.node_ids_by_qualified_name` entries are maintained in canonical `NodeId` order
-/// (`ROUNDTRIP_SEMGRAPH_PREREQS.md` §6, `semantic::graph::insert_canonical`), so `.find()` below
+/// (`planning/ROUNDTRIP_SEMGRAPH_PREREQS.md` §6, `semantic::graph::insert_canonical`), so `.find()` below
 /// always picks the same candidate for the same qualified-name bucket regardless of document
 /// merge order or build parallelism -- it is no longer an accidental insertion-order pick. This
 /// function's signature (`Option<NodeId>`, no ambiguous variant) predates that guarantee and
 /// still cannot *report* a genuine multi-candidate qualified-name collision as ambiguous the way
 /// [`crate::semantic::reference_resolution::ResolveResult`] does elsewhere; it silently takes the
 /// canonically-first non-source candidate. That residual gap is unchanged by B3 and is called out
-/// in `ROUNDTRIP_SEMGRAPH_PREREQS.md` follow-up notes rather than fixed here, since typing it
+/// in `planning/ROUNDTRIP_SEMGRAPH_PREREQS.md` follow-up notes rather than fixed here, since typing it
 /// properly would require `Subsetting`/`Redefinition`/`ReferenceSubsetting`/`CrossSubsetting`
 /// edges to carry an ambiguous-target outcome, which is an edge-model change outside B3's scope.
 fn resolve_subsetting_family_target(
@@ -662,7 +662,35 @@ pub fn link_workspace_relationships(g: &mut SemanticGraph) {
         try_wire_derivation_connection(g, &connection_id.uri, &connection_id);
     }
 
+    rewire_connection_ends_after_merge(g);
     link_case_subject_relationships(g);
+}
+
+/// Re-derives connection edges from connector ends once the workspace is merged.
+///
+/// A connection end redefined to a nested feature path (`end producer ::> sensor.reading;`) can
+/// only be walked when `sensor`'s typing edge exists, and during a per-document build it may not
+/// yet -- the same reason derivation connections are re-wired above. The synthesis inserts each
+/// edge at most once, so running it a second time adds nothing for ends that already resolved.
+fn rewire_connection_ends_after_merge(g: &mut SemanticGraph) {
+    let connection_ids: Vec<NodeId> = sorted_node_ids(g)
+        .into_iter()
+        .filter(|node_id| {
+            g.get_node(node_id).is_some_and(|node| {
+                matches!(
+                    node.element_kind,
+                    ElementKind::Connection | ElementKind::Interface
+                )
+            })
+        })
+        .collect();
+    for connection_id in connection_ids {
+        crate::semantic::graph_builder::interface_def::add_connection_edges_from_end_typing(
+            g,
+            &connection_id.uri,
+            &connection_id,
+        );
+    }
 }
 
 /// Wire derivation connections after a full parallel cross-document edge resolution.
@@ -707,4 +735,5 @@ pub fn link_workspace_derivations(g: &mut SemanticGraph) {
         converged,
         "workspace derivation linking did not converge within {max_passes} passes; semantic graph was not published"
     );
+    rewire_connection_ends_after_merge(g);
 }

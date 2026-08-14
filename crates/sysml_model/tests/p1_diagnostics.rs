@@ -46,7 +46,9 @@ fn emits_incompatible_type_kind_for_part_typed_as_port_def() {
             part engine : CommandPort;
         }
     "#;
-    let diags = diags_for(input);
+    // Asserts on a resolution outcome (redefinition targets, type-kind compatibility), so it
+    // needs the linked graph; `diags_for` builds authored facts only.
+    let diags = linked_diags_for(input);
     assert!(
         has_code(&diags, "incompatible_type_kind"),
         "expected incompatible_type_kind, got {:?}",
@@ -337,7 +339,9 @@ fn part_feature_redefinition_does_not_emit_subset_kind_warnings() {
             }
         }
     "#;
-    let diags = diags_for(input);
+    // Asserts on a resolution outcome (redefinition targets, type-kind compatibility), so it
+    // needs the linked graph; `diags_for` builds authored facts only.
+    let diags = linked_diags_for(input);
     assert!(
         !has_code(&diags, "incompatible_subset_redefine_kind"),
         "part :>> operatorProfile should be valid, got {:?}",
@@ -411,7 +415,9 @@ fn package_connection_usage_resolves_redefined_features_from_its_type() {
             }
         }
     "#;
-    let diags = diags_for(input);
+    // Asserts on a resolution outcome (redefinition targets, type-kind compatibility), so it
+    // needs the linked graph; `diags_for` builds authored facts only.
+    let diags = linked_diags_for(input);
     assert!(
         !has_code(&diags, "unresolved_redefines_target"),
         "typed package connection features should resolve through DataFlowContract, got {:?}",

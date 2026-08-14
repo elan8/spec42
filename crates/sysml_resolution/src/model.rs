@@ -33,10 +33,10 @@ use sysml_v2_parser_next::{
         ImportShape, InOut, InOutDecl, IncludeUseCase, InterfaceDef, InterfaceDefBody,
         InterfaceDefBodyElement, InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement,
         ItemDef, ItemUsage as ParserItemUsage, KermlBindingMember, KermlClassifierDecl,
-        KermlConnectorEnd, KermlConnectorMember, KermlEndMember, KermlFeatureMember,
-        KermlInvariantMember, KermlSuccessionMember, LibraryPackage, Membership,
-        MembershipKind as ParserMembershipKind, MetadataAnnotation, MetadataDef,
-        MetadataUsage as ParserMetadataUsage, Multiplicity, NamespaceDecl, Node,
+        KermlClassifierKeyword, KermlConnectorEnd, KermlConnectorMember, KermlEndMember,
+        KermlFeatureKind, KermlFeatureMember, KermlInvariantMember, KermlSuccessionMember,
+        LibraryPackage, Membership, MembershipKind as ParserMembershipKind, MetadataAnnotation,
+        MetadataDef, MetadataUsage as ParserMetadataUsage, Multiplicity, NamespaceDecl, Node,
         OccurrenceBodyElement, OccurrenceDef, OccurrencePortionKind as ParserOccurrencePortionKind,
         OccurrenceUsage as ParserOccurrenceUsage, OccurrenceUsageBody, Package, PackageBody,
         PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement, PartUsage, PartUsageBody,
@@ -97,7 +97,7 @@ enum ConstructionError {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-enum DeclarationKind {
+pub(crate) enum DeclarationKind {
     Namespace,
     Package,
     LibraryPackage,
@@ -399,6 +399,21 @@ enum DeclarationKind {
     /// (planning/UPSTREAM_PARSER_GAPS.md #4): `ConstraintUsage` previously had no `subsets`/`redefines`
     /// fields at all.
     ConstraintUsage,
+    /// An `assert constraint <name>? { ... }` member.
+    ///
+    /// OMG `AssertConstraintUsage`, a concrete metaclass in its own right
+    /// (`AssertConstraintUsage <: Invariant, ConstraintUsage`) rather than a plain constraint.
+    AssertConstraintUsage,
+    /// An `assume constraint <name>? { ... }` member of a requirement body.
+    ///
+    /// OMG `ConstraintUsage` owned by a `RequirementConstraintMembership` whose `kind` is
+    /// `assumption`; the keyword is the only thing that distinguishes it from the `require` form,
+    /// so it needs its own declaration kind for that role to be derivable.
+    AssumeConstraintUsage,
+    /// A `require constraint <name>? { ... }` member of a requirement body.
+    ///
+    /// As above, with `RequirementConstraintMembership.kind` = `requirement`.
+    RequireConstraintUsage,
     /// `concern def` (BNF ConcernDefinition, Clause 8.2.2.11): a type whose owned members share
     /// `RequirementDefBody`/`RequirementDefBodyElement` with `RequirementDefinition`, mirroring
     /// `lower_viewpoint_def`. The parser models both `concern def` and `concern` under a single
@@ -661,27 +676,65 @@ enum DeclarationKind {
     /// merely an unresolved reference, mirroring `Satisfy::inline_requirement`'s own scope boundary)
     /// is out of scope and left as an explicit unsupported-member diagnostic.
     VerifyRequirement,
-    /// A bodied KerML classifier declaration (`KermlClassifierDecl`), e.g. `function isZero
-    /// specializes DataFunctions::isZero { ... }`, `struct S { ... }`, `assoc A { ... }`,
-    /// `behavior B { ... }`, `interaction I { ... }`, `predicate P { ... }`, `multiplicity m
-    /// [0..1] { ... }`, `subclassifier`/`classifier`/`class`/`assoc struct` bodied forms. Mirrors
-    /// `ClassDefinition` lowering: ownership, an optional `specializes` relationship, and
-    /// owned-member structure through the shared `lower_calc_def_body` walker (the same body
-    /// grammar `calc def` uses). The distinct keyword spellings (`KermlClassifierKeyword`) are
-    /// not modeled as separate `DeclarationKind` variants -- they share identical structural
-    /// semantics (name, specialization, owned members). Header `type_relationships` (`disjoint
-    /// from`/`unions`/`intersects`) are out of scope for this slice.
+    // --- Bodied KerML classifier declarations (`KermlClassifierDecl`) ---------------------
+    //
+    // One variant per metaclass the declaration's keyword denotes. KerML makes these distinct
+    // concrete metaclasses in a subtype lattice -- `Predicate <: Function <: Behavior <: Class
+    // <: Classifier <: Type`, `Structure <: Class`, `Interaction <: Association, Behavior`,
+    // `Multiplicity <: Feature` -- so a single bucket would erase real metaclass identity.
+    // `ast::KermlClassifierDecl.keyword` already carries the spelling; the lowering reads it.
+    //
+    // All of them share one lowering shape (ownership, an optional `specializes` relationship,
+    // and owned members through the shared `lower_calc_def_body` walker). Header
+    // `type_relationships` (`disjoint from`/`unions`/`intersects`) remain out of scope.
+    /// `classifier C { ... }`, and the `subclassifier` dialect shorthand. KerML `Classifier`.
     KermlClassifier,
-    /// A bare/bodied KerML feature member (`KermlFeatureMember`), e.g. `feature x : Integer;`,
-    /// `derived var feature annotatedElement : Element[1..*] ordered redefines
-    /// annotatedElement;`, `step performances : Performance[0..*] subsets occurrences { ... }`.
-    /// Mirrors `ReferenceUsage`/`AttributeUsage` lowering: ownership, membership, an optional
-    /// `:` typing target (`FeatureTyping`), and `subsets`/`redefines` relationships, with owned
-    /// members walked through the shared `lower_calc_def_body` (the same body grammar `calc def`
-    /// uses). `is_member`/`is_derived`/`is_abstract`/`is_composite`/`is_portion`/`is_var`/
-    /// `is_end`/`is_all`/the specific `KermlFeatureKind` spelling/`references`/`chains`/
-    /// `inverse_of`/`type_relationships` are not modeled as distinct facts here.
+    /// `class C { ... }` in the KerML fallback grammar. KerML `Class`.
+    KermlClass,
+    /// `struct S { ... }`. KerML `Structure`.
+    KermlStructure,
+    /// `assoc A { ... }`. KerML `Association`.
+    KermlAssociation,
+    /// `assoc struct L { ... }`. KerML `AssociationStructure`.
+    KermlAssociationStructure,
+    /// `datatype D { ... }`. KerML `DataType`.
+    KermlDataType,
+    /// `metaclass M { ... }`. KerML `Metaclass`.
+    KermlMetaclass,
+    /// `behavior B { ... }`. KerML `Behavior`.
+    KermlBehavior,
+    /// `function isZero specializes DataFunctions::isZero { ... }`. KerML `Function`.
+    KermlFunction,
+    /// `predicate P { ... }`. KerML `Predicate`.
+    KermlPredicate,
+    /// `interaction I { ... }`. KerML `Interaction`.
+    KermlInteraction,
+    /// The bodied `multiplicity m [0..1] { ... }` form. KerML `Multiplicity`.
+    ///
+    /// The bare `;` form stays on `ast::KermlBareDeclaration` and is still unsupported; see
+    /// `UPSTREAM_PARSER_GAPS.md` Gap 13.
+    KermlMultiplicity,
+
+    // --- KerML feature members (`KermlFeatureMember`) ------------------------------------
+    //
+    // Likewise one variant per metaclass the kind keyword denotes: `BooleanExpression <:
+    // Expression <: Step <: Feature`. `ast::KermlFeatureMember.kind` carries the spelling.
+    //
+    // Shared lowering shape: ownership, membership, an optional `:` typing target
+    // (`FeatureTyping`), `subsets`/`redefines` relationships, and owned members through
+    // `lower_calc_def_body`. `references`/`chains`/`inverse_of`/`type_relationships` are still
+    // not modeled as distinct facts.
+    /// `feature x : Integer;`, `derived var feature annotatedElement : Element[1..*] ordered
+    /// redefines annotatedElement;`. KerML `Feature`.
     KermlFeature,
+    /// `step performances : Performance[0..*] subsets occurrences { ... }`. KerML `Step`.
+    KermlStep,
+    /// `expr evaluations : Evaluation[0..*] nonunique subsets performances { ... }`. KerML
+    /// `Expression`.
+    KermlExpression,
+    /// `bool earlierFirstIncomingTransferSort : IncomingTransferSort { ... }`. KerML
+    /// `BooleanExpression`.
+    KermlBooleanExpression,
     /// A keyword-less `<name> = <expr>;` / `<name> : <Type>;` binding (`DefaultReferenceUsage`,
     /// BNF §8.2.2.6 / Spec §7.6.4), e.g. `baseType = Atom meta KerML::Classifier;` (KerML
     /// `metaclass` body) or the anonymous leading-redefinition form `:>> dimension =
@@ -2363,6 +2416,39 @@ fn portion_kind_fact(kind: Option<&ParserOccurrencePortionKind>) -> Option<Porti
     match kind? {
         ParserOccurrencePortionKind::Snapshot => Some(PortionKind::Snapshot),
         ParserOccurrencePortionKind::Timeslice => Some(PortionKind::Timeslice),
+    }
+}
+
+/// Maps a bodied KerML classifier's keyword to the metaclass it denotes.
+///
+/// `subclassifier` is a dialect shorthand for `classifier` (see `KermlClassifierKeyword`'s own doc
+/// comments), so both denote KerML `Classifier`; every other keyword denotes a distinct metaclass.
+fn kerml_classifier_kind(keyword: &KermlClassifierKeyword) -> DeclarationKind {
+    match keyword {
+        KermlClassifierKeyword::Classifier | KermlClassifierKeyword::Subclassifier => {
+            DeclarationKind::KermlClassifier
+        }
+        KermlClassifierKeyword::Class => DeclarationKind::KermlClass,
+        KermlClassifierKeyword::Struct => DeclarationKind::KermlStructure,
+        KermlClassifierKeyword::Assoc => DeclarationKind::KermlAssociation,
+        KermlClassifierKeyword::AssocStruct => DeclarationKind::KermlAssociationStructure,
+        KermlClassifierKeyword::Datatype => DeclarationKind::KermlDataType,
+        KermlClassifierKeyword::Metaclass => DeclarationKind::KermlMetaclass,
+        KermlClassifierKeyword::Behavior => DeclarationKind::KermlBehavior,
+        KermlClassifierKeyword::Function => DeclarationKind::KermlFunction,
+        KermlClassifierKeyword::Predicate => DeclarationKind::KermlPredicate,
+        KermlClassifierKeyword::Interaction => DeclarationKind::KermlInteraction,
+        KermlClassifierKeyword::Multiplicity => DeclarationKind::KermlMultiplicity,
+    }
+}
+
+/// Maps a KerML feature member's kind keyword to the metaclass it denotes.
+fn kerml_feature_kind(kind: &KermlFeatureKind) -> DeclarationKind {
+    match kind {
+        KermlFeatureKind::Feature => DeclarationKind::KermlFeature,
+        KermlFeatureKind::Step => DeclarationKind::KermlStep,
+        KermlFeatureKind::Expr => DeclarationKind::KermlExpression,
+        KermlFeatureKind::Bool => DeclarationKind::KermlBooleanExpression,
     }
 }
 
@@ -4866,7 +4952,7 @@ impl SemanticModelBuilder {
         let declaration = self.push_typed_declaration(
             document,
             owner,
-            DeclarationKind::KermlClassifier,
+            kerml_classifier_kind(&node.value.keyword),
             name,
             node.span.clone(),
             DeclarationFacts {
@@ -4914,7 +5000,7 @@ impl SemanticModelBuilder {
         let declaration = self.push_typed_declaration(
             document,
             owner,
-            DeclarationKind::KermlFeature,
+            kerml_feature_kind(&node.value.kind),
             name,
             node.span.clone(),
             DeclarationFacts {
@@ -11488,12 +11574,12 @@ impl SemanticModelBuilder {
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
-            DeclarationKind::ConstraintUsage,
+            DeclarationKind::AssertConstraintUsage,
             name,
             node.span.clone(),
-            // `ast::AssertConstraintMember` carries only `is_negated`, an assertion-polarity fact
-            // rather than a declaration modifier, and the negated form is routed to the
-            // unsupported diagnostic above.
+            // `ast::AssertConstraintMember`'s remaining field is `is_negated`, an
+            // assertion-polarity fact rather than a declaration modifier, and the negated form is
+            // routed to the unsupported diagnostic above.
             DeclarationFacts::none(),
         )?;
         self.push_membership(
@@ -11568,11 +11654,16 @@ impl SemanticModelBuilder {
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
-            DeclarationKind::ConstraintUsage,
+            if node.value.is_assume {
+                DeclarationKind::AssumeConstraintUsage
+            } else {
+                DeclarationKind::RequireConstraintUsage
+            },
             name,
             node.span.clone(),
-            // `ast::RequireConstraint` carries only `is_assume`/`has_constraint_keyword`, which
-            // select the authored form rather than modify the declaration.
+            // `has_constraint_keyword` selects the authored form (checked above) rather than
+            // modifying the declaration; `is_assume` rides the declaration kind, because it is
+            // what makes `RequirementConstraintMembership.kind` derivable.
             DeclarationFacts::none(),
         )?;
         self.push_membership(
@@ -13013,6 +13104,7 @@ impl SemanticModelBuildCoordinator {
     }
 }
 
+mod element_kind;
 pub(crate) mod resolver;
 
 #[cfg(test)]
@@ -16073,13 +16165,76 @@ mod tests {
              }\n",
         );
         assert!(
-            output.contains("(qualified-name \"Demo::Widget\"))) (kind kerml-classifier)"),
-            "expected a kerml-classifier declaration for struct Widget, got:\n{output}"
+            output.contains("(qualified-name \"Demo::Widget\"))) (kind kerml-structure)"),
+            "expected `struct Widget` to lower as KerML `Structure`, not a generic classifier \
+             bucket, got:\n{output}"
         );
         assert!(
             output.contains("(qualified-name \"Demo::Widget::mass\"))) (kind attribute)"),
             "expected an owned attribute declaration under the struct, got:\n{output}"
         );
+    }
+
+    /// Each KerML classifier keyword denotes its own concrete metaclass -- the spec makes them a
+    /// subtype lattice (`Predicate <: Function <: Behavior <: Class <: Classifier`,
+    /// `Structure <: Class`, `Interaction <: Association, Behavior`, `Multiplicity <: Feature`) --
+    /// and `ast::KermlClassifierDecl.keyword` already carries the spelling, so none of them may
+    /// collapse into a shared bucket.
+    #[test]
+    fn each_kerml_classifier_keyword_lowers_to_its_own_metaclass() {
+        for (source, kind) in [
+            ("classifier K;", "kerml-classifier"),
+            ("subclassifier K;", "kerml-classifier"),
+            ("struct K;", "kerml-structure"),
+            ("assoc K;", "kerml-association"),
+            ("assoc struct K;", "kerml-association-structure"),
+            ("datatype K;", "kerml-datatype"),
+            ("metaclass K;", "kerml-metaclass"),
+            ("behavior K;", "kerml-behavior"),
+            ("function K;", "kerml-function"),
+            ("predicate K;", "kerml-predicate"),
+            ("interaction K;", "kerml-interaction"),
+            ("multiplicity K [0..1];", "kerml-multiplicity"),
+        ] {
+            // A body forces the typed `KermlClassifierDecl` production; the bare `;` form is still
+            // an opaque parser fallback (UPSTREAM_PARSER_GAPS.md Gap 13).
+            let bodied = source.replace(';', " { }");
+            let output = build_semantic_sexpr(&format!("package Demo {{\n\t{bodied}\n}}\n"));
+            assert!(
+                output.contains(&format!("(qualified-name \"Demo::K\"))) (kind {kind})")),
+                "expected `{bodied}` to lower as {kind}, got:\n{output}"
+            );
+        }
+
+        // A plain `class K { }` is claimed by the dedicated `class_def` production, so it lowers
+        // as `ClassDefinition`; `KermlClassifierKeyword::Class` is reached only for the shapes
+        // `class_def` rejects (see that variant's own doc comment).
+        let class_def = build_semantic_sexpr("package Demo {\n\tclass K { }\n}\n");
+        assert!(
+            class_def.contains("(qualified-name \"Demo::K\"))) (kind class-def)"),
+            "expected plain `class` to keep using the dedicated class-def production, got:\n\
+             {class_def}"
+        );
+    }
+
+    /// The same, for the KerML feature kind keywords: `BooleanExpression <: Expression <: Step <:
+    /// Feature` are four distinct metaclasses, carried by `ast::KermlFeatureMember.kind`.
+    #[test]
+    fn each_kerml_feature_keyword_lowers_to_its_own_metaclass() {
+        for (source, kind) in [
+            ("feature f : Real;", "kerml-feature"),
+            ("step f : Real;", "kerml-step"),
+            ("expr f : Real;", "kerml-expression"),
+            ("bool f : Real;", "kerml-boolean-expression"),
+        ] {
+            let output = build_semantic_sexpr(&format!(
+                "package Demo {{\n\tstruct S {{\n\t\tderived {source}\n\t}}\n}}\n"
+            ));
+            assert!(
+                output.contains(&format!("(qualified-name \"Demo::S::f\"))) (kind {kind})")),
+                "expected `{source}` to lower as {kind}, got:\n{output}"
+            );
+        }
     }
 
     #[test]
@@ -16109,8 +16264,8 @@ mod tests {
              }\n",
         );
         assert!(
-            output.contains("(qualified-name \"Demo::Outer::Inner\"))) (kind kerml-classifier)"),
-            "expected a nested kerml-classifier declaration inside the calc def, got:\n{output}"
+            output.contains("(qualified-name \"Demo::Outer::Inner\"))) (kind kerml-structure)"),
+            "expected a nested `struct` declaration inside the calc def, got:\n{output}"
         );
     }
 
@@ -16438,7 +16593,7 @@ mod tests {
              }\n",
         );
         assert!(
-            output.contains("(qualified-name \"Demo::C::check\"))) (kind constraint)"),
+            output.contains("(qualified-name \"Demo::C::check\"))) (kind assert-constraint)"),
             "expected an assert-constraint declaration for check, got:\n{output}"
         );
         assert!(

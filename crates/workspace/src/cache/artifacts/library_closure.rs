@@ -1,4 +1,4 @@
-//! `LibraryClosure` cache artifact (`UNIFY_CACHE_PLAN.md` §6.4).
+//! `LibraryClosure` cache artifact (`planning/UNIFY_CACHE_PLAN.md` §6.4).
 //!
 //! Key inputs: the complete workspace source root (conservatively committing all workspace
 //! text, via [`source_identity::RootDigest`]); the ordered [`ArtifactKey`]s of the library
@@ -16,7 +16,7 @@
 //! `LibraryClosurePolicy` is the single canonical policy this module defines. Routing every
 //! production surface through it is plan step 5 (`SemanticBuildService`), out of scope here. See
 //! the module docs below for the concrete existing call sites that currently diverge from a
-//! single policy — that divergence is exactly what `UNIFY_CACHE_PLAN.md` §1 and §6.4 describe.
+//! single policy — that divergence is exactly what `planning/UNIFY_CACHE_PLAN.md` §1 and §6.4 describe.
 //!
 //! ## Step 5 work list: existing call sites that must be routed through this policy
 //!

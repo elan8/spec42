@@ -1,7 +1,7 @@
 //! Regression coverage proving `TransitionEndpointFacts` (the typed replacement for the removed
 //! `source`/`target` JSON attributes on `Transition` nodes) drives
 //! `sysml_diagnostics::behavior_conformance` for both a resolved and an unresolved transition
-//! endpoint. See `ROUNDTRIP_SEMGRAPH_PREREQS.md` section B9.
+//! endpoint. See `planning/ROUNDTRIP_SEMGRAPH_PREREQS.md` section B9.
 
 use sysml_diagnostics::{collect_diagnostics_from_graph, DiagnosticSeverity, DiagnosticsOptions};
 use sysml_model::{

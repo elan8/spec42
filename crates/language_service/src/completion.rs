@@ -1,6 +1,7 @@
 use std::collections::HashSet;
 
 use sysml_model::{TextPosition, TextRange};
+use sysml_query::resolved_slice::ElementKind;
 use url::Url;
 
 use crate::dto::{
@@ -8,18 +9,45 @@ use crate::dto::{
     CompletionResult, CompletionTextEditDto,
 };
 use crate::keywords::{keyword_doc, sysml_keywords};
-use crate::references::TYPE_LOOKUP_KINDS;
 use crate::text::{completion_prefix, line_prefix_at_position};
 use crate::workspace::WorkspaceSnapshot;
 
-pub const PART_TYPE_LOOKUP_KINDS: &[&str] = &["part def"];
-pub const PORT_TYPE_LOOKUP_KINDS: &[&str] = &["port def", "interface"];
-pub const ATTRIBUTE_TYPE_LOOKUP_KINDS: &[&str] = &[
-    "attribute def",
-    "item def",
-    "enum def",
-    "occurrence def",
-    "kermlDecl",
+/// The definition kinds offered when a typed declaration gives no narrower expectation.
+pub const DEFAULT_TYPE_LOOKUP_KINDS: &[ElementKind] = &[
+    ElementKind::PartDefinition,
+    ElementKind::PortDefinition,
+    ElementKind::InterfaceDefinition,
+    ElementKind::ItemDefinition,
+    ElementKind::AttributeDefinition,
+    ElementKind::ActionDefinition,
+    ElementKind::OccurrenceDefinition,
+    ElementKind::FlowConnectionDefinition,
+    ElementKind::AllocationDefinition,
+    ElementKind::StateDefinition,
+    ElementKind::RequirementDefinition,
+    ElementKind::UseCaseDefinition,
+    ElementKind::ConcernDefinition,
+    ElementKind::Classifier,
+    ElementKind::Class,
+    ElementKind::Structure,
+    ElementKind::DataType,
+];
+pub const PART_TYPE_LOOKUP_KINDS: &[ElementKind] = &[ElementKind::PartDefinition];
+pub const PORT_TYPE_LOOKUP_KINDS: &[ElementKind] = &[
+    ElementKind::PortDefinition,
+    ElementKind::InterfaceDefinition,
+];
+pub const ATTRIBUTE_TYPE_LOOKUP_KINDS: &[ElementKind] = &[
+    ElementKind::AttributeDefinition,
+    ElementKind::ItemDefinition,
+    ElementKind::EnumerationDefinition,
+    ElementKind::OccurrenceDefinition,
+    // What the former `"kermlDecl"` string stood for. The KerML declaration kinds are now
+    // distinct metaclasses, so name the ones that can actually type an attribute.
+    ElementKind::DataType,
+    ElementKind::Classifier,
+    ElementKind::Class,
+    ElementKind::Structure,
 ];
 const DECLARATION_MODIFIER_KEYWORDS: &[&str] = &["def"];
 
@@ -40,7 +68,7 @@ pub enum CompletionContext {
     TypeReference {
         prefix: String,
         qualifier: Option<String>,
-        expected_kinds: &'static [&'static str],
+        expected_kinds: &'static [ElementKind],
     },
     QualifiedReference {
         prefix: String,
@@ -84,6 +112,11 @@ impl CompletionContext {
 struct CompletionCandidate {
     label: String,
     item: CompletionItemDto,
+    /// The candidate's published element kind, where it came from a model member.
+    ///
+    /// Ranking matches on this rather than on `item.detail`, which is an English label built for
+    /// display. Comparing display text was how the kind filter silently stopped matching.
+    element_kind: Option<ElementKind>,
     tier: i32,
     score: i32,
 }
@@ -232,7 +265,7 @@ fn completion_token(trimmed_line_prefix: &str) -> (usize, &str) {
 fn detect_type_reference_context(
     before_token: &str,
     raw_token: &str,
-) -> Option<(&'static [&'static str], Option<String>, String)> {
+) -> Option<(&'static [ElementKind], Option<String>, String)> {
     let before_trimmed = before_token.trim_end();
     if !before_trimmed.ends_with(':') || before_trimmed.ends_with("::") {
         return None;
@@ -243,7 +276,7 @@ fn detect_type_reference_context(
         "part" => PART_TYPE_LOOKUP_KINDS,
         "port" => PORT_TYPE_LOOKUP_KINDS,
         "attribute" => ATTRIBUTE_TYPE_LOOKUP_KINDS,
-        _ => TYPE_LOOKUP_KINDS,
+        _ => DEFAULT_TYPE_LOOKUP_KINDS,
     };
 
     let (qualifier, prefix) = if let Some((qualifier, prefix)) = raw_token.rsplit_once("::") {
@@ -474,6 +507,7 @@ fn snippet_candidate(
     let documentation = documentation.into();
     CompletionCandidate {
         label: label.to_string(),
+        element_kind: None,
         item: CompletionItemDto {
             label: label.to_string(),
             kind: Some(kind),
@@ -514,6 +548,7 @@ fn collect_keyword_candidates(
     for keyword in keywords {
         out.push(CompletionCandidate {
             label: (*keyword).to_string(),
+            element_kind: None,
             item: CompletionItemDto {
                 label: (*keyword).to_string(),
                 kind: Some(CompletionItemKindDto::Keyword),
@@ -622,7 +657,7 @@ fn collect_symbol_candidates(
         if !prefix.is_empty() && !name.to_lowercase().contains(&prefix) {
             continue;
         }
-        let detail = Some(query_kind_label(&member.kind).to_string());
+        let detail = Some(query_kind_label(member.kind).to_string());
         let documentation = Some(format!(
             "**{}**\n\nQualified name: `{}`",
             name, member.qualified_name
@@ -635,9 +670,10 @@ fn collect_symbol_candidates(
                 .map(ToString::to_string)
                 .or_else(|| Some(member.declaring_document.to_string())),
         });
-        let kind = Some(element_kind_to_completion_kind(&member.kind));
+        let kind = Some(element_kind_to_completion_kind(member.kind));
         out.push(CompletionCandidate {
             label: name.clone(),
+            element_kind: Some(member.kind),
             item: CompletionItemDto {
                 label: name.clone(),
                 kind,
@@ -677,42 +713,90 @@ fn collect_symbol_candidates(
     }
 }
 
-fn element_kind_to_completion_kind(kind: &str) -> CompletionItemKindDto {
+/// The editor icon for a published element kind.
+///
+/// Takes `ElementKind` rather than a string: this function used to match display labels such as
+/// `"part def"` while being handed the raw debug spelling `"PartDefinition"`, so no arm ever fired
+/// and every completion item was rendered as `Reference`. With the enum the mismatch cannot be
+/// expressed.
+fn element_kind_to_completion_kind(kind: ElementKind) -> CompletionItemKindDto {
     match kind {
-        "package" => CompletionItemKindDto::Module,
-        "part def" => CompletionItemKindDto::Class,
-        "port def" | "interface" => CompletionItemKindDto::Interface,
-        "action def" => CompletionItemKindDto::Function,
-        "attribute def" | "attribute" => CompletionItemKindDto::Property,
-        "part" | "item" => CompletionItemKindDto::Variable,
-        "requirement def" | "case def" | "analysis def" => CompletionItemKindDto::Event,
+        ElementKind::Package | ElementKind::LibraryPackage | ElementKind::Namespace => {
+            CompletionItemKindDto::Module
+        }
+        ElementKind::PartDefinition
+        | ElementKind::ItemDefinition
+        | ElementKind::OccurrenceDefinition
+        | ElementKind::IndividualDefinition
+        | ElementKind::Definition
+        | ElementKind::Class
+        | ElementKind::Classifier
+        | ElementKind::Structure
+        | ElementKind::Association
+        | ElementKind::AssociationStructure
+        | ElementKind::DataType
+        | ElementKind::Metaclass => CompletionItemKindDto::Class,
+        ElementKind::PortDefinition
+        | ElementKind::InterfaceDefinition
+        | ElementKind::InterfaceUsage => CompletionItemKindDto::Interface,
+        ElementKind::ActionDefinition
+        | ElementKind::ActionUsage
+        | ElementKind::CalculationDefinition
+        | ElementKind::CalculationUsage
+        | ElementKind::Behavior
+        | ElementKind::Function
+        | ElementKind::Predicate
+        | ElementKind::Interaction
+        | ElementKind::Step
+        | ElementKind::Expression
+        | ElementKind::BooleanExpression => CompletionItemKindDto::Function,
+        ElementKind::AttributeDefinition | ElementKind::AttributeUsage | ElementKind::Feature => {
+            CompletionItemKindDto::Property
+        }
+        ElementKind::PartUsage
+        | ElementKind::ItemUsage
+        | ElementKind::OccurrenceUsage
+        | ElementKind::PortUsage
+        | ElementKind::ReferenceUsage
+        | ElementKind::ForLoopVariable => CompletionItemKindDto::Variable,
+        ElementKind::RequirementDefinition
+        | ElementKind::CaseDefinition
+        | ElementKind::AnalysisCaseDefinition
+        | ElementKind::UseCaseDefinition
+        | ElementKind::VerificationCaseDefinition
+        | ElementKind::ConcernDefinition
+        | ElementKind::ConstraintDefinition => CompletionItemKindDto::Event,
+        // `CompletionItemKindDto` has no `Enum` variant; an enumeration definition is a
+        // classifier, so `Class` is the closest available icon.
+        ElementKind::EnumerationDefinition => CompletionItemKindDto::Class,
         _ => CompletionItemKindDto::Reference,
     }
 }
 
-fn query_kind_label(kind: &str) -> &str {
+/// The surface-syntax label shown in a completion item's detail text.
+fn query_kind_label(kind: ElementKind) -> &'static str {
     match kind {
-        "PartDefinition" => "part def",
-        "PortDefinition" => "port def",
-        "InterfaceDefinition" => "interface def",
-        "ItemDefinition" => "item def",
-        "AttributeDefinition" => "attribute def",
-        "ActionDefinition" => "action def",
-        "OccurrenceDefinition" => "occurrence def",
-        "FlowDefinition" => "flow def",
-        "AllocationDefinition" => "allocation def",
-        "StateDefinition" => "state def",
-        "RequirementDefinition" => "requirement def",
-        "UseCaseDefinition" => "use case def",
-        "ConcernDefinition" => "concern def",
-        "EnumerationDefinition" => "enum def",
-        "Package" | "LibraryPackage" => "package",
-        "PartUsage" => "part",
-        "PortUsage" => "port",
-        "ItemUsage" => "item",
-        "AttributeUsage" => "attribute",
-        "ActionUsage" => "action",
-        other => other,
+        ElementKind::PartDefinition => "part def",
+        ElementKind::PortDefinition => "port def",
+        ElementKind::InterfaceDefinition => "interface def",
+        ElementKind::ItemDefinition => "item def",
+        ElementKind::AttributeDefinition => "attribute def",
+        ElementKind::ActionDefinition => "action def",
+        ElementKind::OccurrenceDefinition => "occurrence def",
+        ElementKind::FlowConnectionDefinition => "flow def",
+        ElementKind::AllocationDefinition => "allocation def",
+        ElementKind::StateDefinition => "state def",
+        ElementKind::RequirementDefinition => "requirement def",
+        ElementKind::UseCaseDefinition => "use case def",
+        ElementKind::ConcernDefinition => "concern def",
+        ElementKind::EnumerationDefinition => "enum def",
+        ElementKind::Package | ElementKind::LibraryPackage => "package",
+        ElementKind::PartUsage => "part",
+        ElementKind::PortUsage => "port",
+        ElementKind::ItemUsage => "item",
+        ElementKind::AttributeUsage => "attribute",
+        ElementKind::ActionUsage => "action",
+        other => other.as_str(),
     }
 }
 
@@ -722,7 +806,6 @@ fn rank_candidates_in_place(
     candidates: &mut [CompletionCandidate],
 ) {
     for candidate in candidates {
-        let detail = candidate.item.detail.as_deref();
         let prefix = context.prefix().to_lowercase();
         let label = candidate.label.to_lowercase();
         let starts_with_prefix = !prefix.is_empty() && label.starts_with(&prefix);
@@ -737,7 +820,7 @@ fn rank_candidates_in_place(
 
         let kind_matches_context = match context {
             CompletionContext::TypeReference { expected_kinds, .. } => {
-                entry_kind_matches(detail, expected_kinds)
+                entry_kind_matches(candidate.element_kind, expected_kinds)
             }
             CompletionContext::DeclarationModifier { .. } => candidate.label == "def",
             CompletionContext::BodyStatement { .. } | CompletionContext::TopLevelKeyword { .. } => {
@@ -796,10 +879,8 @@ fn rank_candidates_in_place(
     }
 }
 
-fn entry_kind_matches(detail: Option<&str>, expected_kinds: &[&str]) -> bool {
-    detail
-        .map(|detail| expected_kinds.contains(&detail))
-        .unwrap_or(false)
+fn entry_kind_matches(kind: Option<ElementKind>, expected_kinds: &[ElementKind]) -> bool {
+    kind.is_some_and(|kind| expected_kinds.contains(&kind))
 }
 
 fn dedupe_completion_candidates(candidates: Vec<CompletionCandidate>) -> Vec<CompletionCandidate> {

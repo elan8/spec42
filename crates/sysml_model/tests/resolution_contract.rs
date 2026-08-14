@@ -238,7 +238,7 @@ fn contract_metadata_redefine_shorthand_annotated_element_no_incompatible_type_k
         .expect("annotatedElement attribute");
     // The `:>>` redefinition entails a subsetting per KerML (`Redefinition` specializes
     // `Subsetting`), but nobody authors it -- it must appear as an *implied* graph edge, not a
-    // declared fact (`UNIFY_CACHE_PROGRESS.md` chunk G).
+    // declared fact (`planning/UNIFY_CACHE_PROGRESS.md` B9).
     let edges = graph.edges_for_uri(&uri);
     assert!(
         edges.iter().any(|(source, _target, edge)| {

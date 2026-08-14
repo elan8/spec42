@@ -145,3 +145,18 @@ copy or extend them, but do not broaden an unrelated change solely to remove the
 - Review architectural changes adversarially. Look for a second source of truth, downstream
   re-derivation, hidden recovery, incomplete cache identity, stale publication, nondeterministic
   ordering, boundary leakage, generated-artifact drift, and missing negative or parity coverage.
+
+## Documentation lifecycle
+
+- Planning documents contain only active decisions, blockers, and remaining work. Remove an item
+  when it is completed; do not retain completion summaries, execution diaries, resolved-item
+  indexes, historical context sections, or superseded plans.
+- Git commit messages own implementation history and completed-work rationale. `CHANGELOG.md` may
+  carry one succinct user-visible summary when the change is notable; it is not a substitute for a
+  planning archive.
+- Move reusable lessons into this file as enduring repository policy, or into the authoritative
+  design document when they are lasting properties of the system. Do not preserve them in a
+  completed investigation or progress tracker.
+- Delete a planning or investigation document when it has no live decisions or work. Update or
+  remove inbound references in the same change so completed documents do not survive as accidental
+  authorities.

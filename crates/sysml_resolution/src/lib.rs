@@ -7,7 +7,12 @@ use std::fmt;
 
 use source_identity::{ContentDigest, RootDigest, SourceManifest, SourceManifestEntry, SourceRole};
 
+mod element_kind;
 mod model;
+
+pub use element_kind::{
+    ElementKind, MembershipRole, RequirementConstraintKind, StateSubactionKind,
+};
 
 use model::resolver::ResolvedSemanticModel;
 use model::{BuildSchedule, CoordinatorError, OwnedSourceRecord, SemanticModelBuildCoordinator};
@@ -108,7 +113,10 @@ pub enum RenameOutcome {
 pub struct VisibleMember {
     pub symbol: SymbolIdentity,
     pub name: Box<str>,
-    pub kind: Box<str>,
+    pub kind: ElementKind,
+    /// The role this member plays in its owner, where the OMG carries that on the owning
+    /// membership rather than on the element; `None` for an ordinary member.
+    pub role: Option<MembershipRole>,
     pub qualified_name: Box<str>,
     pub container_name: Option<Box<str>>,
     pub declaring_document: Box<str>,
@@ -939,9 +947,15 @@ mod tests {
         let sexpr = semantic_sexpr_for(
             "package P { attribute massActual; attribute massReqd; requirement def R { require constraint { massActual <= massReqd } assume constraint fuelOk { massActual >= 0 } } }",
         );
+        // The two spellings get their own declaration kinds, because the `assume`/`require`
+        // keyword is the only thing that carries `RequirementConstraintMembership.kind`.
         assert!(
-            sexpr.matches("(kind constraint)").count() >= 2,
-            "expected two constraint declarations (anonymous `require` + named `assume fuelOk`), got: {sexpr}"
+            sexpr.contains("(kind require-constraint)"),
+            "expected a require-constraint declaration for the anonymous `require`, got: {sexpr}"
+        );
+        assert!(
+            sexpr.contains("(qualified-name \"P::R::fuelOk\"))) (kind assume-constraint)"),
+            "expected an assume-constraint declaration for `assume constraint fuelOk`, got: {sexpr}"
         );
         assert!(
             !sexpr.contains("unsupported_requirement_definition_member"),

@@ -1,4 +1,4 @@
-//! `LibraryIndex` cache artifact (`UNIFY_CACHE_PLAN.md` §6.3).
+//! `LibraryIndex` cache artifact (`planning/UNIFY_CACHE_PLAN.md` §6.3).
 //!
 //! Key inputs: ordered library-root content manifests expressed as root slot, relative path, and
 //! content digest — deliberately without absolute install paths, so the index stays reachable

@@ -1,5 +1,5 @@
 //! B11 differential suites (c) and (d): post-edit resume parity and public-query/S-expression
-//! parity (`ROUNDTRIP_SEMGRAPH_PREREQS.md` §7.2/§7.3). Kept as a sibling module to
+//! parity (`planning/ROUNDTRIP_SEMGRAPH_PREREQS.md` §7.2/§7.3). Kept as a sibling module to
 //! `graph_state_fingerprint` (rather than folded into its own `tests` submodule) because these
 //! suites are large enough to want their own fixtures and are conceptually a second, larger
 //! deliverable per the B11 brief ("this is the real deliverable, not the fingerprint struct
@@ -9,7 +9,7 @@
 //! single scoped/incremental edit, and compares against a **fresh full rebuild of the resulting
 //! document set** -- not against another incrementally-assembled graph. This is what actually
 //! exercises "does a resumed/incrementally-edited graph match a full rebuild", matching
-//! `ROUNDTRIP_SEMGRAPH_PREREQS.md` §7.3's explicit requirement that the rename-away/restore case
+//! `planning/ROUNDTRIP_SEMGRAPH_PREREQS.md` §7.3's explicit requirement that the rename-away/restore case
 //! "must begin from a normal full-build graph, not only a graph assembled one document at a
 //! time".
 #![cfg(test)]
@@ -60,7 +60,7 @@ fn remove_document(graph: &mut SemanticGraph, uri: &Url) {
 
 /// Asserts `graph` (after some scoped edit) agrees with a fresh full rebuild of `documents` on
 /// every query surface this suite covers: the S-expression oracle, the `GraphStateFingerprint`
-/// oracle, and a representative sample of `ROUNDTRIP_SEMGRAPH_PREREQS.md` §7.2's named query
+/// oracle, and a representative sample of `planning/ROUNDTRIP_SEMGRAPH_PREREQS.md` §7.2's named query
 /// categories (node/relationship queries, containment, imports, type resolution, inherited
 /// members, standard-library facts, units, evaluation queries).
 fn assert_matches_full_rebuild(graph: &SemanticGraph, documents: &[SysmlDocument], step: &str) {
