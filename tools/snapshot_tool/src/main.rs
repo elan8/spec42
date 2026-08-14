@@ -11,8 +11,8 @@ use std::path::{Path, PathBuf};
 use clap::{Parser, Subcommand};
 use rayon::prelude::*;
 use sysml_query::resolved_slice::{
-    build as build_published_model, BuildRequest, ConstructionStrategy, PublishedModel,
-    SourceDocument as QuerySourceDocument, SourceKind,
+    build as build_published_model, BuildRequest, ConstructionStrategy, EditorProbe,
+    PublishedModel, SourceDocument as QuerySourceDocument, SourceKind, TextPosition,
 };
 
 #[derive(Debug, Parser)]
@@ -192,15 +192,18 @@ fn regenerate_snapshot(fixture: &str, path: &Path) -> Result<String, String> {
         })
         .collect::<Result<Vec<_>, _>>()
         .map_err(|error| format!("{}: invalid source: {error}", path.display()))?;
+    let probes = parse_editor_probes(fixture, &documents, fallback_name)?;
     let sequential = render_owned_sections(
         build_model(&source_documents, ConstructionStrategy::Sequential, path)?,
         &documents,
         &source_documents,
+        &probes,
     )?;
     let parallel = render_owned_sections(
         build_model(&source_documents, ConstructionStrategy::Parallel, path)?,
         &documents,
         &source_documents,
+        &probes,
     )?;
     ensure_strategy_parity(path, &sequential, &parallel)?;
 
@@ -210,6 +213,12 @@ fn regenerate_snapshot(fixture: &str, path: &Path) -> Result<String, String> {
         .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?;
     let fixture = replace_or_insert_section(&fixture, "NAVIGATION", &sequential.navigation)
         .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?;
+    let fixture = if probes.is_empty() {
+        fixture
+    } else {
+        replace_or_insert_section(&fixture, "EDITOR RESULTS", &sequential.editor_queries)
+            .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?
+    };
     Ok(canonicalize_sections(&fixture))
 }
 
@@ -217,6 +226,7 @@ struct OwnedSections {
     smg: String,
     diagnostics: String,
     navigation: String,
+    editor_queries: String,
 }
 
 fn build_model(
@@ -234,6 +244,7 @@ fn render_owned_sections(
     model: PublishedModel,
     documents: &[SourceDocument],
     source_documents: &[QuerySourceDocument],
+    probes: &[EditorProbe],
 ) -> Result<OwnedSections, String> {
     // Both strings are complete owner-defined projections. The SMG includes publication phase,
     // completeness, evaluation state, and all owned facts; diagnostics includes canonical order.
@@ -244,10 +255,16 @@ fn render_owned_sections(
         .debug()
         .write_navigation_sexpr(&mut navigation)
         .map_err(|error| format!("navigation rendering failed: {error}"))?;
+    let mut editor_queries = String::new();
+    model
+        .debug()
+        .write_editor_queries_sexpr(probes, &mut editor_queries)
+        .map_err(|error| format!("editor-query rendering failed: {error}"))?;
     Ok(OwnedSections {
         smg,
         diagnostics,
         navigation,
+        editor_queries,
     })
 }
 
@@ -271,6 +288,12 @@ fn ensure_strategy_parity(
     if sequential.navigation != parallel.navigation {
         return Err(format!(
             "{}: sequential and parallel navigation outputs differ",
+            path.display()
+        ));
+    }
+    if sequential.editor_queries != parallel.editor_queries {
+        return Err(format!(
+            "{}: sequential and parallel editor-query outputs differ",
             path.display()
         ));
     }
@@ -336,6 +359,69 @@ fn parse_source_documents(
         .ok_or_else(|| format!("{fallback_name}: malformed SOURCE fence"))
 }
 
+fn parse_editor_probes(
+    fixture: &str,
+    documents: &[SourceDocument],
+    fallback_name: &str,
+) -> Result<Vec<EditorProbe>, String> {
+    let Some(section) = raw_section(fixture, "EDITOR QUERIES") else {
+        return Ok(Vec::new());
+    };
+    let Some((text, _)) = fenced_block(section) else {
+        return Err(format!("{fallback_name}: malformed EDITOR QUERIES fence"));
+    };
+    let mut probes = Vec::new();
+    for (line_index, line) in text.lines().enumerate() {
+        let line = line.trim();
+        if line.is_empty() || line.starts_with('#') {
+            continue;
+        }
+        let mut fields = line.split_whitespace();
+        if fields.next() != Some("probe") {
+            return Err(format!(
+                "{fallback_name}: EDITOR QUERIES line {} must start with `probe`",
+                line_index + 1
+            ));
+        }
+        let document = fields
+            .next()
+            .ok_or_else(|| format!("{fallback_name}: missing probe document"))?;
+        if !documents.iter().any(|candidate| candidate.name == document) {
+            return Err(format!(
+                "{fallback_name}: unknown probe document {document:?}"
+            ));
+        }
+        let line = fields
+            .next()
+            .and_then(|value| value.parse().ok())
+            .ok_or_else(|| format!("{fallback_name}: invalid probe line"))?;
+        let character = fields
+            .next()
+            .and_then(|value| value.parse().ok())
+            .ok_or_else(|| format!("{fallback_name}: invalid probe character"))?;
+        let mut qualifier = None;
+        let mut rename_to = None;
+        for option in fields {
+            if let Some(value) = option.strip_prefix("qualifier=") {
+                qualifier = Some(value.to_string());
+            } else if let Some(value) = option.strip_prefix("rename=") {
+                rename_to = Some(value.to_string());
+            } else {
+                return Err(format!(
+                    "{fallback_name}: unknown editor probe option {option:?}"
+                ));
+            }
+        }
+        probes.push(EditorProbe {
+            document: format!("memory://snapshot/{document}"),
+            position: TextPosition { line, character },
+            qualifier,
+            rename_to,
+        });
+    }
+    Ok(probes)
+}
+
 fn raw_section<'a>(fixture: &'a str, name: &str) -> Option<&'a str> {
     let marker = format!("# {name}\n");
     let start = fixture.find(&marker)? + marker.len();
@@ -359,7 +445,15 @@ fn replace_or_insert_section(fixture: &str, name: &str, replacement: &str) -> Op
 
 /// Canonical top-level Markdown order. SOURCE is authored; the other sections are owned by this
 /// runner. Canonicalization drops sections outside this ownership contract.
-const SECTION_ORDER: &[&str] = &["META", "SOURCE", "DIAGNOSTICS", "SMG", "NAVIGATION"];
+const SECTION_ORDER: &[&str] = &[
+    "META",
+    "SOURCE",
+    "EDITOR QUERIES",
+    "DIAGNOSTICS",
+    "SMG",
+    "NAVIGATION",
+    "EDITOR RESULTS",
+];
 
 fn canonicalize_sections(fixture: &str) -> String {
     let mut sections = Vec::<(&str, &str, usize)>::new();

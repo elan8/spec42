@@ -14,7 +14,7 @@ fn lsp_rename() {
     let uri_def = "file:///rename/def.sysml";
     let uri_use = "file:///rename/use.sysml";
     let content_def = "package P { part def Foo; }";
-    let content_use = "package Q { part f : Foo; }";
+    let content_use = "package Q { import P::*; part f : Foo; }";
 
     let init_id = next_id();
     let init_req = serde_json::json!({

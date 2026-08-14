@@ -553,6 +553,7 @@ mod tests {
         let uri = Url::parse("file:///atomic.sysml").unwrap();
         let mut state = ready_state();
         insert_document(&mut state, &uri, "package Before;");
+        crate::workspace::state::refresh_published_model(&mut state);
         let handle = WorkspaceHandle::spawn(state);
 
         let (edit, warnings) = handle
@@ -592,6 +593,23 @@ mod tests {
                                 snapshot.session.lifecycle(),
                                 workspace::SessionLifecycle::Ready
                             );
+                            let outcome = snapshot
+                                .published_model
+                                .as_ref()
+                                .unwrap()
+                                .navigation()
+                                .target_at(
+                                    uri.as_str(),
+                                    sysml_query::resolved_slice::TextPosition {
+                                        line: 0,
+                                        character: 9,
+                                    },
+                                );
+                            assert!(matches!(
+                                outcome,
+                                sysml_query::resolved_slice::QueryOutcome::Resolved(target)
+                                    if target.name.as_ref() == "Before"
+                            ));
                         }
                         "package After;" => {
                             assert!(snapshot.index[&uri].parsed.is_some());
@@ -600,6 +618,23 @@ mod tests {
                                 workspace::SessionLifecycle::Reindexing
                             );
                             assert!(snapshot.semantic_graph.all_uris().contains(&uri));
+                            let outcome = snapshot
+                                .published_model
+                                .as_ref()
+                                .unwrap()
+                                .navigation()
+                                .target_at(
+                                    uri.as_str(),
+                                    sysml_query::resolved_slice::TextPosition {
+                                        line: 0,
+                                        character: 9,
+                                    },
+                                );
+                            assert!(matches!(
+                                outcome,
+                                sysml_query::resolved_slice::QueryOutcome::Resolved(target)
+                                    if target.name.as_ref() == "After"
+                            ));
                         }
                         other => panic!("unexpected published document text: {other}"),
                     }
@@ -621,6 +656,66 @@ mod tests {
             workspace::SessionLifecycle::Reindexing
         );
         observer.await.unwrap();
+    }
+
+    #[tokio::test]
+    async fn superseded_parse_cannot_replace_the_current_semantic_publication() {
+        let uri = Url::parse("file:///superseded-navigation.sysml").unwrap();
+        let mut state = ready_state();
+        insert_document(&mut state, &uri, "package Before;");
+        crate::workspace::state::refresh_published_model(&mut state);
+        let handle = WorkspaceHandle::spawn(state);
+
+        let stale = PreparedDocumentEdit {
+            uri: uri.clone(),
+            version: 2,
+            base_content: "package Before;".to_string(),
+            content: "package Stale;".to_string(),
+        };
+        let current = PreparedDocumentEdit {
+            uri: uri.clone(),
+            version: 3,
+            base_content: "package Before;".to_string(),
+            content: "package Current;".to_string(),
+        };
+        handle
+            .apply_parsed_document_update(
+                current,
+                crate::common::util::parse_for_editor("package Current;"),
+                1,
+            )
+            .await
+            .unwrap();
+        let (token, warnings) = handle
+            .apply_parsed_document_update(
+                stale,
+                crate::common::util::parse_for_editor("package Stale;"),
+                1,
+            )
+            .await
+            .unwrap();
+        assert!(token.is_none());
+        assert!(warnings.is_empty());
+
+        let snapshot = handle.snapshot();
+        assert_eq!(snapshot.index[&uri].content, "package Current;");
+        let outcome = snapshot
+            .published_model
+            .as_ref()
+            .unwrap()
+            .navigation()
+            .target_at(
+                uri.as_str(),
+                sysml_query::resolved_slice::TextPosition {
+                    line: 0,
+                    character: 9,
+                },
+            );
+        assert!(matches!(
+            outcome,
+            sysml_query::resolved_slice::QueryOutcome::Resolved(target)
+                if target.name.as_ref() == "Current"
+        ));
     }
 
     #[tokio::test]

@@ -4,8 +4,11 @@
 implementation. It owns the opaque published handle and exposes cohesive build, resolution,
 navigation, diagnostics, and debug services. It does not expose a graph, semantic node, resolver
 state, resolution-fact collection, index handle, generic attribute map, or constructor from partial
-semantic state. This first vertical slice does not yet move every consumer or physical query-index
-representation into this crate.
+semantic state. The navigation/edit vertical slice now exposes typed definition/declaration
+targets, reverse references, collision-aware rename ranges, and effective visible-member
+candidates from the parser-owned immutable publication. Language-service and LSP adapters consume
+these services without graph or textual-lookup fallbacks. Other cutover rows and some physical
+query-index representations remain transitional.
 
 The standalone snapshot pipeline now selects only the `immutable-resolution` facade feature. Its
 transitive dependency closure is `sysml_query -> sysml_resolution -> parser-next` and cannot reach

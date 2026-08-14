@@ -1142,6 +1142,7 @@ dependencies = [
  "serde_json",
  "sysml-v2-parser 0.54.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "sysml_model",
+ "sysml_query",
  "tempfile",
  "url",
 ]
@@ -1235,6 +1236,7 @@ dependencies = [
  "sysml-v2-parser 0.54.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "sysml_diagnostics",
  "sysml_model",
+ "sysml_query",
  "sysml_tokens",
  "tempfile",
  "thiserror 2.0.19",

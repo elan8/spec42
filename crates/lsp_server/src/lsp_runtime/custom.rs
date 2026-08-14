@@ -305,11 +305,34 @@ pub(crate) fn sysml_feature_inspector_result(
         &uri,
         core_position,
     ) {
+        let target_uri = snapshot.resolve_uri_for_path(&target.definition_location.path);
+        let target_node = target_uri.as_ref().and_then(|target_uri| {
+            state
+                .semantic_graph
+                .nodes_for_uri(target_uri)
+                .into_iter()
+                .find(|node| {
+                    let node_start = (node.range.start.line, node.range.start.character);
+                    let node_end = (node.range.end.line, node.range.end.character);
+                    let identifier_start = (
+                        target.definition_location.range.start.line,
+                        target.definition_location.range.start.character,
+                    );
+                    let identifier_end = (
+                        target.definition_location.range.end.line,
+                        target.definition_location.range.end.character,
+                    );
+                    node.name == target.name
+                        && node_start <= identifier_start
+                        && identifier_end <= node_end
+                })
+        });
         let is_containing_element_name = containing_node
-            .map(|node| node.id == target.target_id && node.name == word)
+            .zip(target_node)
+            .map(|(node, target_node)| node.id == target_node.id && node.name == word)
             .unwrap_or(false);
         if !is_containing_element_name {
-            if let Some(target_node) = state.semantic_graph.get_node(&target.target_id) {
+            if let Some(target_node) = target_node {
                 response.selection.kind = "reference".to_string();
                 response.selection.range = Some(range_to_dto(target.identifier_range));
                 response.referenced_element =

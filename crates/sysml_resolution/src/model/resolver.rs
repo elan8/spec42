@@ -7,20 +7,12 @@
 //! import barrier converges.
 
 use super::*;
+use crate::{
+    NavigationTarget, OccurrenceRole, PublicationCompleteness as PublicCompleteness, QueryOutcome,
+    RenameOutcome, SourceLocation, SymbolIdentity, TextPosition, TextRange, VisibleMember,
+};
 
 mod writer;
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-struct TextPosition {
-    line: u32,
-    character: u32,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-struct TextRange {
-    start: TextPosition,
-    end: TextPosition,
-}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum ResolutionError {
@@ -432,6 +424,8 @@ fn compute_evaluation(
 #[derive(Debug)]
 pub(crate) struct ResolvedSemanticModel {
     storage: SemanticModelStorage,
+    direct_names: NameIndex,
+    effective_imports: NameIndex,
     resolution: ResolutionResults,
     evaluation: Box<[EvaluationFact]>,
     metadata: PublicationMetadata,
@@ -458,6 +452,380 @@ struct PublicationMetadata {
 }
 
 impl ResolvedSemanticModel {
+    pub(crate) fn completeness(&self) -> PublicCompleteness {
+        match self.metadata.completeness {
+            PublicationCompleteness::Complete => PublicCompleteness::Complete,
+            PublicationCompleteness::ParseRecovery => PublicCompleteness::ParseRecovery,
+            PublicationCompleteness::UnsupportedSyntax => PublicCompleteness::UnsupportedSyntax,
+            PublicationCompleteness::NonConverged => PublicCompleteness::NonConverged,
+        }
+    }
+
+    fn resolved_outcome<T>(&self, value: T) -> QueryOutcome<T> {
+        match self.metadata.completeness {
+            PublicationCompleteness::Complete => QueryOutcome::Resolved(value),
+            PublicationCompleteness::ParseRecovery => QueryOutcome::Recovered(value),
+            PublicationCompleteness::UnsupportedSyntax => QueryOutcome::UnsupportedWith(value),
+            PublicationCompleteness::NonConverged => QueryOutcome::Incomplete,
+        }
+    }
+
+    fn symbol_identity(id: DeclarationId) -> SymbolIdentity {
+        SymbolIdentity(format!("declaration:{}", id.index()).into_boxed_str())
+    }
+
+    fn identity_declaration(identity: &SymbolIdentity) -> Option<DeclarationId> {
+        identity
+            .0
+            .strip_prefix("declaration:")?
+            .parse::<usize>()
+            .ok()
+            .and_then(|index| DeclarationId::from_index(index).ok())
+    }
+
+    fn declaration_target(&self, id: DeclarationId) -> Option<NavigationTarget> {
+        let declaration = self.storage.declaration(id)?;
+        let name = self.storage.symbol(declaration.name?)?;
+        Some(NavigationTarget {
+            symbol: Self::symbol_identity(id),
+            name: name.into(),
+            location: SourceLocation {
+                document: self
+                    .storage
+                    .document(declaration.document)?
+                    .identity
+                    .clone(),
+                range: identifier_range(
+                    &self.storage,
+                    declaration.document,
+                    &declaration.span,
+                    name,
+                )
+                .ok()?,
+                role: OccurrenceRole::Declaration,
+            },
+        })
+    }
+
+    pub(crate) fn target_at(
+        &self,
+        document: &str,
+        position: TextPosition,
+    ) -> QueryOutcome<NavigationTarget> {
+        let Some(document_id) = self
+            .storage
+            .documents
+            .iter()
+            .position(|candidate| candidate.identity.as_ref() == document)
+            .and_then(|index| DocumentId::from_index(index).ok())
+        else {
+            return QueryOutcome::Unresolved;
+        };
+        let mut reference_matches = Vec::new();
+        for (index, reference) in self.storage.references.iter().enumerate() {
+            let Some(source) = self.storage.declaration(reference.source) else {
+                continue;
+            };
+            if source.document != document_id {
+                continue;
+            }
+            let Ok(range) = document_range(&self.storage, document_id, &reference.span) else {
+                continue;
+            };
+            if !range_contains(range, position) {
+                continue;
+            }
+            let Ok(reference_id) = AuthoredReferenceId::from_index(index) else {
+                return QueryOutcome::Incomplete;
+            };
+            match self.resolution.outcome(reference_id) {
+                Some(ResolutionStatus::Resolved(target)) => {
+                    if let Some(target) = self.declaration_target(target) {
+                        reference_matches.push(target);
+                    }
+                }
+                Some(ResolutionStatus::Ambiguous(range)) => {
+                    let mut targets = self
+                        .resolution
+                        .ambiguous_candidates(range)
+                        .iter()
+                        .filter_map(|id| self.declaration_target(*id))
+                        .collect::<Vec<_>>();
+                    targets.sort_by(target_order);
+                    targets.dedup_by(|a, b| a.symbol == b.symbol);
+                    return QueryOutcome::Ambiguous(targets.into_boxed_slice());
+                }
+                Some(ResolutionStatus::Unsupported) => return QueryOutcome::Unsupported,
+                Some(ResolutionStatus::NonConverged) => return QueryOutcome::Incomplete,
+                Some(ResolutionStatus::Unresolved) | None => return QueryOutcome::Unresolved,
+            }
+        }
+        reference_matches.sort_by(target_order);
+        reference_matches.dedup_by(|a, b| a.symbol == b.symbol);
+        if reference_matches.len() == 1 {
+            return self.resolved_outcome(reference_matches.remove(0));
+        }
+        if reference_matches.len() > 1 {
+            return QueryOutcome::Ambiguous(reference_matches.into_boxed_slice());
+        }
+        let mut declarations = self
+            .storage
+            .declarations
+            .iter()
+            .enumerate()
+            .filter_map(|(index, declaration)| {
+                (declaration.document == document_id)
+                    .then(|| {
+                        let id = DeclarationId::from_index(index).ok()?;
+                        let target = self.declaration_target(id)?;
+                        range_contains(target.location.range, position).then_some(target)
+                    })
+                    .flatten()
+            })
+            .collect::<Vec<_>>();
+        declarations.sort_by(target_order);
+        match declarations.len() {
+            0 => QueryOutcome::Unresolved,
+            1 => self.resolved_outcome(declarations.remove(0)),
+            _ => QueryOutcome::Ambiguous(declarations.into_boxed_slice()),
+        }
+    }
+
+    pub(crate) fn references(
+        &self,
+        symbol: &SymbolIdentity,
+        include_declaration: bool,
+    ) -> QueryOutcome<Box<[SourceLocation]>> {
+        if matches!(
+            self.metadata.completeness,
+            PublicationCompleteness::NonConverged
+        ) {
+            return QueryOutcome::Incomplete;
+        }
+        let Some(target) = Self::identity_declaration(symbol) else {
+            return QueryOutcome::Unresolved;
+        };
+        let Some(target_declaration) = self.storage.declaration(target) else {
+            return QueryOutcome::Unresolved;
+        };
+        let mut locations = Vec::new();
+        if include_declaration {
+            if let Some(target) = self.declaration_target(target) {
+                locations.push(target.location);
+            }
+        }
+        for (index, reference) in self.storage.references.iter().enumerate() {
+            let Ok(id) = AuthoredReferenceId::from_index(index) else {
+                return QueryOutcome::Incomplete;
+            };
+            if self.resolution.outcome(id) != Some(ResolutionStatus::Resolved(target)) {
+                continue;
+            }
+            let Some(source) = self.storage.declaration(reference.source) else {
+                return QueryOutcome::Incomplete;
+            };
+            let Some(name) = self
+                .storage
+                .symbol(target_declaration.name.unwrap_or(SymbolId(u32::MAX)))
+            else {
+                return QueryOutcome::Incomplete;
+            };
+            let range = identifier_range(&self.storage, source.document, &reference.span, name)
+                .or_else(|_| document_range(&self.storage, source.document, &reference.span));
+            let Ok(range) = range else {
+                return QueryOutcome::Incomplete;
+            };
+            locations.push(SourceLocation {
+                document: self
+                    .storage
+                    .document(source.document)
+                    .map(|d| d.identity.clone())
+                    .unwrap_or_default(),
+                range,
+                role: OccurrenceRole::Reference,
+            });
+        }
+        locations.sort_by(location_order);
+        locations.dedup();
+        self.resolved_outcome(locations.into_boxed_slice())
+    }
+
+    pub(crate) fn prepare_rename(
+        &self,
+        document: &str,
+        position: TextPosition,
+        new_name: Option<&str>,
+    ) -> RenameOutcome {
+        let target = match self.target_at(document, position) {
+            QueryOutcome::Resolved(target)
+            | QueryOutcome::Recovered(target)
+            | QueryOutcome::UnsupportedWith(target) => target,
+            QueryOutcome::Ambiguous(targets) => return RenameOutcome::Ambiguous(targets),
+            QueryOutcome::Unsupported => return RenameOutcome::Unsupported,
+            QueryOutcome::Recovery => return RenameOutcome::Recovery,
+            QueryOutcome::Incomplete => return RenameOutcome::Incomplete,
+            QueryOutcome::Unresolved => return RenameOutcome::Unresolved,
+        };
+        if let Some(name) = new_name {
+            if !valid_identifier(name) {
+                return RenameOutcome::InvalidName;
+            }
+            let Some(id) = Self::identity_declaration(&target.symbol) else {
+                return RenameOutcome::Incomplete;
+            };
+            let Some(declaration) = self.storage.declaration(id) else {
+                return RenameOutcome::Incomplete;
+            };
+            if let Some(symbol) = self.storage.symbols.find(name) {
+                let mut collisions = self
+                    .direct_names
+                    .candidates(declaration.owner, symbol)
+                    .iter()
+                    .filter(|candidate| **candidate != id)
+                    .filter_map(|candidate| self.declaration_target(*candidate))
+                    .collect::<Vec<_>>();
+                collisions.sort_by(target_order);
+                if !collisions.is_empty() {
+                    return RenameOutcome::Collision(collisions.into_boxed_slice());
+                }
+            }
+        }
+        let occurrences = match self.references(&target.symbol, true) {
+            QueryOutcome::Resolved(value) => value,
+            _ => return RenameOutcome::Incomplete,
+        };
+        let range = occurrences
+            .iter()
+            .find(|location| {
+                location.document.as_ref() == document && range_contains(location.range, position)
+            })
+            .map(|location| location.range)
+            .unwrap_or(target.location.range);
+        RenameOutcome::Ready {
+            symbol: target.symbol,
+            name: target.name,
+            range,
+            occurrences,
+        }
+    }
+
+    pub(crate) fn visible_members(
+        &self,
+        document: &str,
+        position: TextPosition,
+        qualifier: Option<&str>,
+    ) -> QueryOutcome<Box<[VisibleMember]>> {
+        let recovered = matches!(
+            self.metadata.completeness,
+            PublicationCompleteness::ParseRecovery
+        );
+        let unsupported = matches!(
+            self.metadata.completeness,
+            PublicationCompleteness::UnsupportedSyntax
+        );
+        if matches!(
+            self.metadata.completeness,
+            PublicationCompleteness::NonConverged
+        ) {
+            return QueryOutcome::Incomplete;
+        }
+        let Some(document_id) = self
+            .storage
+            .documents
+            .iter()
+            .position(|candidate| candidate.identity.as_ref() == document)
+            .and_then(|index| DocumentId::from_index(index).ok())
+        else {
+            return QueryOutcome::Unresolved;
+        };
+        let owner = self
+            .storage
+            .declarations
+            .iter()
+            .enumerate()
+            .filter_map(|(index, declaration)| {
+                (declaration.document == document_id
+                    && document_range(&self.storage, document_id, &declaration.span)
+                        .ok()
+                        .is_some_and(|range| range_contains(range, position)))
+                .then(|| DeclarationId::from_index(index).ok())
+                .flatten()
+            })
+            .max_by_key(|id| declaration_depth(&self.storage, *id));
+        let mut ids = Vec::new();
+        let mut scopes = Vec::new();
+        if let Some(qualifier) = qualifier {
+            scopes.extend(self.storage.declarations.iter().enumerate().filter_map(
+                |(index, declaration)| {
+                    (declaration.name.and_then(|name| self.storage.symbol(name)) == Some(qualifier))
+                        .then(|| DeclarationId::from_index(index).ok())
+                        .flatten()
+                        .map(Some)
+                },
+            ));
+        } else {
+            let mut scope = owner;
+            loop {
+                scopes.push(scope);
+                let Some(current) = scope else {
+                    break;
+                };
+                scope = self
+                    .storage
+                    .declaration(current)
+                    .and_then(|declaration| declaration.owner);
+            }
+        }
+        for scope in scopes {
+            for (_, candidates) in self.direct_names.entries_for_owner(scope) {
+                ids.extend_from_slice(candidates);
+            }
+            for (_, candidates) in self.effective_imports.entries_for_owner(scope) {
+                ids.extend_from_slice(candidates);
+            }
+            if let Some(scope) = scope {
+                collect_inherited_members(self, scope, &mut ids);
+            }
+        }
+        ids.sort_unstable();
+        ids.dedup();
+        let mut members = ids
+            .into_iter()
+            .filter_map(|id| {
+                let target = self.declaration_target(id)?;
+                let declaration = self.storage.declaration(id)?;
+                let qualified_name = declaration_qualified_name(&self.storage, id)?;
+                let container_name = declaration
+                    .owner
+                    .and_then(|owner| self.storage.declaration(owner)?.name)
+                    .and_then(|name| self.storage.symbol(name))
+                    .map(Into::into);
+                Some(VisibleMember {
+                    symbol: target.symbol,
+                    name: target.name,
+                    kind: format!("{:?}", declaration.kind).into_boxed_str(),
+                    qualified_name: qualified_name.into_boxed_str(),
+                    container_name,
+                    declaring_document: target.location.document,
+                    declaration_range: target.location.range,
+                })
+            })
+            .collect::<Vec<_>>();
+        members.sort_by(|a, b| {
+            a.name
+                .cmp(&b.name)
+                .then_with(|| a.declaring_document.cmp(&b.declaring_document))
+                .then_with(|| a.declaration_range.cmp(&b.declaration_range))
+        });
+        let members = members.into_boxed_slice();
+        if recovered {
+            QueryOutcome::Recovered(members)
+        } else if unsupported {
+            QueryOutcome::UnsupportedWith(members)
+        } else {
+            QueryOutcome::Resolved(members)
+        }
+    }
     fn diagnostic_records(&self) -> Result<Box<[DiagnosticRecord]>, ResolutionError> {
         let mut records = Vec::with_capacity(self.storage.references.len());
         for (index, reference) in self.storage.references.iter().enumerate() {
@@ -558,6 +926,155 @@ fn document_range(
     })
 }
 
+fn identifier_range(
+    storage: &SemanticModelStorage,
+    document: DocumentId,
+    span: &Span,
+    identifier: &str,
+) -> Result<TextRange, ResolutionError> {
+    let parsed = &storage
+        .document(document)
+        .ok_or(ResolutionError::InvalidStorage)?
+        .parsed;
+    let source = parsed
+        .source
+        .slice(span)
+        .ok_or(ResolutionError::InvalidStorage)?;
+    let relative = source
+        .match_indices(identifier)
+        .filter(|(start, _)| {
+            let before = source[..*start].chars().next_back();
+            let after = source[*start + identifier.len()..].chars().next();
+            !before.is_some_and(identifier_character) && !after.is_some_and(identifier_character)
+        })
+        .map(|(start, _)| start)
+        .last()
+        .ok_or(ResolutionError::InvalidStorage)?;
+    let start_offset = span
+        .offset
+        .checked_add(relative)
+        .ok_or(ResolutionError::Capacity)?;
+    let end_offset = start_offset
+        .checked_add(identifier.len())
+        .ok_or(ResolutionError::Capacity)?;
+    let start = parsed
+        .source
+        .position_at(start_offset)
+        .ok_or(ResolutionError::InvalidStorage)?;
+    let end = parsed
+        .source
+        .position_at(end_offset)
+        .ok_or(ResolutionError::InvalidStorage)?;
+    Ok(TextRange {
+        start: TextPosition {
+            line: start.line.saturating_sub(1),
+            character: u32::try_from(start.column.saturating_sub(1))
+                .map_err(|_| ResolutionError::Capacity)?,
+        },
+        end: TextPosition {
+            line: end.line.saturating_sub(1),
+            character: u32::try_from(end.column.saturating_sub(1))
+                .map_err(|_| ResolutionError::Capacity)?,
+        },
+    })
+}
+
+fn identifier_character(character: char) -> bool {
+    character.is_alphanumeric() || matches!(character, '_' | '-')
+}
+
+fn valid_identifier(value: &str) -> bool {
+    let mut characters = value.chars();
+    characters
+        .next()
+        .is_some_and(|first| first.is_alphabetic() || first == '_')
+        && characters.all(identifier_character)
+}
+
+fn range_contains(range: TextRange, position: TextPosition) -> bool {
+    range.start <= position && position <= range.end
+}
+
+fn target_order(left: &NavigationTarget, right: &NavigationTarget) -> std::cmp::Ordering {
+    left.location
+        .document
+        .cmp(&right.location.document)
+        .then_with(|| left.location.range.cmp(&right.location.range))
+        .then_with(|| left.name.cmp(&right.name))
+}
+
+fn location_order(left: &SourceLocation, right: &SourceLocation) -> std::cmp::Ordering {
+    left.document
+        .cmp(&right.document)
+        .then_with(|| left.range.cmp(&right.range))
+        .then_with(|| left.role.cmp(&right.role))
+}
+
+fn declaration_depth(storage: &SemanticModelStorage, mut declaration: DeclarationId) -> usize {
+    let mut depth = 0usize;
+    while let Some(owner) = storage
+        .declaration(declaration)
+        .and_then(|value| value.owner)
+    {
+        depth = depth.saturating_add(1);
+        declaration = owner;
+    }
+    depth
+}
+
+fn declaration_qualified_name(
+    storage: &SemanticModelStorage,
+    mut declaration: DeclarationId,
+) -> Option<String> {
+    let mut names = Vec::new();
+    loop {
+        let value = storage.declaration(declaration)?;
+        if let Some(name) = value.name.and_then(|name| storage.symbol(name)) {
+            names.push(name);
+        }
+        let Some(owner) = value.owner else {
+            break;
+        };
+        declaration = owner;
+    }
+    names.reverse();
+    Some(names.join("::"))
+}
+
+fn collect_inherited_members(
+    model: &ResolvedSemanticModel,
+    owner: DeclarationId,
+    output: &mut Vec<DeclarationId>,
+) {
+    let mut owners = vec![owner];
+    let mut cursor = 0;
+    while let Some(current) = owners.get(cursor).copied() {
+        cursor += 1;
+        for (index, reference) in model.storage.references.iter().enumerate() {
+            if reference.source != current
+                || !matches!(
+                    reference.kind,
+                    ReferenceKind::Subclassification | ReferenceKind::FeatureTyping
+                )
+            {
+                continue;
+            }
+            let Ok(id) = AuthoredReferenceId::from_index(index) else {
+                continue;
+            };
+            let Some(ResolutionStatus::Resolved(target)) = model.resolution.outcome(id) else {
+                continue;
+            };
+            if !owners.contains(&target) {
+                owners.push(target);
+            }
+            for (_, candidates) in model.direct_names.entries_for_owner(Some(target)) {
+                output.extend_from_slice(candidates);
+            }
+        }
+    }
+}
+
 impl SemanticModelStorage {
     pub(super) fn resolve(self) -> Result<ResolvedSemanticModel, ResolutionError> {
         let has_recovery = self
@@ -566,7 +1083,7 @@ impl SemanticModelStorage {
             .any(|document| !document.parse_errors.is_empty())
             || !self.recovery.is_empty();
         let has_unsupported = !self.unsupported.is_empty();
-        let (_, _, resolution) = resolve_dense(
+        let (direct_names, effective_imports, resolution) = resolve_dense(
             &self.declarations,
             &self.memberships,
             &self.paths,
@@ -585,6 +1102,8 @@ impl SemanticModelStorage {
         let has_evaluation = !evaluation.is_empty();
         Ok(ResolvedSemanticModel {
             storage: self,
+            direct_names,
+            effective_imports,
             resolution,
             evaluation,
             metadata: PublicationMetadata {
