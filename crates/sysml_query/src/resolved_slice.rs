@@ -111,6 +111,60 @@ impl BuildRequest {
         .map(|inner| Self { inner })
         .map_err(BuildError)
     }
+
+    /// Builds `sources` against a library that has already been parsed and solved.
+    ///
+    /// `sources` carries only the workspace documents; the library's come from the stratum.
+    pub fn resolved_with_library(
+        sources: Vec<SourceDocument>,
+        construction: ConstructionStrategy,
+        library: &LibraryStratum,
+    ) -> Result<Self, BuildError> {
+        let schedule = match construction {
+            ConstructionStrategy::Sequential => sysml_resolution::ConstructionSchedule::Sequential,
+            ConstructionStrategy::Parallel => sysml_resolution::ConstructionSchedule::Parallel,
+        };
+        sysml_resolution::BuildRequest::with_library(
+            sources.into_iter().map(|source| source.inner).collect(),
+            schedule,
+            "parser-owned-resolution-v1",
+            library.handle(),
+        )
+        .map(|inner| Self { inner })
+        .map_err(BuildError)
+    }
+}
+
+/// A library parsed and solved once, reusable by any number of later publications.
+///
+/// Build it from the library's own sources when a session opens, then hand it to every workspace
+/// build. Reuse is conditional: a workspace that could change what a library reference resolves to
+/// gets a full solve instead, so the published result never depends on whether a stratum was
+/// supplied.
+#[derive(Debug)]
+pub struct LibraryStratum {
+    inner: std::sync::Arc<sysml_resolution::LibraryStratum>,
+}
+
+impl LibraryStratum {
+    pub fn build(sources: Vec<SourceDocument>) -> Result<Self, BuildError> {
+        sysml_resolution::build_library_stratum(
+            sources.into_iter().map(|source| source.inner).collect(),
+        )
+        .map(|inner| Self {
+            inner: std::sync::Arc::new(inner),
+        })
+        .map_err(BuildError)
+    }
+
+    /// How many documents this stratum admits.
+    pub fn document_count(&self) -> usize {
+        self.inner.document_count()
+    }
+
+    fn handle(&self) -> std::sync::Arc<sysml_resolution::LibraryStratum> {
+        std::sync::Arc::clone(&self.inner)
+    }
 }
 
 /// Opaque published semantic state. Share it behind `Arc`; do not duplicate its owner.

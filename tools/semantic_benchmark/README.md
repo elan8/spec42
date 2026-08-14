@@ -28,12 +28,18 @@ Local evidence from one host, not a threshold. Median of seven parallel builds:
 |---|---|---|---|---|---|
 | `--filter sysml.library` | 94 (1.35 MB) | 57.8 ms | 8.2 ms | 5.1 ms | 44.3 ms |
 | `--filter standard_library_admission` | 1 | ~0.0 ms | ~0.0 ms | ~0.0 ms | ~0.0 ms |
-| ... `--libraries standard` | 1 + 94 | 56.3 ms | 7.9 ms | 5.2 ms | 43.5 ms |
+| ... `--libraries standard` | 1 + 94 | 52.2 ms | 7.8 ms | 5.2 ms | 39.2 ms |
+| ... `--reuse-library` | 1 + 94 | 33.0 ms | 0.0 ms | 5.1 ms | 27.8 ms |
 
 Two things follow. Resolution is roughly three quarters of a library build, so reusing parsed
 documents alone would recover little. And a one-document workspace costs the same as the library
-alone, so essentially the entire cost of an editor rebuild is the library being resolved again --
-which is what a reusable settled library stratum removes.
+alone, so essentially the entire cost of an editor rebuild is the library being resolved again.
+
+Reusing a settled stratum removes the library's parse outright and the library's share of the
+solve, taking the rebuild from 52 ms to 33 ms. What remains is work the stratum does not yet carry
+forward: the library is lowered again (5 ms), and the publication barrier rebuilds its identity,
+document and type indexes over the merged model (roughly 23 ms, of which the identity index is the
+largest). Extending the stratum to carry those index prefixes is the next available step.
 
 Capture a flame profile without including compilation:
 

@@ -2181,10 +2181,144 @@ fn declaration_qualified_name(
     Some(names.join("::"))
 }
 
+/// What a settled library build hands to the publications that follow it.
+///
+/// The outcomes are indexed by authored-reference ordinal. That is only meaningful because sources
+/// are admitted library-first and lowering is per-document: the library's declarations and
+/// references occupy exactly the same dense prefix in a workspace build as they did in the build
+/// that settled them.
+///
+/// The two name sets are the evidence for whether reusing those outcomes is sound at all. See
+/// [`SettledLibrary::admits`].
+#[derive(Debug)]
+pub(crate) struct SettledLibrary {
+    outcomes: Box<[ResolutionStatus]>,
+    /// Names declared at the library's own root, which a workspace declaration must not shadow or
+    /// duplicate.
+    root_names: std::collections::BTreeSet<Box<str>>,
+    /// First path segments of every library reference the library-only build left unresolved or
+    /// ambiguous. A workspace root with one of these names could newly satisfy -- or newly make
+    /// ambiguous -- a reference whose outcome is about to be reused.
+    unsettled_roots: std::collections::BTreeSet<Box<str>>,
+}
+
+impl SettledLibrary {
+    /// Whether these outcomes may be reused for a publication containing `storage`.
+    ///
+    /// Global-root lookup is the one channel through which a workspace declaration can change what
+    /// a library reference resolves to, and it is reachable in exactly two ways: a workspace root
+    /// sharing a library root's name, or a workspace root answering a lookup the library itself
+    /// left unsettled. Both are name comparisons over the roots, so the check costs a walk of the
+    /// workspace's top-level declarations rather than a re-solve.
+    fn admits(&self, storage: &SemanticModelStorage) -> bool {
+        if self.outcomes.len() > storage.references.len() {
+            return false;
+        }
+        // The prefix must still be the library's. If lowering ever stopped putting library
+        // documents first, seeding would silently answer for the wrong references.
+        for reference in storage.references.iter().take(self.outcomes.len()) {
+            let Some(declaration) = storage.declaration(reference.source) else {
+                return false;
+            };
+            let Some(document) = storage.document(declaration.document) else {
+                return false;
+            };
+            if document.role == SourceRole::Workspace {
+                return false;
+            }
+        }
+        for (index, declaration) in storage.declarations.iter().enumerate() {
+            if declaration.owner.is_some() {
+                continue;
+            }
+            let Some(document) = storage.document(declaration.document) else {
+                return false;
+            };
+            if document.role != SourceRole::Workspace {
+                continue;
+            }
+            let Some(name) = declaration.name.and_then(|name| storage.symbol(name)) else {
+                continue;
+            };
+            if self.root_names.contains(name) || self.unsettled_roots.contains(name) {
+                let _ = index;
+                return false;
+            }
+        }
+        true
+    }
+}
+
+impl ResolvedSemanticModel {
+    /// Everything a later publication needs to reuse this one as a library.
+    ///
+    /// The parsed documents come out by reference-counted handle rather than by copy, so reuse
+    /// shares one parse of the library across every publication built against it.
+    pub(crate) fn prepared_library(
+        &self,
+    ) -> Result<super::PreparedLibrary, super::CoordinatorError> {
+        let documents = self
+            .storage
+            .documents
+            .iter()
+            .map(|document| super::PreparedDocument {
+                identity: document.identity.clone(),
+                role: document.role,
+                parsed: Arc::clone(&document.parsed),
+                parse_errors: document.parse_errors.to_vec(),
+            })
+            .collect();
+        Ok(super::PreparedLibrary {
+            documents,
+            settled: self
+                .settled_library()
+                .map_err(|_| super::CoordinatorError::ConstructionFailed)?,
+        })
+    }
+
+    /// The reusable settled state of a library-only publication.
+    pub(super) fn settled_library(&self) -> Result<SettledLibrary, ResolutionError> {
+        let mut root_names = std::collections::BTreeSet::new();
+        for declaration in self.storage.declarations.iter() {
+            if declaration.owner.is_some() {
+                continue;
+            }
+            if let Some(name) = declaration.name.and_then(|name| self.storage.symbol(name)) {
+                root_names.insert(name.into());
+            }
+        }
+        let mut unsettled_roots = std::collections::BTreeSet::new();
+        for (index, reference) in self.storage.references.iter().enumerate() {
+            let id =
+                AuthoredReferenceId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+            let settled = matches!(
+                self.resolution.outcome(id),
+                Some(ResolutionStatus::Resolved(_)) | Some(ResolutionStatus::Unsupported)
+            );
+            if settled {
+                continue;
+            }
+            let Some((segments, _)) = self.storage.paths.get(reference.path) else {
+                continue;
+            };
+            let Some(first) = segments.first().and_then(|id| self.storage.symbol(*id)) else {
+                continue;
+            };
+            unsettled_roots.insert(first.into());
+        }
+        Ok(SettledLibrary {
+            outcomes: self.resolution.outcomes.clone(),
+            root_names,
+            unsettled_roots,
+        })
+    }
+}
+
 impl SemanticModelStorage {
     pub(super) fn resolve(
         self,
         policy: EvaluationPolicy,
+        library: Option<&SettledLibrary>,
     ) -> Result<ResolvedSemanticModel, ResolutionError> {
         let has_recovery = self
             .documents
@@ -2192,11 +2326,15 @@ impl SemanticModelStorage {
             .any(|document| !document.parse_errors.is_empty())
             || !self.recovery.is_empty();
         let has_unsupported = !self.unsupported.is_empty();
+        let seed = library
+            .filter(|library| library.admits(&self))
+            .map(|library| library.outcomes.as_ref());
         let (direct_names, effective_imports, memberships, resolution) = resolve_dense(
             &self.declarations,
             &self.memberships,
             &self.paths,
             &self.references,
+            seed,
         )?;
         let completeness = if has_recovery {
             PublicationCompleteness::ParseRecovery
@@ -2277,6 +2415,7 @@ fn resolve_dense<R: ResolutionReferenceFact>(
     memberships: &[MembershipRecord],
     paths: &SymbolPathArena,
     references: &[R],
+    seed: Option<&[ResolutionStatus]>,
 ) -> Result<(NameIndex, NameIndex, MembershipIndex, ResolutionResults), ResolutionError> {
     let supported_import_count = references
         .iter()
@@ -2291,7 +2430,14 @@ fn resolve_dense<R: ResolutionReferenceFact>(
         .and_then(|limit| limit.checked_add(1))
         .ok_or(ResolutionError::Capacity)?
         .max(1);
-    resolve_dense_with_limit(declarations, memberships, paths, references, pass_limit)
+    resolve_dense_with_limit(
+        declarations,
+        memberships,
+        paths,
+        references,
+        pass_limit,
+        seed,
+    )
 }
 
 fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
@@ -2300,15 +2446,25 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     paths: &SymbolPathArena,
     references: &[R],
     pass_limit: usize,
+    seed: Option<&[ResolutionStatus]>,
 ) -> Result<(NameIndex, NameIndex, MembershipIndex, ResolutionResults), ResolutionError> {
     let membership_records = memberships;
     let memberships = MembershipIndex::build(declarations, memberships)?;
     let direct_names = build_direct_name_index(declarations, None)?;
     let exported_names = build_direct_name_index(declarations, Some(&memberships))?;
     let mut outcomes = vec![ResolutionStatus::Unsupported; references.len()];
+    // A settled library's outcomes are installed before the first pass and its references are then
+    // left out of every slot list below, so no pass re-evaluates them. They are still *read* --
+    // by the name, import and inheritance indexes each pass rebuilds -- which is what makes the
+    // workspace resolve against a library that is already settled rather than against nothing.
+    let settled = seed.map_or(0, <[ResolutionStatus]>::len);
+    if let Some(seed) = seed {
+        outcomes[..settled].copy_from_slice(seed);
+    }
     let import_slots: Vec<usize> = references
         .iter()
         .enumerate()
+        .filter(|(index, _)| *index >= settled)
         .filter_map(|(index, reference)| supported_import_domain(reference).map(|_| index))
         .collect();
     // Subclassification is resolved first because the ancestor-scoped inherited-member lookup used
@@ -2318,6 +2474,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     let subclass_slots: Vec<usize> = references
         .iter()
         .enumerate()
+        .filter(|(index, _)| *index >= settled)
         .filter_map(|(index, reference)| {
             (reference.kind() == ReferenceKind::Subclassification).then_some(index)
         })
@@ -2325,6 +2482,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     let typing_slots: Vec<usize> = references
         .iter()
         .enumerate()
+        .filter(|(index, _)| *index >= settled)
         .filter_map(|(index, reference)| {
             (reference.kind() == ReferenceKind::FeatureTyping).then_some(index)
         })
@@ -2348,6 +2506,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     let metadata_annotation_slots: Vec<usize> = references
         .iter()
         .enumerate()
+        .filter(|(index, _)| *index >= settled)
         .filter_map(|(index, reference)| {
             matches!(
                 reference.kind(),
@@ -2372,6 +2531,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     let subsetting_slots: Vec<usize> = references
         .iter()
         .enumerate()
+        .filter(|(index, _)| *index >= settled)
         .filter_map(|(index, reference)| {
             (reference.kind() == ReferenceKind::Subsetting).then_some(index)
         })
@@ -2379,6 +2539,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     let redefinition_slots: Vec<usize> = references
         .iter()
         .enumerate()
+        .filter(|(index, _)| *index >= settled)
         .filter_map(|(index, reference)| {
             (reference.kind() == ReferenceKind::Redefinition).then_some(index)
         })
@@ -2390,6 +2551,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     let alias_slots: Vec<usize> = references
         .iter()
         .enumerate()
+        .filter(|(index, _)| *index >= settled)
         .filter_map(|(index, reference)| {
             (reference.kind() == ReferenceKind::AliasBinding).then_some(index)
         })
@@ -2401,6 +2563,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     let connector_end_slots: Vec<usize> = references
         .iter()
         .enumerate()
+        .filter(|(index, _)| *index >= settled)
         .filter_map(|(index, reference)| {
             (reference.kind() == ReferenceKind::ConnectorEnd).then_some(index)
         })
@@ -2412,6 +2575,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     let succession_slots: Vec<usize> = references
         .iter()
         .enumerate()
+        .filter(|(index, _)| *index >= settled)
         .filter_map(|(index, reference)| {
             (reference.kind() == ReferenceKind::Succession).then_some(index)
         })
@@ -2431,6 +2595,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     let state_binding_slots: Vec<usize> = references
         .iter()
         .enumerate()
+        .filter(|(index, _)| *index >= settled)
         .filter_map(|(index, reference)| {
             matches!(
                 reference.kind(),
@@ -2482,6 +2647,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     let member_access_slots: Vec<usize> = references
         .iter()
         .enumerate()
+        .filter(|(index, _)| *index >= settled)
         .filter_map(|(index, reference)| {
             (reference.kind() == ReferenceKind::MemberAccessOperand).then_some(index)
         })
@@ -4115,6 +4281,7 @@ mod tests {
             &fixture.memberships,
             &fixture.paths,
             &fixture.references,
+            None,
         )
         .unwrap()
     }
@@ -5968,6 +6135,7 @@ mod tests {
             &fixture.paths,
             &fixture.references,
             1,
+            None,
         )
         .unwrap();
         assert_eq!(resolution.solver_status, SolverStatus::NonConverged);

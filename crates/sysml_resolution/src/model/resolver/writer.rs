@@ -1507,6 +1507,7 @@ mod tests {
             &storage.memberships,
             &storage.paths,
             &storage.references,
+            None,
         )
         .unwrap();
         let evaluation = compute_evaluation(&storage, &resolution, EvaluationPolicy::Evaluate);

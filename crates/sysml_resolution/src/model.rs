@@ -13070,6 +13070,25 @@ pub(crate) enum CoordinatorError {
     ConstructionFailed,
 }
 
+/// A library that has already been parsed and solved, ready to be reused by later publications.
+///
+/// Holds the parsed documents rather than their text, so a workspace build pays neither the
+/// library's parse nor its solve. Lowering still runs: it is per-document and cheap, and rerunning
+/// it keeps every dense identity assigned by exactly the same code path as an unseeded build.
+#[derive(Debug)]
+pub(crate) struct PreparedLibrary {
+    pub(crate) documents: Vec<PreparedDocument>,
+    pub(crate) settled: resolver::SettledLibrary,
+}
+
+#[derive(Debug)]
+pub(crate) struct PreparedDocument {
+    pub(crate) identity: Box<str>,
+    pub(crate) role: SourceRole,
+    pub(crate) parsed: Arc<ParsedDocument>,
+    pub(crate) parse_errors: Vec<ParseError>,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct SemanticModelBuildCoordinator;
 
@@ -13081,10 +13100,11 @@ pub(crate) struct BuildPhaseDurations {
 }
 
 impl SemanticModelBuildCoordinator {
-    pub(crate) fn build_measured(
+    pub(crate) fn build_measured_with_library(
         mut sources: Vec<OwnedSourceRecord>,
         schedule: BuildSchedule,
         policy: EvaluationPolicy,
+        library: Option<&PreparedLibrary>,
     ) -> Result<(resolver::ResolvedSemanticModel, BuildPhaseDurations), CoordinatorError> {
         // Library sources are ordered ahead of workspace sources so that the dense declaration
         // domain assigns them a contiguous prefix. Rendered output is sorted independently by
@@ -13098,6 +13118,12 @@ impl SemanticModelBuildCoordinator {
         let mut identities = sources
             .iter()
             .map(|source| source.identity.as_ref())
+            .chain(
+                library
+                    .into_iter()
+                    .flat_map(|library| library.documents.iter())
+                    .map(|document| document.identity.as_ref()),
+            )
             .collect::<Vec<_>>();
         identities.sort_unstable();
         if identities.windows(2).any(|pair| pair[0] == pair[1]) {
@@ -13105,7 +13131,8 @@ impl SemanticModelBuildCoordinator {
         }
 
         let parse_started = Instant::now();
-        let parsed = match schedule {
+        let parsed: Vec<(Box<str>, SourceRole, sysml_v2_parser_next::ParseResult)> = match schedule
+        {
             BuildSchedule::Sequential => sources
                 .into_iter()
                 .map(Self::parse_source)
@@ -13123,6 +13150,20 @@ impl SemanticModelBuildCoordinator {
         let lowering_started = Instant::now();
         let mut builder = SemanticModelBuilder::default();
         let mut documents = Vec::with_capacity(parsed.len());
+        // The prepared library is admitted first and in its own recorded order, so its
+        // declarations and references land on exactly the dense prefix its settled outcomes were
+        // recorded against.
+        for document in library.into_iter().flat_map(|library| &library.documents) {
+            let admitted = builder
+                .admit_document(
+                    document.identity.clone(),
+                    document.role,
+                    Arc::clone(&document.parsed),
+                    document.parse_errors.clone(),
+                )
+                .map_err(|_| CoordinatorError::DuplicateSourceIdentity)?;
+            documents.push(admitted);
+        }
         for (identity, role, parsed) in parsed {
             let document = builder
                 .admit_document(identity, role, Arc::new(parsed.document), parsed.errors)
@@ -13138,7 +13179,7 @@ impl SemanticModelBuildCoordinator {
         let lowering = lowering_started.elapsed();
         let resolution_started = Instant::now();
         let model = storage
-            .resolve(policy)
+            .resolve(policy, library.map(|library| &library.settled))
             .map_err(|_| CoordinatorError::ConstructionFailed)?;
         let resolution = resolution_started.elapsed();
         Ok((

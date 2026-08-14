@@ -185,8 +185,91 @@ pub struct BuildRequest {
     sources: Vec<SourceInput>,
     schedule: ConstructionSchedule,
     policy: EvaluationPolicy,
+    library: Option<std::sync::Arc<LibraryStratum>>,
     identity: PublicationIdentity,
 }
+
+fn manifest_entry(source: &SourceInput) -> SourceManifestEntry {
+    SourceManifestEntry {
+        uri: source.identity.to_string(),
+        path_hint: None,
+        role: source_role(source.kind),
+        content_digest: source.content_digest,
+        byte_len: source.content.len() as u64,
+        library_root_slot: None,
+        relative_path: None,
+    }
+}
+
+/// A library that has been parsed and solved once, ready to be reused.
+///
+/// Building one costs a full publication. Reusing it costs neither the library's parse nor its
+/// solve, so a workspace publication pays for the workspace. Share it behind the `Arc` the build
+/// request takes; it is immutable and safe to use from any number of concurrent builds.
+///
+/// Reuse is conditional, not assumed. If a workspace declaration could change what a library
+/// reference resolves to -- by declaring a root the library also declares, or one that answers a
+/// lookup the library left unsettled -- the settled outcomes are discarded and that publication
+/// solves everything from scratch. The result is identical either way; only the cost differs.
+#[derive(Debug)]
+pub struct LibraryStratum {
+    prepared: model::PreparedLibrary,
+    manifest_entries: Vec<SourceManifestEntry>,
+    identities: std::collections::BTreeSet<Box<str>>,
+}
+
+// SAFETY: the same invariant `PublishedResolution` states. A stratum is fully constructed before
+// it is shared and exposes only shared reads; its parsed documents own immutable source and AST
+// storage whose only interior mutation is `OnceLock`-backed source line indexing. The auto-trait
+// solver overflows on the parser's deeply recursive owned AST enum, so the boundary states this
+// rather than deriving it.
+unsafe impl Send for LibraryStratum {}
+unsafe impl Sync for LibraryStratum {}
+
+impl LibraryStratum {
+    fn contains(&self, identity: &str) -> bool {
+        self.identities.contains(identity)
+    }
+
+    /// How many documents this stratum admits.
+    pub fn document_count(&self) -> usize {
+        self.prepared.documents.len()
+    }
+}
+
+/// Parses and solves `sources` once so later publications can reuse the result.
+///
+/// The sources are the library's own; a workspace document admitted here would become part of the
+/// stratum and be reused by every publication built against it.
+pub fn build_library_stratum(sources: Vec<SourceInput>) -> Result<LibraryStratum, BuildFailure> {
+    let request = BuildRequest::new(
+        sources,
+        ConstructionSchedule::Parallel,
+        LIBRARY_STRATUM_CONTRACT,
+    )?;
+    let manifest_entries = request.sources.iter().map(manifest_entry).collect();
+    let identities = request
+        .sources
+        .iter()
+        .map(|source| source.identity.clone())
+        .collect();
+    let published = build(request)?;
+    let prepared = published
+        .model
+        .prepared_library()
+        .map_err(|_| BuildFailure::ConstructionFailed)?;
+    Ok(LibraryStratum {
+        prepared,
+        manifest_entries,
+        identities,
+    })
+}
+
+/// The contract version a stratum build is recorded under.
+///
+/// Never reaches a publication identity: `BuildRequest::with_library` recomputes the digest from
+/// the merged manifest and keeps the caller's own contract version.
+const LIBRARY_STRATUM_CONTRACT: &str = "library-stratum";
 
 impl BuildRequest {
     pub fn new(
@@ -202,28 +285,45 @@ impl BuildRequest {
             return Err(BuildFailure::DuplicateSourceIdentity);
         }
         let semantic_contract_version = semantic_contract_version.into();
-        let entries = sources
-            .iter()
-            .map(|source| SourceManifestEntry {
-                uri: source.identity.to_string(),
-                path_hint: None,
-                role: source_role(source.kind),
-                content_digest: source.content_digest,
-                byte_len: source.content.len() as u64,
-                library_root_slot: None,
-                relative_path: None,
-            })
-            .collect();
+        let entries = sources.iter().map(manifest_entry).collect();
         let source_digest = SourceManifest::new(entries, Vec::new()).root_digest();
         Ok(Self {
             sources,
             schedule,
             policy: EvaluationPolicy::default(),
+            library: None,
             identity: PublicationIdentity {
                 source_digest,
                 semantic_contract_version,
             },
         })
+    }
+
+    /// Builds against a library that has already been parsed and solved.
+    ///
+    /// `sources` carries only the workspace documents; the library's own documents come from the
+    /// stratum and are admitted ahead of them. The publication's identity still commits every
+    /// admitted source, library included, so a workspace built against two different library
+    /// versions can never share an identity.
+    pub fn with_library(
+        sources: Vec<SourceInput>,
+        schedule: ConstructionSchedule,
+        semantic_contract_version: impl Into<Box<str>>,
+        library: std::sync::Arc<LibraryStratum>,
+    ) -> Result<Self, BuildFailure> {
+        let mut request = Self::new(sources, schedule, semantic_contract_version)?;
+        if request
+            .sources
+            .iter()
+            .any(|source| library.contains(source.identity.as_ref()))
+        {
+            return Err(BuildFailure::DuplicateSourceIdentity);
+        }
+        let mut entries = library.manifest_entries.clone();
+        entries.extend(request.sources.iter().map(manifest_entry));
+        request.identity.source_digest = SourceManifest::new(entries, Vec::new()).root_digest();
+        request.library = Some(library);
+        Ok(request)
     }
 
     /// Sets whether this build evaluates constant expressions.
@@ -304,13 +404,16 @@ pub fn build_measured(
             content: source.content,
         })
         .collect();
-    let (model, measurements) =
-        SemanticModelBuildCoordinator::build_measured(sources, schedule, request.policy).map_err(
-            |error| match error {
-                CoordinatorError::DuplicateSourceIdentity => BuildFailure::DuplicateSourceIdentity,
-                CoordinatorError::ConstructionFailed => BuildFailure::ConstructionFailed,
-            },
-        )?;
+    let (model, measurements) = SemanticModelBuildCoordinator::build_measured_with_library(
+        sources,
+        schedule,
+        request.policy,
+        request.library.as_deref().map(|library| &library.prepared),
+    )
+    .map_err(|error| match error {
+        CoordinatorError::DuplicateSourceIdentity => BuildFailure::DuplicateSourceIdentity,
+        CoordinatorError::ConstructionFailed => BuildFailure::ConstructionFailed,
+    })?;
     Ok((
         PublishedResolution {
             identity: request.identity,
@@ -2862,6 +2965,193 @@ mod tests {
                 "{name} should report only itself"
             );
         }
+    }
+
+    // --- Reusing a settled library --------------------------------------------------------------
+
+    const LIBRARY_SOURCE: &str = "standard library package Lib { part def Base; part def Wheel :> Base; attribute def Mass; }";
+
+    fn library_stratum() -> std::sync::Arc<LibraryStratum> {
+        std::sync::Arc::new(
+            build_library_stratum(vec![SourceInput::new(
+                "memory://lib.sysml",
+                LIBRARY_SOURCE.to_string(),
+                SourceKind::StandardLibrary,
+            )])
+            .expect("library stratum"),
+        )
+    }
+
+    fn seeded_and_unseeded(workspace: &str) -> (String, String) {
+        let seeded = build(
+            BuildRequest::with_library(
+                vec![SourceInput::new(
+                    "memory://workspace.sysml",
+                    workspace.to_string(),
+                    SourceKind::Workspace,
+                )],
+                ConstructionSchedule::Sequential,
+                "contract-v1",
+                library_stratum(),
+            )
+            .expect("seeded request"),
+        )
+        .expect("seeded build");
+        let unseeded = build(
+            BuildRequest::new(
+                vec![
+                    SourceInput::new(
+                        "memory://workspace.sysml",
+                        workspace.to_string(),
+                        SourceKind::Workspace,
+                    ),
+                    SourceInput::new(
+                        "memory://lib.sysml",
+                        LIBRARY_SOURCE.to_string(),
+                        SourceKind::StandardLibrary,
+                    ),
+                ],
+                ConstructionSchedule::Sequential,
+                "contract-v1",
+            )
+            .expect("unseeded request"),
+        )
+        .expect("unseeded build");
+        let render = |published: &PublishedResolution| {
+            let mut semantic = String::new();
+            published
+                .debug()
+                .write_semantic_sexpr(&mut semantic)
+                .expect("semantic");
+            let mut types = String::new();
+            published
+                .debug()
+                .write_types_sexpr(&mut types)
+                .expect("types");
+            let mut diagnostics = String::new();
+            published
+                .debug()
+                .write_diagnostics_sexpr(&mut diagnostics)
+                .expect("diagnostics");
+            format!("{semantic}\n{types}\n{diagnostics}")
+        };
+        (render(&seeded), render(&unseeded))
+    }
+
+    /// Reusing settled outcomes is an optimisation, so it has to be invisible. Everything the
+    /// publication owns -- facts, type answers and diagnostics -- must come out identical.
+    #[test]
+    fn a_seeded_publication_matches_an_unseeded_one() {
+        let (seeded, unseeded) = seeded_and_unseeded(
+            "package W { part def Car :> Lib::Wheel; attribute m : Lib::Mass; }",
+        );
+        assert_eq!(
+            seeded, unseeded,
+            "a workspace built against a settled library must publish what a full build does"
+        );
+        assert!(
+            seeded.contains("Lib::Base"),
+            "the workspace should reach the library's own supertypes, got: {seeded}"
+        );
+    }
+
+    /// A workspace root sharing a library root's name is the one way a workspace declaration can
+    /// change what a library reference resolves to. The guard has to notice and fall back, and the
+    /// fallback has to be invisible too.
+    #[test]
+    fn a_workspace_root_colliding_with_the_library_falls_back_to_a_full_solve() {
+        let (seeded, unseeded) = seeded_and_unseeded(
+            "package Lib { part def Intruder; } package W { part def Car :> Lib::Wheel; }",
+        );
+        assert_eq!(
+            seeded, unseeded,
+            "a colliding workspace root must not be answered from stale library outcomes"
+        );
+    }
+
+    /// The library leaves `Missing` unresolved. A workspace that then declares a root by that name
+    /// would newly satisfy the library's own reference, so its outcomes cannot be reused.
+    #[test]
+    fn a_workspace_root_answering_an_unsettled_library_reference_falls_back() {
+        let library = std::sync::Arc::new(
+            build_library_stratum(vec![SourceInput::new(
+                "memory://lib.sysml",
+                "standard library package Lib { part def Wheel :> Missing; }".to_string(),
+                SourceKind::StandardLibrary,
+            )])
+            .expect("library stratum"),
+        );
+        let workspace = "part def Missing;";
+        let seeded = build(
+            BuildRequest::with_library(
+                vec![SourceInput::new(
+                    "memory://workspace.sysml",
+                    workspace.to_string(),
+                    SourceKind::Workspace,
+                )],
+                ConstructionSchedule::Sequential,
+                "contract-v1",
+                library,
+            )
+            .expect("seeded request"),
+        )
+        .expect("seeded build");
+        // The projection reports workspace documents, so the library's own reference is not in it.
+        // Its outcome is observable through the reverse type edge instead: if the stratum's
+        // unresolved outcome had been reused, nothing would specialize `Missing`.
+        let missing = symbol_named(&seeded, "memory://workspace.sysml", "Missing");
+        let subtypes =
+            symbols(seeded.direct_subtypes(&missing, SpecializationScope::Subclassification));
+        assert_eq!(
+            subtypes.len(),
+            1,
+            "the library's reference must resolve against the workspace root rather than staying \
+             unresolved from the stratum, got: {subtypes:?}"
+        );
+    }
+
+    #[test]
+    fn a_library_document_cannot_be_admitted_twice() {
+        let error = BuildRequest::with_library(
+            vec![SourceInput::new(
+                "memory://lib.sysml",
+                LIBRARY_SOURCE.to_string(),
+                SourceKind::Workspace,
+            )],
+            ConstructionSchedule::Sequential,
+            "contract-v1",
+            library_stratum(),
+        )
+        .expect_err("a source already in the stratum must be rejected");
+        assert_eq!(error, BuildFailure::DuplicateSourceIdentity);
+    }
+
+    /// The identity has to commit the library, or the same workspace built against two different
+    /// library versions would claim the same publication identity.
+    #[test]
+    fn the_library_participates_in_the_publication_identity() {
+        let workspace = || {
+            vec![SourceInput::new(
+                "memory://workspace.sysml",
+                "package W { part def Car; }".to_string(),
+                SourceKind::Workspace,
+            )]
+        };
+        let with_library = BuildRequest::with_library(
+            workspace(),
+            ConstructionSchedule::Sequential,
+            "contract-v1",
+            library_stratum(),
+        )
+        .expect("seeded request");
+        let without =
+            BuildRequest::new(workspace(), ConstructionSchedule::Sequential, "contract-v1")
+                .expect("plain request");
+        assert_ne!(
+            with_library.identity().source_digest,
+            without.identity().source_digest,
+            "admitting a library must change the publication identity"
+        );
     }
 
     #[test]
