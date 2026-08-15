@@ -70,40 +70,22 @@ package AssignmentTest {
         (range (start 3 20) (end 3 41))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_state_definition_member")
-        (source "semantic")
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "parser")
         (range (start 18 2) (end 19 2))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_state_definition_member")
-        (source "semantic")
-        (range (start 19 2) (end 21 2))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_state_definition_member")
-        (source "semantic")
+        (severity error)
+        (code "recovered_state_body_element")
+        (source "parser")
         (range (start 21 2) (end 22 2))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_state_definition_member")
-        (source "semantic")
-        (range (start 28 3) (end 29 2))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 30 7) (end 30 11))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_state_definition_member")
-        (source "semantic")
-        (range (start 33 3) (end 34 2))
       )
       (diagnostic
         (severity warning)
@@ -160,7 +142,7 @@ package AssignmentTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:9a9130e71b13757d4c986fc821a94556e68b5ad1a1afe13a2cc4ca1a081e88c4") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:9a9130e71b13757d4c986fc821a94556e68b5ad1a1afe13a2cc4ca1a081e88c4") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::Counter"))) (kind part-def) (membership (kind owning) (visibility default)))

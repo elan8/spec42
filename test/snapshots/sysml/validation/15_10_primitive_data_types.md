@@ -104,7 +104,7 @@ package '15.10-Primitive Data Types' {
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 7 16) (end 7 38))
+        (range (start 7 16) (end 7 37))
       )
       (diagnostic
         (severity warning)
@@ -122,7 +122,7 @@ package '15.10-Primitive Data Types' {
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 19 16) (end 19 35))
+        (range (start 19 16) (end 19 34))
       )
       (diagnostic
         (severity warning)
@@ -146,13 +146,13 @@ package '15.10-Primitive Data Types' {
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 35 16) (end 35 37))
+        (range (start 35 16) (end 35 36))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 42 16) (end 42 38))
+        (range (start 42 16) (end 42 37))
       )
       (diagnostic
         (severity warning)
@@ -339,7 +339,7 @@ package '15.10-Primitive Data Types' {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/15_10_primitive_data_types.md") (range (start 7 16) (end 7 38)) (probe (position 7 16))
+  (query (document "memory://snapshot/15_10_primitive_data_types.md") (range (start 7 16) (end 7 37)) (probe (position 7 16))
     (reference (id (source (node (document "memory://snapshot/15_10_primitive_data_types.md") (path (named (kind package) (name "15.10-Primitive Data Types")) (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Integer")
       (outcome (status unresolved)))
     )
@@ -349,17 +349,17 @@ package '15.10-Primitive Data Types' {
       (outcome (status unresolved)))
     )
   )
-  (query (document "memory://snapshot/15_10_primitive_data_types.md") (range (start 19 16) (end 19 35)) (probe (position 19 16))
+  (query (document "memory://snapshot/15_10_primitive_data_types.md") (range (start 19 16) (end 19 34)) (probe (position 19 16))
     (reference (id (source (node (document "memory://snapshot/15_10_primitive_data_types.md") (path (named (kind package) (name "15.10-Primitive Data Types")) (anonymous (kind import) (ordinal 2))))) (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Real")
       (outcome (status unresolved)))
     )
   )
-  (query (document "memory://snapshot/15_10_primitive_data_types.md") (range (start 35 16) (end 35 37)) (probe (position 35 16))
+  (query (document "memory://snapshot/15_10_primitive_data_types.md") (range (start 35 16) (end 35 36)) (probe (position 35 16))
     (reference (id (source (node (document "memory://snapshot/15_10_primitive_data_types.md") (path (named (kind package) (name "15.10-Primitive Data Types")) (anonymous (kind import) (ordinal 3))))) (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::String")
       (outcome (status unresolved)))
     )
   )
-  (query (document "memory://snapshot/15_10_primitive_data_types.md") (range (start 42 16) (end 42 38)) (probe (position 42 16))
+  (query (document "memory://snapshot/15_10_primitive_data_types.md") (range (start 42 16) (end 42 37)) (probe (position 42 16))
     (reference (id (source (node (document "memory://snapshot/15_10_primitive_data_types.md") (path (named (kind package) (name "15.10-Primitive Data Types")) (anonymous (kind import) (ordinal 4))))) (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Boolean")
       (outcome (status unresolved)))
     )

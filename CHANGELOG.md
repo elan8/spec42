@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Bumped the pinned `sysml-v2-parser-next` revision `cb026cd` → `7eb7869`.** The parser's opaque
+  `Other(String)` body member is gone from eleven scopes: content a scope cannot parse is now a
+  recovery node with its authored span and a diagnostic, and a spec-valid member the scope does not
+  model is an explicit `Unsupported` node. Body delimiters are retained (`Body<E>` is one container
+  for all 27 declaration bodies), the four annotating members are one `AnnotatingMember` production,
+  a `ref` body is the general usage-member set, an `if` branch keeps its authored braced/brace-less
+  spelling, and an action usage's absent body is distinct from `;`. Across the snapshot corpus,
+  parser recovery errors fall 224 → 81 and 49 fixtures reach `complete`; members that used to be
+  swallowed opaquely now lower for real (KerML classifier/connector/feature/invariant members in
+  part, attribute, package and relationship bodies; `bind`, `calc`, `connection` and constraint
+  members in attribute bodies; `attribute`/`calc`/nested `action def` in action bodies; `ref` and
+  in/out parameters in use-case bodies; `then send ...;` continuations; typed `flow` ends). A `:>`
+  clause on a parameter is now lowered as the subsetting it is rather than as a typing, an untyped
+  `actor x;` no longer invents a type reference, and `type X ...` gains its own `Type` element kind.
+  `subclassifier X specializes Y;` is the one construct whose coverage narrows: it is a
+  relationship declaration upstream now, not a classifier declaration, and is reported as an
+  unsupported package member until it is lowered.
 - Moved active plans under `planning/` and adopted a remove-on-completion policy.
 
 ## [0.50.0] - 2026-08-07

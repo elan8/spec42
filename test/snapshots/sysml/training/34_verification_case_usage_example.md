@@ -82,9 +82,9 @@ package 'Verification Case Usage Example' {
         (range (start 10 32) (end 10 47))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_verification_case_definition_member")
-        (source "semantic")
+        (severity error)
+        (code "recovered_use_case_body_element")
+        (source "parser")
         (range (start 11 2) (end 11 43))
       )
       (diagnostic

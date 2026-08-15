@@ -232,12 +232,6 @@ doc
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_reference_usage_member")
-        (source "semantic")
-        (range (start 51 4) (end 54 7))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 58 38) (end 58 49))
@@ -273,7 +267,7 @@ doc
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:23f4184b21d02572131ed39a5454f7fdf3a3fb2b76940077e2469fcaaa795f82") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:23f4184b21d02572131ed39a5454f7fdf3a3fb2b76940077e2469fcaaa795f82") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/parts.md") (qualified-name "Parts"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n * This package defines the base types for parts and related structural elements in the\n * SysML language.\n "))))
     (declaration (id (node (document "memory://snapshot/parts.md") (path (named (kind library-package) (name "Parts")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Objects::Object") (import (shape membership) (recursive false))))))
@@ -290,7 +284,7 @@ doc
     (declaration (id (node (document "memory://snapshot/parts.md") (qualified-name "Parts::Part::done"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Part")) (redefinition (reference "Item::done")))))
     (declaration (id (node (document "memory://snapshot/parts.md") (qualified-name "Parts::Part::exhibitedStates"))) (kind state) (membership (kind feature) (visibility default)) (facts (modifiers abstract reference) (multiplicity (lower 0) (upper unbounded))) (documentation (doc (text "\n\t\t\t * StateActions that are exhibited by this Part.\n\t\t\t "))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "StateAction")) (subsetting (reference "stateActions")) (subsetting (reference "performedActions")))))
     (declaration (id (node (document "memory://snapshot/parts.md") (qualified-name "Parts::Part::ownedActions"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers abstract) (multiplicity (lower 0) (upper unbounded))) (documentation (doc (text "\n\t\t\t * Actions that are owned by this Part.\n\t\t\t "))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Action")) (subsetting (reference "actions")) (subsetting (reference "ownedPerformances")))))
-    (declaration (id (node (document "memory://snapshot/parts.md") (qualified-name "Parts::Part::ownedActions::part"))) (kind ref) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/parts.md") (qualified-name "Parts::Part::ownedActions::part"))) (kind ref) (membership (kind feature) (visibility default)) (documentation (doc (text "\n\t\t\t\t * The \"this\" reference of an ownedAction is always its owning Part.\n\t\t\t\t "))))
     (declaration (id (node (document "memory://snapshot/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (kind port) (membership (kind feature) (visibility default)) (facts (modifiers abstract) (multiplicity (lower 0) (upper unbounded))) (documentation (doc (text "\n\t\t\t * Ports that are owned by this Part.\n\t\t\t "))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Port")) (subsetting (reference "ports")) (subsetting (reference "timeEnclosedOccurrences")))))
     (declaration (id (node (document "memory://snapshot/parts.md") (qualified-name "Parts::Part::ownedStates"))) (kind state) (membership (kind feature) (visibility default)) (facts (modifiers abstract) (multiplicity (lower 0) (upper unbounded))) (documentation (doc (text "\n\t\t\t * StateActions that are owned by this Part.\n\t\t\t "))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "StateAction")) (subsetting (reference "stateActions")) (subsetting (reference "ownedActions")))))
     (declaration (id (node (document "memory://snapshot/parts.md") (qualified-name "Parts::Part::performedActions"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers abstract reference) (multiplicity (lower 0) (upper unbounded))) (documentation (doc (text "\n\t\t\t * Actions that are performed by this Part.\n\t\t\t "))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Action")) (subsetting (reference "actions")) (subsetting (reference "enactedPerformances")))))

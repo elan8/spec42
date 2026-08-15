@@ -53,13 +53,25 @@ package 'Interaction Example-2' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_occurrence_definition_member")
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 9 2) (end 11 3))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_parser_construct")
         (source "semantic")
         (range (start 9 2) (end 11 3))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_occurrence_definition_member")
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 13 2) (end 27 3))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_parser_construct")
         (source "semantic")
         (range (start 13 2) (end 27 3))
       )

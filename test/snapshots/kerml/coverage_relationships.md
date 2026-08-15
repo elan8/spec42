@@ -37,16 +37,46 @@ package RelationshipCoverage {
   (document "memory://snapshot/coverage_relationships.md"
     (diagnostics
       (diagnostic
-        (severity error)
-        (code "unrecognized_declaration_in_scope")
-        (source "parser")
-        (range (start 1 4) (end 5 4))
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 10 4) (end 10 36))
       )
       (diagnostic
-        (severity error)
-        (code "unrecognized_declaration_in_scope")
-        (source "parser")
-        (range (start 10 4) (end 24 0))
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 11 4) (end 11 22))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 13 4) (end 13 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 14 4) (end 14 17))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 16 4) (end 16 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 18 4) (end 18 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 19 4) (end 19 31))
       )
     )
   )
@@ -55,13 +85,20 @@ package RelationshipCoverage {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:dc703b955cf7eb123eab106df1f01f499ff2c4cb83a66a167742c278ebe09a52") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:dc703b955cf7eb123eab106df1f01f499ff2c4cb83a66a167742c278ebe09a52") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/coverage_relationships.md") (qualified-name "RelationshipCoverage"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/coverage_relationships.md") (qualified-name "RelationshipCoverage::child"))) (kind default-reference) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/coverage_relationships.md") (qualified-name "RelationshipCoverage::f"))) (kind default-reference) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/coverage_relationships.md") (qualified-name "RelationshipCoverage::g"))) (kind default-reference) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/coverage_relationships.md") (qualified-name "RelationshipCoverage::parent"))) (kind default-reference) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_relationships.md") (qualified-name "RelationshipCoverage::A"))) (kind kerml-type) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_relationships.md") (qualified-name "RelationshipCoverage::B"))) (kind kerml-type) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_relationships.md") (qualified-name "RelationshipCoverage::C"))) (kind kerml-type) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_relationships.md") (qualified-name "RelationshipCoverage::D"))) (kind kerml-type) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_relationships.md") (qualified-name "RelationshipCoverage::DiffType"))) (kind kerml-type) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_relationships.md") (qualified-name "RelationshipCoverage::InterType"))) (kind kerml-type) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_relationships.md") (qualified-name "RelationshipCoverage::UnionType"))) (kind kerml-type) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_relationships.md") (qualified-name "RelationshipCoverage::child"))) (kind kerml-feature) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_relationships.md") (qualified-name "RelationshipCoverage::f"))) (kind kerml-feature) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_relationships.md") (qualified-name "RelationshipCoverage::g"))) (kind kerml-feature) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_relationships.md") (qualified-name "RelationshipCoverage::parent"))) (kind kerml-feature) (membership (kind feature) (visibility default)))
   )
   (references
   )

@@ -367,6 +367,7 @@ fn unsupported_code(family: UnsupportedFamily) -> &'static str {
         }
         UnsupportedFamily::UseCaseDefinitionMember => "unsupported_use_case_definition_member",
         UnsupportedFamily::ReferenceUsageMember => "unsupported_reference_usage_member",
+        UnsupportedFamily::RelationshipBodyMember => "unsupported_relationship_body_member",
         UnsupportedFamily::ParserUnsupported => "unsupported_parser_construct",
     }
 }
@@ -1319,6 +1320,7 @@ pub(crate) fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::KermlPredicate => "kerml-predicate",
         DeclarationKind::KermlInteraction => "kerml-interaction",
         DeclarationKind::KermlMultiplicity => "kerml-multiplicity",
+        DeclarationKind::KermlType => "kerml-type",
         DeclarationKind::KermlStep => "kerml-step",
         DeclarationKind::KermlExpression => "kerml-expression",
         DeclarationKind::KermlBooleanExpression => "kerml-boolean-expression",

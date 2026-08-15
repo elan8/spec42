@@ -67,13 +67,25 @@ package 'Message Payload Example' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_occurrence_definition_member")
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 19 2) (end 19 22))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_parser_construct")
         (source "semantic")
         (range (start 19 2) (end 19 22))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_occurrence_definition_member")
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 20 2) (end 20 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_parser_construct")
         (source "semantic")
         (range (start 20 2) (end 20 32))
       )

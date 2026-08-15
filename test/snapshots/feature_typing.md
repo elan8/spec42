@@ -27,7 +27,7 @@ feature x : Integer;
 (semantic-model
   (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:273caa5b768cf58a9a4a83d66fd3189f9d6739a9c6a1ca78d34372ac87a213b9") (contract-version "parser-owned-resolution-v1"))
   (declarations
-    (declaration (id (node (document "memory://snapshot/feature_typing.md") (qualified-name "x"))) (kind default-reference) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Integer")))))
+    (declaration (id (node (document "memory://snapshot/feature_typing.md") (qualified-name "x"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Integer")))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/feature_typing.md") (qualified-name "x"))) (kind featureTyping) (ordinal 0))

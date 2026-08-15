@@ -167,6 +167,7 @@ element_kinds! {
     Dependency,
 
     // --- KerML types --------------------------------------------------------------------
+    Type,
     Classifier,
     Class,
     Structure,

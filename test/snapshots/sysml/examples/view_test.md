@@ -64,9 +64,9 @@ package ViewTest {
         (range (start 15 14) (end 15 16))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_view_definition_member")
-        (source "semantic")
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "parser")
         (range (start 27 2) (end 31 2))
       )
       (diagnostic
@@ -76,9 +76,9 @@ package ViewTest {
         (range (start 31 2) (end 31 31))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_view_definition_member")
-        (source "semantic")
+        (severity error)
+        (code "missing_body_or_semicolon")
+        (source "parser")
         (range (start 33 2) (end 43 1))
       )
     )
@@ -88,7 +88,7 @@ package ViewTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:150602796e98ab955e756693987d3669c877d4c7667d84a2dcf3071d6b5af48f") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:150602796e98ab955e756693987d3669c877d4c7667d84a2dcf3071d6b5af48f") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::C"))) (kind concern-def) (membership (kind owning) (visibility default)))

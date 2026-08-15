@@ -40,7 +40,13 @@ package 'Flow Definition Example' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_occurrence_definition_member")
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 6 2) (end 6 25))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_parser_construct")
         (source "semantic")
         (range (start 6 2) (end 6 25))
       )

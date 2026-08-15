@@ -103,9 +103,15 @@ package 'Use Case Usage Example' {
         (range (start 11 24) (end 11 39))
       )
       (diagnostic
+        (severity error)
+        (code "recovered_use_case_body_element")
+        (source "parser")
+        (range (start 11 40) (end 15 3))
+      )
+      (diagnostic
         (severity warning)
-        (code "unsupported_use_case_definition_member")
-        (source "semantic")
+        (code "recovery_cascade_suppressed")
+        (source "parser")
         (range (start 11 40) (end 15 3))
       )
       (diagnostic
@@ -148,12 +154,6 @@ package 'Use Case Usage Example' {
         (severity warning)
         (code "unsupported_use_case_definition_member")
         (source "semantic")
-        (range (start 28 39) (end 32 3))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_use_case_definition_member")
-        (source "semantic")
         (range (start 34 2) (end 34 12))
       )
       (diagnostic
@@ -175,7 +175,7 @@ package 'Use Case Usage Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:978b14a368c7e7a64320e8cc6ffcfb059789f65349b6bb1baceb6c8cbaf78168") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:978b14a368c7e7a64320e8cc6ffcfb059789f65349b6bb1baceb6c8cbaf78168") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/35_use_case_usage_example.md") (qualified-name "Use Case Usage Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/35_use_case_usage_example.md") (path (named (kind package) (name "Use Case Usage Example")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Use Case Definition Example") (import (shape namespace) (recursive false))))))

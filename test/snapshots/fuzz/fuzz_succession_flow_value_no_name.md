@@ -20,10 +20,10 @@ package P {
   (document "memory://snapshot/fuzz_succession_flow_value_no_name.md"
     (diagnostics
       (diagnostic
-        (severity error)
-        (code "unrecognized_declaration_in_scope")
-        (source "parser")
-        (range (start 2 8) (end 3 8))
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 2 18) (end 2 25))
       )
       (diagnostic
         (severity error)
@@ -54,8 +54,12 @@ package P {
   (declarations
     (declaration (id (node (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (qualified-name "P::Container"))) (kind class-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (qualified-name "P::Container::a1"))) (kind kerml-step) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Action1")))))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (qualified-name "P::Container::a1"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Action1")
+      (outcome (status unresolved)))
   )
   (relationships
   )
@@ -66,10 +70,18 @@ package P {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (qualified-name "P::Container::a1")))
+      (featured-by (node (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (qualified-name "P::Container")))
+    )
 )
 ~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (range (start 2 18) (end 2 25)) (probe (position 2 18))
+    (reference (id (source (node (document "memory://snapshot/fuzz_succession_flow_value_no_name.md") (qualified-name "P::Container::a1"))) (kind featureTyping) (ordinal 0) (authored-target "Action1")
+      (outcome (status unresolved)))
+    )
+  )
 )
 ~~~
