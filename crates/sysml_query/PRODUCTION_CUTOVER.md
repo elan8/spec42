@@ -5,10 +5,15 @@ used by `HostWorkspaceSnapshot`, `server`, and `lsp_server`. It records required
 not proposed raw graph access. A production consumer is removed from the transitional Cargo
 inventory only when every row it uses is served by one coherent `PublishedModel` identity.
 
+`sysml_query` itself is out. Its normal dependency closure is exactly `sysml_resolution`, which
+`tests/architecture.rs::facade_depends_only_on_the_immutable_resolution_owner` pins, so no consumer
+of the facade can reach the mutable graph. The crates below reach it directly, by their own
+manifests, and are the remaining work.
+
 | Typed service | Required inputs committed by the publication | Required result contract | Current production owners to migrate |
 |---|---|---|---|
 | Source admission and publication | URI, content, source kind, parser recovery, semantic contract version, evaluation policy, standard-library and external-library inputs | Opaque complete/recovery publication, dependency-complete identity, document identities and source ranges, structural counts for resource limits | `workspace::snapshot::{build,update}`, `workspace::IncrementalWorkspace`, `lsp_server::workspace::{services,rebuild,library_closure}` |
-| Document diagnostics | Publication identity, document identity, strict/reporting options, library context and unit registry | Canonically ordered typed diagnostics with code, severity, primary range and related locations; unresolved, ambiguous, unsupported and recovery remain distinct | `workspace::snapshot::facts::collect_host_validation_report`, `lsp_server::analysis`, `lsp_server::lsp_runtime::diagnostics`, `server::generation` |
+| Document diagnostics | Publication identity, document identity, strict/reporting options, library context and unit registry | Canonically ordered typed diagnostics with code, severity, primary range and related locations; unresolved, ambiguous, unsupported and recovery remain distinct | **Producer landed.** `PublishedModel::diagnostics()` answers from facts settled at the publication barrier. Remaining legacy consumers are `workspace::snapshot::facts::collect_host_validation_report`, `lsp_server::analysis`, `lsp_server::lsp_runtime::diagnostics`, and `server::generation`. |
 | Element inspection and symbols | Element identity or source position, document scope, authored/effective selection | Typed kind, name, range, ownership, visibility, multiplicity, documentation, effective type/value and provenance; no generic attribute map or all-node iterator | `language_service::{hover,symbol,completion}`, `lsp_server::{language,lsp_runtime::symbols,views::feature_inspector}`. Generator search and inspection are migrated. |
 | Navigation and edits | Document identity, position, lookup role, optional selected symbol identity | Definition/declaration targets, references, rename ranges and visible-member candidates with canonical ordering and explicit outcomes | **Migrated.** `language_service::{definition,references,rename,completion}` and the LSP definition/reference/highlight/rename/completion adapters consume one immutable `PublishedModel`; graph lookup and textual reference scanning are deleted from these paths. |
 | Relationship queries | Source/target identity, closed relationship kind, authored/effective selection | Direct typed relationships with endpoint identities, provenance and source ranges; authored reference outcome remains separately addressable | `workspace::snapshot::facts`, `lsp_server::views::{model,feature_inspector}`. Generator model queries are migrated. |
@@ -26,7 +31,11 @@ surfaces. During migration there must not be a `PublishedModel` beside a mutable
 free to choose between them; each vertical slice moves its complete producer and consumers, then
 deletes the old access path.
 
-The navigation/edit slice publishes an `Arc<PublishedModel>` atomically with each admitted LSP
-document-index state. Other rows still use the transitional graph, but navigation/edit consumers
-cannot select it and have no fallback to it. `language_service` and `lsp_server` therefore remain in
-`TRANSITIONAL_DIRECT_CONSUMERS` until their other rows migrate.
+`sysml_diagnostics` remains only because `workspace` and `lsp_server` still evaluate its checks over
+the mutable graph. It is not reachable from `sysml_query`, so it is now an unmigrated consumer of
+the graph rather than part of the facade's contract. Its three type-dependent checks are the row
+above; the rest follow their own owners' rows.
+
+The facade's one module is still named `resolved_slice`, which distinguished it from the legacy
+facade that no longer exists. Renaming it is a mechanical change across every consumer and is
+deliberately not bundled with a dependency cut.

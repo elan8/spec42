@@ -7,15 +7,7 @@ license.workspace = true
 description = "Opaque published SysML model and cohesive semantic query services"
 
 [dependencies]
-sysml_diagnostics = { path = "../sysml_diagnostics", optional = true }
-sysml_model = { path = "../sysml_model", optional = true }
-sysml_resolution = { path = "../sysml_resolution", optional = true }
-url = { version = "2", optional = true }
-
-[features]
-default = ["legacy-model"]
-legacy-model = ["dep:sysml_diagnostics", "dep:sysml_model", "dep:url"]
-immutable-resolution = ["dep:sysml_resolution"]
+sysml_resolution = { path = "../sysml_resolution" }
 
 [dev-dependencies]
 serde_json.workspace = true

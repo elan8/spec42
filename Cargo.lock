@@ -2069,10 +2069,7 @@ version = "0.50.0"
 dependencies = [
  "serde_json",
  "syn 2.0.119",
- "sysml_diagnostics",
- "sysml_model",
  "sysml_resolution",
- "url",
 ]
 
 [[package]]

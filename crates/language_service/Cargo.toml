@@ -8,7 +8,7 @@ description = "Protocol-neutral SysML editor language services for Spec42 hosts"
 
 [dependencies]
 sysml_model = { path = "../sysml_model" }
-sysml_query = { path = "../sysml_query", default-features = false, features = ["immutable-resolution"] }
+sysml_query = { path = "../sysml_query" }
 sysml-v2-parser = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }

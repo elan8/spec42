@@ -13,4 +13,4 @@ path = "src/main.rs"
 clap.workspace = true
 serde.workspace = true
 serde_json.workspace = true
-sysml_query = { path = "../../crates/sysml_query", default-features = false, features = ["immutable-resolution"] }
+sysml_query = { path = "../../crates/sysml_query" }
