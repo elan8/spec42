@@ -13,7 +13,9 @@ mod element_kind;
 mod evaluation;
 mod inspection;
 mod model;
+mod traceability;
 mod type_query;
+mod verification;
 
 pub use element_kind::{
     ElementKind, MembershipRole, RequirementConstraintKind, StateSubactionKind,
@@ -25,10 +27,12 @@ pub use inspection::{
     MultiplicityBound, MultiplicityFacts, PortionKind, ReferenceAt, RelationshipProvenance,
     RelationshipTarget, SymbolEntry, ValueKind, Visibility, VisibilityProvenance,
 };
+pub use traceability::{SatisfyEndpoint, SatisfyPolarity, SatisfyRelationship};
 pub use type_query::{
-    Conformance, ConformanceObstacle, EffectiveType, EffectiveTypeOrigin, SpecializationScope,
-    SubsettingConformance, TypeReference,
+    Conformance, ConformanceObstacle, EffectiveType, EffectiveTypeOrigin, RequirementUsageTyping,
+    SpecializationScope, SubsettingConformance, TypeReference,
 };
+pub use verification::{RequirementVerification, VerificationOutcome, VerificationRequirement};
 
 use model::resolver::ResolvedSemanticModel;
 use model::{BuildSchedule, CoordinatorError, OwnedSourceRecord, SemanticModelBuildCoordinator};
@@ -50,6 +54,25 @@ pub enum SourceKind {
     StandardLibrary,
     Library,
     External,
+}
+
+/// Which authored source domain an element search may observe.
+///
+/// This is deliberately provenance-based. Consumers must not infer library ownership from a
+/// document URI or qualified name.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum ElementSource {
+    Workspace,
+    StandardLibrary,
+    Library,
+    External,
+}
+
+/// A typed, bounded search over declarations in one immutable publication.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct ElementSearch {
+    pub kind: ElementKind,
+    pub source: ElementSource,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -86,6 +109,13 @@ pub struct TextRange {
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct SymbolIdentity(Box<str>);
+
+impl SymbolIdentity {
+    /// The canonical, opaque identity encoding used for equality and boundary handles.
+    pub fn as_str(&self) -> &str {
+        &self.0
+    }
+}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum OccurrenceRole {
@@ -500,9 +530,36 @@ impl PublishedResolution {
         self.model.document_symbols(document)
     }
 
+    /// Elements of `search.kind` authored in `search.source`, in canonical source order.
+    pub fn search_elements(&self, search: ElementSearch) -> QueryOutcome<Box<[SymbolEntry]>> {
+        self.model.search_elements(search)
+    }
+
+    /// Workspace-authored satisfy statements in canonical declaration order.
+    pub fn satisfy_relationships(&self) -> QueryOutcome<Box<[SatisfyRelationship]>> {
+        self.model.satisfy_relationships()
+    }
+
+    /// Workspace-authored requirement-verification memberships in canonical declaration order.
+    pub fn requirement_verifications(&self) -> QueryOutcome<Box<[RequirementVerification]>> {
+        self.model.requirement_verifications()
+    }
+
+    /// Effective features, direct first and inherited nearest-first with name shadowing.
+    pub fn effective_features(&self, symbol: &SymbolIdentity) -> QueryOutcome<Box<[SymbolEntry]>> {
+        self.model.effective_features(symbol)
+    }
+
     /// The types a feature declares.
     pub fn direct_types(&self, symbol: &SymbolIdentity) -> QueryOutcome<Box<[TypeReference]>> {
         self.model.direct_types(symbol)
+    }
+
+    pub fn requirement_usage_typing(
+        &self,
+        symbol: &SymbolIdentity,
+    ) -> QueryOutcome<RequirementUsageTyping> {
+        self.model.requirement_usage_typing(symbol)
     }
 
     /// The types a feature has, directly or inherited along its subsetting/redefinition chain.
@@ -2576,6 +2633,223 @@ mod tests {
             published.document_symbols("memory://absent.sysml"),
             QueryOutcome::Unresolved
         ));
+    }
+
+    #[test]
+    fn typed_element_search_filters_by_kind_and_authored_source_in_canonical_order() {
+        let request = BuildRequest::new(
+            vec![
+                SourceInput::new(
+                    "memory://z.sysml",
+                    "package Z { requirement def Later; part def NotARequirement; }".into(),
+                    SourceKind::Workspace,
+                ),
+                SourceInput::new(
+                    "memory://standard.sysml",
+                    "package Standard { requirement def LibraryRequirement; }".into(),
+                    SourceKind::StandardLibrary,
+                ),
+                SourceInput::new(
+                    "memory://a.sysml",
+                    "package A { requirement def First; requirement def Second; }".into(),
+                    SourceKind::Workspace,
+                ),
+            ],
+            ConstructionSchedule::Sequential,
+            "contract-v1",
+        )
+        .expect("request");
+        let published = build(request).expect("publication");
+
+        let requirements = match published.search_elements(ElementSearch {
+            kind: ElementKind::RequirementDefinition,
+            source: ElementSource::Workspace,
+        }) {
+            QueryOutcome::Resolved(entries) => entries,
+            other => panic!("expected resolved search, got: {other:?}"),
+        };
+        assert_eq!(
+            requirements
+                .iter()
+                .map(|entry| (
+                    entry.location.document.as_ref(),
+                    entry.qualified_name.as_ref()
+                ))
+                .collect::<Vec<_>>(),
+            vec![
+                ("memory://a.sysml", "A::First"),
+                ("memory://a.sysml", "A::Second"),
+                ("memory://z.sysml", "Z::Later"),
+            ]
+        );
+        assert!(requirements
+            .iter()
+            .all(|entry| entry.kind == ElementKind::RequirementDefinition));
+
+        let library = match published.search_elements(ElementSearch {
+            kind: ElementKind::RequirementDefinition,
+            source: ElementSource::StandardLibrary,
+        }) {
+            QueryOutcome::Resolved(entries) => entries,
+            other => panic!("expected resolved search, got: {other:?}"),
+        };
+        assert_eq!(library.len(), 1);
+        assert_eq!(
+            library[0].qualified_name.as_ref(),
+            "Standard::LibraryRequirement"
+        );
+    }
+
+    #[test]
+    fn satisfy_query_pairs_directional_ends_preserves_identity_polarity_and_unresolved() {
+        let published = publication_for(&[(
+            "memory://trace.sysml",
+            r#"
+package Trace {
+    requirement def Safety;
+    requirement def Performance;
+    part def Vehicle;
+    part vehicle : Vehicle;
+    satisfy Performance by vehicle;
+    not satisfy Safety by vehicle;
+    satisfy Missing by vehicle;
+}
+"#,
+        )]);
+        let values = match published.satisfy_relationships() {
+            QueryOutcome::Resolved(values) => values,
+            other => panic!("expected resolved satisfy query, got {other:?}"),
+        };
+        assert_eq!(values.len(), 3);
+        let requirements = match published.search_elements(ElementSearch {
+            kind: ElementKind::RequirementDefinition,
+            source: ElementSource::Workspace,
+        }) {
+            QueryOutcome::Resolved(values) => values,
+            other => panic!("expected requirements, got {other:?}"),
+        };
+        let performance = requirements
+            .iter()
+            .find(|value| value.qualified_name.as_ref() == "Trace::Performance")
+            .expect("Performance");
+        let parts = match published.search_elements(ElementSearch {
+            kind: ElementKind::PartUsage,
+            source: ElementSource::Workspace,
+        }) {
+            QueryOutcome::Resolved(values) => values,
+            other => panic!("expected parts, got {other:?}"),
+        };
+        let vehicle = parts
+            .iter()
+            .find(|value| value.qualified_name.as_ref() == "Trace::vehicle")
+            .expect("vehicle");
+        assert!(
+            matches!(&values[0].requirement, SatisfyEndpoint::Resolved(value) if value == &performance.identity)
+        );
+        assert!(
+            matches!(&values[0].satisfying_element, SatisfyEndpoint::Resolved(value) if value == &vehicle.identity)
+        );
+        assert_eq!(values[0].polarity, SatisfyPolarity::Satisfied);
+        assert_eq!(values[1].polarity, SatisfyPolarity::NotSatisfied);
+        assert!(matches!(values[2].requirement, SatisfyEndpoint::Unresolved));
+        assert_eq!(values[0].provenance, RelationshipProvenance::Authored);
+        assert_ne!(values[0].identity, values[1].identity);
+    }
+
+    #[test]
+    fn verification_query_owns_case_direction_endpoint_status_and_unsupported_outcome() {
+        let published = publication_for(&[(
+            "memory://verification.sysml",
+            r#"
+package V {
+    requirement required;
+    verification def Check {
+        objective { verify required; }
+        objective second { verify Missing; }
+    }
+}
+"#,
+        )]);
+        let values = match published.requirement_verifications() {
+            QueryOutcome::Resolved(values) => values,
+            other => panic!("expected resolved verification query, got {other:?}"),
+        };
+        assert_eq!(values.len(), 2);
+        let cases = match published.search_elements(ElementSearch {
+            kind: ElementKind::VerificationCaseDefinition,
+            source: ElementSource::Workspace,
+        }) {
+            QueryOutcome::Resolved(values) => values,
+            other => panic!("expected verification cases, got {other:?}"),
+        };
+        let check = cases
+            .iter()
+            .find(|value| value.qualified_name.as_ref() == "V::Check")
+            .expect("Check");
+        assert!(values
+            .iter()
+            .all(|value| value.verification_case == check.identity));
+        assert!(matches!(
+            values[0].requirement,
+            VerificationRequirement::Resolved(_)
+        ));
+        assert!(matches!(
+            values[1].requirement,
+            VerificationRequirement::Unresolved
+        ));
+        assert!(values
+            .iter()
+            .all(|value| value.provenance == RelationshipProvenance::Authored));
+        assert!(values
+            .iter()
+            .all(|value| value.outcome == VerificationOutcome::Unsupported));
+        assert_ne!(values[0].identity, values[1].identity);
+    }
+
+    #[test]
+    fn effective_features_follow_usage_typing_and_nearest_inheritance_with_shadowing() {
+        let published = publication_for(&[(
+            "memory://features.sysml",
+            r#"
+package P {
+    part def Base {
+        attribute inherited;
+        attribute shadowed;
+    }
+    part def Vehicle :> Base {
+        attribute direct;
+        attribute shadowed;
+    }
+    part vehicle : Vehicle;
+}
+"#,
+        )]);
+        let entries = match published.search_elements(ElementSearch {
+            kind: ElementKind::PartUsage,
+            source: ElementSource::Workspace,
+        }) {
+            QueryOutcome::Resolved(entries) => entries,
+            other => panic!("expected part usage, got {other:?}"),
+        };
+        let vehicle = entries
+            .iter()
+            .find(|entry| entry.qualified_name.as_ref() == "P::vehicle")
+            .expect("vehicle usage");
+        let features = match published.effective_features(&vehicle.identity) {
+            QueryOutcome::Resolved(features) => features,
+            other => panic!("expected effective features, got {other:?}"),
+        };
+        assert_eq!(
+            features
+                .iter()
+                .map(|entry| entry.qualified_name.as_ref())
+                .collect::<Vec<_>>(),
+            vec![
+                "P::Vehicle::direct",
+                "P::Vehicle::shadowed",
+                "P::Base::inherited"
+            ]
+        );
     }
 
     // --- Evaluation states ------------------------------------------------------------------

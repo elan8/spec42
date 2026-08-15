@@ -15,8 +15,8 @@ use generator_host::{
 };
 use rayon::prelude::*;
 use serde::Serialize;
-use workspace::{
-    EngineBuilder, HostContext, HostFilesystemProvider, ValidationTiming, WorkspaceLoadRequest,
+use sysml_query::resolved_slice::{
+    build, BuildRequest, ConstructionStrategy, PublishedModel, SourceDocument, SourceKind,
 };
 
 use crate::case::{Case, Expectation};
@@ -153,24 +153,24 @@ impl Corpus {
         Ok(runs)
     }
 
-    fn load_model(&self, name: &str) -> Result<Arc<workspace::HostWorkspaceSnapshot>, String> {
+    fn load_model(&self, name: &str) -> Result<Arc<PublishedModel>, String> {
         let path = self.model_path(name);
         if !path.is_file() {
             return Err(format!("model `{name}` not found at {}", path.display()));
         }
-        let root = path.parent().expect("model has a parent").to_path_buf();
-        let engine = EngineBuilder::default()
-            .cache_dir(root.join(".cache"))
-            .no_stdlib(true)
-            .build()
+        let content = std::fs::read_to_string(&path)
+            .map_err(|error| format!("failed to read model `{name}`: {error}"))?;
+        let source = SourceDocument::from_memory_path(
+            "generator-conformance",
+            "model.sysml",
+            content,
+            SourceKind::Workspace,
+        )
+        .map_err(|error| error.to_string())?;
+        let request = BuildRequest::resolved(vec![source], ConstructionStrategy::Sequential)
             .map_err(|error| error.to_string())?;
-        let provider =
-            HostFilesystemProvider::from_paths(&path, Some(&root), engine.package_roots());
-        let request = WorkspaceLoadRequest::single_target(path)
-            .with_workspace_root(Some(root))
-            .with_validation_timing(ValidationTiming::Deferred);
-        engine
-            .load_workspace(provider, request, HostContext::default())
+        build(request)
+            .map(Arc::new)
             .map_err(|error| format!("failed to load model `{name}`: {error}"))
     }
 }
@@ -178,7 +178,7 @@ impl Corpus {
 fn run_one(
     runtime: &GeneratorRuntime,
     prepared: &PreparedGenerator,
-    snapshot: &Arc<workspace::HostWorkspaceSnapshot>,
+    snapshot: &Arc<PublishedModel>,
     case: Case,
 ) -> CaseRun {
     // A fresh view per case: the handle index accumulates as elements are exposed, so a
@@ -186,6 +186,8 @@ fn run_one(
     // masking exactly the unknown-handle behaviour the suite exists to pin.
     let model = Arc::new(GeneratorModelView::new(
         Arc::clone(snapshot),
+        snapshot.publication().source_digest(),
+        env!("CARGO_PKG_VERSION"),
         QueryLimits::default(),
     ));
 

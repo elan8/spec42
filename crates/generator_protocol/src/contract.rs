@@ -311,6 +311,12 @@ abi_contract! {
         Relationships = 6 => (String, Vec<Relationship>),
         /// Direct features first, then inherited nearest-first, with shadowing applied.
         EffectiveFeatures = 7 => (String, Vec<ElementSummary>),
+        /// Authoritative typing state for a requirement usage.
+        RequirementTyping = 8 => (String, RequirementUsageTyping),
+        /// Authoritative workspace satisfy statements with directional endpoint states.
+        SatisfyRelationships = 9 => ((), Vec<SatisfyRelationship>),
+        /// Authoritative verification-to-requirement links and explicit outcome states.
+        RequirementVerifications = 10 => ((), Vec<RequirementVerification>),
     }
 
     /// Severity of a generator diagnostic.

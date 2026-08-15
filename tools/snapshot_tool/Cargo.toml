@@ -12,6 +12,8 @@ path = "src/main.rs"
 [dependencies]
 clap.workspace = true
 rayon = "1.12"
+generator_api = { path = "../../crates/generator_api" }
+generator_host = { path = "../../crates/generator_host" }
 sysml_query = { path = "../../crates/sysml_query", default-features = false, features = ["immutable-resolution"] }
 
 [dev-dependencies]

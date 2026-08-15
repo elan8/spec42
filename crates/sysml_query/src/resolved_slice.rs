@@ -5,13 +5,16 @@ use std::fmt;
 pub use sysml_resolution::{
     AnnotationForm, AuthoredValue, BuildMeasurements, Conformance, ConformanceObstacle,
     Documentation, EffectiveType, EffectiveTypeOrigin, ElementInspection, ElementInspectionAt,
-    ElementKind, ElementModifier, ElementRelationship, EvaluatedScalar, EvaluationFailure,
-    EvaluationState, FeatureDirection, MembershipFacts, MembershipKind, MembershipRole,
-    MultiplicityBound, MultiplicityFacts, NavigationTarget, OccurrenceRole, PortionKind,
-    PublicationCompleteness, QueryOutcome, ReferenceAt, RelationshipProvenance, RelationshipTarget,
-    RenameOutcome, RequirementConstraintKind, SourceLocation, SpecializationScope,
-    StateSubactionKind, SubsettingConformance, SymbolEntry, SymbolIdentity, TextPosition,
-    TextRange, TypeReference, ValueKind, Visibility, VisibilityProvenance, VisibleMember,
+    ElementKind, ElementModifier, ElementRelationship, ElementSearch, ElementSource,
+    EvaluatedScalar, EvaluationFailure, EvaluationState, FeatureDirection, MembershipFacts,
+    MembershipKind, MembershipRole, MultiplicityBound, MultiplicityFacts, NavigationTarget,
+    OccurrenceRole, PortionKind, PublicationCompleteness, QueryOutcome, ReferenceAt,
+    RelationshipProvenance, RelationshipTarget, RenameOutcome, RequirementConstraintKind,
+    RequirementUsageTyping, RequirementVerification, SatisfyEndpoint, SatisfyPolarity,
+    SatisfyRelationship, SourceLocation, SpecializationScope, StateSubactionKind,
+    SubsettingConformance, SymbolEntry, SymbolIdentity, TextPosition, TextRange, TypeReference,
+    ValueKind, VerificationOutcome, VerificationRequirement, Visibility, VisibilityProvenance,
+    VisibleMember,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -248,6 +251,13 @@ impl TypeQueries<'_> {
         self.model.direct_types(symbol)
     }
 
+    pub fn requirement_usage_typing(
+        &self,
+        symbol: &SymbolIdentity,
+    ) -> QueryOutcome<RequirementUsageTyping> {
+        self.model.requirement_usage_typing(symbol)
+    }
+
     /// The types a feature has, directly or inherited along its subsetting/redefinition chain.
     pub fn effective_types(&self, symbol: &SymbolIdentity) -> QueryOutcome<Box<[EffectiveType]>> {
         self.model.effective_types(symbol)
@@ -321,6 +331,11 @@ pub struct PublicationQueries<'a> {
 impl PublicationQueries<'_> {
     pub fn completeness(&self) -> PublicationCompleteness {
         self.model.completeness()
+    }
+
+    /// Dependency-complete digest of every source admitted to this publication.
+    pub fn source_digest(&self) -> String {
+        self.model.identity().source_digest().to_string()
     }
 }
 
@@ -403,6 +418,25 @@ impl InspectionQueries<'_> {
     /// Every element declared in one document, in source order.
     pub fn document_symbols(&self, document: &str) -> QueryOutcome<Box<[SymbolEntry]>> {
         self.model.document_symbols(document)
+    }
+
+    /// Elements matching a typed kind and authored-source provenance filter.
+    pub fn search_elements(&self, search: ElementSearch) -> QueryOutcome<Box<[SymbolEntry]>> {
+        self.model.search_elements(search)
+    }
+
+    /// Workspace-authored satisfy statements, with directional ends and explicit outcomes.
+    pub fn satisfy_relationships(&self) -> QueryOutcome<Box<[SatisfyRelationship]>> {
+        self.model.satisfy_relationships()
+    }
+
+    pub fn requirement_verifications(&self) -> QueryOutcome<Box<[RequirementVerification]>> {
+        self.model.requirement_verifications()
+    }
+
+    /// Effective features, direct first and inherited nearest-first with name shadowing.
+    pub fn effective_features(&self, symbol: &SymbolIdentity) -> QueryOutcome<Box<[SymbolEntry]>> {
+        self.model.effective_features(symbol)
     }
 }
 

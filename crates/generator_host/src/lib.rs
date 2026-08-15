@@ -8,7 +8,9 @@ use generator_api::{
     ArtifactLimits, ArtifactSet, ElementDetail as ApiElementDetail,
     ElementSummary as ApiElementSummary, GeneratorDiagnostic, GeneratorDiagnosticLevel,
     GeneratorModelView, MultiplicitySummary as ApiMultiplicity, RelationshipSummary,
-    MAX_ARTIFACT_PATH_BYTES,
+    RequirementUsageTypingSummary, RequirementVerificationSummary, SatisfyEndpointSummary,
+    SatisfyPolaritySummary, SatisfyRelationshipSummary, TypingProvenanceSummary,
+    VerificationOutcomeSummary, VerificationRequirementSummary, MAX_ARTIFACT_PATH_BYTES,
 };
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
@@ -948,6 +950,40 @@ fn handle_query(
                     .map_err(|error| error.to_string()),
             )
         }
+        protocol::Operation::RequirementTyping => {
+            let usage = decode_for::<protocol::query::RequirementTyping>(request)?;
+            encode_result(
+                state
+                    .model
+                    .requirement_usage_typing(&usage)
+                    .map(requirement_usage_typing)
+                    .map_err(|error| error.to_string()),
+            )
+        }
+        protocol::Operation::SatisfyRelationships => encode_result(
+            state
+                .model
+                .satisfy_relationships()
+                .map(|values| {
+                    values
+                        .into_iter()
+                        .map(satisfy_relationship)
+                        .collect::<Vec<_>>()
+                })
+                .map_err(|error| error.to_string()),
+        ),
+        protocol::Operation::RequirementVerifications => encode_result(
+            state
+                .model
+                .requirement_verifications()
+                .map(|values| {
+                    values
+                        .into_iter()
+                        .map(requirement_verification)
+                        .collect::<Vec<_>>()
+                })
+                .map_err(|error| error.to_string()),
+        ),
         protocol::Operation::Relationships => {
             let element = decode_for::<protocol::query::Relationships>(request)?;
             encode_result(
@@ -1108,6 +1144,110 @@ fn relationship(value: RelationshipSummary) -> protocol::Relationship {
         source: summary(value.source),
         target: summary(value.target),
         implied: value.implied,
+    }
+}
+
+fn requirement_usage_typing(
+    value: RequirementUsageTypingSummary,
+) -> protocol::RequirementUsageTyping {
+    use protocol::RequirementUsageTyping as Wire;
+    match value {
+        RequirementUsageTypingSummary::Resolved {
+            definition,
+            provenance,
+        } => Wire::Resolved {
+            definition: summary(definition),
+            provenance: match provenance {
+                TypingProvenanceSummary::Authored => protocol::TypingProvenance::Authored,
+                TypingProvenanceSummary::Implied => protocol::TypingProvenance::Implied,
+            },
+        },
+        RequirementUsageTypingSummary::RecoveredResolved {
+            definition,
+            provenance,
+        } => Wire::RecoveredResolved {
+            definition: summary(definition),
+            provenance: match provenance {
+                TypingProvenanceSummary::Authored => protocol::TypingProvenance::Authored,
+                TypingProvenanceSummary::Implied => protocol::TypingProvenance::Implied,
+            },
+        },
+        RequirementUsageTypingSummary::RecoveredMissing => Wire::RecoveredMissing,
+        RequirementUsageTypingSummary::RecoveredUnresolved => Wire::RecoveredUnresolved,
+        RequirementUsageTypingSummary::RecoveredAmbiguous { candidates } => {
+            Wire::RecoveredAmbiguous {
+                candidates: candidates.into_iter().map(summary).collect(),
+            }
+        }
+        RequirementUsageTypingSummary::RecoveredUnsupported => Wire::RecoveredUnsupported,
+        RequirementUsageTypingSummary::Missing => Wire::Missing,
+        RequirementUsageTypingSummary::Unresolved => Wire::Unresolved,
+        RequirementUsageTypingSummary::Ambiguous { candidates } => Wire::Ambiguous {
+            candidates: candidates.into_iter().map(summary).collect(),
+        },
+        RequirementUsageTypingSummary::Unsupported => Wire::Unsupported,
+        RequirementUsageTypingSummary::Recovery => Wire::Recovery,
+        RequirementUsageTypingSummary::Incomplete => Wire::Incomplete,
+    }
+}
+
+fn satisfy_endpoint(value: SatisfyEndpointSummary) -> protocol::SatisfyEndpoint {
+    match value {
+        SatisfyEndpointSummary::Resolved(value) => {
+            protocol::SatisfyEndpoint::Resolved(summary(value))
+        }
+        SatisfyEndpointSummary::Ambiguous(values) => {
+            protocol::SatisfyEndpoint::Ambiguous(values.into_iter().map(summary).collect())
+        }
+        SatisfyEndpointSummary::Unresolved => protocol::SatisfyEndpoint::Unresolved,
+        SatisfyEndpointSummary::Unsupported => protocol::SatisfyEndpoint::Unsupported,
+    }
+}
+
+fn satisfy_relationship(value: SatisfyRelationshipSummary) -> protocol::SatisfyRelationship {
+    protocol::SatisfyRelationship {
+        semantic_id: value.semantic_id,
+        requirement: satisfy_endpoint(value.requirement),
+        satisfying_element: satisfy_endpoint(value.satisfying_element),
+        polarity: match value.polarity {
+            SatisfyPolaritySummary::Satisfied => protocol::SatisfyPolarity::Satisfied,
+            SatisfyPolaritySummary::NotSatisfied => protocol::SatisfyPolarity::NotSatisfied,
+        },
+        provenance: match value.provenance {
+            TypingProvenanceSummary::Authored => protocol::RelationshipProvenance::Authored,
+            TypingProvenanceSummary::Implied => protocol::RelationshipProvenance::Implied,
+        },
+        recovered: value.recovered,
+    }
+}
+
+fn requirement_verification(
+    value: RequirementVerificationSummary,
+) -> protocol::RequirementVerification {
+    let requirement = match value.requirement {
+        VerificationRequirementSummary::Resolved(value) => {
+            protocol::VerificationRequirement::Resolved(summary(value))
+        }
+        VerificationRequirementSummary::Ambiguous(values) => {
+            protocol::VerificationRequirement::Ambiguous(values.into_iter().map(summary).collect())
+        }
+        VerificationRequirementSummary::Unresolved => protocol::VerificationRequirement::Unresolved,
+        VerificationRequirementSummary::Unsupported => {
+            protocol::VerificationRequirement::Unsupported
+        }
+    };
+    protocol::RequirementVerification {
+        semantic_id: value.semantic_id,
+        verification_case: summary(value.verification_case),
+        requirement,
+        provenance: match value.provenance {
+            TypingProvenanceSummary::Authored => protocol::RelationshipProvenance::Authored,
+            TypingProvenanceSummary::Implied => protocol::RelationshipProvenance::Implied,
+        },
+        outcome: match value.outcome {
+            VerificationOutcomeSummary::Unsupported => protocol::VerificationOutcome::Unsupported,
+        },
+        recovered: value.recovered,
     }
 }
 

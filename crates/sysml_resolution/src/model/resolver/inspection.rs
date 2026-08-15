@@ -192,7 +192,7 @@ impl ResolvedSemanticModel {
         segments.join("::")
     }
 
-    fn source_location(&self, id: DeclarationId) -> Option<SourceLocation> {
+    pub(super) fn source_location(&self, id: DeclarationId) -> Option<SourceLocation> {
         let declaration = self.storage.declaration(id)?;
         let document = self
             .storage
@@ -333,7 +333,7 @@ impl ResolvedSemanticModel {
         .collect()
     }
 
-    fn relationships(&self, id: DeclarationId) -> Box<[ElementRelationship]> {
+    pub(super) fn relationships(&self, id: DeclarationId) -> Box<[ElementRelationship]> {
         let mut relationships = Vec::new();
         for reference_id in slice_range(&self.facts.reference_order, &self.facts.references, id) {
             let reference = &self.storage.references[reference_id.index()];
@@ -581,5 +581,152 @@ impl ResolvedSemanticModel {
             })
             .collect::<Vec<_>>();
         self.resolved_outcome(entries.into_boxed_slice())
+    }
+
+    pub(crate) fn search_elements(
+        &self,
+        search: ElementSearch,
+    ) -> QueryOutcome<Box<[SymbolEntry]>> {
+        let role = match search.source {
+            ElementSource::Workspace => SourceRole::Workspace,
+            ElementSource::StandardLibrary => SourceRole::StandardLibrary,
+            ElementSource::Library => SourceRole::Library,
+            ElementSource::External => SourceRole::External,
+        };
+        let mut entries = self
+            .storage
+            .declarations
+            .iter()
+            .enumerate()
+            .filter_map(|(index, declaration)| {
+                let document = self.storage.document(declaration.document)?;
+                if document.role != role
+                    || element_kind::element_kind(declaration.kind) != search.kind
+                {
+                    return None;
+                }
+                let id = DeclarationId::from_index(index).ok()?;
+                let location = self.source_location(id)?;
+                Some(SymbolEntry {
+                    identity: self.symbol_identity(id)?,
+                    kind: search.kind,
+                    name: declaration
+                        .name
+                        .and_then(|name| self.storage.symbol(name))
+                        .map(Into::into),
+                    qualified_name: self.qualified_name(id).into(),
+                    owner: declaration
+                        .owner
+                        .and_then(|owner| self.symbol_identity(owner)),
+                    declaration_range: location.range,
+                    location,
+                })
+            })
+            .collect::<Vec<_>>();
+        entries.sort_by(|left, right| {
+            left.location
+                .document
+                .cmp(&right.location.document)
+                .then_with(|| left.location.range.cmp(&right.location.range))
+                .then_with(|| left.identity.cmp(&right.identity))
+        });
+        self.resolved_outcome(entries.into_boxed_slice())
+    }
+
+    pub(crate) fn effective_features(
+        &self,
+        symbol: &SymbolIdentity,
+    ) -> QueryOutcome<Box<[SymbolEntry]>> {
+        let declaration = match self.single_declaration(symbol) {
+            Ok(declaration) => declaration,
+            Err(outcome) => return outcome,
+        };
+        let mut queue = std::collections::VecDeque::from([declaration]);
+        // A usage's effective feature set starts with the definitions it is typed by. Keeping the
+        // usage itself first also preserves any direct nested features it authors.
+        let mut direct_types = self
+            .types
+            .direct_types(declaration)
+            .iter()
+            .map(|(target, _)| *target)
+            .collect::<Vec<_>>();
+        direct_types.sort_by_key(|target| self.symbol_identity(*target));
+        queue.extend(direct_types);
+
+        let mut visited = std::collections::BTreeSet::new();
+        let mut names = std::collections::BTreeSet::<Box<str>>::new();
+        let mut result = Vec::new();
+        while let Some(owner) = queue.pop_front() {
+            if !visited.insert(owner) {
+                continue;
+            }
+            let mut children = self
+                .storage
+                .declarations
+                .iter()
+                .enumerate()
+                .filter_map(|(index, child)| {
+                    let id = DeclarationId::from_index(index).ok()?;
+                    (child.owner == Some(owner) && self.types.featuring_type(id) == Some(owner))
+                        .then_some(id)
+                })
+                .collect::<Vec<_>>();
+            children.sort_by(|left, right| {
+                match (self.source_location(*left), self.source_location(*right)) {
+                    (Some(left), Some(right)) => left
+                        .document
+                        .cmp(&right.document)
+                        .then_with(|| left.range.cmp(&right.range)),
+                    (Some(_), None) => std::cmp::Ordering::Less,
+                    (None, Some(_)) => std::cmp::Ordering::Greater,
+                    (None, None) => left.cmp(right),
+                }
+            });
+            for child in children {
+                let Some(entry) = self.symbol_entry(child) else {
+                    continue;
+                };
+                let shadow_key = entry
+                    .name
+                    .clone()
+                    .unwrap_or_else(|| entry.identity.as_str().into());
+                if names.insert(shadow_key) {
+                    result.push(entry);
+                }
+            }
+
+            let mut bases = self
+                .types
+                .supertypes(owner)
+                .iter()
+                .filter(|(_, scopes)| {
+                    types::scopes_of(*scopes)
+                        .any(|scope| scope == types::SpecializationScope::Subclassification)
+                })
+                .map(|(target, _)| *target)
+                .collect::<Vec<_>>();
+            bases.sort_by_key(|target| self.symbol_identity(*target));
+            queue.extend(bases);
+        }
+        self.resolved_outcome(result.into_boxed_slice())
+    }
+
+    fn symbol_entry(&self, id: DeclarationId) -> Option<SymbolEntry> {
+        let declaration = self.storage.declaration(id)?;
+        let location = self.source_location(id)?;
+        Some(SymbolEntry {
+            identity: self.symbol_identity(id)?,
+            kind: element_kind::element_kind(declaration.kind),
+            name: declaration
+                .name
+                .and_then(|name| self.storage.symbol(name))
+                .map(Into::into),
+            qualified_name: self.qualified_name(id).into(),
+            owner: declaration
+                .owner
+                .and_then(|owner| self.symbol_identity(owner)),
+            declaration_range: location.range,
+            location,
+        })
     }
 }

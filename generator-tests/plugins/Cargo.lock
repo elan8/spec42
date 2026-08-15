@@ -222,6 +222,34 @@ dependencies = [
 ]
 
 [[package]]
+name = "spec42-conformance-requirement-traceability-csv"
+version = "0.1.0"
+dependencies = [
+ "spec42-generator-sdk",
+]
+
+[[package]]
+name = "spec42-conformance-requirement_instances_csv"
+version = "0.1.0"
+dependencies = [
+ "spec42-generator-sdk",
+]
+
+[[package]]
+name = "spec42-conformance-requirement_verification_csv"
+version = "0.1.0"
+dependencies = [
+ "spec42-generator-sdk",
+]
+
+[[package]]
+name = "spec42-conformance-requirements_csv"
+version = "0.1.0"
+dependencies = [
+ "spec42-generator-sdk",
+]
+
+[[package]]
 name = "spec42-generator-protocol"
 version = "0.50.0"
 dependencies = [

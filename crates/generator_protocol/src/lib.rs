@@ -35,6 +35,12 @@ struct WireSchema {
     source_range: SourceRange,
     multiplicity: Multiplicity,
     relationship: Relationship,
+    requirement_usage_typing: RequirementUsageTyping,
+    satisfy_relationship: SatisfyRelationship,
+    satisfy_endpoint: SatisfyEndpoint,
+    requirement_verification: RequirementVerification,
+    verification_requirement: VerificationRequirement,
+    verification_outcome: VerificationOutcome,
     level: Level,
     /// Request payloads, which are part of the contract just as much as the responses.
     metaclass_filter: Option<String>,
@@ -557,6 +563,91 @@ pub struct Relationship {
     pub target: ElementSummary,
     pub implied: bool,
 }
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum TypingProvenance {
+    Authored,
+    Implied,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum RequirementUsageTyping {
+    Resolved {
+        definition: ElementSummary,
+        provenance: TypingProvenance,
+    },
+    RecoveredResolved {
+        definition: ElementSummary,
+        provenance: TypingProvenance,
+    },
+    RecoveredMissing,
+    RecoveredUnresolved,
+    RecoveredAmbiguous {
+        candidates: Vec<ElementSummary>,
+    },
+    RecoveredUnsupported,
+    Missing,
+    Unresolved,
+    Ambiguous {
+        candidates: Vec<ElementSummary>,
+    },
+    Unsupported,
+    Recovery,
+    Incomplete,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum SatisfyEndpoint {
+    Resolved(ElementSummary),
+    Ambiguous(Vec<ElementSummary>),
+    Unresolved,
+    Unsupported,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum SatisfyPolarity {
+    Satisfied,
+    NotSatisfied,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum RelationshipProvenance {
+    Authored,
+    Implied,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct SatisfyRelationship {
+    pub semantic_id: String,
+    pub requirement: SatisfyEndpoint,
+    pub satisfying_element: SatisfyEndpoint,
+    pub polarity: SatisfyPolarity,
+    pub provenance: RelationshipProvenance,
+    pub recovered: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum VerificationRequirement {
+    Resolved(ElementSummary),
+    Ambiguous(Vec<ElementSummary>),
+    Unresolved,
+    Unsupported,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum VerificationOutcome {
+    Unsupported,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct RequirementVerification {
+    pub semantic_id: String,
+    pub verification_case: ElementSummary,
+    pub requirement: VerificationRequirement,
+    pub provenance: RelationshipProvenance,
+    pub outcome: VerificationOutcome,
+    pub recovered: bool,
+}
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -641,7 +732,7 @@ mod tests {
     #[test]
     fn the_wire_schema_fingerprint_is_pinned() {
         assert_eq!(
-            SCHEMA_FINGERPRINT, 0x3a46_578a_b105_445f,
+            SCHEMA_FINGERPRINT, 0x0410_39af_27dd_4a86,
             "the generator wire schema changed; every guest must be rebuilt"
         );
     }
@@ -649,7 +740,7 @@ mod tests {
     #[test]
     fn the_compatibility_token_is_pinned() {
         assert_eq!(
-            COMPATIBILITY_TOKEN, 0xa18f_24b3_86a7_570d,
+            COMPATIBILITY_TOKEN, 0xa785_0467_6b7c_86ee,
             "the generator ABI contract changed; every guest must be rebuilt"
         );
     }

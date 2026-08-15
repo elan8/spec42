@@ -11,10 +11,13 @@ use super::evaluation;
 use super::*;
 use crate::evaluation::{EvaluationPolicy, EvaluationState};
 use crate::{
-    Conformance, ConformanceObstacle, EffectiveType, EffectiveTypeOrigin, NavigationTarget,
-    OccurrenceRole, PublicationCompleteness as PublicCompleteness, QueryOutcome,
-    RelationshipProvenance, RenameOutcome, SourceLocation, SpecializationScope,
-    SubsettingConformance, SymbolIdentity, TextPosition, TextRange, TypeReference, VisibleMember,
+    Conformance, ConformanceObstacle, EffectiveType, EffectiveTypeOrigin, ElementSearch,
+    ElementSource, NavigationTarget, OccurrenceRole, PublicationCompleteness as PublicCompleteness,
+    QueryOutcome, RelationshipProvenance, RelationshipTarget, RenameOutcome,
+    RequirementUsageTyping, RequirementVerification, SatisfyEndpoint, SatisfyPolarity,
+    SatisfyRelationship, SourceLocation, SpecializationScope, SubsettingConformance,
+    SymbolIdentity, TextPosition, TextRange, TypeReference, VerificationOutcome,
+    VerificationRequirement, VisibleMember,
 };
 
 mod inspection;
@@ -1718,6 +1721,235 @@ impl ResolvedSemanticModel {
             .collect::<Vec<_>>();
         types.sort_by(|left, right| left.symbol.cmp(&right.symbol));
         self.resolved_outcome(types.into_boxed_slice())
+    }
+
+    pub(crate) fn requirement_usage_typing(
+        &self,
+        symbol: &SymbolIdentity,
+    ) -> QueryOutcome<RequirementUsageTyping> {
+        let declaration = match self.single_declaration(symbol) {
+            Ok(declaration) => declaration,
+            Err(outcome) => return outcome,
+        };
+        if self
+            .storage
+            .declaration(declaration)
+            .is_none_or(|value| value.kind != DeclarationKind::RequirementUsage)
+        {
+            return QueryOutcome::Unsupported;
+        }
+        let relationships = self.relationships(declaration);
+        let mut typings = relationships
+            .iter()
+            .filter(|relationship| relationship.kind == "featureTyping");
+        let value = match (typings.next(), typings.next()) {
+            (None, _) => RequirementUsageTyping::Missing,
+            (Some(_), Some(_)) => {
+                let candidates = self
+                    .types
+                    .direct_types(declaration)
+                    .iter()
+                    .filter_map(|(target, _)| self.symbol_identity(*target))
+                    .collect::<Vec<_>>();
+                RequirementUsageTyping::Ambiguous(candidates.into_boxed_slice())
+            }
+            (Some(relationship), None) => match &relationship.target {
+                RelationshipTarget::Resolved(target) => {
+                    let target_is_requirement_definition = self
+                        .identity_declarations(target)
+                        .into_iter()
+                        .any(|target| {
+                            self.storage.declaration(target).is_some_and(|declaration| {
+                                declaration.kind == DeclarationKind::RequirementDefinition
+                            })
+                        });
+                    if target_is_requirement_definition {
+                        RequirementUsageTyping::Resolved(TypeReference {
+                            symbol: target.clone(),
+                            provenance: relationship.provenance,
+                        })
+                    } else {
+                        RequirementUsageTyping::Unsupported
+                    }
+                }
+                RelationshipTarget::Ambiguous(values) => {
+                    RequirementUsageTyping::Ambiguous(values.clone())
+                }
+                RelationshipTarget::Unresolved => RequirementUsageTyping::Unresolved,
+                RelationshipTarget::Unsupported => RequirementUsageTyping::Unsupported,
+            },
+        };
+        self.resolved_outcome(value)
+    }
+
+    pub(crate) fn satisfy_relationships(&self) -> QueryOutcome<Box<[SatisfyRelationship]>> {
+        let endpoint = |reference: Option<AuthoredReferenceId>| match reference
+            .as_ref()
+            .and_then(|reference| self.resolution.outcome(*reference))
+        {
+            Some(ResolutionStatus::Resolved(target)) => self
+                .symbol_identity(target)
+                .map(SatisfyEndpoint::Resolved)
+                .unwrap_or(SatisfyEndpoint::Unresolved),
+            Some(ResolutionStatus::Ambiguous(candidates)) => SatisfyEndpoint::Ambiguous(
+                self.resolution
+                    .ambiguous_candidates(candidates)
+                    .iter()
+                    .filter_map(|candidate| self.symbol_identity(*candidate))
+                    .collect(),
+            ),
+            Some(ResolutionStatus::Unsupported) => SatisfyEndpoint::Unsupported,
+            Some(ResolutionStatus::Unresolved) | Some(ResolutionStatus::NonConverged) => {
+                SatisfyEndpoint::Unresolved
+            }
+            None => SatisfyEndpoint::Unsupported,
+        };
+        let mut values = self
+            .storage
+            .declarations
+            .iter()
+            .enumerate()
+            .filter_map(|(index, declaration)| {
+                let document = self.storage.document(declaration.document)?;
+                if document.role != SourceRole::Workspace
+                    || declaration.kind != DeclarationKind::Satisfy
+                {
+                    return None;
+                }
+                let id = DeclarationId::from_index(index).ok()?;
+                let requirement = self
+                    .storage
+                    .references
+                    .iter()
+                    .enumerate()
+                    .find(|(_, value)| {
+                        value.source == id && value.kind == ReferenceKind::SatisfySource
+                    })
+                    .and_then(|(index, _)| AuthoredReferenceId::from_index(index).ok());
+                let satisfying = self
+                    .storage
+                    .references
+                    .iter()
+                    .enumerate()
+                    .find(|(_, value)| {
+                        value.source == id && value.kind == ReferenceKind::SatisfyTarget
+                    })
+                    .and_then(|(index, _)| AuthoredReferenceId::from_index(index).ok());
+                let facts = self.storage.declaration_facts(id)?;
+                Some(SatisfyRelationship {
+                    identity: self.symbol_identity(id)?,
+                    requirement: endpoint(requirement),
+                    satisfying_element: endpoint(satisfying),
+                    polarity: if facts.satisfy_negated.unwrap_or(false) {
+                        SatisfyPolarity::NotSatisfied
+                    } else {
+                        SatisfyPolarity::Satisfied
+                    },
+                    provenance: RelationshipProvenance::Authored,
+                    location: self.source_location(id)?,
+                })
+            })
+            .collect::<Vec<_>>();
+        values.sort_by(|left, right| {
+            left.location
+                .document
+                .cmp(&right.location.document)
+                .then_with(|| left.location.range.cmp(&right.location.range))
+                .then_with(|| left.identity.cmp(&right.identity))
+        });
+        self.resolved_outcome(values.into_boxed_slice())
+    }
+
+    pub(crate) fn requirement_verifications(&self) -> QueryOutcome<Box<[RequirementVerification]>> {
+        let endpoint = |reference: Option<AuthoredReferenceId>| match reference
+            .and_then(|reference| self.resolution.outcome(reference))
+        {
+            Some(ResolutionStatus::Resolved(target)) => self
+                .symbol_identity(target)
+                .map(VerificationRequirement::Resolved)
+                .unwrap_or(VerificationRequirement::Unresolved),
+            Some(ResolutionStatus::Ambiguous(candidates)) => VerificationRequirement::Ambiguous(
+                self.resolution
+                    .ambiguous_candidates(candidates)
+                    .iter()
+                    .filter_map(|candidate| self.symbol_identity(*candidate))
+                    .collect(),
+            ),
+            Some(ResolutionStatus::Unsupported) => VerificationRequirement::Unsupported,
+            Some(ResolutionStatus::Unresolved) | Some(ResolutionStatus::NonConverged) => {
+                VerificationRequirement::Unresolved
+            }
+            None => VerificationRequirement::Unsupported,
+        };
+        let mut values = Vec::new();
+        for (index, declaration) in self.storage.declarations.iter().enumerate() {
+            let Some(document) = self.storage.document(declaration.document) else {
+                continue;
+            };
+            if document.role != SourceRole::Workspace
+                || declaration.kind != DeclarationKind::VerifyRequirement
+            {
+                continue;
+            }
+            let Some(id) = DeclarationId::from_index(index).ok() else {
+                continue;
+            };
+            let Some(objective) = declaration
+                .owner
+                .and_then(|id| self.storage.declaration(id))
+            else {
+                continue;
+            };
+            if objective.kind != DeclarationKind::RequirementUsage {
+                continue;
+            }
+            let Some(case_id) = objective.owner else {
+                continue;
+            };
+            let Some(case) = self.storage.declaration(case_id) else {
+                continue;
+            };
+            if !matches!(
+                case.kind,
+                DeclarationKind::VerificationCaseDefinition
+                    | DeclarationKind::VerificationCaseUsage
+            ) {
+                continue;
+            }
+            let reference = self
+                .storage
+                .references
+                .iter()
+                .enumerate()
+                .find(|(_, reference)| {
+                    reference.source == id
+                        && reference.kind == ReferenceKind::VerifyRequirementTarget
+                })
+                .and_then(|(index, _)| AuthoredReferenceId::from_index(index).ok());
+            let (Some(identity), Some(verification_case), Some(location)) = (
+                self.symbol_identity(id),
+                self.symbol_identity(case_id),
+                self.source_location(id),
+            ) else {
+                continue;
+            };
+            values.push(RequirementVerification {
+                identity,
+                verification_case,
+                requirement: endpoint(reference),
+                provenance: RelationshipProvenance::Authored,
+                location,
+                outcome: VerificationOutcome::Unsupported,
+            });
+        }
+        values.sort_by(|left, right| {
+            left.location
+                .document
+                .cmp(&right.location.document)
+                .then_with(|| left.location.range.cmp(&right.location.range))
+                .then_with(|| left.identity.cmp(&right.identity))
+        });
+        self.resolved_outcome(values.into_boxed_slice())
     }
 
     pub(crate) fn effective_types(

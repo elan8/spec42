@@ -790,13 +790,12 @@ name = "generator_api"
 version = "0.50.0"
 dependencies = [
  "serde",
- "serde_json",
  "sha2",
  "spec42-generator-protocol",
+ "sysml_query",
  "tempfile",
  "thiserror 2.0.19",
  "unicode-normalization",
- "workspace",
 ]
 
 [[package]]
@@ -809,9 +808,9 @@ dependencies = [
  "rayon",
  "serde",
  "serde_json",
+ "sysml_query",
  "tempfile",
  "toml",
- "workspace",
 ]
 
 [[package]]
@@ -1805,6 +1804,7 @@ dependencies = [
  "sha2",
  "sysml-v2-parser 0.54.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "sysml_model",
+ "sysml_query",
  "tempfile",
  "tokio",
  "toml",
@@ -1934,6 +1934,8 @@ name = "spec42-snapshot"
 version = "0.50.0"
 dependencies = [
  "clap",
+ "generator_api",
+ "generator_host",
  "rayon",
  "sysml_query",
  "tempfile",

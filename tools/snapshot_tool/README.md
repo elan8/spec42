@@ -23,7 +23,8 @@ location-sensitive and in `NAVIGATION` when source-to-target mapping is under te
 source span is rendered in `SMG` only when the span itself is a named semantic fact that cannot be
 observed through those sections. This keeps formatting-only movement from obscuring semantic diffs.
 
-The canonical top-level section order is `META`, `SOURCE`, `DIAGNOSTICS`, `SMG`, `NAVIGATION`.
+The canonical top-level section order is `META`, `SOURCE`, `DIAGNOSTICS`, `SMG`, `TYPES`,
+`NAVIGATION`, with optional editor-query sections and `GENERATED` last.
 `SOURCE` is authored; generated sections are rewritten to this order with one final newline.
 Every generated section uses a canonical `sexpr` fence.
 Only sections in this contract are retained during normalization. Unknown or future sections
@@ -73,3 +74,34 @@ package Model {}
 
 The parser/updater unit tests cover only Markdown mechanics. Semantic behavior belongs in the
 checked-in source snapshots and their canonical S-expression sections.
+
+## Generator snapshots
+
+A fixture with `type=generate` names a repository-owned WebAssembly test plugin in `META`:
+
+```markdown
+# META
+~~~ini
+type=generate
+libraries=standard
+plugin=requirements_csv
+~~~
+```
+
+The runner executes that plugin against both the sequential and parallel immutable publications.
+Outcome, diagnostics, artifact paths, and exact artifact bytes must agree before the canonical
+result is written. Generated files are captured in memory rather than applied to the filesystem:
+
+```markdown
+# GENERATED
+## requirements.csv
+~~~csv
+qualified_name,name,documentation
+Example::SafeStop,SafeStop,The vehicle shall stop safely.
+
+~~~
+```
+
+Artifacts must be safe relative paths and valid UTF-8. Paths are sorted canonically; a changed or
+removed artifact makes `check` fail and `update` replaces the complete section. Build test plugins
+with `scripts/build-generator-plugins.sh` before running a generator fixture.
