@@ -9,11 +9,13 @@
 use super::element_kind;
 use super::evaluation;
 use super::*;
+use crate::diagnostics::UNCODED_PARSE_ERROR;
 use crate::evaluation::{EvaluationPolicy, EvaluationState};
 use crate::{
-    Conformance, ConformanceObstacle, EffectiveType, EffectiveTypeOrigin, ElementSearch,
+    Conformance, ConformanceObstacle, Diagnostic, DiagnosticCode, DiagnosticLocation,
+    DiagnosticOrigin, DiagnosticSeverity, EffectiveType, EffectiveTypeOrigin, ElementSearch,
     ElementSource, NavigationTarget, OccurrenceRole, PublicationCompleteness as PublicCompleteness,
-    QueryOutcome, RelationshipProvenance, RelationshipTarget, RenameOutcome,
+    PublishedDiagnostics, QueryOutcome, RelationshipProvenance, RelationshipTarget, RenameOutcome,
     RequirementUsageTyping, RequirementVerification, SatisfyEndpoint, SatisfyPolarity,
     SatisfyRelationship, SourceLocation, SpecializationScope, SubsettingConformance,
     SymbolIdentity, TextPosition, TextRange, TypeReference, VerificationOutcome,
@@ -909,33 +911,6 @@ struct ResolutionWork {
     effective_index_entries: u64,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-enum DiagnosticOutcome {
-    Resolved,
-    Unresolved,
-    Unsupported,
-    NonConverged,
-    Ambiguous {
-        candidates: Box<[DiagnosticCandidate]>,
-    },
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-struct DiagnosticCandidate {
-    target: DeclarationId,
-    kind: DeclarationKind,
-    range: TextRange,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-struct DiagnosticRecord {
-    reference: AuthoredReferenceId,
-    source: DeclarationId,
-    kind: ReferenceKind,
-    range: TextRange,
-    outcome: DiagnosticOutcome,
-}
-
 /// A resolver-synthesized relationship fact that has no authored reference site. The narrow slice
 /// currently covered here is same-name inherited-member redefinition against an immediate
 /// (directly specialized) parent's own directly owned feature. Multi-level/diamond inherited
@@ -1140,6 +1115,9 @@ pub(crate) struct ResolvedSemanticModel {
     types: types::TypeIndex,
     resolution: ResolutionResults,
     evaluation: Box<[EvaluationFact]>,
+    /// Settled at the publication barrier alongside the indexes, so reading them is a lookup and
+    /// a broken storage invariant fails the build instead of a later query.
+    diagnostics: Box<[Diagnostic]>,
     metadata: PublicationMetadata,
 }
 
@@ -1587,35 +1565,91 @@ impl ResolvedSemanticModel {
         members.into_boxed_slice()
     }
 
-    fn diagnostic_records(&self) -> Result<Box<[DiagnosticRecord]>, ResolutionError> {
-        let mut records = Vec::with_capacity(self.storage.references.len());
-        for (index, reference) in self.storage.references.iter().enumerate() {
-            let reference_id =
-                AuthoredReferenceId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
-            let source = self
+    /// Every diagnostic this publication settled, as facts rather than rendered text.
+    ///
+    /// Derived once while the model is sealed, for the same reason the other indexes are: a query
+    /// against a settled publication reads a fact instead of recomputing one, and a storage
+    /// inconsistency fails the build rather than surfacing later as a silently missing diagnostic.
+    ///
+    /// Only workspace-authored documents contribute. Library sources take part in the same
+    /// semantic system, but their own diagnostics are not the authoring surface, and this also
+    /// keeps the barrier's cost proportional to the workspace rather than to the library.
+    fn derive_diagnostics(&self) -> Result<Box<[Diagnostic]>, ResolutionError> {
+        let mut diagnostics = Vec::new();
+        for document_index in writer::canonical_document_indices(self) {
+            let document = &self.storage.documents[document_index];
+            let document_id = DocumentId(document_index as u32);
+            let first = diagnostics.len();
+
+            for error in document.parse_errors.iter() {
+                let range = parse_error_range(&document.parsed, error)
+                    .ok_or(ResolutionError::InvalidStorage)?;
+                diagnostics.push(Diagnostic {
+                    code: DiagnosticCode::Parser(match error.code.as_deref() {
+                        Some(code) => code.into(),
+                        None => UNCODED_PARSE_ERROR.into(),
+                    }),
+                    severity: match error.severity {
+                        Some(sysml_v2_parser_next::DiagnosticSeverity::Warning) => {
+                            DiagnosticSeverity::Warning
+                        }
+                        Some(sysml_v2_parser_next::DiagnosticSeverity::Error) | None => {
+                            DiagnosticSeverity::Error
+                        }
+                    },
+                    origin: DiagnosticOrigin::Parser,
+                    location: DiagnosticLocation {
+                        document: document.identity.clone(),
+                        range,
+                    },
+                    related: Box::default(),
+                });
+            }
+
+            for record in self
                 .storage
-                .declaration(reference.source)
-                .ok_or(ResolutionError::InvalidStorage)?;
-            let range = document_range(&self.storage, source.document, &reference.span)?;
-            let outcome = match self
-                .resolution
-                .outcome(reference_id)
-                .ok_or(ResolutionError::InvalidStorage)?
+                .unsupported
+                .iter()
+                .filter(|record| record.document == document_id)
             {
-                ResolutionStatus::Resolved(_) => DiagnosticOutcome::Resolved,
-                ResolutionStatus::Unresolved => DiagnosticOutcome::Unresolved,
-                ResolutionStatus::Unsupported => DiagnosticOutcome::Unsupported,
-                ResolutionStatus::NonConverged => DiagnosticOutcome::NonConverged,
-                ResolutionStatus::Ambiguous(candidate_range) => {
-                    let mut candidates = Vec::new();
-                    for target in self.resolution.ambiguous_candidates(candidate_range) {
+                diagnostics.push(Diagnostic {
+                    code: unsupported_construct_code(record.family),
+                    severity: DiagnosticSeverity::Warning,
+                    origin: DiagnosticOrigin::Semantic,
+                    location: DiagnosticLocation {
+                        document: document.identity.clone(),
+                        range: document_range(&self.storage, document_id, &record.span)?,
+                    },
+                    related: Box::default(),
+                });
+            }
+
+            for (index, reference) in self.storage.references.iter().enumerate() {
+                let source = self
+                    .storage
+                    .declaration(reference.source)
+                    .ok_or(ResolutionError::InvalidStorage)?;
+                if source.document != document_id {
+                    continue;
+                }
+                let reference_id = AuthoredReferenceId::from_index(index)
+                    .map_err(|_| ResolutionError::Capacity)?;
+                let status = self
+                    .resolution
+                    .outcome(reference_id)
+                    .ok_or(ResolutionError::InvalidStorage)?;
+                let Some((severity, code)) = reference_diagnostic(reference.kind, status) else {
+                    continue;
+                };
+                let mut related = Vec::new();
+                if let ResolutionStatus::Ambiguous(candidates) = status {
+                    for target in self.resolution.ambiguous_candidates(candidates) {
                         let declaration = self
                             .storage
                             .declaration(*target)
                             .ok_or(ResolutionError::InvalidStorage)?;
-                        candidates.push(DiagnosticCandidate {
-                            target: *target,
-                            kind: declaration.kind,
+                        related.push(DiagnosticLocation {
+                            document: writer::document_identity(self, declaration.document).into(),
                             range: document_range(
                                 &self.storage,
                                 declaration.document,
@@ -1623,20 +1657,42 @@ impl ResolvedSemanticModel {
                             )?,
                         });
                     }
-                    DiagnosticOutcome::Ambiguous {
-                        candidates: candidates.into_boxed_slice(),
-                    }
                 }
-            };
-            records.push(DiagnosticRecord {
-                reference: reference_id,
-                source: reference.source,
-                kind: reference.kind,
-                range,
-                outcome,
+                diagnostics.push(Diagnostic {
+                    code,
+                    severity,
+                    origin: DiagnosticOrigin::Semantic,
+                    location: DiagnosticLocation {
+                        document: document.identity.clone(),
+                        range: document_range(&self.storage, document_id, &reference.span)?,
+                    },
+                    related: related.into_boxed_slice(),
+                });
+            }
+
+            // Ordering is owned here so no consumer has to sort, and so the order cannot vary with
+            // which storage collection a diagnostic happened to come from. The sort is stable, so
+            // parser, unsupported-construct, and reference diagnostics that share a range keep the
+            // order they were derived in.
+            diagnostics[first..].sort_by(|left, right| {
+                left.location
+                    .range
+                    .cmp(&right.location.range)
+                    .then_with(|| left.code.as_str().cmp(right.code.as_str()))
             });
         }
-        Ok(records.into_boxed_slice())
+        Ok(diagnostics.into_boxed_slice())
+    }
+
+    pub(crate) fn published_diagnostics(&self) -> PublishedDiagnostics {
+        PublishedDiagnostics {
+            completeness: self.completeness(),
+            diagnostics: self.diagnostics.clone(),
+        }
+    }
+
+    pub(crate) fn diagnostics(&self) -> &[Diagnostic] {
+        &self.diagnostics
     }
 
     pub(crate) fn write_semantic_sexpr(
@@ -2249,6 +2305,125 @@ fn document_range(
     })
 }
 
+fn parse_error_range(document: &ParsedDocument, error: &ParseError) -> Option<TextRange> {
+    let start_offset = error.offset?;
+    let end_offset = start_offset.checked_add(error.length.unwrap_or(1))?;
+    let start = document.source.position_at(start_offset)?;
+    let end = document.source.position_at(end_offset).unwrap_or(start);
+    Some(TextRange {
+        start: TextPosition {
+            line: start.line.saturating_sub(1),
+            character: u32::try_from(start.column.saturating_sub(1)).ok()?,
+        },
+        end: TextPosition {
+            line: end.line.saturating_sub(1),
+            character: u32::try_from(end.column.saturating_sub(1)).ok()?,
+        },
+    })
+}
+
+/// The public code for a construct this publication does not model.
+///
+/// Exhaustive by construction: a new lowering family cannot be added without deciding its code.
+fn unsupported_construct_code(family: UnsupportedFamily) -> DiagnosticCode {
+    match family {
+        UnsupportedFamily::PackageMember => DiagnosticCode::UnsupportedPackageMember,
+        UnsupportedFamily::PartDefinitionMember => DiagnosticCode::UnsupportedPartDefinitionMember,
+        UnsupportedFamily::PartUsageMember => DiagnosticCode::UnsupportedPartUsageMember,
+        UnsupportedFamily::AttributeMember => DiagnosticCode::UnsupportedAttributeMember,
+        UnsupportedFamily::RequirementDefinitionMember => {
+            DiagnosticCode::UnsupportedRequirementDefinitionMember
+        }
+        UnsupportedFamily::PortDefinitionMember => DiagnosticCode::UnsupportedPortDefinitionMember,
+        UnsupportedFamily::PortUsageMember => DiagnosticCode::UnsupportedPortUsageMember,
+        UnsupportedFamily::ActionDefinitionMember => {
+            DiagnosticCode::UnsupportedActionDefinitionMember
+        }
+        UnsupportedFamily::ActionUsageMember => DiagnosticCode::UnsupportedActionUsageMember,
+        UnsupportedFamily::StateDefinitionMember => {
+            DiagnosticCode::UnsupportedStateDefinitionMember
+        }
+        UnsupportedFamily::ConnectionDefinitionMember => {
+            DiagnosticCode::UnsupportedConnectionDefinitionMember
+        }
+        UnsupportedFamily::InterfaceDefinitionMember => {
+            DiagnosticCode::UnsupportedInterfaceDefinitionMember
+        }
+        UnsupportedFamily::ViewDefinitionMember => DiagnosticCode::UnsupportedViewDefinitionMember,
+        UnsupportedFamily::ConstraintDefinitionMember => {
+            DiagnosticCode::UnsupportedConstraintDefinitionMember
+        }
+        UnsupportedFamily::CalcDefinitionMember => DiagnosticCode::UnsupportedCalcDefinitionMember,
+        UnsupportedFamily::RenderingDefinitionMember => {
+            DiagnosticCode::UnsupportedRenderingDefinitionMember
+        }
+        UnsupportedFamily::OccurrenceDefinitionMember => {
+            DiagnosticCode::UnsupportedOccurrenceDefinitionMember
+        }
+        UnsupportedFamily::AnalysisCaseDefinitionMember => {
+            DiagnosticCode::UnsupportedAnalysisCaseDefinitionMember
+        }
+        UnsupportedFamily::CaseDefinitionMember => DiagnosticCode::UnsupportedCaseDefinitionMember,
+        UnsupportedFamily::VerificationCaseDefinitionMember => {
+            DiagnosticCode::UnsupportedVerificationCaseDefinitionMember
+        }
+        UnsupportedFamily::UseCaseDefinitionMember => {
+            DiagnosticCode::UnsupportedUseCaseDefinitionMember
+        }
+        UnsupportedFamily::ReferenceUsageMember => DiagnosticCode::UnsupportedReferenceUsageMember,
+        UnsupportedFamily::RelationshipBodyMember => {
+            DiagnosticCode::UnsupportedRelationshipBodyMember
+        }
+        UnsupportedFamily::ParserUnsupported => DiagnosticCode::UnsupportedParserConstruct,
+    }
+}
+
+/// What one authored reference's settled outcome reports, or `None` when it resolved.
+///
+/// A resolved reference has nothing to report; that is not the same answer as any of the failure
+/// states below, and the three failure classes stay distinct all the way to the consumer.
+fn reference_diagnostic(
+    kind: ReferenceKind,
+    status: ResolutionStatus,
+) -> Option<(DiagnosticSeverity, DiagnosticCode)> {
+    match status {
+        ResolutionStatus::Resolved(_) => None,
+        ResolutionStatus::Unresolved => Some((
+            DiagnosticSeverity::Warning,
+            match kind {
+                ReferenceKind::FeatureTyping => DiagnosticCode::UnresolvedTypeReference,
+                ReferenceKind::Subclassification => DiagnosticCode::UnresolvedSpecializesReference,
+                ReferenceKind::NamespaceImport | ReferenceKind::MembershipImport => {
+                    DiagnosticCode::UnresolvedImportTarget
+                }
+                _ => DiagnosticCode::UnresolvedReference,
+            },
+        )),
+        ResolutionStatus::Unsupported => Some((
+            DiagnosticSeverity::Warning,
+            match kind {
+                ReferenceKind::NamespaceImport
+                | ReferenceKind::MembershipImport
+                | ReferenceKind::FilterImport => DiagnosticCode::UnsupportedFilteredImport,
+                _ => DiagnosticCode::UnsupportedReference,
+            },
+        )),
+        ResolutionStatus::NonConverged => Some((
+            DiagnosticSeverity::Error,
+            DiagnosticCode::NonConvergedResolution,
+        )),
+        ResolutionStatus::Ambiguous(_) => Some((
+            DiagnosticSeverity::Error,
+            match kind {
+                ReferenceKind::NamespaceImport | ReferenceKind::MembershipImport => {
+                    DiagnosticCode::AmbiguousImportTarget
+                }
+                _ => DiagnosticCode::AmbiguousReference,
+            },
+        )),
+    }
+}
+
 /// Where a *declaration* writes its own name.
 ///
 /// Distinct from [`identifier_range`], which searches a reference span and takes the last
@@ -2595,7 +2770,7 @@ impl SemanticModelStorage {
         // ancestor closure for inherited names stays separate and unchanged -- widening that one
         // would silently change name resolution.
         let type_facts = types::TypeIndex::build(&self, &resolution)?;
-        Ok(ResolvedSemanticModel {
+        let mut model = ResolvedSemanticModel {
             storage: self,
             direct_names,
             effective_imports,
@@ -2608,12 +2783,17 @@ impl SemanticModelStorage {
             types: type_facts,
             resolution,
             evaluation,
+            diagnostics: Box::default(),
             metadata: PublicationMetadata {
                 phase: PublicationPhase::Resolved,
                 completeness,
                 has_evaluation,
             },
-        })
+        };
+        // Last barrier product: diagnostics report what every earlier phase settled, so they are
+        // derived from the assembled model rather than from any one phase's intermediate state.
+        model.diagnostics = model.derive_diagnostics()?;
+        Ok(model)
     }
 }
 

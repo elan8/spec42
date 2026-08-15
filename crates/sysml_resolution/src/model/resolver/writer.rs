@@ -161,254 +161,72 @@ fn specialization_scope(scope: types::SpecializationScope) -> &'static str {
     }
 }
 
+/// The canonical S-expression adapter over the publication's typed diagnostics.
+///
+/// It decides layout and nothing else: every code, severity, origin, range, and related location
+/// below is read from [`crate::Diagnostic`]. Other adapters read the same values, so no two
+/// surfaces can disagree about what a publication reported.
 pub(super) fn write_diagnostics(
     model: &ResolvedSemanticModel,
     output: &mut dyn fmt::Write,
 ) -> fmt::Result {
-    // TODO(diagnostic-presentation-boundary): Publish one presentation-neutral typed diagnostic
-    // contract containing the semantic code/category, severity, primary provenance, related
-    // provenance, and structured message arguments. Keep localization, prose, styling, protocol
-    // conversion, and layout in domain adapters. This function should then be only the canonical
-    // snapshot S-expression adapter; CLI, LSP, Markdown, and HTML must consume the same typed
-    // diagnostics without accessing resolver storage or reconstructing semantic meaning.
-    let semantic_records = model.diagnostic_records().map_err(|_| fmt::Error)?;
+    // The publication groups diagnostics by document in this same canonical order, so one cursor
+    // walks them. A document with none still prints its empty group: "this document reported
+    // nothing" is an answer the fixture should show.
+    let diagnostics = model.diagnostics();
+    let mut next = 0;
     writeln!(output, "(fixture-diagnostics")?;
     for document_index in canonical_document_indices(model) {
         let document = &model.storage.documents[document_index];
-        let document_id = DocumentId(document_index as u32);
-        let mut records = Vec::new();
-        for error in &document.parse_errors {
-            let range = parse_error_range(&document.parsed, error).ok_or(fmt::Error)?;
-            records.push(CanonicalDiagnostic::Parser { error, range });
-        }
-        for record in model
-            .storage
-            .unsupported
-            .iter()
-            .filter(|record| record.document == document_id)
-        {
-            let range = document_range(&model.storage, document_id, &record.span)
-                .map_err(|_| fmt::Error)?;
-            records.push(CanonicalDiagnostic::Unsupported { record, range });
-        }
-        for record in semantic_records.iter().filter(|record| {
-            model
-                .storage
-                .declaration(record.source)
-                .is_some_and(|source| source.document == document_id)
-        }) {
-            if diagnostic_label(record.kind, &record.outcome).is_some() {
-                records.push(CanonicalDiagnostic::Semantic(record));
-            }
-        }
-        records.sort_by(|left, right| {
-            let left_range = left.range();
-            let right_range = right.range();
-            (
-                left_range.start.line,
-                left_range.start.character,
-                left_range.end.line,
-                left_range.end.character,
-            )
-                .cmp(&(
-                    right_range.start.line,
-                    right_range.start.character,
-                    right_range.end.line,
-                    right_range.end.character,
-                ))
-                .then_with(|| left.code().cmp(right.code()))
-        });
         writeln!(output, "  (document {:?}", document.identity)?;
         writeln!(output, "    (diagnostics")?;
-        for record in records {
-            write_diagnostic(model, record, output)?;
+        while let Some(diagnostic) = diagnostics.get(next) {
+            if diagnostic.location.document != document.identity {
+                break;
+            }
+            write_diagnostic(diagnostic, output)?;
+            next += 1;
         }
         writeln!(output, "    )\n  )")?;
     }
     write!(output, ")")
 }
 
-enum CanonicalDiagnostic<'a> {
-    Parser {
-        error: &'a ParseError,
-        range: TextRange,
-    },
-    Unsupported {
-        record: &'a UnsupportedRecord,
-        range: TextRange,
-    },
-    Semantic(&'a DiagnosticRecord),
-}
-
-impl CanonicalDiagnostic<'_> {
-    fn range(&self) -> TextRange {
-        match self {
-            Self::Parser { range, .. } | Self::Unsupported { range, .. } => *range,
-            Self::Semantic(record) => record.range,
-        }
-    }
-
-    fn code(&self) -> &str {
-        match self {
-            Self::Parser { error, .. } => error.code.as_deref().unwrap_or("parse_error"),
-            Self::Unsupported { record, .. } => unsupported_code(record.family),
-            Self::Semantic(record) => diagnostic_label(record.kind, &record.outcome)
-                .map_or("semantic_diagnostic", |(_, code)| code),
-        }
-    }
-}
-
-fn write_diagnostic(
-    model: &ResolvedSemanticModel,
-    diagnostic: CanonicalDiagnostic<'_>,
-    output: &mut dyn fmt::Write,
-) -> fmt::Result {
-    let (severity, source) = match &diagnostic {
-        CanonicalDiagnostic::Parser { error, .. } => (
-            match error.severity {
-                Some(sysml_v2_parser_next::DiagnosticSeverity::Warning) => "warning",
-                Some(sysml_v2_parser_next::DiagnosticSeverity::Error) | None => "error",
-            },
-            "parser",
-        ),
-        CanonicalDiagnostic::Unsupported { .. } => ("warning", "semantic"),
-        CanonicalDiagnostic::Semantic(record) => {
-            let (severity, _) = diagnostic_label(record.kind, &record.outcome).ok_or(fmt::Error)?;
-            (severity, "semantic")
-        }
-    };
-    let range = diagnostic.range();
+fn write_diagnostic(diagnostic: &Diagnostic, output: &mut dyn fmt::Write) -> fmt::Result {
+    let range = diagnostic.location.range;
     writeln!(output, "      (diagnostic")?;
-    writeln!(output, "        (severity {severity})")?;
+    writeln!(
+        output,
+        "        (severity {})",
+        diagnostic.severity.as_str()
+    )?;
     write!(output, "        (code ")?;
-    write_quoted(output, diagnostic.code())?;
+    write_quoted(output, diagnostic.code.as_str())?;
     writeln!(output, ")")?;
-    writeln!(output, "        (source \"{source}\")")?;
+    writeln!(output, "        (source {:?})", diagnostic.origin.as_str())?;
     writeln!(
         output,
         "        (range (start {} {}) (end {} {}))",
         range.start.line, range.start.character, range.end.line, range.end.character,
     )?;
-    if let CanonicalDiagnostic::Semantic(DiagnosticRecord {
-        outcome: DiagnosticOutcome::Ambiguous { candidates },
-        ..
-    }) = diagnostic
-    {
+    if !diagnostic.related.is_empty() {
         writeln!(output, "        (related-information")?;
-        for candidate in candidates {
-            let declaration = model
-                .storage
-                .declaration(candidate.target)
-                .ok_or(fmt::Error)?;
-            let range = document_range(&model.storage, declaration.document, &declaration.span)
-                .map_err(|_| fmt::Error)?;
+        for related in diagnostic.related.iter() {
             writeln!(output, "          (related")?;
-            writeln!(
-                output,
-                "            (uri {:?})",
-                document_identity(model, declaration.document)
-            )?;
+            writeln!(output, "            (uri {:?})", related.document)?;
             writeln!(
                 output,
                 "            (range (start {} {}) (end {} {}))",
-                range.start.line, range.start.character, range.end.line, range.end.character,
+                related.range.start.line,
+                related.range.start.character,
+                related.range.end.line,
+                related.range.end.character,
             )?;
             writeln!(output, "          )")?;
         }
         writeln!(output, "        )")?;
     }
     writeln!(output, "      )")
-}
-
-fn parse_error_range(document: &ParsedDocument, error: &ParseError) -> Option<TextRange> {
-    let start_offset = error.offset?;
-    let end_offset = start_offset.checked_add(error.length.unwrap_or(1))?;
-    let start = document.source.position_at(start_offset)?;
-    let end = document.source.position_at(end_offset).unwrap_or(start);
-    Some(TextRange {
-        start: TextPosition {
-            line: start.line.saturating_sub(1),
-            character: u32::try_from(start.column.saturating_sub(1)).ok()?,
-        },
-        end: TextPosition {
-            line: end.line.saturating_sub(1),
-            character: u32::try_from(end.column.saturating_sub(1)).ok()?,
-        },
-    })
-}
-
-fn unsupported_code(family: UnsupportedFamily) -> &'static str {
-    match family {
-        UnsupportedFamily::PackageMember => "unsupported_package_member",
-        UnsupportedFamily::PartDefinitionMember => "unsupported_part_definition_member",
-        UnsupportedFamily::PartUsageMember => "unsupported_part_usage_member",
-        UnsupportedFamily::AttributeMember => "unsupported_attribute_member",
-        UnsupportedFamily::RequirementDefinitionMember => {
-            "unsupported_requirement_definition_member"
-        }
-        UnsupportedFamily::PortDefinitionMember => "unsupported_port_definition_member",
-        UnsupportedFamily::PortUsageMember => "unsupported_port_usage_member",
-        UnsupportedFamily::ActionDefinitionMember => "unsupported_action_definition_member",
-        UnsupportedFamily::ActionUsageMember => "unsupported_action_usage_member",
-        UnsupportedFamily::StateDefinitionMember => "unsupported_state_definition_member",
-        UnsupportedFamily::ConnectionDefinitionMember => "unsupported_connection_definition_member",
-        UnsupportedFamily::InterfaceDefinitionMember => "unsupported_interface_definition_member",
-        UnsupportedFamily::ViewDefinitionMember => "unsupported_view_definition_member",
-        UnsupportedFamily::ConstraintDefinitionMember => "unsupported_constraint_definition_member",
-        UnsupportedFamily::CalcDefinitionMember => "unsupported_calc_definition_member",
-        UnsupportedFamily::RenderingDefinitionMember => "unsupported_rendering_definition_member",
-        UnsupportedFamily::OccurrenceDefinitionMember => "unsupported_occurrence_definition_member",
-        UnsupportedFamily::AnalysisCaseDefinitionMember => {
-            "unsupported_analysis_case_definition_member"
-        }
-        UnsupportedFamily::CaseDefinitionMember => "unsupported_case_definition_member",
-        UnsupportedFamily::VerificationCaseDefinitionMember => {
-            "unsupported_verification_case_definition_member"
-        }
-        UnsupportedFamily::UseCaseDefinitionMember => "unsupported_use_case_definition_member",
-        UnsupportedFamily::ReferenceUsageMember => "unsupported_reference_usage_member",
-        UnsupportedFamily::RelationshipBodyMember => "unsupported_relationship_body_member",
-        UnsupportedFamily::ParserUnsupported => "unsupported_parser_construct",
-    }
-}
-
-fn diagnostic_label(
-    kind: ReferenceKind,
-    outcome: &DiagnosticOutcome,
-) -> Option<(&'static str, &'static str)> {
-    match outcome {
-        DiagnosticOutcome::Resolved => None,
-        DiagnosticOutcome::Unresolved => Some((
-            "warning",
-            match kind {
-                ReferenceKind::FeatureTyping => "unresolved_type_reference",
-                ReferenceKind::Subclassification => "unresolved_specializes_reference",
-                ReferenceKind::NamespaceImport | ReferenceKind::MembershipImport => {
-                    "unresolved_import_target"
-                }
-                _ => "unresolved_reference",
-            },
-        )),
-        DiagnosticOutcome::Unsupported => Some((
-            "warning",
-            match kind {
-                ReferenceKind::NamespaceImport
-                | ReferenceKind::MembershipImport
-                | ReferenceKind::FilterImport => "unsupported_filtered_import",
-                _ => "unsupported_reference",
-            },
-        )),
-        DiagnosticOutcome::NonConverged => Some(("error", "non_converged_resolution")),
-        DiagnosticOutcome::Ambiguous { .. } => Some((
-            "error",
-            match kind {
-                ReferenceKind::NamespaceImport | ReferenceKind::MembershipImport => {
-                    "ambiguous_import_target"
-                }
-                _ => "ambiguous_reference",
-            },
-        )),
-    }
 }
 
 fn write_metadata(
@@ -1124,7 +942,7 @@ fn is_projected_declaration(model: &ResolvedSemanticModel, declaration: Declarat
         .is_some_and(|declaration| is_projected_document(model, declaration.document))
 }
 
-fn canonical_document_indices(model: &ResolvedSemanticModel) -> Vec<usize> {
+pub(super) fn canonical_document_indices(model: &ResolvedSemanticModel) -> Vec<usize> {
     let mut indices = (0..model.storage.documents.len())
         .filter(|index| is_projected_document(model, DocumentId(*index as u32)))
         .collect::<Vec<_>>();
@@ -1208,7 +1026,7 @@ fn write_range(output: &mut dyn fmt::Write, range: TextRange) -> fmt::Result {
     )
 }
 
-fn document_identity(model: &ResolvedSemanticModel, id: DocumentId) -> &str {
+pub(super) fn document_identity(model: &ResolvedSemanticModel, id: DocumentId) -> &str {
     model
         .storage
         .document(id)
@@ -1527,7 +1345,7 @@ mod tests {
         let facts =
             inspection::ElementFactIndex::build(&storage, &resolution, &evaluation).unwrap();
         let type_facts = types::TypeIndex::build(&storage, &resolution).unwrap();
-        let model = ResolvedSemanticModel {
+        let mut model = ResolvedSemanticModel {
             storage,
             direct_names,
             effective_imports,
@@ -1540,12 +1358,14 @@ mod tests {
             types: type_facts,
             resolution,
             evaluation,
+            diagnostics: Box::default(),
             metadata: PublicationMetadata {
                 phase: PublicationPhase::Resolved,
                 completeness: PublicationCompleteness::Complete,
                 has_evaluation: false,
             },
         };
+        model.diagnostics = model.derive_diagnostics().unwrap();
         let mut output = String::new();
         model
             .write_semantic_sexpr(

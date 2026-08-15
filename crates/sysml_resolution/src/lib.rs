@@ -9,6 +9,7 @@ use std::fmt;
 
 use source_identity::{ContentDigest, RootDigest, SourceManifest, SourceManifestEntry, SourceRole};
 
+mod diagnostics;
 mod element_kind;
 mod evaluation;
 mod inspection;
@@ -17,6 +18,10 @@ mod traceability;
 mod type_query;
 mod verification;
 
+pub use diagnostics::{
+    Diagnostic, DiagnosticCode, DiagnosticLocation, DiagnosticOrigin, DiagnosticSeverity,
+    PublishedDiagnostics,
+};
 pub use element_kind::{
     ElementKind, MembershipRole, RequirementConstraintKind, StateSubactionKind,
 };
@@ -471,6 +476,15 @@ impl PublishedResolution {
 
     pub fn completeness(&self) -> PublicationCompleteness {
         self.model.completeness()
+    }
+
+    /// Every diagnostic this publication settled, in canonical order.
+    ///
+    /// These are facts, not rendered text. The canonical S-expression projection is one adapter
+    /// over exactly these values; an editor or generator host is another. No consumer recovers a
+    /// code, severity, or reason from presentation output, and none re-decides a rule.
+    pub fn diagnostics(&self) -> PublishedDiagnostics {
+        self.model.published_diagnostics()
     }
 
     pub fn target_at(
