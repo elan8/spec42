@@ -14,8 +14,9 @@ use crate::{
     Conformance, ConformanceObstacle, EffectiveType, EffectiveTypeOrigin, ElementSearch,
     ElementSource, NavigationTarget, OccurrenceRole, PublicationCompleteness as PublicCompleteness,
     QueryOutcome, RelationshipProvenance, RelationshipTarget, RenameOutcome,
-    RequirementUsageTyping, SourceLocation, SpecializationScope, SubsettingConformance,
-    SymbolIdentity, TextPosition, TextRange, TypeReference, VisibleMember,
+    RequirementUsageTyping, SatisfyEndpoint, SatisfyPolarity, SatisfyRelationship, SourceLocation,
+    SpecializationScope, SubsettingConformance, SymbolIdentity, TextPosition, TextRange,
+    TypeReference, VisibleMember,
 };
 
 mod inspection;
@@ -1778,6 +1779,84 @@ impl ResolvedSemanticModel {
             },
         };
         self.resolved_outcome(value)
+    }
+
+    pub(crate) fn satisfy_relationships(&self) -> QueryOutcome<Box<[SatisfyRelationship]>> {
+        let endpoint = |reference: Option<AuthoredReferenceId>| match reference
+            .as_ref()
+            .and_then(|reference| self.resolution.outcome(*reference))
+        {
+            Some(ResolutionStatus::Resolved(target)) => self
+                .symbol_identity(target)
+                .map(SatisfyEndpoint::Resolved)
+                .unwrap_or(SatisfyEndpoint::Unresolved),
+            Some(ResolutionStatus::Ambiguous(candidates)) => SatisfyEndpoint::Ambiguous(
+                self.resolution
+                    .ambiguous_candidates(candidates)
+                    .iter()
+                    .filter_map(|candidate| self.symbol_identity(*candidate))
+                    .collect(),
+            ),
+            Some(ResolutionStatus::Unsupported) => SatisfyEndpoint::Unsupported,
+            Some(ResolutionStatus::Unresolved) | Some(ResolutionStatus::NonConverged) => {
+                SatisfyEndpoint::Unresolved
+            }
+            None => SatisfyEndpoint::Unsupported,
+        };
+        let mut values = self
+            .storage
+            .declarations
+            .iter()
+            .enumerate()
+            .filter_map(|(index, declaration)| {
+                let document = self.storage.document(declaration.document)?;
+                if document.role != SourceRole::Workspace
+                    || declaration.kind != DeclarationKind::Satisfy
+                {
+                    return None;
+                }
+                let id = DeclarationId::from_index(index).ok()?;
+                let requirement = self
+                    .storage
+                    .references
+                    .iter()
+                    .enumerate()
+                    .find(|(_, value)| {
+                        value.source == id && value.kind == ReferenceKind::SatisfySource
+                    })
+                    .and_then(|(index, _)| AuthoredReferenceId::from_index(index).ok());
+                let satisfying = self
+                    .storage
+                    .references
+                    .iter()
+                    .enumerate()
+                    .find(|(_, value)| {
+                        value.source == id && value.kind == ReferenceKind::SatisfyTarget
+                    })
+                    .and_then(|(index, _)| AuthoredReferenceId::from_index(index).ok());
+                let facts = self.storage.declaration_facts(id)?;
+                Some(SatisfyRelationship {
+                    identity: self.symbol_identity(id)?,
+                    requirement: endpoint(requirement),
+                    satisfying_element: endpoint(satisfying),
+                    polarity: if facts.satisfy_negated.unwrap_or(false) {
+                        SatisfyPolarity::NotSatisfied
+                    } else {
+                        SatisfyPolarity::Satisfied
+                    },
+                    provenance: RelationshipProvenance::Authored,
+                    location: self.source_location(id)?,
+                })
+            })
+            .collect::<Vec<_>>();
+        values.sort_by(|left, right| {
+            left.location
+                .document
+                .cmp(&right.location.document)
+                .then_with(|| left.location.range.cmp(&right.location.range))
+                .then_with(|| left.identity.cmp(&right.identity))
+        });
+        self.resolved_outcome(values.into_boxed_slice())
     }
 
     pub(crate) fn effective_types(

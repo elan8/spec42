@@ -114,6 +114,30 @@ pub enum RequirementUsageTypingSummary {
     Incomplete,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum SatisfyEndpointSummary {
+    Resolved(ElementSummary),
+    Ambiguous(Vec<ElementSummary>),
+    Unresolved,
+    Unsupported,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum SatisfyPolaritySummary {
+    Satisfied,
+    NotSatisfied,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SatisfyRelationshipSummary {
+    pub semantic_id: String,
+    pub requirement: SatisfyEndpointSummary,
+    pub satisfying_element: SatisfyEndpointSummary,
+    pub polarity: SatisfyPolaritySummary,
+    pub provenance: TypingProvenanceSummary,
+    pub recovered: bool,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum TypingProvenanceSummary {
     Authored,
@@ -444,6 +468,69 @@ impl GeneratorModelView {
                 .cmp(b.kind.as_str())
                 .then_with(|| summary_order(&a.target, &b.target))
         });
+        self.enforce_limit(values.len())?;
+        Ok(values)
+    }
+
+    pub fn satisfy_relationships(
+        &self,
+    ) -> Result<Vec<SatisfyRelationshipSummary>, ModelQueryError> {
+        use sysml_query::resolved_slice::{
+            QueryOutcome, SatisfyEndpoint as OwnedEndpoint, SatisfyPolarity as OwnedPolarity,
+        };
+        let (relationships, recovered) = match self.model.inspection().satisfy_relationships() {
+            QueryOutcome::Resolved(values) => (values, false),
+            QueryOutcome::Recovered(values) => (values, true),
+            QueryOutcome::UnsupportedWith(_) | QueryOutcome::Unsupported => {
+                return Err(ModelQueryError::Unsupported("satisfy relationships".into()))
+            }
+            QueryOutcome::Unresolved => {
+                return Err(ModelQueryError::Unresolved("satisfy relationships".into()))
+            }
+            QueryOutcome::Ambiguous(_) => {
+                return Err(ModelQueryError::Ambiguous("satisfy relationships".into()))
+            }
+            QueryOutcome::Recovery => {
+                return Err(ModelQueryError::Unresolved(
+                    "satisfy relationships are in parser recovery".into(),
+                ))
+            }
+            QueryOutcome::Incomplete => return Err(ModelQueryError::Incomplete),
+        };
+        let endpoint = |value: &OwnedEndpoint| -> Result<SatisfyEndpointSummary, ModelQueryError> {
+            Ok(match value {
+                OwnedEndpoint::Resolved(identity) => {
+                    SatisfyEndpointSummary::Resolved(self.summary(identity)?)
+                }
+                OwnedEndpoint::Ambiguous(values) => SatisfyEndpointSummary::Ambiguous(
+                    values
+                        .iter()
+                        .map(|value| self.summary(value))
+                        .collect::<Result<Vec<_>, _>>()?,
+                ),
+                OwnedEndpoint::Unresolved => SatisfyEndpointSummary::Unresolved,
+                OwnedEndpoint::Unsupported => SatisfyEndpointSummary::Unsupported,
+            })
+        };
+        let values = relationships
+            .iter()
+            .map(|relationship| {
+                Ok(SatisfyRelationshipSummary {
+                    semantic_id: relationship.identity.as_str().to_owned(),
+                    requirement: endpoint(&relationship.requirement)?,
+                    satisfying_element: endpoint(&relationship.satisfying_element)?,
+                    polarity: match relationship.polarity {
+                        OwnedPolarity::Satisfied => SatisfyPolaritySummary::Satisfied,
+                        OwnedPolarity::NotSatisfied => SatisfyPolaritySummary::NotSatisfied,
+                    },
+                    provenance: match relationship.provenance {
+                        RelationshipProvenance::Authored => TypingProvenanceSummary::Authored,
+                        RelationshipProvenance::Implied => TypingProvenanceSummary::Implied,
+                    },
+                    recovered,
+                })
+            })
+            .collect::<Result<Vec<_>, ModelQueryError>>()?;
         self.enforce_limit(values.len())?;
         Ok(values)
     }

@@ -10,9 +10,10 @@ pub use sysml_resolution::{
     MembershipKind, MembershipRole, MultiplicityBound, MultiplicityFacts, NavigationTarget,
     OccurrenceRole, PortionKind, PublicationCompleteness, QueryOutcome, ReferenceAt,
     RelationshipProvenance, RelationshipTarget, RenameOutcome, RequirementConstraintKind,
-    RequirementUsageTyping, SourceLocation, SpecializationScope, StateSubactionKind,
-    SubsettingConformance, SymbolEntry, SymbolIdentity, TextPosition, TextRange, TypeReference,
-    ValueKind, Visibility, VisibilityProvenance, VisibleMember,
+    RequirementUsageTyping, SatisfyEndpoint, SatisfyPolarity, SatisfyRelationship, SourceLocation,
+    SpecializationScope, StateSubactionKind, SubsettingConformance, SymbolEntry, SymbolIdentity,
+    TextPosition, TextRange, TypeReference, ValueKind, Visibility, VisibilityProvenance,
+    VisibleMember,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -421,6 +422,11 @@ impl InspectionQueries<'_> {
     /// Elements matching a typed kind and authored-source provenance filter.
     pub fn search_elements(&self, search: ElementSearch) -> QueryOutcome<Box<[SymbolEntry]>> {
         self.model.search_elements(search)
+    }
+
+    /// Workspace-authored satisfy statements, with directional ends and explicit outcomes.
+    pub fn satisfy_relationships(&self) -> QueryOutcome<Box<[SatisfyRelationship]>> {
+        self.model.satisfy_relationships()
     }
 
     /// Effective features, direct first and inherited nearest-first with name shadowing.

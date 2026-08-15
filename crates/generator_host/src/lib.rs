@@ -8,7 +8,8 @@ use generator_api::{
     ArtifactLimits, ArtifactSet, ElementDetail as ApiElementDetail,
     ElementSummary as ApiElementSummary, GeneratorDiagnostic, GeneratorDiagnosticLevel,
     GeneratorModelView, MultiplicitySummary as ApiMultiplicity, RelationshipSummary,
-    RequirementUsageTypingSummary, TypingProvenanceSummary, MAX_ARTIFACT_PATH_BYTES,
+    RequirementUsageTypingSummary, SatisfyEndpointSummary, SatisfyPolaritySummary,
+    SatisfyRelationshipSummary, TypingProvenanceSummary, MAX_ARTIFACT_PATH_BYTES,
 };
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
@@ -958,6 +959,18 @@ fn handle_query(
                     .map_err(|error| error.to_string()),
             )
         }
+        protocol::Operation::SatisfyRelationships => encode_result(
+            state
+                .model
+                .satisfy_relationships()
+                .map(|values| {
+                    values
+                        .into_iter()
+                        .map(satisfy_relationship)
+                        .collect::<Vec<_>>()
+                })
+                .map_err(|error| error.to_string()),
+        ),
         protocol::Operation::Relationships => {
             let element = decode_for::<protocol::query::Relationships>(request)?;
             encode_result(
@@ -1162,6 +1175,36 @@ fn requirement_usage_typing(
         RequirementUsageTypingSummary::Unsupported => Wire::Unsupported,
         RequirementUsageTypingSummary::Recovery => Wire::Recovery,
         RequirementUsageTypingSummary::Incomplete => Wire::Incomplete,
+    }
+}
+
+fn satisfy_endpoint(value: SatisfyEndpointSummary) -> protocol::SatisfyEndpoint {
+    match value {
+        SatisfyEndpointSummary::Resolved(value) => {
+            protocol::SatisfyEndpoint::Resolved(summary(value))
+        }
+        SatisfyEndpointSummary::Ambiguous(values) => {
+            protocol::SatisfyEndpoint::Ambiguous(values.into_iter().map(summary).collect())
+        }
+        SatisfyEndpointSummary::Unresolved => protocol::SatisfyEndpoint::Unresolved,
+        SatisfyEndpointSummary::Unsupported => protocol::SatisfyEndpoint::Unsupported,
+    }
+}
+
+fn satisfy_relationship(value: SatisfyRelationshipSummary) -> protocol::SatisfyRelationship {
+    protocol::SatisfyRelationship {
+        semantic_id: value.semantic_id,
+        requirement: satisfy_endpoint(value.requirement),
+        satisfying_element: satisfy_endpoint(value.satisfying_element),
+        polarity: match value.polarity {
+            SatisfyPolaritySummary::Satisfied => protocol::SatisfyPolarity::Satisfied,
+            SatisfyPolaritySummary::NotSatisfied => protocol::SatisfyPolarity::NotSatisfied,
+        },
+        provenance: match value.provenance {
+            TypingProvenanceSummary::Authored => protocol::RelationshipProvenance::Authored,
+            TypingProvenanceSummary::Implied => protocol::RelationshipProvenance::Implied,
+        },
+        recovered: value.recovered,
     }
 }
 

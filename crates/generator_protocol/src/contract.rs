@@ -313,6 +313,8 @@ abi_contract! {
         EffectiveFeatures = 7 => (String, Vec<ElementSummary>),
         /// Authoritative typing state for a requirement usage.
         RequirementTyping = 8 => (String, RequirementUsageTyping),
+        /// Authoritative workspace satisfy statements with directional endpoint states.
+        SatisfyRelationships = 9 => ((), Vec<SatisfyRelationship>),
     }
 
     /// Severity of a generator diagnostic.

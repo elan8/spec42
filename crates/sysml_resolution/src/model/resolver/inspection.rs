@@ -192,7 +192,7 @@ impl ResolvedSemanticModel {
         segments.join("::")
     }
 
-    fn source_location(&self, id: DeclarationId) -> Option<SourceLocation> {
+    pub(super) fn source_location(&self, id: DeclarationId) -> Option<SourceLocation> {
         let declaration = self.storage.declaration(id)?;
         let document = self
             .storage

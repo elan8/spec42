@@ -2320,6 +2320,8 @@ struct DeclarationFacts {
     portion_kind: Option<PortionKind>,
     direction: Option<ParameterDirection>,
     multiplicity: Option<MultiplicityRecord>,
+    /// Authored polarity for an anonymous satisfy relationship declaration.
+    satisfy_negated: Option<bool>,
 }
 
 impl DeclarationFacts {
@@ -8963,7 +8965,10 @@ impl SemanticModelBuilder {
             node.span.clone(),
             // `ast::Satisfy` carries only `is_negated`, a satisfaction-polarity fact rather than a
             // declaration modifier.
-            DeclarationFacts::none(),
+            DeclarationFacts {
+                satisfy_negated: Some(node.value.is_negated),
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,

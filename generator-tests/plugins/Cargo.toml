@@ -11,6 +11,7 @@ members = [
     "find_all",
     "requirements_csv",
     "requirement_instances_csv",
+    "requirement_traceability_csv",
 ]
 
 [workspace.dependencies]

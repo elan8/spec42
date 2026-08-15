@@ -13,6 +13,7 @@ mod element_kind;
 mod evaluation;
 mod inspection;
 mod model;
+mod traceability;
 mod type_query;
 
 pub use element_kind::{
@@ -25,6 +26,7 @@ pub use inspection::{
     MultiplicityBound, MultiplicityFacts, PortionKind, ReferenceAt, RelationshipProvenance,
     RelationshipTarget, SymbolEntry, ValueKind, Visibility, VisibilityProvenance,
 };
+pub use traceability::{SatisfyEndpoint, SatisfyPolarity, SatisfyRelationship};
 pub use type_query::{
     Conformance, ConformanceObstacle, EffectiveType, EffectiveTypeOrigin, RequirementUsageTyping,
     SpecializationScope, SubsettingConformance, TypeReference,
@@ -529,6 +531,11 @@ impl PublishedResolution {
     /// Elements of `search.kind` authored in `search.source`, in canonical source order.
     pub fn search_elements(&self, search: ElementSearch) -> QueryOutcome<Box<[SymbolEntry]>> {
         self.model.search_elements(search)
+    }
+
+    /// Workspace-authored satisfy statements in canonical declaration order.
+    pub fn satisfy_relationships(&self) -> QueryOutcome<Box<[SatisfyRelationship]>> {
+        self.model.satisfy_relationships()
     }
 
     /// Effective features, direct first and inherited nearest-first with name shadowing.
@@ -2684,6 +2691,62 @@ mod tests {
             library[0].qualified_name.as_ref(),
             "Standard::LibraryRequirement"
         );
+    }
+
+    #[test]
+    fn satisfy_query_pairs_directional_ends_preserves_identity_polarity_and_unresolved() {
+        let published = publication_for(&[(
+            "memory://trace.sysml",
+            r#"
+package Trace {
+    requirement def Safety;
+    requirement def Performance;
+    part def Vehicle;
+    part vehicle : Vehicle;
+    satisfy Performance by vehicle;
+    not satisfy Safety by vehicle;
+    satisfy Missing by vehicle;
+}
+"#,
+        )]);
+        let values = match published.satisfy_relationships() {
+            QueryOutcome::Resolved(values) => values,
+            other => panic!("expected resolved satisfy query, got {other:?}"),
+        };
+        assert_eq!(values.len(), 3);
+        let requirements = match published.search_elements(ElementSearch {
+            kind: ElementKind::RequirementDefinition,
+            source: ElementSource::Workspace,
+        }) {
+            QueryOutcome::Resolved(values) => values,
+            other => panic!("expected requirements, got {other:?}"),
+        };
+        let performance = requirements
+            .iter()
+            .find(|value| value.qualified_name.as_ref() == "Trace::Performance")
+            .expect("Performance");
+        let parts = match published.search_elements(ElementSearch {
+            kind: ElementKind::PartUsage,
+            source: ElementSource::Workspace,
+        }) {
+            QueryOutcome::Resolved(values) => values,
+            other => panic!("expected parts, got {other:?}"),
+        };
+        let vehicle = parts
+            .iter()
+            .find(|value| value.qualified_name.as_ref() == "Trace::vehicle")
+            .expect("vehicle");
+        assert!(
+            matches!(&values[0].requirement, SatisfyEndpoint::Resolved(value) if value == &performance.identity)
+        );
+        assert!(
+            matches!(&values[0].satisfying_element, SatisfyEndpoint::Resolved(value) if value == &vehicle.identity)
+        );
+        assert_eq!(values[0].polarity, SatisfyPolarity::Satisfied);
+        assert_eq!(values[1].polarity, SatisfyPolarity::NotSatisfied);
+        assert!(matches!(values[2].requirement, SatisfyEndpoint::Unresolved));
+        assert_eq!(values[0].provenance, RelationshipProvenance::Authored);
+        assert_ne!(values[0].identity, values[1].identity);
     }
 
     #[test]

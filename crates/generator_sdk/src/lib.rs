@@ -134,7 +134,8 @@ fn call_query<T: DeserializeOwned>(operation: i32, request: &impl Serialize) -> 
 pub mod model {
     pub use spec42_generator_protocol::{
         ElementDetail, ElementSummary, ModelInfo, Multiplicity, Relationship,
-        RequirementUsageTyping, SourceRange, TypingProvenance,
+        RelationshipProvenance, RequirementUsageTyping, SatisfyEndpoint, SatisfyPolarity,
+        SatisfyRelationship, SourceRange, TypingProvenance,
     };
 
     use super::call;
@@ -166,6 +167,10 @@ pub mod model {
 
     pub fn requirement_usage_typing(usage: &str) -> Result<RequirementUsageTyping, String> {
         call::<query::RequirementTyping>(&usage.to_owned())
+    }
+
+    pub fn satisfy_relationships() -> Result<Vec<SatisfyRelationship>, String> {
+        call::<query::SatisfyRelationships>(&())
     }
 
     pub fn relationships(element: &str) -> Result<Vec<Relationship>, String> {
