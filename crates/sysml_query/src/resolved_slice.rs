@@ -3,12 +3,13 @@
 use std::fmt;
 
 pub use sysml_resolution::{
-    AnnotationForm, AuthoredValue, BuildMeasurements, Conformance, ConformanceObstacle,
-    Documentation, EffectiveType, EffectiveTypeOrigin, ElementInspection, ElementInspectionAt,
-    ElementKind, ElementModifier, ElementRelationship, ElementSearch, ElementSource,
-    EvaluatedScalar, EvaluationFailure, EvaluationState, FeatureDirection, MembershipFacts,
-    MembershipKind, MembershipRole, MultiplicityBound, MultiplicityFacts, NavigationTarget,
-    OccurrenceRole, PortionKind, PublicationCompleteness, QueryOutcome, ReferenceAt,
+    AnnotationForm, AuthoredValue, BuildMeasurements, Conformance, ConformanceObstacle, Diagnostic,
+    DiagnosticCode, DiagnosticLocation, DiagnosticOrigin, DiagnosticSeverity, Documentation,
+    EffectiveType, EffectiveTypeOrigin, ElementInspection, ElementInspectionAt, ElementKind,
+    ElementModifier, ElementRelationship, ElementSearch, ElementSource, EvaluatedScalar,
+    EvaluationFailure, EvaluationState, FeatureDirection, MembershipFacts, MembershipKind,
+    MembershipRole, MultiplicityBound, MultiplicityFacts, NavigationTarget, OccurrenceRole,
+    PortionKind, PublicationCompleteness, PublishedDiagnostics, QueryOutcome, ReferenceAt,
     RelationshipProvenance, RelationshipTarget, RenameOutcome, RequirementConstraintKind,
     RequirementUsageTyping, RequirementVerification, SatisfyEndpoint, SatisfyPolarity,
     SatisfyRelationship, SourceLocation, SpecializationScope, StateSubactionKind,
@@ -234,6 +235,28 @@ impl PublishedModel {
 
     pub fn types(&self) -> TypeQueries<'_> {
         TypeQueries { model: &self.inner }
+    }
+
+    pub fn diagnostics(&self) -> DiagnosticQueries<'_> {
+        DiagnosticQueries { model: &self.inner }
+    }
+}
+
+/// The diagnostics this publication settled.
+///
+/// The facade adapts the owner's contract; it does not evaluate a rule of its own. Every code,
+/// severity, range, and related location a consumer sees here was decided by `sysml_resolution`
+/// at the publication barrier, so a host, a generator, and the canonical snapshot projection
+/// cannot disagree about what one publication reported.
+pub struct DiagnosticQueries<'a> {
+    model: &'a sysml_resolution::PublishedResolution,
+}
+
+impl DiagnosticQueries<'_> {
+    /// Every diagnostic, canonically ordered, with the completeness of the publication that
+    /// produced them. Only workspace-authored documents are reported.
+    pub fn published(&self) -> PublishedDiagnostics {
+        self.model.diagnostics()
     }
 }
 
