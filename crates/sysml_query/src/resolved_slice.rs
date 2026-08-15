@@ -9,10 +9,10 @@ pub use sysml_resolution::{
     ElementModifier, ElementRelationship, ElementSearch, ElementSource, EvaluatedScalar,
     EvaluationFailure, EvaluationState, FeatureDirection, MembershipFacts, MembershipKind,
     MembershipRole, MultiplicityBound, MultiplicityFacts, NavigationTarget, OccurrenceRole,
-    PortionKind, PublicationCompleteness, PublishedDiagnostics, QueryOutcome, ReferenceAt,
-    RelationshipProvenance, RelationshipTarget, RenameOutcome, RequirementConstraintKind,
-    RequirementUsageTyping, RequirementVerification, SatisfyEndpoint, SatisfyPolarity,
-    SatisfyRelationship, SourceLocation, SpecializationScope, StateSubactionKind,
+    PortionKind, PublicationCompleteness, PublicationIdentity, PublishedDiagnostics, QueryOutcome,
+    ReferenceAt, RelationshipProvenance, RelationshipTarget, RenameOutcome,
+    RequirementConstraintKind, RequirementUsageTyping, RequirementVerification, SatisfyEndpoint,
+    SatisfyPolarity, SatisfyRelationship, SourceLocation, SpecializationScope, StateSubactionKind,
     SubsettingConformance, SymbolEntry, SymbolIdentity, TextPosition, TextRange, TypeReference,
     ValueKind, VerificationOutcome, VerificationRequirement, Visibility, VisibilityProvenance,
     VisibleMember,
@@ -136,6 +136,14 @@ impl BuildRequest {
         )
         .map(|inner| Self { inner })
         .map_err(BuildError)
+    }
+
+    /// The identity the publication built from this request will carry.
+    ///
+    /// Available before the build so a publication owner can record what it scheduled and reject
+    /// a result built from anything else, rather than trusting whatever comes back.
+    pub fn identity(&self) -> &PublicationIdentity {
+        self.inner.identity()
     }
 }
 
@@ -351,9 +359,17 @@ pub struct PublicationQueries<'a> {
     model: &'a sysml_resolution::PublishedResolution,
 }
 
-impl PublicationQueries<'_> {
+impl<'a> PublicationQueries<'a> {
     pub fn completeness(&self) -> PublicationCompleteness {
         self.model.completeness()
+    }
+
+    /// The dependency-complete identity of every input this publication committed to.
+    ///
+    /// Borrowed from the publication rather than the query handle, so an owner can hold it
+    /// against the publication itself instead of cloning at every comparison.
+    pub fn identity(&self) -> &'a PublicationIdentity {
+        self.model.identity()
     }
 
     /// Dependency-complete digest of every source admitted to this publication.
