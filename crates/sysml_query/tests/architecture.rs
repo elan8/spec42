@@ -301,6 +301,43 @@ fn facade_depends_only_on_the_immutable_resolution_owner() {
     );
 }
 
+/// `PRODUCTION_CUTOVER.md` claims its family table is the complete inventory of what
+/// `sysml_diagnostics` still owns. A claim of completeness has to be checked, not trusted.
+///
+/// The risk this guards is specific: a consumer pointed at `PublishedModel::diagnostics()` before
+/// its families are published stops reporting those codes, and nothing else fails. Keeping the
+/// table exhaustive is what makes that decision reviewable.
+#[test]
+fn the_cutover_inventory_names_every_legacy_diagnostic_check_family() {
+    let root = repository_root();
+    let modules = fs::read_to_string(root.join("crates/sysml_diagnostics/src/checks/mod.rs"))
+        .expect("read diagnostic check modules");
+    let inventory = fs::read_to_string(root.join("crates/sysml_query/PRODUCTION_CUTOVER.md"))
+        .expect("read cutover inventory");
+
+    let mut missing = Vec::new();
+    for line in modules.lines() {
+        let Some(module) = line
+            .trim()
+            .strip_prefix("pub(super) mod ")
+            .and_then(|rest| rest.strip_suffix(';'))
+        else {
+            continue;
+        };
+        // The table names families in prose ("kind compatibility"), not by module path, because it
+        // is read by people deciding whether a slice is safe to migrate.
+        let prose = module.replace('_', " ");
+        if !inventory.contains(module) && !inventory.contains(&prose) {
+            missing.push(module.to_owned());
+        }
+    }
+    assert!(
+        missing.is_empty(),
+        "diagnostic check families absent from PRODUCTION_CUTOVER.md: {missing:?}. \
+         A family that is not in the table can be dropped by a consumer migration without review."
+    );
+}
+
 #[test]
 fn query_facade_public_api_contains_no_raw_semantic_storage() {
     assert_source_tree_has_no_raw_semantic_storage(

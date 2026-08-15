@@ -1,9 +1,29 @@
 //! The publication's typed diagnostic contract.
 //!
-//! A diagnostic is a semantic fact about one publication, not a rendering of one. Every consumer
-//! -- the canonical S-expression adapter, an editor protocol, a generator host -- reads the same
-//! values from here. None of them recovers a code, severity, or reason by parsing presentation
-//! text, and none of them re-derives a rule the publication already settled.
+//! A diagnostic is a semantic fact about one publication, not a rendering of one. A consumer of
+//! this contract -- the canonical S-expression adapter today, an editor protocol or generator host
+//! later -- reads these values rather than recovering a code, severity, or outcome by parsing
+//! presentation text, and never re-derives a rule the publication already settled.
+//!
+//! # Scope: this is not yet every diagnostic Spec42 reports
+//!
+//! This contract covers exactly the families resolution owns:
+//!
+//! - parser errors, carried through with the parser's own code;
+//! - constructs this publication does not model ([`DiagnosticCode::UnsupportedPackageMember`] and
+//!   the other `Unsupported*Member` codes);
+//! - the settled outcome of every authored reference -- unresolved, ambiguous, unsupported, or
+//!   non-converged.
+//!
+//! The conformance families are **not** here. Kind compatibility, structural-feature conformance,
+//! view metadata, behavior, connection, expression, import, and requirement-case conformance are
+//! still evaluated by `sysml_diagnostics` over the mutable semantic graph, and together they own
+//! roughly thirty further public codes.
+//!
+//! A consumer that swaps `sysml_diagnostics` for this contract as it stands would therefore stop
+//! reporting those codes. Do not treat this as a drop-in replacement for the legacy diagnostic
+//! path; each conformance family needs its owner-defined facts published here first.
+//! `crates/sysml_query/PRODUCTION_CUTOVER.md` tracks that work.
 //!
 //! The states below stay distinguishable on purpose. "No diagnostic" is the absence of an entry;
 //! an unresolved prerequisite, an ambiguous one, a rule this publication does not support, a
@@ -14,7 +34,10 @@
 
 use crate::{PublicationCompleteness, TextRange};
 
-/// Every diagnostic one publication reports, with the phase that produced them.
+/// The resolution-owned diagnostics of one publication, with the phase that produced them.
+///
+/// "Every diagnostic" only within the families listed in the module documentation; the conformance
+/// families are not represented yet.
 ///
 /// `completeness` travels with the diagnostics rather than being a separate lookup because the two
 /// are only meaningful together: an empty slice from a complete publication means the model is

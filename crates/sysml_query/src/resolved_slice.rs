@@ -255,19 +255,26 @@ impl PublishedModel {
     }
 }
 
-/// The diagnostics this publication settled.
+/// The resolution-owned diagnostics this publication settled.
 ///
 /// The facade adapts the owner's contract; it does not evaluate a rule of its own. Every code,
 /// severity, range, and related location a consumer sees here was decided by `sysml_resolution`
 /// at the publication barrier, so a host, a generator, and the canonical snapshot projection
 /// cannot disagree about what one publication reported.
+///
+/// This does not yet cover the conformance families -- kind compatibility, structural-feature,
+/// view metadata, behavior, connection, expression, import, and requirement-case conformance are
+/// still evaluated by `sysml_diagnostics` over the mutable graph. Read
+/// `sysml_resolution::diagnostics`'s module documentation and `PRODUCTION_CUTOVER.md` before
+/// pointing a legacy diagnostic consumer at this service, or it will silently stop reporting
+/// roughly thirty public codes.
 pub struct DiagnosticQueries<'a> {
     model: &'a sysml_resolution::PublishedResolution,
 }
 
 impl DiagnosticQueries<'_> {
-    /// Every diagnostic, canonically ordered, with the completeness of the publication that
-    /// produced them. Only workspace-authored documents are reported.
+    /// The published diagnostics, canonically ordered, with the completeness of the publication
+    /// that produced them. Only workspace-authored documents are reported.
     pub fn published(&self) -> PublishedDiagnostics {
         self.model.diagnostics()
     }

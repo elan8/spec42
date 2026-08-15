@@ -486,11 +486,16 @@ impl PublishedResolution {
         self.model.completeness()
     }
 
-    /// Every diagnostic this publication settled, in canonical order.
+    /// The resolution-owned diagnostics this publication settled, in canonical order.
     ///
-    /// These are facts, not rendered text. The canonical S-expression projection is one adapter
-    /// over exactly these values; an editor or generator host is another. No consumer recovers a
-    /// code, severity, or reason from presentation output, and none re-decides a rule.
+    /// These are facts, not rendered text: the canonical S-expression projection is one adapter
+    /// over exactly these values, so no consumer recovers a code, severity, or outcome from
+    /// presentation output or re-decides a rule.
+    ///
+    /// This is **not** the whole diagnostic surface. Parser recovery, unmodelled constructs, and
+    /// authored-reference outcomes are here; the conformance families are still owned by
+    /// `sysml_diagnostics` over the mutable graph. See the [`diagnostics`] module documentation
+    /// before using this to replace a legacy diagnostic consumer.
     pub fn diagnostics(&self) -> PublishedDiagnostics {
         self.model.published_diagnostics()
     }
