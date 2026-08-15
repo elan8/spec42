@@ -13,8 +13,9 @@ use crate::evaluation::{EvaluationPolicy, EvaluationState};
 use crate::{
     Conformance, ConformanceObstacle, EffectiveType, EffectiveTypeOrigin, ElementSearch,
     ElementSource, NavigationTarget, OccurrenceRole, PublicationCompleteness as PublicCompleteness,
-    QueryOutcome, RelationshipProvenance, RenameOutcome, SourceLocation, SpecializationScope,
-    SubsettingConformance, SymbolIdentity, TextPosition, TextRange, TypeReference, VisibleMember,
+    QueryOutcome, RelationshipProvenance, RelationshipTarget, RenameOutcome,
+    RequirementUsageTyping, SourceLocation, SpecializationScope, SubsettingConformance,
+    SymbolIdentity, TextPosition, TextRange, TypeReference, VisibleMember,
 };
 
 mod inspection;
@@ -1718,6 +1719,65 @@ impl ResolvedSemanticModel {
             .collect::<Vec<_>>();
         types.sort_by(|left, right| left.symbol.cmp(&right.symbol));
         self.resolved_outcome(types.into_boxed_slice())
+    }
+
+    pub(crate) fn requirement_usage_typing(
+        &self,
+        symbol: &SymbolIdentity,
+    ) -> QueryOutcome<RequirementUsageTyping> {
+        let declaration = match self.single_declaration(symbol) {
+            Ok(declaration) => declaration,
+            Err(outcome) => return outcome,
+        };
+        if self
+            .storage
+            .declaration(declaration)
+            .is_none_or(|value| value.kind != DeclarationKind::RequirementUsage)
+        {
+            return QueryOutcome::Unsupported;
+        }
+        let relationships = self.relationships(declaration);
+        let mut typings = relationships
+            .iter()
+            .filter(|relationship| relationship.kind == "featureTyping");
+        let value = match (typings.next(), typings.next()) {
+            (None, _) => RequirementUsageTyping::Missing,
+            (Some(_), Some(_)) => {
+                let candidates = self
+                    .types
+                    .direct_types(declaration)
+                    .iter()
+                    .filter_map(|(target, _)| self.symbol_identity(*target))
+                    .collect::<Vec<_>>();
+                RequirementUsageTyping::Ambiguous(candidates.into_boxed_slice())
+            }
+            (Some(relationship), None) => match &relationship.target {
+                RelationshipTarget::Resolved(target) => {
+                    let target_is_requirement_definition = self
+                        .identity_declarations(target)
+                        .into_iter()
+                        .any(|target| {
+                            self.storage.declaration(target).is_some_and(|declaration| {
+                                declaration.kind == DeclarationKind::RequirementDefinition
+                            })
+                        });
+                    if target_is_requirement_definition {
+                        RequirementUsageTyping::Resolved(TypeReference {
+                            symbol: target.clone(),
+                            provenance: relationship.provenance,
+                        })
+                    } else {
+                        RequirementUsageTyping::Unsupported
+                    }
+                }
+                RelationshipTarget::Ambiguous(values) => {
+                    RequirementUsageTyping::Ambiguous(values.clone())
+                }
+                RelationshipTarget::Unresolved => RequirementUsageTyping::Unresolved,
+                RelationshipTarget::Unsupported => RequirementUsageTyping::Unsupported,
+            },
+        };
+        self.resolved_outcome(value)
     }
 
     pub(crate) fn effective_types(

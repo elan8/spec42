@@ -311,6 +311,8 @@ abi_contract! {
         Relationships = 6 => (String, Vec<Relationship>),
         /// Direct features first, then inherited nearest-first, with shadowing applied.
         EffectiveFeatures = 7 => (String, Vec<ElementSummary>),
+        /// Authoritative typing state for a requirement usage.
+        RequirementTyping = 8 => (String, RequirementUsageTyping),
     }
 
     /// Severity of a generator diagnostic.

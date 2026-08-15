@@ -31,6 +31,16 @@ pub struct TypeReference {
     pub provenance: RelationshipProvenance,
 }
 
+/// The authoritative direct typing of one requirement usage.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum RequirementUsageTyping {
+    Missing,
+    Resolved(TypeReference),
+    Ambiguous(Box<[SymbolIdentity]>),
+    Unresolved,
+    Unsupported,
+}
+
 /// Where one of a feature's effective types came from.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum EffectiveTypeOrigin {

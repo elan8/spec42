@@ -333,7 +333,7 @@ impl ResolvedSemanticModel {
         .collect()
     }
 
-    fn relationships(&self, id: DeclarationId) -> Box<[ElementRelationship]> {
+    pub(super) fn relationships(&self, id: DeclarationId) -> Box<[ElementRelationship]> {
         let mut relationships = Vec::new();
         for reference_id in slice_range(&self.facts.reference_order, &self.facts.references, id) {
             let reference = &self.storage.references[reference_id.index()];

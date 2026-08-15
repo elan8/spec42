@@ -88,6 +88,38 @@ pub struct RelationshipSummary {
     pub implied: bool,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum RequirementUsageTypingSummary {
+    Resolved {
+        definition: ElementSummary,
+        provenance: TypingProvenanceSummary,
+    },
+    RecoveredResolved {
+        definition: ElementSummary,
+        provenance: TypingProvenanceSummary,
+    },
+    RecoveredMissing,
+    RecoveredUnresolved,
+    RecoveredAmbiguous {
+        candidates: Vec<ElementSummary>,
+    },
+    RecoveredUnsupported,
+    Missing,
+    Unresolved,
+    Ambiguous {
+        candidates: Vec<ElementSummary>,
+    },
+    Unsupported,
+    Recovery,
+    Incomplete,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum TypingProvenanceSummary {
+    Authored,
+    Implied,
+}
+
 #[derive(Debug, Error, Clone, PartialEq, Eq)]
 pub enum ModelQueryError {
     #[error("unknown or expired element handle `{0}`")]
@@ -304,6 +336,66 @@ impl GeneratorModelView {
                 types.len()
             ))),
         }
+    }
+
+    pub fn requirement_usage_typing(
+        &self,
+        handle: &str,
+    ) -> Result<RequirementUsageTypingSummary, ModelQueryError> {
+        use sysml_query::resolved_slice::{QueryOutcome, RequirementUsageTyping as Owned};
+        use RequirementUsageTypingSummary as Wire;
+        let identity = self.resolve_handle(handle)?;
+        Ok(
+            match self.model.types().requirement_usage_typing(&identity) {
+                QueryOutcome::Resolved(Owned::Missing) => Wire::Missing,
+                QueryOutcome::Resolved(Owned::Resolved(reference)) => Wire::Resolved {
+                    definition: self.summary(&reference.symbol)?,
+                    provenance: match reference.provenance {
+                        RelationshipProvenance::Authored => TypingProvenanceSummary::Authored,
+                        RelationshipProvenance::Implied => TypingProvenanceSummary::Implied,
+                    },
+                },
+                QueryOutcome::Resolved(Owned::Ambiguous(values)) => Wire::Ambiguous {
+                    candidates: values
+                        .iter()
+                        .map(|value| self.summary(value))
+                        .collect::<Result<Vec<_>, _>>()?,
+                },
+                QueryOutcome::Resolved(Owned::Unresolved) | QueryOutcome::Unresolved => {
+                    Wire::Unresolved
+                }
+                QueryOutcome::Resolved(Owned::Unsupported)
+                | QueryOutcome::Unsupported
+                | QueryOutcome::UnsupportedWith(_) => Wire::Unsupported,
+                QueryOutcome::Recovered(Owned::Resolved(reference)) => Wire::RecoveredResolved {
+                    definition: self.summary(&reference.symbol)?,
+                    provenance: match reference.provenance {
+                        RelationshipProvenance::Authored => TypingProvenanceSummary::Authored,
+                        RelationshipProvenance::Implied => TypingProvenanceSummary::Implied,
+                    },
+                },
+                QueryOutcome::Recovered(Owned::Missing) => Wire::RecoveredMissing,
+                QueryOutcome::Recovered(Owned::Unresolved) => Wire::RecoveredUnresolved,
+                QueryOutcome::Recovered(Owned::Ambiguous(values)) => Wire::RecoveredAmbiguous {
+                    candidates: values
+                        .iter()
+                        .map(|value| self.summary(value))
+                        .collect::<Result<Vec<_>, _>>()?,
+                },
+                QueryOutcome::Recovered(Owned::Unsupported) => Wire::RecoveredUnsupported,
+                QueryOutcome::Recovery => Wire::Recovery,
+                QueryOutcome::Ambiguous(values) => Wire::Ambiguous {
+                    candidates: values
+                        .iter()
+                        .flat_map(|value| match value {
+                            Owned::Resolved(reference) => self.summary(&reference.symbol).ok(),
+                            _ => None,
+                        })
+                        .collect(),
+                },
+                QueryOutcome::Incomplete => Wire::Incomplete,
+            },
+        )
     }
 
     pub fn relationships(&self, handle: &str) -> Result<Vec<RelationshipSummary>, ModelQueryError> {

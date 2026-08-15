@@ -10,6 +10,7 @@ members = [
     "artifact_paths",
     "find_all",
     "requirements_csv",
+    "requirement_instances_csv",
 ]
 
 [workspace.dependencies]

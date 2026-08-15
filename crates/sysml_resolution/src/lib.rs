@@ -26,8 +26,8 @@ pub use inspection::{
     RelationshipTarget, SymbolEntry, ValueKind, Visibility, VisibilityProvenance,
 };
 pub use type_query::{
-    Conformance, ConformanceObstacle, EffectiveType, EffectiveTypeOrigin, SpecializationScope,
-    SubsettingConformance, TypeReference,
+    Conformance, ConformanceObstacle, EffectiveType, EffectiveTypeOrigin, RequirementUsageTyping,
+    SpecializationScope, SubsettingConformance, TypeReference,
 };
 
 use model::resolver::ResolvedSemanticModel;
@@ -539,6 +539,13 @@ impl PublishedResolution {
     /// The types a feature declares.
     pub fn direct_types(&self, symbol: &SymbolIdentity) -> QueryOutcome<Box<[TypeReference]>> {
         self.model.direct_types(symbol)
+    }
+
+    pub fn requirement_usage_typing(
+        &self,
+        symbol: &SymbolIdentity,
+    ) -> QueryOutcome<RequirementUsageTyping> {
+        self.model.requirement_usage_typing(symbol)
     }
 
     /// The types a feature has, directly or inherited along its subsetting/redefinition chain.

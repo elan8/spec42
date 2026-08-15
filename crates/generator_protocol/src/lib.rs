@@ -35,6 +35,7 @@ struct WireSchema {
     source_range: SourceRange,
     multiplicity: Multiplicity,
     relationship: Relationship,
+    requirement_usage_typing: RequirementUsageTyping,
     level: Level,
     /// Request payloads, which are part of the contract just as much as the responses.
     metaclass_filter: Option<String>,
@@ -557,6 +558,38 @@ pub struct Relationship {
     pub target: ElementSummary,
     pub implied: bool,
 }
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum TypingProvenance {
+    Authored,
+    Implied,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum RequirementUsageTyping {
+    Resolved {
+        definition: ElementSummary,
+        provenance: TypingProvenance,
+    },
+    RecoveredResolved {
+        definition: ElementSummary,
+        provenance: TypingProvenance,
+    },
+    RecoveredMissing,
+    RecoveredUnresolved,
+    RecoveredAmbiguous {
+        candidates: Vec<ElementSummary>,
+    },
+    RecoveredUnsupported,
+    Missing,
+    Unresolved,
+    Ambiguous {
+        candidates: Vec<ElementSummary>,
+    },
+    Unsupported,
+    Recovery,
+    Incomplete,
+}
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -641,7 +674,7 @@ mod tests {
     #[test]
     fn the_wire_schema_fingerprint_is_pinned() {
         assert_eq!(
-            SCHEMA_FINGERPRINT, 0x3a46_578a_b105_445f,
+            SCHEMA_FINGERPRINT, 0x918a_b074_faa1_442d,
             "the generator wire schema changed; every guest must be rebuilt"
         );
     }
@@ -649,7 +682,7 @@ mod tests {
     #[test]
     fn the_compatibility_token_is_pinned() {
         assert_eq!(
-            COMPATIBILITY_TOKEN, 0xa18f_24b3_86a7_570d,
+            COMPATIBILITY_TOKEN, 0x2b13_a60c_1682_e02e,
             "the generator ABI contract changed; every guest must be rebuilt"
         );
     }

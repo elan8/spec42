@@ -8,7 +8,7 @@ use generator_api::{
     ArtifactLimits, ArtifactSet, ElementDetail as ApiElementDetail,
     ElementSummary as ApiElementSummary, GeneratorDiagnostic, GeneratorDiagnosticLevel,
     GeneratorModelView, MultiplicitySummary as ApiMultiplicity, RelationshipSummary,
-    MAX_ARTIFACT_PATH_BYTES,
+    RequirementUsageTypingSummary, TypingProvenanceSummary, MAX_ARTIFACT_PATH_BYTES,
 };
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
@@ -948,6 +948,16 @@ fn handle_query(
                     .map_err(|error| error.to_string()),
             )
         }
+        protocol::Operation::RequirementTyping => {
+            let usage = decode_for::<protocol::query::RequirementTyping>(request)?;
+            encode_result(
+                state
+                    .model
+                    .requirement_usage_typing(&usage)
+                    .map(requirement_usage_typing)
+                    .map_err(|error| error.to_string()),
+            )
+        }
         protocol::Operation::Relationships => {
             let element = decode_for::<protocol::query::Relationships>(request)?;
             encode_result(
@@ -1108,6 +1118,50 @@ fn relationship(value: RelationshipSummary) -> protocol::Relationship {
         source: summary(value.source),
         target: summary(value.target),
         implied: value.implied,
+    }
+}
+
+fn requirement_usage_typing(
+    value: RequirementUsageTypingSummary,
+) -> protocol::RequirementUsageTyping {
+    use protocol::RequirementUsageTyping as Wire;
+    match value {
+        RequirementUsageTypingSummary::Resolved {
+            definition,
+            provenance,
+        } => Wire::Resolved {
+            definition: summary(definition),
+            provenance: match provenance {
+                TypingProvenanceSummary::Authored => protocol::TypingProvenance::Authored,
+                TypingProvenanceSummary::Implied => protocol::TypingProvenance::Implied,
+            },
+        },
+        RequirementUsageTypingSummary::RecoveredResolved {
+            definition,
+            provenance,
+        } => Wire::RecoveredResolved {
+            definition: summary(definition),
+            provenance: match provenance {
+                TypingProvenanceSummary::Authored => protocol::TypingProvenance::Authored,
+                TypingProvenanceSummary::Implied => protocol::TypingProvenance::Implied,
+            },
+        },
+        RequirementUsageTypingSummary::RecoveredMissing => Wire::RecoveredMissing,
+        RequirementUsageTypingSummary::RecoveredUnresolved => Wire::RecoveredUnresolved,
+        RequirementUsageTypingSummary::RecoveredAmbiguous { candidates } => {
+            Wire::RecoveredAmbiguous {
+                candidates: candidates.into_iter().map(summary).collect(),
+            }
+        }
+        RequirementUsageTypingSummary::RecoveredUnsupported => Wire::RecoveredUnsupported,
+        RequirementUsageTypingSummary::Missing => Wire::Missing,
+        RequirementUsageTypingSummary::Unresolved => Wire::Unresolved,
+        RequirementUsageTypingSummary::Ambiguous { candidates } => Wire::Ambiguous {
+            candidates: candidates.into_iter().map(summary).collect(),
+        },
+        RequirementUsageTypingSummary::Unsupported => Wire::Unsupported,
+        RequirementUsageTypingSummary::Recovery => Wire::Recovery,
+        RequirementUsageTypingSummary::Incomplete => Wire::Incomplete,
     }
 }
 
