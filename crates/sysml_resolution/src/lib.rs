@@ -52,6 +52,25 @@ pub enum SourceKind {
     External,
 }
 
+/// Which authored source domain an element search may observe.
+///
+/// This is deliberately provenance-based. Consumers must not infer library ownership from a
+/// document URI or qualified name.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum ElementSource {
+    Workspace,
+    StandardLibrary,
+    Library,
+    External,
+}
+
+/// A typed, bounded search over declarations in one immutable publication.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct ElementSearch {
+    pub kind: ElementKind,
+    pub source: ElementSource,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SourceInput {
     identity: Box<str>,
@@ -86,6 +105,13 @@ pub struct TextRange {
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct SymbolIdentity(Box<str>);
+
+impl SymbolIdentity {
+    /// The canonical, opaque identity encoding used for equality and boundary handles.
+    pub fn as_str(&self) -> &str {
+        &self.0
+    }
+}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum OccurrenceRole {
@@ -498,6 +524,16 @@ impl PublishedResolution {
     /// Every element declared in one document, in source order.
     pub fn document_symbols(&self, document: &str) -> QueryOutcome<Box<[SymbolEntry]>> {
         self.model.document_symbols(document)
+    }
+
+    /// Elements of `search.kind` authored in `search.source`, in canonical source order.
+    pub fn search_elements(&self, search: ElementSearch) -> QueryOutcome<Box<[SymbolEntry]>> {
+        self.model.search_elements(search)
+    }
+
+    /// Effective features, direct first and inherited nearest-first with name shadowing.
+    pub fn effective_features(&self, symbol: &SymbolIdentity) -> QueryOutcome<Box<[SymbolEntry]>> {
+        self.model.effective_features(symbol)
     }
 
     /// The types a feature declares.
@@ -2576,6 +2612,117 @@ mod tests {
             published.document_symbols("memory://absent.sysml"),
             QueryOutcome::Unresolved
         ));
+    }
+
+    #[test]
+    fn typed_element_search_filters_by_kind_and_authored_source_in_canonical_order() {
+        let request = BuildRequest::new(
+            vec![
+                SourceInput::new(
+                    "memory://z.sysml",
+                    "package Z { requirement def Later; part def NotARequirement; }".into(),
+                    SourceKind::Workspace,
+                ),
+                SourceInput::new(
+                    "memory://standard.sysml",
+                    "package Standard { requirement def LibraryRequirement; }".into(),
+                    SourceKind::StandardLibrary,
+                ),
+                SourceInput::new(
+                    "memory://a.sysml",
+                    "package A { requirement def First; requirement def Second; }".into(),
+                    SourceKind::Workspace,
+                ),
+            ],
+            ConstructionSchedule::Sequential,
+            "contract-v1",
+        )
+        .expect("request");
+        let published = build(request).expect("publication");
+
+        let requirements = match published.search_elements(ElementSearch {
+            kind: ElementKind::RequirementDefinition,
+            source: ElementSource::Workspace,
+        }) {
+            QueryOutcome::Resolved(entries) => entries,
+            other => panic!("expected resolved search, got: {other:?}"),
+        };
+        assert_eq!(
+            requirements
+                .iter()
+                .map(|entry| (
+                    entry.location.document.as_ref(),
+                    entry.qualified_name.as_ref()
+                ))
+                .collect::<Vec<_>>(),
+            vec![
+                ("memory://a.sysml", "A::First"),
+                ("memory://a.sysml", "A::Second"),
+                ("memory://z.sysml", "Z::Later"),
+            ]
+        );
+        assert!(requirements
+            .iter()
+            .all(|entry| entry.kind == ElementKind::RequirementDefinition));
+
+        let library = match published.search_elements(ElementSearch {
+            kind: ElementKind::RequirementDefinition,
+            source: ElementSource::StandardLibrary,
+        }) {
+            QueryOutcome::Resolved(entries) => entries,
+            other => panic!("expected resolved search, got: {other:?}"),
+        };
+        assert_eq!(library.len(), 1);
+        assert_eq!(
+            library[0].qualified_name.as_ref(),
+            "Standard::LibraryRequirement"
+        );
+    }
+
+    #[test]
+    fn effective_features_follow_usage_typing_and_nearest_inheritance_with_shadowing() {
+        let published = publication_for(&[(
+            "memory://features.sysml",
+            r#"
+package P {
+    part def Base {
+        attribute inherited;
+        attribute shadowed;
+    }
+    part def Vehicle :> Base {
+        attribute direct;
+        attribute shadowed;
+    }
+    part vehicle : Vehicle;
+}
+"#,
+        )]);
+        let entries = match published.search_elements(ElementSearch {
+            kind: ElementKind::PartUsage,
+            source: ElementSource::Workspace,
+        }) {
+            QueryOutcome::Resolved(entries) => entries,
+            other => panic!("expected part usage, got {other:?}"),
+        };
+        let vehicle = entries
+            .iter()
+            .find(|entry| entry.qualified_name.as_ref() == "P::vehicle")
+            .expect("vehicle usage");
+        let features = match published.effective_features(&vehicle.identity) {
+            QueryOutcome::Resolved(features) => features,
+            other => panic!("expected effective features, got {other:?}"),
+        };
+        assert_eq!(
+            features
+                .iter()
+                .map(|entry| entry.qualified_name.as_ref())
+                .collect::<Vec<_>>(),
+            vec![
+                "P::Vehicle::direct",
+                "P::Vehicle::shadowed",
+                "P::Base::inherited"
+            ]
+        );
     }
 
     // --- Evaluation states ------------------------------------------------------------------

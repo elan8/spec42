@@ -5,13 +5,14 @@ use std::fmt;
 pub use sysml_resolution::{
     AnnotationForm, AuthoredValue, BuildMeasurements, Conformance, ConformanceObstacle,
     Documentation, EffectiveType, EffectiveTypeOrigin, ElementInspection, ElementInspectionAt,
-    ElementKind, ElementModifier, ElementRelationship, EvaluatedScalar, EvaluationFailure,
-    EvaluationState, FeatureDirection, MembershipFacts, MembershipKind, MembershipRole,
-    MultiplicityBound, MultiplicityFacts, NavigationTarget, OccurrenceRole, PortionKind,
-    PublicationCompleteness, QueryOutcome, ReferenceAt, RelationshipProvenance, RelationshipTarget,
-    RenameOutcome, RequirementConstraintKind, SourceLocation, SpecializationScope,
-    StateSubactionKind, SubsettingConformance, SymbolEntry, SymbolIdentity, TextPosition,
-    TextRange, TypeReference, ValueKind, Visibility, VisibilityProvenance, VisibleMember,
+    ElementKind, ElementModifier, ElementRelationship, ElementSearch, ElementSource,
+    EvaluatedScalar, EvaluationFailure, EvaluationState, FeatureDirection, MembershipFacts,
+    MembershipKind, MembershipRole, MultiplicityBound, MultiplicityFacts, NavigationTarget,
+    OccurrenceRole, PortionKind, PublicationCompleteness, QueryOutcome, ReferenceAt,
+    RelationshipProvenance, RelationshipTarget, RenameOutcome, RequirementConstraintKind,
+    SourceLocation, SpecializationScope, StateSubactionKind, SubsettingConformance, SymbolEntry,
+    SymbolIdentity, TextPosition, TextRange, TypeReference, ValueKind, Visibility,
+    VisibilityProvenance, VisibleMember,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -322,6 +323,11 @@ impl PublicationQueries<'_> {
     pub fn completeness(&self) -> PublicationCompleteness {
         self.model.completeness()
     }
+
+    /// Dependency-complete digest of every source admitted to this publication.
+    pub fn source_digest(&self) -> String {
+        self.model.identity().source_digest().to_string()
+    }
 }
 
 pub struct NavigationQueries<'a> {
@@ -403,6 +409,16 @@ impl InspectionQueries<'_> {
     /// Every element declared in one document, in source order.
     pub fn document_symbols(&self, document: &str) -> QueryOutcome<Box<[SymbolEntry]>> {
         self.model.document_symbols(document)
+    }
+
+    /// Elements matching a typed kind and authored-source provenance filter.
+    pub fn search_elements(&self, search: ElementSearch) -> QueryOutcome<Box<[SymbolEntry]>> {
+        self.model.search_elements(search)
+    }
+
+    /// Effective features, direct first and inherited nearest-first with name shadowing.
+    pub fn effective_features(&self, symbol: &SymbolIdentity) -> QueryOutcome<Box<[SymbolEntry]>> {
+        self.model.effective_features(symbol)
     }
 }
 

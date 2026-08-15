@@ -4,8 +4,8 @@
   },
   "artifacts": {
     "transcript.txt": {
-      "bytes": 1016,
-      "text": "info: model_digest=<present> spec42_version=<present> semantic_api_version=0.1.0\nroots: 1 element(s)\n  Minimal [Package] name=Minimal library=false\nfind(None): 2 element(s)\n  Minimal [Package] name=Minimal library=false\n  Minimal::Widget [PartDefinition] name=Widget library=false\nfind(PartDefinition): 1 element(s)\n  Minimal::Widget [PartDefinition] name=Widget library=false\nchildren(Minimal): 1 element(s)\n  Minimal::Widget [PartDefinition] name=Widget library=false\nelement(Minimal): definition=false abstract=false derived=false end=false multiplicity=<none>\ntyped_by(Minimal): <untyped>\nrelationships(Minimal): 1 edge(s)\n  reference Minimal -> Minimal::Widget implied=false\neffective_features(Minimal): 0 element(s)\nchildren(Minimal::Widget): 0 element(s)\nelement(Minimal::Widget): definition=true abstract=false derived=false end=false multiplicity=<none>\ntyped_by(Minimal::Widget): <untyped>\nrelationships(Minimal::Widget): 0 edge(s)\neffective_features(Minimal::Widget): 0 element(s)\nelement(<bogus>): error\n"
+      "bytes": 963,
+      "text": "info: model_digest=<present> spec42_version=<present> semantic_api_version=0.1.0\nroots: 1 element(s)\n  Minimal [Package] name=Minimal library=false\nfind(None): 2 element(s)\n  Minimal [Package] name=Minimal library=false\n  Minimal::Widget [PartDefinition] name=Widget library=false\nfind(PartDefinition): 1 element(s)\n  Minimal::Widget [PartDefinition] name=Widget library=false\nchildren(Minimal): 1 element(s)\n  Minimal::Widget [PartDefinition] name=Widget library=false\nelement(Minimal): definition=false abstract=false derived=false end=false multiplicity=<none>\ntyped_by(Minimal): <untyped>\nrelationships(Minimal): 0 edge(s)\neffective_features(Minimal): 0 element(s)\nchildren(Minimal::Widget): 0 element(s)\nelement(Minimal::Widget): definition=true abstract=false derived=false end=false multiplicity=<none>\ntyped_by(Minimal::Widget): <untyped>\nrelationships(Minimal::Widget): 0 edge(s)\neffective_features(Minimal::Widget): 0 element(s)\nelement(<bogus>): error\n"
     }
   },
   "diagnostics": [],
@@ -13,5 +13,5 @@
   "fuel_consumed": null,
   "peak_memory_bytes": 1310720,
   "output_files": 1,
-  "output_bytes": 1016
+  "output_bytes": 963
 }

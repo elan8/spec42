@@ -2,7 +2,15 @@
 # of the root workspace or `cargo clippy --workspace` would try to build them for the host.
 [workspace]
 resolver = "2"
-members = ["query_all", "diagnostics", "error_guest", "empty", "artifact_paths", "find_all"]
+members = [
+    "query_all",
+    "diagnostics",
+    "error_guest",
+    "empty",
+    "artifact_paths",
+    "find_all",
+    "requirements_csv",
+]
 
 [workspace.dependencies]
 spec42-generator-sdk = { path = "../../crates/generator_sdk" }

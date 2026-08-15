@@ -11,9 +11,9 @@ use super::evaluation;
 use super::*;
 use crate::evaluation::{EvaluationPolicy, EvaluationState};
 use crate::{
-    Conformance, ConformanceObstacle, EffectiveType, EffectiveTypeOrigin, NavigationTarget,
-    OccurrenceRole, PublicationCompleteness as PublicCompleteness, QueryOutcome,
-    RelationshipProvenance, RenameOutcome, SourceLocation, SpecializationScope,
+    Conformance, ConformanceObstacle, EffectiveType, EffectiveTypeOrigin, ElementSearch,
+    ElementSource, NavigationTarget, OccurrenceRole, PublicationCompleteness as PublicCompleteness,
+    QueryOutcome, RelationshipProvenance, RenameOutcome, SourceLocation, SpecializationScope,
     SubsettingConformance, SymbolIdentity, TextPosition, TextRange, TypeReference, VisibleMember,
 };
 

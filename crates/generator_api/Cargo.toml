@@ -5,10 +5,9 @@ edition.workspace = true
 description = "Runtime-neutral semantic and artifact API for Spec42 generators"
 
 [dependencies]
-workspace = { path = "../workspace", default-features = false }
+sysml_query = { path = "../sysml_query", default-features = false, features = ["immutable-resolution"] }
 spec42-generator-protocol = { path = "../generator_protocol" }
 serde = { workspace = true }
-serde_json = { workspace = true }
 sha2 = { workspace = true }
 unicode-normalization = "0.1"
 thiserror = { workspace = true }

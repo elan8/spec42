@@ -10,8 +10,7 @@ children(Minimal): 1 element(s)
   Minimal::Widget [PartDefinition] name=Widget library=false
 element(Minimal): definition=false abstract=false derived=false end=false multiplicity=<none>
 typed_by(Minimal): <untyped>
-relationships(Minimal): 1 edge(s)
-  reference Minimal -> Minimal::Widget implied=false
+relationships(Minimal): 0 edge(s)
 effective_features(Minimal): 0 element(s)
 children(Minimal::Widget): 0 element(s)
 element(Minimal::Widget): definition=true abstract=false derived=false end=false multiplicity=<none>

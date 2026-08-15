@@ -10,11 +10,14 @@
 //! references resolve against them while the owned projections keep reporting only the fixture's
 //! own authored documents.
 
+use std::collections::{BTreeMap, HashSet};
 use std::fs;
 use std::path::{Path, PathBuf};
-use std::sync::OnceLock;
+use std::sync::{Arc, OnceLock};
 
 use clap::{Parser, Subcommand};
+use generator_api::{ArtifactLimits, GeneratorModelView, QueryLimits};
+use generator_host::{CancellationHandle, GeneratorRuntime, RuntimeLimits};
 use rayon::prelude::*;
 use sysml_query::resolved_slice::{
     build as build_published_model, BuildRequest, ConstructionStrategy, EditorProbe,
@@ -60,6 +63,40 @@ struct SourceDocument {
 enum LibrarySelection {
     None,
     Standard,
+}
+
+/// Generator selection parsed from fixture metadata. Execution is deliberately kept separate from
+/// Markdown parsing so the runner can provide the immutable publication to whichever WASM host it
+/// uses without making the snapshot format depend on that host.
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct GenerationRequest {
+    plugin: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct FixtureMeta {
+    libraries: LibrarySelection,
+    generation: Option<GenerationRequest>,
+}
+
+/// Complete in-memory output of a generator invocation. A sorted map makes artifact order part of
+/// the snapshot contract rather than an accident of plugin emission order.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+struct GeneratedArtifacts {
+    files: BTreeMap<String, String>,
+}
+
+impl GeneratedArtifacts {
+    fn insert_utf8(&mut self, path: impl Into<String>, contents: String) -> Result<(), String> {
+        let path = path.into();
+        validate_artifact_path(&path)?;
+        if self.files.insert(path.clone(), contents).is_some() {
+            return Err(format!(
+                "generator emitted duplicate artifact path {path:?}"
+            ));
+        }
+        Ok(())
+    }
 }
 
 /// The directory of the checked-in standard-library corpus, relative to the snapshot root.
@@ -272,7 +309,7 @@ fn regenerate_snapshot(
         .and_then(|name| name.to_str())
         .unwrap_or("snapshot.md");
     let documents = parse_source_documents(fixture, fallback_name)?;
-    let selection = parse_library_selection(fixture, fallback_name)?;
+    let meta = parse_fixture_meta(fixture, fallback_name)?;
     let mut source_documents = documents
         .iter()
         .map(|document| {
@@ -285,20 +322,21 @@ fn regenerate_snapshot(
         })
         .collect::<Result<Vec<_>, _>>()
         .map_err(|error| format!("{}: invalid source: {error}", path.display()))?;
-    source_documents.extend_from_slice(libraries.sources(selection)?);
+    source_documents.extend_from_slice(libraries.sources(meta.libraries)?);
     let probes = parse_editor_probes(fixture, &documents, fallback_name)?;
-    let sequential = render_owned_sections(
-        build_model(&source_documents, ConstructionStrategy::Sequential, path)?,
-        &documents,
+    let sequential_model = Arc::new(build_model(
         &source_documents,
-        &probes,
-    )?;
-    let parallel = render_owned_sections(
-        build_model(&source_documents, ConstructionStrategy::Parallel, path)?,
-        &documents,
+        ConstructionStrategy::Sequential,
+        path,
+    )?);
+    let parallel_model = Arc::new(build_model(
         &source_documents,
-        &probes,
-    )?;
+        ConstructionStrategy::Parallel,
+        path,
+    )?);
+    let sequential =
+        render_owned_sections(&sequential_model, &documents, &source_documents, &probes)?;
+    let parallel = render_owned_sections(&parallel_model, &documents, &source_documents, &probes)?;
     ensure_strategy_parity(path, &sequential, &parallel)?;
     ensure_sections_balanced(&sequential)
         .map_err(|error| format!("{}: {error}", path.display()))?;
@@ -317,7 +355,80 @@ fn regenerate_snapshot(
         replace_or_insert_section(&fixture, "EDITOR RESULTS", &sequential.editor_queries)
             .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?
     };
+    let fixture = if let Some(generation) = &meta.generation {
+        let sequential_generated =
+            execute_generation(Arc::clone(&sequential_model), generation, path)?;
+        let parallel_generated = execute_generation(Arc::clone(&parallel_model), generation, path)?;
+        if sequential_generated != parallel_generated {
+            return Err(format!(
+                "{}: sequential and parallel generation differ",
+                path.display()
+            ));
+        }
+        replace_or_insert_generated_section(&fixture, &sequential_generated)
+    } else {
+        fixture
+    };
     Ok(canonicalize_sections(&fixture))
+}
+
+fn execute_generation(
+    publication: Arc<PublishedModel>,
+    request: &GenerationRequest,
+    fixture_path: &Path,
+) -> Result<GeneratedArtifacts, String> {
+    let plugin_path = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../../generator-tests/plugins/target/wasm32-unknown-unknown/release")
+        .join(format!("spec42_conformance_{}.wasm", request.plugin));
+    let module = fs::read(&plugin_path).map_err(|error| {
+        format!(
+            "{}: failed to read generator plugin `{}` at {}: {error}; run scripts/build-generator-plugins.sh",
+            fixture_path.display(),
+            request.plugin,
+            plugin_path.display()
+        )
+    })?;
+    let model_digest = publication.publication().source_digest();
+    let model = Arc::new(GeneratorModelView::new(
+        publication,
+        model_digest,
+        env!("CARGO_PKG_VERSION"),
+        QueryLimits::default(),
+    ));
+    let runtime = GeneratorRuntime::new().map_err(|error| {
+        format!(
+            "{}: generator runtime failed: {error}",
+            fixture_path.display()
+        )
+    })?;
+    let execution = runtime
+        .execute(
+            &module,
+            model,
+            &[],
+            RuntimeLimits::default(),
+            ArtifactLimits::default(),
+            CancellationHandle::new(),
+        )
+        .map_err(|error| format!("{}: generation failed: {error}", fixture_path.display()))?;
+    if !execution.diagnostics.is_empty() {
+        return Err(format!(
+            "{}: snapshot generator emitted diagnostics: {:?}",
+            fixture_path.display(),
+            execution.diagnostics
+        ));
+    }
+    let mut artifacts = GeneratedArtifacts::default();
+    for (path, bytes) in execution.artifacts.entries() {
+        let contents = String::from_utf8(bytes.to_vec()).map_err(|_| {
+            format!(
+                "{}: generated artifact `{path}` is not UTF-8",
+                fixture_path.display()
+            )
+        })?;
+        artifacts.insert_utf8(path.to_string(), contents)?;
+    }
+    Ok(artifacts)
 }
 
 struct OwnedSections {
@@ -340,7 +451,7 @@ fn build_model(
 }
 
 fn render_owned_sections(
-    model: PublishedModel,
+    model: &PublishedModel,
     documents: &[SourceDocument],
     source_documents: &[QuerySourceDocument],
     probes: &[EditorProbe],
@@ -516,36 +627,164 @@ fn parse_source_documents(
         .ok_or_else(|| format!("{fallback_name}: malformed SOURCE fence"))
 }
 
-/// Reads the fixture's `libraries` META key.
-///
-/// Absent means workspace-only, which is what every fixture authored before libraries could be
-/// admitted means. A present-but-unrecognised value is rejected rather than treated as absent.
-fn parse_library_selection(fixture: &str, fallback_name: &str) -> Result<LibrarySelection, String> {
+/// Reads execution-affecting META keys. Descriptive keys remain open-ended, but malformed lines,
+/// duplicate execution keys, and incomplete generator declarations are rejected.
+fn parse_fixture_meta(fixture: &str, fallback_name: &str) -> Result<FixtureMeta, String> {
     let Some(section) = raw_section(fixture, "META") else {
-        return Ok(LibrarySelection::None);
+        return Ok(FixtureMeta {
+            libraries: LibrarySelection::None,
+            generation: None,
+        });
     };
     let Some((text, _)) = fenced_block(section) else {
         return Err(format!("{fallback_name}: malformed META fence"));
     };
     let mut selection = LibrarySelection::None;
-    for line in text.lines() {
-        let Some((key, value)) = line.split_once('=') else {
-            continue;
-        };
-        if key.trim() != "libraries" {
+    let mut fixture_type = None;
+    let mut plugin = None;
+    let mut seen = HashSet::new();
+    for (line_index, line) in text.lines().enumerate() {
+        if line.trim().is_empty() || line.trim_start().starts_with('#') {
             continue;
         }
-        selection = match value.trim() {
-            "none" => LibrarySelection::None,
-            "standard" => LibrarySelection::Standard,
-            other => {
-                return Err(format!(
-                    "{fallback_name}: unknown META libraries value {other:?} (expected \"none\" or \"standard\")"
-                ))
-            }
+        let Some((key, value)) = line.split_once('=') else {
+            return Err(format!(
+                "{fallback_name}: META line {} must be key=value",
+                line_index + 1
+            ));
         };
+        let key = key.trim();
+        let value = value.trim();
+        if matches!(key, "libraries" | "type" | "plugin") && !seen.insert(key) {
+            return Err(format!("{fallback_name}: duplicate META key {key:?}"));
+        }
+        match key {
+            "libraries" => selection = match value {
+                "none" => LibrarySelection::None,
+                "standard" => LibrarySelection::Standard,
+                other => return Err(format!(
+                    "{fallback_name}: unknown META libraries value {other:?} (expected \"none\" or \"standard\")"
+                )),
+            },
+            "type" => {
+                if value.is_empty() {
+                    return Err(format!("{fallback_name}: META type must not be empty"));
+                }
+                fixture_type = Some(value.to_string());
+            }
+            "plugin" => {
+                if value.is_empty() {
+                    return Err(format!("{fallback_name}: META plugin must not be empty"));
+                }
+                plugin = Some(value.to_string());
+            }
+            _ => {}
+        }
     }
-    Ok(selection)
+    let generation = match (fixture_type.as_deref(), plugin) {
+        (Some("generate"), Some(plugin)) => Some(GenerationRequest { plugin }),
+        (Some("generate"), None) => {
+            return Err(format!(
+                "{fallback_name}: META type=generate requires a plugin"
+            ))
+        }
+        (_, Some(_)) => {
+            return Err(format!(
+                "{fallback_name}: META plugin is only valid with type=generate"
+            ))
+        }
+        _ => None,
+    };
+    Ok(FixtureMeta {
+        libraries: selection,
+        generation,
+    })
+}
+
+fn validate_artifact_path(path: &str) -> Result<(), String> {
+    let candidate = Path::new(path);
+    if path.is_empty()
+        || candidate.is_absolute()
+        || candidate.components().any(|part| {
+            matches!(
+                part,
+                std::path::Component::ParentDir | std::path::Component::CurDir
+            )
+        })
+    {
+        return Err(format!("invalid generated artifact path {path:?}"));
+    }
+    Ok(())
+}
+
+fn artifact_fence_language(path: &str) -> &'static str {
+    match Path::new(path)
+        .extension()
+        .and_then(|extension| extension.to_str())
+    {
+        Some("csv") => "csv",
+        Some("json") => "json",
+        _ => "text",
+    }
+}
+
+fn render_generated_artifacts(artifacts: &GeneratedArtifacts) -> String {
+    let mut output = String::new();
+    for (path, contents) in &artifacts.files {
+        output.push_str("## ");
+        output.push_str(path);
+        output.push('\n');
+        output.push_str("~~~");
+        output.push_str(artifact_fence_language(path));
+        output.push('\n');
+        output.push_str(contents);
+        output.push_str("\n~~~\n");
+    }
+    output
+}
+
+#[cfg(test)]
+fn parse_generated_artifacts(
+    fixture: &str,
+    fallback_name: &str,
+) -> Result<Option<GeneratedArtifacts>, String> {
+    let Some(section) = raw_section(fixture, "GENERATED") else {
+        return Ok(None);
+    };
+    let mut artifacts = GeneratedArtifacts::default();
+    let mut cursor = section;
+    while let Some(index) = cursor.find("## ") {
+        cursor = &cursor[index + 3..];
+        let Some((path, rest)) = cursor.split_once('\n') else {
+            return Err(format!(
+                "{fallback_name}: malformed GENERATED artifact name"
+            ));
+        };
+        let Some((contents, after)) = fenced_block(rest) else {
+            return Err(format!(
+                "{fallback_name}: malformed GENERATED fence for {path}"
+            ));
+        };
+        artifacts.insert_utf8(path.trim(), contents)?;
+        cursor = after;
+    }
+    if !section.trim().is_empty() && artifacts.files.is_empty() {
+        return Err(format!(
+            "{fallback_name}: GENERATED section must contain named artifacts"
+        ));
+    }
+    Ok(Some(artifacts))
+}
+
+fn replace_or_insert_generated_section(fixture: &str, artifacts: &GeneratedArtifacts) -> String {
+    let body = render_generated_artifacts(artifacts);
+    if let Some(updated) = replace_raw_section(fixture, "GENERATED", &body) {
+        return updated;
+    }
+    let mut updated = fixture.trim_end_matches('\n').to_string();
+    updated.push_str("\n# GENERATED\n");
+    updated.push_str(&body);
+    updated
 }
 
 fn parse_editor_probes(
@@ -643,6 +882,7 @@ const SECTION_ORDER: &[&str] = &[
     "TYPES",
     "NAVIGATION",
     "EDITOR RESULTS",
+    "GENERATED",
 ];
 
 fn canonicalize_sections(fixture: &str) -> String {
@@ -707,6 +947,20 @@ fn replace_section(fixture: &str, name: &str, replacement: &str) -> Option<Strin
     updated.push_str("~~~sexpr\n");
     updated.push_str(replacement.trim_end_matches('\n'));
     updated.push_str("\n~~~");
+    updated.push_str(&fixture[section_end..]);
+    Some(updated)
+}
+
+fn replace_raw_section(fixture: &str, name: &str, replacement: &str) -> Option<String> {
+    let marker = format!("# {name}\n");
+    let section_start = fixture.find(&marker)? + marker.len();
+    let section_end = fixture[section_start..]
+        .find("\n# ")
+        .map_or(fixture.len(), |index| section_start + index);
+    let mut updated = String::with_capacity(fixture.len() + replacement.len());
+    updated.push_str(&fixture[..section_start]);
+    updated.push_str(replacement.trim_end_matches('\n'));
+    updated.push('\n');
     updated.push_str(&fixture[section_end..]);
     Some(updated)
 }
@@ -844,5 +1098,99 @@ mod tests {
         assert!(!canonical.contains("# NOTES\n"));
         assert!(!canonical.contains("# FORMAT\n"));
         assert_eq!(canonicalize_sections(&canonical), canonical);
+    }
+
+    #[test]
+    fn parses_generate_metadata_and_rejects_incomplete_or_conflicting_metadata() {
+        let fixture = "# META\n~~~ini\ndescription=Requirements CSV\ntype=generate\nlibraries=standard\nplugin=requirements_csv\n~~~\n";
+        assert_eq!(
+            parse_fixture_meta(fixture, "fixture.md").unwrap(),
+            FixtureMeta {
+                libraries: LibrarySelection::Standard,
+                generation: Some(GenerationRequest {
+                    plugin: "requirements_csv".to_string()
+                })
+            }
+        );
+
+        for (meta, expected) in [
+            ("type=generate", "requires a plugin"),
+            ("type=file\nplugin=x", "only valid with type=generate"),
+            ("type=generate\ntype=file\nplugin=x", "duplicate META key"),
+            ("type=generate\nplugin=x\nplugin=y", "duplicate META key"),
+            ("type=generate\nnot metadata", "must be key=value"),
+        ] {
+            let fixture = format!("# META\n~~~ini\n{meta}\n~~~\n");
+            let error = parse_fixture_meta(&fixture, "fixture.md").unwrap_err();
+            assert!(error.contains(expected), "unexpected error: {error}");
+        }
+    }
+
+    #[test]
+    fn generated_artifacts_are_sorted_and_use_path_specific_fences() {
+        let mut artifacts = GeneratedArtifacts::default();
+        artifacts
+            .insert_utf8("z/report.json", "{\"ok\":true}\n".to_string())
+            .unwrap();
+        artifacts
+            .insert_utf8("requirements.csv", "name\nSafeStop\n".to_string())
+            .unwrap();
+        let rendered = render_generated_artifacts(&artifacts);
+        assert_eq!(
+            rendered,
+            "## requirements.csv\n~~~csv\nname\nSafeStop\n\n~~~\n## z/report.json\n~~~json\n{\"ok\":true}\n\n~~~\n"
+        );
+        let fixture = format!("# GENERATED\n{rendered}");
+        assert_eq!(
+            parse_generated_artifacts(&fixture, "fixture.md").unwrap(),
+            Some(artifacts)
+        );
+    }
+
+    #[test]
+    fn generated_section_is_inserted_last_and_replaced_as_a_complete_artifact_set() {
+        let fixture = "# GENERATED\n## stale.txt\n~~~text\nstale\n~~~\n# SOURCE\n~~~sysml\npackage A {}\n~~~\n# META\n~~~ini\ntype=generate\nplugin=x\n~~~\n";
+        let mut artifacts = GeneratedArtifacts::default();
+        artifacts
+            .insert_utf8("fresh.csv", "name\nA\n".to_string())
+            .unwrap();
+        let updated = replace_or_insert_generated_section(fixture, &artifacts);
+        let canonical = canonicalize_sections(&updated);
+        assert!(!canonical.contains("stale.txt"));
+        assert!(canonical.ends_with("# GENERATED\n## fresh.csv\n~~~csv\nname\nA\n\n~~~\n"));
+        assert_eq!(canonicalize_sections(&canonical), canonical);
+
+        let without_generated = "# META\nmeta\n# SOURCE\nsource\n";
+        let inserted = canonicalize_sections(&replace_or_insert_generated_section(
+            without_generated,
+            &artifacts,
+        ));
+        assert!(inserted.ends_with("# GENERATED\n## fresh.csv\n~~~csv\nname\nA\n\n~~~\n"));
+    }
+
+    #[test]
+    fn generated_artifact_paths_are_safe_and_unique() {
+        let mut artifacts = GeneratedArtifacts::default();
+        artifacts
+            .insert_utf8("ok/report.csv", String::new())
+            .unwrap();
+        assert!(artifacts
+            .insert_utf8("ok/report.csv", String::new())
+            .unwrap_err()
+            .contains("duplicate"));
+        for path in [
+            "",
+            "/absolute.csv",
+            "../escape.csv",
+            "a/../escape.csv",
+            "./same.csv",
+        ] {
+            assert!(
+                GeneratedArtifacts::default()
+                    .insert_utf8(path, String::new())
+                    .is_err(),
+                "accepted {path:?}"
+            );
+        }
     }
 }
