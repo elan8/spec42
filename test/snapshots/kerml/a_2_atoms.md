@@ -33,21 +33,9 @@ package Atoms {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 9 1) (end 9 17))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")
         (range (start 10 43) (end 10 53))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 11 13) (end 11 17))
       )
       (diagnostic
         (severity warning)
@@ -62,10 +50,11 @@ package Atoms {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:ce6425b889fc153c98df08a93122a3aedca50b5c85670b6ddf82ad7ecd939f6c") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:ce6425b889fc153c98df08a93122a3aedca50b5c85670b6ddf82ad7ecd939f6c") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms"))) (kind package) (membership (kind owning) (visibility default)) (documentation (doc (text " This package defines a keyword (atom) for classifiers with\n\t * exactly one instance and are disjoint from any others\n\t * marked with this keyword.\n\t "))))
     (declaration (id (node (document "memory://snapshot/a_2_atoms.md") (path (named (kind package) (name "Atoms")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Metaobjects::Metaobject") (import (shape membership) (recursive false))))))
+    (declaration (id (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms::Atom"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms::AtomMetadata"))) (kind kerml-metaclass) (membership (kind owning) (visibility default)) (facts (short-name "atom")) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Metaobject")))))
     (declaration (id (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms::AtomMetadata::baseType"))) (kind default-reference) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "Atom")) (metaCastTarget (reference "KerML::Classifier")))))
   )
@@ -78,12 +67,13 @@ package Atoms {
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms::AtomMetadata::baseType"))) (kind expressionOperand) (ordinal 0))
       (authored-target "Atom")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms::Atom")))))
     (reference (id (source (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms::AtomMetadata::baseType"))) (kind metaCastTarget) (ordinal 0))
       (authored-target "KerML::Classifier")
       (outcome (status unresolved)))
   )
   (relationships
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms::AtomMetadata::baseType"))) (target (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms::Atom"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms::AtomMetadata::baseType"))) (kind expressionOperand) (ordinal 0)))
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms::AtomMetadata::baseType"))) (state non-constant))
@@ -113,7 +103,7 @@ package Atoms {
   )
   (query (document "memory://snapshot/a_2_atoms.md") (range (start 11 13) (end 11 17)) (probe (position 11 13))
     (reference (id (source (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms::AtomMetadata::baseType"))) (kind expressionOperand) (ordinal 0) (authored-target "Atom")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms::Atom")))))
     )
   )
   (query (document "memory://snapshot/a_2_atoms.md") (range (start 11 23) (end 11 40)) (probe (position 11 23))

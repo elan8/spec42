@@ -86,12 +86,6 @@ package MetadataTest {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 15 2) (end 15 21))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 19 2) (end 19 10))
@@ -107,12 +101,6 @@ package MetadataTest {
         (code "recovery_cascade_suppressed")
         (source "parser")
         (range (start 19 22) (end 22 1))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 28 3) (end 28 11))
       )
       (diagnostic
         (severity warning)
@@ -197,6 +185,7 @@ package MetadataTest {
     (declaration (id (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::Classified"))) (kind kerml-metaclass) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/metadata_test.md") (path (named (kind package) (name "MetadataTest")) (named (kind library-package) (name "User Defined Extensions")) (named (kind kerml-metaclass) (name "Classified")) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "KerML::Feature")) (redefinition (reference "annotatedElement")))))
     (declaration (id (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::Classified::classificationLevel"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ClassificationLevel")))))
+    (declaration (id (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::Security"))) (kind kerml-metaclass) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::conf"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 1) (upper 1))) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ClassificationLevel")))))
     (declaration (id (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::secret"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 1) (upper 1))) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ClassificationLevel")))))
     (declaration (id (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::uncl"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 1) (upper 1))) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ClassificationLevel")))))
@@ -205,6 +194,7 @@ package MetadataTest {
     (declaration (id (node (document "memory://snapshot/metadata_test.md") (path (named (kind package) (name "MetadataTest")) (named (kind kerml-feature) (name "y")) (anonymous (kind metadata) (ordinal 0))))) (kind metadata) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/metadata_test.md") (path (named (kind package) (name "MetadataTest")) (named (kind kerml-feature) (name "y")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "classificationLevel"))))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "conf")))))
     (declaration (id (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::z"))) (kind kerml-feature) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::z2"))) (kind extended-definition) (membership (kind owning) (visibility default)) (facts (modifiers abstract)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/metadata_test.md") (path (named (kind package) (name "MetadataTest")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
@@ -272,7 +262,7 @@ package MetadataTest {
       (outcome (status resolved) (target (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::Classified")))))
     (reference (id (source (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::y"))) (kind metadataAnnotation) (ordinal 1))
       (authored-target "Security")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::Security")))))
     (reference (id (source (node (document "memory://snapshot/metadata_test.md") (path (named (kind package) (name "MetadataTest")) (named (kind kerml-feature) (name "y")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "classificationLevel"))))) (kind expressionOperand) (ordinal 0))
       (authored-target "conf")
       (outcome (status resolved) (target (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::conf")))))
@@ -287,6 +277,7 @@ package MetadataTest {
     (relationship (kind typing) (source (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::uncl"))) (target (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::ClassificationLevel"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::uncl"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::x"))) (target (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::Classified"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::x"))) (kind expressionOperand) (ordinal 1)))
     (relationship (kind metadataAnnotation) (source (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::y"))) (target (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::Classified"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::y"))) (kind metadataAnnotation) (ordinal 0)))
+    (relationship (kind metadataAnnotation) (source (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::y"))) (target (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::Security"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::y"))) (kind metadataAnnotation) (ordinal 1)))
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/metadata_test.md") (path (named (kind package) (name "MetadataTest")) (named (kind kerml-feature) (name "y")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "classificationLevel"))))) (target (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::conf"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/metadata_test.md") (path (named (kind package) (name "MetadataTest")) (named (kind kerml-feature) (name "y")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "classificationLevel"))))) (kind expressionOperand) (ordinal 0)))
   )
   (evaluation
@@ -465,7 +456,7 @@ package MetadataTest {
   )
   (query (document "memory://snapshot/metadata_test.md") (range (start 28 3) (end 28 11)) (probe (position 28 3))
     (reference (id (source (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::y"))) (kind metadataAnnotation) (ordinal 1) (authored-target "Security")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::Security")))))
     )
   )
   (query (document "memory://snapshot/metadata_test.md") (range (start 26 25) (end 26 29)) (probe (position 26 25))

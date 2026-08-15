@@ -79,9 +79,15 @@ package UseCaseTest {
         (range (start 13 19) (end 13 22))
       )
       (diagnostic
+        (severity error)
+        (code "recovered_use_case_body_element")
+        (source "parser")
+        (range (start 13 23) (end 13 29))
+      )
+      (diagnostic
         (severity warning)
-        (code "unsupported_use_case_definition_member")
-        (source "semantic")
+        (code "recovery_cascade_suppressed")
+        (source "parser")
         (range (start 13 23) (end 13 29))
       )
       (diagnostic
@@ -101,18 +107,6 @@ package UseCaseTest {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 14 14) (end 14 18))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_use_case_definition_member")
-        (source "semantic")
-        (range (start 14 23) (end 17 3))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_use_case_definition_member")
-        (source "semantic")
-        (range (start 26 2) (end 26 17))
       )
       (diagnostic
         (severity warning)
@@ -139,7 +133,7 @@ package UseCaseTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:c9177640324998bea3516aa02bd078a8abb67fdfab27000797838daab7c9a5a1") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:c9177640324998bea3516aa02bd078a8abb67fdfab27000797838daab7c9a5a1") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::System"))) (kind part-def) (membership (kind owning) (visibility default)))

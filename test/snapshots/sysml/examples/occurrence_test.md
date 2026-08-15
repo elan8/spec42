@@ -45,7 +45,13 @@ package OccurrenceTest {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_occurrence_definition_member")
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 3 2) (end 3 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_parser_construct")
         (source "semantic")
         (range (start 3 2) (end 3 28))
       )

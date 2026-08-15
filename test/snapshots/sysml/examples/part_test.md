@@ -128,7 +128,13 @@ package PartTest {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_port_definition_member")
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 45 2) (end 45 18))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_parser_construct")
         (source "semantic")
         (range (start 45 2) (end 45 18))
       )

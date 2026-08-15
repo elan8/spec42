@@ -32,7 +32,7 @@ package Expansion {
   (declarations
     (declaration (id (node (document "memory://snapshot/expansion.md") (qualified-name "Expansion"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/expansion.md") (path (named (kind package) (name "Expansion")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ControlFunctions::select") (import (shape membership) (recursive false))))))
-    (declaration (id (node (document "memory://snapshot/expansion.md") (qualified-name "Expansion::x"))) (kind default-reference) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "x")))))
+    (declaration (id (node (document "memory://snapshot/expansion.md") (qualified-name "Expansion::x"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "x")))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/expansion.md") (path (named (kind package) (name "Expansion")) (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))

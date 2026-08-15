@@ -308,15 +308,15 @@ standard library package Requirements {
         (range (start 40 9) (end 40 15))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_constraint_definition_member")
-        (source "semantic")
+        (severity error)
+        (code "recovered_constraint_body_element")
+        (source "parser")
         (range (start 40 16) (end 46 1))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_requirement_definition_member")
-        (source "semantic")
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "parser")
         (range (start 55 2) (end 55 45))
       )
       (diagnostic
@@ -326,21 +326,21 @@ standard library package Requirements {
         (range (start 57 17) (end 57 25))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_requirement_definition_member")
-        (source "semantic")
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "parser")
         (range (start 64 2) (end 71 3))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_requirement_definition_member")
-        (source "semantic")
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "parser")
         (range (start 73 2) (end 80 3))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_requirement_definition_member")
-        (source "semantic")
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "parser")
         (range (start 96 2) (end 101 3))
       )
       (diagnostic
@@ -374,9 +374,9 @@ standard library package Requirements {
         (range (start 151 11) (end 151 15))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_requirement_definition_member")
-        (source "semantic")
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "parser")
         (range (start 161 2) (end 161 37))
       )
       (diagnostic
@@ -404,7 +404,7 @@ standard library package Requirements {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:d88ac67d997f213f4f536ab0338a318b2b9d53074d455c67debf6f3ac07173da") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:d88ac67d997f213f4f536ab0338a318b2b9d53074d455c67debf6f3ac07173da") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/requirements.md") (qualified-name "Requirements"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package defines the base types for requirements and related elements in the SysML language.\n\t "))))
     (declaration (id (node (document "memory://snapshot/requirements.md") (path (named (kind library-package) (name "Requirements")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Base::Anything") (import (shape membership) (recursive false))))))

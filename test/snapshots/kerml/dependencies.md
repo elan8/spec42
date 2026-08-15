@@ -33,12 +33,6 @@ package Dependencies {
 (fixture-diagnostics
   (document "memory://snapshot/dependencies.md"
     (diagnostics
-      (diagnostic
-        (severity error)
-        (code "unrecognized_declaration_in_scope")
-        (source "parser")
-        (range (start 18 2) (end 19 1))
-      )
     )
   )
 )
@@ -46,20 +40,21 @@ package Dependencies {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:526982ee6349689d97406de6cf14dd886e218a1139374ed9119523131c81bbb0") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:526982ee6349689d97406de6cf14dd886e218a1139374ed9119523131c81bbb0") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/dependencies.md") (qualified-name "Dependencies"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/dependencies.md") (path (named (kind package) (name "Dependencies")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "System") (import (shape namespace) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/dependencies.md") (path (named (kind package) (name "Dependencies")) (anonymous (kind dependency) (ordinal 0))))) (kind dependency) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (dependencyClient (reference "Service Layer")) (dependencySupplier (reference "Data Layer")))))
     (declaration (id (node (document "memory://snapshot/dependencies.md") (path (named (kind package) (name "Dependencies")) (anonymous (kind dependency) (ordinal 1))))) (kind dependency) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (dependencyClient (reference "z")) (dependencySupplier (reference "x")) (dependencySupplier (reference "y")))))
+    (declaration (id (node (document "memory://snapshot/dependencies.md") (path (named (kind package) (name "Dependencies")) (anonymous (kind dependency) (ordinal 1)) (named (kind kerml-feature) (name "e"))))) (kind kerml-feature) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/dependencies.md") (qualified-name "Dependencies::System"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/dependencies.md") (qualified-name "Dependencies::System::Application Layer"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/dependencies.md") (qualified-name "Dependencies::System::Data Layer"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/dependencies.md") (qualified-name "Dependencies::System::Service Layer"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/dependencies.md") (qualified-name "Dependencies::Use"))) (kind dependency) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (dependencyClient (reference "Application Layer")) (dependencySupplier (reference "Service Layer")))))
-    (declaration (id (node (document "memory://snapshot/dependencies.md") (qualified-name "Dependencies::x"))) (kind default-reference) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/dependencies.md") (qualified-name "Dependencies::y"))) (kind default-reference) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/dependencies.md") (qualified-name "Dependencies::z"))) (kind default-reference) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/dependencies.md") (qualified-name "Dependencies::x"))) (kind kerml-feature) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/dependencies.md") (qualified-name "Dependencies::y"))) (kind kerml-feature) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/dependencies.md") (qualified-name "Dependencies::z"))) (kind kerml-feature) (membership (kind feature) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/dependencies.md") (path (named (kind package) (name "Dependencies")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
@@ -103,6 +98,9 @@ package Dependencies {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/dependencies.md") (path (named (kind package) (name "Dependencies")) (anonymous (kind dependency) (ordinal 1)) (named (kind kerml-feature) (name "e")))))
+      (featured-by (node (document "memory://snapshot/dependencies.md") (path (named (kind package) (name "Dependencies")) (anonymous (kind dependency) (ordinal 1)))))
+    )
 )
 ~~~
 # NAVIGATION

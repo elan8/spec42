@@ -207,32 +207,50 @@ standard library package Views {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_view_definition_member")
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 13 2) (end 13 27))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_parser_construct")
         (source "semantic")
         (range (start 13 2) (end 13 27))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_view_definition_member")
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 15 2) (end 20 3))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_parser_construct")
         (source "semantic")
         (range (start 15 2) (end 20 3))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_view_definition_member")
-        (source "semantic")
+        (code "unsupported_grammar_form")
+        (source "parser")
         (range (start 22 2) (end 27 3))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_view_definition_member")
+        (code "unsupported_parser_construct")
         (source "semantic")
+        (range (start 22 2) (end 27 3))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "parser")
         (range (start 29 2) (end 36 2))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_view_definition_member")
-        (source "semantic")
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "parser")
         (range (start 36 2) (end 50 1))
       )
       (diagnostic
@@ -242,15 +260,15 @@ standard library package Views {
         (range (start 52 42) (end 52 58))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_requirement_definition_member")
-        (source "semantic")
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "parser")
         (range (start 59 2) (end 59 42))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_requirement_definition_member")
-        (source "semantic")
+        (severity error)
+        (code "recovered_requirement_body_element")
+        (source "parser")
         (range (start 60 2) (end 60 52))
       )
       (diagnostic
@@ -261,13 +279,25 @@ standard library package Views {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_rendering_definition_member")
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 69 2) (end 69 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_parser_construct")
         (source "semantic")
         (range (start 69 2) (end 69 37))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_rendering_definition_member")
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 71 2) (end 76 3))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_parser_construct")
         (source "semantic")
         (range (start 71 2) (end 76 3))
       )
@@ -284,9 +314,9 @@ standard library package Views {
         (range (start 114 62) (end 114 67))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_view_definition_member")
-        (source "semantic")
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "parser")
         (range (start 159 3) (end 160 2))
       )
       (diagnostic
@@ -302,7 +332,7 @@ standard library package Views {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:875f58bcb2871341548a54cda318901e08fdac5047d5a8268b51b3aa8a677ab9") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:875f58bcb2871341548a54cda318901e08fdac5047d5a8268b51b3aa8a677ab9") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/views.md") (qualified-name "Views"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package defines the base types for views, viewpoints, renderings and related elements \n\t * in the SysML language.\n\t "))))
     (declaration (id (node (document "memory://snapshot/views.md") (path (named (kind library-package) (name "Views")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Parts::Part") (import (shape membership) (recursive false))))))

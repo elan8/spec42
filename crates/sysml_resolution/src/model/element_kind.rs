@@ -137,6 +137,7 @@ pub(crate) fn element_kind(kind: DeclarationKind) -> ElementKind {
         DeclarationKind::Alias => ElementKind::Alias,
         DeclarationKind::Dependency => ElementKind::Dependency,
 
+        DeclarationKind::KermlType => ElementKind::Type,
         DeclarationKind::KermlClassifier => ElementKind::Classifier,
         // The dedicated `class def` production and the KerML fallback's `class` keyword denote the
         // same metaclass.
@@ -278,6 +279,7 @@ pub(crate) fn membership_role(kind: DeclarationKind) -> Option<MembershipRole> {
         | DeclarationKind::Dependency
         | DeclarationKind::KermlClassifier
         | DeclarationKind::ClassDefinition
+        | DeclarationKind::KermlType
         | DeclarationKind::KermlClass
         | DeclarationKind::KermlStructure
         | DeclarationKind::KermlAssociation
@@ -393,6 +395,7 @@ mod tests {
         DeclarationKind::CaseActor,
         DeclarationKind::Frame,
         DeclarationKind::VerifyRequirement,
+        DeclarationKind::KermlType,
         DeclarationKind::KermlClassifier,
         DeclarationKind::KermlClass,
         DeclarationKind::KermlStructure,

@@ -59,12 +59,6 @@ package Imports {
     (diagnostics
       (diagnostic
         (severity error)
-        (code "unrecognized_declaration_in_scope")
-        (source "parser")
-        (range (start 11 3) (end 12 2))
-      )
-      (diagnostic
-        (severity error)
         (code "recovered_package_body_element")
         (source "parser")
         (range (start 16 3) (end 19 2))
@@ -120,6 +114,7 @@ package Imports {
     (declaration (id (node (document "memory://snapshot/imports.md") (qualified-name "Imports::Q"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/imports.md") (qualified-name "Imports::Q::A"))) (kind class-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/imports.md") (qualified-name "Imports::Q::D"))) (kind class-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/imports.md") (qualified-name "Imports::Q::D::E"))) (kind class-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/imports.md") (qualified-name "Imports::Q::Q1"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/imports.md") (qualified-name "Imports::Q::Q1::D"))) (kind class-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/imports.md") (qualified-name "Imports::Q::Q1::E"))) (kind class-def) (membership (kind owning) (visibility default)))
@@ -179,6 +174,9 @@ package Imports {
 (types
     (declaration (id (node (document "memory://snapshot/imports.md") (qualified-name "Imports::P::A")))
       (subtype (node (document "memory://snapshot/imports.md") (qualified-name "Imports::S::X")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/imports.md") (qualified-name "Imports::Q::D::E")))
+      (featured-by (node (document "memory://snapshot/imports.md") (qualified-name "Imports::Q::D")))
     )
     (declaration (id (node (document "memory://snapshot/imports.md") (qualified-name "Imports::S::X")))
       (supertype (node (document "memory://snapshot/imports.md") (qualified-name "Imports::P::A")) (scopes any subclassification))

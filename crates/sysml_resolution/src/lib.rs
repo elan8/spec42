@@ -1220,10 +1220,10 @@ mod tests {
     }
 
     /// A bare `require;`-less-constraint shorthand (`has_constraint_keyword == false`, e.g.
-    /// `require someExistingConstraint;`) references an existing constraint by a plain `String`
-    /// name rather than declaring one -- the typed AST gives no `QualifiedReferenceId` to resolve
-    /// through the shared lexical-lookup machinery (planning/UPSTREAM_PARSER_GAPS.md #44), so it must stay
-    /// an explicit unsupported diagnostic rather than being silently dropped or guessed at.
+    /// `require someExistingConstraint;`) references an existing constraint rather than declaring
+    /// one. Upstream now carries that role on `RequireConstraint::target`, but nothing lowers it
+    /// yet (planning/UPSTREAM_PARSER_GAPS.md, "Typed upstream, not yet lowered here"), so it must
+    /// stay an explicit unsupported diagnostic rather than being silently dropped or guessed at.
     #[test]
     fn require_shorthand_reference_without_constraint_keyword_stays_unsupported() {
         let sexpr =
@@ -1279,25 +1279,35 @@ mod tests {
         );
     }
 
-    /// The `then send new S() to b;` continuation shorthand is a genuine parser gap (see
-    /// planning/UPSTREAM_PARSER_GAPS.md Gap 30, `ThenTarget` has no `Send` variant): the parser itself
-    /// cannot represent it as a distinguishable `ThenAction` target, so it falls to parser-level
-    /// recovery rather than admitting a typed node `sysml_resolution` could silently mis-resolve.
+    /// The `then send new S() to b;` continuation shorthand (formerly parser Gap 30) now parses as
+    /// `ThenTarget::Send`, carrying the same `ActionUsage` shape a standalone `send ...;` statement
+    /// produces, so it lowers through `lower_action_usage` exactly like `then action ...;` does:
+    /// the payload constructor resolves as an `invocationCallee` and the `to` clause as a
+    /// `sendTarget`, and nothing is left to parser recovery.
     #[test]
-    fn then_send_continuation_stays_unsupported_pending_gap_30() {
+    fn then_send_continuation_resolves_payload_and_target() {
         let sexpr = semantic_sexpr_for(
             "package P { attribute def S; action def A { action b; then send new S() to b; } }",
         );
         assert!(
-            sexpr.contains("(completeness parse-recovery)"),
-            "expected `then send ...;` to remain a parser-recovery gap (Gap 30), got: {sexpr}"
+            !sexpr.contains("(completeness parse-recovery)"),
+            "expected `then send ...;` to parse, got: {sexpr}"
+        );
+        assert!(
+            sexpr.contains("(kind invocationCallee)") && sexpr.contains("(kind sendTarget)"),
+            "expected the send payload and target to resolve as references, got: {sexpr}"
+        );
+        assert!(
+            !sexpr.contains("unsupported_action_definition_member"),
+            "did not expect unsupported_action_definition_member, got: {sexpr}"
         );
     }
 
     /// A bare `flow <source> to <target>;` statement (distinct from a named/typed flow usage or
-    /// def) must lower as its own `DeclarationKind::Flow` feature with `from`/`to` resolved as
-    /// `memberAccessOperand` dotted feature-chain references, reusing
-    /// `resolve_member_access_reference` for both ends.
+    /// def) must lower as its own `DeclarationKind::Flow` feature. Its ends are typed
+    /// `KermlConnectorEnd`s upstream -- the same connector-end shape the KerML connector, binding
+    /// and succession members carry -- so each resolves directly as a `flowSource`/`flowTarget`
+    /// reference to the feature it names, including the dotted feature-chain spelling.
     #[test]
     fn bare_flow_stmt_resolves_source_and_target() {
         let sexpr = semantic_sexpr_for(
@@ -1308,8 +1318,12 @@ mod tests {
             "expected a flow declaration, got: {sexpr}"
         );
         assert!(
-            sexpr.matches("(kind memberAccessOperand)").count() >= 2,
-            "expected both flow ends to resolve as memberAccessOperand references, got: {sexpr}"
+            sexpr.contains(
+                "(kind flowSource) (ordinal 0))\n      (authored-target \"aa::target\")\n      (outcome (status resolved)"
+            ) && sexpr.contains(
+                "(kind flowTarget) (ordinal 0))\n      (authored-target \"snd::receiver\")\n      (outcome (status resolved)"
+            ),
+            "expected both flow ends to resolve to the features they name, got: {sexpr}"
         );
         assert!(
             !sexpr.contains("unsupported_action_definition_member"),

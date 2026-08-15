@@ -34,12 +34,6 @@ package Inheritance {
   (document "memory://snapshot/inheritance.md"
     (diagnostics
       (diagnostic
-        (severity error)
-        (code "unrecognized_declaration_in_scope")
-        (source "parser")
-        (range (start 2 2) (end 3 1))
-      )
-      (diagnostic
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
@@ -67,12 +61,6 @@ package Inheritance {
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
-        (range (start 11 22) (end 11 23))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
         (range (start 18 14) (end 18 18))
       )
     )
@@ -82,16 +70,17 @@ package Inheritance {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:bcf46385f7f1e9a2b8e6d606e86f99b9d21f2aa81f60309b3bfba5794642d5e0") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:bcf46385f7f1e9a2b8e6d606e86f99b9d21f2aa81f60309b3bfba5794642d5e0") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::A"))) (kind class-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::A::f"))) (kind kerml-feature) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::B"))) (kind class-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "A")))))
     (declaration (id (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::us"))) (kind alias) (membership (kind alias) (visibility default)) (authored (membership (kind alias) (visibility default)) (relationships (aliasBinding (reference "w::g")))))
-    (declaration (id (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::w"))) (kind default-reference) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "y")))))
+    (declaration (id (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::w"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "y")))))
     (declaration (id (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::y"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "A")) (expressionOperand (reference "alias")) (expressionOperand (reference "x")) (expressionOperand (reference "for")) (expressionOperand (reference "B::f")))))
     (declaration (id (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::y::g"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "f")))))
-    (declaration (id (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::yy"))) (kind default-reference) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "y")))))
+    (declaration (id (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::yy"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "y")))))
     (declaration (id (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::z"))) (kind alias) (membership (kind alias) (visibility default)) (authored (membership (kind alias) (visibility default)) (relationships (aliasBinding (reference "y::g")))))
   )
   (references
@@ -121,7 +110,7 @@ package Inheritance {
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::y::g"))) (kind redefinition) (ordinal 0))
       (authored-target "f")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::A::f")))))
     (reference (id (source (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::yy"))) (kind featureTyping) (ordinal 0))
       (authored-target "y")
       (outcome (status resolved) (target (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::y")))))
@@ -133,6 +122,7 @@ package Inheritance {
     (relationship (kind specialization) (source (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::B"))) (target (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::A"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::B"))) (kind specialization) (ordinal 0)))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::w"))) (target (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::y"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::w"))) (kind subsetting) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::y"))) (target (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::A"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::y"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::y::g"))) (target (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::A::f"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::y::g"))) (kind redefinition) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::yy"))) (target (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::y"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::yy"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind aliasBinding) (source (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::z"))) (target (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::y::g"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::z"))) (kind aliasBinding) (ordinal 0)))
   )
@@ -151,6 +141,10 @@ package Inheritance {
       (subtype (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::B")) (scopes any subclassification))
       (subtype (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::y")) (scopes any))
     )
+    (declaration (id (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::A::f")))
+      (featured-by (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::A")))
+      (subtype (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::y::g")) (scopes any feature))
+    )
     (declaration (id (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::B")))
       (supertype (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::A")) (scopes any subclassification))
     )
@@ -168,6 +162,7 @@ package Inheritance {
     )
     (declaration (id (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::y::g")))
       (featured-by (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::y")))
+      (supertype (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::A::f")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::yy")))
       (type (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::y")) (provenance authored))
@@ -222,7 +217,7 @@ package Inheritance {
   )
   (query (document "memory://snapshot/inheritance.md") (range (start 11 22) (end 11 23)) (probe (position 11 22))
     (reference (id (source (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::y::g"))) (kind redefinition) (ordinal 0) (authored-target "f")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::A::f")))))
     )
   )
   (query (document "memory://snapshot/inheritance.md") (range (start 20 13) (end 20 14)) (probe (position 20 13))

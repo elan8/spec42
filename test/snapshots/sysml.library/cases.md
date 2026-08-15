@@ -143,9 +143,15 @@ standard library package Cases {
         (range (start 21 11) (end 21 15))
       )
       (diagnostic
+        (severity error)
+        (code "recovered_use_case_body_element")
+        (source "parser")
+        (range (start 21 16) (end 21 45))
+      )
+      (diagnostic
         (severity warning)
-        (code "unsupported_case_definition_member")
-        (source "semantic")
+        (code "recovery_cascade_suppressed")
+        (source "parser")
         (range (start 21 16) (end 21 45))
       )
       (diagnostic
@@ -174,12 +180,6 @@ standard library package Cases {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_requirement_definition_member")
-        (source "semantic")
-        (range (start 45 3) (end 45 37))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_case_definition_member")
         (source "semantic")
         (range (start 48 2) (end 53 3))
@@ -202,12 +202,6 @@ standard library package Cases {
         (source "semantic")
         (range (start 55 16) (end 55 24))
       )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_case_definition_member")
-        (source "semantic")
-        (range (start 55 25) (end 60 3))
-      )
     )
   )
 )
@@ -215,7 +209,7 @@ standard library package Cases {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:fd3a88f3bd062fe1d73e2b30e1b8fb2cf3ab8767091a59849454b4fd8915d379") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:fd3a88f3bd062fe1d73e2b30e1b8fb2cf3ab8767091a59849454b4fd8915d379") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/cases.md") (qualified-name "Cases"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package defines the base types for cases and related behavioral elements \n\t * in the SysML language.\n\t "))))
     (declaration (id (node (document "memory://snapshot/cases.md") (path (named (kind library-package) (name "Cases")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Base::Anything") (import (shape membership) (recursive false))))))
@@ -225,8 +219,9 @@ standard library package Cases {
     (declaration (id (node (document "memory://snapshot/cases.md") (path (named (kind library-package) (name "Cases")) (anonymous (kind import) (ordinal 4))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Parts::Part") (import (shape membership) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/cases.md") (path (named (kind library-package) (name "Cases")) (anonymous (kind import) (ordinal 5))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Parts::parts") (import (shape membership) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case"))) (kind case-def) (membership (kind owning) (visibility default)) (facts (modifiers abstract)) (documentation (doc (text "\n\t\t * Case is the most general class of performances of CaseDefinitions. \n\t\t * Case is the base class of all CaseDefinitions.\n\t\t "))) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Calculation")) (expressionOperand (reference "ref")) (expressionOperand (reference "case")) (expressionOperand (reference "self")) (expressionOperand (reference "abstract")) (expressionOperand (reference "case")) (expressionOperand (reference "subcases")))))
-    (declaration (id (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case::actors"))) (kind part) (membership (kind feature) (visibility default)) (facts (modifiers reference) (multiplicity (lower 0) (upper unbounded))) (documentation (doc (text "\n\t\t\t * The Parts that fill the role of actors for this Case.\n\t\t\t * (Note: This is not itself an actor parameter, because specific actor\n\t\t\t * parameters will be added for specific Cases.)\n\t\t\t "))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Part")) (subsetting (reference "parts")))))
+    (declaration (id (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case::actors"))) (kind ref) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 0) (upper unbounded))) (documentation (doc (text "\n\t\t\t * The Parts that fill the role of actors for this Case.\n\t\t\t * (Note: This is not itself an actor parameter, because specific actor\n\t\t\t * parameters will be added for specific Cases.)\n\t\t\t "))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Part")) (subsetting (reference "parts")))))
     (declaration (id (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case::obj"))) (kind requirement) (membership (kind feature) (visibility default)) (documentation (doc (text "\n\t\t\t * A check of whether the objective RequirementUsage was satisfied for this Case.\n\t\t\t "))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "RequirementCheck")))))
+    (declaration (id (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case::obj::subj"))) (kind subject) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case::subj"))) (kind subject) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 1) (upper 1))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Anything")))))
     (declaration (id (node (document "memory://snapshot/cases.md") (qualified-name "Cases::cases"))) (kind case) (membership (kind feature) (visibility default)) (facts (modifiers abstract)) (documentation (doc (text "\n\t\t * cases is the base Feature of all CaseUsages.\n\t\t "))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Case")))))
   )
@@ -310,6 +305,9 @@ standard library package Cases {
     )
     (declaration (id (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case::obj")))
       (featured-by (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case")))
+    )
+    (declaration (id (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case::obj::subj")))
+      (featured-by (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case::obj")))
     )
     (declaration (id (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case::subj")))
       (featured-by (node (document "memory://snapshot/cases.md") (qualified-name "Cases::Case")))

@@ -65,9 +65,9 @@ package 'Views Example' {
         (range (start 3 16) (end 3 40))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_view_definition_member")
-        (source "semantic")
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "parser")
         (range (start 6 2) (end 7 2))
       )
       (diagnostic
@@ -107,9 +107,9 @@ package 'Views Example' {
         (range (start 17 3) (end 17 28))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_view_definition_member")
-        (source "semantic")
+        (severity error)
+        (code "missing_body_or_semicolon")
+        (source "parser")
         (range (start 23 2) (end 32 1))
       )
     )
@@ -119,7 +119,7 @@ package 'Views Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:75e1b12ea33488b2c3ff36d83083c66bb25c8b324aad65f842a384cc07595467") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:75e1b12ea33488b2c3ff36d83083c66bb25c8b324aad65f842a384cc07595467") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/42_views_example.md") (path (named (kind package) (name "Views Example")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Views") (import (shape namespace) (recursive false))))))

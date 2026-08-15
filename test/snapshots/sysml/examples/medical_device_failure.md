@@ -44,12 +44,6 @@ package MedicalDeviceFailure {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_reference_usage_member")
-        (source "semantic")
-        (range (start 12 3) (end 12 35))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_part_usage_member")
         (source "semantic")
         (range (start 15 2) (end 19 3))
@@ -77,6 +71,7 @@ package MedicalDeviceFailure {
     (declaration (id (node (document "memory://snapshot/medical_device_failure.md") (qualified-name "MedicalDeviceFailure::medicalDevice::battery::depleted"))) (kind occurrence) (membership (kind feature) (visibility default)) (facts (modifiers event)))
     (declaration (id (node (document "memory://snapshot/medical_device_failure.md") (qualified-name "MedicalDeviceFailure::medicalDevice::deviceFails"))) (kind occurrence) (membership (kind feature) (visibility default)) (facts (modifiers event)))
     (declaration (id (node (document "memory://snapshot/medical_device_failure.md") (qualified-name "MedicalDeviceFailure::medicalDevice::patient"))) (kind ref) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/medical_device_failure.md") (qualified-name "MedicalDeviceFailure::medicalDevice::patient::therapyDelayed"))) (kind occurrence) (membership (kind feature) (visibility default)) (facts (modifiers event)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
@@ -106,6 +101,9 @@ package MedicalDeviceFailure {
     )
     (declaration (id (node (document "memory://snapshot/medical_device_failure.md") (qualified-name "MedicalDeviceFailure::medicalDevice::patient")))
       (featured-by (node (document "memory://snapshot/medical_device_failure.md") (qualified-name "MedicalDeviceFailure::medicalDevice")))
+    )
+    (declaration (id (node (document "memory://snapshot/medical_device_failure.md") (qualified-name "MedicalDeviceFailure::medicalDevice::patient::therapyDelayed")))
+      (featured-by (node (document "memory://snapshot/medical_device_failure.md") (qualified-name "MedicalDeviceFailure::medicalDevice::patient")))
     )
 )
 ~~~

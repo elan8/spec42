@@ -37,12 +37,6 @@ package 'Action Succession Example-1' {
 (fixture-diagnostics
   (document "memory://snapshot/14_action_succession_example_1.md"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unsupported_action_definition_member")
-        (source "semantic")
-        (range (start 16 2) (end 16 39))
-      )
     )
   )
 )
@@ -50,7 +44,7 @@ package 'Action Succession Example-1' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:d5673eaabcadc6ae55b994aad4e9a600c78efd7948dcd053da47adc42c9a7bf9") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d5673eaabcadc6ae55b994aad4e9a600c78efd7948dcd053da47adc42c9a7bf9") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/14_action_succession_example_1.md") (qualified-name "Action Succession Example-1"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/14_action_succession_example_1.md") (qualified-name "Action Succession Example-1::Focus"))) (kind action-def) (membership (kind owning) (visibility default)))
@@ -64,6 +58,7 @@ package 'Action Succession Example-1' {
     (declaration (id (node (document "memory://snapshot/14_action_succession_example_1.md") (qualified-name "Action Succession Example-1::Shoot::picture"))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction out)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Picture") (direction out)))))
     (declaration (id (node (document "memory://snapshot/14_action_succession_example_1.md") (qualified-name "Action Succession Example-1::TakePicture"))) (kind action-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/14_action_succession_example_1.md") (path (named (kind package) (name "Action Succession Example-1")) (named (kind action-def) (name "TakePicture")) (anonymous (kind bind) (ordinal 0))))) (kind bind) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (bindTarget (reference "scene")) (memberAccessOperand (reference "focus::scene")))))
+    (declaration (id (node (document "memory://snapshot/14_action_succession_example_1.md") (path (named (kind package) (name "Action Succession Example-1")) (named (kind action-def) (name "TakePicture")) (anonymous (kind flow) (ordinal 0))))) (kind flow) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (flowSource (reference "focus::image")) (flowTarget (reference "shoot::image")))))
     (declaration (id (node (document "memory://snapshot/14_action_succession_example_1.md") (path (named (kind package) (name "Action Succession Example-1")) (named (kind action-def) (name "TakePicture")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (succession (reference "focus")) (succession (reference "shoot")))))
     (declaration (id (node (document "memory://snapshot/14_action_succession_example_1.md") (path (named (kind package) (name "Action Succession Example-1")) (named (kind action-def) (name "TakePicture")) (anonymous (kind bind) (ordinal 1))))) (kind bind) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (bindTarget (reference "picture")) (memberAccessOperand (reference "shoot::picture")))))
     (declaration (id (node (document "memory://snapshot/14_action_succession_example_1.md") (qualified-name "Action Succession Example-1::TakePicture::focus"))) (kind action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Focus")))))
@@ -106,6 +101,12 @@ package 'Action Succession Example-1' {
     (reference (id (source (node (document "memory://snapshot/14_action_succession_example_1.md") (path (named (kind package) (name "Action Succession Example-1")) (named (kind action-def) (name "TakePicture")) (anonymous (kind bind) (ordinal 1))))) (kind memberAccessOperand) (ordinal 0))
       (authored-target "shoot::picture")
       (outcome (status resolved) (target (node (document "memory://snapshot/14_action_succession_example_1.md") (qualified-name "Action Succession Example-1::Shoot::picture")))))
+    (reference (id (source (node (document "memory://snapshot/14_action_succession_example_1.md") (path (named (kind package) (name "Action Succession Example-1")) (named (kind action-def) (name "TakePicture")) (anonymous (kind flow) (ordinal 0))))) (kind flowSource) (ordinal 0))
+      (authored-target "focus::image")
+      (outcome (status resolved) (target (node (document "memory://snapshot/14_action_succession_example_1.md") (qualified-name "Action Succession Example-1::TakePicture::focus::image")))))
+    (reference (id (source (node (document "memory://snapshot/14_action_succession_example_1.md") (path (named (kind package) (name "Action Succession Example-1")) (named (kind action-def) (name "TakePicture")) (anonymous (kind flow) (ordinal 0))))) (kind flowTarget) (ordinal 0))
+      (authored-target "shoot::image")
+      (outcome (status resolved) (target (node (document "memory://snapshot/14_action_succession_example_1.md") (qualified-name "Action Succession Example-1::TakePicture::shoot::image")))))
     (reference (id (source (node (document "memory://snapshot/14_action_succession_example_1.md") (qualified-name "Action Succession Example-1::TakePicture::focus"))) (kind featureTyping) (ordinal 0))
       (authored-target "Focus")
       (outcome (status resolved) (target (node (document "memory://snapshot/14_action_succession_example_1.md") (qualified-name "Action Succession Example-1::Focus")))))
@@ -130,6 +131,8 @@ package 'Action Succession Example-1' {
     (relationship (kind bindTarget) (source (node (document "memory://snapshot/14_action_succession_example_1.md") (path (named (kind package) (name "Action Succession Example-1")) (named (kind action-def) (name "TakePicture")) (anonymous (kind bind) (ordinal 1))))) (target (node (document "memory://snapshot/14_action_succession_example_1.md") (qualified-name "Action Succession Example-1::TakePicture::picture"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/14_action_succession_example_1.md") (path (named (kind package) (name "Action Succession Example-1")) (named (kind action-def) (name "TakePicture")) (anonymous (kind bind) (ordinal 1))))) (kind bindTarget) (ordinal 0)))
     (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/14_action_succession_example_1.md") (path (named (kind package) (name "Action Succession Example-1")) (named (kind action-def) (name "TakePicture")) (anonymous (kind bind) (ordinal 0))))) (target (node (document "memory://snapshot/14_action_succession_example_1.md") (qualified-name "Action Succession Example-1::Focus::scene"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/14_action_succession_example_1.md") (path (named (kind package) (name "Action Succession Example-1")) (named (kind action-def) (name "TakePicture")) (anonymous (kind bind) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0)))
     (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/14_action_succession_example_1.md") (path (named (kind package) (name "Action Succession Example-1")) (named (kind action-def) (name "TakePicture")) (anonymous (kind bind) (ordinal 1))))) (target (node (document "memory://snapshot/14_action_succession_example_1.md") (qualified-name "Action Succession Example-1::Shoot::picture"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/14_action_succession_example_1.md") (path (named (kind package) (name "Action Succession Example-1")) (named (kind action-def) (name "TakePicture")) (anonymous (kind bind) (ordinal 1))))) (kind memberAccessOperand) (ordinal 0)))
+    (relationship (kind flowSource) (source (node (document "memory://snapshot/14_action_succession_example_1.md") (path (named (kind package) (name "Action Succession Example-1")) (named (kind action-def) (name "TakePicture")) (anonymous (kind flow) (ordinal 0))))) (target (node (document "memory://snapshot/14_action_succession_example_1.md") (qualified-name "Action Succession Example-1::TakePicture::focus::image"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/14_action_succession_example_1.md") (path (named (kind package) (name "Action Succession Example-1")) (named (kind action-def) (name "TakePicture")) (anonymous (kind flow) (ordinal 0))))) (kind flowSource) (ordinal 0)))
+    (relationship (kind flowTarget) (source (node (document "memory://snapshot/14_action_succession_example_1.md") (path (named (kind package) (name "Action Succession Example-1")) (named (kind action-def) (name "TakePicture")) (anonymous (kind flow) (ordinal 0))))) (target (node (document "memory://snapshot/14_action_succession_example_1.md") (qualified-name "Action Succession Example-1::TakePicture::shoot::image"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/14_action_succession_example_1.md") (path (named (kind package) (name "Action Succession Example-1")) (named (kind action-def) (name "TakePicture")) (anonymous (kind flow) (ordinal 0))))) (kind flowTarget) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/14_action_succession_example_1.md") (qualified-name "Action Succession Example-1::TakePicture::focus"))) (target (node (document "memory://snapshot/14_action_succession_example_1.md") (qualified-name "Action Succession Example-1::Focus"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/14_action_succession_example_1.md") (qualified-name "Action Succession Example-1::TakePicture::focus"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/14_action_succession_example_1.md") (qualified-name "Action Succession Example-1::TakePicture::picture"))) (target (node (document "memory://snapshot/14_action_succession_example_1.md") (qualified-name "Action Succession Example-1::Picture"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/14_action_succession_example_1.md") (qualified-name "Action Succession Example-1::TakePicture::picture"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/14_action_succession_example_1.md") (qualified-name "Action Succession Example-1::TakePicture::scene"))) (target (node (document "memory://snapshot/14_action_succession_example_1.md") (qualified-name "Action Succession Example-1::Scene"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/14_action_succession_example_1.md") (qualified-name "Action Succession Example-1::TakePicture::scene"))) (kind featureTyping) (ordinal 0)))
@@ -185,6 +188,9 @@ package 'Action Succession Example-1' {
       (supertype (node (document "memory://snapshot/14_action_succession_example_1.md") (qualified-name "Action Succession Example-1::Picture")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/14_action_succession_example_1.md") (path (named (kind package) (name "Action Succession Example-1")) (named (kind action-def) (name "TakePicture")) (anonymous (kind bind) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/14_action_succession_example_1.md") (qualified-name "Action Succession Example-1::TakePicture")))
+    )
+    (declaration (id (node (document "memory://snapshot/14_action_succession_example_1.md") (path (named (kind package) (name "Action Succession Example-1")) (named (kind action-def) (name "TakePicture")) (anonymous (kind flow) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/14_action_succession_example_1.md") (qualified-name "Action Succession Example-1::TakePicture")))
     )
     (declaration (id (node (document "memory://snapshot/14_action_succession_example_1.md") (path (named (kind package) (name "Action Succession Example-1")) (named (kind action-def) (name "TakePicture")) (anonymous (kind succession) (ordinal 0)))))
@@ -282,6 +288,16 @@ package 'Action Succession Example-1' {
   (query (document "memory://snapshot/14_action_succession_example_1.md") (range (start 22 7) (end 22 20)) (probe (position 22 7))
     (reference (id (source (node (document "memory://snapshot/14_action_succession_example_1.md") (path (named (kind package) (name "Action Succession Example-1")) (named (kind action-def) (name "TakePicture")) (anonymous (kind bind) (ordinal 1))))) (kind memberAccessOperand) (ordinal 0) (authored-target "shoot::picture")
       (outcome (status resolved) (target (node (document "memory://snapshot/14_action_succession_example_1.md") (qualified-name "Action Succession Example-1::Shoot::picture")))))
+    )
+  )
+  (query (document "memory://snapshot/14_action_succession_example_1.md") (range (start 16 12) (end 16 23)) (probe (position 16 12))
+    (reference (id (source (node (document "memory://snapshot/14_action_succession_example_1.md") (path (named (kind package) (name "Action Succession Example-1")) (named (kind action-def) (name "TakePicture")) (anonymous (kind flow) (ordinal 0))))) (kind flowSource) (ordinal 0) (authored-target "focus::image")
+      (outcome (status resolved) (target (node (document "memory://snapshot/14_action_succession_example_1.md") (qualified-name "Action Succession Example-1::TakePicture::focus::image")))))
+    )
+  )
+  (query (document "memory://snapshot/14_action_succession_example_1.md") (range (start 16 27) (end 16 38)) (probe (position 16 27))
+    (reference (id (source (node (document "memory://snapshot/14_action_succession_example_1.md") (path (named (kind package) (name "Action Succession Example-1")) (named (kind action-def) (name "TakePicture")) (anonymous (kind flow) (ordinal 0))))) (kind flowTarget) (ordinal 0) (authored-target "shoot::image")
+      (outcome (status resolved) (target (node (document "memory://snapshot/14_action_succession_example_1.md") (qualified-name "Action Succession Example-1::TakePicture::shoot::image")))))
     )
   )
   (query (document "memory://snapshot/14_action_succession_example_1.md") (range (start 14 16) (end 14 21)) (probe (position 14 16))

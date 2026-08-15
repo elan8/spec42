@@ -112,9 +112,9 @@ package RequirementMetadataExample {
         (range (start 29 5) (end 30 5))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_requirement_definition_member")
-        (source "semantic")
+        (severity error)
+        (code "recovered_requirement_body_element")
+        (source "parser")
         (range (start 30 5) (end 30 42))
       )
     )

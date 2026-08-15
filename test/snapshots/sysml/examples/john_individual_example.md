@@ -83,10 +83,10 @@ package JohnIndividualExample {
         (range (start 32 43) (end 32 73))
       )
       (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "parser")
-        (range (start 44 6) (end 45 4))
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 44 26) (end 44 29))
       )
       (diagnostic
         (severity error)
@@ -101,7 +101,7 @@ package JohnIndividualExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:b21982bd258772fdc2c06901a8c859b8b5913deba876cd21a39a07c949854382") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:b21982bd258772fdc2c06901a8c859b8b5913deba876cd21a39a07c949854382") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::Country"))) (kind item-def) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t\t * This is the definition of the class of countries, each of which may have \n\t\t * at most one president (at any point in time).\n\t\t "))))
@@ -112,6 +112,7 @@ package JohnIndividualExample {
     (declaration (id (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::Person::asPresident"))) (kind occurrence) (membership (kind feature) (visibility default)) (facts (portion timeslice) (multiplicity (lower 0) (upper unbounded))) (documentation (doc (text "\n\t\t\t * These are the periods during which a Person is president.\n\t\t\t "))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Person")))))
     (declaration (id (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::UnitedStates"))) (kind item-def) (membership (kind owning) (visibility default)) (facts (modifiers individual)) (documentation (doc (text "\n\t\t * This is the definition of the individual country that is the\n\t\t * United States. It contains a single instance. The United States\n\t\t * always has a president who must be at least 35 years old.\n\t\t "))) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Country")))))
     (declaration (id (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::UnitedStates::presidentOfUS"))) (kind ref) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 1) (upper 1))) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "presidentOfCountry")))))
+    (declaration (id (node (document "memory://snapshot/john_individual_example.md") (path (named (kind package) (name "JohnIndividualExample")) (named (kind item-def) (name "UnitedStates")) (named (kind ref) (name "presidentOfUS")) (anonymous (kind assert-constraint) (ordinal 0))))) (kind assert-constraint) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "age")))))
     (declaration (id (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::UnitedStatesWithJohnAsPresident"))) (kind occurrence) (membership (kind feature) (visibility default)) (facts (modifiers individual)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "UnitedStates")))))
   )
   (references
@@ -136,6 +137,9 @@ package JohnIndividualExample {
     (reference (id (source (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::UnitedStates::presidentOfUS"))) (kind redefinition) (ordinal 0))
       (authored-target "presidentOfCountry")
       (outcome (status resolved) (target (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::Country::presidentOfCountry")))))
+    (reference (id (source (node (document "memory://snapshot/john_individual_example.md") (path (named (kind package) (name "JohnIndividualExample")) (named (kind item-def) (name "UnitedStates")) (named (kind ref) (name "presidentOfUS")) (anonymous (kind assert-constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
+      (authored-target "age")
+      (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::UnitedStatesWithJohnAsPresident"))) (kind featureTyping) (ordinal 0))
       (authored-target "UnitedStates")
       (outcome (status resolved) (target (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::UnitedStates")))))
@@ -149,6 +153,7 @@ package JohnIndividualExample {
     (relationship (kind typing) (source (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::UnitedStatesWithJohnAsPresident"))) (target (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::UnitedStates"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::UnitedStatesWithJohnAsPresident"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/john_individual_example.md") (path (named (kind package) (name "JohnIndividualExample")) (named (kind item-def) (name "UnitedStates")) (named (kind ref) (name "presidentOfUS")) (anonymous (kind assert-constraint) (ordinal 0))))) (state unresolved-operand))
   )
 )
 ~~~
@@ -191,6 +196,9 @@ package JohnIndividualExample {
       (effective-type (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::Person")) (source inherited) (from (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::Country::presidentOfCountry"))))
       (supertype (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::Country::presidentOfCountry")) (scopes any feature))
       (supertype (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::Person")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/john_individual_example.md") (path (named (kind package) (name "JohnIndividualExample")) (named (kind item-def) (name "UnitedStates")) (named (kind ref) (name "presidentOfUS")) (anonymous (kind assert-constraint) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::UnitedStates::presidentOfUS")))
     )
     (declaration (id (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::UnitedStatesWithJohnAsPresident")))
       (type (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::UnitedStates")) (provenance authored))
@@ -236,6 +244,11 @@ package JohnIndividualExample {
   (query (document "memory://snapshot/john_individual_example.md") (range (start 43 27) (end 43 45)) (probe (position 43 27))
     (reference (id (source (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::UnitedStates::presidentOfUS"))) (kind redefinition) (ordinal 0) (authored-target "presidentOfCountry")
       (outcome (status resolved) (target (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::Country::presidentOfCountry")))))
+    )
+  )
+  (query (document "memory://snapshot/john_individual_example.md") (range (start 44 26) (end 44 29)) (probe (position 44 26))
+    (reference (id (source (node (document "memory://snapshot/john_individual_example.md") (path (named (kind package) (name "JohnIndividualExample")) (named (kind item-def) (name "UnitedStates")) (named (kind ref) (name "presidentOfUS")) (anonymous (kind assert-constraint) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "age")
+      (outcome (status unresolved)))
     )
   )
   (query (document "memory://snapshot/john_individual_example.md") (range (start 48 46) (end 48 58)) (probe (position 48 46))
