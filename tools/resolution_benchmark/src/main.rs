@@ -14,10 +14,10 @@ use std::time::{Duration, Instant};
 
 use clap::{Parser, ValueEnum};
 use serde::Serialize;
-use sysml_query::{
-    build, AuthoredReferenceId, BuildRequest, ConstructionStrategy, EvaluationPolicy,
-    NavigationOutcome, NodeId, PublicationCompleteness, PublishedModel, ReferenceKind,
-    RelationshipKind, SourceDocument as QuerySourceDocument, SourceKind, TextPosition,
+use sysml_query::resolved_slice::{
+    build_measured, BuildMeasurements, BuildRequest, ConstructionStrategy, PublicationCompleteness,
+    PublishedModel, QueryOutcome, SourceDocument as QuerySourceDocument, SourceKind,
+    SpecializationScope, SymbolIdentity, TextPosition,
 };
 
 const REVIEWED_PRIMARY_TARGET_NS: u64 = 1_000_000_000;
@@ -147,6 +147,29 @@ struct FreshBuildSample {
     publication_build_wall_time_ns: u64,
     request_and_build_wall_time_ns: u64,
     publication_completeness: &'static str,
+    /// Measured by the publication owner at its own phase barriers, not inferred by this tool.
+    owner_phases: OwnerPhases,
+}
+
+/// Elapsed time at the publication's stable phase barriers.
+///
+/// Parallel phases report wall time rather than summed worker CPU time, and source acquisition
+/// and request construction happen outside them, so these do not sum to the build wall time.
+#[derive(Debug, Serialize)]
+struct OwnerPhases {
+    parse_ns: u64,
+    lowering_ns: u64,
+    resolution_ns: u64,
+}
+
+impl From<BuildMeasurements> for OwnerPhases {
+    fn from(measurements: BuildMeasurements) -> Self {
+        Self {
+            parse_ns: nanos(measurements.parse),
+            lowering_ns: nanos(measurements.lowering),
+            resolution_ns: nanos(measurements.resolution),
+        }
+    }
 }
 
 #[derive(Debug, Serialize)]
@@ -189,8 +212,10 @@ struct LoadedWorkload {
 #[derive(Clone)]
 struct PreparedQueries {
     probes: Vec<(usize, TextPosition)>,
-    definitions: Vec<AuthoredReferenceId>,
-    adjacency: Vec<(NodeId, RelationshipKind, NodeId)>,
+    /// The symbols the probes actually landed on, deduplicated. Every downstream query below is
+    /// keyed on one of these, so result counts describe real published elements rather than the
+    /// probe count.
+    symbols: Vec<SymbolIdentity>,
 }
 
 #[derive(Clone)]
@@ -237,12 +262,12 @@ fn main() -> Result<(), String> {
             build_profile: if cfg!(debug_assertions) { "debug" } else { "release" },
         },
         methodology: Methodology {
-            construction: "BuildRequest selects the parallel construction policy; the opaque publication owner controls internal scheduling and deterministic canonicalization",
-            evaluation: "BuildRequest selects Evaluate; opaque owner phase breakdown remains unavailable",
+            construction: "BuildRequest selects the parallel construction schedule; the opaque publication owner controls internal scheduling and deterministic canonicalization",
+            evaluation: "the publication evaluates supported constant expressions; per-phase parse, lowering, and resolution wall times are reported by the owner at its own barriers",
             fresh_build_definition: "a new immutable source snapshot and opaque PublishedModel are constructed for every sample; no semantic cache is reused, while OS filesystem and allocator caches are not controlled",
             replacement_definition: "one workspace document receives a fixed-size comment edit; a reader thread repeatedly queries the prior immutable publication while the replacement model is built",
             acceptance_rule: "report-only architectural review; there is no machine-specific timing threshold and no scoped-resolver fallback",
-            query_evidence: "source-document adapter reconstruction is reported separately from timed queries; query timings are paired with operation/result counters and an implementation classification so scans cannot masquerade as indexed work",
+            query_evidence: "source-document adapter reconstruction is reported separately from timed queries; query timings are paired with operation/result counters and an implementation classification so scans cannot masquerade as indexed work. Every timed query reads settled publication facts and performs no resolution",
         },
         unavailable_measurements: vec![
             UnavailableMeasurement {
@@ -250,16 +275,12 @@ fn main() -> Result<(), String> {
                 reason: "the build owner has no portable per-phase allocator accounting; process RSS would mix tool, parser, and prior-reader memory and is not reported as a precise build metric",
             },
             UnavailableMeasurement {
-                name: "owner_phase_wall_times",
-                reason: "the opaque publication facade does not yet expose immutable-IR-owned parse, construction, solve, index, evaluation, or validation phase observations",
-            },
-            UnavailableMeasurement {
                 name: "semantic_structure_and_work_counters",
-                reason: "node, reference, solver-pass, changed-slot, and index-work counters must be owned by the new immutable IR; this tool does not inspect or instrument the transitional mutable graph",
+                reason: "node, reference, solver-pass, changed-slot, and index-work counters are not published by the resolution owner; this tool does not reconstruct them by scanning storage or parsing a debug projection",
             },
             UnavailableMeasurement {
                 name: "generator_traversal",
-                reason: "no generator consumes the opaque sysml_query publication at this checkpoint; timing a legacy mutable-graph generator would violate the gate",
+                reason: "generators consume the immutable publication, but wiring a generator host into this gate is separate work; it is not substituted with a projection render",
             },
         ],
         workloads,
@@ -306,24 +327,25 @@ fn run_workload(cli: &Cli, size: ModelSize) -> Result<WorkloadReport, String> {
         let loaded = load_workload(&cli.repo_root, &manifest, size.name())?;
         let source_acquisition_ns = nanos(acquisition_started.elapsed());
         let documents = loaded.documents;
-        let (model, request_preparation_ns, publication_build_wall_time_ns) =
-            build_model(&documents)?;
-        let request_and_build_wall_time_ns =
-            request_preparation_ns.saturating_add(publication_build_wall_time_ns);
+        let built = build_model(&documents)?;
+        let request_and_build_wall_time_ns = built
+            .request_preparation_ns
+            .saturating_add(built.publication_build_wall_time_ns);
         downstream_queries.push(measure_downstream(
-            &model,
+            &built.model,
             &documents,
             cli.query_repetitions,
         )?);
         fresh_builds.push(FreshBuildSample {
             source_acquisition_ns,
-            request_preparation_ns,
-            publication_build_wall_time_ns,
+            request_preparation_ns: built.request_preparation_ns,
+            publication_build_wall_time_ns: built.publication_build_wall_time_ns,
             request_and_build_wall_time_ns,
-            publication_completeness: completeness_name(&model),
+            publication_completeness: completeness_name(&built.model),
+            owner_phases: built.measurements.into(),
         });
         last_documents = documents;
-        last_model = Some(Arc::new(model));
+        last_model = Some(Arc::new(built.model));
     }
     let (replacements, _) = measure_replacements(
         last_model.expect("positive iterations"),
@@ -353,37 +375,46 @@ fn run_workload(cli: &Cli, size: ModelSize) -> Result<WorkloadReport, String> {
         downstream_queries,
         replacements,
         query_contract_gaps: vec![
-            "outcome lookup is a binary search over settled facts, not the design's expected O(1) authored-reference index",
-            "diagnostic category projections scan publication facts/nodes on every call rather than reading eager publication projections or an explicitly bounded lazy memo",
             "canonical model projection is a deliberate full publication scan and is reported separately from indexed point queries",
         ],
     })
 }
 
-fn build_model(documents: &[BenchmarkDocument]) -> Result<(PublishedModel, u64, u64), String> {
-    let request_started = Instant::now();
-    let sources = query_documents(documents)?;
-    let request = BuildRequest::new(
-        sources,
-        ConstructionStrategy::Parallel,
-        EvaluationPolicy::Evaluate,
-        "canonical-resolution-v1",
-    )
-    .map_err(|error| format!("invalid benchmark source snapshot: {error}"))?;
-    let request_preparation_ns = nanos(request_started.elapsed());
-    let build_started = Instant::now();
-    let model = build(request).map_err(|error| format!("semantic build failed: {error}"))?;
-    Ok((
-        model,
-        request_preparation_ns,
-        nanos(build_started.elapsed()),
-    ))
+struct BuiltModel {
+    model: PublishedModel,
+    request_preparation_ns: u64,
+    publication_build_wall_time_ns: u64,
+    measurements: BuildMeasurements,
 }
 
+fn build_model(documents: &[BenchmarkDocument]) -> Result<BuiltModel, String> {
+    let request_started = Instant::now();
+    let sources = query_documents(documents)?;
+    let request = BuildRequest::resolved(sources, ConstructionStrategy::Parallel)
+        .map_err(|error| format!("invalid benchmark source snapshot: {error}"))?;
+    let request_preparation_ns = nanos(request_started.elapsed());
+    let build_started = Instant::now();
+    let (model, measurements) =
+        build_measured(request).map_err(|error| format!("semantic build failed: {error}"))?;
+    Ok(BuiltModel {
+        model,
+        request_preparation_ns,
+        publication_build_wall_time_ns: nanos(build_started.elapsed()),
+        measurements,
+    })
+}
+
+/// The publication's own settled phase, not a summary of it.
+///
+/// The immutable owner distinguishes three ways a build can fail to settle where the retired
+/// facade reported one "editor recovery" state, so a sample that did not converge can no longer
+/// be read as one that merely recovered from a parse error.
 fn completeness_name(model: &PublishedModel) -> &'static str {
     match model.publication().completeness() {
         PublicationCompleteness::Complete => "complete",
-        PublicationCompleteness::EditorRecovery => "editor-recovery",
+        PublicationCompleteness::ParseRecovery => "parse-recovery",
+        PublicationCompleteness::UnsupportedSyntax => "unsupported-syntax",
+        PublicationCompleteness::NonConverged => "non-converged",
     }
 }
 
@@ -412,14 +443,14 @@ fn measure_downstream(
         elapsed_ns: nanos(preparation_elapsed),
         repetitions: 1,
         operation_count: prepared.probes.len() as u64,
-        result_count: Some(prepared.definitions.len() as u64),
+        result_count: Some(prepared.symbols.len() as u64),
         output_bytes: 0,
     }];
 
     let navigation_started = Instant::now();
     let mut navigation = QueryCounts::default();
     for _ in 0..repetitions {
-        let counts = run_navigation_queries(model, &query_documents, &prepared)?;
+        let counts = run_navigation_queries(model, &query_documents, &prepared);
         navigation.operations += counts.operations;
         navigation.results += counts.results;
     }
@@ -433,44 +464,56 @@ fn measure_downstream(
         output_bytes: 0,
     });
 
-    let definition_started = Instant::now();
-    let mut definitions = QueryCounts::default();
+    let reference_started = Instant::now();
+    let mut references = QueryCounts::default();
     for _ in 0..repetitions {
-        let counts = run_definition_queries(model, &prepared);
-        definitions.operations += counts.operations;
-        definitions.results += counts.results;
+        let counts = run_reference_queries(model, &prepared);
+        references.operations += counts.operations;
+        references.results += counts.results;
     }
     measurements.push(QueryMeasurement {
-        name: "definition_outcomes_and_adjacency",
-        implementation: "settled authored-reference binary search; outgoing/incoming use eager adjacency indexes",
-        elapsed_ns: nanos(definition_started.elapsed()),
+        name: "references_for_resolved_symbols",
+        implementation: "eager reverse-reference index keyed by published symbol identity",
+        elapsed_ns: nanos(reference_started.elapsed()),
         repetitions,
-        operation_count: definitions.operations,
-        result_count: Some(definitions.results),
+        operation_count: references.operations,
+        result_count: Some(references.results),
+        output_bytes: 0,
+    });
+
+    let type_started = Instant::now();
+    let mut types = QueryCounts::default();
+    for _ in 0..repetitions {
+        let counts = run_type_queries(model, &prepared);
+        types.operations += counts.operations;
+        types.results += counts.results;
+    }
+    measurements.push(QueryMeasurement {
+        name: "effective_types_and_supertypes",
+        implementation: "settled publication-barrier type index; no traversal per call",
+        elapsed_ns: nanos(type_started.elapsed()),
+        repetitions,
+        operation_count: types.operations,
+        result_count: Some(types.results),
         output_bytes: 0,
     });
 
     let diagnostics_started = Instant::now();
-    let mut diagnostic_bytes = 0u64;
+    let mut diagnostic_results = 0u64;
     for _ in 0..repetitions {
-        for document in &query_documents {
-            let mut output = String::new();
-            model
-                .diagnostics()
-                .write_document_sexpr(document, &mut output)
-                .map_err(|error| format!("diagnostic projection failed: {error}"))?;
-            diagnostic_bytes += output.len() as u64;
-            black_box(output);
-        }
+        let published = model.diagnostics().published();
+        diagnostic_results += published.diagnostics.len() as u64;
+        black_box(published);
     }
     measurements.push(QueryMeasurement {
         name: "diagnostics",
-        implementation: "downstream immutable publication scans and typed projections; repeated calls currently repeat scans",
+        implementation:
+            "typed diagnostics settled at the publication barrier; each call is a read, not a scan",
         elapsed_ns: nanos(diagnostics_started.elapsed()),
         repetitions,
-        operation_count: (documents.len() * repetitions) as u64,
-        result_count: None,
-        output_bytes: diagnostic_bytes,
+        operation_count: repetitions as u64,
+        result_count: Some(diagnostic_results),
+        output_bytes: 0,
     });
 
     let projection_started = Instant::now();
@@ -497,43 +540,26 @@ fn measure_downstream(
     Ok(measurements)
 }
 
+/// Selects the probe positions and resolves each once, so the timed workloads below query
+/// published symbols rather than re-deriving what a position points at on every repetition.
 fn prepare_queries(
     model: &PublishedModel,
     documents: &[BenchmarkDocument],
     query_documents: &[QuerySourceDocument],
 ) -> Result<PreparedQueries, String> {
     let probes = source_probes(documents)?;
-    let mut definitions = std::collections::BTreeSet::new();
-    let mut adjacency = Vec::new();
+    let mut symbols = std::collections::BTreeSet::new();
     for (document, position) in &probes {
-        for reference in model
+        if let QueryOutcome::Resolved(target) | QueryOutcome::Recovered(target) = model
             .navigation()
-            .references_at_position(&query_documents[*document], *position)
-            .map_err(|error| format!("navigation query failed: {error}"))?
+            .target_at(query_documents[*document].identity(), *position)
         {
-            definitions.insert(AuthoredReferenceId {
-                source: reference.source.clone(),
-                kind: reference.kind,
-                authored_ordinal: reference.authored_ordinal,
-            });
-            let relationship_kind = match reference.kind {
-                ReferenceKind::FeatureTyping => Some(RelationshipKind::Typing),
-                ReferenceKind::Specialization => Some(RelationshipKind::Specializes),
-                _ => None,
-            };
-            if let (Some(kind), NavigationOutcome::Resolved(target)) =
-                (relationship_kind, reference.outcome)
-            {
-                adjacency.push((reference.source, kind, target.id));
-            }
+            symbols.insert(target.symbol);
         }
     }
-    adjacency.sort();
-    adjacency.dedup();
     Ok(PreparedQueries {
         probes,
-        definitions: definitions.into_iter().collect(),
-        adjacency,
+        symbols: symbols.into_iter().collect(),
     })
 }
 
@@ -541,34 +567,51 @@ fn run_navigation_queries(
     model: &PublishedModel,
     documents: &[QuerySourceDocument],
     prepared: &PreparedQueries,
-) -> Result<QueryCounts, String> {
+) -> QueryCounts {
     let mut counts = QueryCounts::default();
     for (document, position) in &prepared.probes {
         counts.operations += 1;
-        let results = model
+        let outcome = model
             .navigation()
-            .references_at_position(&documents[*document], *position)
-            .map_err(|error| format!("navigation query failed: {error}"))?;
-        counts.results += results.len() as u64;
-        black_box(results);
-    }
-    Ok(counts)
-}
-
-fn run_definition_queries(model: &PublishedModel, prepared: &PreparedQueries) -> QueryCounts {
-    let mut counts = QueryCounts::default();
-    for reference in &prepared.definitions {
-        counts.operations += 1;
-        let outcome = model.resolution().outcome(reference);
-        counts.results += outcome.is_some() as u64;
+            .target_at(documents[*document].identity(), *position);
+        counts.results += u64::from(matches!(
+            outcome,
+            QueryOutcome::Resolved(_) | QueryOutcome::Recovered(_)
+        ));
         black_box(outcome);
     }
-    for (source, kind, target) in &prepared.adjacency {
+    counts
+}
+
+fn run_reference_queries(model: &PublishedModel, prepared: &PreparedQueries) -> QueryCounts {
+    let mut counts = QueryCounts::default();
+    for symbol in &prepared.symbols {
+        counts.operations += 1;
+        let occurrences = model.navigation().references(symbol, true);
+        if let QueryOutcome::Resolved(locations) | QueryOutcome::Recovered(locations) = &occurrences
+        {
+            counts.results += locations.len() as u64;
+        }
+        black_box(occurrences);
+    }
+    counts
+}
+
+fn run_type_queries(model: &PublishedModel, prepared: &PreparedQueries) -> QueryCounts {
+    let mut counts = QueryCounts::default();
+    for symbol in &prepared.symbols {
         counts.operations += 2;
-        let outgoing = model.resolution().outgoing(source, kind.clone());
-        let incoming = model.resolution().incoming(target, kind.clone());
-        counts.results += (outgoing.len() + incoming.len()) as u64;
-        black_box((outgoing, incoming));
+        let effective = model.types().effective_types(symbol);
+        let supertypes = model
+            .types()
+            .all_supertypes(symbol, SpecializationScope::AnySpecialization);
+        if let QueryOutcome::Resolved(types) | QueryOutcome::Recovered(types) = &effective {
+            counts.results += types.len() as u64;
+        }
+        if let QueryOutcome::Resolved(types) | QueryOutcome::Recovered(types) = &supertypes {
+            counts.results += types.len() as u64;
+        }
+        black_box((effective, supertypes));
     }
     counts
 }
@@ -597,37 +640,35 @@ fn measure_replacements(
             let mut results = 0u64;
             while !reader_stop.load(Ordering::Acquire) {
                 let navigation =
-                    run_navigation_queries(&reader_model, &reader_documents, &prepared).expect(
-                        "prepared source-position queries remain valid for their publication",
-                    );
-                let definitions = run_definition_queries(&reader_model, &prepared);
+                    run_navigation_queries(&reader_model, &reader_documents, &prepared);
+                let references = run_reference_queries(&reader_model, &prepared);
                 batches += 1;
-                operations += navigation.operations + definitions.operations;
-                results += navigation.results + definitions.results;
+                operations += navigation.operations + references.operations;
+                results += navigation.results + references.results;
             }
             (batches, operations, results)
         });
 
-        let (next, request_preparation_ns, publication_build_wall_time_ns) =
-            build_model(&documents)?;
-        let request_and_build_wall_time_ns =
-            request_preparation_ns.saturating_add(publication_build_wall_time_ns);
+        let built = build_model(&documents)?;
+        let request_and_build_wall_time_ns = built
+            .request_preparation_ns
+            .saturating_add(built.publication_build_wall_time_ns);
         stop.store(true, Ordering::Release);
         let (batches, operations, results) = reader
             .join()
             .map_err(|_| "prior-model reader thread panicked".to_string())?;
         samples.push(ReplacementSample {
             source_preparation_ns,
-            request_preparation_ns,
-            publication_build_wall_time_ns,
+            request_preparation_ns: built.request_preparation_ns,
+            publication_build_wall_time_ns: built.publication_build_wall_time_ns,
             request_and_build_wall_time_ns,
-            publication_completeness: completeness_name(&next),
+            publication_completeness: completeness_name(&built.model),
             prior_model_reader_preparation_ns,
             prior_model_reader_batches: batches,
             prior_model_reader_operations: operations,
             prior_model_reader_results: results,
         });
-        prior = Arc::new(next);
+        prior = Arc::new(built.model);
     }
     Ok((samples, prior))
 }
@@ -865,7 +906,7 @@ fn source_probes(documents: &[BenchmarkDocument]) -> Result<Vec<(usize, TextPosi
                             document.path
                         )
                     })?;
-                    probes.push((document_index, TextPosition::new(line, character)));
+                    probes.push((document_index, TextPosition { line, character }));
                     selected += 1;
                     if selected == MAX_PROBES_PER_DOCUMENT {
                         break;

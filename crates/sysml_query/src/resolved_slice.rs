@@ -63,6 +63,11 @@ impl SourceDocument {
             ),
         })
     }
+
+    /// The identity queries and published facts address this document by.
+    pub fn identity(&self) -> &str {
+        self.inner.identity()
+    }
 }
 
 impl From<SourceKind> for sysml_resolution::SourceKind {

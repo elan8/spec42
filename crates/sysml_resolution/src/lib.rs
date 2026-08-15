@@ -89,6 +89,14 @@ pub struct SourceInput {
 }
 
 impl SourceInput {
+    /// The normalized identity every query and published fact addresses this source by.
+    ///
+    /// Exposed so a caller can name a document it admitted without re-deriving the identity from
+    /// a path; this crate owns that normalization and a second spelling of it would drift.
+    pub fn identity(&self) -> &str {
+        &self.identity
+    }
+
     pub fn new(identity: impl Into<Box<str>>, content: String, kind: SourceKind) -> Self {
         let content_digest = ContentDigest::of_bytes(content.as_bytes());
         Self {
