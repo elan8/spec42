@@ -315,6 +315,8 @@ abi_contract! {
         RequirementTyping = 8 => (String, RequirementUsageTyping),
         /// Authoritative workspace satisfy statements with directional endpoint states.
         SatisfyRelationships = 9 => ((), Vec<SatisfyRelationship>),
+        /// Authoritative verification-to-requirement links and explicit outcome states.
+        RequirementVerifications = 10 => ((), Vec<RequirementVerification>),
     }
 
     /// Severity of a generator diagnostic.

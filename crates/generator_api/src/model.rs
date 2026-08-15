@@ -138,6 +138,29 @@ pub struct SatisfyRelationshipSummary {
     pub recovered: bool,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum VerificationRequirementSummary {
+    Resolved(ElementSummary),
+    Ambiguous(Vec<ElementSummary>),
+    Unresolved,
+    Unsupported,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum VerificationOutcomeSummary {
+    Unsupported,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RequirementVerificationSummary {
+    pub semantic_id: String,
+    pub verification_case: ElementSummary,
+    pub requirement: VerificationRequirementSummary,
+    pub provenance: TypingProvenanceSummary,
+    pub outcome: VerificationOutcomeSummary,
+    pub recovered: bool,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum TypingProvenanceSummary {
     Authored,
@@ -526,6 +549,73 @@ impl GeneratorModelView {
                     provenance: match relationship.provenance {
                         RelationshipProvenance::Authored => TypingProvenanceSummary::Authored,
                         RelationshipProvenance::Implied => TypingProvenanceSummary::Implied,
+                    },
+                    recovered,
+                })
+            })
+            .collect::<Result<Vec<_>, ModelQueryError>>()?;
+        self.enforce_limit(values.len())?;
+        Ok(values)
+    }
+
+    pub fn requirement_verifications(
+        &self,
+    ) -> Result<Vec<RequirementVerificationSummary>, ModelQueryError> {
+        use sysml_query::resolved_slice::{
+            QueryOutcome, VerificationOutcome as OwnedOutcome,
+            VerificationRequirement as OwnedRequirement,
+        };
+        let (relationships, recovered) = match self.model.inspection().requirement_verifications() {
+            QueryOutcome::Resolved(values) => (values, false),
+            QueryOutcome::Recovered(values) => (values, true),
+            QueryOutcome::UnsupportedWith(_) | QueryOutcome::Unsupported => {
+                return Err(ModelQueryError::Unsupported(
+                    "requirement verifications".into(),
+                ))
+            }
+            QueryOutcome::Unresolved | QueryOutcome::Recovery => {
+                return Err(ModelQueryError::Unresolved(
+                    "requirement verifications".into(),
+                ))
+            }
+            QueryOutcome::Ambiguous(_) => {
+                return Err(ModelQueryError::Ambiguous(
+                    "requirement verifications".into(),
+                ))
+            }
+            QueryOutcome::Incomplete => return Err(ModelQueryError::Incomplete),
+        };
+        let endpoint =
+            |value: &OwnedRequirement| -> Result<VerificationRequirementSummary, ModelQueryError> {
+                Ok(match value {
+                    OwnedRequirement::Resolved(identity) => {
+                        VerificationRequirementSummary::Resolved(self.summary(identity)?)
+                    }
+                    OwnedRequirement::Ambiguous(values) => {
+                        VerificationRequirementSummary::Ambiguous(
+                            values
+                                .iter()
+                                .map(|v| self.summary(v))
+                                .collect::<Result<Vec<_>, _>>()?,
+                        )
+                    }
+                    OwnedRequirement::Unresolved => VerificationRequirementSummary::Unresolved,
+                    OwnedRequirement::Unsupported => VerificationRequirementSummary::Unsupported,
+                })
+            };
+        let values = relationships
+            .iter()
+            .map(|value| {
+                Ok(RequirementVerificationSummary {
+                    semantic_id: value.identity.as_str().to_owned(),
+                    verification_case: self.summary(&value.verification_case)?,
+                    requirement: endpoint(&value.requirement)?,
+                    provenance: match value.provenance {
+                        RelationshipProvenance::Authored => TypingProvenanceSummary::Authored,
+                        RelationshipProvenance::Implied => TypingProvenanceSummary::Implied,
+                    },
+                    outcome: match value.outcome {
+                        OwnedOutcome::Unsupported => VerificationOutcomeSummary::Unsupported,
                     },
                     recovered,
                 })

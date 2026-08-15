@@ -10,9 +10,10 @@ pub use sysml_resolution::{
     MembershipKind, MembershipRole, MultiplicityBound, MultiplicityFacts, NavigationTarget,
     OccurrenceRole, PortionKind, PublicationCompleteness, QueryOutcome, ReferenceAt,
     RelationshipProvenance, RelationshipTarget, RenameOutcome, RequirementConstraintKind,
-    RequirementUsageTyping, SatisfyEndpoint, SatisfyPolarity, SatisfyRelationship, SourceLocation,
-    SpecializationScope, StateSubactionKind, SubsettingConformance, SymbolEntry, SymbolIdentity,
-    TextPosition, TextRange, TypeReference, ValueKind, Visibility, VisibilityProvenance,
+    RequirementUsageTyping, RequirementVerification, SatisfyEndpoint, SatisfyPolarity,
+    SatisfyRelationship, SourceLocation, SpecializationScope, StateSubactionKind,
+    SubsettingConformance, SymbolEntry, SymbolIdentity, TextPosition, TextRange, TypeReference,
+    ValueKind, VerificationOutcome, VerificationRequirement, Visibility, VisibilityProvenance,
     VisibleMember,
 };
 
@@ -427,6 +428,10 @@ impl InspectionQueries<'_> {
     /// Workspace-authored satisfy statements, with directional ends and explicit outcomes.
     pub fn satisfy_relationships(&self) -> QueryOutcome<Box<[SatisfyRelationship]>> {
         self.model.satisfy_relationships()
+    }
+
+    pub fn requirement_verifications(&self) -> QueryOutcome<Box<[RequirementVerification]>> {
+        self.model.requirement_verifications()
     }
 
     /// Effective features, direct first and inherited nearest-first with name shadowing.

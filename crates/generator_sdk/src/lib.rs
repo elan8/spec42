@@ -134,8 +134,9 @@ fn call_query<T: DeserializeOwned>(operation: i32, request: &impl Serialize) -> 
 pub mod model {
     pub use spec42_generator_protocol::{
         ElementDetail, ElementSummary, ModelInfo, Multiplicity, Relationship,
-        RelationshipProvenance, RequirementUsageTyping, SatisfyEndpoint, SatisfyPolarity,
-        SatisfyRelationship, SourceRange, TypingProvenance,
+        RelationshipProvenance, RequirementUsageTyping, RequirementVerification, SatisfyEndpoint,
+        SatisfyPolarity, SatisfyRelationship, SourceRange, TypingProvenance, VerificationOutcome,
+        VerificationRequirement,
     };
 
     use super::call;
@@ -171,6 +172,10 @@ pub mod model {
 
     pub fn satisfy_relationships() -> Result<Vec<SatisfyRelationship>, String> {
         call::<query::SatisfyRelationships>(&())
+    }
+
+    pub fn requirement_verifications() -> Result<Vec<RequirementVerification>, String> {
+        call::<query::RequirementVerifications>(&())
     }
 
     pub fn relationships(element: &str) -> Result<Vec<Relationship>, String> {

@@ -8,8 +8,9 @@ use generator_api::{
     ArtifactLimits, ArtifactSet, ElementDetail as ApiElementDetail,
     ElementSummary as ApiElementSummary, GeneratorDiagnostic, GeneratorDiagnosticLevel,
     GeneratorModelView, MultiplicitySummary as ApiMultiplicity, RelationshipSummary,
-    RequirementUsageTypingSummary, SatisfyEndpointSummary, SatisfyPolaritySummary,
-    SatisfyRelationshipSummary, TypingProvenanceSummary, MAX_ARTIFACT_PATH_BYTES,
+    RequirementUsageTypingSummary, RequirementVerificationSummary, SatisfyEndpointSummary,
+    SatisfyPolaritySummary, SatisfyRelationshipSummary, TypingProvenanceSummary,
+    VerificationOutcomeSummary, VerificationRequirementSummary, MAX_ARTIFACT_PATH_BYTES,
 };
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
@@ -971,6 +972,18 @@ fn handle_query(
                 })
                 .map_err(|error| error.to_string()),
         ),
+        protocol::Operation::RequirementVerifications => encode_result(
+            state
+                .model
+                .requirement_verifications()
+                .map(|values| {
+                    values
+                        .into_iter()
+                        .map(requirement_verification)
+                        .collect::<Vec<_>>()
+                })
+                .map_err(|error| error.to_string()),
+        ),
         protocol::Operation::Relationships => {
             let element = decode_for::<protocol::query::Relationships>(request)?;
             encode_result(
@@ -1203,6 +1216,36 @@ fn satisfy_relationship(value: SatisfyRelationshipSummary) -> protocol::SatisfyR
         provenance: match value.provenance {
             TypingProvenanceSummary::Authored => protocol::RelationshipProvenance::Authored,
             TypingProvenanceSummary::Implied => protocol::RelationshipProvenance::Implied,
+        },
+        recovered: value.recovered,
+    }
+}
+
+fn requirement_verification(
+    value: RequirementVerificationSummary,
+) -> protocol::RequirementVerification {
+    let requirement = match value.requirement {
+        VerificationRequirementSummary::Resolved(value) => {
+            protocol::VerificationRequirement::Resolved(summary(value))
+        }
+        VerificationRequirementSummary::Ambiguous(values) => {
+            protocol::VerificationRequirement::Ambiguous(values.into_iter().map(summary).collect())
+        }
+        VerificationRequirementSummary::Unresolved => protocol::VerificationRequirement::Unresolved,
+        VerificationRequirementSummary::Unsupported => {
+            protocol::VerificationRequirement::Unsupported
+        }
+    };
+    protocol::RequirementVerification {
+        semantic_id: value.semantic_id,
+        verification_case: summary(value.verification_case),
+        requirement,
+        provenance: match value.provenance {
+            TypingProvenanceSummary::Authored => protocol::RelationshipProvenance::Authored,
+            TypingProvenanceSummary::Implied => protocol::RelationshipProvenance::Implied,
+        },
+        outcome: match value.outcome {
+            VerificationOutcomeSummary::Unsupported => protocol::VerificationOutcome::Unsupported,
         },
         recovered: value.recovered,
     }

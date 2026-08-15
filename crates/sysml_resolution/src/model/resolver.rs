@@ -14,9 +14,10 @@ use crate::{
     Conformance, ConformanceObstacle, EffectiveType, EffectiveTypeOrigin, ElementSearch,
     ElementSource, NavigationTarget, OccurrenceRole, PublicationCompleteness as PublicCompleteness,
     QueryOutcome, RelationshipProvenance, RelationshipTarget, RenameOutcome,
-    RequirementUsageTyping, SatisfyEndpoint, SatisfyPolarity, SatisfyRelationship, SourceLocation,
-    SpecializationScope, SubsettingConformance, SymbolIdentity, TextPosition, TextRange,
-    TypeReference, VisibleMember,
+    RequirementUsageTyping, RequirementVerification, SatisfyEndpoint, SatisfyPolarity,
+    SatisfyRelationship, SourceLocation, SpecializationScope, SubsettingConformance,
+    SymbolIdentity, TextPosition, TextRange, TypeReference, VerificationOutcome,
+    VerificationRequirement, VisibleMember,
 };
 
 mod inspection;
@@ -1849,6 +1850,98 @@ impl ResolvedSemanticModel {
                 })
             })
             .collect::<Vec<_>>();
+        values.sort_by(|left, right| {
+            left.location
+                .document
+                .cmp(&right.location.document)
+                .then_with(|| left.location.range.cmp(&right.location.range))
+                .then_with(|| left.identity.cmp(&right.identity))
+        });
+        self.resolved_outcome(values.into_boxed_slice())
+    }
+
+    pub(crate) fn requirement_verifications(&self) -> QueryOutcome<Box<[RequirementVerification]>> {
+        let endpoint = |reference: Option<AuthoredReferenceId>| match reference
+            .and_then(|reference| self.resolution.outcome(reference))
+        {
+            Some(ResolutionStatus::Resolved(target)) => self
+                .symbol_identity(target)
+                .map(VerificationRequirement::Resolved)
+                .unwrap_or(VerificationRequirement::Unresolved),
+            Some(ResolutionStatus::Ambiguous(candidates)) => VerificationRequirement::Ambiguous(
+                self.resolution
+                    .ambiguous_candidates(candidates)
+                    .iter()
+                    .filter_map(|candidate| self.symbol_identity(*candidate))
+                    .collect(),
+            ),
+            Some(ResolutionStatus::Unsupported) => VerificationRequirement::Unsupported,
+            Some(ResolutionStatus::Unresolved) | Some(ResolutionStatus::NonConverged) => {
+                VerificationRequirement::Unresolved
+            }
+            None => VerificationRequirement::Unsupported,
+        };
+        let mut values = Vec::new();
+        for (index, declaration) in self.storage.declarations.iter().enumerate() {
+            let Some(document) = self.storage.document(declaration.document) else {
+                continue;
+            };
+            if document.role != SourceRole::Workspace
+                || declaration.kind != DeclarationKind::VerifyRequirement
+            {
+                continue;
+            }
+            let Some(id) = DeclarationId::from_index(index).ok() else {
+                continue;
+            };
+            let Some(objective) = declaration
+                .owner
+                .and_then(|id| self.storage.declaration(id))
+            else {
+                continue;
+            };
+            if objective.kind != DeclarationKind::RequirementUsage {
+                continue;
+            }
+            let Some(case_id) = objective.owner else {
+                continue;
+            };
+            let Some(case) = self.storage.declaration(case_id) else {
+                continue;
+            };
+            if !matches!(
+                case.kind,
+                DeclarationKind::VerificationCaseDefinition
+                    | DeclarationKind::VerificationCaseUsage
+            ) {
+                continue;
+            }
+            let reference = self
+                .storage
+                .references
+                .iter()
+                .enumerate()
+                .find(|(_, reference)| {
+                    reference.source == id
+                        && reference.kind == ReferenceKind::VerifyRequirementTarget
+                })
+                .and_then(|(index, _)| AuthoredReferenceId::from_index(index).ok());
+            let (Some(identity), Some(verification_case), Some(location)) = (
+                self.symbol_identity(id),
+                self.symbol_identity(case_id),
+                self.source_location(id),
+            ) else {
+                continue;
+            };
+            values.push(RequirementVerification {
+                identity,
+                verification_case,
+                requirement: endpoint(reference),
+                provenance: RelationshipProvenance::Authored,
+                location,
+                outcome: VerificationOutcome::Unsupported,
+            });
+        }
         values.sort_by(|left, right| {
             left.location
                 .document

@@ -12,6 +12,7 @@ members = [
     "requirements_csv",
     "requirement_instances_csv",
     "requirement_traceability_csv",
+    "requirement_verification_csv",
 ]
 
 [workspace.dependencies]

@@ -3,8 +3,8 @@
   "semanticApiVersion": "0.1.0",
   "namespace": "spec42:generator-abi/4",
   "importModule": "spec42",
-  "schemaFingerprint": "0x4b814b2cda452253",
-  "compatibilityToken": "0xbd93e166135ada6f",
+  "schemaFingerprint": "0x041039af27dd4a86",
+  "compatibilityToken": "0xa78504676b7c86ee",
   "operations": [
     { "name": "Info", "code": 0, "request": "()", "response": "ModelInfo" },
     { "name": "Roots", "code": 1, "request": "()", "response": "Vec<ElementSummary>" },
@@ -15,7 +15,8 @@
     { "name": "Relationships", "code": 6, "request": "String", "response": "Vec<Relationship>" },
     { "name": "EffectiveFeatures", "code": 7, "request": "String", "response": "Vec<ElementSummary>" },
     { "name": "RequirementTyping", "code": 8, "request": "String", "response": "RequirementUsageTyping" },
-    { "name": "SatisfyRelationships", "code": 9, "request": "()", "response": "Vec<SatisfyRelationship>" }
+    { "name": "SatisfyRelationships", "code": 9, "request": "()", "response": "Vec<SatisfyRelationship>" },
+    { "name": "RequirementVerifications", "code": 10, "request": "()", "response": "Vec<RequirementVerification>" }
   ],
   "diagnosticLevels": [
     { "name": "Debug", "code": 0 },

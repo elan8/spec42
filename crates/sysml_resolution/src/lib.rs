@@ -15,6 +15,7 @@ mod inspection;
 mod model;
 mod traceability;
 mod type_query;
+mod verification;
 
 pub use element_kind::{
     ElementKind, MembershipRole, RequirementConstraintKind, StateSubactionKind,
@@ -31,6 +32,7 @@ pub use type_query::{
     Conformance, ConformanceObstacle, EffectiveType, EffectiveTypeOrigin, RequirementUsageTyping,
     SpecializationScope, SubsettingConformance, TypeReference,
 };
+pub use verification::{RequirementVerification, VerificationOutcome, VerificationRequirement};
 
 use model::resolver::ResolvedSemanticModel;
 use model::{BuildSchedule, CoordinatorError, OwnedSourceRecord, SemanticModelBuildCoordinator};
@@ -536,6 +538,11 @@ impl PublishedResolution {
     /// Workspace-authored satisfy statements in canonical declaration order.
     pub fn satisfy_relationships(&self) -> QueryOutcome<Box<[SatisfyRelationship]>> {
         self.model.satisfy_relationships()
+    }
+
+    /// Workspace-authored requirement-verification memberships in canonical declaration order.
+    pub fn requirement_verifications(&self) -> QueryOutcome<Box<[RequirementVerification]>> {
+        self.model.requirement_verifications()
     }
 
     /// Effective features, direct first and inherited nearest-first with name shadowing.
@@ -2746,6 +2753,56 @@ package Trace {
         assert_eq!(values[1].polarity, SatisfyPolarity::NotSatisfied);
         assert!(matches!(values[2].requirement, SatisfyEndpoint::Unresolved));
         assert_eq!(values[0].provenance, RelationshipProvenance::Authored);
+        assert_ne!(values[0].identity, values[1].identity);
+    }
+
+    #[test]
+    fn verification_query_owns_case_direction_endpoint_status_and_unsupported_outcome() {
+        let published = publication_for(&[(
+            "memory://verification.sysml",
+            r#"
+package V {
+    requirement required;
+    verification def Check {
+        objective { verify required; }
+        objective second { verify Missing; }
+    }
+}
+"#,
+        )]);
+        let values = match published.requirement_verifications() {
+            QueryOutcome::Resolved(values) => values,
+            other => panic!("expected resolved verification query, got {other:?}"),
+        };
+        assert_eq!(values.len(), 2);
+        let cases = match published.search_elements(ElementSearch {
+            kind: ElementKind::VerificationCaseDefinition,
+            source: ElementSource::Workspace,
+        }) {
+            QueryOutcome::Resolved(values) => values,
+            other => panic!("expected verification cases, got {other:?}"),
+        };
+        let check = cases
+            .iter()
+            .find(|value| value.qualified_name.as_ref() == "V::Check")
+            .expect("Check");
+        assert!(values
+            .iter()
+            .all(|value| value.verification_case == check.identity));
+        assert!(matches!(
+            values[0].requirement,
+            VerificationRequirement::Resolved(_)
+        ));
+        assert!(matches!(
+            values[1].requirement,
+            VerificationRequirement::Unresolved
+        ));
+        assert!(values
+            .iter()
+            .all(|value| value.provenance == RelationshipProvenance::Authored));
+        assert!(values
+            .iter()
+            .all(|value| value.outcome == VerificationOutcome::Unsupported));
         assert_ne!(values[0].identity, values[1].identity);
     }
 

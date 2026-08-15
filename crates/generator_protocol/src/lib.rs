@@ -38,6 +38,9 @@ struct WireSchema {
     requirement_usage_typing: RequirementUsageTyping,
     satisfy_relationship: SatisfyRelationship,
     satisfy_endpoint: SatisfyEndpoint,
+    requirement_verification: RequirementVerification,
+    verification_requirement: VerificationRequirement,
+    verification_outcome: VerificationOutcome,
     level: Level,
     /// Request payloads, which are part of the contract just as much as the responses.
     metaclass_filter: Option<String>,
@@ -622,6 +625,29 @@ pub struct SatisfyRelationship {
     pub provenance: RelationshipProvenance,
     pub recovered: bool,
 }
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum VerificationRequirement {
+    Resolved(ElementSummary),
+    Ambiguous(Vec<ElementSummary>),
+    Unresolved,
+    Unsupported,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum VerificationOutcome {
+    Unsupported,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct RequirementVerification {
+    pub semantic_id: String,
+    pub verification_case: ElementSummary,
+    pub requirement: VerificationRequirement,
+    pub provenance: RelationshipProvenance,
+    pub outcome: VerificationOutcome,
+    pub recovered: bool,
+}
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -706,7 +732,7 @@ mod tests {
     #[test]
     fn the_wire_schema_fingerprint_is_pinned() {
         assert_eq!(
-            SCHEMA_FINGERPRINT, 0x4b81_4b2c_da45_2253,
+            SCHEMA_FINGERPRINT, 0x0410_39af_27dd_4a86,
             "the generator wire schema changed; every guest must be rebuilt"
         );
     }
@@ -714,7 +740,7 @@ mod tests {
     #[test]
     fn the_compatibility_token_is_pinned() {
         assert_eq!(
-            COMPATIBILITY_TOKEN, 0xbd93_e166_135a_da6f,
+            COMPATIBILITY_TOKEN, 0xa785_0467_6b7c_86ee,
             "the generator ABI contract changed; every guest must be rebuilt"
         );
     }
