@@ -12,7 +12,11 @@ const DESIGNATED_CONSUMERS: &[&str] = &[
     "spec42-snapshot",
     "workspace_session",
 ];
-const MODEL_IMPLEMENTATION_OWNERS: &[&str] = &["sysml_query"];
+/// Crates that still reach the legacy mutable semantic graph directly.
+///
+/// `sysml_query` is deliberately absent: the facade now depends only on `sysml_resolution`, which
+/// is what `facade_depends_only_on_the_immutable_resolution_owner` pins. Every crate below is an
+/// unmigrated consumer tracked in `PRODUCTION_CUTOVER.md`, and this list may only shrink.
 const TRANSITIONAL_DIRECT_CONSUMERS: &[&str] = &[
     "language_service",
     "lsp_server",
@@ -118,9 +122,8 @@ fn designated_consumers_use_the_query_facade_and_direct_model_dependencies_do_no
         }
     }
 
-    let known = MODEL_IMPLEMENTATION_OWNERS
+    let known = TRANSITIONAL_DIRECT_CONSUMERS
         .iter()
-        .chain(TRANSITIONAL_DIRECT_CONSUMERS)
         .copied()
         .collect::<BTreeSet<_>>();
     assert_eq!(
@@ -179,17 +182,12 @@ fn immutable_snapshot_runner_has_an_exact_graph_free_dependency_boundary() {
         .iter()
         .find(|package| package["name"] == "spec42-snapshot")
         .expect("snapshot package");
-    let query = snapshot["dependencies"]
+    snapshot["dependencies"]
         .as_array()
         .expect("snapshot dependencies")
         .iter()
         .find(|dependency| dependency["name"] == "sysml_query")
         .expect("snapshot query dependency");
-    assert_eq!(query["uses_default_features"], false);
-    assert_eq!(
-        query["features"].as_array().expect("query features"),
-        &[Value::String("immutable-resolution".to_owned())]
-    );
 
     let resolution = packages
         .iter()
@@ -247,6 +245,97 @@ fn immutable_snapshot_runner_has_an_exact_graph_free_dependency_boundary() {
         "the parser-owned semantic builder must have exactly one owner"
     );
     assert!(root.join("crates/sysml_resolution/src/model.rs").exists());
+}
+
+/// The facade's whole dependency surface, stated exactly.
+///
+/// This replaces the feature selection consumers used to carry. While `sysml_query` had a
+/// `legacy-model` feature, a consumer had to opt out of the graph and the guardrail could only
+/// check that it had; now there is nothing to opt out of, and the boundary is a property of the
+/// facade itself. A feature reintroducing an optional dependency would fail here, because an
+/// always-off feature is still a way to grow this set later without review.
+#[test]
+fn facade_depends_only_on_the_immutable_resolution_owner() {
+    let root = repository_root();
+    let output = Command::new(env!("CARGO"))
+        .args(["metadata", "--format-version", "1", "--no-deps"])
+        .current_dir(&root)
+        .output()
+        .expect("run cargo metadata");
+    assert!(
+        output.status.success(),
+        "cargo metadata failed: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let metadata: Value = serde_json::from_slice(&output.stdout).expect("parse cargo metadata");
+    let query = metadata["packages"]
+        .as_array()
+        .expect("packages array")
+        .iter()
+        .find(|package| package["name"] == "sysml_query")
+        .expect("query package");
+
+    let dependencies = query["dependencies"]
+        .as_array()
+        .expect("query dependencies")
+        .iter()
+        .filter(|dependency| dependency["kind"].is_null())
+        .map(|dependency| {
+            dependency["name"]
+                .as_str()
+                .expect("dependency name")
+                .to_owned()
+        })
+        .collect::<BTreeSet<_>>();
+    assert_eq!(
+        dependencies,
+        BTreeSet::from(["sysml_resolution".to_owned()]),
+        "the query facade's normal dependency boundary changed"
+    );
+    assert!(
+        query["features"]
+            .as_object()
+            .expect("query features")
+            .is_empty(),
+        "the facade must not offer a feature that can admit another dependency"
+    );
+}
+
+/// `PRODUCTION_CUTOVER.md` claims its family table is the complete inventory of what
+/// `sysml_diagnostics` still owns. A claim of completeness has to be checked, not trusted.
+///
+/// The risk this guards is specific: a consumer pointed at `PublishedModel::diagnostics()` before
+/// its families are published stops reporting those codes, and nothing else fails. Keeping the
+/// table exhaustive is what makes that decision reviewable.
+#[test]
+fn the_cutover_inventory_names_every_legacy_diagnostic_check_family() {
+    let root = repository_root();
+    let modules = fs::read_to_string(root.join("crates/sysml_diagnostics/src/checks/mod.rs"))
+        .expect("read diagnostic check modules");
+    let inventory = fs::read_to_string(root.join("crates/sysml_query/PRODUCTION_CUTOVER.md"))
+        .expect("read cutover inventory");
+
+    let mut missing = Vec::new();
+    for line in modules.lines() {
+        let Some(module) = line
+            .trim()
+            .strip_prefix("pub(super) mod ")
+            .and_then(|rest| rest.strip_suffix(';'))
+        else {
+            continue;
+        };
+        // The table names families in prose ("kind compatibility"), not by module path, because it
+        // is read by people deciding whether a slice is safe to migrate.
+        let prose = module.replace('_', " ");
+        if !inventory.contains(module) && !inventory.contains(&prose) {
+            missing.push(module.to_owned());
+        }
+    }
+    assert!(
+        missing.is_empty(),
+        "diagnostic check families absent from PRODUCTION_CUTOVER.md: {missing:?}. \
+         A family that is not in the table can be dropped by a consumer migration without review."
+    );
 }
 
 #[test]

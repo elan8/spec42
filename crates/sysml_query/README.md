@@ -25,41 +25,36 @@ library once so later publications reuse it, which is what makes admitting the s
 affordable on a rebuild-per-keystroke host; see `planning/RESOLUTION_LAYER_DESIGN.md` §5.5.1 for
 the conditions under which that reuse is discarded.
 
-The standalone snapshot pipeline now selects only the `immutable-resolution` facade feature. Its
-transitive dependency closure is `sysml_query -> sysml_resolution -> parser-next` and cannot reach
-`sysml_model` or `sysml_diagnostics`; unsupported syntax and recovery remain explicit incomplete
-publications rather than falling back. `workspace_session` stores only `Arc<PublishedModel>` and
-validates replacement identity and completeness through the existing typed publication service
-while the remaining production consumers migrate.
+The facade has one dependency. Its transitive closure is
+`sysml_query -> sysml_resolution -> parser-next` and cannot reach `sysml_model` or
+`sysml_diagnostics`; unsupported syntax and recovery remain explicit incomplete publications rather
+than falling back. There is no feature to select, so no consumer can opt back in. `workspace_session`
+stores only `Arc<PublishedModel>` and validates replacement identity and completeness through the
+typed publication service while the remaining production consumers migrate.
 
 The normal `sysml_query` test gate enforces the boundary in three ways:
 
-- Cargo metadata verifies designated consumers depend on `sysml_query`, not `sysml_model`, and
-  rejects any change to direct implementation dependencies outside the recorded, shrink-only
-  migration inventory. Removing a dependency must remove its inventory entry in the same change.
+- Cargo metadata verifies the facade's own dependency set is exactly `sysml_resolution` and that it
+  declares no features, verifies designated consumers depend on `sysml_query` rather than
+  `sysml_model`, and rejects any change to direct implementation dependencies outside the recorded,
+  shrink-only migration inventory. Removing a dependency must remove its inventory entry in the same
+  change.
 - A `syn`-based public-API inspection rejects raw storage types, aliases, and public glob exports;
   it also verifies the model publication has no public graph/node/state/index escape hatch.
 - Compiler-fail documentation tests prove consumers cannot import raw state/index types, call an
   implementation view, or access the opaque handle's private field.
 
-Only `sysml_query` is an implementation owner allowed to depend directly on `sysml_model` in the
-finished architecture. `language_service`, `lsp_server`, `server`, `sysml_diagnostics`, and
-`workspace` are named migration debt in an exact transitional inventory; the metadata gate permits
-no additions or stale entries. Each is removed when its complete vertical slice migrates—partial
-wrappers are not retained as a compatibility surface.
+No crate may depend directly on `sysml_model` in the finished architecture. `language_service`,
+`lsp_server`, `server`, `sysml_diagnostics`, and `workspace` are named migration debt in an exact
+transitional inventory; the metadata gate permits no additions or stale entries. Each is removed
+when its complete vertical slice migrates—partial wrappers are not retained as a compatibility
+surface.
 
-The `legacy-model` facade feature still depends on `sysml_diagnostics` for production consumers that
-have not migrated. The immutable snapshot path instead receives parser, canonicalization, and
-resolution diagnostics from `sysml_resolution` and streams their canonical S-expression without
-exposing storage. Presentation-neutral typed diagnostics remain the intended shared contract for
-future CLI, LSP, Markdown, and HTML adapters.
-
-The next ownership step is a dependency-complete, owner-scoped construction seed from
-`sysml_model`. It must carry only the canonical typed inputs needed to build indexes, not expose a
-graph, generic facts collection, or index handle. `sysml_query` can then build and privately own
-`SemanticQueryIndexes` before publishing `PublishedModel`, after which the model-owned temporary
-index and its forwarding methods are deleted. The manifest gate, rather than compatibility
-wrappers, restricts that implementation seam to `sysml_query`.
+Diagnostics are published as typed values. `PublishedModel::diagnostics()` returns the codes,
+severities, ranges, and related locations `sysml_resolution` settled at the publication barrier, and
+the canonical S-expression is one adapter over them rather than their only representation. That is
+the shared contract CLI, LSP, Markdown, and HTML adapters consume; none of them recovers a fact by
+parsing presentation text.
 
 The dependency-complete inventory for replacing the production workspace, server, and LSP graph
 publication is maintained in [PRODUCTION_CUTOVER.md](PRODUCTION_CUTOVER.md). This tranche does not

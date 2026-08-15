@@ -9,6 +9,7 @@ use std::fmt;
 
 use source_identity::{ContentDigest, RootDigest, SourceManifest, SourceManifestEntry, SourceRole};
 
+mod diagnostics;
 mod element_kind;
 mod evaluation;
 mod inspection;
@@ -17,6 +18,10 @@ mod traceability;
 mod type_query;
 mod verification;
 
+pub use diagnostics::{
+    Diagnostic, DiagnosticCode, DiagnosticLocation, DiagnosticOrigin, DiagnosticSeverity,
+    PublishedDiagnostics,
+};
 pub use element_kind::{
     ElementKind, MembershipRole, RequirementConstraintKind, StateSubactionKind,
 };
@@ -84,6 +89,14 @@ pub struct SourceInput {
 }
 
 impl SourceInput {
+    /// The normalized identity every query and published fact addresses this source by.
+    ///
+    /// Exposed so a caller can name a document it admitted without re-deriving the identity from
+    /// a path; this crate owns that normalization and a second spelling of it would drift.
+    pub fn identity(&self) -> &str {
+        &self.identity
+    }
+
     pub fn new(identity: impl Into<Box<str>>, content: String, kind: SourceKind) -> Self {
         let content_digest = ContentDigest::of_bytes(content.as_bytes());
         Self {
@@ -471,6 +484,20 @@ impl PublishedResolution {
 
     pub fn completeness(&self) -> PublicationCompleteness {
         self.model.completeness()
+    }
+
+    /// The resolution-owned diagnostics this publication settled, in canonical order.
+    ///
+    /// These are facts, not rendered text: the canonical S-expression projection is one adapter
+    /// over exactly these values, so no consumer recovers a code, severity, or outcome from
+    /// presentation output or re-decides a rule.
+    ///
+    /// This is **not** the whole diagnostic surface. Parser recovery, unmodelled constructs, and
+    /// authored-reference outcomes are here; the conformance families are still owned by
+    /// `sysml_diagnostics` over the mutable graph. See the [`diagnostics`] module documentation
+    /// before using this to replace a legacy diagnostic consumer.
+    pub fn diagnostics(&self) -> PublishedDiagnostics {
+        self.model.published_diagnostics()
     }
 
     pub fn target_at(

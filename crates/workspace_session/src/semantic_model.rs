@@ -1,4 +1,5 @@
-//! Atomic publication owner for opaque immutable [`sysml_query::PublishedModel`] values.
+//! Atomic publication owner for opaque immutable
+//! [`sysml_query::resolved_slice::PublishedModel`] values.
 //!
 //! A build runs against an immutable source snapshot outside this owner.  The owner only admits
 //! a completed model at its publication barrier, after checking both the owner-scoped relink token
@@ -7,7 +8,9 @@
 
 use std::sync::Arc;
 
-use sysml_query::{BuildRequest, PublicationCompleteness, PublicationIdentity, PublishedModel};
+use sysml_query::resolved_slice::{
+    BuildRequest, PublicationCompleteness, PublicationIdentity, PublishedModel,
+};
 use workspace::{SessionLifecycle, WorkspaceSession};
 
 use crate::{MutatePanicked, Mutation, SessionActor, SnapshotHandle, TracksRelink};
@@ -38,6 +41,9 @@ impl PublicationValue<PublicationIdentity> for Arc<PublishedModel> {
         self.publication().identity()
     }
 
+    /// Only a `Complete` publication is admitted. Parse recovery, unsupported syntax, and a
+    /// non-converged solve are each a distinct reason the build did not settle, and none of them
+    /// may quietly replace the last coherent model a reader is using.
     fn is_complete(&self) -> bool {
         self.publication().completeness() == PublicationCompleteness::Complete
     }

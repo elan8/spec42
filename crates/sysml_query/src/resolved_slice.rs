@@ -3,15 +3,16 @@
 use std::fmt;
 
 pub use sysml_resolution::{
-    AnnotationForm, AuthoredValue, BuildMeasurements, Conformance, ConformanceObstacle,
-    Documentation, EffectiveType, EffectiveTypeOrigin, ElementInspection, ElementInspectionAt,
-    ElementKind, ElementModifier, ElementRelationship, ElementSearch, ElementSource,
-    EvaluatedScalar, EvaluationFailure, EvaluationState, FeatureDirection, MembershipFacts,
-    MembershipKind, MembershipRole, MultiplicityBound, MultiplicityFacts, NavigationTarget,
-    OccurrenceRole, PortionKind, PublicationCompleteness, QueryOutcome, ReferenceAt,
-    RelationshipProvenance, RelationshipTarget, RenameOutcome, RequirementConstraintKind,
-    RequirementUsageTyping, RequirementVerification, SatisfyEndpoint, SatisfyPolarity,
-    SatisfyRelationship, SourceLocation, SpecializationScope, StateSubactionKind,
+    AnnotationForm, AuthoredValue, BuildMeasurements, Conformance, ConformanceObstacle, Diagnostic,
+    DiagnosticCode, DiagnosticLocation, DiagnosticOrigin, DiagnosticSeverity, Documentation,
+    EffectiveType, EffectiveTypeOrigin, ElementInspection, ElementInspectionAt, ElementKind,
+    ElementModifier, ElementRelationship, ElementSearch, ElementSource, EvaluatedScalar,
+    EvaluationFailure, EvaluationState, FeatureDirection, MembershipFacts, MembershipKind,
+    MembershipRole, MultiplicityBound, MultiplicityFacts, NavigationTarget, OccurrenceRole,
+    PortionKind, PublicationCompleteness, PublicationIdentity, PublishedDiagnostics, QueryOutcome,
+    ReferenceAt, RelationshipProvenance, RelationshipTarget, RenameOutcome,
+    RequirementConstraintKind, RequirementUsageTyping, RequirementVerification, SatisfyEndpoint,
+    SatisfyPolarity, SatisfyRelationship, SourceLocation, SpecializationScope, StateSubactionKind,
     SubsettingConformance, SymbolEntry, SymbolIdentity, TextPosition, TextRange, TypeReference,
     ValueKind, VerificationOutcome, VerificationRequirement, Visibility, VisibilityProvenance,
     VisibleMember,
@@ -61,6 +62,11 @@ impl SourceDocument {
                 source_kind.into(),
             ),
         })
+    }
+
+    /// The identity queries and published facts address this document by.
+    pub fn identity(&self) -> &str {
+        self.inner.identity()
     }
 }
 
@@ -135,6 +141,14 @@ impl BuildRequest {
         )
         .map(|inner| Self { inner })
         .map_err(BuildError)
+    }
+
+    /// The identity the publication built from this request will carry.
+    ///
+    /// Available before the build so a publication owner can record what it scheduled and reject
+    /// a result built from anything else, rather than trusting whatever comes back.
+    pub fn identity(&self) -> &PublicationIdentity {
+        self.inner.identity()
     }
 }
 
@@ -235,6 +249,35 @@ impl PublishedModel {
     pub fn types(&self) -> TypeQueries<'_> {
         TypeQueries { model: &self.inner }
     }
+
+    pub fn diagnostics(&self) -> DiagnosticQueries<'_> {
+        DiagnosticQueries { model: &self.inner }
+    }
+}
+
+/// The resolution-owned diagnostics this publication settled.
+///
+/// The facade adapts the owner's contract; it does not evaluate a rule of its own. Every code,
+/// severity, range, and related location a consumer sees here was decided by `sysml_resolution`
+/// at the publication barrier, so a host, a generator, and the canonical snapshot projection
+/// cannot disagree about what one publication reported.
+///
+/// This does not yet cover the conformance families -- kind compatibility, structural-feature,
+/// view metadata, behavior, connection, expression, import, and requirement-case conformance are
+/// still evaluated by `sysml_diagnostics` over the mutable graph. Read
+/// `sysml_resolution::diagnostics`'s module documentation and `PRODUCTION_CUTOVER.md` before
+/// pointing a legacy diagnostic consumer at this service, or it will silently stop reporting
+/// roughly thirty public codes.
+pub struct DiagnosticQueries<'a> {
+    model: &'a sysml_resolution::PublishedResolution,
+}
+
+impl DiagnosticQueries<'_> {
+    /// The published diagnostics, canonically ordered, with the completeness of the publication
+    /// that produced them. Only workspace-authored documents are reported.
+    pub fn published(&self) -> PublishedDiagnostics {
+        self.model.diagnostics()
+    }
 }
 
 /// Direct types, supertypes, subtypes, effective types, featuring types and conformance.
@@ -328,9 +371,17 @@ pub struct PublicationQueries<'a> {
     model: &'a sysml_resolution::PublishedResolution,
 }
 
-impl PublicationQueries<'_> {
+impl<'a> PublicationQueries<'a> {
     pub fn completeness(&self) -> PublicationCompleteness {
         self.model.completeness()
+    }
+
+    /// The dependency-complete identity of every input this publication committed to.
+    ///
+    /// Borrowed from the publication rather than the query handle, so an owner can hold it
+    /// against the publication itself instead of cloning at every comparison.
+    pub fn identity(&self) -> &'a PublicationIdentity {
+        self.model.identity()
     }
 
     /// Dependency-complete digest of every source admitted to this publication.
