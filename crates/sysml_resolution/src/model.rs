@@ -4403,6 +4403,12 @@ impl SemanticModelBuilder {
             PartUsageBodyElement::Ref(node) => {
                 self.lower_ref_decl(document, Some(owner), node)?;
             }
+            PartUsageBodyElement::EndDecl(node) => {
+                self.lower_end_decl(document, owner, node)?;
+            }
+            PartUsageBodyElement::InOutDecl(node) => {
+                self.lower_parameter_declaration(document, Some(owner), family, node)?;
+            }
             PartUsageBodyElement::DefaultReferenceUsage(node) => {
                 self.lower_default_reference_usage(document, Some(owner), family, node)?;
             }
@@ -5585,6 +5591,8 @@ impl SemanticModelBuilder {
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declared_name(&node.value.name)?;
         let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
+        let (is_abstract, variation) =
+            definition_prefix_modifiers(node.value.usage_prefix.as_ref());
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -5594,8 +5602,11 @@ impl SemanticModelBuilder {
             DeclarationFacts {
                 short_name,
                 modifiers: DeclarationModifiers {
-                    is_abstract: node.value.is_abstract,
+                    is_abstract,
+                    variation,
                     individual: node.value.is_individual,
+                    derived: node.value.is_derived,
+                    constant: node.value.is_constant,
                     ordered: node.value.ordered,
                     nonunique: node.value.nonunique,
                     ..DeclarationModifiers::default()
@@ -5633,7 +5644,10 @@ impl SemanticModelBuilder {
                 kind: ReferenceKind::FeatureTyping,
                 document,
                 local: type_name,
-                flags: RelationshipFlags::default(),
+                flags: RelationshipFlags {
+                    variation,
+                    ..RelationshipFlags::default()
+                },
                 span,
                 import: None,
             })?;
@@ -9578,6 +9592,15 @@ impl SemanticModelBuilder {
                 RequirementDefBodyElement::RequireConstraint(node) => {
                     self.lower_require_constraint_member(document, owner, unsupported, node)?;
                 }
+                RequirementDefBodyElement::RefDecl(node) => {
+                    self.lower_ref_decl(document, Some(owner), node)?;
+                }
+                RequirementDefBodyElement::ConcernUsage(node) => {
+                    self.lower_concern_usage(document, Some(owner), node)?;
+                }
+                RequirementDefBodyElement::CalcUsage(node) => {
+                    self.lower_calc_usage(document, Some(owner), node)?;
+                }
                 RequirementDefBodyElement::Annotation(_)
                 | RequirementDefBodyElement::MetadataKeywordUsage(_) => {
                     self.push_unsupported(document, unsupported, element.span.clone())
@@ -10309,6 +10332,19 @@ impl SemanticModelBuilder {
                 UseCaseDefBodyElement::AnalysisCaseUsage(analysis_case_usage) => {
                     self.lower_analysis_case_usage(document, Some(owner), analysis_case_usage)?;
                 }
+                UseCaseDefBodyElement::UseCaseUsage(use_case_usage) => {
+                    self.lower_use_case_usage(document, Some(owner), use_case_usage)?;
+                }
+                UseCaseDefBodyElement::CaseUsage(case_usage) => {
+                    self.lower_case_usage(document, Some(owner), case_usage)?;
+                }
+                UseCaseDefBodyElement::VerificationCaseUsage(verification_case_usage) => {
+                    self.lower_verification_case_usage(
+                        document,
+                        Some(owner),
+                        verification_case_usage,
+                    )?;
+                }
                 UseCaseDefBodyElement::ActionUsage(action_usage) => {
                     self.lower_action_usage(document, Some(owner), action_usage)?;
                 }
@@ -10484,6 +10520,9 @@ impl SemanticModelBuilder {
                     }
                     PortDefBodyElement::Doc(node) => {
                         self.record_doc_comment(declaration, node)?;
+                    }
+                    PortDefBodyElement::RefDecl(ref_decl) => {
+                        self.lower_ref_decl(document, Some(declaration), ref_decl)?;
                     }
                     PortDefBodyElement::InOutDecl(param) => {
                         self.lower_parameter_declaration(
@@ -11299,6 +11338,20 @@ impl SemanticModelBuilder {
                     ViewDefBodyElement::MetadataAnnotation(node) => {
                         self.lower_metadata_annotation(document, declaration, node)?;
                     }
+                    ViewDefBodyElement::RefDecl(ref_decl) => {
+                        self.lower_ref_decl(document, Some(declaration), ref_decl)?;
+                    }
+                    ViewDefBodyElement::ViewpointUsage(viewpoint_usage) => {
+                        self.lower_viewpoint_usage(document, Some(declaration), viewpoint_usage)?;
+                    }
+                    ViewDefBodyElement::Satisfy(node) => {
+                        self.lower_satisfy(
+                            document,
+                            declaration,
+                            UnsupportedFamily::ViewDefinitionMember,
+                            node,
+                        )?;
+                    }
                     ViewDefBodyElement::Filter(filter) => {
                         self.lower_filter_expression(
                             document,
@@ -11406,6 +11459,9 @@ impl SemanticModelBuilder {
                     }
                     ViewBodyElement::Satisfy(node) => {
                         self.lower_view_satisfy(document, declaration, node)?;
+                    }
+                    ViewBodyElement::RefDecl(ref_decl) => {
+                        self.lower_ref_decl(document, Some(declaration), ref_decl)?;
                     }
                     ViewBodyElement::Filter(filter) => {
                         self.lower_filter_expression(
@@ -11632,6 +11688,13 @@ impl SemanticModelBuilder {
                         .lower_default_reference_usage(
                             document,
                             Some(declaration),
+                            UnsupportedFamily::ConstraintDefinitionMember,
+                            node,
+                        )?,
+                    ConstraintDefBodyElement::RequireConstraint(node) => self
+                        .lower_require_constraint_member(
+                            document,
+                            declaration,
                             UnsupportedFamily::ConstraintDefinitionMember,
                             node,
                         )?,
@@ -12143,6 +12206,9 @@ impl SemanticModelBuilder {
                 RenderingDefBodyElement::Filter(filter) => {
                     self.lower_filter_expression(document, declaration, &filter.value.condition)?;
                 }
+                RenderingDefBodyElement::RefDecl(ref_decl) => {
+                    self.lower_ref_decl(document, Some(declaration), ref_decl)?;
+                }
                 RenderingDefBodyElement::Unsupported(node) => self.push_unsupported(
                     document,
                     UnsupportedFamily::ParserUnsupported,
@@ -12272,6 +12338,12 @@ impl SemanticModelBuilder {
             }
             OccurrenceBodyElement::EndDecl(end_decl) => {
                 self.lower_end_decl(document, owner, end_decl)?;
+            }
+            OccurrenceBodyElement::RefDecl(ref_decl) => {
+                self.lower_ref_decl(document, Some(owner), ref_decl)?;
+            }
+            OccurrenceBodyElement::ConnectionUsage(connection_usage) => {
+                self.lower_connection_usage(document, Some(owner), connection_usage)?;
             }
             OccurrenceBodyElement::StateUsage(state_usage) => {
                 self.lower_state_usage(document, Some(owner), state_usage)?;

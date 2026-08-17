@@ -44,18 +44,6 @@ package OccurrenceTest {
   (document "memory://snapshot/occurrence_test.md"
     (diagnostics
       (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 3 2) (end 3 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_parser_construct")
-        (source "semantic")
-        (range (start 3 2) (end 3 28))
-      )
-      (diagnostic
         (severity error)
         (code "recovered_occurrence_def_body_element")
         (source "parser")
@@ -82,6 +70,7 @@ package OccurrenceTest {
     (declaration (id (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Ind::t2"))) (kind occurrence) (membership (kind feature) (visibility default)) (facts (portion timeslice)))
     (declaration (id (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Occ"))) (kind occurrence-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Occ::a"))) (kind attribute) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Occ::occ1"))) (kind occurrence) (membership (kind feature) (visibility default)) (facts (modifiers reference)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Occ")))))
     (declaration (id (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Occ::occ2"))) (kind occurrence) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Occ")))))
     (declaration (id (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Occ::t"))) (kind occurrence) (membership (kind feature) (visibility default)) (facts (portion timeslice)))
     (declaration (id (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Occ::x"))) (kind item) (membership (kind feature) (visibility default)))
@@ -96,6 +85,9 @@ package OccurrenceTest {
     (declaration (id (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::occ::z"))) (kind item) (membership (kind feature) (visibility default)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Occ::occ1"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Occ")
+      (outcome (status resolved) (target (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Occ")))))
     (reference (id (source (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Occ::occ2"))) (kind featureTyping) (ordinal 0))
       (authored-target "Occ")
       (outcome (status resolved) (target (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Occ")))))
@@ -113,6 +105,7 @@ package OccurrenceTest {
       (outcome (status resolved) (target (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Occ")))))
   )
   (relationships
+    (relationship (kind typing) (source (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Occ::occ1"))) (target (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Occ"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Occ::occ1"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Occ::occ2"))) (target (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Occ"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Occ::occ2"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::ind"))) (target (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Ind"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::ind"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::occ"))) (target (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Occ"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::occ"))) (kind featureTyping) (ordinal 0)))
@@ -136,6 +129,7 @@ package OccurrenceTest {
       (featured-by (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Ind")))
     )
     (declaration (id (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Occ")))
+      (subtype (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Occ::occ1")) (scopes any))
       (subtype (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Occ::occ2")) (scopes any))
       (subtype (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::occ")) (scopes any))
       (subtype (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::occ::o1")) (scopes any))
@@ -143,6 +137,12 @@ package OccurrenceTest {
     )
     (declaration (id (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Occ::a")))
       (featured-by (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Occ")))
+    )
+    (declaration (id (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Occ::occ1")))
+      (featured-by (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Occ")))
+      (type (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Occ")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Occ")) (source direct))
+      (supertype (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Occ")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Occ::occ2")))
       (featured-by (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Occ")))
@@ -195,6 +195,11 @@ package OccurrenceTest {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/occurrence_test.md") (range (start 3 24) (end 3 27)) (probe (position 3 24))
+    (reference (id (source (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Occ::occ1"))) (kind featureTyping) (ordinal 0) (authored-target "Occ")
+      (outcome (status resolved) (target (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Occ")))))
+    )
+  )
   (query (document "memory://snapshot/occurrence_test.md") (range (start 4 20) (end 4 23)) (probe (position 4 20))
     (reference (id (source (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Occ::occ2"))) (kind featureTyping) (ordinal 0) (authored-target "Occ")
       (outcome (status resolved) (target (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Occ")))))

@@ -42,27 +42,15 @@ package 'Interaction Example-1' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 8 2) (end 8 22))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_parser_construct")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 8 2) (end 8 22))
+        (range (start 8 15) (end 8 21))
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 9 2) (end 9 23))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_parser_construct")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 9 2) (end 9 23))
+        (range (start 9 15) (end 9 22))
       )
       (diagnostic
         (severity warning)
@@ -100,6 +88,8 @@ package 'Interaction Example-1' {
     (declaration (id (node (document "memory://snapshot/27_interaction_example_1.md") (qualified-name "Interaction Example-1"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/27_interaction_example_1.md") (path (named (kind package) (name "Interaction Example-1")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "Event Occurrence Example") (import (shape namespace) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/27_interaction_example_1.md") (qualified-name "Interaction Example-1::CruiseControlInteraction"))) (kind occurrence-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/27_interaction_example_1.md") (path (named (kind package) (name "Interaction Example-1")) (named (kind occurrence-def) (name "CruiseControlInteraction")) (anonymous (kind part) (ordinal 0))))) (kind part) (membership (kind feature) (visibility default)) (facts (modifiers reference)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "driver")))))
+    (declaration (id (node (document "memory://snapshot/27_interaction_example_1.md") (path (named (kind package) (name "Interaction Example-1")) (named (kind occurrence-def) (name "CruiseControlInteraction")) (anonymous (kind part) (ordinal 1))))) (kind part) (membership (kind feature) (visibility default)) (facts (modifiers reference)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "vehicle")))))
     (declaration (id (node (document "memory://snapshot/27_interaction_example_1.md") (qualified-name "Interaction Example-1::FuelCommand"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/27_interaction_example_1.md") (qualified-name "Interaction Example-1::SensedSpeed"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/27_interaction_example_1.md") (qualified-name "Interaction Example-1::SetSpeed"))) (kind item-def) (membership (kind owning) (visibility default)))
@@ -107,6 +97,12 @@ package 'Interaction Example-1' {
   (references
     (reference (id (source (node (document "memory://snapshot/27_interaction_example_1.md") (path (named (kind package) (name "Interaction Example-1")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
       (authored-target "Event Occurrence Example")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/27_interaction_example_1.md") (path (named (kind package) (name "Interaction Example-1")) (named (kind occurrence-def) (name "CruiseControlInteraction")) (anonymous (kind part) (ordinal 0))))) (kind redefinition) (ordinal 0))
+      (authored-target "driver")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/27_interaction_example_1.md") (path (named (kind package) (name "Interaction Example-1")) (named (kind occurrence-def) (name "CruiseControlInteraction")) (anonymous (kind part) (ordinal 1))))) (kind redefinition) (ordinal 0))
+      (authored-target "vehicle")
       (outcome (status unresolved)))
   )
   (relationships
@@ -118,6 +114,12 @@ package 'Interaction Example-1' {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/27_interaction_example_1.md") (path (named (kind package) (name "Interaction Example-1")) (named (kind occurrence-def) (name "CruiseControlInteraction")) (anonymous (kind part) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/27_interaction_example_1.md") (qualified-name "Interaction Example-1::CruiseControlInteraction")))
+    )
+    (declaration (id (node (document "memory://snapshot/27_interaction_example_1.md") (path (named (kind package) (name "Interaction Example-1")) (named (kind occurrence-def) (name "CruiseControlInteraction")) (anonymous (kind part) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/27_interaction_example_1.md") (qualified-name "Interaction Example-1::CruiseControlInteraction")))
+    )
 )
 ~~~
 # NAVIGATION
@@ -125,6 +127,16 @@ package 'Interaction Example-1' {
 (navigation
   (query (document "memory://snapshot/27_interaction_example_1.md") (range (start 1 15) (end 1 44)) (probe (position 1 15))
     (reference (id (source (node (document "memory://snapshot/27_interaction_example_1.md") (path (named (kind package) (name "Interaction Example-1")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "Event Occurrence Example")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/27_interaction_example_1.md") (range (start 8 15) (end 8 21)) (probe (position 8 15))
+    (reference (id (source (node (document "memory://snapshot/27_interaction_example_1.md") (path (named (kind package) (name "Interaction Example-1")) (named (kind occurrence-def) (name "CruiseControlInteraction")) (anonymous (kind part) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "driver")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/27_interaction_example_1.md") (range (start 9 15) (end 9 22)) (probe (position 9 15))
+    (reference (id (source (node (document "memory://snapshot/27_interaction_example_1.md") (path (named (kind package) (name "Interaction Example-1")) (named (kind occurrence-def) (name "CruiseControlInteraction")) (anonymous (kind part) (ordinal 1))))) (kind redefinition) (ordinal 0) (authored-target "vehicle")
       (outcome (status unresolved)))
     )
   )
