@@ -1506,6 +1506,8 @@ impl ResolvedSemanticModel {
             owner,
             first,
             DeclarationDomain::Any,
+            // An interactive lookup has no redefining feature to exclude.
+            None,
             &mut candidates,
             &mut work,
         )?;
@@ -4267,6 +4269,21 @@ fn resolve_reference<R: ResolutionReferenceFact>(
     let source = declarations
         .get(reference.source().index())
         .ok_or(ResolutionError::InvalidStorage)?;
+    // KerML Redefinition relates a feature to a *different* feature, so the redefining feature is
+    // not in its own redefinition scope: the Pilot's `KerMLScope` excludes it, and
+    // planning/RESOLUTION_LAYER_DESIGN.md section 11.1 requires "Redefinition excludes owned
+    // first-scope candidates".
+    //
+    // Without this, `feature annotatedElement : Element[1..*] redefines annotatedElement;` -- the
+    // shape the KerML abstract-syntax library uses throughout to narrow an inherited feature --
+    // finds itself in its owner's owned tier, and that tier shadows the inherited one the author
+    // meant. The feature then specializes itself, which makes its whole conformance hierarchy
+    // cyclic and every conformance question about it unanswerable.
+    //
+    // This removes one candidate; it does not reorder the precedence tiers. An owned tier left
+    // empty by the exclusion falls through to inherited scope exactly as an owner that never
+    // declared the name would.
+    let excluded = (reference.kind() == ReferenceKind::Redefinition).then(|| reference.source());
     scratch.candidates.clear();
     scratch.next_candidates.clear();
     if rooted {
@@ -4293,6 +4310,7 @@ fn resolve_reference<R: ResolutionReferenceFact>(
             source.owner,
             segments[0],
             first_segment_domain,
+            excluded,
             scratch.candidates,
             scratch.work,
         )?;
@@ -4343,6 +4361,11 @@ fn resolve_reference<R: ResolutionReferenceFact>(
                 .is_some_and(|declaration| domain.accepts(declaration.kind))
         });
     }
+    // A qualified or absolute path can name the redefining feature just as an unqualified one can,
+    // and it is no more well-formed for having been spelled out.
+    if let Some(excluded) = excluded {
+        scratch.candidates.retain(|candidate| *candidate != excluded);
+    }
     status_from_candidates(scratch.candidates, scratch.ambiguous_candidates)
 }
 
@@ -4366,6 +4389,7 @@ fn lookup_lexical_into(
     mut owner: Option<DeclarationId>,
     name: SymbolId,
     domain: DeclarationDomain,
+    excluded: Option<DeclarationId>,
     candidates: &mut Vec<DeclarationId>,
     work: &mut ResolutionWork,
 ) -> Result<(), ResolutionError> {
@@ -4385,9 +4409,26 @@ fn lookup_lexical_into(
             out.extend(compatible);
         }
     };
+    // Applied before the tier is tested for emptiness, so a tier whose only binding is the
+    // excluded declaration does not shadow the tiers below it.
+    let visible = |raw: &[DeclarationId], scratch: &mut Vec<DeclarationId>| -> bool {
+        let Some(excluded) = excluded else {
+            return false;
+        };
+        if !raw.contains(&excluded) {
+            return false;
+        }
+        scratch.clear();
+        scratch.extend(raw.iter().copied().filter(|entry| *entry != excluded));
+        true
+    };
+    let mut filtered = Vec::new();
     loop {
         record_lookup(work)?;
-        let direct = indexes.direct_names.candidates(owner, name);
+        let mut direct = indexes.direct_names.candidates(owner, name);
+        if visible(direct, &mut filtered) {
+            direct = &filtered;
+        }
         if !direct.is_empty() {
             select_tier(direct, candidates);
             return Ok(());
@@ -4464,6 +4505,8 @@ fn resolve_member_access_reference<R: ResolutionReferenceFact>(
         source.owner,
         segments[0],
         DeclarationDomain::Any,
+        // A member-access chain is never a Redefinition reference.
+        None,
         scratch.candidates,
         scratch.work,
     )?;
