@@ -500,8 +500,8 @@ impl PublishedResolution {
     /// over exactly these values, so no consumer recovers a code, severity, or outcome from
     /// presentation output or re-decides a rule.
     ///
-    /// This is the complete production validation surface; see the [`diagnostics`] module
-    /// documentation for the families it decides.
+    /// This is the complete production validation surface; see [`DiagnosticCode`] for every
+    /// family it decides.
     pub fn diagnostics(&self) -> PublishedDiagnostics {
         self.model.published_diagnostics()
     }
@@ -875,6 +875,86 @@ mod tests {
             .diagnostics
             .iter()
             .any(|diagnostic| diagnostic.code == DiagnosticCode::ViewTypeNonStandard));
+    }
+
+    /// The library-context hint is a fact about the publication, not about a host's configuration.
+    ///
+    /// Both admission paths answer the same way, which is what makes the hint safe for a host that
+    /// reuses a solved library stratum: a workspace that admitted a library never reports it,
+    /// whether the library came in as a source or as a stratum.
+    #[test]
+    fn the_library_context_hint_reads_what_the_publication_admitted() {
+        let workspace = "package P { import Lib::*; part def D :> Missing; }";
+        let codes = |published: PublishedResolution| {
+            published
+                .document_diagnostics("memory://workspace.sysml")
+                .diagnostics
+                .iter()
+                .map(|diagnostic| diagnostic.code.as_str().to_string())
+                .collect::<Vec<_>>()
+        };
+
+        let alone = build(
+            BuildRequest::new(
+                vec![SourceInput::new(
+                    "memory://workspace.sysml",
+                    workspace.to_string(),
+                    SourceKind::Workspace,
+                )],
+                ConstructionSchedule::Sequential,
+                "contract-v1",
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        assert!(
+            codes(alone).contains(&"missing_library_context".to_string()),
+            "a workspace with unresolved imports and no library admitted reports the hint"
+        );
+
+        let with_stratum = build(
+            BuildRequest::with_library(
+                vec![SourceInput::new(
+                    "memory://workspace.sysml",
+                    workspace.to_string(),
+                    SourceKind::Workspace,
+                )],
+                ConstructionSchedule::Sequential,
+                "contract-v1",
+                library_stratum(),
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        assert!(
+            !codes(with_stratum).contains(&"missing_library_context".to_string()),
+            "a publication that admitted a library stratum has library context"
+        );
+
+        let with_source = build(
+            BuildRequest::new(
+                vec![
+                    SourceInput::new(
+                        "memory://lib.sysml",
+                        LIBRARY_SOURCE.to_string(),
+                        SourceKind::StandardLibrary,
+                    ),
+                    SourceInput::new(
+                        "memory://workspace.sysml",
+                        workspace.to_string(),
+                        SourceKind::Workspace,
+                    ),
+                ],
+                ConstructionSchedule::Sequential,
+                "contract-v1",
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        assert!(
+            !codes(with_source).contains(&"missing_library_context".to_string()),
+            "admitting the library as a source is the same fact as admitting it as a stratum"
+        );
     }
 
     #[test]

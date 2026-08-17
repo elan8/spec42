@@ -1299,7 +1299,7 @@ mod publication_tests {
         let (graph, _) = build_and_link_graph(&documents).expect("build");
         // The reference to `DoesNotExist` never resolves to a Typing edge -- an explicit
         // unresolved outcome, not a build failure (`unresolved_type_reference` is exactly the
-        // diagnostic this state drives in `sysml_diagnostics`).
+        // diagnostic this state drives).
         assert!(
             !edge_triples(&graph).iter().any(|(source, _, kind)| {
                 source == "Demo::x" && kind == RelationshipKind::Typing.as_str()

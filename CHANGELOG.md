@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Every diagnostic Spec42 reports is settled by the immutable publication.** `sysml_resolution`
+  now owns the conformance families the graph engine ran -- namespace identity, connection,
+  behavior, requirement/case, view and inherited-value conformance -- and the two authoring hints,
+  deciding each from a fact an earlier phase settled rather than from text. The typed contract
+  gains an owner-produced message, the identity of the element a diagnostic is about, a note per
+  related site, and `information` severity; `diagnostics().for_document()` answers one document
+  from a prebuilt index. Workspace validation, the LSP, and `spec42 check` read that one result:
+  the graph-backed engine, its check modules, helpers and entry points are deleted, and
+  `sysml_diagnostics` is now the neutral diagnostic shape plus the one reporting policy a host has
+  -- report only what the parser rejected for a document that does not parse.
+
+  Diagnostic codes change with it. Every unresolved endpoint reports `unresolved_reference` or
+  `unresolved_type_reference` at the same range instead of a per-relationship spelling
+  (`unresolved_satisfy_source`, `unresolved_allocate_target`, `unresolved_ref_type_reference` and
+  their siblings), because the publication settles every authored reference the same way;
+  `ambiguous_name_reference` becomes `ambiguous_reference`; port compatibility reports
+  `port_type_mismatch` or `flow_direction_incompatible` from the settled conjugation and feature
+  directions rather than from the spelling of a type reference. `unresolved_pending_relationship`
+  and its expression sibling described the graph's own pending queues and have no counterpart.
+  Codes whose owning fact the publication does not hold -- view expose targets, metadata `about`
+  and body bindings, user-defined keywords, case objective and verdict shape, initial-transition
+  cardinality -- are listed with the missing fact in `crates/sysml_query/PRODUCTION_CUTOVER.md`.
+  Three answers improve: a `connect a.fill to b.fill` is checked rather than skipped, two ports are
+  compatible when they offer each other the features they expect rather than when one definition
+  specializes the other, and a fan-out to distinct usages is no longer one connection repeated.
+
 - **The feature inspector reads the immutable publication.** `sysml_resolution` publishes
   `element_details`: one cohesive answer per element carrying its inspection, what each authored
   relationship family settled to, the types it has once inheritance is taken into account, the
@@ -44,7 +70,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   is retired: a string literal is not an enumeration literal whether or not the enum declares a member
   of that name, so `attribute_value_type_mismatch` reports it, and reports any value whose type is
   unrelated to its feature's. Hover reads the published evaluation for both the evaluated value and
-  the unit literal; the LSP and CLI pipelines pick the codes up when `sysml_diagnostics` migrates.
+  the unit literal.
 
 - **Bumped the pinned `sysml-v2-parser-next` revision `7eb7869` → `7d4fd85`.** The shared
   `RefPrefix` modifier chain (`abstract`/`variation`, `derived`, `constant`, `ref`, and the

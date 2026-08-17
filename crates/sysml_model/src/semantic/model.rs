@@ -1182,7 +1182,7 @@ pub struct DeclaredSemanticFacts {
     pub own_expression: Option<DeclaredExpression>,
     /// Set on a `Transition` node: the authored source/target endpoint references plus the
     /// `initial`/`done` state-machine flags derived from them. Endpoint resolution to concrete
-    /// node IDs happens downstream (e.g. `sysml_diagnostics::behavior_conformance`), the same
+    /// node IDs happens downstream in the behavior projection, the same
     /// two-step handoff `ConnectStatementDetail`'s `source_expression`/`target_expression` use.
     #[serde(default)]
     pub transition_endpoints: Option<TransitionEndpointFacts>,
@@ -1219,7 +1219,7 @@ pub struct DeclaredSemanticFacts {
     /// Declared keyword spelling used only for semantic-classification decisions: user-defined
     /// modeled-keyword detection on a `feature decl`/`classifier decl` node, or the matched
     /// keyword on a `MetadataKeyword` usage (see
-    /// `sysml_diagnostics::checks::view_metadata_conformance`). Deliberately distinct from
+    /// the view projection). Deliberately distinct from
     /// `SourceTextFacts::keyword`, which covers only the unrelated hover/doc-comment spelling of
     /// an opaque member / action body decl (was `attributes["keyword"]` for this use,
     /// `planning/UNIFY_CACHE_PROGRESS.md` B9).
@@ -2303,7 +2303,7 @@ impl Drop for DeclaredExpression {
 /// `keyword` here covers only the hover/doc-comment presentation use (opaque member / action
 /// body decl spelling). The *semantic* classification use of a `keyword` value -- feature/
 /// classifier-decl user-defined-keyword detection and metadata-keyword-usage matching in
-/// `sysml_diagnostics::checks::view_metadata_conformance` -- reads a distinct producer/consumer
+/// the view projection -- reads a distinct producer/consumer
 /// pair on the untyped `attributes` map and is out of scope here; see
 /// `planning/UNIFY_CACHE_PROGRESS.md` B9.
 #[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq, Eq)]

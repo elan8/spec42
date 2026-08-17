@@ -89,9 +89,9 @@ fn assert_matches_full_rebuild(graph: &SemanticGraph, documents: &[SysmlDocument
 /// §7.2's public-query differential suite (d): for the two graphs, compares node/relationship
 /// queries, containment, imports, type resolution, inherited members, standard-library facts,
 /// units, and evaluation queries. Diagnostics (codes/ranges/severities/ordering) are owned by
-/// `sysml_diagnostics`, a crate that depends on `sysml_model` rather than the reverse, so they
+/// the diagnostic layer, which reads the immutable publication rather than this graph, so they
 /// are out of reach from inside this crate; that half of §7.2 is deferred to a suite living in
-/// `sysml_diagnostics` itself, not silently dropped.
+/// that layer itself, not silently dropped.
 fn assert_observable_query_surface_matches(
     left: &SemanticGraph,
     right: &SemanticGraph,

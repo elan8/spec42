@@ -17,7 +17,7 @@
 //! # Cache miss, not a model diagnostic
 //!
 //! A [`GraphInvariantError`] must never be surfaced as though the user's source model were at
-//! fault. It is deliberately not a `sysml_diagnostics` diagnostic and carries no source-facing
+//! fault. It is deliberately not a reported diagnostic and carries no source-facing
 //! severity, code, or message contract; the only sanctioned use is `Err` propagation into a cache
 //! layer that maps it to a typed miss (`workspace::cache::api::CacheMissReason::InvariantFailure`)
 //! and falls back to the canonical uncached build path. See the `separates_from_user_diagnostics`
@@ -1176,7 +1176,7 @@ mod tests {
         assert!(matches!(err, GraphInvariantError::ExpressionTooDeep { .. }));
     }
 
-    /// A rejected graph never produces a `sysml_diagnostics`-shaped value: `GraphInvariantError`
+    /// A rejected graph never produces a reported-diagnostic-shaped value: `GraphInvariantError`
     /// carries no diagnostic code, severity, or source range, and is only ever surfaced through
     /// `Result::Err`, never appended to a diagnostics collection. This asserts the type-level
     /// separation the module doc comment describes: nothing about this error can be mistaken for
@@ -1195,7 +1195,7 @@ mod tests {
             other => panic!("expected DuplicateNodeId, got {other:?}"),
         }
         // `GraphInvariantError` has no `code()`/`severity()`/`range()` accessor and does not
-        // implement any `sysml_diagnostics` diagnostic trait -- there is no path from this type
+        // implement any reported-diagnostic trait -- there is no path from this type
         // into a diagnostics collection. The compile-time absence of such members is the
         // assertion; this test documents that intent alongside the typed-variant checks above.
     }

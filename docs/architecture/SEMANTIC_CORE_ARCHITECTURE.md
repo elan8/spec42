@@ -33,7 +33,6 @@ The crate is designed to be consumed by multiple hosts (`lsp_server`, `workspace
 - Expression evaluation and unit-aware calculations
 - Shared DTOs for model/graph/visualization payloads
 - Graph-first visualization entrypoint (`build_sysml_visualization_from_graph`)
-- Graph-first diagnostics entrypoint (`collect_diagnostics_from_graph`)
 
 ## Module Overview
 

@@ -1562,7 +1562,7 @@ pub(super) fn materialize_textual_rep(
         g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
     }
     // `language` also feeds the `viewpoint_rep_language_unresolved` diagnostic in
-    // `sysml_diagnostics::checks::view_metadata_conformance`, which reads the typed
+    // the view projection, which reads the typed
     // `source_text.language` fact set below.
     if let Some(ref language_span) = tr.language_span {
         attrs.insert(

@@ -6,7 +6,7 @@
 //!
 //! # What the legacy check did instead
 //!
-//! `sysml_diagnostics::checks::expression_conformance` decided a feature's expected type by
+//! The deleted graph-backed expression check decided a feature's expected type by
 //! testing whether its authored type reference ended in `::Boolean`, decided a value's type by
 //! testing whether the value text spelled `true`, matched enumeration values by comparing a string
 //! literal against member names, and found units by searching the whole graph for a node whose

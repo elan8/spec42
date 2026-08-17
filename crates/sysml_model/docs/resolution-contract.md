@@ -9,7 +9,6 @@ This document defines how Spec42 resolves names in the merged semantic graph. Co
 3. **Link** — `link_workspace_relationships` (typing, specializes, derivation wiring).
 4. **Evaluate prep** — `prepare_analysis_evaluation_context`.
 5. **Pending resolve** — `resolve_workspace_pending_relationships` (expression + qualified pending edges).
-6. **Diagnostics** — `collect_diagnostics_from_graph`.
 
 Entry point: `build_and_link_graph` in `semantic/pipeline.rs`.
 
