@@ -3588,6 +3588,148 @@ package P {
         }
     }
 
+    /// A minimal but structurally faithful measurement library.
+    ///
+    /// The unit rules are rooted in library declarations, so parity for them cannot be shown
+    /// against a library that declares none. This mirrors the standard library's shape exactly
+    /// where the rules read it: `MeasurementUnit` as the root of unit types, `TensorQuantityValue`
+    /// with the `mRef` feature a quantity value redefines, and units declared as attribute usages
+    /// carrying a short-name symbol.
+    const MEASUREMENT_LIBRARY_SOURCE: &str = concat!(
+        "standard library package ScalarValues { datatype Boolean; datatype String; ",
+        "datatype Real; datatype Integer :> Real; }\n",
+        "standard library package MeasurementReferences { ",
+        "abstract attribute def MeasurementUnit; ",
+        "attribute def MassUnit :> MeasurementUnit; ",
+        "attribute def DurationUnit :> MeasurementUnit; }\n",
+        "standard library package Quantities { ",
+        "abstract attribute def TensorQuantityValue { ",
+        "attribute mRef : MeasurementReferences::MeasurementUnit; } ",
+        "attribute def MassValue :> TensorQuantityValue { ",
+        "attribute :>> mRef : MeasurementReferences::MassUnit; } }\n",
+        "standard library package SI { ",
+        "attribute <kg> kilogram : MeasurementReferences::MassUnit; ",
+        "attribute <s> second : MeasurementReferences::DurationUnit; }",
+    );
+
+    /// A workspace exercising every migrated expression-conformance rule that reads the library.
+    const MEASUREMENT_WORKSPACE: &str = concat!(
+        "package W { ",
+        "attribute good : Quantities::MassValue = 1 [kg]; ",
+        "attribute wrongDimension : Quantities::MassValue = 1 [s]; ",
+        "attribute unknownUnit : Quantities::MassValue = 1 [zz]; ",
+        "attribute mistyped : ScalarValues::Boolean = \"no\"; ",
+        "constraint def Counted { 1 + 2 } }",
+    );
+
+    fn measurement_publication(schedule: ConstructionSchedule) -> String {
+        let published = build(
+            BuildRequest::new(
+                vec![
+                    SourceInput::new(
+                        "memory://workspace.sysml",
+                        MEASUREMENT_WORKSPACE.to_string(),
+                        SourceKind::Workspace,
+                    ),
+                    SourceInput::new(
+                        "memory://measurement.sysml",
+                        MEASUREMENT_LIBRARY_SOURCE.to_string(),
+                        SourceKind::StandardLibrary,
+                    ),
+                ],
+                schedule,
+                "contract-v1",
+            )
+            .expect("measurement request"),
+        )
+        .expect("measurement build");
+        render_publication(&published)
+    }
+
+    fn render_publication(published: &PublishedResolution) -> String {
+        let mut semantic = String::new();
+        published
+            .debug()
+            .write_semantic_sexpr(&mut semantic)
+            .expect("semantic");
+        let mut types = String::new();
+        published
+            .debug()
+            .write_types_sexpr(&mut types)
+            .expect("types");
+        let mut diagnostics = String::new();
+        published
+            .debug()
+            .write_diagnostics_sexpr(&mut diagnostics)
+            .expect("diagnostics");
+        format!("{semantic}\n{types}\n{diagnostics}")
+    }
+
+    /// Every migrated expression rule the parity cases below rely on actually firing.
+    const MEASUREMENT_CODES: [&str; 4] = [
+        "incompatible_unit_dimension",
+        "unknown_unit_symbol",
+        "attribute_value_type_mismatch",
+        "non_boolean_expression",
+    ];
+
+    /// Evaluation, unit resolution and the decisions they feed must not depend on the schedule
+    /// that built the publication.
+    #[test]
+    fn parallel_and_sequential_construction_publish_the_same_evaluation_and_units() {
+        let sequential = measurement_publication(ConstructionSchedule::Sequential);
+        let parallel = measurement_publication(ConstructionSchedule::Parallel);
+        assert_eq!(
+            sequential, parallel,
+            "evaluation, unit and measurement facts must not depend on construction schedule"
+        );
+        for code in MEASUREMENT_CODES {
+            assert!(
+                sequential.contains(code),
+                "the parity workspace must actually exercise {code}, got: {sequential}"
+            );
+        }
+    }
+
+    /// The same facts, reached through a settled library stratum rather than a cold solve.
+    #[test]
+    fn a_seeded_publication_matches_an_unseeded_one_for_evaluation_and_units() {
+        let library = std::sync::Arc::new(
+            build_library_stratum(vec![SourceInput::new(
+                "memory://measurement.sysml",
+                MEASUREMENT_LIBRARY_SOURCE.to_string(),
+                SourceKind::StandardLibrary,
+            )])
+            .expect("measurement stratum"),
+        );
+        let seeded = build(
+            BuildRequest::with_library(
+                vec![SourceInput::new(
+                    "memory://workspace.sysml",
+                    MEASUREMENT_WORKSPACE.to_string(),
+                    SourceKind::Workspace,
+                )],
+                ConstructionSchedule::Sequential,
+                "contract-v1",
+                library,
+            )
+            .expect("seeded request"),
+        )
+        .expect("seeded build");
+        let seeded = render_publication(&seeded);
+        assert_eq!(
+            seeded,
+            measurement_publication(ConstructionSchedule::Sequential),
+            "unit and evaluation decisions must not depend on library-stratum reuse"
+        );
+        for code in MEASUREMENT_CODES {
+            assert!(
+                seeded.contains(code),
+                "the parity workspace must actually exercise {code}, got: {seeded}"
+            );
+        }
+    }
+
     /// A workspace root sharing a library root's name is the one way a workspace declaration can
     /// change what a library reference resolves to. The guard has to notice and fall back, and the
     /// fallback has to be invisible too.

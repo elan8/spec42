@@ -33,6 +33,7 @@
 //! layer does not reimplement a unit-expression grammar over text the parser declined to model.
 
 use super::*;
+use crate::evaluation::EvaluatedScalar;
 
 /// A normative standard-library declaration this fact family is rooted in.
 ///
@@ -49,12 +50,22 @@ const QUANTITY_VALUE_PATH: &[&str] = &["Quantities", "TensorQuantityValue"];
 /// `Quantities::TensorQuantityValue::mRef`: the feature every quantity value redefines to state
 /// which measurement reference its values are expressed in.
 const MEASUREMENT_REFERENCE_PATH: &[&str] = &["Quantities", "TensorQuantityValue", "mRef"];
+/// The KerML scalar datatypes a literal value has.
+const BOOLEAN_PATH: &[&str] = &["ScalarValues", "Boolean"];
+const STRING_PATH: &[&str] = &["ScalarValues", "String"];
+const INTEGER_PATH: &[&str] = &["ScalarValues", "Integer"];
+const REAL_PATH: &[&str] = &["ScalarValues", "Real"];
+
 /// The standard-library declarations the unit and value rules are rooted in.
 #[derive(Debug, Default)]
 pub(super) struct LibraryAnchors {
     measurement_unit: Anchor,
     quantity_value: Anchor,
     measurement_reference: Anchor,
+    boolean: Anchor,
+    string: Anchor,
+    integer: Anchor,
+    real: Anchor,
 }
 
 impl LibraryAnchors {
@@ -63,6 +74,26 @@ impl LibraryAnchors {
             measurement_unit: find_anchor(storage, MEASUREMENT_UNIT_PATH),
             quantity_value: find_anchor(storage, QUANTITY_VALUE_PATH),
             measurement_reference: find_anchor(storage, MEASUREMENT_REFERENCE_PATH),
+            boolean: find_anchor(storage, BOOLEAN_PATH),
+            string: find_anchor(storage, STRING_PATH),
+            integer: find_anchor(storage, INTEGER_PATH),
+            real: find_anchor(storage, REAL_PATH),
+        }
+    }
+
+    /// The scalar datatype a settled literal value has, or `None` when the library declaring it is
+    /// not admitted.
+    ///
+    /// A quantity deliberately has none: its type is the quantity value definition its unit
+    /// belongs to, not the datatype of its magnitude, and answering `Integer` for `10 [kg]` would
+    /// make every mass look like a mistyped integer.
+    fn scalar_type(&self, value: &EvaluatedScalar) -> Option<DeclarationId> {
+        match value {
+            EvaluatedScalar::Boolean(_) => self.boolean,
+            EvaluatedScalar::String(_) => self.string,
+            EvaluatedScalar::Integer(_) => self.integer,
+            EvaluatedScalar::Real(_) => self.real,
+            EvaluatedScalar::Quantity { .. } => None,
         }
     }
 }
@@ -196,6 +227,7 @@ pub(super) struct SettledInvocation {
 /// Every settled expression fact of one publication.
 #[derive(Debug, Default)]
 pub(crate) struct ExpressionIndex {
+    anchors: LibraryAnchors,
     /// Settled unit tokens, sorted by `(declaration, ordinal)`.
     units: Box<[SettledUnit]>,
     /// Contiguous range into `units` per declaration, indexed by declaration ordinal.
@@ -292,6 +324,7 @@ impl ExpressionIndex {
         }
 
         Ok(Self {
+            anchors,
             units: units.into_boxed_slice(),
             unit_ranges: unit_ranges.into_boxed_slice(),
             required: required.into_boxed_slice(),
@@ -321,6 +354,16 @@ impl ExpressionIndex {
         self.required
             .get(declaration.index())
             .unwrap_or(&RequiredMeasurement::NotApplicable)
+    }
+
+    /// Every settled unit token in the publication, sorted by `(declaration, ordinal)`.
+    pub(super) fn all_units(&self) -> &[SettledUnit] {
+        &self.units
+    }
+
+    /// The scalar datatype a settled literal value has, when the library declaring it is admitted.
+    pub(super) fn scalar_type(&self, value: &EvaluatedScalar) -> Option<DeclarationId> {
+        self.anchors.scalar_type(value)
     }
 
     pub(super) fn filters(&self) -> &[SettledFilter] {

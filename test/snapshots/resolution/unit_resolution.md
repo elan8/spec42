@@ -23,6 +23,24 @@ package Units {
 (fixture-diagnostics
   (document "memory://snapshot/unit_resolution.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "incompatible_unit_dimension")
+        (source "semantic")
+        (range (start 5 50) (end 5 51))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml.library/isq_base.md")
+            (range (start 84 4) (end 87 5))
+          )
+        )
+      )
+      (diagnostic
+        (severity warning)
+        (code "unknown_unit_symbol")
+        (source "semantic")
+        (range (start 6 49) (end 6 51))
+      )
     )
   )
 )
