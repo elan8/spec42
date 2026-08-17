@@ -10,6 +10,59 @@ a scratch fixture run through `cargo run -p spec42-snapshot`, or both.
 
 ## Open
 
+- Gap 57. The anonymous subsetting/redefinition shorthand member -- `:> annotatedElement :
+  SysML::Usage;`, `:>> baseType = ...;` -- authors no declared name, but the parser populates the
+  member's `name` field with the subsetting target's spelling *and* reports the same spelling as the
+  `subsets`/`redefines` target. Verified against `7d4fd85` with a scratch fixture: `metadata def M {
+  :> annotatedElement : SysML::Usage; }` yields an `AttributeUsage` whose `name` is
+  `"annotatedElement"` alongside a subsetting relationship to `annotatedElement`.
+
+  KerML gives such a feature the subsetted feature's *effective* name; it does not give it a
+  declared one, and the difference is load-bearing for scope. The declared name puts the feature
+  into its own owner's owned name tier under exactly the name it is looking up, and that tier
+  shadows the inherited one the author meant, so the feature subsets itself. Two declarations in
+  `test/snapshots/sysml.library/requirement_derivation.md` are reported as `specialization_cycle`
+  for this reason, and every conformance question about them answers from a self-loop.
+
+  `sysml_resolution` cannot correct it locally. Excluding a specialization reference's own source
+  from its scope -- which it does for `Redefinition`, per
+  `planning/RESOLUTION_LAYER_DESIGN.md` section 11.1 -- is not enough here, because a metadata
+  definition commonly authors several of these shorthand members and they all acquire the same
+  declared name: excluding only the reference's own source makes two of them resolve to each other,
+  turning a self-loop into a two-cycle. Distinguishing a declared name from an effective one needs
+  the parser to stop reporting one, filed upstream against
+  `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+
+- Gap 58. None of the four connection-like definition nodes carries an abstractness field:
+  `ConnectionDef`, `FlowDef`, `AllocationDef` and `InterfaceDef` (`src/ast/structure.rs`,
+  `src/ast/view.rs`) have `is_individual` and a `derivation_role` but no `is_abstract` and no
+  `definition_prefix`, unlike `PartDef`/`ItemDef`/`AttributeDef`, which all carry one. The
+  `abstract` prefix parses and is then dropped: `abstract connection def C { end only : T; }`
+  lowers with no modifier fact at all. Confirmed with a scratch fixture at `7d4fd85`; the corpus
+  authors eight such declarations (`Causation`, `Derivation`, `Multicausation`,
+  `ControllingMeasure`, and others).
+
+  An abstract connection-like definition is legitimately allowed an incomplete end set, so
+  `sysml_resolution`'s end-count rules cannot exempt one. They keep the guard, which becomes
+  correct as soon as the field exists; until then
+  `test/snapshots/resolution/structural_feature_conformance.md` shows an abstract declaration being
+  reported, so the limitation stays visible. One field per node mirroring `PartDef`, filed upstream
+  against `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+
+- Gap 59. No spelling authors an end feature that also carries a direction, so KerML
+  8.3.3.3.1's prohibition on exactly that combination has no authorable violation.
+  `KermlFeatureMember` carries `is_end` and the other modifier flags, but the parser accepts no
+  direction alongside `end`: `in end feature x : T;`, `end in feature x : T;` and SysML's `end in
+  port x : T;` all fail with `unexpected_keyword_in_scope`, while `derived end feature x : T;`,
+  `composite end feature x : T;` and `abstract end feature x : T;` all parse and lower correctly.
+  Verified with a scratch fixture at `7d4fd85`.
+
+  `sysml_resolution` therefore does not publish an `end_feature_has_direction` code: it could never
+  fire, and an untestable diagnostic is worse than a recorded gap. The sibling restrictions
+  (derived/abstract/composite) are published and covered. Needs the direction prefix accepted
+  alongside `end` on `KermlFeatureMember` and the SysML usage prefixes, filed upstream against
+  `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+
 - Gap 41. KerML's implicit self-reference identifier `that` (e.g.
   `test/snapshots/sysml/examples`'s `trig_functions.md`: `inv unitBound { -1.0 <= that & that <=
   1.0 }` inside `datatype UnitBoundedReal :> Real { ... }`, 111 fixtures overall) has no

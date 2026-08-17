@@ -23,6 +23,24 @@ package Circular {
 (fixture-diagnostics
   (document "memory://snapshot/circular.md"
     (diagnostics
+      (diagnostic
+        (severity error)
+        (code "specialization_cycle")
+        (source "semantic")
+        (range (start 8 1) (end 8 16))
+      )
+      (diagnostic
+        (severity error)
+        (code "specialization_cycle")
+        (source "semantic")
+        (range (start 9 1) (end 9 16))
+      )
+      (diagnostic
+        (severity error)
+        (code "specialization_cycle")
+        (source "semantic")
+        (range (start 10 1) (end 10 16))
+      )
     )
   )
 )

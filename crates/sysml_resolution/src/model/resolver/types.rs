@@ -298,6 +298,42 @@ pub(crate) struct TypeIndex {
     effective_types: Rows<(DeclarationId, EffectiveTypeSource)>,
     /// The type each declaration is featured by, indexed by declaration ordinal.
     featuring: Box<[Option<DeclarationId>]>,
+    /// The KerML type-relationship operands each type owns, in authored order.
+    ///
+    /// Deliberately outside [`SpecializationClosure`]. `Unioning`, `Intersecting`, `Differencing`
+    /// and `Disjoining` are direct kinds of `Relationship`, not of `Specialization`, so folding
+    /// their targets into the closure would put a union's operands into its `supertypes` and make
+    /// a set-membership statement answer a generalization question. The set semantics they do
+    /// entail are derived by the conformance query from this table, with their own provenance.
+    set_operands: Rows<(u32, SetOperator, DeclarationId)>,
+    /// How many positional connector ends each declaration authors, indexed by ordinal.
+    authored_ends: Box<[u32]>,
+    /// How many positional ends each declaration effectively has.
+    ///
+    /// A connection-like declaration that specializes another inherits its ends, and ends it
+    /// authors itself redefine the inherited ones positionally rather than adding to them. The
+    /// effective count is therefore the larger of what it authors and the most any of its
+    /// specialization ancestors authors -- read straight off the transitive closure, so no separate
+    /// fixed point is needed.
+    ///
+    /// Kept beside `authored_ends` rather than replacing it: a rule that asks "did the author write
+    /// one end" and a rule that asks "does this declaration have two ends" are different questions,
+    /// and the legacy check could only answer the first, which is why it fell silent whenever an
+    /// ancestor declared any end at all.
+    effective_ends: Box<[u32]>,
+}
+
+/// A KerML type-relationship operator, as a set operation over what its operands classify.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub(crate) enum SetOperator {
+    /// The owner classifies exactly what any operand classifies.
+    Union,
+    /// The owner classifies exactly what every operand classifies.
+    Intersection,
+    /// The owner classifies what the first operand classifies, less everything the rest classify.
+    Difference,
+    /// The owner and its operands share no instances. Carries no inclusion entailment.
+    Disjoint,
 }
 
 /// Whether a declaration is a namespace-like container rather than a KerML `Type`.
@@ -424,6 +460,58 @@ impl TypeIndex {
         }
         let effective_types = Rows::build(count, effective)?;
 
+        // Ordinals are per `(source, kind)` and assigned in authored order, so sorting the row by
+        // `(ordinal, operator)` recovers the authored sequence -- which `Difference` needs, since
+        // its first operand is the type being reduced and the rest are exclusions.
+        let mut set_operands = Vec::new();
+        for (index, reference) in storage.references.iter().enumerate() {
+            let Some(operator) = set_operator(reference.kind) else {
+                continue;
+            };
+            let id =
+                AuthoredReferenceId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+            // Only a settled single target contributes an operand: an unresolved or ambiguous one
+            // would make the operand set silently smaller than the author wrote, and a set
+            // entailment computed over a short set is not a weaker answer but a wrong one.
+            if let Some(ResolutionStatus::Resolved(target)) = resolution.outcome(id) {
+                set_operands.push((reference.source, (reference.ordinal, operator, target)));
+            }
+        }
+        let set_operands = Rows::build(count, set_operands)?;
+
+        let mut authored_ends = vec![0u32; count];
+        for (index, facts) in storage.declaration_facts.iter().enumerate() {
+            if facts.positional_end.is_none() {
+                continue;
+            }
+            let Some(owner) = storage
+                .declarations
+                .get(index)
+                .and_then(|declaration| declaration.owner)
+            else {
+                continue;
+            };
+            let slot = authored_ends
+                .get_mut(owner.index())
+                .ok_or(ResolutionError::InvalidStorage)?;
+            *slot = slot.checked_add(1).ok_or(ResolutionError::Capacity)?;
+        }
+        let mut effective_ends = authored_ends.clone();
+        for index in 0..count {
+            let declaration =
+                DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+            for (ancestor, _) in specialization.entries(declaration) {
+                let inherited = authored_ends
+                    .get(ancestor.index())
+                    .copied()
+                    .unwrap_or_default();
+                let slot = effective_ends
+                    .get_mut(index)
+                    .ok_or(ResolutionError::InvalidStorage)?;
+                *slot = (*slot).max(inherited);
+            }
+        }
+
         let mut featuring = Vec::with_capacity(count);
         for index in 0..count {
             let declaration =
@@ -438,6 +526,9 @@ impl TypeIndex {
             subtypes,
             effective_types,
             featuring: featuring.into_boxed_slice(),
+            set_operands,
+            authored_ends: authored_ends.into_boxed_slice(),
+            effective_ends: effective_ends.into_boxed_slice(),
         })
     }
 
@@ -472,6 +563,59 @@ impl TypeIndex {
         declaration: DeclarationId,
     ) -> &[(DeclarationId, EffectiveTypeSource)] {
         self.effective_types.row(declaration)
+    }
+
+    /// The type-relationship operands `declaration` owns, in authored order.
+    pub(crate) fn set_operands(
+        &self,
+        declaration: DeclarationId,
+    ) -> &[(u32, SetOperator, DeclarationId)] {
+        self.set_operands.row(declaration)
+    }
+
+    /// The operands of one operator on `declaration`, in authored order.
+    ///
+    /// Authored order is the row order because ordinals are assigned in it; `Difference` reads the
+    /// first entry as the reduced type and the remainder as exclusions, and a second `differences`
+    /// clause continues that same list rather than starting a new one.
+    pub(crate) fn operands_of(
+        &self,
+        declaration: DeclarationId,
+        operator: SetOperator,
+    ) -> impl Iterator<Item = DeclarationId> + '_ {
+        self.set_operands(declaration)
+            .iter()
+            .filter(move |(_, candidate, _)| *candidate == operator)
+            .map(|(_, _, target)| *target)
+    }
+}
+
+impl TypeIndex {
+    /// How many positional connector ends `declaration` authors itself.
+    pub(crate) fn authored_ends(&self, declaration: DeclarationId) -> u32 {
+        self.authored_ends
+            .get(declaration.index())
+            .copied()
+            .unwrap_or_default()
+    }
+
+    /// How many positional ends `declaration` has, counting those it inherits.
+    pub(crate) fn effective_ends(&self, declaration: DeclarationId) -> u32 {
+        self.effective_ends
+            .get(declaration.index())
+            .copied()
+            .unwrap_or_default()
+    }
+}
+
+/// The set operation one reference kind states, or `None` if it states none.
+pub(crate) fn set_operator(kind: ReferenceKind) -> Option<SetOperator> {
+    match kind {
+        ReferenceKind::Unioning => Some(SetOperator::Union),
+        ReferenceKind::Intersecting => Some(SetOperator::Intersection),
+        ReferenceKind::Differencing => Some(SetOperator::Difference),
+        ReferenceKind::Disjoining => Some(SetOperator::Disjoint),
+        _ => None,
     }
 }
 

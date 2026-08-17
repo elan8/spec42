@@ -60,12 +60,17 @@ fn write_types(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fm
         let effective_types =
             canonical_targets(model, model.types.effective_types(declaration).to_vec());
         let featuring = model.types.featuring_type(declaration);
+        let set_operands = model.types.set_operands(declaration);
+        let authored_ends = model.types.authored_ends(declaration);
+        let effective_ends = model.types.effective_ends(declaration);
         if !cyclic
             && supertypes.is_empty()
             && direct_types.is_empty()
             && subtypes.is_empty()
             && effective_types.is_empty()
             && featuring.is_none()
+            && set_operands.is_empty()
+            && effective_ends == 0
         {
             continue;
         }
@@ -76,6 +81,14 @@ fn write_types(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fm
             write!(output, " (cyclic true)")?;
         }
         writeln!(output)?;
+        if effective_ends > 0 {
+            // Both counts, always: a reader cannot tell an inherited end pair from an authored one
+            // if only the effective total is published.
+            writeln!(
+                output,
+                "      (positional-ends (authored {authored_ends}) (effective {effective_ends}))",
+            )?;
+        }
         if let Some(featuring) = featuring {
             write!(output, "      (featured-by ")?;
             write_node_identity(model, featuring, output)?;
@@ -97,6 +110,18 @@ fn write_types(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fm
                     write!(output, ")")?;
                 }
             }
+            writeln!(output, ")")?;
+        }
+        // Authored order, not the canonical target order the other rows use: `differences` reads
+        // its first operand as the type being reduced and the rest as exclusions, so sorting these
+        // by target would destroy the fact. The row is already in ordinal order.
+        for (ordinal, operator, target) in set_operands {
+            write!(
+                output,
+                "      (set-operand (operator {}) (ordinal {ordinal}) ",
+                set_operator_name(*operator),
+            )?;
+            write_node_identity(model, *target, output)?;
             writeln!(output, ")")?;
         }
         for (ancestor, scopes) in supertypes {
@@ -150,6 +175,15 @@ fn fact_provenance(provenance: types::FactProvenance) -> &'static str {
     match provenance {
         types::FactProvenance::Authored => "authored",
         types::FactProvenance::Implied => "implied",
+    }
+}
+
+fn set_operator_name(operator: types::SetOperator) -> &'static str {
+    match operator {
+        types::SetOperator::Union => "union",
+        types::SetOperator::Intersection => "intersection",
+        types::SetOperator::Difference => "difference",
+        types::SetOperator::Disjoint => "disjoint",
     }
 }
 
@@ -342,6 +376,7 @@ fn write_declaration_facts(
         && facts.portion_kind.is_none()
         && facts.direction.is_none()
         && facts.multiplicity.is_none()
+        && facts.positional_end.is_none()
     {
         return Ok(());
     }
@@ -369,6 +404,9 @@ fn write_declaration_facts(
         output.write_str(") (upper ")?;
         write_multiplicity_bound(multiplicity.upper, output)?;
         output.write_str("))")?;
+    }
+    if let Some(position) = facts.positional_end {
+        write!(output, " (positional-end {position})")?;
     }
     output.write_char(')')
 }
@@ -1192,6 +1230,10 @@ pub(crate) fn reference_kind(kind: ReferenceKind) -> &'static str {
         ReferenceKind::References => "referenceSubsetting",
         ReferenceKind::Crosses => "crossSubsetting",
         ReferenceKind::Intersects => "intersects",
+        ReferenceKind::Unioning => "unioning",
+        ReferenceKind::Intersecting => "intersecting",
+        ReferenceKind::Differencing => "differencing",
+        ReferenceKind::Disjoining => "disjoining",
         ReferenceKind::AliasBinding => "aliasBinding",
         ReferenceKind::ConnectorEnd => "connectorEnd",
         ReferenceKind::Succession => "succession",
@@ -1250,6 +1292,10 @@ fn relationship_kind(kind: ReferenceKind) -> Option<&'static str> {
         ReferenceKind::References => Some("referenceSubsetting"),
         ReferenceKind::Crosses => Some("crossSubsetting"),
         ReferenceKind::Intersects => Some("intersects"),
+        ReferenceKind::Unioning => Some("unioning"),
+        ReferenceKind::Intersecting => Some("intersecting"),
+        ReferenceKind::Differencing => Some("differencing"),
+        ReferenceKind::Disjoining => Some("disjoining"),
         ReferenceKind::AliasBinding => Some("aliasBinding"),
         ReferenceKind::ConnectorEnd => Some("connectorEnd"),
         ReferenceKind::Succession => Some("succession"),

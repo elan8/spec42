@@ -13,12 +13,16 @@
 //! - constructs this publication does not model ([`DiagnosticCode::UnsupportedPackageMember`] and
 //!   the other `Unsupported*Member` codes);
 //! - the settled outcome of every authored reference -- unresolved, ambiguous, unsupported, or
-//!   non-converged.
+//!   non-converged;
+//! - typed feature conformance: metaclass-family compatibility for typing, specialization and the
+//!   subsetting family, specialization cycles, multiplicity and type conformance under
+//!   redefinition and subsetting, KerML type-relationship cardinality, and the structural feature
+//!   rules (connector-end counts, end-feature restrictions, variation members, redefinition
+//!   featuring type, end and direction, and subsetting uniqueness).
 //!
-//! The conformance families are **not** here. Kind compatibility, structural-feature conformance,
-//! view metadata, behavior, connection, expression, import, and requirement-case conformance are
-//! still evaluated by `sysml_diagnostics` over the mutable semantic graph, and together they own
-//! roughly thirty further public codes.
+//! The remaining conformance families are **not** here. View metadata, behavior, connection,
+//! expression, import, and requirement-case conformance are still evaluated by `sysml_diagnostics`
+//! over the mutable semantic graph.
 //!
 //! A consumer that swaps `sysml_diagnostics` for this contract as it stands would therefore stop
 //! reporting those codes. Do not treat this as a drop-in replacement for the legacy diagnostic
@@ -163,6 +167,44 @@ pub enum DiagnosticCode {
     NonConvergedResolution,
     AmbiguousImportTarget,
     AmbiguousReference,
+
+    /// A usage is typed by a definition of an incompatible metaclass family.
+    IncompatibleTypeKind,
+    /// A definition specializes a definition of an incompatible metaclass family.
+    IncompatibleSpecializationKind,
+    /// A usage subsets or redefines a feature of an incompatible metaclass family.
+    IncompatibleSubsettingKind,
+    /// A declaration reaches itself through specialization.
+    SpecializationCycle,
+    /// A redefining feature admits values its redefined feature's multiplicity excludes.
+    RedefinitionMultiplicityWidened,
+    /// A redefining feature's types do not conform to the redefined feature's.
+    RedefinitionTypeIncompatible,
+    /// A subsetting feature's types do not conform to the subsetted feature's.
+    SubsettingTypeIncompatible,
+    /// A flow payload is typed by something that is not an occurrence.
+    FlowPayloadTypeNotOccurrence,
+    /// A binary connection-like declaration has one end where it needs two.
+    IncompleteConnectionLikeEndPair,
+    /// A binary connection-like declaration has more than two ends.
+    InvalidBinaryConnectionLikeEndCount,
+    /// An end feature is derived, abstract or composite.
+    EndFeatureInvalidRestrictions,
+    /// A variant member's metaclass family is not the variation's.
+    InvalidVariationMemberKind,
+    /// A redefining feature is featured by a type unrelated to the redefined feature's.
+    RedefinitionFeaturingTypeIncompatible,
+    /// A feature redefines an end feature without being one.
+    RedefinitionEndMismatch,
+    /// A redefining feature's direction does not conform to the redefined feature's.
+    RedefinitionDirectionMismatch,
+    /// A non-unique feature subsets a unique one.
+    SubsettingUniquenessMismatch,
+    /// A type owns exactly one `unions`, `intersects` or `differences` operand.
+    ///
+    /// KerML requires zero or at least two: a union, intersection or difference of one type is
+    /// that type, so a single operand states a generalization the author did not write.
+    SingleTypeRelationshipOperand,
 }
 
 impl DiagnosticCode {
@@ -214,6 +256,25 @@ impl DiagnosticCode {
             Self::NonConvergedResolution => "non_converged_resolution",
             Self::AmbiguousImportTarget => "ambiguous_import_target",
             Self::AmbiguousReference => "ambiguous_reference",
+            Self::IncompatibleTypeKind => "incompatible_type_kind",
+            Self::IncompatibleSpecializationKind => "incompatible_specializes_kind",
+            Self::IncompatibleSubsettingKind => "incompatible_subset_redefine_kind",
+            Self::SpecializationCycle => "specialization_cycle",
+            Self::RedefinitionMultiplicityWidened => "redefinition_multiplicity_widened",
+            Self::RedefinitionTypeIncompatible => "redefinition_type_incompatible",
+            Self::SubsettingTypeIncompatible => "subsetting_type_incompatible",
+            Self::FlowPayloadTypeNotOccurrence => "flow_payload_type_not_occurrence",
+            Self::IncompleteConnectionLikeEndPair => "incomplete_connection_like_end_pair",
+            Self::InvalidBinaryConnectionLikeEndCount => "invalid_binary_connection_like_end_count",
+            Self::EndFeatureInvalidRestrictions => "end_feature_invalid_restrictions",
+            Self::InvalidVariationMemberKind => "invalid_variation_member_kind",
+            Self::RedefinitionFeaturingTypeIncompatible => {
+                "redefinition_featuring_type_incompatible"
+            }
+            Self::RedefinitionEndMismatch => "redefinition_end_mismatch",
+            Self::RedefinitionDirectionMismatch => "redefinition_direction_mismatch",
+            Self::SubsettingUniquenessMismatch => "subsetting_uniqueness_mismatch",
+            Self::SingleTypeRelationshipOperand => "single_type_relationship_operand",
         }
     }
 }

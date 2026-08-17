@@ -22,7 +22,9 @@ use crate::{
     VerificationRequirement, VisibleMember,
 };
 
+mod conformance;
 mod inspection;
+mod structural;
 mod types;
 pub(crate) mod writer;
 
@@ -1505,7 +1507,11 @@ impl ResolvedSemanticModel {
             },
             owner,
             first,
-            DeclarationDomain::Any,
+            // An interactive lookup has no redefining feature to exclude.
+            LookupTarget {
+                domain: DeclarationDomain::Any,
+                excluded: None,
+            },
             &mut candidates,
             &mut work,
         )?;
@@ -1669,6 +1675,9 @@ impl ResolvedSemanticModel {
                     related: related.into_boxed_slice(),
                 });
             }
+
+            self.collect_conformance(document_id, &mut diagnostics)?;
+            self.collect_structural_conformance(document_id, &mut diagnostics)?;
 
             // Ordering is owned here so no consumer has to sort, and so the order cannot vary with
             // which storage collection a diagnostic happened to come from. The sort is stable, so
@@ -2156,10 +2165,96 @@ impl ResolvedSemanticModel {
             .specialization()
             .reaches(specific, general, internal_scope(scope))
         {
-            Conformance::Conforms
-        } else {
-            Conformance::DoesNotConform
+            return Conformance::Conforms;
         }
+        // Specialization did not reach it. Conformance is a question about what a type
+        // *classifies*, and KerML's type relationships constrain that without stating a
+        // generalization, so the set entailments are consulted before concluding.
+        if self.set_inclusion(specific, general, scope, &mut Vec::new()) {
+            return Conformance::Conforms;
+        }
+        Conformance::DoesNotConform
+    }
+
+    /// Whether `specific`'s instances are all `general`'s, following only entailments that are
+    /// sound for KerML's four type relationships.
+    ///
+    /// Each is one direction of one relationship's set meaning, and nothing here is symmetric:
+    ///
+    /// - a union owner is included in `general` only when *every* operand is, since it classifies
+    ///   whatever any operand does;
+    /// - an intersection owner is included in `general` when *any* operand is, since it classifies
+    ///   only what every operand does;
+    /// - a difference owner is included in `general` when its *first* operand is -- the remaining
+    ///   operands are exclusions and carry no positive inclusion;
+    /// - `general` being a union owner admits `specific` when `specific` is included in any of its
+    ///   operands, since each operand is included in the union;
+    /// - `Disjoint` states that two types share no instances and entails no inclusion at all, so
+    ///   it appears nowhere below.
+    ///
+    /// `visiting` bounds the recursion. A malformed model can make these relationships mutually
+    /// recursive, and the answer for a type currently being decided is "not established by this
+    /// path" rather than a second attempt.
+    fn set_inclusion(
+        &self,
+        specific: DeclarationId,
+        general: DeclarationId,
+        scope: SpecializationScope,
+        visiting: &mut Vec<DeclarationId>,
+    ) -> bool {
+        if specific == general {
+            return true;
+        }
+        if visiting.contains(&specific) {
+            return false;
+        }
+        if self
+            .types
+            .specialization()
+            .reaches(specific, general, internal_scope(scope))
+        {
+            return true;
+        }
+        visiting.push(specific);
+        let included = self.set_inclusion_uncached(specific, general, scope, visiting);
+        visiting.pop();
+        included
+    }
+
+    fn set_inclusion_uncached(
+        &self,
+        specific: DeclarationId,
+        general: DeclarationId,
+        scope: SpecializationScope,
+        visiting: &mut Vec<DeclarationId>,
+    ) -> bool {
+        let mut union_operands = self
+            .types
+            .operands_of(specific, types::SetOperator::Union)
+            .peekable();
+        if union_operands.peek().is_some()
+            && union_operands.all(|operand| self.set_inclusion(operand, general, scope, visiting))
+        {
+            return true;
+        }
+        if self
+            .types
+            .operands_of(specific, types::SetOperator::Intersection)
+            .any(|operand| self.set_inclusion(operand, general, scope, visiting))
+        {
+            return true;
+        }
+        if self
+            .types
+            .operands_of(specific, types::SetOperator::Difference)
+            .next()
+            .is_some_and(|reduced| self.set_inclusion(reduced, general, scope, visiting))
+        {
+            return true;
+        }
+        self.types
+            .operands_of(general, types::SetOperator::Union)
+            .any(|operand| self.set_inclusion(specific, operand, scope, visiting))
     }
 
     /// KerML §7.4.12: every type of the general feature must be conformed to by some type of the
@@ -2195,11 +2290,23 @@ impl ResolvedSemanticModel {
             .iter()
             .filter(|(_, source)| match source {
                 types::EffectiveTypeSource::Direct => true,
+                // Discard a typing the specific side inherited along a chain that runs *through*
+                // the general side: the general side has that typing too, so it cannot be the
+                // thing that fails to conform to it.
+                //
+                // The test is that `general` reaches `from`, not the reverse. `trueEvaluations
+                // subsets booleanEvaluations subsets evaluations` inherits `Evaluation` from
+                // `evaluations`, and `evaluations` is an ancestor of the general side rather than
+                // a descendant, so asking whether `evaluations` reaches `booleanEvaluations`
+                // answered no and kept a typing both sides share. The rule then demanded that
+                // `Evaluation` conform to `BooleanEvaluation` -- the general side's own narrower
+                // typing -- and reported the Kernel Semantic Library's own declarations as
+                // incompatible.
                 types::EffectiveTypeSource::Inherited(from) => {
                     *from != general
                         && !self.types.specialization().reaches(
-                            *from,
                             general,
+                            *from,
                             types::SpecializationScope::FeatureSpecialization,
                         )
                 }
@@ -2888,7 +2995,19 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         .enumerate()
         .filter(|(index, _)| *index >= settled)
         .filter_map(|(index, reference)| {
-            (reference.kind() == ReferenceKind::Subclassification).then_some(index)
+            // The four KerML type-relationship kinds join this pass rather than getting their own:
+            // each names a `Type` through the same lexical lookup a `specializes` clause uses, and
+            // none of them reads inherited scope. They stay distinct `ReferenceKind`s so the
+            // published relationship never collapses into a specialization.
+            matches!(
+                reference.kind(),
+                ReferenceKind::Subclassification
+                    | ReferenceKind::Unioning
+                    | ReferenceKind::Intersecting
+                    | ReferenceKind::Differencing
+                    | ReferenceKind::Disjoining
+            )
+            .then_some(index)
         })
         .collect();
     let typing_slots: Vec<usize> = references
@@ -3945,6 +4064,10 @@ fn supported_import_domain(reference: &impl ResolutionReferenceFact) -> Option<D
         | ReferenceKind::References
         | ReferenceKind::Crosses
         | ReferenceKind::Intersects
+        | ReferenceKind::Unioning
+        | ReferenceKind::Intersecting
+        | ReferenceKind::Differencing
+        | ReferenceKind::Disjoining
         | ReferenceKind::AliasBinding
         | ReferenceKind::ConnectorEnd
         | ReferenceKind::Succession
@@ -4166,6 +4289,10 @@ fn build_effective_import_indexes<R: ResolutionReferenceFact>(
             | ReferenceKind::References
             | ReferenceKind::Crosses
             | ReferenceKind::Intersects
+            | ReferenceKind::Unioning
+            | ReferenceKind::Intersecting
+            | ReferenceKind::Differencing
+            | ReferenceKind::Disjoining
             | ReferenceKind::AliasBinding
             | ReferenceKind::ConnectorEnd
             | ReferenceKind::Succession
@@ -4267,6 +4394,25 @@ fn resolve_reference<R: ResolutionReferenceFact>(
     let source = declarations
         .get(reference.source().index())
         .ok_or(ResolutionError::InvalidStorage)?;
+    // KerML Redefinition relates a feature to a *different* feature, so the redefining feature is
+    // not in its own redefinition scope: the Pilot's `KerMLScope` excludes it, and
+    // planning/RESOLUTION_LAYER_DESIGN.md section 11.1 requires "Redefinition excludes owned
+    // first-scope candidates".
+    //
+    // Without this, `feature annotatedElement : Element[1..*] redefines annotatedElement;` -- the
+    // shape the KerML abstract-syntax library uses throughout to narrow an inherited feature --
+    // finds itself in its owner's owned tier, and that tier shadows the inherited one the author
+    // meant. The feature then specializes itself, which makes its whole conformance hierarchy
+    // cyclic and every conformance question about it unanswerable.
+    //
+    // Deliberately Redefinition alone. The anonymous subsetting shorthand `:> annotatedElement :
+    // T;` has the same shape, but a metadata definition commonly authors several of them, and the
+    // lowering gives each the subsetted feature's name as its *declared* name. Excluding only the
+    // reference's own source there does not reach the inherited feature; it reaches the sibling
+    // shorthand, so two of them resolve to each other and the self-loop becomes a two-cycle. That
+    // is a lowering defect -- an unnamed member must not acquire a declared name -- and it is
+    // recorded in planning/UPSTREAM_PARSER_GAPS.md rather than compensated for here.
+    let excluded = (reference.kind() == ReferenceKind::Redefinition).then(|| reference.source());
     scratch.candidates.clear();
     scratch.next_candidates.clear();
     if rooted {
@@ -4292,7 +4438,10 @@ fn resolve_reference<R: ResolutionReferenceFact>(
             &indexes,
             source.owner,
             segments[0],
-            first_segment_domain,
+            LookupTarget {
+                domain: first_segment_domain,
+                excluded,
+            },
             scratch.candidates,
             scratch.work,
         )?;
@@ -4343,6 +4492,13 @@ fn resolve_reference<R: ResolutionReferenceFact>(
                 .is_some_and(|declaration| domain.accepts(declaration.kind))
         });
     }
+    // A qualified or absolute path can name the specializing feature just as an unqualified one
+    // can, and it is no more well-formed for having been spelled out.
+    if let Some(excluded) = excluded {
+        scratch
+            .candidates
+            .retain(|candidate| *candidate != excluded);
+    }
     status_from_candidates(scratch.candidates, scratch.ambiguous_candidates)
 }
 
@@ -4360,15 +4516,25 @@ fn resolve_reference<R: ResolutionReferenceFact>(
 /// domain-incompatible. Passing `DeclarationDomain::Any` disables this preference entirely (every
 /// candidate matches), which is what callers use when this lookup does not produce the reference's
 /// final target (an interior segment of a qualified name).
+/// What a lexical lookup is looking for, as opposed to where it looks.
+#[derive(Debug, Clone, Copy)]
+struct LookupTarget {
+    /// The broad metamodel-domain filter for the reference's final target.
+    domain: DeclarationDomain,
+    /// A declaration that is not in its own scope for this reference, if any.
+    excluded: Option<DeclarationId>,
+}
+
 fn lookup_lexical_into(
     declarations: &[Declaration],
     indexes: &ResolutionIndexes<'_>,
     mut owner: Option<DeclarationId>,
     name: SymbolId,
-    domain: DeclarationDomain,
+    target: LookupTarget,
     candidates: &mut Vec<DeclarationId>,
     work: &mut ResolutionWork,
 ) -> Result<(), ResolutionError> {
+    let LookupTarget { domain, excluded } = target;
     let select_tier = |raw: &[DeclarationId], out: &mut Vec<DeclarationId>| {
         let compatible = raw
             .iter()
@@ -4385,9 +4551,26 @@ fn lookup_lexical_into(
             out.extend(compatible);
         }
     };
+    // Applied before the tier is tested for emptiness, so a tier whose only binding is the
+    // excluded declaration does not shadow the tiers below it.
+    let visible = |raw: &[DeclarationId], scratch: &mut Vec<DeclarationId>| -> bool {
+        let Some(excluded) = excluded else {
+            return false;
+        };
+        if !raw.contains(&excluded) {
+            return false;
+        }
+        scratch.clear();
+        scratch.extend(raw.iter().copied().filter(|entry| *entry != excluded));
+        true
+    };
+    let mut filtered = Vec::new();
     loop {
         record_lookup(work)?;
-        let direct = indexes.direct_names.candidates(owner, name);
+        let mut direct = indexes.direct_names.candidates(owner, name);
+        if visible(direct, &mut filtered) {
+            direct = &filtered;
+        }
         if !direct.is_empty() {
             select_tier(direct, candidates);
             return Ok(());
@@ -4463,7 +4646,11 @@ fn resolve_member_access_reference<R: ResolutionReferenceFact>(
         &indexes,
         source.owner,
         segments[0],
-        DeclarationDomain::Any,
+        // A member-access chain is never a Redefinition reference.
+        LookupTarget {
+            domain: DeclarationDomain::Any,
+            excluded: None,
+        },
         scratch.candidates,
         scratch.work,
     )?;

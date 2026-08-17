@@ -65,16 +65,64 @@ library package 'Model Library Example' {
         (range (start 9 26) (end 9 30))
       )
       (diagnostic
+        (severity error)
+        (code "subsetting_type_incompatible")
+        (source "semantic")
+        (range (start 12 52) (end 12 62))
+        (related-information
+          (related
+            (uri "memory://snapshot/41_model_library_example.md")
+            (range (start 6 21) (end 6 57))
+          )
+        )
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 15 23) (end 15 28))
       )
       (diagnostic
+        (severity error)
+        (code "subsetting_type_incompatible")
+        (source "semantic")
+        (range (start 18 56) (end 18 66))
+        (related-information
+          (related
+            (uri "memory://snapshot/41_model_library_example.md")
+            (range (start 6 21) (end 6 57))
+          )
+        )
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")
         (range (start 20 38) (end 20 64))
+      )
+      (diagnostic
+        (severity error)
+        (code "subsetting_type_incompatible")
+        (source "semantic")
+        (range (start 29 27) (end 29 37))
+        (related-information
+          (related
+            (uri "memory://snapshot/41_model_library_example.md")
+            (range (start 6 21) (end 6 57))
+          )
+        )
+      )
+      (diagnostic
+        (severity error)
+        (code "subsetting_type_incompatible")
+        (source "semantic")
+        (range (start 30 29) (end 30 39))
+        (related-information
+          (related
+            (uri "memory://snapshot/41_model_library_example.md")
+            (range (start 6 21) (end 6 57))
+          )
+        )
       )
     )
   )
@@ -89,8 +137,8 @@ library package 'Model Library Example' {
     (declaration (id (node (document "memory://snapshot/41_model_library_example.md") (path (named (kind library-package) (name "Model Library Example")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/41_model_library_example.md") (path (named (kind library-package) (name "Model Library Example")) (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "RiskMetadata::Level") (import (shape membership) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::Causation"))) (kind connection-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Occurrences::HappensBefore")))))
-    (declaration (id (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::Causation::cause"))) (kind connection) (membership (kind feature) (visibility default)) (facts (multiplicity (lower unbounded) (upper unbounded))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Situation")))))
-    (declaration (id (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::Causation::effect"))) (kind connection) (membership (kind feature) (visibility default)) (facts (multiplicity (lower unbounded) (upper unbounded))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Situation")))))
+    (declaration (id (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::Causation::cause"))) (kind connection) (membership (kind feature) (visibility default)) (facts (multiplicity (lower unbounded) (upper unbounded)) (positional-end 0)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Situation")))))
+    (declaration (id (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::Causation::effect"))) (kind connection) (membership (kind feature) (visibility default)) (facts (multiplicity (lower unbounded) (upper unbounded)) (positional-end 1)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Situation")))))
     (declaration (id (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::Cause"))) (kind occurrence-def) (membership (kind owning) (visibility default)) (facts (modifiers abstract)))
     (declaration (id (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::Cause::probability"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Real")))))
     (declaration (id (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::Failure"))) (kind occurrence-def) (membership (kind owning) (visibility default)) (facts (modifiers abstract)))
@@ -189,6 +237,7 @@ library package 'Model Library Example' {
 ~~~sexpr
 (types
     (declaration (id (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::Causation")))
+      (positional-ends (authored 2) (effective 2))
       (subtype (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::causations")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::Causation::cause")))
@@ -248,6 +297,7 @@ library package 'Model Library Example' {
       (subtype (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::situations")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::causations")))
+      (positional-ends (authored 0) (effective 2))
       (type (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::Causation")) (provenance authored))
       (effective-type (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::Causation")) (source direct))
       (supertype (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::Causation")) (scopes any))

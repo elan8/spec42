@@ -8,8 +8,7 @@ use url::Url;
 
 use crate::checks::{
     behavior_conformance, connection_conformance, expression_conformance, import_conformance,
-    kind_compatibility, name_resolution, requirement_case_conformance,
-    structural_feature_conformance, view_metadata_conformance,
+    name_resolution, requirement_case_conformance, view_metadata_conformance,
 };
 use crate::helpers::*;
 use crate::relationship_endpoint_messages::builder_relationship_diagnostic_to_emit;
@@ -299,18 +298,6 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
         "6_name_resolution".to_string(),
         t6.elapsed().as_millis(),
         diagnostics.len().saturating_sub(d6),
-    ));
-
-    // 7) P1 kind compatibility (typing, specializes, redefinition conformance, cycles).
-    let t7 = Instant::now();
-    let d7 = diagnostics.len();
-    diagnostics.extend(kind_compatibility::collect_kind_compatibility_diagnostics(
-        graph, uri,
-    ));
-    section_timings.push((
-        "7_kind_compatibility".to_string(),
-        t7.elapsed().as_millis(),
-        diagnostics.len().saturating_sub(d7),
     ));
 
     // 8) Redefines consistency, from parser-owned declared relationship facts.
@@ -701,22 +688,6 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
         "14_connection_conformance".to_string(),
         t14.elapsed().as_millis(),
         diagnostics.len().saturating_sub(d14),
-    ));
-
-    // 14b) KerML feature/end and SysML variation conformance. These rules use
-    // parser-projected feature facts and resolved relationship edges only; in
-    // particular they deliberately do not compare textual type names.
-    let t14b = Instant::now();
-    let d14b = diagnostics.len();
-    diagnostics.extend(
-        structural_feature_conformance::collect_structural_feature_conformance_diagnostics(
-            graph, uri,
-        ),
-    );
-    section_timings.push((
-        "14b_structural_feature_conformance".to_string(),
-        t14b.elapsed().as_millis(),
-        diagnostics.len().saturating_sub(d14b),
     ));
 
     // 15) P1 expression/value/unit conformance.

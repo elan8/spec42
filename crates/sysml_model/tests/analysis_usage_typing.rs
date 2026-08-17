@@ -127,28 +127,3 @@ fn analysis_usage_typed_by_imported_analysis_def_resolves_without_unresolved_typ
             .collect::<Vec<_>>()
     );
 }
-
-#[test]
-fn analysis_usage_typed_by_part_def_emits_incompatible_type_kind() {
-    let input = r#"
-        package P {
-            part def Engine;
-            analysis study : Engine;
-        }
-    "#;
-    let doc = SysmlDocument::from_memory_path(
-        "analysis-usage-typing",
-        "Invalid.sysml",
-        input.to_string(),
-        SysmlDocumentSourceKind::Workspace,
-        None,
-        None,
-    )
-    .expect("document uri");
-    let diags = diags_for_documents(&[doc]);
-    assert!(
-        has_code(&diags, "incompatible_type_kind"),
-        "expected incompatible_type_kind for analysis usage typed by part def, got {:?}",
-        diags.iter().map(|d| &d.code).collect::<Vec<_>>()
-    );
-}

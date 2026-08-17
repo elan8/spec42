@@ -13,6 +13,18 @@ part p : Foo;
 (fixture-diagnostics
   (document "memory://snapshot/feature_typing_mismatch.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "incompatible_type_kind")
+        (source "semantic")
+        (range (start 1 9) (end 1 12))
+        (related-information
+          (related
+            (uri "memory://snapshot/feature_typing_mismatch.md")
+            (range (start 0 0) (end 0 20))
+          )
+        )
+      )
     )
   )
 )

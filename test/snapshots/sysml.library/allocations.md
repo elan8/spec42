@@ -89,8 +89,8 @@ standard library package Allocations {
     (declaration (id (node (document "memory://snapshot/allocations.md") (path (named (kind library-package) (name "Allocations")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Base::Anything") (import (shape membership) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/allocations.md") (path (named (kind library-package) (name "Allocations")) (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Connections") (import (shape namespace) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/allocations.md") (qualified-name "Allocations::Allocation"))) (kind allocation-def) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t\t * Allocation is the most general class of allocation, represented as a connection \n\t\t * between the source of the allocation and the target. Allocation is the base type \n\t\t * of all AllocationDefinitions.\n\t\t "))) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "BinaryConnection")))))
-    (declaration (id (node (document "memory://snapshot/allocations.md") (qualified-name "Allocations::Allocation::source"))) (kind connection) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Anything")))))
-    (declaration (id (node (document "memory://snapshot/allocations.md") (qualified-name "Allocations::Allocation::target"))) (kind connection) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Anything")))))
+    (declaration (id (node (document "memory://snapshot/allocations.md") (qualified-name "Allocations::Allocation::source"))) (kind connection) (membership (kind feature) (visibility default)) (facts (positional-end 0)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Anything")))))
+    (declaration (id (node (document "memory://snapshot/allocations.md") (qualified-name "Allocations::Allocation::target"))) (kind connection) (membership (kind feature) (visibility default)) (facts (positional-end 1)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Anything")))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/allocations.md") (path (named (kind library-package) (name "Allocations")) (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0))
@@ -118,6 +118,9 @@ standard library package Allocations {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/allocations.md") (qualified-name "Allocations::Allocation")))
+      (positional-ends (authored 2) (effective 2))
+    )
     (declaration (id (node (document "memory://snapshot/allocations.md") (qualified-name "Allocations::Allocation::source")))
       (featured-by (node (document "memory://snapshot/allocations.md") (qualified-name "Allocations::Allocation")))
     )

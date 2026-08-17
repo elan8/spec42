@@ -338,6 +338,83 @@ fn the_cutover_inventory_names_every_legacy_diagnostic_check_family() {
     );
 }
 
+/// The feature-conformance families are owned by the immutable publication, and this keeps a
+/// graph-based version from coming back.
+///
+/// Deleting the two modules is not self-enforcing: a new check module, or a few functions added to
+/// a surviving one, would report the same codes over `&SemanticGraph` again and nothing would fail.
+/// The guard is therefore two-sided -- the modules must stay gone, and no `sysml_diagnostics`
+/// source may name a code the publication now owns.
+#[test]
+fn the_migrated_feature_conformance_families_cannot_return_to_the_graph() {
+    let root = repository_root();
+    let checks = root.join("crates/sysml_diagnostics/src/checks");
+    for module in ["kind_compatibility.rs", "structural_feature_conformance.rs"] {
+        assert!(
+            !checks.join(module).exists(),
+            "{module} is owned by sysml_resolution; it must not return to sysml_diagnostics"
+        );
+    }
+
+    // Every code the publication settles for these families. A `sysml_diagnostics` source
+    // mentioning one is either reporting it over the mutable graph or suppressing the immutable
+    // one; both are the dual-reporting this migration removed.
+    let migrated = [
+        "incompatible_type_kind",
+        "incompatible_specializes_kind",
+        "incompatible_subset_redefine_kind",
+        "specialization_cycle",
+        "redefinition_multiplicity_widened",
+        "redefinition_type_incompatible",
+        "subsetting_type_incompatible",
+        "single_type_relationship_operand",
+        "flow_payload_type_not_occurrence",
+        "incomplete_connection_like_end_pair",
+        "invalid_binary_connection_like_end_count",
+        "end_feature_invalid_restrictions",
+        "invalid_variation_member_kind",
+        "redefinition_featuring_type_incompatible",
+        "redefinition_end_mismatch",
+        "redefinition_direction_mismatch",
+        "subsetting_uniqueness_mismatch",
+    ];
+    let mut sources = Vec::new();
+    rust_sources(&root.join("crates/sysml_diagnostics/src"), &mut sources);
+    let mut violations = Vec::new();
+    for file in sources {
+        let source = fs::read_to_string(&file).expect("read diagnostic source");
+        for code in migrated {
+            if source.contains(code) {
+                violations.push(format!("{}: reintroduces {code}", file.display()));
+            }
+        }
+    }
+    assert!(
+        violations.is_empty(),
+        "these codes are settled by the immutable publication:\n{}",
+        violations.join("\n")
+    );
+
+    // The tables those checks asked for are gone too. A caller-supplied allowlist is the shape the
+    // migration replaced with an exhaustive metaclass-family relation, so a returning helper would
+    // be the old design even under a new name.
+    let kinds = fs::read_to_string(root.join("crates/sysml_model/src/semantic/kinds.rs"))
+        .expect("read kind tables");
+    for helper in [
+        "allowed_subset_redefine_target_kinds",
+        "allowed_specializes_target_kinds",
+        "is_compatible_specializes_target",
+        "is_compatible_typing_target",
+        "expected_typing_definition_label",
+        "is_flow_payload_occurrence_type",
+    ] {
+        assert!(
+            !kinds.contains(helper),
+            "{helper} served only the deleted kind checks and must not return"
+        );
+    }
+}
+
 #[test]
 fn query_facade_public_api_contains_no_raw_semantic_storage() {
     assert_source_tree_has_no_raw_semantic_storage(

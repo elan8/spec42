@@ -238,19 +238,6 @@ pub fn is_part_like(element_kind: &ElementKind) -> bool {
     ) || matches!(element_kind, ElementKind::Unknown(s) if s.contains("part"))
 }
 
-/// Definitions that are concrete occurrence types for a flow payload.
-///
-/// This deliberately names the metaclass family rather than relying on a library type name:
-/// part, item, and occurrence definitions are the occurrence classifiers represented by the
-/// current graph. Other typing targets, such as attributes and enumerations, are value types
-/// and cannot be transported as a flow payload occurrence.
-pub fn is_flow_payload_occurrence_type(element_kind: &ElementKind) -> bool {
-    matches!(
-        element_kind,
-        ElementKind::PartDef | ElementKind::ItemDef | ElementKind::OccurrenceDef
-    )
-}
-
 /// Canonical `element_type`-string form of [`is_part_like`], for callers holding only a
 /// projected `element_type: String` (DTOs) rather than a [`SemanticNode`]/[`ElementKind`].
 /// Round-trips losslessly through [`ElementKind::parse`]/[`ElementKind::as_str`] for every
@@ -283,27 +270,17 @@ pub fn is_requirement(element_kind: &ElementKind) -> bool {
 }
 
 pub fn is_metadata_restriction_attribute(node: &SemanticNode) -> bool {
-    !node.declared_facts.relationships.subsetting.is_empty() || is_known_metadata_redefine(node)
+    !node.declared_facts.relationships.subsetting.is_empty()
+        || node
+            .declared_facts
+            .relationships
+            .redefinition
+            .iter()
+            .any(|target| METADATA_RESTRICTION_FEATURE_NAMES.contains(&target.reference.as_str()))
 }
 
 /// Feature names that may appear in metadata def restriction shorthand (`:>` / `:>>`).
 pub const METADATA_RESTRICTION_FEATURE_NAMES: &[&str] = &["annotatedElement", "baseType"];
-
-pub fn is_known_metadata_redefine(node: &SemanticNode) -> bool {
-    node.declared_facts
-        .relationships
-        .redefinition
-        .iter()
-        .any(|target| METADATA_RESTRICTION_FEATURE_NAMES.contains(&target.reference.as_str()))
-}
-
-pub fn is_reflective_sysml_usage_type(type_ref: &str, target: &SemanticNode) -> bool {
-    type_ref.contains("SysML::")
-        && matches!(
-            target.element_kind,
-            ElementKind::MetadataDef | ElementKind::KermlDecl
-        )
-}
 
 pub fn is_kerml_metadata_supertype(target: &SemanticNode) -> bool {
     if target.declared_facts.metaclass_role
@@ -326,51 +303,8 @@ pub fn is_kerml_metadata_supertype(target: &SemanticNode) -> bool {
         )
 }
 
-pub fn is_semantic_metadata_base_type_redefine(owner: &SemanticNode, node: &SemanticNode) -> bool {
-    node.name == "baseType"
-        && node
-            .declared_facts
-            .relationships
-            .redefinition
-            .iter()
-            .any(|target| target.reference == "baseType")
-        && owner.element_kind == ElementKind::MetadataDef
-        && owner
-            .declared_facts
-            .relationships
-            .specializes
-            .iter()
-            .any(|target| target.reference.contains("SemanticMetadata"))
-}
-
 pub fn is_compatible_kind(target_kind: &ElementKind, allowed: &[ElementKind]) -> bool {
     allowed.contains(target_kind)
-}
-
-pub fn is_compatible_specializes_target(def_kind: &ElementKind, target: &SemanticNode) -> bool {
-    if is_compatible_kind(
-        &target.element_kind,
-        allowed_specializes_target_kinds(def_kind),
-    ) {
-        return true;
-    }
-    *def_kind == ElementKind::MetadataDef && is_kerml_metadata_supertype(target)
-}
-
-pub fn is_kerml_datatype(target: &SemanticNode) -> bool {
-    target.element_kind == ElementKind::KermlDecl
-        && target
-            .attributes
-            .get("bnfProduction")
-            .and_then(|value| value.as_str())
-            .is_some_and(|production| production.eq_ignore_ascii_case("datatype"))
-}
-
-pub fn is_compatible_typing_target(usage_kind: &ElementKind, target: &SemanticNode) -> bool {
-    is_compatible_kind(
-        &target.element_kind,
-        allowed_typing_target_kinds(usage_kind),
-    ) || (*usage_kind == ElementKind::Attribute && is_kerml_datatype(target))
 }
 
 /// Per-usage typing compatibility (diagnostics layer).
@@ -431,115 +365,6 @@ pub fn allowed_typing_target_kinds(usage_kind: &ElementKind) -> &'static [Elemen
             ElementKind::OccurrenceDef,
         ],
         _ => &[],
-    }
-}
-
-pub fn allowed_specializes_target_kinds(def_kind: &ElementKind) -> &'static [ElementKind] {
-    match def_kind {
-        // `Systems Library/Parts.sysml` itself declares `abstract part def Part :> Item` --
-        // ItemDef must be an allowed specializes target for PartDef, matching
-        // `allowed_typing_target_kinds`'s `Part => [PartDef, ItemDef, OccurrenceDef]`, which
-        // already correctly allows the usage-level equivalent (`part x : SomeItemDef;`). Its
-        // absence here made `incompatible_specializes_kind` false-positive on any `part def X :>
-        // SomeItemDef` -- confirmed against the OMG Geometry domain library's own
-        // `VehicleGeometryAndCoordinateFrames.sysml` example, which specializes `SpatialItem`
-        // (an `item def`) from several `part def`s.
-        ElementKind::PartDef => &[
-            ElementKind::PartDef,
-            ElementKind::ItemDef,
-            ElementKind::OccurrenceDef,
-        ],
-        ElementKind::PortDef => &[ElementKind::PortDef],
-        ElementKind::ItemDef => &[ElementKind::ItemDef],
-        ElementKind::AttributeDef => &[ElementKind::AttributeDef],
-        ElementKind::ActionDef => &[ElementKind::ActionDef],
-        ElementKind::StateDef => &[ElementKind::StateDef],
-        ElementKind::RequirementDef => &[ElementKind::RequirementDef],
-        ElementKind::UseCaseDef => &[ElementKind::UseCaseDef],
-        ElementKind::AnalysisDef => &[ElementKind::AnalysisDef],
-        ElementKind::VerificationDef => &[ElementKind::VerificationDef],
-        ElementKind::ViewDef => &[ElementKind::ViewDef],
-        ElementKind::ViewpointDef => &[ElementKind::ViewpointDef],
-        ElementKind::ConcernDef => &[ElementKind::ConcernDef],
-        ElementKind::FlowDef => &[ElementKind::FlowDef],
-        ElementKind::AllocationDef => &[ElementKind::AllocationDef],
-        ElementKind::EnumDef => &[ElementKind::EnumDef],
-        ElementKind::MetadataDef => &[ElementKind::MetadataDef],
-        ElementKind::RenderingDef => &[ElementKind::RenderingDef],
-        ElementKind::InterfaceDef => &[ElementKind::InterfaceDef],
-        _ => &[],
-    }
-}
-
-const PART_SUBSET_TARGETS: &[ElementKind] = &[
-    ElementKind::Part,
-    ElementKind::PartDef,
-    ElementKind::ItemDef,
-    ElementKind::OccurrenceDef,
-];
-const PORT_SUBSET_TARGETS: &[ElementKind] = &[ElementKind::Port, ElementKind::PortDef];
-const ITEM_SUBSET_TARGETS: &[ElementKind] = &[
-    ElementKind::Item,
-    ElementKind::ItemDef,
-    ElementKind::PartDef,
-];
-const ATTRIBUTE_SUBSET_TARGETS: &[ElementKind] = &[
-    ElementKind::Attribute,
-    ElementKind::AttributeDef,
-    ElementKind::EnumDef,
-];
-const ACTION_SUBSET_TARGETS: &[ElementKind] = &[ElementKind::Action, ElementKind::ActionDef];
-const STATE_SUBSET_TARGETS: &[ElementKind] = &[ElementKind::State, ElementKind::StateDef];
-const REQUIREMENT_SUBSET_TARGETS: &[ElementKind] =
-    &[ElementKind::Requirement, ElementKind::RequirementDef];
-const USE_CASE_SUBSET_TARGETS: &[ElementKind] = &[ElementKind::UseCase, ElementKind::UseCaseDef];
-const ANALYSIS_SUBSET_TARGETS: &[ElementKind] = &[ElementKind::Analysis, ElementKind::AnalysisDef];
-const VERIFICATION_SUBSET_TARGETS: &[ElementKind] =
-    &[ElementKind::Verification, ElementKind::VerificationDef];
-const VIEW_SUBSET_TARGETS: &[ElementKind] = &[ElementKind::View, ElementKind::ViewDef];
-const VIEWPOINT_SUBSET_TARGETS: &[ElementKind] =
-    &[ElementKind::Viewpoint, ElementKind::ViewpointDef];
-const CONCERN_SUBSET_TARGETS: &[ElementKind] = &[ElementKind::Concern, ElementKind::ConcernDef];
-const ACTOR_SUBSET_TARGETS: &[ElementKind] = &[
-    ElementKind::Actor,
-    ElementKind::Part,
-    ElementKind::PartDef,
-    ElementKind::ItemDef,
-    ElementKind::OccurrenceDef,
-];
-const FLOW_SUBSET_TARGETS: &[ElementKind] = &[ElementKind::Flow, ElementKind::FlowDef];
-const ALLOCATION_SUBSET_TARGETS: &[ElementKind] =
-    &[ElementKind::Allocation, ElementKind::AllocationDef];
-const INTERFACE_SUBSET_TARGETS: &[ElementKind] =
-    &[ElementKind::Interface, ElementKind::InterfaceDef];
-
-pub fn allowed_subset_redefine_target_kinds(usage_kind: &ElementKind) -> &'static [ElementKind] {
-    match usage_kind {
-        ElementKind::Part => PART_SUBSET_TARGETS,
-        ElementKind::Port => PORT_SUBSET_TARGETS,
-        ElementKind::Item => ITEM_SUBSET_TARGETS,
-        ElementKind::Attribute => ATTRIBUTE_SUBSET_TARGETS,
-        ElementKind::Action => ACTION_SUBSET_TARGETS,
-        ElementKind::State => STATE_SUBSET_TARGETS,
-        ElementKind::Requirement => REQUIREMENT_SUBSET_TARGETS,
-        ElementKind::UseCase => USE_CASE_SUBSET_TARGETS,
-        ElementKind::Analysis => ANALYSIS_SUBSET_TARGETS,
-        ElementKind::Verification => VERIFICATION_SUBSET_TARGETS,
-        ElementKind::View => VIEW_SUBSET_TARGETS,
-        ElementKind::Viewpoint => VIEWPOINT_SUBSET_TARGETS,
-        ElementKind::Concern => CONCERN_SUBSET_TARGETS,
-        ElementKind::Actor | ElementKind::Stakeholder => ACTOR_SUBSET_TARGETS,
-        ElementKind::Flow => FLOW_SUBSET_TARGETS,
-        ElementKind::Allocation => ALLOCATION_SUBSET_TARGETS,
-        ElementKind::Interface => INTERFACE_SUBSET_TARGETS,
-        _ => &[],
-    }
-}
-
-pub fn expected_typing_definition_label(usage_kind: &ElementKind) -> String {
-    match usage_kind {
-        ElementKind::Actor | ElementKind::Stakeholder => "part or item".to_string(),
-        _ => usage_kind.as_str().trim_end_matches(" def").to_string(),
     }
 }
 

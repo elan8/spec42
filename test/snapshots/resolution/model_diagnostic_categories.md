@@ -32,6 +32,18 @@ package Demo {
 (fixture-diagnostics
   (document "memory://snapshot/model_diagnostic_categories.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "incompatible_type_kind")
+        (source "semantic")
+        (range (start 8 19) (end 8 26))
+        (related-information
+          (related
+            (uri "memory://snapshot/model_diagnostic_categories.md")
+            (range (start 7 4) (end 7 23))
+          )
+        )
+      )
     )
   )
 )

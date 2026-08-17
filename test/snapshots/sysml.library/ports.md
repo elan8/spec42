@@ -97,6 +97,18 @@ standard library package Ports {
       )
       (diagnostic
         (severity warning)
+        (code "subsetting_uniqueness_mismatch")
+        (source "semantic")
+        (range (start 29 69) (end 29 74))
+        (related-information
+          (related
+            (uri "memory://snapshot/ports.md")
+            (range (start 47 4) (end 52 5))
+          )
+        )
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 36 16) (end 36 41))
@@ -127,8 +139,8 @@ standard library package Ports {
     (declaration (id (node (document "memory://snapshot/ports.md") (path (named (kind library-package) (name "Ports")) (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Objects::objects") (import (shape membership) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/ports.md") (qualified-name "Ports::Port"))) (kind port-def) (membership (kind owning) (visibility default)) (documentation (doc (text "\n         * Port is the most general class of objects that represent connection points\n         * for interacting with a Part. Port is the base type of all PortDefinitions.\n         * \n         * Transfers outgoing from a Port are always targeted to a Port connected to\n         * the original Port by an Interface.\n         "))) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Object")))))
     (declaration (id (node (document "memory://snapshot/ports.md") (path (named (kind library-package) (name "Ports")) (named (kind port-def) (name "Port")) (anonymous (kind ref) (ordinal 0))))) (kind ref) (membership (kind feature) (visibility default)) (documentation (doc (text " \n             * The target of each of the outgoingTransfersFromSelf of a Port must be an interfacingPort.\n             "))) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "interfacingPorts::incomingTransfersToSelf")) (redefinition (reference "outgoingTransfersFromSelf")))))
-    (declaration (id (node (document "memory://snapshot/ports.md") (path (named (kind library-package) (name "Ports")) (named (kind port-def) (name "Port")) (anonymous (kind ref) (ordinal 0)) (named (kind connection) (name "source"))))) (kind connection) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/ports.md") (path (named (kind library-package) (name "Ports")) (named (kind port-def) (name "Port")) (anonymous (kind ref) (ordinal 0)) (named (kind connection) (name "target"))))) (kind connection) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/ports.md") (path (named (kind library-package) (name "Ports")) (named (kind port-def) (name "Port")) (anonymous (kind ref) (ordinal 0)) (named (kind connection) (name "source"))))) (kind connection) (membership (kind feature) (visibility default)) (facts (positional-end 0)))
+    (declaration (id (node (document "memory://snapshot/ports.md") (path (named (kind library-package) (name "Ports")) (named (kind port-def) (name "Port")) (anonymous (kind ref) (ordinal 0)) (named (kind connection) (name "target"))))) (kind connection) (membership (kind feature) (visibility default)) (facts (positional-end 1)))
     (declaration (id (node (document "memory://snapshot/ports.md") (qualified-name "Ports::Port::interfacingPorts"))) (kind ref) (membership (kind feature) (visibility default)) (facts (modifiers abstract nonunique) (multiplicity (lower 0) (upper unbounded))) (documentation (doc (text "\n             * Ports that are connected to this Port by an Interface.\n             "))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Port")) (subsetting (reference "ports")))))
     (declaration (id (node (document "memory://snapshot/ports.md") (qualified-name "Ports::Port::self"))) (kind ref) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Port")) (redefinition (reference "Object::self")))))
     (declaration (id (node (document "memory://snapshot/ports.md") (qualified-name "Ports::Port::subports"))) (kind port) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 0) (upper unbounded))) (documentation (doc (text "\n             * The Ports that are subports of this Port.\n             "))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Port")) (subsetting (reference "ports")) (subsetting (reference "timeEnclosedOccurrences")))))
@@ -195,6 +207,7 @@ standard library package Ports {
       (subtype (node (document "memory://snapshot/ports.md") (qualified-name "Ports::Port::subports")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/ports.md") (path (named (kind library-package) (name "Ports")) (named (kind port-def) (name "Port")) (anonymous (kind ref) (ordinal 0)))))
+      (positional-ends (authored 2) (effective 2))
       (featured-by (node (document "memory://snapshot/ports.md") (qualified-name "Ports::Port")))
     )
     (declaration (id (node (document "memory://snapshot/ports.md") (path (named (kind library-package) (name "Ports")) (named (kind port-def) (name "Port")) (anonymous (kind ref) (ordinal 0)) (named (kind connection) (name "source")))))

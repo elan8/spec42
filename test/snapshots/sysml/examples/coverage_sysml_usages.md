@@ -82,6 +82,30 @@ part def Vehicle {
       )
       (diagnostic
         (severity warning)
+        (code "incompatible_type_kind")
+        (source "semantic")
+        (range (start 15 17) (end 15 22))
+        (related-information
+          (related
+            (uri "memory://snapshot/coverage_sysml_usages.md")
+            (range (start 4 0) (end 4 15))
+          )
+        )
+      )
+      (diagnostic
+        (severity warning)
+        (code "incompatible_type_kind")
+        (source "semantic")
+        (range (start 21 16) (end 21 24))
+        (related-information
+          (related
+            (uri "memory://snapshot/coverage_sysml_usages.md")
+            (range (start 2 0) (end 2 18))
+          )
+        )
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 29 28) (end 29 35))
