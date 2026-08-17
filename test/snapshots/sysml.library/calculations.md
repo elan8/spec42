@@ -88,12 +88,6 @@ standard library package Calculations {
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
-        (range (start 19 2) (end 19 5))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
         (range (start 19 33) (end 19 45))
       )
       (diagnostic
@@ -127,14 +121,14 @@ standard library package Calculations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:76edc93a07e743414784c68e1469af2a857523f9f84b6ed941875b990b53c295") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:76edc93a07e743414784c68e1469af2a857523f9f84b6ed941875b990b53c295") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package defines the base types for calculations and related behavioral elements in the\n\t * SysML language.\n\t "))))
     (declaration (id (node (document "memory://snapshot/calculations.md") (path (named (kind library-package) (name "Calculations")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Performances::Evaluation") (import (shape membership) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/calculations.md") (path (named (kind library-package) (name "Calculations")) (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Performances::evaluations") (import (shape membership) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/calculations.md") (path (named (kind library-package) (name "Calculations")) (anonymous (kind import) (ordinal 2))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Actions::Action") (import (shape membership) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/calculations.md") (path (named (kind library-package) (name "Calculations")) (anonymous (kind import) (ordinal 3))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Actions::actions") (import (shape membership) (recursive false))))))
-    (declaration (id (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations::Calculation"))) (kind calc-def) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t\t * Calculation is the most general class of evaluations of CalculationDefinitions in a\n\t\t * system or part of a system. Calculation is the base class of all CalculationDefinitions.\n\t\t "))) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Action")) (specialization (reference "Evaluation")) (expressionOperand (reference "ref")))))
+    (declaration (id (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations::Calculation"))) (kind calc-def) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t\t * Calculation is the most general class of evaluations of CalculationDefinitions in a\n\t\t * system or part of a system. Calculation is the base class of all CalculationDefinitions.\n\t\t "))) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Action")) (specialization (reference "Evaluation")))))
     (declaration (id (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations::Calculation::self"))) (kind calc) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Calculation")) (redefinition (reference "Action::self")) (redefinition (reference "Evaluation::self")))))
     (declaration (id (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations::Calculation::subcalculations"))) (kind calc) (membership (kind feature) (visibility default)) (facts (modifiers abstract)) (documentation (doc (text "\n\t\t\t * The subactions of this Calculation that are Calculations.\n\t\t\t "))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Calculation")) (subsetting (reference "calculations")) (subsetting (reference "subactions")))))
     (declaration (id (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations::calculations"))) (kind calc-def) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t\t * calculations is the base Feature for all CalculationUsages.\n\t\t "))) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "actions")) (specialization (reference "evaluations")))))
@@ -157,9 +151,6 @@ standard library package Calculations {
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations::Calculation"))) (kind specialization) (ordinal 1))
       (authored-target "Evaluation")
-      (outcome (status unresolved)))
-    (reference (id (source (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations::Calculation"))) (kind expressionOperand) (ordinal 0))
-      (authored-target "ref")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations::Calculation::self"))) (kind featureTyping) (ordinal 0))
       (authored-target "Calculation")
@@ -192,7 +183,6 @@ standard library package Calculations {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations::Calculation::subcalculations"))) (target (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations::calculations"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations::Calculation::subcalculations"))) (kind subsetting) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations::Calculation"))) (state unresolved-operand))
   )
 )
 ~~~
@@ -251,11 +241,6 @@ standard library package Calculations {
   )
   (query (document "memory://snapshot/calculations.md") (range (start 12 42) (end 12 52)) (probe (position 12 42))
     (reference (id (source (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations::Calculation"))) (kind specialization) (ordinal 1) (authored-target "Evaluation")
-      (outcome (status unresolved)))
-    )
-  )
-  (query (document "memory://snapshot/calculations.md") (range (start 19 2) (end 19 5)) (probe (position 19 2))
-    (reference (id (source (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations::Calculation"))) (kind expressionOperand) (ordinal 0) (authored-target "ref")
       (outcome (status unresolved)))
     )
   )

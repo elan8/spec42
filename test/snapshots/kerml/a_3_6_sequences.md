@@ -95,19 +95,19 @@ package SequencesExecution {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 28 1) (end 29 1))
+        (range (start 28 1) (end 28 6))
       )
       (diagnostic
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 30 1) (end 31 1))
+        (range (start 30 1) (end 30 6))
       )
       (diagnostic
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 33 1) (end 34 1))
+        (range (start 33 1) (end 33 6))
       )
       (diagnostic
         (severity warning)
@@ -131,13 +131,13 @@ package SequencesExecution {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 41 1) (end 42 1))
+        (range (start 41 1) (end 41 6))
       )
       (diagnostic
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 44 1) (end 45 1))
+        (range (start 44 1) (end 44 6))
       )
       (diagnostic
         (severity warning)
@@ -161,7 +161,7 @@ package SequencesExecution {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 52 1) (end 53 1))
+        (range (start 52 1) (end 52 6))
       )
       (diagnostic
         (severity warning)

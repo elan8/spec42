@@ -217,19 +217,19 @@ package AHFNorway {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 18 1) (end 18 12))
+        (range (start 18 1) (end 18 11))
       )
       (diagnostic
         (severity warning)
         (code "unsupported_port_definition_member")
         (source "semantic")
-        (range (start 21 2) (end 21 7))
+        (range (start 21 2) (end 21 6))
       )
       (diagnostic
         (severity warning)
         (code "unsupported_port_definition_member")
         (source "semantic")
-        (range (start 27 2) (end 27 7))
+        (range (start 27 2) (end 27 6))
       )
       (diagnostic
         (severity warning)
@@ -283,7 +283,7 @@ package AHFNorway {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 48 3) (end 48 14))
+        (range (start 48 3) (end 48 13))
       )
       (diagnostic
         (severity error)
@@ -295,7 +295,7 @@ package AHFNorway {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 49 3) (end 49 14))
+        (range (start 49 3) (end 49 13))
       )
       (diagnostic
         (severity warning)
@@ -325,7 +325,7 @@ package AHFNorway {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 70 3) (end 70 14))
+        (range (start 70 3) (end 70 13))
       )
       (diagnostic
         (severity error)
@@ -337,7 +337,7 @@ package AHFNorway {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 71 3) (end 71 14))
+        (range (start 71 3) (end 71 13))
       )
       (diagnostic
         (severity error)
@@ -349,7 +349,7 @@ package AHFNorway {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 72 3) (end 72 14))
+        (range (start 72 3) (end 72 13))
       )
       (diagnostic
         (severity warning)
@@ -415,7 +415,7 @@ package AHFNorway {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 104 3) (end 104 14))
+        (range (start 104 3) (end 104 13))
       )
       (diagnostic
         (severity error)
@@ -427,7 +427,7 @@ package AHFNorway {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 105 3) (end 105 14))
+        (range (start 105 3) (end 105 13))
       )
       (diagnostic
         (severity error)

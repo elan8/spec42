@@ -288,7 +288,7 @@ package TimingForStructuresExecution3 {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 28 1) (end 29 1))
+        (range (start 28 1) (end 28 6))
       )
       (diagnostic
         (severity warning)
@@ -420,7 +420,7 @@ package TimingForStructuresExecution3 {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 72 1) (end 73 1))
+        (range (start 72 1) (end 72 6))
       )
       (diagnostic
         (severity warning)
@@ -444,7 +444,7 @@ package TimingForStructuresExecution3 {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 77 1) (end 78 1))
+        (range (start 77 1) (end 77 6))
       )
       (diagnostic
         (severity warning)
@@ -468,7 +468,7 @@ package TimingForStructuresExecution3 {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 82 1) (end 83 1))
+        (range (start 82 1) (end 82 6))
       )
       (diagnostic
         (severity warning)
@@ -492,7 +492,7 @@ package TimingForStructuresExecution3 {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 87 1) (end 88 1))
+        (range (start 87 1) (end 87 6))
       )
       (diagnostic
         (severity warning)
@@ -534,7 +534,7 @@ package TimingForStructuresExecution3 {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 99 1) (end 100 1))
+        (range (start 99 1) (end 99 6))
       )
       (diagnostic
         (severity warning)
@@ -660,7 +660,7 @@ package TimingForStructuresExecution3 {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 143 1) (end 144 1))
+        (range (start 143 1) (end 143 6))
       )
       (diagnostic
         (severity warning)
@@ -672,7 +672,7 @@ package TimingForStructuresExecution3 {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 145 1) (end 146 1))
+        (range (start 145 1) (end 145 6))
       )
       (diagnostic
         (severity warning)
@@ -690,7 +690,7 @@ package TimingForStructuresExecution3 {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 149 1) (end 150 1))
+        (range (start 149 1) (end 149 6))
       )
       (diagnostic
         (severity warning)
@@ -702,7 +702,7 @@ package TimingForStructuresExecution3 {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 151 1) (end 152 1))
+        (range (start 151 1) (end 151 6))
       )
       (diagnostic
         (severity warning)
@@ -726,7 +726,7 @@ package TimingForStructuresExecution3 {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 156 1) (end 157 1))
+        (range (start 156 1) (end 156 6))
       )
       (diagnostic
         (severity warning)
@@ -750,7 +750,7 @@ package TimingForStructuresExecution3 {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 161 1) (end 162 1))
+        (range (start 161 1) (end 161 6))
       )
       (diagnostic
         (severity warning)
@@ -768,13 +768,13 @@ package TimingForStructuresExecution3 {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 165 1) (end 166 1))
+        (range (start 165 1) (end 165 6))
       )
       (diagnostic
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 169 1) (end 170 1))
+        (range (start 169 1) (end 169 6))
       )
       (diagnostic
         (severity warning)
@@ -798,7 +798,7 @@ package TimingForStructuresExecution3 {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 174 1) (end 175 1))
+        (range (start 174 1) (end 174 6))
       )
       (diagnostic
         (severity warning)
@@ -822,7 +822,7 @@ package TimingForStructuresExecution3 {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 179 1) (end 180 1))
+        (range (start 179 1) (end 179 6))
       )
       (diagnostic
         (severity warning)
@@ -846,7 +846,7 @@ package TimingForStructuresExecution3 {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 184 1) (end 185 1))
+        (range (start 184 1) (end 184 6))
       )
       (diagnostic
         (severity warning)
@@ -876,7 +876,7 @@ package TimingForStructuresExecution3 {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 194 1) (end 195 1))
+        (range (start 194 1) (end 194 6))
       )
       (diagnostic
         (severity warning)

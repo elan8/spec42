@@ -66,7 +66,7 @@ package CommentTest {
   (declarations
     (declaration (id (node (document "memory://snapshot/comment_test.md") (qualified-name "CommentTest"))) (kind package) (membership (kind owning) (visibility default)) (documentation (comment (locale "en_US") (text "\n * AAAA\n * BBBB\n *    CCC DDD    \n ")) (doc (locale "en_US") (text " Documentation about Package ")) (comment (text " Named Comment ")) (comment (text " Comment about Comment ")) (comment (text " Documention Comment about Part Def "))))
     (declaration (id (node (document "memory://snapshot/comment_test.md") (qualified-name "CommentTest::A"))) (kind part-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/comment_test.md") (qualified-name "CommentTest::C"))) (kind part-def) (membership (kind owning) (visibility default)) (documentation (doc (text " Documentation in Part Def ")) (comment (text " Comment in Part Def ")) (comment (text " Comment about Package "))))
+    (declaration (id (node (document "memory://snapshot/comment_test.md") (qualified-name "CommentTest::C"))) (kind part-def) (membership (kind owning) (visibility default)) (documentation (doc (text " Documentation in Part Def ")) (comment (text " Comment in Part Def ")) (comment (locale "en_US") (text " Comment about Package "))))
   )
   (references
   )

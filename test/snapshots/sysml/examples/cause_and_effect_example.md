@@ -76,13 +76,13 @@ package CauseAndEffectExample {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 8 1) (end 8 17))
+        (range (start 8 1) (end 8 16))
       )
       (diagnostic
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 20 1) (end 20 17))
+        (range (start 20 1) (end 20 16))
       )
       (diagnostic
         (severity warning)
@@ -100,7 +100,7 @@ package CauseAndEffectExample {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 24 1) (end 24 17))
+        (range (start 24 1) (end 24 16))
       )
       (diagnostic
         (severity error)
@@ -118,13 +118,13 @@ package CauseAndEffectExample {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 33 1) (end 33 17))
+        (range (start 33 1) (end 33 16))
       )
       (diagnostic
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 40 1) (end 40 8))
+        (range (start 40 1) (end 40 7))
       )
       (diagnostic
         (severity error)
@@ -136,7 +136,7 @@ package CauseAndEffectExample {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 41 1) (end 41 8))
+        (range (start 41 1) (end 41 7))
       )
       (diagnostic
         (severity error)
@@ -148,7 +148,7 @@ package CauseAndEffectExample {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 42 1) (end 42 9))
+        (range (start 42 1) (end 42 8))
       )
       (diagnostic
         (severity error)
@@ -160,7 +160,7 @@ package CauseAndEffectExample {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 43 1) (end 43 9))
+        (range (start 43 1) (end 43 8))
       )
       (diagnostic
         (severity error)
@@ -172,7 +172,7 @@ package CauseAndEffectExample {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 45 1) (end 45 17))
+        (range (start 45 1) (end 45 16))
       )
       (diagnostic
         (severity error)
@@ -184,13 +184,19 @@ package CauseAndEffectExample {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 47 1) (end 47 12))
+        (range (start 47 1) (end 47 11))
       )
       (diagnostic
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 48 1) (end 48 12))
+        (range (start 48 1) (end 48 11))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 49 3) (end 49 20))
       )
     )
   )
@@ -199,13 +205,16 @@ package CauseAndEffectExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:69f74b0751c962ce0cd0ebd8f57bdd0faafd0b4bd08338cdef5e11d903a54859") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:69f74b0751c962ce0cd0ebd8f57bdd0faafd0b4bd08338cdef5e11d903a54859") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/cause_and_effect_example.md") (path (named (kind package) (name "CauseAndEffectExample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "CauseAndEffect") (import (shape namespace) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/cause_and_effect_example.md") (path (named (kind package) (name "CauseAndEffectExample")) (anonymous (kind connection-def) (ordinal 0))))) (kind connection-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/cause_and_effect_example.md") (path (named (kind package) (name "CauseAndEffectExample")) (anonymous (kind bare-connect) (ordinal 0))))) (kind bare-connect) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (connectorEnd (reference "a")) (connectorEnd (reference "c")))))
-    (declaration (id (node (document "memory://snapshot/cause_and_effect_example.md") (path (named (kind package) (name "CauseAndEffectExample")) (anonymous (kind bare-connect) (ordinal 1))))) (kind bare-connect) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (connectorEnd (reference "b")) (connectorEnd (reference "d")))))
+    (declaration (id (node (document "memory://snapshot/cause_and_effect_example.md") (path (named (kind package) (name "CauseAndEffectExample")) (anonymous (kind bare-connect) (ordinal 1))))) (kind bare-connect) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (connectorEnd (reference "b")) (connectorEnd (reference "d")) (metadataAnnotation (reference "CausationMetadata")))))
+    (declaration (id (node (document "memory://snapshot/cause_and_effect_example.md") (path (named (kind package) (name "CauseAndEffectExample")) (anonymous (kind bare-connect) (ordinal 1)) (anonymous (kind metadata) (ordinal 0))))) (kind metadata) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/cause_and_effect_example.md") (path (named (kind package) (name "CauseAndEffectExample")) (anonymous (kind bare-connect) (ordinal 1)) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "isNecessary"))))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)))
+    (declaration (id (node (document "memory://snapshot/cause_and_effect_example.md") (path (named (kind package) (name "CauseAndEffectExample")) (anonymous (kind bare-connect) (ordinal 1)) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "probability"))))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)))
     (declaration (id (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample::Causer1"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample::Causer2"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample::Effected1"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -240,6 +249,9 @@ package CauseAndEffectExample {
     (reference (id (source (node (document "memory://snapshot/cause_and_effect_example.md") (path (named (kind package) (name "CauseAndEffectExample")) (anonymous (kind bare-connect) (ordinal 1))))) (kind connectorEnd) (ordinal 1))
       (authored-target "d")
       (outcome (status resolved) (target (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample::d")))))
+    (reference (id (source (node (document "memory://snapshot/cause_and_effect_example.md") (path (named (kind package) (name "CauseAndEffectExample")) (anonymous (kind bare-connect) (ordinal 1))))) (kind metadataAnnotation) (ordinal 0))
+      (authored-target "CausationMetadata")
+      (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample::MultiCauseEffect::cause1"))) (kind featureTyping) (ordinal 0))
       (authored-target "Causer1")
       (outcome (status resolved) (target (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample::Causer1")))))
@@ -280,12 +292,23 @@ package CauseAndEffectExample {
     (relationship (kind typing) (source (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample::effected2"))) (target (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample::Effected2"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample::effected2"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/cause_and_effect_example.md") (path (named (kind package) (name "CauseAndEffectExample")) (anonymous (kind bare-connect) (ordinal 1)) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "isNecessary"))))) (state literal) (value (kind boolean) (boolean true)))
+    (evaluated (declaration (node (document "memory://snapshot/cause_and_effect_example.md") (path (named (kind package) (name "CauseAndEffectExample")) (anonymous (kind bare-connect) (ordinal 1)) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "probability"))))) (state literal) (value (kind real) (real 0.1)))
   )
 )
 ~~~
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/cause_and_effect_example.md") (path (named (kind package) (name "CauseAndEffectExample")) (anonymous (kind bare-connect) (ordinal 1)) (anonymous (kind metadata) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/cause_and_effect_example.md") (path (named (kind package) (name "CauseAndEffectExample")) (anonymous (kind bare-connect) (ordinal 1)))))
+    )
+    (declaration (id (node (document "memory://snapshot/cause_and_effect_example.md") (path (named (kind package) (name "CauseAndEffectExample")) (anonymous (kind bare-connect) (ordinal 1)) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "isNecessary")))))
+      (featured-by (node (document "memory://snapshot/cause_and_effect_example.md") (path (named (kind package) (name "CauseAndEffectExample")) (anonymous (kind bare-connect) (ordinal 1)) (anonymous (kind metadata) (ordinal 0)))))
+    )
+    (declaration (id (node (document "memory://snapshot/cause_and_effect_example.md") (path (named (kind package) (name "CauseAndEffectExample")) (anonymous (kind bare-connect) (ordinal 1)) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "probability")))))
+      (featured-by (node (document "memory://snapshot/cause_and_effect_example.md") (path (named (kind package) (name "CauseAndEffectExample")) (anonymous (kind bare-connect) (ordinal 1)) (anonymous (kind metadata) (ordinal 0)))))
+    )
     (declaration (id (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample::Causer1")))
       (subtype (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample::MultiCauseEffect::cause1")) (scopes any))
       (subtype (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample::causer1")) (scopes any))
@@ -377,6 +400,11 @@ package CauseAndEffectExample {
   (query (document "memory://snapshot/cause_and_effect_example.md") (range (start 48 25) (end 48 26)) (probe (position 48 25))
     (reference (id (source (node (document "memory://snapshot/cause_and_effect_example.md") (path (named (kind package) (name "CauseAndEffectExample")) (anonymous (kind bare-connect) (ordinal 1))))) (kind connectorEnd) (ordinal 1) (authored-target "d")
       (outcome (status resolved) (target (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample::d")))))
+    )
+  )
+  (query (document "memory://snapshot/cause_and_effect_example.md") (range (start 49 3) (end 49 20)) (probe (position 49 3))
+    (reference (id (source (node (document "memory://snapshot/cause_and_effect_example.md") (path (named (kind package) (name "CauseAndEffectExample")) (anonymous (kind bare-connect) (ordinal 1))))) (kind metadataAnnotation) (ordinal 0) (authored-target "CausationMetadata")
+      (outcome (status unresolved)))
     )
   )
   (query (document "memory://snapshot/cause_and_effect_example.md") (range (start 9 22) (end 9 29)) (probe (position 9 22))

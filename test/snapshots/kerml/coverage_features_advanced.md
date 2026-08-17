@@ -99,7 +99,7 @@ package FeatureAdvancedCoverage {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 17 4) (end 17 12))
+        (range (start 17 4) (end 17 11))
       )
       (diagnostic
         (severity error)

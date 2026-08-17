@@ -32,7 +32,7 @@ package ExtendedExamples {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 7 4) (end 7 15))
+        (range (start 7 4) (end 7 14))
       )
       (diagnostic
         (severity warning)
@@ -44,7 +44,7 @@ package ExtendedExamples {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 8 4) (end 8 15))
+        (range (start 8 4) (end 8 14))
       )
       (diagnostic
         (severity error)

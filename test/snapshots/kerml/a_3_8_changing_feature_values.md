@@ -345,7 +345,7 @@ package ChangingFeatureValuesExecution {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 87 1) (end 88 1))
+        (range (start 87 1) (end 87 6))
       )
       (diagnostic
         (severity warning)
@@ -393,19 +393,19 @@ package ChangingFeatureValuesExecution {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 100 1) (end 101 1))
+        (range (start 100 1) (end 100 6))
       )
       (diagnostic
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 102 1) (end 103 1))
+        (range (start 102 1) (end 102 6))
       )
       (diagnostic
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 104 1) (end 105 1))
+        (range (start 104 1) (end 104 6))
       )
       (diagnostic
         (severity warning)
@@ -429,7 +429,7 @@ package ChangingFeatureValuesExecution {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 109 1) (end 110 1))
+        (range (start 109 1) (end 109 6))
       )
       (diagnostic
         (severity error)
@@ -441,13 +441,13 @@ package ChangingFeatureValuesExecution {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 121 1) (end 122 1))
+        (range (start 121 1) (end 121 6))
       )
       (diagnostic
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 128 1) (end 129 1))
+        (range (start 128 1) (end 128 6))
       )
       (diagnostic
         (severity warning)
@@ -471,13 +471,13 @@ package ChangingFeatureValuesExecution {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 133 1) (end 134 1))
+        (range (start 133 1) (end 133 6))
       )
       (diagnostic
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 140 1) (end 141 1))
+        (range (start 140 1) (end 140 6))
       )
       (diagnostic
         (severity warning)
@@ -501,7 +501,7 @@ package ChangingFeatureValuesExecution {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 145 1) (end 146 1))
+        (range (start 145 1) (end 145 6))
       )
       (diagnostic
         (severity warning)
