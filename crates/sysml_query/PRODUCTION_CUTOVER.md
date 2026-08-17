@@ -51,6 +51,13 @@ covers the case where a usage's value is bound to a member it inherits without t
 deriving a redefinition for it, so the two never report the same declaration. It moves with the
 inline engine rules rather than with this family.
 
+One fact the graph-backed inspector showed has no published owner yet: SysML's contextual
+*effective* feature ownership, which appended `composite` or `reference` to an element's modifiers
+even where the author wrote neither. `ElementInspection::modifiers` carries authored modifiers only,
+which is the correct provenance -- an implied default must not appear as a keyword the author
+wrote -- so the fact is absent rather than mislabelled. Publishing it belongs with the implied-fact
+family, not with a presentation adapter.
+
 LSP call hierarchy and monikers (`lsp_server::lsp_runtime::features`) stay on the graph. They are a
 different semantic product -- `perform` relationships between behaviours -- that no published row
 answers, so they are inventoried here rather than served by widening a type or relationship query
