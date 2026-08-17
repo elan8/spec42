@@ -316,39 +316,6 @@ fn typed_engine_cannot_reintroduce_projection_or_text_parser_evaluation() {
 }
 
 #[test]
-fn production_consumers_cannot_reintroduce_retired_evaluation_attributes() {
-    // Keep the semantic/host consumer closure on the canonical graph facts. Test fixtures may
-    // mention historical keys while asserting migration behavior; production code may not.
-    let production_sources = [
-        include_str!("engine.rs"),
-        include_str!("mod.rs"),
-        include_str!("../../../../sysml_diagnostics/src/engine_impl.rs"),
-        include_str!("../../../../generator_api/src/model.rs"),
-        include_str!("../../../../language_service/src/presentation_hover.rs"),
-        include_str!("../../../../lsp_server/src/lsp_runtime/symbols.rs"),
-    ];
-    for source in production_sources {
-        for retired_key in [
-            "evaluatedValue",
-            "evaluatedUnit",
-            "evaluationStatus",
-            "evaluationError",
-            "analysisEvaluationStatus",
-            "analysisEvaluationValue",
-            "analysisEvaluationError",
-            "analysisConstraintPassed",
-            "analysisComputedValue",
-            "analysisComputedUnit",
-        ] {
-            assert!(
-                !source.contains(retired_key),
-                "production semantic consumers must read typed evaluation facts, not {retired_key}"
-            );
-        }
-    }
-}
-
-#[test]
 fn parser_backed_resolution_prefers_nearest_lexical_scope() {
     let uri = Url::parse("memory://typed-evaluation/shadowing.sysml").expect("uri");
     let document = SysmlDocument {

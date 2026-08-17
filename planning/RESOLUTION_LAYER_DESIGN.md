@@ -1,7 +1,7 @@
 # Canonical Semantic Resolution Design
 
 Status: implementation handoff
-Audience: maintainers of `sysml_model`, `workspace`, `sysml_diagnostics`, `language_service`,
+Audience: maintainers of `sysml_model`, `workspace`, `language_service`,
 `lsp_server`, and the unified semantic cache
 
 ## 1. Decision summary

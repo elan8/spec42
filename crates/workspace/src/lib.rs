@@ -62,6 +62,7 @@ pub use sysml_model::ElementKind;
 
 pub use session::{PublicationToken, RelinkToken, SessionLifecycle, WorkspaceSession};
 pub use snapshot::discovery::{discover_target_files, path_to_file_url, resolve_workspace_root};
+pub use snapshot::publish_documents;
 pub use snapshot::{
     apply_document_changes, enrich_document_hashes, CancellationToken, DocumentChanges,
     HostAnalysisEvaluation, HostConnectorEnd, HostContext, HostElementFacts, HostEvaluatedScalar,

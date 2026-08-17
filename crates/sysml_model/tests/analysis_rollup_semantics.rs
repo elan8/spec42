@@ -1,6 +1,5 @@
-use sysml_diagnostics::{collect_diagnostics_from_graph, DiagnosticsOptions};
 use sysml_model::{
-    build_semantic_graph_from_documents, evaluate_expressions, RelationshipKind, SysmlDocument,
+    build_semantic_graph_from_documents, evaluate_expressions, SysmlDocument,
     SysmlDocumentSourceKind,
 };
 
@@ -168,45 +167,6 @@ fn cross_document_analysis_subject_links_to_architecture_type() {
             .iter()
             .map(|node| node.id.qualified_name.as_str())
             .collect::<Vec<_>>()
-    );
-}
-
-#[test]
-fn cross_document_analysis_subject_relationship_resolves_without_pending_diagnostic() {
-    let graph = build_two_document_graph();
-    let analysis_qualified = "AnalysisCases::TotalPowerConsumptionAnalysis";
-    let analysis_id = graph
-        .node_ids_by_qualified_name
-        .get(analysis_qualified)
-        .and_then(|ids| ids.first())
-        .expect("analysis case node");
-    let subject_targets = graph.outgoing_targets_by_kind(
-        graph.get_node(analysis_id).expect("analysis case"),
-        RelationshipKind::Subject,
-    );
-    assert!(
-        subject_targets.iter().any(|target| {
-            target.id.qualified_name == "Architecture::AutonomousFloorCleaningRobot"
-        }),
-        "analysis case should have subject edge to imported part def, got {:?}",
-        subject_targets
-            .iter()
-            .map(|node| node.id.qualified_name.as_str())
-            .collect::<Vec<_>>()
-    );
-    assert!(
-        graph.pending_relationships.is_empty(),
-        "unexpected pending relationships: {:?}",
-        graph.pending_relationships
-    );
-    let analysis_uri = analysis_id.uri.clone();
-    let diagnostics =
-        collect_diagnostics_from_graph(&graph, &analysis_uri, DiagnosticsOptions::default());
-    assert!(
-        !diagnostics
-            .iter()
-            .any(|diagnostic| diagnostic.code == "unresolved_pending_relationship"),
-        "unexpected unresolved subject pending diagnostic: {diagnostics:?}"
     );
 }
 

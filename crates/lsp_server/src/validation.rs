@@ -97,6 +97,15 @@ package KitchenTimer {
 "#
     }
 
+    /// The exact source a diagnostic's range covers, or `None` when the range is outside it.
+    fn slice_at(source: &str, range: tower_lsp::lsp_types::Range) -> Option<&str> {
+        let line = source.lines().nth(range.start.line as usize)?;
+        if range.start.line != range.end.line {
+            return None;
+        }
+        line.get(range.start.character as usize..range.end.character as usize)
+    }
+
     fn write_timer_fixture(temp: &tempfile::TempDir) -> PathBuf {
         let model_path = temp.path().join("KitchenTimer.sysml");
         std::fs::write(&model_path, timer_like_model()).expect("write timer fixture");
@@ -249,17 +258,21 @@ package UseLibrary {
                     ))
             })
             .collect();
+        // Asserted by the range the publication reported, not by the message: a diagnostic's
+        // text is presentation, and reading a symbol back out of it is exactly the inference this
+        // migration removed. The range is the authored reference, so the source under it is.
+        let source = timer_like_model();
+        let referenced = unresolved
+            .iter()
+            .filter_map(|diagnostic| slice_at(source, diagnostic.range))
+            .collect::<Vec<_>>();
         assert!(
-            unresolved
-                .iter()
-                .any(|diagnostic| diagnostic.message.contains("Real")),
-            "expected unresolved Real diagnostic: {unresolved:#?}"
+            referenced.contains(&"Real"),
+            "expected an unresolved reference at `Real`: {referenced:?}"
         );
         assert!(
-            unresolved
-                .iter()
-                .any(|diagnostic| diagnostic.message.contains("DurationValue")),
-            "expected unresolved DurationValue diagnostic: {unresolved:#?}"
+            referenced.contains(&"DurationValue"),
+            "expected an unresolved reference at `DurationValue`: {referenced:?}"
         );
         assert!(!report.advice.is_empty());
         assert!(report

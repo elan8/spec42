@@ -22,4 +22,3 @@ thiserror = { workspace = true }
 
 [dev-dependencies]
 tempfile = "3"
-sysml_diagnostics = { path = "../sysml_diagnostics" }

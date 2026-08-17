@@ -4,7 +4,7 @@ use super::{
     apply_document_changes, apply_document_changes_fast, rebuild_all_document_links,
     remove_document, store_document_text,
 };
-use crate::analysis::compute_semantic_diagnostics;
+use crate::analysis::diagnostics_core;
 use crate::workspace::state::ServerState;
 use tower_lsp::lsp_types::{NumberOrString, Position, Range, TextDocumentContentChangeEvent, Url};
 
@@ -186,7 +186,12 @@ fn rebuild_all_document_links_relinks_library_documents_after_dependency_ingest(
 
     rebuild_all_document_links(&mut state);
 
-    let rebuilt_diagnostics = compute_semantic_diagnostics(&state.semantic_graph, &importer_uri);
+    let rebuilt_diagnostics = diagnostics_core::collect_document_diagnostics(
+        state.published_model.as_deref(),
+        &importer_uri,
+        diagnostics_core::lsp_reporting(),
+        diagnostics_core::lsp_postprocess_options(),
+    );
     assert!(
         rebuilt_diagnostics.iter().all(|d| {
             d.code.as_ref().is_none_or(|code| {
@@ -233,7 +238,12 @@ fn rebuild_all_document_links_relinks_public_reexport_chains_after_dependency_in
 
     rebuild_all_document_links(&mut state);
 
-    let rebuilt_diagnostics = compute_semantic_diagnostics(&state.semantic_graph, &importer_uri);
+    let rebuilt_diagnostics = diagnostics_core::collect_document_diagnostics(
+        state.published_model.as_deref(),
+        &importer_uri,
+        diagnostics_core::lsp_reporting(),
+        diagnostics_core::lsp_postprocess_options(),
+    );
     assert!(
             rebuilt_diagnostics.iter().all(|d| {
                 d.code.as_ref().is_none_or(|code| {

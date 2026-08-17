@@ -531,16 +531,14 @@ fn snapshot_conjugated_port_structural_mismatch_uses_feature_check_not_fallback(
     let model_path = cache.path().join("ConjugatedMismatch.sysml");
     let content = r#"
 package Demo {
+    attribute def Enabled;
     port def PowerPort {
-        in enabled : Boolean;
-    }
-    part def Sensor {
-        port cmd : ~PowerPort;
+        in enabled : Enabled;
     }
     part def System {
-        part sensorA : Sensor;
-        part sensorB : Sensor;
-        connect sensorA.cmd to sensorB.cmd;
+        port cmdA : ~PowerPort;
+        port cmdB : ~PowerPort;
+        connect cmdA to cmdB;
     }
 }
 "#;
@@ -555,24 +553,18 @@ package Demo {
         )
         .expect("snapshot");
 
-    // Connecting two ~PowerPort-typed ports (same conjugation on both sides) mirrors the same
-    // "in" direction on both -- structurally incompatible. Before the fix in this round,
-    // `effective_port_features` returned empty for any conjugated port (it only matched
-    // ElementKind::PortDef targets, and conjugated usages are now typed by the
-    // ConjugatedPortDefinition instead), so this diagnostic only fired via the coarse
-    // text-based "same conjugation" fallback (`conjugated_port_inconsistent`). After the fix,
-    // the structural feature-direction check (which correctly follows the conjugate to the real
-    // PortDef's children) fires first with the more precise code.
+    // Connecting two `~PowerPort` ports gives both ends the same conjugation, so both present
+    // `enabled` in the same direction and nothing can flow. The publication decides this from the
+    // conjugation flag on each authored typing and the directions `PowerPort` declares; the legacy
+    // check inferred it from the spelling of the authored type reference.
     let diagnostics = &snapshot.validation().documents[0].diagnostics;
     let mismatch = diagnostics
         .iter()
-        .find(|d| {
-            d.code == "flow_direction_incompatible" || d.code == "conjugated_port_inconsistent"
-        })
+        .find(|d| d.code == "flow_direction_incompatible")
         .expect("connecting two ~PowerPort ports should be flagged incompatible");
     assert_eq!(
-        mismatch.code, "flow_direction_incompatible",
-        "structural feature check should fire for conjugated ports, not just the coarse fallback"
+        mismatch.severity,
+        sysml_diagnostics::DiagnosticSeverity::Warning
     );
 }
 

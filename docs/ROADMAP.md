@@ -173,6 +173,5 @@ The following capabilities are explicitly out of scope for 1.0. They may appear 
 |----------|---------|
 | [SUPPORTED-WORKFLOWS.md](user/SUPPORTED-WORKFLOWS.md) | Release-gating editor and CLI workflows |
 | [CONFORMANCE-MATRIX.md](reference/CONFORMANCE-MATRIX.md) | Generated SysML v2 feature coverage |
-| [DIAGNOSTIC-CATALOG.md](engineering/DIAGNOSTIC-CATALOG.md) | Diagnostic check inventory |
 | [PERFORMANCE-GUARDRAILS.md](engineering/PERFORMANCE-GUARDRAILS.md) | Performance budgets and CI reporting |
 | [SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md](architecture/SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md) | Shared renderer contract |

@@ -1,4 +1,3 @@
-pub(crate) mod checks;
 pub(crate) mod diagnostics_adapter;
 pub(crate) mod diagnostics_core;
 pub(crate) mod diagnostics_postprocess;
@@ -11,4 +10,3 @@ pub use crate::semantic::{
 pub use crate::semantic_tokens::{
     ast_semantic_ranges, legend, semantic_tokens_full, semantic_tokens_range,
 };
-pub use checks::compute_semantic_diagnostics;

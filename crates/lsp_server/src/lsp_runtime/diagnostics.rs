@@ -7,7 +7,8 @@ use tracing::info;
 
 use crate::analysis::diagnostics_core;
 use crate::common::util;
-use crate::semantic::SemanticGraph;
+use sysml_query::resolved_slice::PublishedModel;
+
 use crate::workspace::state::supports_semantic_queries;
 use crate::workspace::{RuntimeConfig, WorkspaceHandle};
 
@@ -35,7 +36,6 @@ pub(crate) async fn publish_document_diagnostics(
     handle: &WorkspaceHandle,
     runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
     uri: Url,
-    text: &str,
 ) {
     let started_at = Instant::now();
     let snap = handle.snapshot();
@@ -57,9 +57,7 @@ pub(crate) async fn publish_document_diagnostics(
         }
         return;
     }
-    let diagnostics =
-        collect_diagnostics_for_document(&snap.semantic_graph, &snap.library_paths, &uri, text)
-            .await;
+    let diagnostics = collect_diagnostics_for_document(snap.published_model.clone(), &uri).await;
     if perf_logging_enabled(runtime_config) {
         info!(
             event = "diagnostics:document",
@@ -93,23 +91,17 @@ pub(crate) async fn publish_workspace_diagnostics(
         }
         return;
     }
-    let docs: Vec<(Url, String)> = if let Some(targets) = target_uris {
+    let docs: Vec<Url> = if let Some(targets) = target_uris {
         targets
             .iter()
-            .filter_map(|uri| {
-                snap.index
-                    .get(uri)
-                    .map(|entry| (uri.clone(), entry.content.clone()))
-            })
+            .filter(|uri| snap.index.contains_key(*uri))
+            .cloned()
             .collect()
     } else if diagnose_library_paths_enabled(runtime_config) {
         // `spec42.development.diagnoseLibraryPaths` opt-in: include library paths anyway,
         // trading the performance guardrail below for full coverage while developing or
         // debugging a library through a local override.
-        snap.index
-            .iter()
-            .map(|(uri, entry)| (uri.clone(), entry.content.clone()))
-            .collect()
+        snap.index.keys().cloned().collect()
     } else {
         // Excludes library paths deliberately — this pass is O(project files) and runs on a
         // debounce after every edit; including the bundled standard library and any configured
@@ -118,9 +110,9 @@ pub(crate) async fn publish_workspace_diagnostics(
         // diagnoses individual library files when they're actually opened/edited (no exclusion
         // there — see its comment), so this only affects the *background* cross-file sweep.
         snap.index
-            .iter()
-            .filter(|(uri, _)| !util::uri_under_any_library(uri, &snap.library_paths))
-            .map(|(uri, entry)| (uri.clone(), entry.content.clone()))
+            .keys()
+            .filter(|uri| !util::uri_under_any_library(uri, &snap.library_paths))
+            .cloned()
             .collect()
     };
 
@@ -129,13 +121,11 @@ pub(crate) async fn publish_workspace_diagnostics(
     let mut diagnostic_count = 0usize;
 
     let mut join_set = tokio::task::JoinSet::new();
-    for (uri, text) in docs {
-        let graph = snap.semantic_graph.clone();
-        let library_paths = snap.library_paths.clone();
+    for uri in docs {
+        let model = snap.published_model.clone();
         let client = client.clone();
         join_set.spawn(async move {
-            let diagnostics =
-                collect_diagnostics_for_document(&graph, &library_paths, &uri, &text).await;
+            let diagnostics = collect_diagnostics_for_document(model, &uri).await;
             let count = diagnostics.len();
             client.publish_diagnostics(uri, diagnostics, None).await;
             count
@@ -160,28 +150,23 @@ pub(crate) async fn publish_workspace_diagnostics(
     }
 }
 
-/// Computes diagnostics for a single document from state the caller already captured — no
-/// `handle.snapshot()` call here. This is deliberate: every document diagnosed within one
-/// `publish_workspace_diagnostics` call (including its parallel per-document tasks) must see
-/// the exact same graph, otherwise a concurrent relink landing mid-flight could make different
-/// documents in the same publish operation disagree about what state they were diagnosed
-/// against.
+/// Computes diagnostics for a single document from the publication the caller already captured --
+/// no `handle.snapshot()` call here. This is deliberate: every document diagnosed within one
+/// `publish_workspace_diagnostics` call (including its parallel per-document tasks) must read the
+/// same publication, otherwise a concurrent rebuild landing mid-flight could make different
+/// documents in the same publish operation disagree about what model state they describe. Holding
+/// the publication by `Arc` is what makes that guarantee hold across the await: the captured
+/// publication is immutable and cannot be superseded underneath a task.
 async fn collect_diagnostics_for_document(
-    graph: &SemanticGraph,
-    library_paths: &[Url],
+    model: Option<Arc<PublishedModel>>,
     uri: &Url,
-    text: &str,
 ) -> Vec<Diagnostic> {
     let uri_norm = util::normalize_file_uri(uri);
-    let graph = graph.clone();
-    let library_paths = library_paths.to_vec();
-    let text = text.to_owned();
     tokio::task::spawn_blocking(move || {
         diagnostics_core::collect_document_diagnostics(
-            &graph,
-            &library_paths,
+            model.as_deref(),
             &uri_norm,
-            &text,
+            diagnostics_core::lsp_reporting(),
             diagnostics_core::lsp_postprocess_options(),
         )
     })

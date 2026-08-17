@@ -333,32 +333,27 @@ impl IncrementalWorkspace {
     }
 }
 
-/// Compute a [`HostValidationReport`] directly from an [`IncrementalWorkspace`]'s current
-/// graph/documents, without building a [`crate::snapshot::HostWorkspaceSnapshot`].
+/// Compute a [`HostValidationReport`] for `documents`, without building a
+/// [`crate::snapshot::HostWorkspaceSnapshot`].
 ///
-/// A thin, same-crate call into `snapshot::facts::collect_host_validation_report` — the exact
-/// function `snapshot::build::build_workspace_snapshot` already uses internally.
-/// Exists so embedders that hold an [`IncrementalWorkspace`] directly (rather than going
-/// through the `snapshot` pipeline) can still get diagnostics, without paying for the rest of
-/// a snapshot's eager derived fields (`language_workspace`/`render_snapshot`/
-/// `semantic_projection`) they don't need.
+/// Publishes the documents and reports what that publication settled, so an embedder holding an
+/// [`IncrementalWorkspace`] gets exactly the diagnostics a full snapshot would, without paying for
+/// the snapshot's other eager derived fields (`language_workspace`/`render_snapshot`/
+/// `semantic_projection`) it does not need.
 ///
 /// # Errors
 ///
-/// Returns an error when target file URLs cannot be resolved.
+/// Returns an error when the documents cannot be published or target file URLs cannot be resolved.
 pub fn validate_workspace(
-    graph: &SemanticGraph,
     documents: &[SysmlDocument],
-    library_urls: &[Url],
     target_files: &[PathBuf],
     workspace_root: Option<&Path>,
     library_paths_display: &[PathBuf],
     strict_diagnostics: bool,
 ) -> WorkspaceResult<HostValidationReport> {
+    let model = crate::snapshot::publication::publish_documents(documents)?;
     crate::snapshot::facts::collect_host_validation_report(
-        graph,
-        documents,
-        library_urls,
+        &model,
         target_files,
         workspace_root,
         library_paths_display,
@@ -876,14 +871,11 @@ package AnalysisCases {
         let documents = fixture_documents();
         engine.load(&documents);
 
-        let library_urls: Vec<Url> = Vec::new();
         let target_files: Vec<PathBuf> = Vec::new();
         let library_paths_display: Vec<PathBuf> = Vec::new();
 
         let via_wrapper = validate_workspace(
-            &engine.graph(),
             &documents,
-            &library_urls,
             &target_files,
             None,
             &library_paths_display,
@@ -891,10 +883,10 @@ package AnalysisCases {
         )
         .expect("validate_workspace succeeds");
 
+        let model =
+            crate::snapshot::publication::publish_documents(&documents).expect("documents publish");
         let via_direct_call = crate::snapshot::facts::collect_host_validation_report(
-            &engine.graph(),
-            &documents,
-            &library_urls,
+            &model,
             &target_files,
             None,
             &library_paths_display,
@@ -902,14 +894,8 @@ package AnalysisCases {
         )
         .expect("collect_host_validation_report succeeds");
 
-        assert_eq!(
-            via_wrapper.summary.document_count,
-            via_direct_call.summary.document_count
-        );
-        assert_eq!(
-            via_wrapper.summary.error_count,
-            via_direct_call.summary.error_count
-        );
+        assert_eq!(via_wrapper.summary, via_direct_call.summary);
+        assert_eq!(via_wrapper.documents, via_direct_call.documents);
         assert_eq!(via_wrapper.workspace_root, via_direct_call.workspace_root);
         assert_eq!(
             via_wrapper.resolved_library_paths,

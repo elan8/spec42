@@ -244,12 +244,6 @@ package AHFNorway {
         (range (start 27 2) (end 27 6))
       )
       (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 27 7) (end 32 3))
-      )
-      (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")

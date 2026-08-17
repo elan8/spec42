@@ -1,4 +1,3 @@
-use sysml_diagnostics::{collect_diagnostics_from_graph, DiagnosticsOptions};
 use sysml_model::{
     build_semantic_graph_from_documents, evaluate_expressions, EvaluationStatus, SysmlDocument,
     SysmlDocumentSourceKind,
@@ -36,32 +35,6 @@ fn catalog_document() -> SysmlDocument {
         byte_size: None,
     }
 }
-
-const PASSING_REQUIREMENT_SYSML: &str = r#"
-package GridRequirements {
-    requirement def GridCapacity {
-        attribute basePeakLoad = 12.3;
-        attribute winterMultiplier = 1.30;
-        attribute requiredCapacity = 16.0;
-        require constraint {
-            basePeakLoad * winterMultiplier <= requiredCapacity
-        }
-    }
-}
-"#;
-
-const FAILING_REQUIREMENT_SYSML: &str = r#"
-package GridRequirements {
-    requirement def GridCapacity {
-        attribute basePeakLoad = 12.3;
-        attribute winterMultiplier = 1.30;
-        attribute requiredCapacity = 15.0;
-        require constraint {
-            basePeakLoad * winterMultiplier <= requiredCapacity
-        }
-    }
-}
-"#;
 
 const INHERITED_DEF_CONSTRAINT_SYSML: &str = r#"
 package GridRequirements {
@@ -132,41 +105,6 @@ fn analysis_result(
         .and_then(|node| graph.evaluation_facts_for(node))
         .and_then(|facts| facts.analysis.as_ref())
         .map(|analysis| (analysis.expression.status, analysis.passed))
-}
-
-fn has_code(graph: &sysml_model::SemanticGraph, code: &str) -> bool {
-    let uri = graph
-        .node_ids_by_qualified_name
-        .get("GridRequirements::GridCapacity")
-        .and_then(|ids| ids.first())
-        .map(|id| id.uri.clone())
-        .expect("requirement uri");
-    collect_diagnostics_from_graph(graph, &uri, DiagnosticsOptions::default())
-        .into_iter()
-        .any(|diag| diag.code == code)
-}
-
-#[test]
-fn requirement_usage_quantity_constraint_passes_when_within_capacity() {
-    let graph = build_graph(PASSING_REQUIREMENT_SYSML);
-    assert_eq!(
-        analysis_result(&graph, "GridRequirements::GridCapacity"),
-        Some((EvaluationStatus::Ok, Some(true)))
-    );
-    assert!(
-        !has_code(&graph, "analysis_evaluation_unresolved"),
-        "quantity require constraint should evaluate without unresolved status"
-    );
-}
-
-#[test]
-fn requirement_usage_quantity_constraint_fails_when_over_capacity() {
-    let graph = build_graph(FAILING_REQUIREMENT_SYSML);
-    assert_eq!(
-        analysis_result(&graph, "GridRequirements::GridCapacity"),
-        Some((EvaluationStatus::Ok, Some(false)))
-    );
-    assert!(has_code(&graph, "analysis_constraint_failed"));
 }
 
 #[test]

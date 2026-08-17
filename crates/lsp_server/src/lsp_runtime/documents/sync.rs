@@ -81,7 +81,7 @@ pub(crate) async fn did_open(
         let uri_norm_log = uri_norm.clone();
         tokio::spawn(async move {
             let diag_start = Instant::now();
-            publish_document_diagnostics(&client, &handle, &runtime_config, uri, &text).await;
+            publish_document_diagnostics(&client, &handle, &runtime_config, uri).await;
             if perf_logging_enabled {
                 client
                     .log_message(

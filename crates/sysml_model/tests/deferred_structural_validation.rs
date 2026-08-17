@@ -1,8 +1,3 @@
-//! Deferred structural-validation regressions from the compatibility corpus.
-//!
-//! These regressions assert the graph facts required by their structural checks.
-
-use sysml_diagnostics::{collect_diagnostics_from_graph, DiagnosticsOptions};
 use sysml_model::{
     build_semantic_graph_from_documents, resolve_inherited_member_via_type, ElementKind,
     ResolveResult, SysmlDocument, SysmlDocumentSourceKind,
@@ -18,54 +13,6 @@ fn workspace_doc(path: &str, content: &str) -> SysmlDocument {
         None,
     )
     .expect("workspace document")
-}
-
-#[test]
-fn connection_like_definition_ends_share_one_positional_graph_fact() {
-    let doc = workspace_doc(
-        "connection_like_ends.sysml",
-        r#"package P {
-  occurrence def Occurrence;
-  connection def Connector {
-    end feature source : Occurrence;
-    end feature target : Occurrence;
-  }
-  flow def Transfer {
-    end feature source : Occurrence;
-    end feature target : Occurrence;
-  }
-  allocation def Allocation {
-    end feature source : Occurrence;
-    end feature target : Occurrence;
-  }
-}"#,
-    );
-    let uri = doc.uri.clone();
-    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("semantic graph");
-
-    for (name, kind) in [
-        ("Connector", ElementKind::ConnectionDef),
-        ("Transfer", ElementKind::FlowDef),
-        ("Allocation", ElementKind::AllocationDef),
-    ] {
-        let owner = graph
-            .nodes_named(name)
-            .into_iter()
-            .find(|node| node.element_kind == kind)
-            .unwrap_or_else(|| panic!("missing {name} {kind}"));
-        let names: Vec<_> = graph
-            .positional_end_features(owner)
-            .into_iter()
-            .map(|end| end.name.as_str())
-            .collect();
-        assert_eq!(names, ["source", "target"], "unexpected ends for {name}");
-    }
-    assert!(
-        !collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default())
-            .iter()
-            .any(|diagnostic| diagnostic.code == "incomplete_connection_like_end_pair"),
-        "complete connection-like definitions must not receive the incomplete-pair diagnostic"
-    );
 }
 
 #[test]

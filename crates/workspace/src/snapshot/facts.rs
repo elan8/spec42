@@ -4,11 +4,11 @@ use std::collections::{BTreeSet, HashMap, HashSet};
 
 use sha2::{Digest, Sha256};
 
-use sysml_diagnostics::{DiagnosticSeverity, SemanticDiagnostic};
+use sysml_diagnostics::{DiagnosticSeverity, ReportingPolicy};
 use sysml_model::{
-    typed_by_reference, DeclaredLiteral, EvaluationStatus, ExpressionEvaluationQuery,
-    SemanticGraph, SysmlDocument,
+    typed_by_reference, DeclaredLiteral, EvaluationStatus, ExpressionEvaluationQuery, SemanticGraph,
 };
+use sysml_query::resolved_slice::PublishedModel;
 use url::Url;
 
 use super::discovery::path_to_file_url;
@@ -23,40 +23,27 @@ use super::projection::{
 };
 use super::validation::{HostValidatedDocument, HostValidationReport, HostValidationSummary};
 
+/// The host validation report for one publication.
+///
+/// Reads the immutable publication and applies the host's reporting policy to what it settled. It
+/// decides no semantics: every code, severity, range, message, and related site was settled before
+/// the publication became visible, and this only chooses which documents to report and whether
+/// strict mode narrows them.
 pub(crate) fn collect_host_validation_report(
-    graph: &SemanticGraph,
-    documents: &[SysmlDocument],
-    library_urls: &[Url],
+    model: &PublishedModel,
     target_files: &[std::path::PathBuf],
     workspace_root: Option<&std::path::Path>,
     library_paths_display: &[std::path::PathBuf],
     strict_diagnostics: bool,
 ) -> crate::error::WorkspaceResult<HostValidationReport> {
     let target_urls = target_file_urls(target_files)?;
-    // Keyed by normalized URI: document URIs may differ from `target_urls` in drive-letter
-    // case (documents come from whatever the caller/provider constructed, `target_urls` is
-    // always canonicalized by `path_to_file_url`), so raw string keys would silently miss.
-    let document_text: HashMap<String, &str> = documents
-        .iter()
-        .map(|doc| {
-            (
-                language_service::uri::normalize_uri(&doc.uri).to_string(),
-                doc.content.as_str(),
-            )
-        })
-        .collect();
+    let policy = ReportingPolicy::strict(strict_diagnostics);
     let mut host_documents = Vec::new();
 
     for uri in &target_urls {
-        let text = document_text
-            .get(language_service::uri::normalize_uri(uri).as_str())
-            .copied()
-            .unwrap_or("");
-        let diagnostics =
-            collect_host_document_diagnostics(graph, library_urls, uri, text, strict_diagnostics);
         host_documents.push(HostValidatedDocument {
             uri: uri.to_string(),
-            diagnostics,
+            diagnostics: sysml_diagnostics::document_diagnostics(model, uri, policy),
         });
     }
 
@@ -1057,33 +1044,6 @@ fn target_file_urls(
         .collect::<Result<BTreeSet<_>, _>>()
 }
 
-fn collect_host_document_diagnostics(
-    graph: &SemanticGraph,
-    library_urls: &[Url],
-    uri: &Url,
-    text: &str,
-    strict_diagnostics: bool,
-) -> Vec<SemanticDiagnostic> {
-    let mut diagnostics = sysml_diagnostics::collect_document_diagnostics(
-        graph,
-        !library_urls.is_empty(),
-        uri,
-        text,
-        strict_diagnostics,
-    );
-
-    let has_parse_error = diagnostics.iter().any(|diagnostic| {
-        diagnostic.severity == DiagnosticSeverity::Error && diagnostic.source == "sysml"
-    });
-    if strict_diagnostics && has_parse_error {
-        diagnostics.retain(|diagnostic| {
-            diagnostic.severity == DiagnosticSeverity::Error && diagnostic.source == "sysml"
-        });
-    }
-
-    diagnostics
-}
-
 fn summarize_host_documents(documents: &[HostValidatedDocument]) -> HostValidationSummary {
     let mut summary = HostValidationSummary {
         document_count: documents.len(),
@@ -1094,9 +1054,7 @@ fn summarize_host_documents(documents: &[HostValidatedDocument]) -> HostValidati
             match diagnostic.severity {
                 DiagnosticSeverity::Error => summary.error_count += 1,
                 DiagnosticSeverity::Warning => summary.warning_count += 1,
-                DiagnosticSeverity::Information | DiagnosticSeverity::Hint => {
-                    summary.information_count += 1
-                }
+                DiagnosticSeverity::Information => summary.information_count += 1,
             }
         }
     }

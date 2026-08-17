@@ -10,6 +10,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use sysml_model::{SemanticGraph, SysmlDocument, WorkspaceParsedDocument};
+use sysml_query::resolved_slice::PublishedModel;
 use tower_lsp::lsp_types::{Diagnostic, Url};
 use workspace::{
     HostContext, HostFilesystemProvider, HostWorkspaceSnapshot, Spec42Engine, ValidationTiming,
@@ -18,7 +19,6 @@ use workspace::{
 
 use crate::analysis::diagnostics_core;
 use crate::host::config::Spec42Config;
-use crate::workspace::indexed_text_or_empty;
 use crate::workspace::state::{IndexEntry, ParseMetadata, ServerState};
 
 use super::discovery::{discover_target_files, path_to_file_url, resolve_workspace_root};
@@ -29,6 +29,8 @@ use super::{SemanticValidationReport, ValidatedDocument, ValidationReport, Valid
 #[derive(Debug, Clone)]
 pub struct BuiltWorkspaceInput {
     pub semantic_graph: SemanticGraph,
+    /// The publication validation reports from, admitted from the same documents as the graph.
+    pub published_model: Arc<PublishedModel>,
     /// Every document the provider loaded, including ones that failed the graph builder's
     /// strict parse. Indexed for raw text below so `collect_diagnostics_for_document` can
     /// re-parse them with a tolerant parser and still report syntax errors; without this,
@@ -47,6 +49,7 @@ pub fn built_workspace_input_from_snapshot(
 ) -> BuiltWorkspaceInput {
     BuiltWorkspaceInput {
         semantic_graph: snapshot.semantic_graph().clone(),
+        published_model: snapshot.published_model_arc(),
         all_documents: snapshot.documents().to_vec(),
         parsed_documents: snapshot.parsed_documents().to_vec(),
         library_urls: snapshot.library_urls().to_vec(),
@@ -187,6 +190,7 @@ fn server_state_from_built(
         workspace_roots: workspace_root_url.iter().cloned().collect(),
         library_paths: built.library_urls.clone(),
         semantic_graph: built.semantic_graph.clone(),
+        published_model: Some(built.published_model.clone()),
         index,
         session,
         ..ServerState::default()
@@ -224,9 +228,7 @@ fn collect_target_documents_inner(
     Ok(target_urls
         .into_iter()
         .map(|uri| {
-            let text = indexed_text_or_empty(state, &uri);
-            let diagnostics =
-                collect_diagnostics_for_document(state, &uri, &text, strict_diagnostics);
+            let diagnostics = collect_diagnostics_for_document(state, &uri, strict_diagnostics);
             ValidatedDocument {
                 uri: uri.to_string(),
                 diagnostics,
@@ -245,14 +247,12 @@ fn target_file_urls(target_files: &[std::path::PathBuf]) -> Result<BTreeSet<Url>
 fn collect_diagnostics_for_document(
     state: &ServerState,
     uri: &Url,
-    text: &str,
     strict_diagnostics: bool,
 ) -> Vec<Diagnostic> {
     diagnostics_core::collect_document_diagnostics(
-        &state.semantic_graph,
-        &state.library_paths,
+        state.published_model.as_deref(),
         uri,
-        text,
+        diagnostics_core::validation_reporting(strict_diagnostics),
         diagnostics_core::validation_postprocess_options(strict_diagnostics),
     )
 }

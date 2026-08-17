@@ -2,13 +2,13 @@
 
 use sysml_diagnostics::SemanticDiagnostic;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct HostValidatedDocument {
     pub uri: String,
     pub diagnostics: Vec<SemanticDiagnostic>,
 }
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct HostValidationSummary {
     pub document_count: usize,
     pub error_count: usize,
@@ -16,7 +16,7 @@ pub struct HostValidationSummary {
     pub information_count: usize,
 }
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct HostValidationReport {
     pub workspace_root: Option<String>,
     pub resolved_library_paths: Vec<String>,

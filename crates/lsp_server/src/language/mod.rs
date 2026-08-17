@@ -220,22 +220,6 @@ pub fn suggest_create_usage_from_definition(
         .map(|suggestion| wrap_refactor_action(suggestion, uri))
 }
 
-pub fn suggest_add_missing_case_subject_quick_fix(
-    source: &str,
-    uri: &Url,
-    diagnostic: &Diagnostic,
-) -> Option<CodeAction> {
-    let path = uri.path().trim_start_matches('/').to_string();
-    language_service::suggest_add_missing_case_subject_quick_fix(
-        source,
-        &path,
-        DiagnosticLine {
-            line: diagnostic.range.start.line,
-        },
-    )
-    .map(|suggestion| suggestion_to_code_action(suggestion, uri, Some(diagnostic)))
-}
-
 pub fn suggest_qualify_ambiguous_name_quick_fixes(
     source: &str,
     uri: &Url,

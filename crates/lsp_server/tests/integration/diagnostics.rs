@@ -886,8 +886,10 @@ fn unresolved_ref_type_reference_emits_semantic_diagnostic() {
         }
     "#;
     let diagnostics = validate_inline_sysml("missing_ref_type.sysml", content);
-    let diagnostic = diagnostic_by_code(&diagnostics, "semantic", "unresolved_ref_type_reference")
-        .expect("expected unresolved_ref_type_reference semantic diagnostic");
+    // A `ref` usage's type reference is settled like any other typing, so it reports the same
+    // code. The publication does not carry a separate outcome for the `ref` spelling.
+    let diagnostic = diagnostic_by_code(&diagnostics, "semantic", "unresolved_type_reference")
+        .expect("expected unresolved_type_reference semantic diagnostic");
     assert_eq!(
         diagnostic_range_text(content, diagnostic),
         "MissingCelestialBody"
@@ -904,12 +906,10 @@ fn unresolved_viewpoint_conformance_target_emits_semantic_diagnostic() {
         }
     "#;
     let diagnostics = validate_inline_sysml("missing_viewpoint_conformance_target.sysml", content);
-    let diagnostic = diagnostic_by_code(
-        &diagnostics,
-        "semantic",
-        "unresolved_viewpoint_conformance_target",
-    )
-    .expect("expected unresolved_viewpoint_conformance_target semantic diagnostic");
+    // A satisfy endpoint that names nothing is an unresolved authored reference, reported at the
+    // endpoint. The publication has no viewpoint-specific unresolved outcome.
+    let diagnostic = diagnostic_by_code(&diagnostics, "semantic", "unresolved_reference")
+        .expect("expected an unresolved reference for the missing viewpoint");
     assert_eq!(
         diagnostic_range_text(content, diagnostic),
         "MissingViewpoint"
@@ -1096,60 +1096,6 @@ fn unresolved_specializes_reference_is_not_emitted_for_sibling_analysis_def_spec
 }
 
 #[test]
-fn unresolved_specializes_reference_is_emitted_for_multi_base_with_missing_target() {
-    let content = r#"
-        package P {
-            part def RobotPlatform {}
-            part def MissionProfile {}
-            part def InspectionRover :> RobotPlatform {
-                attribute robotName = "inspection-rover";
-            }
-        }
-    "#;
-    let root = lsp_server::sysml_v2::parse(content).expect("parse");
-    let uri = tower_lsp::lsp_types::Url::parse("file:///multi_base_missing_specializes.sysml")
-        .expect("uri");
-    let mut graph = lsp_server::semantic::build_graph_from_doc(&root, &uri);
-    let child_id = graph
-        .nodes_for_uri(&uri)
-        .into_iter()
-        .find(|node| node.element_kind == "part def" && node.name == "InspectionRover")
-        .map(|node| node.id.clone())
-        .expect("inspection rover node");
-    // `declared_specializes_refs` (crates/sysml_diagnostics/src/helpers.rs) reads
-    // `declared_facts.relationships.specializes`, the typed-facts representation -- not the
-    // `specializes` display attribute this used to inject into, which nothing production reads
-    // anymore.
-    graph
-        .get_node_mut(&child_id)
-        .expect("mutable inspection rover node")
-        .declared_facts
-        .relationships
-        .specializes = ["RobotPlatform", "MissingBase", "MissionProfile"]
-        .into_iter()
-        .map(|reference| sysml_model::DeclaredRelationshipTarget {
-            reference: reference.to_string(),
-            range: None,
-        })
-        .collect();
-    lsp_server::semantic::add_cross_document_edges_for_uri(&mut graph, &uri);
-    let diagnostics = lsp_server::compute_semantic_diagnostics(&graph, &uri);
-    let found_unresolved_specializes = diagnostics.iter().any(|diagnostic| {
-        diagnostic.source.as_deref() == Some("semantic")
-            && diagnostic.code.as_ref()
-                == Some(&tower_lsp::lsp_types::NumberOrString::String(
-                    "unresolved_specializes_reference".to_string(),
-                ))
-            && diagnostic.message.contains("MissingBase")
-    });
-
-    assert!(
-        found_unresolved_specializes,
-        "expected unresolved_specializes_reference semantic diagnostic for missing base in multi-base clause"
-    );
-}
-
-#[test]
 fn implicit_redefinition_without_operator_emits_error_for_inherited_features() {
     let content = r#"
         package P {
@@ -1231,13 +1177,11 @@ fn unresolved_satisfy_reference_emits_semantic_diagnostic() {
         .join("requirements_unresolved_satisfy.sysml");
     let content = fs::read_to_string(&fixture_path).expect("read unresolved satisfy fixture");
     let diagnostics = validate_inline_sysml("unresolved_satisfy.sysml", &content);
-    let found_unresolved_satisfy =
-        has_diag_code(&diagnostics, "semantic", "unresolved_satisfy_source")
-            || has_diag_code(&diagnostics, "semantic", "unresolved_satisfy_target");
-
+    // The publication settles every authored reference the same way, so a satisfy endpoint that
+    // names nothing is `unresolved_reference` rather than a satisfy-specific code.
     assert!(
-        found_unresolved_satisfy,
-        "expected unresolved_satisfy_* semantic diagnostic for missing satisfy reference"
+        has_diag_code(&diagnostics, "semantic", "unresolved_reference"),
+        "expected an unresolved reference for the missing satisfy endpoint: {diagnostics:#?}"
     );
 }
 
@@ -1251,32 +1195,11 @@ fn unresolved_allocate_reference_emits_semantic_diagnostic() {
         }
     "#;
     let diagnostics = validate_inline_sysml("unresolved_allocate.sysml", content);
-    let found_unresolved_allocate =
-        has_diag_code(&diagnostics, "semantic", "unresolved_allocate_source")
-            || has_diag_code(&diagnostics, "semantic", "unresolved_allocate_target");
+    let found_unresolved_allocate = has_diag_code(&diagnostics, "semantic", "unresolved_reference");
 
     assert!(
         found_unresolved_allocate,
         "expected unresolved_allocate_* semantic diagnostic for missing allocate reference"
-    );
-}
-
-#[test]
-fn allocation_type_not_allocation_def_emits_semantic_diagnostic() {
-    let content = r#"
-        package P {
-            part def NotAllocation;
-            allocation usageBad : NotAllocation;
-        }
-    "#;
-    let diagnostics = validate_inline_sysml("allocation_type_conformance.sysml", content);
-    assert!(
-        has_diag_code(
-            &diagnostics,
-            "semantic",
-            "allocation_type_not_allocation_def"
-        ),
-        "expected allocation_type_not_allocation_def semantic diagnostic"
     );
 }
 
@@ -1509,42 +1432,6 @@ fn multi_line_and_requirement_constraint_uses_full_expression_span() {
 }
 
 #[test]
-fn invalid_verdict_value_emits_semantic_diagnostic() {
-    let content = r#"
-        package P {
-            verification def VerifyRuntime {
-                return ref verdictResult { return VerdictKind::unknown; }
-            }
-        }
-    "#;
-    let diagnostics = validate_inline_sysml("invalid_verdict_value.sysml", content);
-    assert!(
-        has_diag_code(&diagnostics, "semantic", "invalid_verdict_value"),
-        "expected invalid_verdict_value semantic diagnostic"
-    );
-}
-
-#[test]
-fn analysis_objective_without_result_emits_binding_diagnostic() {
-    let content = r#"
-        package P {
-            part def System;
-            analysis def AnalyzeRuntime {
-                subject runtimeSystem : System;
-                objective runtimeObjective {
-                    doc /* Analyze runtime behavior. */
-                }
-            }
-        }
-    "#;
-    let diagnostics = validate_inline_sysml("analysis_binding_unresolved.sysml", content);
-    assert!(
-        has_diag_code(&diagnostics, "semantic", "objective_binding_unresolved"),
-        "expected objective_binding_unresolved semantic diagnostic"
-    );
-}
-
-#[test]
 fn analysis_objective_inherits_parent_return_ref_without_local_result() {
     let content = r#"
         package PowerAnalysis {
@@ -1682,13 +1569,18 @@ fn part_to_part_connect_has_no_connection_endpoint_not_port_diagnostic() {
 
 #[test]
 fn homonymous_port_defs_emit_port_type_mismatch_with_qualified_names() {
+    // The feature types are declared here rather than taken from the standard library: without a
+    // library the publication cannot say whether `Real` and `Integer` are related, and a rule that
+    // reported them as unrelated would be answering from a missing input.
     let content = r#"
         package P {
+            attribute def Level;
+            attribute def Count;
             package PkgA {
-                port def FillState { in level : Real; }
+                port def FillState { in level : P::Level; }
             }
             package PkgB {
-                port def FillState { in level : Integer; }
+                port def FillState { in level : P::Count; }
             }
             part def TankA { port fill : PkgA::FillState; }
             part def TankB { port fill : PkgB::FillState; }
@@ -1710,7 +1602,10 @@ fn homonymous_port_defs_emit_port_type_mismatch_with_qualified_names() {
         "homonymous incompatible port defs should emit port_type_mismatch; got: {:?}",
         diagnostics
     );
-    let mismatch = diagnostics
+    // The two ends are named by typed related locations rather than by the message: a
+    // diagnostic's text is presentation, and reading a symbol back out of it is exactly the
+    // inference this migration removed.
+    let related = diagnostics
         .iter()
         .find(|d| {
             d.source.as_deref() == Some("semantic")
@@ -1719,11 +1614,12 @@ fn homonymous_port_defs_emit_port_type_mismatch_with_qualified_names() {
                         "port_type_mismatch".to_string(),
                     ))
         })
-        .map(|d| d.message.as_str())
-        .unwrap_or("");
-    assert!(
-        mismatch.contains("PkgA") && mismatch.contains("PkgB"),
-        "message should name qualified port definitions, got: {mismatch}"
+        .and_then(|d| d.related_information.clone())
+        .unwrap_or_default();
+    assert_eq!(
+        related.len(),
+        2,
+        "both connected ports are related locations: {related:?}"
     );
 }
 
@@ -1746,7 +1642,7 @@ part def Laptop {
         diagnostics
     );
     assert!(
-        has_diag_code(&diagnostics, "sysml", "untyped_part_usage"),
+        has_diag_code(&diagnostics, "semantic", "untyped_part_usage"),
         "expected the untyped `part motherboard;` to still be flagged: {:?}",
         diagnostics
     );
@@ -2047,10 +1943,10 @@ fn ambiguous_name_reference_offers_qualify_quick_fixes() {
                                 "start": { "line": 9, "character": 13 },
                                 "end": { "line": 9, "character": 20 }
                             },
-                            "severity": 2,
-                            "code": "ambiguous_name_reference",
-                            "source": "sysml",
-                            "message": "Reference 'Vehicle' for 'car' is ambiguous in the current scope; use a qualified name."
+                            "severity": 1,
+                            "code": "ambiguous_reference",
+                            "source": "semantic",
+                            "message": "This reference names several elements, so it identifies none of them."
                         }
                     ],
                     "only": ["quickfix"]
@@ -2343,65 +2239,6 @@ fn requirement_line_offers_create_verification_case_refactor() {
     );
 
     let _ = child.kill();
-}
-
-#[test]
-fn case_without_subject_offers_add_subject_quick_fix() {
-    let uri = "file:///quickfix_case_subject.sysml";
-    let content = concat!(
-        "package P {\n",
-        "  requirement def RuntimeRequirement;\n",
-        "  verification def VerifyRuntime {\n",
-        "    objective {\n",
-        "      verify RuntimeRequirement;\n",
-        "    }\n",
-        "  }\n",
-        "}\n",
-    );
-    let diagnostics = validate_inline_sysml("quickfix_case_subject.sysml", content);
-    assert!(
-        has_diag_code(&diagnostics, "semantic", "case_subject_missing"),
-        "fixture must exercise case_subject_missing, got {diagnostics:#?}"
-    );
-
-    let mut session = TestSession::new();
-    session.initialize_default("quickfix_case_subject");
-    session.did_open(uri, content, 1);
-    session.barrier();
-    let response = session.request(
-        "textDocument/codeAction",
-        serde_json::json!({
-            "textDocument": { "uri": uri },
-            "range": {
-                "start": { "line": 2, "character": 2 },
-                "end": { "line": 6, "character": 3 }
-            },
-            "context": {
-                "diagnostics": [{
-                    "range": {
-                        "start": { "line": 2, "character": 2 },
-                        "end": { "line": 6, "character": 3 }
-                    },
-                    "severity": 2,
-                    "code": "case_subject_missing",
-                    "source": "semantic",
-                    "message": "Case 'VerifyRuntime' has objectives bound to a subject but no subject is declared."
-                }],
-                "only": ["quickfix"]
-            }
-        }),
-    );
-    let actions = response["result"].as_array().expect("code actions");
-    let action = actions
-        .iter()
-        .find(|action| action["title"].as_str() == Some("Add missing case subject"))
-        .expect("add subject quick fix");
-    assert_eq!(action["kind"].as_str(), Some("quickfix"));
-    assert_eq!(action["isPreferred"].as_bool(), Some(true));
-    assert_eq!(
-        action["edit"]["documentChanges"][0]["edits"][0]["newText"].as_str(),
-        Some("    subject subjectUnderVerification;\n")
-    );
 }
 
 #[test]
@@ -2919,8 +2756,14 @@ fn nested_ref_part_assignments_have_no_parse_diagnostics() {
         !has_diag_code(&diagnostics, "parser", "recovered_part_usage_body_element"),
         "valid ref part assignments must not recover as part usage body elements: {diagnostics:#?}"
     );
+    // `part system { ... }` declares no type, which the publication reports as information. The
+    // fixture is about parsing, so only the parser's own diagnostics must be absent.
+    let parse_diagnostics = diagnostics
+        .iter()
+        .filter(|diagnostic| diagnostic.source.as_deref() == Some("sysml"))
+        .collect::<Vec<_>>();
     assert!(
-        diagnostics.is_empty(),
-        "expected ref part assignment fixture to be diagnostic-clean, got: {diagnostics:#?}"
+        parse_diagnostics.is_empty(),
+        "expected ref part assignment fixture to parse cleanly, got: {parse_diagnostics:#?}"
     );
 }

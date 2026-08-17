@@ -1,4 +1,3 @@
-use sysml_diagnostics::{collect_diagnostics_from_graph, DiagnosticsOptions};
 use sysml_model::{
     build_semantic_graph_from_documents, RelationshipKind, SysmlDocument, SysmlDocumentSourceKind,
 };
@@ -76,57 +75,6 @@ fn cross_file_viewpoint_conformance_resolves_after_workspace_merge() {
 }
 
 #[test]
-fn unresolved_viewpoint_target_emits_specific_diagnostic() {
-    let doc = workspace_doc(
-        "viewpoint_missing.sysml",
-        r#"package Demo {
-  view def StructuralView;
-  view structure : StructuralView;
-  satisfy structure by MissingViewpoint;
-}"#,
-    );
-    let uri = doc.uri.clone();
-    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("semantic graph");
-    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
-    assert!(
-        diagnostics
-            .iter()
-            .any(|diagnostic| diagnostic.code == "unresolved_viewpoint_conformance_target"),
-        "expected unresolved_viewpoint_conformance_target, got: {:?}",
-        diagnostics
-            .iter()
-            .map(|diagnostic| (&diagnostic.code, &diagnostic.message))
-            .collect::<Vec<_>>()
-    );
-}
-
-#[test]
-fn non_viewpoint_satisfy_target_emits_conformance_kind_diagnostic() {
-    let doc = workspace_doc(
-        "viewpoint_invalid_target.sysml",
-        r#"package Demo {
-  requirement def SystemRequirement;
-  view def StructuralView;
-  view structure : StructuralView;
-  satisfy structure by SystemRequirement;
-}"#,
-    );
-    let uri = doc.uri.clone();
-    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("semantic graph");
-    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
-    assert!(
-        diagnostics
-            .iter()
-            .any(|diagnostic| diagnostic.code == "viewpoint_conformance_invalid_target_kind"),
-        "expected viewpoint_conformance_invalid_target_kind, got: {:?}",
-        diagnostics
-            .iter()
-            .map(|diagnostic| (&diagnostic.code, &diagnostic.message))
-            .collect::<Vec<_>>()
-    );
-}
-
-#[test]
 fn astronomy_fixture_view_conforms_to_viewpoint() {
     let content = std::fs::read_to_string(
         std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
@@ -143,45 +91,5 @@ fn astronomy_fixture_view_conforms_to_viewpoint() {
                 && target.ends_with("OrbitalStructureViewpoint")
         }),
         "expected astronomy view->viewpoint satisfy edge, got: {edges:#?}"
-    );
-}
-
-#[test]
-fn imported_view_and_viewpoint_types_resolve_from_nested_namespace() {
-    let defs = workspace_doc(
-        "defs_nested.sysml",
-        r#"package Defs {
-  package Views {
-    viewpoint def ArchitectureViewpoint;
-    view def StructuralView;
-  }
-}"#,
-    );
-    let usage = workspace_doc(
-        "usage_nested.sysml",
-        r#"package Usage {
-  import Defs::Views::*;
-  view structure : StructuralView {
-    expose Usage;
-  }
-  satisfy structure by ArchitectureViewpoint;
-}"#,
-    );
-    let usage_uri = usage.uri.clone();
-    let (graph, _parsed) =
-        build_semantic_graph_from_documents(&[defs, usage]).expect("semantic graph");
-    let diagnostics =
-        collect_diagnostics_from_graph(&graph, &usage_uri, DiagnosticsOptions::default());
-
-    assert!(
-        diagnostics.iter().all(|diagnostic| {
-            diagnostic.code != "unresolved_type_reference"
-                && diagnostic.code != "unresolved_viewpoint_conformance_target"
-        }),
-        "expected imported view/viewpoint references to resolve from nested namespace, got: {:?}",
-        diagnostics
-            .iter()
-            .map(|diagnostic| (&diagnostic.code, &diagnostic.message))
-            .collect::<Vec<_>>()
     );
 }

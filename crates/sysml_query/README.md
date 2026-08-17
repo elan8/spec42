@@ -66,16 +66,22 @@ The normal `sysml_query` test gate enforces the boundary in three ways:
   implementation view, or access the opaque handle's private field.
 
 No crate may depend directly on `sysml_model` in the finished architecture. `language_service`,
-`lsp_server`, `server`, `sysml_diagnostics`, and `workspace` are named migration debt in an exact
+`lsp_server`, `server`, and `workspace` are named migration debt in an exact
 transitional inventory; the metadata gate permits no additions or stale entries. Each is removed
 when its complete vertical slice migrates—partial wrappers are not retained as a compatibility
 surface.
 
-Diagnostics are published as typed values. `PublishedModel::diagnostics()` returns the codes,
-severities, ranges, and related locations `sysml_resolution` settled at the publication barrier, and
-the canonical S-expression is one adapter over them rather than their only representation. That is
-the shared contract CLI, LSP, Markdown, and HTML adapters consume; none of them recovers a fact by
-parsing presentation text.
+Diagnostics are published as typed values, and this is now the whole validation surface a host
+reports. `PublishedModel::diagnostics()` returns the codes, severities, ranges, messages, subject
+identities, and related locations `sysml_resolution` settled at the publication barrier;
+`for_document` answers one document from a prebuilt index, so the cost is proportional to what is
+returned and repeating the query or reordering documents changes nothing. The canonical
+S-expression is one adapter over these values rather than their only representation. That is the
+shared contract workspace validation, the LSP, the CLI, Markdown, and HTML adapters consume; none
+of them recovers a fact by parsing presentation text, and none of them runs a rule of its own.
+`sysml_diagnostics` is the neutral rendering shape plus the one explicit reporting policy a host
+has -- report only what the parser rejected for a document that does not parse -- and depends on
+this facade alone.
 
 The dependency-complete inventory for replacing the production workspace, server, and LSP graph
 publication is maintained in [PRODUCTION_CUTOVER.md](PRODUCTION_CUTOVER.md). This tranche does not

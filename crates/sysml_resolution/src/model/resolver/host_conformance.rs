@@ -173,6 +173,16 @@ fn is_input_role_member(kind: DeclarationKind) -> bool {
     )
 }
 
+/// The reference families a SysML `connect` states its ends with.
+///
+/// `connect a to b;` names each end directly; `connect a.fill to b.fill;` names it through a
+/// member access, which the resolver settles to the same declaration. Reading only the first would
+/// leave every dotted connection unchecked, which is the form real models are written in.
+const CONNECTOR_END_KINDS: &[ReferenceKind] = &[
+    ReferenceKind::ConnectorEnd,
+    ReferenceKind::MemberAccessOperand,
+];
+
 /// Whether a declaration is a SysML `connect`, whose ends must be connectable structure.
 ///
 /// `KermlConnector` is deliberately absent. KerML relates any two features -- the Kernel library's
@@ -478,7 +488,7 @@ impl ResolvedSemanticModel {
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
         let mut connected_ends: BTreeSet<DeclarationId> = BTreeSet::new();
-        let mut seen_pairs: BTreeSet<(Option<DeclarationId>, Vec<DeclarationId>)> = BTreeSet::new();
+        let mut seen_pairs: BTreeSet<(Option<DeclarationId>, Vec<SymbolPathId>)> = BTreeSet::new();
 
         for id in self.declarations_in(document)? {
             let declaration = self
@@ -488,7 +498,7 @@ impl ResolvedSemanticModel {
             if !is_connector_kind(declaration.kind) {
                 continue;
             }
-            let ends = self.authored_references(id, &[ReferenceKind::ConnectorEnd]);
+            let ends = self.authored_references(id, CONNECTOR_END_KINDS);
             let mut settled = Vec::with_capacity(ends.len());
             for (reference_id, reference) in &ends {
                 let Some(target) = self.settled_target(*reference_id) else {
@@ -551,20 +561,39 @@ impl ResolvedSemanticModel {
 
             // Two connected ports must be typed by related definitions. Only settled effective
             // types are compared: a port with no effective type has nothing to conform to.
-            if settled.len() == 2
+            //
+            // SysML 8.4.10.2: the ends of a typed interface usage redefine the corresponding ends
+            // of its interface definition, so end conformance is stated there and the pairwise
+            // question does not arise here.
+            let redefines_declared_ends = declaration.kind == DeclarationKind::InterfaceUsage
+                && !self
+                    .settled_targets(id, &[ReferenceKind::FeatureTyping])
+                    .is_empty();
+            if !redefines_declared_ends
+                && settled.len() == 2
                 && families
                     .iter()
                     .all(|family| matches!(family, Some((Family::Port, _))))
             {
                 let left = settled[0].0;
                 let right = settled[1].0;
-                if self.types_are_unrelated(left, right) {
+                let code = if self.types_are_unrelated(left, right)
+                    && !self.ports_are_feature_compatible(left, right)
+                {
+                    Some(DiagnosticCode::PortTypeMismatch)
+                } else if self.ports_mirror_direction(left, right) {
+                    Some(DiagnosticCode::FlowDirectionIncompatible)
+                } else {
+                    None
+                };
+                if let Some(code) = code {
                     let mut diagnostic = self.declaration_message_diagnostic(
                         id,
-                        DiagnosticCode::PortTypeMismatch,
+                        code.clone(),
                         DiagnosticSeverity::Warning,
                         Some(format!(
-                            "Ports '{}' and '{}' are typed by unrelated definitions.",
+                            "{} Connecting '{}' to '{}'.",
+                            code.describe(),
                             self.display_name(left),
                             self.display_name(right)
                         )),
@@ -577,11 +606,15 @@ impl ResolvedSemanticModel {
                 }
             }
 
+            // Keyed by the authored paths, not the settled declarations. A member-access end
+            // settles to the *definition's* port -- `propulsionUnit1.cmd` and
+            // `propulsionUnit2.cmd` both name `PropulsionUnit::cmd` -- so keying on targets would
+            // report a fan-out to distinct usages as one connection repeated. The path is an
+            // authored fact the parser interned, not the text of the statement.
             let pair = (
                 declaration.owner,
-                settled
-                    .iter()
-                    .map(|(target, _)| *target)
+                ends.iter()
+                    .map(|(_, reference)| reference.path)
                     .collect::<Vec<_>>(),
             );
             if !seen_pairs.insert(pair) {
@@ -635,6 +668,7 @@ impl ResolvedSemanticModel {
                 matches!(
                     self.storage.references[id.index()].kind,
                     ReferenceKind::ConnectorEnd
+                        | ReferenceKind::MemberAccessOperand
                         | ReferenceKind::FlowSource
                         | ReferenceKind::FlowTarget
                         | ReferenceKind::BindSource
@@ -739,6 +773,124 @@ impl ResolvedSemanticModel {
             diagnostics.push(diagnostic);
         }
         Ok(())
+    }
+
+    /// Whether two port types offer each other the same features.
+    ///
+    /// SysML connects ports whose *definitions* are unrelated all the time -- a spigot's `out item
+    /// water` meets an inlet's `in item water`, and neither definition specializes the other. What
+    /// makes the connection valid is that each end offers the feature the other expects, so this
+    /// compares the feature sets rather than the definitions.
+    ///
+    /// A port with no features has nothing to match, so the question falls back to the definitions.
+    fn ports_are_feature_compatible(&self, left: DeclarationId, right: DeclarationId) -> bool {
+        let left_features = self.port_features(left);
+        let right_features = self.port_features(right);
+        if left_features.is_empty() || right_features.is_empty() {
+            return false;
+        }
+        if left_features.keys().ne(right_features.keys()) {
+            return false;
+        }
+        left_features.iter().all(|(name, left_types)| {
+            right_features.get(name).is_some_and(|right_types| {
+                left_types.is_empty()
+                    || right_types.is_empty()
+                    || left_types.iter().any(|left| {
+                        right_types.iter().any(|right| {
+                            self.conformance(*left, *right, SpecializationScope::AnySpecialization)
+                                == Conformance::Conforms
+                                || self.conformance(
+                                    *right,
+                                    *left,
+                                    SpecializationScope::AnySpecialization,
+                                ) == Conformance::Conforms
+                        })
+                    })
+            })
+        })
+    }
+
+    /// The named features a port offers, with the effective types of each.
+    ///
+    /// Read through the port's effective types and their specializations, so a port typed by a
+    /// definition that inherits its features offers them too.
+    fn port_features(&self, port: DeclarationId) -> BTreeMap<Box<str>, Vec<DeclarationId>> {
+        let mut features: BTreeMap<Box<str>, Vec<DeclarationId>> = BTreeMap::new();
+        let mut owners = self
+            .types
+            .effective_types(port)
+            .iter()
+            .map(|(target, _)| *target)
+            .collect::<Vec<_>>();
+        let direct = owners.clone();
+        for owner in direct {
+            owners.extend(
+                self.types
+                    .supertypes(owner)
+                    .iter()
+                    .map(|(target, _)| *target),
+            );
+        }
+        for owner in owners {
+            for child in self.child_declarations(owner) {
+                let Some(name) = self
+                    .storage
+                    .declaration(*child)
+                    .and_then(|declaration| declaration.name)
+                    .and_then(|name| self.storage.symbol(name))
+                else {
+                    continue;
+                };
+                let types = self
+                    .types
+                    .effective_types(*child)
+                    .iter()
+                    .map(|(target, _)| *target)
+                    .collect::<Vec<_>>();
+                features.entry(name.into()).or_insert(types);
+            }
+        }
+        features
+    }
+
+    /// Whether two connected ports present the same direction to each other.
+    ///
+    /// SysML conjugation is what makes a connection carry anything: one end offers `in x` and the
+    /// other, conjugated, offers it as `out x`. Two ends of comparable types with the *same*
+    /// conjugation therefore mirror each other, and nothing flows.
+    ///
+    /// Decided from the conjugation flag on each end's authored typing and the directions its type
+    /// declares, both settled facts. A type that declares no directed feature carries no direction
+    /// to mirror, so the question does not arise; the legacy check answered it from the spelling of
+    /// the authored type reference instead.
+    fn ports_mirror_direction(&self, left: DeclarationId, right: DeclarationId) -> bool {
+        if self.types_are_unrelated(left, right) {
+            return false;
+        }
+        if self.port_is_conjugated(left) != self.port_is_conjugated(right) {
+            return false;
+        }
+        self.types
+            .effective_types(left)
+            .iter()
+            .any(|(target, _)| self.declares_a_directed_feature(*target))
+    }
+
+    /// Whether a port's authored typing conjugates the definition it names (`port p : ~PD;`).
+    fn port_is_conjugated(&self, port: DeclarationId) -> bool {
+        self.authored_references(port, &[ReferenceKind::FeatureTyping])
+            .iter()
+            .any(|(_, reference)| reference.flags.conjugated)
+    }
+
+    /// Whether a type declares at least one member with an authored direction.
+    fn declares_a_directed_feature(&self, type_id: DeclarationId) -> bool {
+        self.child_declarations(type_id).iter().any(|child| {
+            self.storage
+                .declaration_facts(*child)
+                .is_some_and(|facts| facts.direction.is_some())
+        })
     }
 
     /// Whether two features both have effective types and no pair of them is comparable.
@@ -1229,22 +1381,37 @@ impl ResolvedSemanticModel {
             .and_then(|declaration| declaration.owner)
             .and_then(|owner| self.kind_of(owner))
             .is_some_and(is_view_kind);
-        if owner_is_view {
-            self.collect_target_kind(
+        let satisfied_is_view = self
+            .settled_targets(id, &[ReferenceKind::SatisfySource])
+            .first()
+            .and_then(|target| self.kind_of(*target))
+            .is_some_and(is_view_kind);
+        // Two authored forms of viewpoint conformance. `satisfy <viewpoint>;` inside a view body
+        // names the viewpoint as the satisfied thing; `satisfy <view> by <viewpoint>;` names the
+        // view as the satisfied thing and the viewpoint in the `by` clause. The conforming target
+        // is whichever operand is not the view.
+        match (owner_is_view, satisfied_is_view) {
+            (_, true) => self.collect_target_kind(
+                id,
+                &[ReferenceKind::SatisfyTarget],
+                is_viewpoint_kind,
+                DiagnosticCode::ViewpointConformanceInvalidTargetKind,
+                diagnostics,
+            ),
+            (true, false) => self.collect_target_kind(
                 id,
                 &[ReferenceKind::SatisfySource],
                 is_viewpoint_kind,
                 DiagnosticCode::ViewpointConformanceInvalidTargetKind,
                 diagnostics,
-            )
-        } else {
-            self.collect_target_kind(
+            ),
+            (false, false) => self.collect_target_kind(
                 id,
                 &[ReferenceKind::SatisfySource],
                 |kind| is_requirement_kind(kind) || is_viewpoint_kind(kind),
                 DiagnosticCode::SatisfyInvalidEndpointKind,
                 diagnostics,
-            )
+            ),
         }
     }
 

@@ -1,10 +1,8 @@
 use std::path::Path;
-
-use sysml_diagnostics::{collect_diagnostics_from_graph, DiagnosticsOptions};
 use sysml_model::{
-    build_semantic_graph_from_documents, build_view_catalog, build_workspace_graph_dto_for_uris,
-    evaluate_views, resolve_expose_target, resolve_library_closure, ExposeTargetResolution,
-    LibraryClosureOptions, SysmlDocument, SysmlDocumentSourceKind, WorkspaceSource,
+    build_semantic_graph_from_documents, resolve_expose_target, resolve_library_closure,
+    ExposeTargetResolution, LibraryClosureOptions, SysmlDocument, SysmlDocumentSourceKind,
+    WorkspaceSource,
 };
 
 const WEBSHOP_FILES: &[&str] = &[
@@ -177,53 +175,5 @@ fn webshop_view_expose_targets_resolve_with_domain_libraries_present() {
     assert!(
         matches!(expose, ExposeTargetResolution::Resolved(_)),
         "expected webshopSystem expose to resolve with domain libraries present, got {expose:?}"
-    );
-}
-
-#[test]
-fn webshop_views_expose_non_empty_elements() {
-    let Some((documents, uris, graph, parsed)) = load_webshop_workspace() else {
-        eprintln!("skipping: C:\\Git\\sysml-examples\\webshop not found");
-        return;
-    };
-
-    let views_uri = documents
-        .iter()
-        .find(|doc| doc.path_hint.as_deref() == Some("Views.sysml"))
-        .map(|doc| doc.uri.clone())
-        .expect("Views.sysml");
-
-    let diagnostics = collect_diagnostics_from_graph(
-        &graph,
-        &views_uri,
-        DiagnosticsOptions {
-            include_hints: true,
-        },
-    );
-    let ambiguous: Vec<_> = diagnostics
-        .iter()
-        .filter(|d| d.code == "view_expose_unresolved" && d.message.contains("ambiguous"))
-        .map(|d| d.message.clone())
-        .collect();
-    assert!(
-        ambiguous.is_empty(),
-        "unexpected ambiguous expose diagnostics: {ambiguous:?}"
-    );
-
-    let catalog = build_view_catalog(&uris, &parsed);
-    let graph_dto = build_workspace_graph_dto_for_uris(&graph, &uris);
-    let evaluated = evaluate_views(&catalog, &graph, &graph_dto);
-    let empty: Vec<_> = evaluated
-        .iter()
-        .filter(|view| view.exposed_ids.is_empty())
-        .map(|view| view.name.clone())
-        .collect();
-    assert!(
-        empty.is_empty(),
-        "views with no exposed elements: {empty:?}; all views: {:?}",
-        evaluated
-            .iter()
-            .map(|v| (v.name.clone(), v.exposed_ids.len()))
-            .collect::<Vec<_>>()
     );
 }

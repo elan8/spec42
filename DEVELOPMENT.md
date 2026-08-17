@@ -7,7 +7,8 @@ Guidance for building, testing, and contributing to Spec42.
 Spec42 is a Rust workspace plus a VS Code extension.
 
 - `crates/sysml_model` owns reusable semantic logic: graph construction, cross-document linking, resolution, evaluation, and graph-first visualization helpers.
-- `crates/sysml_diagnostics` owns the semantic diagnostics engine: rule evaluation over the graph built by `sysml_model`.
+- `crates/sysml_resolution` owns semantic construction, resolution, and every diagnostic a host reports, settled at the publication barrier; `crates/sysml_query` is the typed read-only facade over it.
+- `crates/sysml_diagnostics` owns transport-neutral diagnostic values and the host reporting policy over them. It decides nothing semantic and depends only on `sysml_query`.
 - `crates/sysml_tokens` owns SysML v2 semantic tokenization for editor highlighting, neutral over WASM and LSP hosts.
 - `crates/diagram` owns shared diagram projection utilities used by Spec42 and other consumers.
 - `crates/kpar` owns KerML Project Archive (KPAR) read, pack, and validate support.
@@ -18,7 +19,7 @@ Spec42 is a Rust workspace plus a VS Code extension.
 - `crates/server` (`spec42`) owns the CLI, LSP binary, and thin adapters over `workspace` and `lsp_server`.
 - `vscode` owns the VS Code client, webviews, tests, packaging, and bundled asset staging.
 
-Keep reusable semantic/model behavior in `sysml_model` (and diagnostics rules in `sysml_diagnostics`); keep editor intelligence that is shared across hosts in `language_service`; keep protocol, filesystem runtime, and editor-specific behavior in `lsp_server` or the host crate that owns it.
+Keep reusable semantic/model behavior in `sysml_model`, and every diagnostic rule in `sysml_resolution`; keep editor intelligence that is shared across hosts in `language_service`; keep protocol, filesystem runtime, and editor-specific behavior in `lsp_server` or the host crate that owns it.
 
 ## Language Service Structure
 
@@ -50,7 +51,7 @@ The LSP implementation lives under `crates/kernel/src/lsp_runtime`.
 - `hierarchy.rs`, `navigation.rs`, `references_resolver.rs`, `symbols.rs`: feature helpers
 - `mod.rs`: `tower-lsp` trait entrypoint that delegates to the modules above
 
-Semantic diagnostics rule evaluation is owned by `semantic_core::semantic::diagnostics`; kernel code maps neutral diagnostics at the LSP boundary.
+Diagnostic rules are owned by `sysml_resolution` and read through `sysml_query`; kernel code maps neutral diagnostics at the LSP boundary.
 
 ## Building
 

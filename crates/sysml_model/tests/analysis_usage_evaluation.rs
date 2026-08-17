@@ -1,4 +1,3 @@
-use sysml_diagnostics::{collect_diagnostics_from_graph, DiagnosticsOptions};
 use sysml_model::{
     build_semantic_graph_from_documents, evaluate_expressions, EvaluationStatus, SysmlDocument,
     SysmlDocumentSourceKind,
@@ -99,18 +98,6 @@ fn analysis_status(
         .map(|analysis| analysis.expression.status)
 }
 
-fn has_analysis_diagnostic_code(graph: &sysml_model::SemanticGraph, code: &str) -> bool {
-    let uri = graph
-        .node_ids_by_qualified_name
-        .get("AnalysisCases::powerRun")
-        .and_then(|ids| ids.first())
-        .map(|id| id.uri.clone())
-        .expect("analysis usage uri");
-    collect_diagnostics_from_graph(graph, &uri, DiagnosticsOptions::default())
-        .into_iter()
-        .any(|diag| diag.code == code)
-}
-
 #[test]
 fn typed_analysis_usage_inherits_expression_and_evaluates_successfully() {
     let graph = build_graph();
@@ -128,14 +115,5 @@ fn specialized_imported_analysis_usage_inherits_expression_via_typing() {
     assert_eq!(
         analysis_status(&graph, "AnalysisCases::loadFlowRun"),
         Some(EvaluationStatus::Ok)
-    );
-}
-
-#[test]
-fn typed_analysis_usage_does_not_emit_analysis_evaluation_unresolved() {
-    let graph = build_graph();
-    assert!(
-        !has_analysis_diagnostic_code(&graph, "analysis_evaluation_unresolved"),
-        "unexpected analysis_evaluation_unresolved after typed usage evaluation"
     );
 }

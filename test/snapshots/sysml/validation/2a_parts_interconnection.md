@@ -245,12 +245,6 @@ package '2a-Parts Interconnection' {
         (severity information)
         (code "unconnected_port")
         (source "semantic")
-        (range (start 40 3) (end 40 33))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
         (range (start 47 3) (end 47 33))
       )
       (diagnostic
@@ -258,30 +252,6 @@ package '2a-Parts Interconnection' {
         (code "unconnected_port")
         (source "semantic")
         (range (start 48 3) (end 48 41))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 52 3) (end 52 33))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 53 3) (end 53 35))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 57 3) (end 57 31))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 58 3) (end 58 33))
       )
       (diagnostic
         (severity information)

@@ -110,13 +110,25 @@ fn diagnostics_by_uri(
     Ok(by_uri)
 }
 
+/// The comparison DTO's own range type, copied coordinate for coordinate.
+///
+/// A published diagnostic carries the resolution owner's range; the comparison contract predates
+/// it and carries the graph's. The two are the same two positions, and this is the boundary that
+/// says so once rather than in every field.
+fn comparison_range(range: sysml_query::resolved_slice::TextRange) -> TextRange {
+    TextRange::new(
+        sysml_model::TextPosition::new(range.start.line, range.start.character),
+        sysml_model::TextPosition::new(range.end.line, range.end.character),
+    )
+}
+
 fn diagnostic_identity(diagnostic: &SemanticDiagnostic) -> HostDiagnosticIdentity {
     HostDiagnosticIdentity {
         uri: diagnostic.uri.to_string(),
         code: diagnostic.code.clone(),
         severity: severity_label(diagnostic.severity).to_string(),
         message: diagnostic.message.clone(),
-        range: Some(diagnostic.range),
+        range: Some(comparison_range(diagnostic.range)),
         source: diagnostic.source.clone(),
         related_information: canonical_related_information(&diagnostic.related_information),
     }
@@ -129,7 +141,7 @@ fn canonical_related_information(
         .iter()
         .map(|information| HostDiagnosticRelatedInformation {
             uri: information.uri.to_string(),
-            range: information.range,
+            range: comparison_range(information.range),
             message: information.message.clone(),
         })
         .collect::<Vec<_>>();
@@ -204,7 +216,6 @@ fn severity_label(severity: DiagnosticSeverity) -> &'static str {
         DiagnosticSeverity::Error => "error",
         DiagnosticSeverity::Warning => "warning",
         DiagnosticSeverity::Information => "information",
-        DiagnosticSeverity::Hint => "hint",
     }
 }
 
@@ -212,7 +223,7 @@ fn severity_label(severity: DiagnosticSeverity) -> &'static str {
 mod tests {
     use super::*;
     use crate::snapshot::{HostValidatedDocument, HostValidationReport, HostValidationSummary};
-    use sysml_model::{TextPosition, TextRange};
+    use sysml_query::resolved_slice::{TextPosition, TextRange};
     use url::Url;
 
     fn report(diagnostic: SemanticDiagnostic) -> HostValidationReport {
@@ -230,7 +241,16 @@ mod tests {
     fn diagnostic(source: &str) -> SemanticDiagnostic {
         SemanticDiagnostic {
             uri: Url::parse("file:///demo.sysml").expect("uri"),
-            range: TextRange::new(TextPosition::new(1, 0), TextPosition::new(1, 1)),
+            range: TextRange {
+                start: TextPosition {
+                    line: 1,
+                    character: 0,
+                },
+                end: TextPosition {
+                    line: 1,
+                    character: 1,
+                },
+            },
             severity: DiagnosticSeverity::Warning,
             source: source.to_string(),
             code: "semantic.example".to_string(),
@@ -243,7 +263,16 @@ mod tests {
     fn diagnostic_provenance_and_primary_range_are_compared() {
         let previous = report(diagnostic("parser"));
         let mut shifted = diagnostic("parser");
-        shifted.range = TextRange::new(TextPosition::new(9, 0), TextPosition::new(9, 1));
+        shifted.range = TextRange {
+            start: TextPosition {
+                line: 9,
+                character: 0,
+            },
+            end: TextPosition {
+                line: 9,
+                character: 1,
+            },
+        };
         let shifted_comparison = compare_diagnostics(&previous, &report(shifted)).expect("compare");
         assert_eq!(
             shifted_comparison.by_document["file:///demo.sysml"]

@@ -17,17 +17,6 @@ fn elapsed_ms(start: Instant) -> u32 {
     start.elapsed().as_millis().max(1) as u32
 }
 
-pub(crate) fn indexed_text(state: &impl DocumentStore, uri_norm: &Url) -> Option<String> {
-    state
-        .index()
-        .get(uri_norm)
-        .map(|entry| entry.content.clone())
-}
-
-pub(crate) fn indexed_text_or_empty(state: &impl DocumentStore, uri_norm: &Url) -> String {
-    indexed_text(state, uri_norm).unwrap_or_default()
-}
-
 #[derive(Debug)]
 pub(crate) struct ParsedScanEntry {
     pub(crate) uri: Url,

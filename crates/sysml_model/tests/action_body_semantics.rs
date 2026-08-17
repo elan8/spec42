@@ -1,4 +1,3 @@
-use sysml_diagnostics::{collect_diagnostics_from_graph, DiagnosticsOptions};
 use sysml_model::{
     build_semantic_graph_from_documents, ElementKind, RelationshipKind, SysmlDocument,
     SysmlDocumentSourceKind,
@@ -179,63 +178,5 @@ fn action_def_body_materializes_metadata_annotation() {
             .iter()
             .any(|child| { child.element_kind == "metadata usage" && child.name == "safetyTag" }),
         "expected metadata usage child under action def body"
-    );
-}
-
-#[test]
-fn action_def_flow_still_emits_succession_invalid_for_bad_target() {
-    let doc = workspace_doc(
-        "flow_invalid.sysml",
-        r#"package Demo {
-  part def WrongPart;
-  action def Step1;
-  action def Pipeline {
-    action step1 : Step1;
-    flow step1 to WrongPart;
-  }
-}"#,
-    );
-    let uri = doc.uri.clone();
-    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
-    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
-    assert!(
-        diagnostics
-            .iter()
-            .any(|d| d.code == "succession_endpoint_invalid"),
-        "expected succession_endpoint_invalid, got: {:?}",
-        diagnostics
-            .iter()
-            .map(|d| (&d.code, &d.message))
-            .collect::<Vec<_>>()
-    );
-}
-
-#[test]
-fn action_item_flow_between_parameters_is_not_a_succession_error() {
-    let doc = workspace_doc(
-        "item_flow.sysml",
-        r#"package Demo {
-  item def Signal;
-  action def Produce { out signal : Signal; }
-  action def Consume { in signal : Signal; }
-  action def Pipeline {
-    action producer : Produce;
-    action consumer : Consume;
-    flow producer.signal to consumer.signal;
-  }
-}"#,
-    );
-    let uri = doc.uri.clone();
-    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
-    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
-    assert!(
-        diagnostics
-            .iter()
-            .all(|d| d.code != "succession_endpoint_invalid"),
-        "plain item flow must not be diagnosed as an invalid succession: {:?}",
-        diagnostics
-            .iter()
-            .map(|d| (&d.code, &d.message))
-            .collect::<Vec<_>>()
     );
 }

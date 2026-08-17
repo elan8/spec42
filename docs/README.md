@@ -19,7 +19,6 @@ The published user guide lives in [`docs-site/`](../docs-site/) and is deployed 
 | --- | --- |
 | Development workflow and tests | [../DEVELOPMENT.md](../DEVELOPMENT.md) |
 | 1.0 product definition | [ROADMAP.md](ROADMAP.md) |
-| Diagnostic catalog | [engineering/DIAGNOSTIC-CATALOG.md](engineering/DIAGNOSTIC-CATALOG.md) |
 | Nightly performance guardrails | [engineering/PERFORMANCE-GUARDRAILS.md](engineering/PERFORMANCE-GUARDRAILS.md) |
 
 ## Architecture and API

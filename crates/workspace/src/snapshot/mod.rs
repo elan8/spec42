@@ -8,6 +8,7 @@ pub(crate) mod facts;
 mod metadata;
 mod output;
 mod projection;
+pub mod publication;
 mod request;
 mod update;
 mod validation;
@@ -26,6 +27,7 @@ pub use projection::{
     HostRelationshipMetaclass, HostRelationshipProvenance, HostSemanticModelNode,
     HostSemanticModelRelationship, HostSemanticProjection, HostVisibilityKind,
 };
+pub use publication::publish_documents;
 pub use request::{ValidationTiming, WorkspaceLoadRequest};
 pub use update::update_workspace_snapshot;
 pub use validation::{HostValidatedDocument, HostValidationReport, HostValidationSummary};

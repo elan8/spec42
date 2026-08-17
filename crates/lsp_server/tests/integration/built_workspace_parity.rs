@@ -51,8 +51,11 @@ package RiskTrace {
         build_semantic_graph_with_provider(&provider).expect("graph");
     let all_documents = provider.load_documents().expect("load documents");
 
+    let published_model =
+        std::sync::Arc::new(workspace::publish_documents(&all_documents).expect("publication"));
     let built = BuiltWorkspaceInput {
         semantic_graph,
+        published_model,
         all_documents,
         parsed_documents,
         library_urls: Vec::new(),
@@ -137,8 +140,11 @@ fn built_workspace_reports_hard_parse_error() {
     let all_documents = provider.load_documents().expect("load documents");
     assert_eq!(all_documents.len(), 1);
 
+    let published_model =
+        std::sync::Arc::new(workspace::publish_documents(&all_documents).expect("publication"));
     let built = BuiltWorkspaceInput {
         semantic_graph,
+        published_model,
         all_documents,
         parsed_documents,
         library_urls: Vec::new(),

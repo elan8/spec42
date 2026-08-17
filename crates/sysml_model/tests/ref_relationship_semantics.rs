@@ -1,4 +1,3 @@
-use sysml_diagnostics::{collect_diagnostics_from_graph, DiagnosticsOptions};
 use sysml_model::{
     build_semantic_graph_from_documents, RelationshipKind, SysmlDocument, SysmlDocumentSourceKind,
 };
@@ -95,32 +94,6 @@ fn cross_file_ref_usage_resolves_after_workspace_merge() {
                 &target.element_kind,
                 &target.id.uri
             ))
-            .collect::<Vec<_>>()
-    );
-}
-
-#[test]
-fn unresolved_ref_type_emits_specific_diagnostic() {
-    let doc = workspace_doc(
-        "broken_ref.sysml",
-        r#"package Broken {
-  part def BrokenOrbitUsage {
-    ref unresolvedOrbitEndpoint : MissingOrbitBody;
-  }
-}"#,
-    );
-    let uri = doc.uri.clone();
-    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("semantic graph");
-    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
-
-    assert!(
-        diagnostics
-            .iter()
-            .any(|diagnostic| diagnostic.code == "unresolved_ref_type_reference"),
-        "expected unresolved ref-type diagnostic, got: {:?}",
-        diagnostics
-            .iter()
-            .map(|diagnostic| (&diagnostic.code, &diagnostic.message))
             .collect::<Vec<_>>()
     );
 }

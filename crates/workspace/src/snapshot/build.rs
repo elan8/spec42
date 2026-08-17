@@ -21,6 +21,8 @@ use crate::error::{
 };
 use crate::snapshot::context::{HostContext, HostPipelinePhase};
 use crate::snapshot::discovery::{discover_target_files, path_to_file_url, resolve_workspace_root};
+use sysml_query::resolved_slice::PublishedModel;
+
 use crate::snapshot::facts::{collect_host_validation_report, project_host_semantic_model};
 use crate::snapshot::metadata::HostArtifactMetadata;
 use crate::snapshot::output::Spec42ProjectionOutput;
@@ -35,6 +37,7 @@ pub struct HostWorkspaceSnapshot {
     metadata: HostArtifactMetadata,
     documents: Vec<SysmlDocument>,
     semantic_graph: SemanticGraph,
+    published_model: Arc<PublishedModel>,
     parsed_documents: Vec<WorkspaceParsedDocument>,
     language_workspace: InMemoryWorkspace,
     render_snapshot: WorkspaceRenderSnapshot,
@@ -62,6 +65,16 @@ impl HostWorkspaceSnapshot {
 
     pub fn documents(&self) -> &[SysmlDocument] {
         &self.documents
+    }
+
+    /// The immutable publication this snapshot validates from.
+    pub fn published_model(&self) -> &PublishedModel {
+        &self.published_model
+    }
+
+    /// A shared handle to the same publication, for a host that keeps it beyond this snapshot.
+    pub fn published_model_arc(&self) -> Arc<PublishedModel> {
+        Arc::clone(&self.published_model)
     }
 
     pub fn semantic_graph(&self) -> &SemanticGraph {
@@ -107,9 +120,7 @@ impl HostWorkspaceSnapshot {
             return Ok(report);
         }
         let report = collect_host_validation_report(
-            &self.semantic_graph,
-            &self.documents,
-            &self.library_urls,
+            &self.published_model,
             &self.validation_target_files,
             Some(self.workspace_root.as_path()),
             &self.library_paths,
@@ -242,13 +253,14 @@ pub(crate) fn build_workspace_snapshot(
     context.check_continue(HostPipelinePhase::BuildingViewCatalog)?;
 
     context.check_continue(HostPipelinePhase::CollectingValidation)?;
+    // Published before validation and kept on the snapshot: every later validation query answers
+    // from the same publication this build admitted, not from a model rebuilt on demand.
+    let published_model = Arc::new(crate::snapshot::publication::publish_documents(&documents)?);
     let validation_report = if request.validation_timing == ValidationTiming::Eager {
         init_validation_report(
             ValidationTiming::Eager,
             collect_host_validation_report(
-                &semantic_graph,
-                &documents,
-                &library_urls,
+                &published_model,
                 &target_files,
                 Some(workspace_root.as_path()),
                 &library_paths,
@@ -283,6 +295,7 @@ pub(crate) fn build_workspace_snapshot(
         metadata: snapshot_metadata,
         documents,
         semantic_graph,
+        published_model,
         parsed_documents,
         language_workspace,
         render_snapshot,
@@ -306,6 +319,7 @@ pub(crate) fn assemble_host_workspace_snapshot(
     catalog: &LibraryCatalog,
     documents: Vec<SysmlDocument>,
     semantic_graph: SemanticGraph,
+    published_model: Arc<PublishedModel>,
     parsed_documents: Vec<WorkspaceParsedDocument>,
     language_workspace: InMemoryWorkspace,
     render_snapshot: WorkspaceRenderSnapshot,
@@ -338,6 +352,7 @@ pub(crate) fn assemble_host_workspace_snapshot(
         metadata: snapshot_metadata,
         documents,
         semantic_graph,
+        published_model,
         parsed_documents,
         language_workspace,
         render_snapshot,

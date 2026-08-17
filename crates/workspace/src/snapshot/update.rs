@@ -167,13 +167,13 @@ fn assemble_snapshot_from_state(
     context.check_continue(HostPipelinePhase::BuildingViewCatalog)?;
 
     context.check_continue(HostPipelinePhase::CollectingValidation)?;
+    let published_model =
+        std::sync::Arc::new(crate::snapshot::publication::publish_documents(documents)?);
     let validation_report = if request.validation_timing == ValidationTiming::Eager {
         crate::snapshot::build::init_validation_report(
             ValidationTiming::Eager,
             collect_host_validation_report(
-                &semantic_graph,
-                documents,
-                &library_urls,
+                &published_model,
                 &target_files,
                 Some(workspace_root.as_path()),
                 &library_paths,
@@ -195,6 +195,7 @@ fn assemble_snapshot_from_state(
         engine.library_catalog(),
         documents.to_vec(),
         semantic_graph,
+        published_model,
         parsed_documents,
         language_workspace,
         render_snapshot,
