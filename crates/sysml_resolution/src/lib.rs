@@ -9,6 +9,7 @@ use std::fmt;
 
 use source_identity::{ContentDigest, RootDigest, SourceManifest, SourceManifestEntry, SourceRole};
 
+mod details;
 mod diagnostics;
 mod element_kind;
 mod evaluation;
@@ -18,6 +19,10 @@ mod traceability;
 mod type_query;
 mod verification;
 
+pub use details::{
+    ConnectedElement, EffectiveTypeEntry, EffectiveTyping, ElementDetails, ElementDetailsAt,
+    InheritedFeature, ReferencedDetails, RelationshipFamily, RelationshipOutcome,
+};
 pub use diagnostics::{
     Diagnostic, DiagnosticCode, DiagnosticLocation, DiagnosticOrigin, DiagnosticSeverity,
     PublishedDiagnostics,
@@ -26,8 +31,8 @@ pub use element_kind::{
     ElementKind, MembershipRole, RequirementConstraintKind, StateSubactionKind,
 };
 pub use evaluation::{
-    AuthoredUnit, ElementEvaluation, EvaluatedScalar, EvaluationFailure, EvaluationPolicy,
-    EvaluationState, ExpectedMeasurement, ResolvedUnit, UnitResolution,
+    AnalysisEvaluation, AuthoredUnit, ElementEvaluation, EvaluatedScalar, EvaluationFailure,
+    EvaluationPolicy, EvaluationState, ExpectedMeasurement, ResolvedUnit, UnitResolution,
 };
 pub use inspection::{
     AnnotationForm, AuthoredValue, Documentation, ElementInspection, ElementInspectionAt,
@@ -559,6 +564,26 @@ impl PublishedResolution {
         position: TextPosition,
     ) -> QueryOutcome<ElementInspectionAt> {
         self.model.inspect_at(document, position)
+    }
+
+    /// Everything this publication settled about one element, as one coherent answer.
+    ///
+    /// The cohesive form of [`PublishedResolution::inspect`]: the same inspection, plus the
+    /// relationship families, effective typing, inherited features, metadata bindings, incoming
+    /// and outgoing relationships, and both evaluation channels. Assembled from the same settled
+    /// facts, so the two can never disagree.
+    pub fn element_details(&self, symbol: &SymbolIdentity) -> QueryOutcome<ElementDetails> {
+        self.model.element_details(symbol)
+    }
+
+    /// The element whose declaration encloses `position` and the element a reference there
+    /// resolves to, both in full detail.
+    pub fn element_details_at(
+        &self,
+        document: &str,
+        position: TextPosition,
+    ) -> QueryOutcome<ElementDetailsAt> {
+        self.model.element_details_at(document, position)
     }
 
     /// Every element declared in one document, in source order.
@@ -3892,5 +3917,703 @@ package P {
             ),
             "conformance against an unknown identity is unanswerable, not false"
         );
+    }
+
+    // --- Element details --------------------------------------------------------------------
+
+    fn detail_publication(
+        sources: &[(&str, &str)],
+        schedule: ConstructionSchedule,
+    ) -> PublishedResolution {
+        let request = BuildRequest::new(
+            sources
+                .iter()
+                .map(|(identity, source)| {
+                    SourceInput::new(*identity, source.to_string(), SourceKind::Workspace)
+                })
+                .collect(),
+            schedule,
+            "contract-v1",
+        )
+        .unwrap();
+        build(request).unwrap()
+    }
+
+    fn settled<T: fmt::Debug>(outcome: QueryOutcome<T>) -> T {
+        match outcome {
+            QueryOutcome::Resolved(value)
+            | QueryOutcome::Recovered(value)
+            | QueryOutcome::UnsupportedWith(value) => value,
+            other => panic!("expected a settled outcome, got: {other:?}"),
+        }
+    }
+
+    fn identity_of(
+        published: &PublishedResolution,
+        document: &str,
+        qualified_name: &str,
+    ) -> SymbolIdentity {
+        settled(published.document_symbols(document))
+            .iter()
+            .find(|entry| entry.qualified_name.as_ref() == qualified_name)
+            .unwrap_or_else(|| panic!("no declaration named {qualified_name} in {document}"))
+            .identity
+            .clone()
+    }
+
+    fn details_of(
+        published: &PublishedResolution,
+        document: &str,
+        qualified_name: &str,
+    ) -> ElementDetails {
+        settled(published.element_details(&identity_of(published, document, qualified_name)))
+    }
+
+    fn names(entries: &[SymbolEntry]) -> Vec<&str> {
+        entries
+            .iter()
+            .map(|entry| entry.name.as_deref().unwrap_or("<anonymous>"))
+            .collect()
+    }
+
+    /// One deterministic rendering of an element's details, for equivalence assertions.
+    fn render_details(details: &ElementDetails) -> String {
+        let mut output = String::new();
+        let family = |output: &mut String, label: &str, family: &RelationshipFamily| {
+            output.push_str(&format!(
+                "{label} {} {:?} {:?}\n",
+                family.outcome.as_str(),
+                names(&family.targets),
+                names(&family.candidates)
+            ));
+        };
+        output.push_str(&format!(
+            "element {} {}\n",
+            details.inspection.qualified_name,
+            details.inspection.kind.as_str()
+        ));
+        output.push_str(&format!(
+            "owner {:?}\n",
+            details
+                .owner
+                .as_ref()
+                .map(|owner| owner.qualified_name.clone())
+        ));
+        family(&mut output, "typing", &details.typing);
+        family(&mut output, "specialization", &details.specialization);
+        family(&mut output, "subsetting", &details.subsetting);
+        family(&mut output, "redefinition", &details.redefinition);
+        output.push_str(&format!(
+            "effective-typing {} {:?}\n",
+            details.effective_typing.outcome.as_str(),
+            details
+                .effective_typing
+                .types
+                .iter()
+                .map(|entry| (
+                    entry.element.qualified_name.clone(),
+                    format!("{:?}", entry.origin)
+                ))
+                .collect::<Vec<_>>()
+        ));
+        output.push_str(&format!(
+            "inherited {:?}\n",
+            details
+                .inherited_features
+                .iter()
+                .map(|entry| (
+                    entry.feature.qualified_name.clone(),
+                    entry.declared_in.qualified_name.clone()
+                ))
+                .collect::<Vec<_>>()
+        ));
+        output.push_str(&format!("metadata {:?}\n", names(&details.metadata)));
+        for (label, connected) in [
+            ("incoming", &details.incoming),
+            ("outgoing", &details.outgoing),
+        ] {
+            output.push_str(&format!(
+                "{label} {:?}\n",
+                connected
+                    .iter()
+                    .map(|entry| (
+                        entry.kind,
+                        entry.peer.qualified_name.clone(),
+                        format!("{:?}", entry.provenance)
+                    ))
+                    .collect::<Vec<_>>()
+            ));
+        }
+        output.push_str(&format!("evaluation {}\n", details.evaluation.state));
+        output.push_str(&format!("analysis {}\n", details.analysis.as_str()));
+        output
+    }
+
+    const VEHICLE_MODEL: &str = concat!(
+        "package P {\n",
+        "  metadata def Safety;\n",
+        "  part def Wheel;\n",
+        "  part def Vehicle {\n",
+        "    @Safety;\n",
+        "    part wheel[4] : Wheel;\n",
+        "    part spare[0..*] : Wheel;\n",
+        "  }\n",
+        "  part def Rover :> Vehicle {\n",
+        "    part :>> wheel[4];\n",
+        "  }\n",
+        "  part rover : Rover;\n",
+        "  part broken : Missing;\n",
+        "  part selected subsets rover;\n",
+        "}\n",
+    );
+
+    /// The three states an inspector must keep apart. An empty target list alone cannot tell
+    /// "nothing was written" from "what was written did not resolve".
+    #[test]
+    fn a_relationship_family_separates_no_declaration_from_a_failed_one() {
+        let published = detail_publication(
+            &[("memory://model.sysml", VEHICLE_MODEL)],
+            ConstructionSchedule::Sequential,
+        );
+
+        let wheel = details_of(&published, "memory://model.sysml", "P::Wheel");
+        assert_eq!(wheel.typing.outcome, RelationshipOutcome::NotApplicable);
+        assert!(wheel.typing.targets.is_empty());
+
+        let broken = details_of(&published, "memory://model.sysml", "P::broken");
+        assert_eq!(broken.typing.outcome, RelationshipOutcome::Unresolved);
+        assert!(
+            broken.typing.targets.is_empty(),
+            "an unresolved typing must not present a guessed target"
+        );
+
+        let rover = details_of(&published, "memory://model.sysml", "P::rover");
+        assert_eq!(rover.typing.outcome, RelationshipOutcome::Resolved);
+        assert_eq!(names(&rover.typing.targets), vec!["Rover"]);
+    }
+
+    /// A family where one reference settled and another did not is not a resolved family.
+    #[test]
+    fn a_partly_settled_relationship_family_is_not_reported_as_resolved() {
+        let published = detail_publication(
+            &[(
+                "memory://model.sysml",
+                "package P { part def Wheel; part def Frame; part axle : Wheel, Missing; }",
+            )],
+            ConstructionSchedule::Sequential,
+        );
+        let axle = details_of(&published, "memory://model.sysml", "P::axle");
+        assert_eq!(axle.typing.outcome, RelationshipOutcome::Partial);
+        assert_eq!(names(&axle.typing.targets), vec!["Wheel"]);
+    }
+
+    /// Never select the first candidate of an ambiguous reference: every candidate is retained and
+    /// the outcome says none was chosen.
+    #[test]
+    fn an_ambiguous_relationship_target_keeps_every_candidate_and_chooses_none() {
+        let published = detail_publication(
+            &[(
+                "memory://model.sysml",
+                concat!(
+                    "package P {\n",
+                    "  package A { part def Shared; }\n",
+                    "  package B { part def Shared; }\n",
+                    "  package C { import A::*; import B::*; part unit : Shared; }\n",
+                    "}\n",
+                ),
+            )],
+            ConstructionSchedule::Sequential,
+        );
+        let usage = details_of(&published, "memory://model.sysml", "P::C::unit");
+        assert_eq!(usage.typing.outcome, RelationshipOutcome::Ambiguous);
+        assert!(
+            usage.typing.targets.is_empty(),
+            "an ambiguous family must publish no chosen target"
+        );
+        assert_eq!(usage.typing.candidates.len(), 2, "{:?}", usage.typing);
+    }
+
+    /// Effective typing is a fact about the declaration, so its outcome distinguishes a feature
+    /// that inherits nothing from one whose declaration did not resolve.
+    #[test]
+    fn effective_typing_reports_its_own_outcome_rather_than_an_empty_list() {
+        let published = detail_publication(
+            &[("memory://model.sysml", VEHICLE_MODEL)],
+            ConstructionSchedule::Sequential,
+        );
+
+        let wheel = details_of(&published, "memory://model.sysml", "P::Wheel");
+        assert_eq!(
+            wheel.effective_typing.outcome,
+            RelationshipOutcome::NotApplicable
+        );
+
+        let broken = details_of(&published, "memory://model.sysml", "P::broken");
+        assert_eq!(
+            broken.effective_typing.outcome,
+            RelationshipOutcome::Unresolved
+        );
+
+        // A feature that declares no typing of its own still has one along its subsetting chain.
+        let selected = details_of(&published, "memory://model.sysml", "P::selected");
+        assert_eq!(selected.typing.outcome, RelationshipOutcome::NotApplicable);
+        assert_eq!(
+            selected.effective_typing.outcome,
+            RelationshipOutcome::Resolved
+        );
+        assert_eq!(
+            selected
+                .effective_typing
+                .types
+                .iter()
+                .map(|entry| entry.element.name.as_deref().unwrap_or_default())
+                .collect::<Vec<_>>(),
+            vec!["Rover"]
+        );
+        assert!(
+            selected
+                .effective_typing
+                .types
+                .iter()
+                .all(|entry| matches!(entry.origin, EffectiveTypeOrigin::Inherited(_))),
+            "a type reached through subsetting is inherited, not direct: {:?}",
+            selected.effective_typing
+        );
+    }
+
+    /// Inherited features carry the type that declares them, and a redefinition replaces the
+    /// feature it redefines even when the redefining feature is anonymous.
+    #[test]
+    fn inherited_features_carry_provenance_and_a_redefinition_shadows_the_redefined_feature() {
+        let published = detail_publication(
+            &[("memory://model.sysml", VEHICLE_MODEL)],
+            ConstructionSchedule::Sequential,
+        );
+        let rover = details_of(&published, "memory://model.sysml", "P::Rover");
+        assert_eq!(
+            rover
+                .inherited_features
+                .iter()
+                .map(|entry| (
+                    entry.feature.name.as_deref().unwrap_or_default(),
+                    entry.declared_in.name.as_deref().unwrap_or_default()
+                ))
+                .collect::<Vec<_>>(),
+            vec![("spare", "Vehicle")],
+            "the anonymous `part :>> wheel[4]` must replace the inherited wheel"
+        );
+
+        // A usage reaches the same features through the definition it is typed by.
+        let usage = details_of(&published, "memory://model.sysml", "P::rover");
+        assert!(
+            usage
+                .inherited_features
+                .iter()
+                .any(|entry| entry.feature.name.as_deref() == Some("spare")),
+            "{:?}",
+            usage.inherited_features
+        );
+    }
+
+    /// A metadata annotation is a settled binding to the definition it names, not a string.
+    #[test]
+    fn metadata_annotations_publish_the_definition_they_bind_to() {
+        let published = detail_publication(
+            &[("memory://model.sysml", VEHICLE_MODEL)],
+            ConstructionSchedule::Sequential,
+        );
+        let vehicle = details_of(&published, "memory://model.sysml", "P::Vehicle");
+        assert_eq!(names(&vehicle.metadata), vec!["Safety"]);
+
+        // An annotation naming nothing publishes no binding at all rather than an empty-named one.
+        let unresolved = detail_publication(
+            &[(
+                "memory://unresolved.sysml",
+                "package P { part def Vehicle { @Missing; } }",
+            )],
+            ConstructionSchedule::Sequential,
+        );
+        let vehicle = details_of(&unresolved, "memory://unresolved.sysml", "P::Vehicle");
+        assert!(vehicle.metadata.is_empty(), "{:?}", vehicle.metadata);
+    }
+
+    /// Both directions are published, so an inspector never has to scan the model to find what
+    /// points at an element.
+    #[test]
+    fn relationships_are_published_in_both_directions() {
+        let published = detail_publication(
+            &[("memory://model.sysml", VEHICLE_MODEL)],
+            ConstructionSchedule::Sequential,
+        );
+        let rover_def = details_of(&published, "memory://model.sysml", "P::Rover");
+        assert!(
+            rover_def
+                .outgoing
+                .iter()
+                .any(|entry| entry.kind == "specialization"
+                    && entry.peer.name.as_deref() == Some("Vehicle")),
+            "{:?}",
+            rover_def.outgoing
+        );
+        assert!(
+            rover_def
+                .incoming
+                .iter()
+                .any(|entry| entry.kind == "typing" && entry.peer.name.as_deref() == Some("rover")),
+            "{:?}",
+            rover_def.incoming
+        );
+    }
+
+    /// The verdict channel is a projection of the same settled value channel, gated by the
+    /// element's kind, so the two cannot disagree.
+    #[test]
+    fn analysis_evaluation_is_a_second_channel_over_the_settled_value() {
+        let published = detail_publication(
+            &[(
+                "memory://analysis.sysml",
+                concat!(
+                    "package P {\n",
+                    "  attribute plain = 1;\n",
+                    "  constraint holds { true }\n",
+                    "  constraint fails { false }\n",
+                    "  constraint broken { missing }\n",
+                    "}\n",
+                ),
+            )],
+            ConstructionSchedule::Sequential,
+        );
+
+        let plain = details_of(&published, "memory://analysis.sysml", "P::plain");
+        assert_eq!(
+            plain.analysis,
+            AnalysisEvaluation::NotApplicable,
+            "an attribute's value is not a verdict"
+        );
+        assert_eq!(
+            plain.evaluation.state,
+            EvaluationState::Literal(EvaluatedScalar::Integer(1))
+        );
+
+        assert_eq!(
+            details_of(&published, "memory://analysis.sysml", "P::holds").analysis,
+            AnalysisEvaluation::Verdict(true)
+        );
+        assert_eq!(
+            details_of(&published, "memory://analysis.sysml", "P::fails").analysis,
+            AnalysisEvaluation::Verdict(false)
+        );
+
+        let broken = details_of(&published, "memory://analysis.sysml", "P::broken");
+        assert!(
+            matches!(broken.analysis, AnalysisEvaluation::Unsettled(_)),
+            "an unsettled constraint must not read as a failing verdict, got {:?}",
+            broken.analysis
+        );
+    }
+
+    /// A build that does not evaluate reports the verdict channel as not run, which is neither a
+    /// verdict nor an inapplicable element.
+    #[test]
+    fn a_skipped_evaluation_policy_reports_the_verdict_channel_as_not_run() {
+        let request = BuildRequest::new(
+            vec![SourceInput::new(
+                "memory://skip.sysml",
+                "package P { constraint holds { true } }".to_string(),
+                SourceKind::Workspace,
+            )],
+            ConstructionSchedule::Sequential,
+            "contract-v1",
+        )
+        .unwrap()
+        .with_evaluation_policy(EvaluationPolicy::Skip);
+        let published = build(request).unwrap();
+        let holds = details_of(&published, "memory://skip.sysml", "P::holds");
+        assert_eq!(holds.evaluation.state, EvaluationState::NotRun);
+        assert_eq!(holds.analysis, AnalysisEvaluation::NotRun);
+    }
+
+    /// The cohesive answer and the individual services read the same settled facts, so a consumer
+    /// choosing one cannot see a different model from a consumer choosing the other.
+    #[test]
+    fn element_details_agrees_with_the_services_it_is_assembled_from() {
+        let published = detail_publication(
+            &[("memory://model.sysml", VEHICLE_MODEL)],
+            ConstructionSchedule::Sequential,
+        );
+        let symbol = identity_of(&published, "memory://model.sysml", "P::rover");
+        let details = settled(published.element_details(&symbol));
+        assert_eq!(details.inspection, settled(published.inspect(&symbol)));
+        assert_eq!(details.evaluation, settled(published.evaluate(&symbol)));
+        let effective = settled(published.effective_types(&symbol));
+        assert_eq!(
+            details
+                .effective_typing
+                .types
+                .iter()
+                .map(|entry| entry.element.identity.clone())
+                .collect::<Vec<_>>(),
+            effective
+                .iter()
+                .map(|entry| entry.symbol.clone())
+                .collect::<Vec<_>>()
+        );
+    }
+
+    /// The whole point of the publication-time child, reverse-reference and implied indexes: an
+    /// element's details are its own facts, so a workspace that grows elsewhere costs nothing here.
+    ///
+    /// Before the child index existed, the inherited-feature walk filtered every declaration in the
+    /// publication per owner it visited, which made one element's answer cost the size of the model.
+    #[test]
+    fn element_details_cost_is_independent_of_the_rest_of_the_workspace() {
+        let cost = |sources: &[(&str, &str)]| {
+            let published = publication_for(sources);
+            let symbol = identity_of(&published, "memory://i.sysml", "P::w");
+            let (outcome, visited) = crate::model::resolver::measure_visited_index_entries(|| {
+                published.element_details(&symbol)
+            });
+            assert!(
+                matches!(outcome, QueryOutcome::Resolved(_)),
+                "the probe must resolve, got: {outcome:?}"
+            );
+            visited
+        };
+
+        let small = cost(&[("memory://i.sysml", PROBED)]);
+        let large_source = format!("package Other {{\n{}}}\n", padding(500));
+        let large = cost(&[
+            ("memory://i.sysml", PROBED),
+            ("memory://other.sysml", &large_source),
+        ]);
+        assert_eq!(
+            small, large,
+            "500 declarations in another document changed what one element-details answer reads"
+        );
+    }
+
+    /// Repetition and query order cannot change a published answer.
+    #[test]
+    fn repeated_and_reordered_element_detail_queries_return_identical_answers() {
+        let published = detail_publication(
+            &[("memory://model.sysml", VEHICLE_MODEL)],
+            ConstructionSchedule::Sequential,
+        );
+        let names = ["P::rover", "P::Rover", "P::Vehicle", "P::selected"];
+        let forward = names
+            .iter()
+            .map(|name| render_details(&details_of(&published, "memory://model.sysml", name)))
+            .collect::<Vec<_>>();
+        let mut reverse = names
+            .iter()
+            .rev()
+            .map(|name| render_details(&details_of(&published, "memory://model.sysml", name)))
+            .collect::<Vec<_>>();
+        reverse.reverse();
+        assert_eq!(forward, reverse);
+        // Asking a second time, after every other element has been asked for, must not differ.
+        for (index, name) in names.iter().enumerate() {
+            assert_eq!(
+                forward[index],
+                render_details(&details_of(&published, "memory://model.sysml", name))
+            );
+        }
+    }
+
+    /// Sequential and parallel construction publish the same details, and so do the same sources
+    /// admitted in a different order.
+    #[test]
+    fn construction_strategy_and_source_order_publish_equivalent_details() {
+        let sources = [
+            ("memory://a.sysml", "package P { part def Wheel; }"),
+            (
+                "memory://b.sysml",
+                "package P { part def Vehicle { part wheel : Wheel; } part car : Vehicle; }",
+            ),
+        ];
+        let permuted = [sources[1], sources[0]];
+
+        let render = |published: &PublishedResolution| {
+            ["P::car", "P::Vehicle", "P::Wheel"]
+                .iter()
+                .map(|name| {
+                    let document = if *name == "P::Wheel" {
+                        "memory://a.sysml"
+                    } else {
+                        "memory://b.sysml"
+                    };
+                    render_details(&details_of(published, document, name))
+                })
+                .collect::<Vec<_>>()
+        };
+
+        let sequential = detail_publication(&sources, ConstructionSchedule::Sequential);
+        let parallel = detail_publication(&sources, ConstructionSchedule::Parallel);
+        let reordered = detail_publication(&permuted, ConstructionSchedule::Sequential);
+        assert_eq!(render(&sequential), render(&parallel));
+        assert_eq!(render(&sequential), render(&reordered));
+    }
+
+    /// A publication that reuses a solved library stratum answers exactly as a full solve does.
+    #[test]
+    fn library_stratum_reuse_publishes_the_same_details_as_a_full_solve() {
+        let library = SourceInput::new(
+            "memory://lib.sysml",
+            "standard library package Lib { part def Wheel; }".to_string(),
+            SourceKind::StandardLibrary,
+        );
+        let workspace = SourceInput::new(
+            "memory://model.sysml",
+            "package W { part w : Lib::Wheel; }".to_string(),
+            SourceKind::Workspace,
+        );
+
+        let full = build(
+            BuildRequest::new(
+                vec![library.clone(), workspace.clone()],
+                ConstructionSchedule::Sequential,
+                "contract-v1",
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        let stratum = std::sync::Arc::new(build_library_stratum(vec![library]).unwrap());
+        let warm = build(
+            BuildRequest::with_library(
+                vec![workspace],
+                ConstructionSchedule::Sequential,
+                "contract-v1",
+                stratum,
+            )
+            .unwrap(),
+        )
+        .unwrap();
+
+        assert_eq!(
+            render_details(&details_of(&full, "memory://model.sysml", "W::w")),
+            render_details(&details_of(&warm, "memory://model.sysml", "W::w")),
+        );
+    }
+
+    /// A cross-document reference is a resolved relationship with the target's own document, not a
+    /// name the consumer has to look up.
+    #[test]
+    fn element_details_resolve_a_cross_document_relationship_to_its_declaring_document() {
+        let published = detail_publication(
+            &[
+                (
+                    "memory://defs.sysml",
+                    "package Defs { requirement def Endurance; }",
+                ),
+                (
+                    "memory://usage.sysml",
+                    "package Usage { import Defs::*; requirement check : Endurance; }",
+                ),
+            ],
+            ConstructionSchedule::Sequential,
+        );
+        let check = details_of(&published, "memory://usage.sysml", "Usage::check");
+        assert_eq!(check.typing.outcome, RelationshipOutcome::Resolved);
+        assert_eq!(
+            check.typing.targets[0].location.document.as_ref(),
+            "memory://defs.sysml"
+        );
+    }
+
+    /// Two documents that both declare `package P` declare two packages, not one.
+    ///
+    /// The mutable graph merged them, so an unqualified name in one reached the other's members.
+    /// This layer keeps them apart -- which is what makes each declaration separately addressable
+    /// (see `duplicate_qualified_names`) -- so an unqualified cross-document name is unresolved
+    /// rather than silently bound to a sibling package that happens to share a spelling. Pinned
+    /// here because the element-details service is the surface where the difference is visible.
+    #[test]
+    fn same_named_packages_in_two_documents_do_not_share_an_unqualified_scope() {
+        let published = detail_publication(
+            &[
+                ("memory://defs.sysml", "package R { part def Engine; }"),
+                ("memory://usage.sysml", "package R { part motor : Engine; }"),
+            ],
+            ConstructionSchedule::Sequential,
+        );
+        let motor = details_of(&published, "memory://usage.sysml", "R::motor");
+        assert_eq!(motor.typing.outcome, RelationshipOutcome::Unresolved);
+
+        // The qualified form crosses the document boundary, because it names the package.
+        let qualified = detail_publication(
+            &[
+                ("memory://defs.sysml", "package R { part def Engine; }"),
+                (
+                    "memory://usage.sysml",
+                    "package S { part motor : R::Engine; }",
+                ),
+            ],
+            ConstructionSchedule::Sequential,
+        );
+        let motor = details_of(&qualified, "memory://usage.sysml", "S::motor");
+        assert_eq!(motor.typing.outcome, RelationshipOutcome::Resolved);
+    }
+
+    /// Recovery-produced input is still answered, and the outcome says the publication recovered
+    /// rather than presenting the answer as complete.
+    #[test]
+    fn element_details_over_recovery_produced_input_keep_their_recovery_outcome() {
+        let published = detail_publication(
+            &[(
+                "memory://recovery.sysml",
+                "package P { part def Wheel; part broken : ; }",
+            )],
+            ConstructionSchedule::Sequential,
+        );
+        let symbol = identity_of(&published, "memory://recovery.sysml", "P::Wheel");
+        assert!(
+            matches!(
+                published.element_details(&symbol),
+                QueryOutcome::Recovered(_) | QueryOutcome::UnsupportedWith(_)
+            ),
+            "expected a degraded publication to say so, got: {:?}",
+            published.completeness()
+        );
+    }
+
+    /// A position identifies two different elements, and both are answered in full.
+    #[test]
+    fn element_details_at_a_position_answer_the_container_and_the_reference_separately() {
+        let published = detail_publication(
+            &[(
+                "memory://at.sysml",
+                "package P {\n  part def Engine;\n  part motor : Engine;\n}\n",
+            )],
+            ConstructionSchedule::Sequential,
+        );
+        let at = settled(published.element_details_at(
+            "memory://at.sysml",
+            TextPosition {
+                line: 2,
+                character: 15,
+            },
+        ));
+        assert_eq!(
+            at.containing
+                .as_ref()
+                .and_then(|details| details.inspection.name.as_deref()),
+            Some("motor")
+        );
+        match &at.referenced {
+            ReferencedDetails::Resolved(details) => {
+                assert_eq!(details.inspection.name.as_deref(), Some("Engine"))
+            }
+            other => panic!("expected the reference under the cursor, got: {other:?}"),
+        }
+
+        // A position with no reference under it says so rather than reporting an unresolved one.
+        let at = settled(published.element_details_at(
+            "memory://at.sysml",
+            TextPosition {
+                line: 2,
+                character: 8,
+            },
+        ));
+        assert_eq!(at.referenced, ReferencedDetails::None);
     }
 }

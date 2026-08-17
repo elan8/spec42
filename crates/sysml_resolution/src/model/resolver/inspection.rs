@@ -31,6 +31,20 @@ pub(super) struct ElementFactIndex {
     /// Implied relationships ordered by source declaration.
     implied: Box<[(u32, u32)]>,
     implied_order: Box<[u32]>,
+    /// Implied relationships ordered by *target* declaration.
+    ///
+    /// The authored direction already has [`super::ReverseReferenceIndex`]; without this one, the
+    /// relationships the resolver synthesized would be visible only from their source, so an
+    /// element would be told nothing points at it when something does.
+    incoming_implied: Box<[(u32, u32)]>,
+    incoming_implied_order: Box<[u32]>,
+    /// Per-declaration ranges into `child_order`: the declarations each one owns.
+    ///
+    /// Prebuilt because the alternative is a scan of every declaration in the publication per
+    /// element, which makes one element's inherited-feature answer cost the size of the model.
+    children: Box<[(u32, u32)]>,
+    /// Child declaration ids, ordered by owner and then by source position within the owner.
+    child_order: Box<[DeclarationId]>,
     /// Each declaration's evaluation fact, as an index into the publication's evaluation table.
     ///
     /// Dense rather than a range, because a declaration has at most one evaluation outcome; the
@@ -98,6 +112,41 @@ impl ElementFactIndex {
                 .index()
         });
 
+        let mut incoming_implied_order: Vec<u32> =
+            (0..resolution.implied_relationships.len() as u32).collect();
+        incoming_implied_order.sort_by_key(|index| {
+            resolution.implied_relationships[*index as usize]
+                .target
+                .index()
+        });
+
+        // Source order within an owner, so an inherited-feature list reads the way the author
+        // wrote the type rather than the way lowering happened to visit it.
+        let mut child_order: Vec<DeclarationId> = (0..declarations)
+            .filter_map(|index| DeclarationId::from_index(index).ok())
+            .filter(|id| {
+                storage
+                    .declaration(*id)
+                    .is_some_and(|declaration| declaration.owner.is_some())
+            })
+            .collect();
+        child_order.sort_by_key(|id| {
+            let declaration = storage.declaration(*id);
+            (
+                declaration
+                    .and_then(|declaration| declaration.owner)
+                    .map(|owner| owner.index())
+                    .unwrap_or_default(),
+                declaration
+                    .map(|declaration| declaration.document.0)
+                    .unwrap_or_default(),
+                declaration
+                    .map(|declaration| declaration.span.offset)
+                    .unwrap_or_default(),
+                id.index(),
+            )
+        });
+
         let mut evaluation_by_declaration = vec![None; declarations];
         for (index, fact) in evaluation.iter().enumerate() {
             if let Some(slot) = evaluation_by_declaration.get_mut(fact.declaration.index()) {
@@ -136,6 +185,22 @@ impl ElementFactIndex {
                     .map(|index| resolution.implied_relationships[*index as usize].source),
             ),
             implied_order: implied_order.into_boxed_slice(),
+            incoming_implied: ranges_by_declaration(
+                declarations,
+                incoming_implied_order
+                    .iter()
+                    .map(|index| resolution.implied_relationships[*index as usize].target),
+            ),
+            incoming_implied_order: incoming_implied_order.into_boxed_slice(),
+            children: ranges_by_declaration(
+                declarations,
+                child_order.iter().filter_map(|id| {
+                    storage
+                        .declaration(*id)
+                        .and_then(|declaration| declaration.owner)
+                }),
+            ),
+            child_order: child_order.into_boxed_slice(),
             evaluation: evaluation_by_declaration.into_boxed_slice(),
         })
     }
@@ -441,8 +506,32 @@ impl ResolvedSemanticModel {
             .unwrap_or(EvaluationState::NotApplicable)
     }
 
+    /// The authored and implied references this declaration is the source of, in canonical order.
+    pub(super) fn outgoing_reference_ids(&self, id: DeclarationId) -> &[AuthoredReferenceId] {
+        slice_range(&self.facts.reference_order, &self.facts.references, id)
+    }
+
+    /// Indices into the publication's implied relationships that this declaration is the source of.
+    pub(super) fn outgoing_implied_indices(&self, id: DeclarationId) -> &[u32] {
+        slice_range(&self.facts.implied_order, &self.facts.implied, id)
+    }
+
+    /// Indices into the publication's implied relationships that target this declaration.
+    pub(super) fn incoming_implied_indices(&self, id: DeclarationId) -> &[u32] {
+        slice_range(
+            &self.facts.incoming_implied_order,
+            &self.facts.incoming_implied,
+            id,
+        )
+    }
+
+    /// The declarations this one owns, in source order.
+    pub(super) fn child_declarations(&self, id: DeclarationId) -> &[DeclarationId] {
+        slice_range(&self.facts.child_order, &self.facts.children, id)
+    }
+
     /// The full inspection answer for one declaration.
-    fn inspection(&self, id: DeclarationId) -> Option<ElementInspection> {
+    pub(super) fn inspection(&self, id: DeclarationId) -> Option<ElementInspection> {
         let declaration = self.storage.declaration(id)?;
         let facts = self.storage.declaration_facts(id)?;
         Some(ElementInspection {
@@ -661,15 +750,10 @@ impl ResolvedSemanticModel {
                 continue;
             }
             let mut children = self
-                .storage
-                .declarations
+                .child_declarations(owner)
                 .iter()
-                .enumerate()
-                .filter_map(|(index, child)| {
-                    let id = DeclarationId::from_index(index).ok()?;
-                    (child.owner == Some(owner) && self.types.featuring_type(id) == Some(owner))
-                        .then_some(id)
-                })
+                .copied()
+                .filter(|id| self.types.featuring_type(*id) == Some(owner))
                 .collect::<Vec<_>>();
             children.sort_by(|left, right| {
                 match (self.source_location(*left), self.source_location(*right)) {
@@ -711,7 +795,7 @@ impl ResolvedSemanticModel {
         self.resolved_outcome(result.into_boxed_slice())
     }
 
-    fn symbol_entry(&self, id: DeclarationId) -> Option<SymbolEntry> {
+    pub(super) fn symbol_entry(&self, id: DeclarationId) -> Option<SymbolEntry> {
         let declaration = self.storage.declaration(id)?;
         let location = self.source_location(id)?;
         Some(SymbolEntry {
