@@ -3261,6 +3261,65 @@ package P {
         );
     }
 
+    /// The set entailments are query-time recursion rather than a closure lookup, so they need the
+    /// same complexity property the closure has: an answer is a function of the operand structure,
+    /// not of how much else the publication contains.
+    #[test]
+    fn set_entailment_answers_do_not_grow_with_the_model() {
+        let core = "package P { classifier Base; classifier L :> Base; classifier R :> Base; \
+                    classifier U unions L, R; }";
+        let mut padded = String::from(core);
+        for index in 0..200 {
+            padded.push_str(&format!(
+                " package Q{index} {{ classifier A{index}; classifier B{index}; \
+                 classifier U{index} unions A{index}, B{index}; }}"
+            ));
+        }
+        let small = publication_for(&[("memory://sets.kerml", core)]);
+        let large = publication_for(&[("memory://sets.kerml", &padded)]);
+        for (published, label) in [(&small, "small"), (&large, "large")] {
+            let union = symbol_named(published, "memory://sets.kerml", "P::U");
+            let base = symbol_named(published, "memory://sets.kerml", "P::Base");
+            let left = symbol_named(published, "memory://sets.kerml", "P::L");
+            assert_eq!(
+                conformance(published.conforms_to(
+                    &union,
+                    &base,
+                    SpecializationScope::AnySpecialization
+                )),
+                Conformance::Conforms,
+                "{label}: every operand of U is a Base, so U is one"
+            );
+            assert_eq!(
+                conformance(published.conforms_to(
+                    &left,
+                    &union,
+                    SpecializationScope::AnySpecialization
+                )),
+                Conformance::Conforms,
+                "{label}: each operand is included in the union it belongs to"
+            );
+        }
+    }
+
+    /// A union whose operands reach back to it is malformed, and the entailment has to answer rather
+    /// than recurse forever. The visiting set is what bounds it.
+    #[test]
+    fn mutually_recursive_unions_terminate() {
+        let published = publication_for(&[(
+            "memory://sets.kerml",
+            "package P { classifier Other; classifier A unions B, Other; classifier B unions A, Other; }",
+        )]);
+        let a = symbol_named(&published, "memory://sets.kerml", "P::A");
+        let other = symbol_named(&published, "memory://sets.kerml", "P::Other");
+        // `A` is `B` union `Other`, and `B` is `A` union `Other`; nothing establishes that either
+        // is an `Other`, and the answer is reached rather than looped over.
+        assert_eq!(
+            conformance(published.conforms_to(&a, &other, SpecializationScope::AnySpecialization)),
+            Conformance::DoesNotConform
+        );
+    }
+
     /// The published closure carries only what the model actually specializes. A model with no
     /// specialization at all publishes no ancestors, so the storage cannot quietly become
     /// quadratic in declaration count.
@@ -3368,6 +3427,30 @@ package P {
             seeded.contains("Lib::Base"),
             "the workspace should reach the library's own supertypes, got: {seeded}"
         );
+    }
+
+    /// The parity above only proves what the workspace it builds exercises, and a clean workspace
+    /// exercises no conformance rule. This one authors a violation of each family that reads a
+    /// library declaration, so a seeded build that answered any of them differently would show up.
+    #[test]
+    fn a_seeded_publication_matches_an_unseeded_one_for_feature_conformance() {
+        let (seeded, unseeded) = seeded_and_unseeded(
+            "package W { \
+             part def Holder { part wrong : Lib::Mass; attribute right : Lib::Mass; } \
+             part def Widened :> Lib::Wheel { part slot[0..*] : Lib::Wheel; } \
+             part def Narrowed :> Lib::Wheel { part slot[1..2] : Lib::Wheel; } \
+             part def Cycle :> Cycle; }",
+        );
+        assert_eq!(
+            seeded, unseeded,
+            "feature-conformance decisions must not depend on library-stratum reuse"
+        );
+        for code in ["incompatible_type_kind", "specialization_cycle"] {
+            assert!(
+                seeded.contains(code),
+                "the parity workspace must actually exercise {code}, got: {seeded}"
+            );
+        }
     }
 
     /// A workspace root sharing a library root's name is the one way a workspace declaration can
