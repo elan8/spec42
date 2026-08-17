@@ -16,5 +16,4 @@ thiserror = { workspace = true }
 
 [dev-dependencies]
 wat = "1"
-tempfile = "3"
-workspace = { path = "../workspace", default-features = false }
+sysml_query = { path = "../sysml_query" }

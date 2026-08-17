@@ -822,12 +822,11 @@ dependencies = [
  "serde",
  "sha2",
  "spec42-generator-protocol",
- "tempfile",
+ "sysml_query",
  "thiserror 2.0.19",
  "wasmparser 0.253.0",
  "wasmtime",
  "wat",
- "workspace",
 ]
 
 [[package]]
@@ -2024,7 +2023,7 @@ dependencies = [
 [[package]]
 name = "sysml-v2-parser"
 version = "0.54.0"
-source = "git+https://github.com/lukewilliamboswell/sysml-v2-parser.git?rev=7eb786908f4c7b3081eb617c98c0ecf2ab968a5e#7eb786908f4c7b3081eb617c98c0ecf2ab968a5e"
+source = "git+https://github.com/lukewilliamboswell/sysml-v2-parser.git?rev=7d4fd858a65cfcf23296dfd3862fc8646e5224dd#7d4fd858a65cfcf23296dfd3862fc8646e5224dd"
 dependencies = [
  "log",
  "nom",
@@ -2079,7 +2078,7 @@ dependencies = [
  "hashbrown 0.17.1",
  "rayon",
  "source_identity",
- "sysml-v2-parser 0.54.0 (git+https://github.com/lukewilliamboswell/sysml-v2-parser.git?rev=7eb786908f4c7b3081eb617c98c0ecf2ab968a5e)",
+ "sysml-v2-parser 0.54.0 (git+https://github.com/lukewilliamboswell/sysml-v2-parser.git?rev=7d4fd858a65cfcf23296dfd3862fc8646e5224dd)",
 ]
 
 [[package]]

@@ -4,6 +4,11 @@
 //! raw observations and structural work counters; it deliberately has no machine-specific pass
 //! threshold and never compares against the removed scoped resolver.
 
+// The parser AST's body-element enums nest deeply enough that rustdoc exceeds the default
+// limit proving auto-trait bounds (`RefUnwindSafe`) for the types reachable from a published
+// model. Compilation is unaffected; only documentation generation walks the whole closure.
+#![recursion_limit = "256"]
+
 use std::fs;
 use std::hint::black_box;
 use std::path::{Path, PathBuf};

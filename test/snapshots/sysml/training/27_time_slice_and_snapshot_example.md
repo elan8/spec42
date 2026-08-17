@@ -38,18 +38,6 @@ package 'Time Slice and Snapshot Example' {
 (fixture-diagnostics
   (document "memory://snapshot/27_time_slice_and_snapshot_example.md"
     (diagnostics
-      (diagnostic
-        (severity error)
-        (code "recovered_occurrence_body_element")
-        (source "parser")
-        (range (start 17 3) (end 19 3))
-      )
-      (diagnostic
-        (severity warning)
-        (code "recovery_cascade_suppressed")
-        (source "parser")
-        (range (start 17 3) (end 19 3))
-      )
     )
   )
 )
@@ -57,7 +45,7 @@ package 'Time Slice and Snapshot Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:b57bc12caa5547fc29077dd18653ef97509612138b3b83668984234a9e289536") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:b57bc12caa5547fc29077dd18653ef97509612138b3b83668984234a9e289536") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Date"))) (kind attribute-def) (membership (kind owning) (visibility default)))
@@ -70,6 +58,8 @@ package 'Time Slice and Snapshot Example' {
     (declaration (id (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Vehicle::junked"))) (kind occurrence) (membership (kind feature) (visibility default)) (facts (portion snapshot)) (feature-value (kind bind)))
     (declaration (id (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Vehicle::ownership"))) (kind occurrence) (membership (kind feature) (visibility default)) (facts (portion timeslice) (multiplicity (lower 0) (upper unbounded))))
     (declaration (id (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Vehicle::ownership::driven"))) (kind occurrence) (membership (kind feature) (visibility default)) (facts (portion timeslice) (multiplicity (lower 0) (upper unbounded))))
+    (declaration (id (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Vehicle::ownership::driven::driver"))) (kind ref) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 1) (upper 1))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Person")))))
+    (declaration (id (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Vehicle::ownership::owner"))) (kind ref) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 1) (upper 1))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Person")))))
     (declaration (id (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Vehicle::ownership::sale"))) (kind occurrence) (membership (kind feature) (visibility default)) (facts (portion snapshot)) (feature-value (kind bind)))
   )
   (references
@@ -82,11 +72,19 @@ package 'Time Slice and Snapshot Example' {
     (reference (id (source (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Vehicle::delivery::deliveryDate"))) (kind featureTyping) (ordinal 0))
       (authored-target "Date")
       (outcome (status resolved) (target (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Date")))))
+    (reference (id (source (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Vehicle::ownership::driven::driver"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Person")
+      (outcome (status resolved) (target (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Person")))))
+    (reference (id (source (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Vehicle::ownership::owner"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Person")
+      (outcome (status resolved) (target (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Person")))))
   )
   (relationships
     (relationship (kind succession) (source (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (path (named (kind package) (name "Time Slice and Snapshot Example")) (named (kind part-def) (name "Vehicle")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Vehicle::assembly"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (path (named (kind package) (name "Time Slice and Snapshot Example")) (named (kind part-def) (name "Vehicle")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0)))
     (relationship (kind succession) (source (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (path (named (kind package) (name "Time Slice and Snapshot Example")) (named (kind part-def) (name "Vehicle")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Vehicle::delivery"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (path (named (kind package) (name "Time Slice and Snapshot Example")) (named (kind part-def) (name "Vehicle")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 1)))
     (relationship (kind typing) (source (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Vehicle::delivery::deliveryDate"))) (target (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Date"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Vehicle::delivery::deliveryDate"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Vehicle::ownership::driven::driver"))) (target (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Person"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Vehicle::ownership::driven::driver"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Vehicle::ownership::owner"))) (target (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Person"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Vehicle::ownership::owner"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )
@@ -97,6 +95,10 @@ package 'Time Slice and Snapshot Example' {
 (types
     (declaration (id (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Date")))
       (subtype (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Vehicle::delivery::deliveryDate")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Person")))
+      (subtype (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Vehicle::ownership::driven::driver")) (scopes any))
+      (subtype (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Vehicle::ownership::owner")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (path (named (kind package) (name "Time Slice and Snapshot Example")) (named (kind part-def) (name "Vehicle")) (anonymous (kind succession) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Vehicle")))
@@ -122,6 +124,18 @@ package 'Time Slice and Snapshot Example' {
     (declaration (id (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Vehicle::ownership::driven")))
       (featured-by (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Vehicle::ownership")))
     )
+    (declaration (id (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Vehicle::ownership::driven::driver")))
+      (featured-by (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Vehicle::ownership::driven")))
+      (type (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Person")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Person")) (source direct))
+      (supertype (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Person")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Vehicle::ownership::owner")))
+      (featured-by (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Vehicle::ownership")))
+      (type (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Person")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Person")) (source direct))
+      (supertype (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Person")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Vehicle::ownership::sale")))
       (featured-by (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Vehicle::ownership")))
     )
@@ -143,6 +157,16 @@ package 'Time Slice and Snapshot Example' {
   (query (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (range (start 11 28) (end 11 32)) (probe (position 11 28))
     (reference (id (source (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Vehicle::delivery::deliveryDate"))) (kind featureTyping) (ordinal 0) (authored-target "Date")
       (outcome (status resolved) (target (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Date")))))
+    )
+  )
+  (query (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (range (start 20 22) (end 20 28)) (probe (position 20 22))
+    (reference (id (source (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Vehicle::ownership::driven::driver"))) (kind featureTyping) (ordinal 0) (authored-target "Person")
+      (outcome (status resolved) (target (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Person")))))
+    )
+  )
+  (query (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (range (start 17 20) (end 17 26)) (probe (position 17 20))
+    (reference (id (source (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Vehicle::ownership::owner"))) (kind featureTyping) (ordinal 0) (authored-target "Person")
+      (outcome (status resolved) (target (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Person")))))
     )
   )
 )

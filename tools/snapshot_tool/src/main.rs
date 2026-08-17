@@ -458,8 +458,8 @@ fn render_owned_sections(
 ) -> Result<OwnedSections, String> {
     // Both strings are complete owner-defined projections. The SMG includes publication phase,
     // completeness, evaluation state, and all owned facts; diagnostics includes canonical order.
-    let smg = render_semantic_model(&model)?;
-    let diagnostics = render_diagnostics(&model, documents, source_documents)?;
+    let smg = render_semantic_model(model)?;
+    let diagnostics = render_diagnostics(model, documents, source_documents)?;
     let mut types = String::new();
     model
         .debug()
