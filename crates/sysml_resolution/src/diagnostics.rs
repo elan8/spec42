@@ -178,6 +178,24 @@ pub enum DiagnosticCode {
     RedefinitionTypeIncompatible,
     /// A subsetting feature's types do not conform to the subsetted feature's.
     SubsettingTypeIncompatible,
+    /// A flow payload is typed by something that is not an occurrence.
+    FlowPayloadTypeNotOccurrence,
+    /// A binary connection-like declaration has one end where it needs two.
+    IncompleteConnectionLikeEndPair,
+    /// A binary connection-like declaration has more than two ends.
+    InvalidBinaryConnectionLikeEndCount,
+    /// An end feature is derived, abstract or composite.
+    EndFeatureInvalidRestrictions,
+    /// A variant member's metaclass family is not the variation's.
+    InvalidVariationMemberKind,
+    /// A redefining feature is featured by a type unrelated to the redefined feature's.
+    RedefinitionFeaturingTypeIncompatible,
+    /// A feature redefines an end feature without being one.
+    RedefinitionEndMismatch,
+    /// A redefining feature's direction does not conform to the redefined feature's.
+    RedefinitionDirectionMismatch,
+    /// A non-unique feature subsets a unique one.
+    SubsettingUniquenessMismatch,
     /// A type owns exactly one `unions`, `intersects` or `differences` operand.
     ///
     /// KerML requires zero or at least two: a union, intersection or difference of one type is
@@ -241,6 +259,17 @@ impl DiagnosticCode {
             Self::RedefinitionMultiplicityWidened => "redefinition_multiplicity_widened",
             Self::RedefinitionTypeIncompatible => "redefinition_type_incompatible",
             Self::SubsettingTypeIncompatible => "subsetting_type_incompatible",
+            Self::FlowPayloadTypeNotOccurrence => "flow_payload_type_not_occurrence",
+            Self::IncompleteConnectionLikeEndPair => "incomplete_connection_like_end_pair",
+            Self::InvalidBinaryConnectionLikeEndCount => "invalid_binary_connection_like_end_count",
+            Self::EndFeatureInvalidRestrictions => "end_feature_invalid_restrictions",
+            Self::InvalidVariationMemberKind => "invalid_variation_member_kind",
+            Self::RedefinitionFeaturingTypeIncompatible => {
+                "redefinition_featuring_type_incompatible"
+            }
+            Self::RedefinitionEndMismatch => "redefinition_end_mismatch",
+            Self::RedefinitionDirectionMismatch => "redefinition_direction_mismatch",
+            Self::SubsettingUniquenessMismatch => "subsetting_uniqueness_mismatch",
             Self::SingleTypeRelationshipOperand => "single_type_relationship_operand",
         }
     }

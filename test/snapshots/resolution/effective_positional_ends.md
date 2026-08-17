@@ -38,6 +38,12 @@ package Ends {
 (fixture-diagnostics
   (document "memory://snapshot/effective_positional_ends.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "incomplete_connection_like_end_pair")
+        (source "semantic")
+        (range (start 23 4) (end 25 5))
+      )
     )
   )
 )

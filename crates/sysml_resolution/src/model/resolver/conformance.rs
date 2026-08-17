@@ -242,6 +242,15 @@ fn parent(family: Family) -> Option<Family> {
     })
 }
 
+/// Whether `family` is an occurrence family: `Occurrence` itself or one specialising it.
+///
+/// SysML's flow payload rule is about occurrences, and the occurrence families are exactly those
+/// under `Occurrence` in the hierarchy above -- part, item, action, state, connection and the rest.
+/// Asking the hierarchy keeps the rule from naming a library type.
+pub(super) fn descends_from_occurrence(family: Family) -> bool {
+    descends_from(family, Family::Occurrence)
+}
+
 /// Whether `descendant` is `ancestor` or specialises it, transitively.
 fn descends_from(descendant: Family, ancestor: Family) -> bool {
     let mut cursor = Some(descendant);
@@ -269,7 +278,7 @@ fn descends_from(descendant: Family, ancestor: Family) -> bool {
 /// an `action def`, `port out1 : DataPort;` where `DataPort` is a `part def`, or `enum color :
 /// Color;` where `Color` is one. Those are the violations the rule exists to find, and they are
 /// exactly the pairs with no path between them.
-fn families_are_comparable(source: Family, target: Family) -> bool {
+pub(super) fn families_are_comparable(source: Family, target: Family) -> bool {
     descends_from(target, source) || descends_from(source, target)
 }
 
@@ -282,7 +291,7 @@ impl ResolvedSemanticModel {
     /// a structural placeholder, not the end's metaclass, and judging `end drivePwrPort :
     /// DrivePwrPort;` against the connection family's typing rule would report the lowering rather
     /// than the model. The end's own type is whatever it connects.
-    fn declaration_family(&self, declaration: DeclarationId) -> Option<(Family, Role)> {
+    pub(super) fn declaration_family(&self, declaration: DeclarationId) -> Option<(Family, Role)> {
         if self
             .storage
             .declaration_facts(declaration)
@@ -645,6 +654,36 @@ impl ResolvedSemanticModel {
             });
         }
         Ok(())
+    }
+
+    /// The authored-reference identity of one stored reference.
+    pub(super) fn reference_index(
+        &self,
+        reference: &AuthoredReference,
+    ) -> Result<AuthoredReferenceId, ResolutionError> {
+        let index = self
+            .storage
+            .references
+            .iter()
+            .position(|candidate| std::ptr::eq(candidate, reference))
+            .ok_or(ResolutionError::InvalidStorage)?;
+        AuthoredReferenceId::from_index(index).map_err(|_| ResolutionError::Capacity)
+    }
+
+    /// One diagnostic reported at a declaration's own range.
+    pub(super) fn declaration_diagnostic(
+        &self,
+        declaration: DeclarationId,
+        code: DiagnosticCode,
+        severity: DiagnosticSeverity,
+    ) -> Result<Diagnostic, ResolutionError> {
+        Ok(Diagnostic {
+            code,
+            severity,
+            origin: DiagnosticOrigin::Semantic,
+            location: self.declaration_location(declaration)?,
+            related: Box::default(),
+        })
     }
 
     /// One diagnostic reported at an authored reference, optionally pointing at what it resolved

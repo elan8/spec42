@@ -97,6 +97,18 @@ standard library package Ports {
       )
       (diagnostic
         (severity warning)
+        (code "subsetting_uniqueness_mismatch")
+        (source "semantic")
+        (range (start 29 69) (end 29 74))
+        (related-information
+          (related
+            (uri "memory://snapshot/ports.md")
+            (range (start 47 4) (end 52 5))
+          )
+        )
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 36 16) (end 36 41))

@@ -2301,6 +2301,18 @@ standard library package Occurrences {
       )
       (diagnostic
         (severity warning)
+        (code "redefinition_end_mismatch")
+        (source "semantic")
+        (range (start 755 74) (end 755 90))
+        (related-information
+          (related
+            (uri "memory://snapshot/occurrences.md")
+            (range (start 741 2) (end 741 72))
+          )
+        )
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 766 34) (end 766 59))

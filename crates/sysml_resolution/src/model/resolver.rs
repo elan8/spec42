@@ -24,6 +24,7 @@ use crate::{
 
 mod conformance;
 mod inspection;
+mod structural;
 mod types;
 pub(crate) mod writer;
 
@@ -1676,6 +1677,7 @@ impl ResolvedSemanticModel {
             }
 
             self.collect_conformance(document_id, &mut diagnostics)?;
+            self.collect_structural_conformance(document_id, &mut diagnostics)?;
 
             // Ordering is owned here so no consumer has to sort, and so the order cannot vary with
             // which storage collection a diagnostic happened to come from. The sort is stable, so

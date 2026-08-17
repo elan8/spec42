@@ -140,6 +140,18 @@ standard library package Links {
       )
       (diagnostic
         (severity warning)
+        (code "redefinition_end_mismatch")
+        (source "semantic")
+        (range (start 39 60) (end 39 66))
+        (related-information
+          (related
+            (uri "memory://snapshot/links.md")
+            (range (start 28 8) (end 28 60))
+          )
+        )
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 42 57) (end 42 63))
