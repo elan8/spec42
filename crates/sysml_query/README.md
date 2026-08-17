@@ -20,6 +20,17 @@ classifier-only one. The producers behind it are published at the barrier; the l
 `specializes_transitively`/`feature_typing_conforms` and their consumers migrate with the
 diagnostics and views slices.
 
+`PublishedModel::element_details()` answers everything about one element at once: its inspection,
+what each authored relationship family settled to, the types it has once inheritance is taken into
+account, the features it inherits and the type that declares each, its metadata bindings, both
+directions of its relationships with authored/implied provenance, and both evaluation channels.
+It exists because assembling that view from the individual services made each consumer decide how
+they relate to one another, and every consumer decided differently. A family's outcome is a closed
+`RelationshipOutcome`, so an empty target list never means both "nothing was authored" and "what
+was authored did not resolve", a partly resolved family cannot present as resolved, and an
+ambiguous one keeps every candidate without promoting one to a target. The LSP feature inspector is
+a projection of this and nothing else.
+
 `PublishedModel::evaluation()` answers one cohesive question per element: what its authored
 expression settled to, the unit tokens it wrote with their own ranges and outcomes, and the
 measurement reference its type requires. A unit is a declaration -- the `SI::kilogram` an authored
