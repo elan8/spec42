@@ -3622,13 +3622,17 @@ package P {
         "constraint def Counted { 1 + 2 } }",
     );
 
-    fn measurement_publication(schedule: ConstructionSchedule) -> String {
-        let published = build(
+    /// One publication of `workspace` against the measurement library above.
+    fn against_measurement_library(
+        workspace: &str,
+        schedule: ConstructionSchedule,
+    ) -> PublishedResolution {
+        build(
             BuildRequest::new(
                 vec![
                     SourceInput::new(
                         "memory://workspace.sysml",
-                        MEASUREMENT_WORKSPACE.to_string(),
+                        workspace.to_string(),
                         SourceKind::Workspace,
                     ),
                     SourceInput::new(
@@ -3642,8 +3646,47 @@ package P {
             )
             .expect("measurement request"),
         )
-        .expect("measurement build");
-        render_publication(&published)
+        .expect("measurement build")
+    }
+
+    fn measurement_publication(schedule: ConstructionSchedule) -> String {
+        render_publication(&against_measurement_library(
+            MEASUREMENT_WORKSPACE,
+            schedule,
+        ))
+    }
+
+    /// Whether an element is quantity-typed can only be answered against the library that declares
+    /// what a quantity value is. Without it the answer is unknown, and publishing "not a quantity"
+    /// would state as a fact about the model what is really a missing input -- silently ruling out
+    /// the unit rules rather than reporting that they could not be applied.
+    #[test]
+    fn a_missing_quantity_library_leaves_measurement_applicability_unavailable() {
+        let workspace = "package P { attribute plain = 1; }";
+        let published = publication_for(&[("memory://q.sysml", workspace)]);
+        let symbol = probe_symbol(&published, workspace, "memory://q.sysml", "plain");
+        let QueryOutcome::Resolved(evaluation) = published.evaluate(&symbol) else {
+            panic!("the probe must resolve");
+        };
+        assert_eq!(
+            evaluation.expected_measurement,
+            ExpectedMeasurement::Unavailable
+        );
+    }
+
+    /// With the library admitted, the same shape of element gets the affirmative answer.
+    #[test]
+    fn an_admitted_quantity_library_answers_a_non_quantity_element_affirmatively() {
+        let workspace = "package P { attribute plain : ScalarValues::Integer = 1; }";
+        let published = against_measurement_library(workspace, ConstructionSchedule::Sequential);
+        let symbol = probe_symbol(&published, workspace, "memory://workspace.sysml", "plain");
+        let QueryOutcome::Resolved(evaluation) = published.evaluate(&symbol) else {
+            panic!("the probe must resolve");
+        };
+        assert_eq!(
+            evaluation.expected_measurement,
+            ExpectedMeasurement::NotApplicable
+        );
     }
 
     fn render_publication(published: &PublishedResolution) -> String {

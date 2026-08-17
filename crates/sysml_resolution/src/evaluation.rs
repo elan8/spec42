@@ -214,7 +214,16 @@ pub struct ElementEvaluation {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ExpectedMeasurement {
     /// The element is not typed by a quantity value, so no measurement reference is required.
+    ///
+    /// An affirmative answer: this publication admits the library that says what a quantity value
+    /// is, and this element is not one. [`ExpectedMeasurement::Unavailable`] is the case where
+    /// that prerequisite is missing, and the two must not be confused -- suppressing a unit rule
+    /// because a fact was ruled out is not the same as suppressing it because it was never
+    /// decidable.
     NotApplicable,
+    /// No admitted library declares what a quantity value is, so whether this element is one is
+    /// unknown.
+    Unavailable,
     /// The element is typed by a quantity value whose measurement reference is not settled: the
     /// type resolved but its measurement-reference feature has no type this publication can read.
     Indeterminate,

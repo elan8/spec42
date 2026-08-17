@@ -1534,10 +1534,11 @@ mod tests {
             None,
         )
         .unwrap();
-        let SettledEvaluation {
-            facts: evaluation,
-            filters: filter_conditions,
-        } = compute_evaluation(&storage, &resolution, EvaluationPolicy::Evaluate);
+        let (evaluation, filter_conditions) =
+            match compute_evaluation(&storage, &resolution, EvaluationPolicy::Evaluate) {
+                SettledEvaluation::Settled { facts, filters } => (facts, Some(filters)),
+                SettledEvaluation::Vacuous => (Box::default(), None),
+            };
         let identities = IdentityIndex::build(&storage).unwrap();
         let documents = DocumentIndex::build(&storage).unwrap();
         let reverse_references =
@@ -1573,7 +1574,7 @@ mod tests {
                 has_evaluation: false,
             },
         };
-        model.expressions = expression::ExpressionIndex::build(&model, &filter_conditions).unwrap();
+        model.expressions = expression::ExpressionIndex::build(&model, filter_conditions).unwrap();
         model.diagnostics = model.derive_diagnostics().unwrap();
         let mut output = String::new();
         model

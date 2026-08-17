@@ -1003,7 +1003,7 @@ fn compute_evaluation(
             ExpressionEvalShape::Unsupported => EvaluationState::Unsupported,
             _ => EvaluationState::NotRun,
         };
-        return SettledEvaluation {
+        return SettledEvaluation::Settled {
             facts: storage
                 .evaluation_facts
                 .iter()
@@ -1012,17 +1012,11 @@ fn compute_evaluation(
                     state: skipped(&pending.shape),
                 })
                 .collect(),
-            filters: storage
-                .filter_conditions
-                .iter()
-                .map(|condition| SettledFilterCondition {
-                    state: skipped(&condition.shape),
-                })
-                .collect(),
+            filters: settled_filters(storage, |condition| skipped(&condition.shape)),
         };
     }
     if resolution.solver_status != SolverStatus::Converged {
-        return SettledEvaluation::default();
+        return SettledEvaluation::Vacuous;
     }
 
     // operand_targets[declaration][ordinal] = the ExpressionOperand reference's resolved target,
@@ -1137,38 +1131,59 @@ fn compute_evaluation(
     // Filter conditions settle after the declaration fixed point, against its result. They are
     // read-only consumers of it: a condition defines no declaration's value, so nothing can depend
     // on one, and folding them here cannot change what any declaration evaluated to.
-    let filters = storage
-        .filter_conditions
-        .iter()
-        .map(|condition| SettledFilterCondition {
-            state: fold_settled_expression(
-                &condition.shape,
-                condition.owner,
-                &operand_targets,
-                &outcomes,
-            ),
-        })
-        .collect();
+    let filters = settled_filters(storage, |condition| {
+        fold_settled_expression(
+            &condition.shape,
+            condition.owner,
+            &operand_targets,
+            &outcomes,
+        )
+    });
 
-    SettledEvaluation {
+    SettledEvaluation::Settled {
         facts: facts.into_boxed_slice(),
         filters,
     }
 }
 
-/// Everything the evaluation pass settled: one outcome per declaration expression, and one per
-/// authored `filter` condition, in the storage order of the facts they were classified from.
-#[derive(Debug, Default)]
-struct SettledEvaluation {
-    facts: Box<[EvaluationFact]>,
-    /// Parallel to `SemanticModelStorage::filter_conditions`, so a condition's authored facts and
-    /// its settled state are read together without a second key.
-    filters: Box<[SettledFilterCondition]>,
+/// One settled record per authored `filter` condition, carrying its authored facts alongside the
+/// state `state_of` decides for it.
+///
+/// The authored half is copied here rather than left to a later join: a state array parallel to
+/// `SemanticModelStorage::filter_conditions` was a second invariant to keep, and the one branch
+/// that could not produce a state for every condition broke it by publishing none.
+fn settled_filters(
+    storage: &SemanticModelStorage,
+    mut state_of: impl FnMut(&AuthoredFilterCondition) -> EvaluationState,
+) -> Box<[expression::SettledFilter]> {
+    storage
+        .filter_conditions
+        .iter()
+        .map(|condition| expression::SettledFilter {
+            owner: condition.owner,
+            document: condition.document,
+            form: condition.form,
+            span: condition.span.clone(),
+            state: state_of(condition),
+        })
+        .collect()
 }
 
-#[derive(Debug, Clone, PartialEq)]
-struct SettledFilterCondition {
-    state: EvaluationState,
+/// Everything the evaluation pass settled.
+///
+/// Two states, not one with empty collections. A publication whose resolution did not converge has
+/// no stable outcomes to evaluate against, so it settles nothing at all -- which is a different
+/// fact from settling that nothing has a value, and the completeness the publication carries is
+/// where a consumer reads it.
+#[derive(Debug)]
+enum SettledEvaluation {
+    /// One outcome per classified declaration expression, and one per authored filter condition.
+    Settled {
+        facts: Box<[EvaluationFact]>,
+        filters: Box<[expression::SettledFilter]>,
+    },
+    /// Resolution did not converge, so no expression was evaluated.
+    Vacuous,
 }
 
 /// Folds one already-classified expression against the constants a settled publication holds.
@@ -2967,10 +2982,11 @@ impl SemanticModelStorage {
         } else {
             PublicationCompleteness::Complete
         };
-        let SettledEvaluation {
-            facts: evaluation,
-            filters: filter_conditions,
-        } = compute_evaluation(&self, &resolution, policy);
+        let settled = compute_evaluation(&self, &resolution, policy);
+        let (evaluation, filter_conditions) = match settled {
+            SettledEvaluation::Settled { facts, filters } => (facts, Some(filters)),
+            SettledEvaluation::Vacuous => (Box::default(), None),
+        };
         let has_evaluation = !evaluation.is_empty();
         let identities = IdentityIndex::build(&self)?;
         let documents = DocumentIndex::build(&self)?;
@@ -3011,7 +3027,7 @@ impl SemanticModelStorage {
         };
         // Expression facts read the type closure and the settled evaluation, so they are assembled
         // once the model holds both, and before diagnostics, which report what they settled.
-        model.expressions = expression::ExpressionIndex::build(&model, &filter_conditions)?;
+        model.expressions = expression::ExpressionIndex::build(&model, filter_conditions)?;
         // Last barrier product: diagnostics report what every earlier phase settled, so they are
         // derived from the assembled model rather than from any one phase's intermediate state.
         model.diagnostics = model.derive_diagnostics()?;
@@ -4861,6 +4877,87 @@ mod tests {
             kind,
             span: Span::dummy(),
         }
+    }
+
+    /// A storage holding nothing but one authored `filter` condition.
+    ///
+    /// Enough for the evaluation pass, which reads the condition table, the evaluation candidates
+    /// and the references, and nothing else.
+    fn storage_with_one_filter() -> SemanticModelStorage {
+        SemanticModelStorage {
+            documents: Box::new([]),
+            declarations: Box::new([]),
+            declaration_facts: Box::new([]),
+            memberships: Box::new([]),
+            references: Box::new([]),
+            documentation: Box::new([]),
+            feature_values: Box::new([]),
+            unsupported: Box::new([]),
+            recovery: Box::new([]),
+            symbols: SymbolTableBuilder::default().freeze(),
+            paths: SymbolPathArenaBuilder::default().freeze(),
+            evaluation_facts: Box::new([]),
+            unit_tokens: Box::new([]),
+            filter_conditions: Box::new([AuthoredFilterCondition {
+                owner: DeclarationId(0),
+                document: DocumentId(0),
+                form: FilterForm::View,
+                span: Span::dummy(),
+                shape: ExpressionEvalShape::Literal(EvaluatedValue::Integer(5)),
+            }]),
+            invocations: Box::new([]),
+        }
+    }
+
+    fn resolution_with_status(status: SolverStatus) -> ResolutionResults {
+        ResolutionResults {
+            outcomes: Box::new([]),
+            ambiguous_candidates: Box::new([]),
+            inherited_names: NameIndex::build(Vec::new()).unwrap(),
+            solver_status: status,
+            implied_relationships: Box::new([]),
+            work: ResolutionWork::default(),
+        }
+    }
+
+    /// A converged publication settles every authored condition.
+    #[test]
+    fn every_authored_filter_condition_settles_when_resolution_converges() {
+        let storage = storage_with_one_filter();
+        let settled = compute_evaluation(
+            &storage,
+            &resolution_with_status(SolverStatus::Converged),
+            EvaluationPolicy::Evaluate,
+        );
+        let SettledEvaluation::Settled { filters, .. } = settled else {
+            panic!("a converged publication settles its filter conditions");
+        };
+        assert_eq!(filters.len(), storage.filter_conditions.len());
+        assert_eq!(
+            filters[0].state,
+            EvaluationState::Literal(crate::evaluation::EvaluatedScalar::Integer(5))
+        );
+    }
+
+    /// A publication whose resolution did not converge has no outcomes to publish, and saying so
+    /// is not the same as failing to build.
+    ///
+    /// The evaluation pass and the filter table used to be joined by index, so the branch that
+    /// could not produce an outcome per condition published none and the join rejected the whole
+    /// publication -- turning an explicitly supported incomplete state into a construction error
+    /// for any model that authored a `filter`.
+    #[test]
+    fn a_non_converged_publication_settles_nothing_rather_than_failing() {
+        let storage = storage_with_one_filter();
+        let settled = compute_evaluation(
+            &storage,
+            &resolution_with_status(SolverStatus::NonConverged),
+            EvaluationPolicy::Evaluate,
+        );
+        assert!(
+            matches!(settled, SettledEvaluation::Vacuous),
+            "a non-converged publication must settle no expression outcome"
+        );
     }
 
     fn reference(

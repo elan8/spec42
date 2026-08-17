@@ -246,9 +246,14 @@ pub(crate) struct ExpressionIndex {
 }
 
 impl ExpressionIndex {
+    /// Assembles the settled expression facts of one publication.
+    ///
+    /// `filters` is `None` when resolution did not converge: nothing was evaluated, so no filter
+    /// condition has an outcome to publish. The authored conditions are still in storage; what is
+    /// absent is any claim about what they evaluate to.
     pub(super) fn build(
         model: &ResolvedSemanticModel,
-        filter_states: &[SettledFilterCondition],
+        filters: Option<Box<[SettledFilter]>>,
     ) -> Result<Self, ResolutionError> {
         let storage = &model.storage;
         let count = storage.declarations.len();
@@ -294,24 +299,6 @@ impl ExpressionIndex {
             required.push(measurements.required_for(model, id));
         }
 
-        // The parallel arrays are produced by one pass over one table, so a length mismatch means
-        // the evaluation pass and the lowering disagree about how many conditions exist.
-        if filter_states.len() != storage.filter_conditions.len() {
-            return Err(ResolutionError::InvalidStorage);
-        }
-        let filters = storage
-            .filter_conditions
-            .iter()
-            .zip(filter_states)
-            .map(|(condition, settled)| SettledFilter {
-                owner: condition.owner,
-                document: condition.document,
-                form: condition.form,
-                span: condition.span.clone(),
-                state: settled.state.clone(),
-            })
-            .collect();
-
         let mut invocations = Vec::new();
         let parameters = bindable_parameter_counts(storage)?;
         for invocation in storage.invocations.iter() {
@@ -335,7 +322,7 @@ impl ExpressionIndex {
             units: units.into_boxed_slice(),
             unit_ranges: unit_ranges.into_boxed_slice(),
             required: required.into_boxed_slice(),
-            filters,
+            filters: filters.unwrap_or_default(),
             invocations: invocations.into_boxed_slice(),
         })
     }
@@ -354,6 +341,15 @@ impl ExpressionIndex {
             .unwrap_or_default();
         record_visited_index_entries(units.len().saturating_add(1));
         units
+    }
+
+    /// Whether this publication admits the library that declares what a quantity value is.
+    ///
+    /// Without it, [`ExpressionIndex::required_measurement`] answers `NotApplicable` for every
+    /// declaration because it has nothing to compare a type against -- which is the absence of an
+    /// input, not a decision about the model, and the published contract says so separately.
+    pub(super) fn admits_quantity_values(&self) -> bool {
+        self.anchors.quantity_value.is_some()
     }
 
     pub(super) fn required_measurement(&self, declaration: DeclarationId) -> &RequiredMeasurement {
@@ -577,6 +573,11 @@ fn owner_path_matches_suffix(
 /// accepts -- `kg`, `SI::s`, and the quoted form `'in'` -- and rejects everything else, which is
 /// then published as an unsupported unit expression rather than silently resolved to whichever
 /// unit some prefix of it happens to name.
+///
+/// Quoting is decided per segment, not for the token. `'SI'::m/s` quotes only its first segment,
+/// and treating the whole token as quoted would accept `m/s` as an ordinary name and then report
+/// it as an unknown *symbol* -- a claim about the catalog, when the truth is that this layer
+/// cannot decode the token.
 fn unit_symbol_path(text: &str) -> Option<Vec<&str>> {
     let text = text.trim();
     if text.is_empty() {
@@ -585,22 +586,26 @@ fn unit_symbol_path(text: &str) -> Option<Vec<&str>> {
     let mut segments = Vec::new();
     for segment in text.split("::") {
         let segment = segment.trim();
-        let segment = match segment.strip_prefix('\'') {
-            Some(quoted) => quoted.strip_suffix('\'')?,
-            None => segment,
-        };
-        if segment.is_empty() {
-            return None;
+        match segment.strip_prefix('\'') {
+            // A quoted name is delimited by the quotes and may not contain one, so an unterminated
+            // or re-quoted segment spells no name. A token whose quoted segment itself contains
+            // `::` is split by it here and fails on the resulting halves, which is the honest
+            // answer: recovering it would need a scanner the parser has not given us.
+            Some(quoted) => match quoted.strip_suffix('\'') {
+                Some(inner) if !inner.is_empty() && !inner.contains('\'') => segments.push(inner),
+                _ => return None,
+            },
+            None => {
+                if segment.is_empty()
+                    || !segment
+                        .chars()
+                        .all(|character| character.is_alphanumeric() || character == '_')
+                {
+                    return None;
+                }
+                segments.push(segment);
+            }
         }
-        // A quoted name may contain anything but a quote; an unquoted one is an identifier.
-        if !text.contains('\'')
-            && !segment
-                .chars()
-                .all(|character| character.is_alphanumeric() || character == '_')
-        {
-            return None;
-        }
-        segments.push(segment);
     }
     Some(segments)
 }
@@ -816,7 +821,16 @@ impl ResolvedSemanticModel {
         }
     }
 
+    /// What one declaration's type requires of its values, as the published contract states it.
+    ///
+    /// Whether an element is quantity-typed can only be answered against the library that declares
+    /// what a quantity value is. That is a property of the publication, not of the element, so it
+    /// is applied here rather than stored once per declaration: with the anchor missing every
+    /// element's answer is the same, and it is "unknown", not "no".
     fn published_measurement(&self, declaration: DeclarationId) -> ExpectedMeasurement {
+        if !self.expressions.admits_quantity_values() {
+            return ExpectedMeasurement::Unavailable;
+        }
         match self.expressions.required_measurement(declaration) {
             RequiredMeasurement::NotApplicable => ExpectedMeasurement::NotApplicable,
             RequiredMeasurement::Indeterminate => ExpectedMeasurement::Indeterminate,
@@ -824,5 +838,41 @@ impl ResolvedSemanticModel {
                 ExpectedMeasurement::Required(self.symbols(dimensions.iter().copied()))
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::unit_symbol_path;
+
+    /// A plain identifier and a qualified path are names; both reach the catalog.
+    #[test]
+    fn a_name_decodes_to_its_segments() {
+        assert_eq!(unit_symbol_path("kg"), Some(vec!["kg"]));
+        assert_eq!(unit_symbol_path(" SI :: s "), Some(vec!["SI", "s"]));
+        assert_eq!(unit_symbol_path("'in'"), Some(vec!["in"]));
+        assert_eq!(unit_symbol_path("'SI'::'in'"), Some(vec!["SI", "in"]));
+    }
+
+    /// Quoting one segment must not excuse the others.
+    ///
+    /// `'SI'::m/s` used to be accepted whole -- the quote guard was asked of the token rather than
+    /// of each segment -- so `m/s` became a name, and the token was reported as an unknown unit
+    /// symbol. That is a claim about the catalog; the truth is that this layer cannot decode it.
+    #[test]
+    fn a_quoted_segment_does_not_excuse_an_operator_in_another() {
+        assert_eq!(unit_symbol_path("'SI'::m/s"), None);
+        assert_eq!(unit_symbol_path("SI::m/s"), None);
+        assert_eq!(unit_symbol_path("m/s^2"), None);
+    }
+
+    /// A quoted name is delimited by its quotes and may not contain one.
+    #[test]
+    fn a_malformed_quoted_segment_spells_no_name() {
+        assert_eq!(unit_symbol_path("'in"), None);
+        assert_eq!(unit_symbol_path("'i'n'"), None);
+        assert_eq!(unit_symbol_path("''"), None);
+        assert_eq!(unit_symbol_path("SI::"), None);
+        assert_eq!(unit_symbol_path("   "), None);
     }
 }
