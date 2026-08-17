@@ -31,6 +31,13 @@
 //! catalog; one that is not is published as
 //! [`UnitResolution::UnsupportedExpression`](crate::UnitResolution::UnsupportedExpression). This
 //! layer does not reimplement a unit-expression grammar over text the parser declined to model.
+//!
+//! The same gap decides the catalog's scope. An ordinary reference resolves through the scopes
+//! visible where it was written; a unit token is not a reference, carries no scope, and cannot be
+//! resolved through the import machinery without the parser first modelling it as one. The catalog
+//! is therefore publication-wide: a token names the units the whole publication declares, and a
+//! symbol two of them answer to is reported as ambiguous rather than decided by proximity. That is
+//! visible behaviour, not an accident -- see `test/snapshots/resolution/ambiguous_unit_symbol.md`.
 
 use super::*;
 use crate::evaluation::EvaluatedScalar;
