@@ -163,6 +163,12 @@ pub enum DiagnosticCode {
     NonConvergedResolution,
     AmbiguousImportTarget,
     AmbiguousReference,
+
+    /// A type owns exactly one `unions`, `intersects` or `differences` operand.
+    ///
+    /// KerML requires zero or at least two: a union, intersection or difference of one type is
+    /// that type, so a single operand states a generalization the author did not write.
+    SingleTypeRelationshipOperand,
 }
 
 impl DiagnosticCode {
@@ -214,6 +220,7 @@ impl DiagnosticCode {
             Self::NonConvergedResolution => "non_converged_resolution",
             Self::AmbiguousImportTarget => "ambiguous_import_target",
             Self::AmbiguousReference => "ambiguous_reference",
+            Self::SingleTypeRelationshipOperand => "single_type_relationship_operand",
         }
     }
 }

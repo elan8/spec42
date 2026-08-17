@@ -39,8 +39,9 @@ use sysml_v2_parser_next::{
         ItemDef, ItemUsage as ParserItemUsage, KermlBindingMember, KermlClassifierDecl,
         KermlClassifierKeyword, KermlConnectorEnd, KermlConnectorMember, KermlEndMember,
         KermlFeatureKind, KermlFeatureMember, KermlInvariantMember, KermlSuccessionMember,
-        LibraryPackage, Membership, MembershipKind as ParserMembershipKind, MetadataAnnotation,
-        MetadataDef, MetadataUsage as ParserMetadataUsage, Multiplicity, NamespaceDecl, Node,
+        KermlTypeRelationship, KermlTypeRelationshipKeyword, LibraryPackage, Membership,
+        MembershipKind as ParserMembershipKind, MetadataAnnotation, MetadataDef,
+        MetadataUsage as ParserMetadataUsage, Multiplicity, NamespaceDecl, Node,
         OccurrenceBodyElement, OccurrenceDef, OccurrencePortionKind as ParserOccurrencePortionKind,
         OccurrenceUsage as ParserOccurrenceUsage, OccurrenceUsageBody, Package, PackageBody,
         PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement, PartUsage, PartUsageBody,
@@ -926,6 +927,29 @@ pub(crate) enum ReferenceKind {
     References,
     Crosses,
     Intersects,
+    /// One target of a KerML `unions` header clause (`ast::KermlTypeRelationship` with
+    /// `KermlTypeRelationshipKeyword::Unions`). KerML `Unioning`, a direct kind of `Relationship`
+    /// -- *not* of `Specialization` -- relating `typeUnioned` (the owning type) to `unioningType`
+    /// (this target). One reference per authored target: `classifier U unions A, B;` publishes two,
+    /// whose ordinals preserve authored order across repeated clauses.
+    Unioning,
+    /// One target of a KerML `intersects` header clause. KerML `Intersecting`, relating
+    /// `typeIntersected` to `intersectingType`.
+    ///
+    /// Distinct from [`ReferenceKind::Intersects`], which is the *feature*-level `intersects`
+    /// operand of a subsetting-family clause (`ast::SubsettingKind::Intersects`). The two are
+    /// different productions with different owners and are kept apart rather than merged.
+    Intersecting,
+    /// One target of a KerML `differences` header clause. KerML `Differencing`, relating
+    /// `typeDifferenced` to `differencingType`.
+    ///
+    /// Ordinal order is semantically load-bearing here in a way it is not for the other three: the
+    /// owning type classifies what the *first* target classifies, excluding everything the rest
+    /// classify, and a later `differences` clause continues that exclusion list.
+    Differencing,
+    /// One target of a KerML `disjoint from` header clause. KerML `Disjoining`, relating
+    /// `typeDisjoined` to `disjoiningType`.
+    Disjoining,
     /// The authored target of an `alias X for Y;` member (`AliasDef::target`), resolved through
     /// the same lexical lookup fixed point as every other authored reference kind. Named
     /// `AliasBinding` to match planning/RESOLUTION_LAYER_DESIGN.md's "alias binding" vocabulary (section
@@ -5059,6 +5083,58 @@ impl SemanticModelBuilder {
     /// `lower_attribute_body`. `is_abstract`/`is_all`/`multiplicity`/`type_relationships` and the
     /// specific `KermlClassifierKeyword` spelling are not modeled as distinct facts here (see
     /// `DeclarationKind::KermlClassifier`).
+    /// Lowers the KerML type-relationship clauses on a classifier or feature header --
+    /// `unions`, `intersects`, `differences`, `disjoint from` (BNF `TypeRelationshipPart`).
+    ///
+    /// KerML models these as four distinct metaclasses, each a direct kind of `Relationship` and
+    /// none of them a kind of `Specialization`: `Unioning` relates `typeUnioned` to `unioningType`,
+    /// and `Intersecting`, `Differencing` and `Disjoining` follow the same source-to-target shape.
+    /// They are therefore lowered as their own reference kinds rather than folded into the
+    /// specialization edges, which would state a generalization the author did not write and would
+    /// put union operands into `supertypes`.
+    ///
+    /// One reference per authored target, in authored order across clauses. The per-`(source,
+    /// kind)` ordinal is what carries that order, and it is load-bearing for `differences`, whose
+    /// first target is the type being reduced and whose remaining targets are the exclusions --
+    /// including across a second `differences` clause, which continues the same list.
+    ///
+    /// Shared by the classifier and feature owners so the two cannot drift; the parser gives both
+    /// the same `Vec<Node<KermlTypeRelationship>>`.
+    fn lower_kerml_type_relationships(
+        &mut self,
+        document: DocumentId,
+        source: DeclarationId,
+        relationships: &[Node<KermlTypeRelationship>],
+    ) -> Result<(), ConstructionError> {
+        for relationship in relationships {
+            let kind = match relationship.value.keyword {
+                KermlTypeRelationshipKeyword::Unions => ReferenceKind::Unioning,
+                KermlTypeRelationshipKeyword::Intersects => ReferenceKind::Intersecting,
+                KermlTypeRelationshipKeyword::Differences => ReferenceKind::Differencing,
+                KermlTypeRelationshipKeyword::DisjointFrom => ReferenceKind::Disjoining,
+            };
+            for target in relationship.value.targets.iter().copied() {
+                let span = self.documents[document.index()]
+                    .parsed
+                    .qualified_reference(target)
+                    .ok_or(ConstructionError::InvalidParserReference)?
+                    .metadata
+                    .span
+                    .clone();
+                self.push_reference(PendingReference {
+                    source,
+                    kind,
+                    document,
+                    local: target,
+                    flags: RelationshipFlags::default(),
+                    span,
+                    import: None,
+                })?;
+            }
+        }
+        Ok(())
+    }
+
     fn lower_kerml_classifier_decl(
         &mut self,
         document: DocumentId,
@@ -5103,6 +5179,7 @@ impl SemanticModelBuilder {
         if let Some(relationship) = &node.value.specializes {
             self.lower_typing_relationship(document, declaration, relationship)?;
         }
+        self.lower_kerml_type_relationships(document, declaration, &node.value.type_relationships)?;
         self.lower_calc_def_body(document, declaration, &node.value.body)
     }
 
@@ -5164,6 +5241,7 @@ impl SemanticModelBuilder {
         if let Some(relationship) = &node.value.redefines {
             self.lower_subsetting_relationship(document, declaration, relationship)?;
         }
+        self.lower_kerml_type_relationships(document, declaration, &node.value.type_relationships)?;
         if let Some(feature_value) = &node.value.value {
             self.record_feature_value(declaration, feature_value)?;
             let expression = feature_value.value.expression.clone();

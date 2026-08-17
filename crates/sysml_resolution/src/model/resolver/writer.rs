@@ -60,12 +60,14 @@ fn write_types(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fm
         let effective_types =
             canonical_targets(model, model.types.effective_types(declaration).to_vec());
         let featuring = model.types.featuring_type(declaration);
+        let set_operands = model.types.set_operands(declaration);
         if !cyclic
             && supertypes.is_empty()
             && direct_types.is_empty()
             && subtypes.is_empty()
             && effective_types.is_empty()
             && featuring.is_none()
+            && set_operands.is_empty()
         {
             continue;
         }
@@ -97,6 +99,18 @@ fn write_types(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fm
                     write!(output, ")")?;
                 }
             }
+            writeln!(output, ")")?;
+        }
+        // Authored order, not the canonical target order the other rows use: `differences` reads
+        // its first operand as the type being reduced and the rest as exclusions, so sorting these
+        // by target would destroy the fact. The row is already in ordinal order.
+        for (ordinal, operator, target) in set_operands {
+            write!(
+                output,
+                "      (set-operand (operator {}) (ordinal {ordinal}) ",
+                set_operator_name(*operator),
+            )?;
+            write_node_identity(model, *target, output)?;
             writeln!(output, ")")?;
         }
         for (ancestor, scopes) in supertypes {
@@ -150,6 +164,15 @@ fn fact_provenance(provenance: types::FactProvenance) -> &'static str {
     match provenance {
         types::FactProvenance::Authored => "authored",
         types::FactProvenance::Implied => "implied",
+    }
+}
+
+fn set_operator_name(operator: types::SetOperator) -> &'static str {
+    match operator {
+        types::SetOperator::Union => "union",
+        types::SetOperator::Intersection => "intersection",
+        types::SetOperator::Difference => "difference",
+        types::SetOperator::Disjoint => "disjoint",
     }
 }
 
@@ -1196,6 +1219,10 @@ pub(crate) fn reference_kind(kind: ReferenceKind) -> &'static str {
         ReferenceKind::References => "referenceSubsetting",
         ReferenceKind::Crosses => "crossSubsetting",
         ReferenceKind::Intersects => "intersects",
+        ReferenceKind::Unioning => "unioning",
+        ReferenceKind::Intersecting => "intersecting",
+        ReferenceKind::Differencing => "differencing",
+        ReferenceKind::Disjoining => "disjoining",
         ReferenceKind::AliasBinding => "aliasBinding",
         ReferenceKind::ConnectorEnd => "connectorEnd",
         ReferenceKind::Succession => "succession",
@@ -1254,6 +1281,10 @@ fn relationship_kind(kind: ReferenceKind) -> Option<&'static str> {
         ReferenceKind::References => Some("referenceSubsetting"),
         ReferenceKind::Crosses => Some("crossSubsetting"),
         ReferenceKind::Intersects => Some("intersects"),
+        ReferenceKind::Unioning => Some("unioning"),
+        ReferenceKind::Intersecting => Some("intersecting"),
+        ReferenceKind::Differencing => Some("differencing"),
+        ReferenceKind::Disjoining => Some("disjoining"),
         ReferenceKind::AliasBinding => Some("aliasBinding"),
         ReferenceKind::ConnectorEnd => Some("connectorEnd"),
         ReferenceKind::Succession => Some("succession"),
