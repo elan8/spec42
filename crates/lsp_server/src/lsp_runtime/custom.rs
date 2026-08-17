@@ -228,33 +228,37 @@ pub(crate) fn mark_sysml_model_parse_cached(state: &mut impl DocumentStore, uri:
     }
 }
 
+/// Builds the `sysml/featureInspector` answer for one position.
+///
+/// Every semantic field comes from `PublishedModel::element_details_at`. What stays here is
+/// lexical: which token the cursor is on, whether it is a reserved keyword, and whether it is the
+/// unit suffix of a value. Those are source-fidelity questions the publication does not answer and
+/// deliberately does not own.
 pub(crate) fn sysml_feature_inspector_result(
     state: &ServerState,
     params: serde_json::Value,
 ) -> Result<dto::SysmlFeatureInspectorResultDto> {
-    use language_service::WorkspaceSnapshot;
-
     let (uri, position) = crate::views::parse_sysml_feature_inspector_params(&params)?;
     let Some(entry) = state.index.get(&uri) else {
         return Ok(crate::views::empty_feature_inspector_response(
             &uri, position,
         ));
     };
-    if entry.parsed.is_none() {
+    let Some(model) = state.published_model.as_deref() else {
         return Ok(crate::views::empty_feature_inspector_response(
             &uri, position,
         ));
-    }
-    let mut response =
-        crate::views::build_sysml_feature_inspector_response(&state.semantic_graph, &uri, position);
-    let snapshot = crate::workspace::snapshot::ServerStateSnapshot::new(state, false);
-    let core_position = crate::common::text_span::to_core_position(position);
-    let Some(text) = snapshot.document_text(&uri) else {
-        return Ok(response);
     };
+    let text = entry.content.clone();
+    let mut response = crate::views::build_sysml_feature_inspector_response(
+        model,
+        &uri,
+        position,
+        Some(text.as_str()),
+    );
 
     if let Some((unit, range)) = language_service::unit_value_suffix_selection_at_position(
-        text,
+        &text,
         position.line,
         position.character,
     ) {
@@ -267,7 +271,7 @@ pub(crate) fn sysml_feature_inspector_result(
     }
 
     let Some((line, start, end, word)) =
-        language_service::word_at_position(text, position.line, position.character)
+        language_service::word_at_position(&text, position.line, position.character)
     else {
         return Ok(response);
     };
@@ -296,59 +300,27 @@ pub(crate) fn sysml_feature_inspector_result(
         return Ok(response);
     }
 
-    let containing_node = state
-        .semantic_graph
-        .find_deepest_node_at_position(&uri, core_position)
-        .filter(|node| node.id.uri == uri);
-    if let Some(target) = language_service::references::resolve_symbol_target_at_position(
-        &snapshot,
-        &uri,
-        core_position,
-    ) {
-        let target_uri = snapshot.resolve_uri_for_path(&target.definition_location.path);
-        let target_node = target_uri.as_ref().and_then(|target_uri| {
-            state
-                .semantic_graph
-                .nodes_for_uri(target_uri)
-                .into_iter()
-                .find(|node| {
-                    let node_start = (node.range.start.line, node.range.start.character);
-                    let node_end = (node.range.end.line, node.range.end.character);
-                    let identifier_start = (
-                        target.definition_location.range.start.line,
-                        target.definition_location.range.start.character,
-                    );
-                    let identifier_end = (
-                        target.definition_location.range.end.line,
-                        target.definition_location.range.end.character,
-                    );
-                    node.name == target.name
-                        && node_start <= identifier_start
-                        && identifier_end <= node_end
-                })
-        });
-        let is_containing_element_name = containing_node
-            .zip(target_node)
-            .map(|(node, target_node)| node.id == target_node.id && node.name == word)
-            .unwrap_or(false);
-        if !is_containing_element_name {
-            if let Some(target_node) = target_node {
-                response.selection.kind = "reference".to_string();
-                response.selection.range = Some(range_to_dto(target.identifier_range));
-                response.referenced_element =
-                    Some(crate::views::feature_inspector::feature_inspector_element(
-                        &state.semantic_graph,
-                        target_node,
-                    ));
-                return Ok(response);
-            }
-        }
-    }
+    // The publication decides all three of these. A reference is a reference because the
+    // publication placed one at this position, not because a name lookup happened to succeed, and
+    // an unresolved or unsupported one is deliberately *not* a reference selection: the inspector
+    // has no target to show for it.
+    let at = crate::views::feature_inspector::details_at(model, &uri, position);
+    let on_reference = at.as_ref().is_some_and(|at| {
+        matches!(
+            at.referenced,
+            sysml_query::resolved_slice::ReferencedDetails::Resolved(_)
+                | sysml_query::resolved_slice::ReferencedDetails::Ambiguous(_)
+        )
+    });
+    let on_own_name = at.as_ref().is_some_and(|at| {
+        at.containing
+            .as_ref()
+            .is_some_and(|details| crate::views::feature_inspector::covers_name(details, position))
+    });
 
-    if containing_node
-        .map(|node| node.name == word || node.id.qualified_name == word)
-        .unwrap_or(false)
-    {
+    if on_reference {
+        response.selection.kind = "reference".to_string();
+    } else if on_own_name {
         response.selection.kind = "element".to_string();
     } else if word.parse::<f64>().is_ok() {
         response.selection.kind = "value".to_string();

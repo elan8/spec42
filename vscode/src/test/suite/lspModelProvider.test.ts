@@ -177,7 +177,9 @@ describe("LspModelProvider", () => {
               start: { line: 2, character: 2 },
               end: { line: 2, character: 20 },
             },
-            attributes: { doc: "The main drive motor." },
+            documentation: "The main drive motor.",
+            evaluation: { state: "notApplicable" },
+            analysis: { state: "notApplicable" },
             typing: { status: "resolved", targets: [] },
             specialization: { status: "notApplicable", targets: [] },
             incomingRelationships: [],
@@ -206,7 +208,7 @@ describe("LspModelProvider", () => {
     });
     assert.strictEqual(result.containingElement?.name, "motor");
     assert.strictEqual(
-      result.containingElement?.attributes.doc,
+      result.containingElement?.documentation,
       "The main drive motor."
     );
   });

@@ -1,93 +1,416 @@
 //! sysml/featureInspector request parsing and response building.
-
-use std::collections::{HashSet, VecDeque};
+//!
+//! A protocol adapter over one immutable publication. Every semantic fact it reports -- what an
+//! element is, what it declares, what those declarations resolved to, what it inherits and from
+//! where, and what its expression settled to -- is read from `PublishedModel::element_details`.
+//! Nothing here resolves a name, walks a hierarchy, infers a type or manufactures a status; the
+//! only thing it decides is how a settled fact is spelled on the wire.
 
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::{Position, Url};
 
-use crate::common::text_span::to_core_position;
 use crate::common::util;
-use crate::semantic::{RelationshipKind, SemanticGraph, SemanticNode};
 use crate::views::dto::{
-    SysmlFeatureInspectorElementDto, SysmlFeatureInspectorElementRefDto,
-    SysmlFeatureInspectorEvaluationDto, SysmlFeatureInspectorEvaluationStatusDto,
+    PositionDto, RangeDto, SysmlFeatureInspectorAnalysisDto, SysmlFeatureInspectorElementDto,
+    SysmlFeatureInspectorElementRefDto, SysmlFeatureInspectorEvaluationDto,
     SysmlFeatureInspectorInheritedFeatureDto, SysmlFeatureInspectorParamsDto,
-    SysmlFeatureInspectorRelationshipDto, SysmlFeatureInspectorResolutionDto,
-    SysmlFeatureInspectorResultDto, SysmlFeatureInspectorSelectionDto,
+    SysmlFeatureInspectorReferenceDto, SysmlFeatureInspectorRelationshipDto,
+    SysmlFeatureInspectorResolutionDto, SysmlFeatureInspectorResultDto,
+    SysmlFeatureInspectorSelectionDto,
 };
-use sysml_model::{range_to_dto, ElementKind, ExpressionEvaluationQuery, PositionDto};
+use sysml_query::resolved_slice::{
+    AnalysisEvaluation, AnnotationForm, ConnectedElement, ElementDetails, ElementDetailsAt,
+    ElementEvaluation, ElementKind, ElementModifier, EvaluatedScalar, EvaluationFailure,
+    EvaluationState, FeatureDirection, MultiplicityBound, MultiplicityFacts, PortionKind,
+    PublishedModel, QueryOutcome, ReferencedDetails, RelationshipFamily, RelationshipOutcome,
+    RelationshipProvenance, SymbolEntry, TextPosition, TextRange,
+};
 
-/// The inspector is a JSON transport boundary. Semantic evaluation keeps this closed scalar
-/// representation in `sysml_model`; conversion happens only while assembling this DTO.
-fn evaluated_value_to_json(value: &sysml_model::EvaluatedValue) -> serde_json::Value {
-    match value {
-        sysml_model::EvaluatedValue::Integer(value) => serde_json::Value::Number((*value).into()),
-        sysml_model::EvaluatedValue::Real(value) => serde_json::Number::from_f64(*value)
-            .map(serde_json::Value::Number)
-            // Preserve an invalid externally-constructed scalar visibly instead of presenting it
-            // as a successful JSON number. The evaluator itself only publishes finite values.
-            .unwrap_or_else(|| serde_json::Value::String(value.to_string())),
-        sysml_model::EvaluatedValue::Boolean(value) => serde_json::Value::Bool(*value),
-        sysml_model::EvaluatedValue::String(value) => serde_json::Value::String(value.clone()),
+/// The settled details a position identifies, whatever completeness they were published under.
+///
+/// A recovery or unsupported publication still answers; only a non-converged one has nothing to
+/// report, and that is an absent answer rather than an empty one.
+pub(crate) fn details_at(
+    model: &PublishedModel,
+    uri: &Url,
+    position: Position,
+) -> Option<ElementDetailsAt> {
+    match model.inspection().element_details_at(
+        uri.as_str(),
+        TextPosition {
+            line: position.line,
+            character: position.character,
+        },
+    ) {
+        QueryOutcome::Resolved(at)
+        | QueryOutcome::Recovered(at)
+        | QueryOutcome::UnsupportedWith(at) => Some(at),
+        _ => None,
     }
 }
 
-fn evaluation_status(
-    status: sysml_model::EvaluationStatus,
-) -> SysmlFeatureInspectorEvaluationStatusDto {
-    match status {
-        sysml_model::EvaluationStatus::Ok => SysmlFeatureInspectorEvaluationStatusDto::Ok,
-        sysml_model::EvaluationStatus::Unresolved => {
-            SysmlFeatureInspectorEvaluationStatusDto::Unresolved
-        }
-        sysml_model::EvaluationStatus::Ambiguous => {
-            SysmlFeatureInspectorEvaluationStatusDto::Ambiguous
-        }
-        sysml_model::EvaluationStatus::Malformed => {
-            SysmlFeatureInspectorEvaluationStatusDto::Malformed
-        }
-        sysml_model::EvaluationStatus::Incomplete => {
-            SysmlFeatureInspectorEvaluationStatusDto::Incomplete
-        }
-        sysml_model::EvaluationStatus::TypeError => {
-            SysmlFeatureInspectorEvaluationStatusDto::TypeError
-        }
-        sysml_model::EvaluationStatus::DivByZero => {
-            SysmlFeatureInspectorEvaluationStatusDto::DivByZero
-        }
-        sysml_model::EvaluationStatus::Unsupported => {
-            SysmlFeatureInspectorEvaluationStatusDto::Unsupported
-        }
-        sysml_model::EvaluationStatus::Cycle => SysmlFeatureInspectorEvaluationStatusDto::Cycle,
+fn range_dto(range: TextRange) -> RangeDto {
+    RangeDto {
+        start: PositionDto {
+            line: range.start.line,
+            character: range.start.character,
+        },
+        end: PositionDto {
+            line: range.end.line,
+            character: range.end.character,
+        },
     }
 }
 
-fn evaluation(
-    semantic_graph: &SemanticGraph,
-    node: &SemanticNode,
-) -> SysmlFeatureInspectorEvaluationDto {
-    match semantic_graph.expression_evaluation_for(node) {
-        ExpressionEvaluationQuery::NotRun => SysmlFeatureInspectorEvaluationDto::NotRun,
-        ExpressionEvaluationQuery::NotApplicable => {
-            SysmlFeatureInspectorEvaluationDto::NotApplicable
+fn element_ref(entry: &SymbolEntry) -> SysmlFeatureInspectorElementRefDto {
+    SysmlFeatureInspectorElementRefDto {
+        id: entry.identity.as_str().to_string(),
+        name: entry.name.as_deref().unwrap_or_default().to_string(),
+        qualified_name: entry.qualified_name.to_string(),
+        element_type: entry.kind.as_str().to_string(),
+        uri: entry.location.document.to_string(),
+        range: range_dto(entry.location.range),
+    }
+}
+
+/// The coarse role a client groups elements by.
+///
+/// A total match over the published kind vocabulary, so a kind added to the publication fails to
+/// compile here until someone decides which group it belongs to. That compile error is the point:
+/// a fall-through arm is how every new usage kind would silently become a "definition".
+fn semantic_role(kind: ElementKind) -> &'static str {
+    match kind {
+        ElementKind::Namespace | ElementKind::Package | ElementKind::LibraryPackage => "namespace",
+
+        ElementKind::PartDefinition
+        | ElementKind::AttributeDefinition
+        | ElementKind::EnumerationDefinition
+        | ElementKind::ItemDefinition
+        | ElementKind::PortDefinition
+        | ElementKind::OccurrenceDefinition
+        | ElementKind::IndividualDefinition
+        | ElementKind::ConnectionDefinition
+        | ElementKind::InterfaceDefinition
+        | ElementKind::AllocationDefinition
+        | ElementKind::FlowConnectionDefinition
+        | ElementKind::ActionDefinition
+        | ElementKind::StateDefinition
+        | ElementKind::CalculationDefinition
+        | ElementKind::ConstraintDefinition
+        | ElementKind::RequirementDefinition
+        | ElementKind::ConcernDefinition
+        | ElementKind::CaseDefinition
+        | ElementKind::AnalysisCaseDefinition
+        | ElementKind::VerificationCaseDefinition
+        | ElementKind::UseCaseDefinition
+        | ElementKind::ViewDefinition
+        | ElementKind::ViewpointDefinition
+        | ElementKind::RenderingDefinition
+        | ElementKind::MetadataDefinition
+        | ElementKind::Definition
+        | ElementKind::Type
+        | ElementKind::Classifier
+        | ElementKind::Class
+        | ElementKind::Structure
+        | ElementKind::Association
+        | ElementKind::AssociationStructure
+        | ElementKind::DataType
+        | ElementKind::Metaclass
+        | ElementKind::Behavior
+        | ElementKind::Function
+        | ElementKind::Predicate
+        | ElementKind::Interaction
+        | ElementKind::Multiplicity => "definition",
+
+        ElementKind::ConnectionUsage
+        | ElementKind::InterfaceUsage
+        | ElementKind::AllocationUsage
+        | ElementKind::FlowConnectionUsage
+        | ElementKind::SuccessionAsUsage
+        | ElementKind::SatisfyRequirementUsage
+        | ElementKind::BindingConnectorAsUsage
+        | ElementKind::Import
+        | ElementKind::Alias
+        | ElementKind::Dependency
+        | ElementKind::Connector
+        | ElementKind::BindingConnector => "relationship",
+
+        ElementKind::PartUsage
+        | ElementKind::AttributeUsage
+        | ElementKind::EnumerationUsage
+        | ElementKind::ItemUsage
+        | ElementKind::PortUsage
+        | ElementKind::OccurrenceUsage
+        | ElementKind::ActionUsage
+        | ElementKind::StateUsage
+        | ElementKind::CalculationUsage
+        | ElementKind::ConstraintUsage
+        | ElementKind::AssertConstraintUsage
+        | ElementKind::RequirementUsage
+        | ElementKind::ConcernUsage
+        | ElementKind::CaseUsage
+        | ElementKind::AnalysisCaseUsage
+        | ElementKind::VerificationCaseUsage
+        | ElementKind::UseCaseUsage
+        | ElementKind::ViewUsage
+        | ElementKind::ViewpointUsage
+        | ElementKind::RenderingUsage
+        | ElementKind::MetadataUsage
+        | ElementKind::ReferenceUsage
+        | ElementKind::PerformActionUsage
+        | ElementKind::TransitionUsage
+        | ElementKind::AssignmentActionUsage
+        | ElementKind::IfActionUsage
+        | ElementKind::WhileLoopActionUsage
+        | ElementKind::ForLoopActionUsage
+        | ElementKind::ForLoopVariable
+        | ElementKind::DecisionNode
+        | ElementKind::MergeNode
+        | ElementKind::ForkNode
+        | ElementKind::JoinNode
+        | ElementKind::FinalState
+        | ElementKind::Feature
+        | ElementKind::Step
+        | ElementKind::Expression
+        | ElementKind::BooleanExpression
+        | ElementKind::Invariant => "usage",
+    }
+}
+
+/// The wire spelling of a published relationship outcome.
+fn resolution_status(outcome: RelationshipOutcome) -> &'static str {
+    match outcome {
+        RelationshipOutcome::NotApplicable => "notApplicable",
+        RelationshipOutcome::Resolved => "resolved",
+        RelationshipOutcome::Partial => "partial",
+        RelationshipOutcome::Unresolved => "unresolved",
+        RelationshipOutcome::Ambiguous => "ambiguous",
+        RelationshipOutcome::Unsupported => "unsupported",
+    }
+}
+
+fn resolution(family: &RelationshipFamily) -> SysmlFeatureInspectorResolutionDto {
+    SysmlFeatureInspectorResolutionDto {
+        status: resolution_status(family.outcome).to_string(),
+        targets: family.targets.iter().map(element_ref).collect(),
+        candidates: family.candidates.iter().map(element_ref).collect(),
+    }
+}
+
+fn relationship(entry: &ConnectedElement) -> SysmlFeatureInspectorRelationshipDto {
+    SysmlFeatureInspectorRelationshipDto {
+        rel_type: entry.kind.to_string(),
+        peer: element_ref(&entry.peer),
+        provenance: match entry.provenance {
+            RelationshipProvenance::Authored => "authored",
+            RelationshipProvenance::Implied => "implied",
         }
-        ExpressionEvaluationQuery::Result(result) => {
-            let analysis = semantic_graph
-                .evaluation_facts_for(node)
-                .and_then(|facts| facts.analysis.as_ref());
-            SysmlFeatureInspectorEvaluationDto::Result {
-                status: evaluation_status(result.status),
-                value: result.value.as_ref().map(evaluated_value_to_json),
-                unit: result.unit.clone(),
-                error: result.error.clone(),
-                passed: analysis.and_then(|value| value.passed),
-                computed_value: analysis
-                    .and_then(|value| value.computed_value.as_ref())
-                    .map(evaluated_value_to_json),
-                computed_unit: analysis.and_then(|value| value.computed_unit.clone()),
+        .to_string(),
+    }
+}
+
+fn inherited_feature(
+    feature: &sysml_query::resolved_slice::InheritedFeature,
+) -> SysmlFeatureInspectorInheritedFeatureDto {
+    SysmlFeatureInspectorInheritedFeatureDto {
+        feature: element_ref(&feature.feature),
+        declared_in: element_ref(&feature.declared_in),
+    }
+}
+
+/// The inspector is a JSON transport boundary; the published scalar keeps its closed
+/// representation until here.
+///
+/// A quantity's magnitude and unit are returned separately, because the unit is not part of the
+/// number and folding them into one string would make a client parse it back out.
+fn scalar_json(scalar: &EvaluatedScalar) -> (serde_json::Value, Option<String>) {
+    match scalar {
+        EvaluatedScalar::Boolean(value) => (serde_json::Value::Bool(*value), None),
+        EvaluatedScalar::Integer(value) => (serde_json::Value::Number((*value).into()), None),
+        EvaluatedScalar::Real(value) => (
+            serde_json::Number::from_f64(*value)
+                .map(serde_json::Value::Number)
+                // Preserve an out-of-range scalar visibly rather than presenting it as a
+                // successful JSON number. The evaluator itself only publishes finite values.
+                .unwrap_or_else(|| serde_json::Value::String(value.to_string())),
+            None,
+        ),
+        EvaluatedScalar::String(value) => (serde_json::Value::String(value.to_string()), None),
+        EvaluatedScalar::Quantity { magnitude, unit } => {
+            let (value, _) = scalar_json(magnitude);
+            (value, Some(unit.to_string()))
+        }
+    }
+}
+
+fn evaluation(evaluation: &ElementEvaluation) -> SysmlFeatureInspectorEvaluationDto {
+    match &evaluation.state {
+        EvaluationState::NotApplicable => SysmlFeatureInspectorEvaluationDto::NotApplicable,
+        EvaluationState::NotRun => SysmlFeatureInspectorEvaluationDto::NotRun,
+        EvaluationState::Literal(scalar) => {
+            let (value, unit) = scalar_json(scalar);
+            SysmlFeatureInspectorEvaluationDto::Literal { value, unit }
+        }
+        EvaluationState::Evaluated(scalar) => {
+            let (value, unit) = scalar_json(scalar);
+            SysmlFeatureInspectorEvaluationDto::Evaluated { value, unit }
+        }
+        EvaluationState::NonConstant => SysmlFeatureInspectorEvaluationDto::NonConstant,
+        EvaluationState::Cyclic => SysmlFeatureInspectorEvaluationDto::Cyclic,
+        EvaluationState::Unsupported => SysmlFeatureInspectorEvaluationDto::Unsupported,
+        EvaluationState::Failed(failure) => SysmlFeatureInspectorEvaluationDto::Failed {
+            reason: match failure {
+                EvaluationFailure::DivisionByZero => "divisionByZero",
+                EvaluationFailure::TypeMismatch => "typeMismatch",
+                EvaluationFailure::UnresolvedOperand => "unresolvedOperand",
             }
+            .to_string(),
+        },
+    }
+}
+
+fn analysis(analysis: &AnalysisEvaluation) -> SysmlFeatureInspectorAnalysisDto {
+    match analysis {
+        AnalysisEvaluation::NotApplicable => SysmlFeatureInspectorAnalysisDto::NotApplicable,
+        AnalysisEvaluation::NotRun => SysmlFeatureInspectorAnalysisDto::NotRun,
+        AnalysisEvaluation::Verdict(passed) => {
+            SysmlFeatureInspectorAnalysisDto::Verdict { passed: *passed }
+        }
+        AnalysisEvaluation::Computed(scalar) => {
+            let (value, unit) = scalar_json(scalar);
+            SysmlFeatureInspectorAnalysisDto::Computed { value, unit }
+        }
+        AnalysisEvaluation::Unsettled(state) => SysmlFeatureInspectorAnalysisDto::Unsettled {
+            evaluation: state.as_str().to_string(),
+        },
+    }
+}
+
+fn bound_text(bound: MultiplicityBound) -> String {
+    match bound {
+        MultiplicityBound::Unbounded => "*".to_string(),
+        MultiplicityBound::Literal(value) => value.to_string(),
+        // The author wrote a non-literal bound. Rendering a number here would invent one.
+        MultiplicityBound::Expression => "…".to_string(),
+    }
+}
+
+fn multiplicity_text(multiplicity: MultiplicityFacts) -> Option<String> {
+    match multiplicity {
+        MultiplicityFacts::Absent => None,
+        MultiplicityFacts::Declared { lower, upper, .. } => {
+            let lower = bound_text(lower);
+            let upper = bound_text(upper);
+            Some(if lower == upper {
+                lower
+            } else {
+                format!("{lower}..{upper}")
+            })
         }
     }
+}
+
+fn modifiers(details: &ElementDetails) -> Vec<String> {
+    let mut modifiers = details
+        .inspection
+        .modifiers
+        .iter()
+        .map(|modifier| ElementModifier::as_str(*modifier).to_string())
+        .collect::<Vec<_>>();
+    if let Some(portion) = details.inspection.portion_kind {
+        modifiers.push(
+            match portion {
+                PortionKind::Snapshot => "snapshot",
+                PortionKind::Timeslice => "timeslice",
+            }
+            .to_string(),
+        );
+    }
+    modifiers
+}
+
+fn documentation(details: &ElementDetails) -> Option<String> {
+    let text = details
+        .inspection
+        .documentation
+        .iter()
+        .filter(|entry| entry.form == AnnotationForm::Documentation)
+        .map(|entry| entry.text.trim().to_string())
+        .filter(|text| !text.is_empty())
+        .collect::<Vec<_>>()
+        .join("\n\n");
+    (!text.is_empty()).then_some(text)
+}
+
+/// The declaration as the author wrote it, taken from the source the publication was built from.
+///
+/// Source text, not a reconstruction: a signature rebuilt from published facts would have to guess
+/// the keyword the author used, and a keyword is a syntax fact rather than a semantic one. The
+/// range is the publication's own declaration range, so the slice is exactly the declaration.
+fn declaration_text(details: &ElementDetails, source: Option<&str>) -> String {
+    let fallback = || {
+        format!(
+            "{} {}",
+            details.inspection.kind.as_str(),
+            details.inspection.name.as_deref().unwrap_or_default()
+        )
+        .trim_end()
+        .to_string()
+    };
+    let Some(source) = source else {
+        return fallback();
+    };
+    let Some(text) = slice_range(source, details.inspection.declaration_range) else {
+        return fallback();
+    };
+    // A body is not part of the declaration a reader wants to see.
+    let head = text.split('{').next().unwrap_or(text);
+    let collapsed = head.split_whitespace().collect::<Vec<_>>().join(" ");
+    let collapsed = collapsed.trim_end_matches(';').trim().to_string();
+    if collapsed.is_empty() {
+        fallback()
+    } else {
+        collapsed
+    }
+}
+
+/// The `text` covered by `range`, in LSP line/UTF-16-agnostic character terms.
+///
+/// Character offsets are counted in `char`s, which matches how the publication reports them for
+/// the ASCII-and-BMP sources this slice admits.
+fn slice_range(text: &str, range: TextRange) -> Option<&str> {
+    let start = byte_offset(text, range.start)?;
+    let end = byte_offset(text, range.end)?;
+    text.get(start..end)
+}
+
+fn byte_offset(text: &str, position: TextPosition) -> Option<usize> {
+    let mut line = 0u32;
+    let mut character = 0u32;
+    for (offset, value) in text.char_indices() {
+        if line == position.line && character == position.character {
+            return Some(offset);
+        }
+        if value == '\n' {
+            line += 1;
+            character = 0;
+        } else {
+            character += 1;
+        }
+    }
+    (line == position.line && character == position.character).then_some(text.len())
+}
+
+/// Whether the publication places `position` on this element's own name.
+///
+/// Read from the published name range rather than by comparing the token under the cursor with the
+/// element's name: two elements in one declaration can share a spelling, and a text comparison
+/// cannot tell the declaration from a reference to something else with the same name.
+pub(crate) fn covers_name(details: &ElementDetails, position: Position) -> bool {
+    let range = details.inspection.location.range;
+    let position = (position.line, position.character);
+    (range.start.line, range.start.character) <= position
+        && position <= (range.end.line, range.end.character)
 }
 
 pub fn parse_sysml_feature_inspector_params(v: &serde_json::Value) -> Result<(Url, Position)> {
@@ -136,685 +459,203 @@ pub fn empty_feature_inspector_response(
         },
         language_help: None,
         containing_element: None,
-        referenced_element: None,
-    }
-}
-
-fn element_ref(node: &SemanticNode) -> SysmlFeatureInspectorElementRefDto {
-    SysmlFeatureInspectorElementRefDto {
-        id: node.id.qualified_name.clone(),
-        name: node.name.clone(),
-        qualified_name: node.id.qualified_name.clone(),
-        element_type: node.element_kind.as_str().to_string(),
-        uri: node.id.uri.to_string(),
-        range: range_to_dto(node.range),
-    }
-}
-
-/// A node declared a typing when the typed declared facts say so: the generic
-/// `DeclaredRelationshipFacts::typing` vector, or `interface_end_type` for interface ends (which
-/// are deliberately kept out of that vector). The legacy `*Type` attribute keys are not consulted.
-fn has_typing_intent(node: &SemanticNode) -> bool {
-    !node.declared_facts.relationships.typing.is_empty()
-        || node.declared_facts.interface_end_type.is_some()
-}
-
-fn has_specialization_intent(node: &SemanticNode) -> bool {
-    !node.declared_facts.relationships.specializes.is_empty()
-}
-
-/// Typed replacement for the legacy attribute-map based relationship-intent check, for the
-/// redefines/subsetting family, whose
-/// authored declarations are always carried by `DeclaredRelationshipFacts` rather than the
-/// legacy attribute map.
-fn has_typed_relationship_intent(
-    target_lists: &[&[sysml_model::DeclaredRelationshipTarget]],
-) -> bool {
-    target_lists.iter().any(|targets| !targets.is_empty())
-}
-
-fn resolution(has_intent: bool, targets: Vec<&SemanticNode>) -> SysmlFeatureInspectorResolutionDto {
-    let status = if !has_intent {
-        "notApplicable"
-    } else if targets.is_empty() {
-        "unresolved"
-    } else {
-        "resolved"
-    };
-    SysmlFeatureInspectorResolutionDto {
-        status: status.to_string(),
-        targets: targets.into_iter().map(element_ref).collect(),
-    }
-}
-
-fn outgoing_relationships(
-    semantic_graph: &SemanticGraph,
-    node: &SemanticNode,
-) -> Vec<SysmlFeatureInspectorRelationshipDto> {
-    semantic_graph
-        .outgoing_relationships(node)
-        .into_iter()
-        .map(|(peer, kind)| SysmlFeatureInspectorRelationshipDto {
-            rel_type: kind.as_str().to_string(),
-            peer: element_ref(peer),
-            name: None,
-        })
-        .collect()
-}
-
-fn incoming_relationships(
-    semantic_graph: &SemanticGraph,
-    node: &SemanticNode,
-) -> Vec<SysmlFeatureInspectorRelationshipDto> {
-    semantic_graph
-        .incoming_relationships(node)
-        .into_iter()
-        .filter(|(peer, kind)| {
-            *kind != RelationshipKind::Annotation || peer.element_kind != ElementKind::Documentation
-        })
-        .map(|(peer, kind)| SysmlFeatureInspectorRelationshipDto {
-            rel_type: kind.as_str().to_string(),
-            peer: element_ref(peer),
-            name: None,
-        })
-        .collect()
-}
-
-fn distinct_nodes<'a>(nodes: impl IntoIterator<Item = &'a SemanticNode>) -> Vec<&'a SemanticNode> {
-    let mut seen = HashSet::new();
-    nodes
-        .into_iter()
-        .filter(|node| seen.insert(node.id.clone()))
-        .collect()
-}
-
-fn declared_target_candidates<'a>(
-    semantic_graph: &'a SemanticGraph,
-    node: &SemanticNode,
-    raw: &str,
-) -> Vec<&'a SemanticNode> {
-    let normalized = raw.trim().trim_start_matches('~').replace('.', "::");
-    if normalized.is_empty() {
-        return Vec::new();
-    }
-    let mut qualified_candidates = vec![normalized.clone()];
-    if !normalized.contains("::") {
-        if let Some(parent) = node
-            .parent_id
-            .as_ref()
-            .and_then(|parent_id| semantic_graph.get_node(parent_id))
-        {
-            qualified_candidates.push(format!("{}::{normalized}", parent.id.qualified_name));
-        }
-    }
-    let exact = distinct_nodes(
-        qualified_candidates
-            .iter()
-            .filter_map(|qualified| semantic_graph.node_ids_by_qualified_name.get(qualified))
-            .flatten()
-            .filter_map(|id| semantic_graph.get_node(id))
-            .filter(|candidate| candidate.id != node.id),
-    );
-    if !exact.is_empty() {
-        return exact;
-    }
-
-    let simple = normalized.split("::").last().unwrap_or(normalized.as_str());
-    if let Some(owner) = node
-        .parent_id
-        .as_ref()
-        .and_then(|parent_id| semantic_graph.get_node(parent_id))
-    {
-        if let sysml_model::ResolveResult::Resolved(target_id) =
-            sysml_model::resolve_inherited_member_via_type(semantic_graph, owner, simple)
-        {
-            if let Some(target) = semantic_graph.get_node(&target_id) {
-                return vec![target];
-            }
-        }
-    }
-    let matches: Vec<_> = semantic_graph
-        .nodes_named(simple)
-        .into_iter()
-        .filter(|candidate| candidate.id != node.id)
-        .collect();
-    if matches.len() == 1 {
-        matches
-    } else {
-        Vec::new()
-    }
-}
-
-fn relationship_targets_with_fallback<'a>(
-    semantic_graph: &'a SemanticGraph,
-    node: &'a SemanticNode,
-    kind: RelationshipKind,
-    attribute_keys: &[&str],
-) -> Vec<&'a SemanticNode> {
-    let direct = semantic_graph.outgoing_targets_by_kind(node, kind);
-    if !direct.is_empty() {
-        return distinct_nodes(direct);
-    }
-    distinct_nodes(attribute_keys.iter().flat_map(|key| {
-        node.attributes
-            .get(*key)
-            .into_iter()
-            .flat_map(|value| match value {
-                serde_json::Value::String(raw) => raw
-                    .split(',')
-                    .flat_map(|target| declared_target_candidates(semantic_graph, node, target))
-                    .collect(),
-                serde_json::Value::Array(values) => values
-                    .iter()
-                    .filter_map(|value| value.as_str())
-                    .flat_map(|target| declared_target_candidates(semantic_graph, node, target))
-                    .collect(),
-                _ => Vec::new(),
-            })
-    }))
-}
-
-/// Resolved-or-declared targets for a relationship kind whose authored form is already carried
-/// by a typed `DeclaredRelationshipFacts` field (`redefines`/`subsetsFeature`/
-/// `referencesFeature`/`crossesFeature`/`specializes`). Prefers the published edge; falls back to
-/// the typed declared targets -- never the legacy attribute map -- when the relationship is
-/// unresolved.
-fn relationship_targets_with_typed_fallback<'a>(
-    semantic_graph: &'a SemanticGraph,
-    node: &'a SemanticNode,
-    kind: RelationshipKind,
-    declared_targets: &[sysml_model::DeclaredRelationshipTarget],
-) -> Vec<&'a SemanticNode> {
-    let direct = semantic_graph.outgoing_targets_by_kind(node, kind);
-    if !direct.is_empty() {
-        return distinct_nodes(direct);
-    }
-    distinct_nodes(
-        declared_targets
-            .iter()
-            .flat_map(|target| declared_target_candidates(semantic_graph, node, &target.reference)),
-    )
-}
-
-/// Resolved-or-declared typing targets. Prefers the published `Typing` edge; falls back to the
-/// typed `DeclaredRelationshipFacts::typing` targets and, for interface ends, to the typed
-/// `interface_end_type` fact. Never reads the legacy `*Type` projection attributes: every
-/// producer of those keys already dual-writes the typed typing fact (or, for interface ends,
-/// `interface_end_type`), so the typed facts are the authoritative unresolved-case source.
-fn typing_targets_from_typed_facts<'a>(
-    semantic_graph: &'a SemanticGraph,
-    node: &'a SemanticNode,
-) -> Vec<&'a SemanticNode> {
-    let direct = semantic_graph.outgoing_targets_by_kind(node, RelationshipKind::Typing);
-    if !direct.is_empty() {
-        return distinct_nodes(direct);
-    }
-    let declared = distinct_nodes(
-        node.declared_facts
-            .relationships
-            .typing
-            .iter()
-            .flat_map(|target| declared_target_candidates(semantic_graph, node, &target.reference)),
-    );
-    if !declared.is_empty() {
-        return declared;
-    }
-    distinct_nodes(
-        node.declared_facts
-            .interface_end_type
-            .iter()
-            .flat_map(|reference| declared_target_candidates(semantic_graph, node, reference)),
-    )
-}
-
-/// The redefines/subsetting-family typed declared target list for a relationship kind. These are
-/// always dual-written by SysML producers into `DeclaredRelationshipFacts`.
-fn typed_subsetting_family_targets(
-    node: &SemanticNode,
-    kind: RelationshipKind,
-) -> &[sysml_model::DeclaredRelationshipTarget] {
-    let relationships = &node.declared_facts.relationships;
-    match kind {
-        RelationshipKind::Redefinition => &relationships.redefinition,
-        RelationshipKind::Subsetting => &relationships.subsetting,
-        RelationshipKind::ReferenceSubsetting => &relationships.reference_subsetting,
-        RelationshipKind::CrossSubsetting => &relationships.cross_subsetting,
-        _ => &[],
-    }
-}
-
-fn subsetting_targets<'a>(
-    semantic_graph: &'a SemanticGraph,
-    node: &'a SemanticNode,
-) -> Vec<&'a SemanticNode> {
-    distinct_nodes(
-        [
-            RelationshipKind::Subsetting,
-            RelationshipKind::ReferenceSubsetting,
-            RelationshipKind::CrossSubsetting,
-        ]
-        .into_iter()
-        .flat_map(|kind| {
-            let targets = typed_subsetting_family_targets(node, kind.clone());
-            relationship_targets_with_typed_fallback(semantic_graph, node, kind, targets)
-        }),
-    )
-}
-
-fn effective_typing_targets<'a>(
-    semantic_graph: &'a SemanticGraph,
-    node: &'a SemanticNode,
-) -> Vec<&'a SemanticNode> {
-    let direct = typing_targets_from_typed_facts(semantic_graph, node);
-    if !direct.is_empty() {
-        return distinct_nodes(direct);
-    }
-
-    let mut visited = HashSet::new();
-    let mut queue: VecDeque<&SemanticNode> = [
-        RelationshipKind::Redefinition,
-        RelationshipKind::Subsetting,
-        RelationshipKind::ReferenceSubsetting,
-        RelationshipKind::CrossSubsetting,
-    ]
-    .into_iter()
-    .flat_map(|kind| {
-        let targets = typed_subsetting_family_targets(node, kind.clone());
-        relationship_targets_with_typed_fallback(semantic_graph, node, kind, targets)
-    })
-    .collect();
-    while let Some(candidate) = queue.pop_front() {
-        if !visited.insert(candidate.id.clone()) {
-            continue;
-        }
-        let typing = typing_targets_from_typed_facts(semantic_graph, candidate);
-        if !typing.is_empty() {
-            return distinct_nodes(typing);
-        }
-        for kind in [
-            RelationshipKind::Redefinition,
-            RelationshipKind::Subsetting,
-            RelationshipKind::ReferenceSubsetting,
-            RelationshipKind::CrossSubsetting,
-        ] {
-            let targets = typed_subsetting_family_targets(candidate, kind.clone());
-            queue.extend(relationship_targets_with_typed_fallback(
-                semantic_graph,
-                candidate,
-                kind,
-                targets,
-            ));
-        }
-    }
-    Vec::new()
-}
-
-fn feature_modifiers(semantic_graph: &SemanticGraph, node: &SemanticNode) -> Vec<String> {
-    let Some(properties) = node.declared_facts.feature_properties.as_ref() else {
-        return Vec::new();
-    };
-    let mut modifiers = Vec::new();
-    for (enabled, label) in [
-        (properties.is_abstract, "abstract"),
-        (properties.is_variation, "variation"),
-        (properties.is_individual, "individual"),
-        (properties.is_derived, "derived"),
-        (properties.is_constant, "constant"),
-        (properties.is_end, "end"),
-        (properties.is_conjugated, "conjugated"),
-        (properties.is_portion, "portion"),
-    ] {
-        if enabled {
-            modifiers.push(label.to_string());
-        }
-    }
-    if let Some(ownership) = semantic_graph.effective_feature_ownership_for(node) {
-        if ownership.is_reference {
-            modifiers.push("reference".to_string());
-        } else if ownership.is_composite {
-            modifiers.push("composite".to_string());
-        }
-    }
-    if properties.is_ordered == Some(true) {
-        modifiers.push("ordered".to_string());
-    }
-    if properties.is_unique == Some(false) {
-        modifiers.push("nonunique".to_string());
-    }
-    if let Some(portion_kind) = properties.portion_kind.as_deref() {
-        if !modifiers.iter().any(|item| item == portion_kind) {
-            modifiers.push(portion_kind.to_string());
-        }
-    }
-    modifiers
-}
-
-fn declared_expression_text(expression: &sysml_model::DeclaredExpression) -> Option<String> {
-    if let Some(literal) = expression.literal.as_ref() {
-        return match literal {
-            sysml_model::DeclaredLiteral::Integer(value) => Some(value.to_string()),
-            sysml_model::DeclaredLiteral::Real(value)
-            | sysml_model::DeclaredLiteral::String(value) => Some(value.clone()),
-            sysml_model::DeclaredLiteral::Boolean(value) => Some(value.to_string()),
-        };
-    }
-    expression.reference.clone()
-}
-
-fn multiplicity_text(node: &SemanticNode) -> Option<String> {
-    if let Some(text) = node
-        .attributes
-        .get("multiplicity")
-        .and_then(|value| value.as_str())
-    {
-        return Some(text.to_string());
-    }
-    let multiplicity = node.declared_facts.multiplicity.as_ref()?;
-    let lower = multiplicity
-        .lower
-        .as_ref()
-        .and_then(declared_expression_text);
-    let upper = multiplicity
-        .upper
-        .as_ref()
-        .and_then(declared_expression_text);
-    match (lower, upper) {
-        (Some(lower), Some(upper)) if lower == upper => Some(lower),
-        (Some(lower), Some(upper)) => Some(format!("{lower}..{upper}")),
-        // The parser represents the unlimited upper bound in `[lower..*]` as `None`.
-        (Some(lower), None) => Some(format!("{lower}..*")),
-        (None, Some(upper)) => Some(upper),
-        (None, None) => None,
-    }
-}
-
-fn metadata_refs(
-    semantic_graph: &SemanticGraph,
-    node: &SemanticNode,
-) -> Vec<SysmlFeatureInspectorElementRefDto> {
-    distinct_nodes(
-        semantic_graph
-            .incoming_relationships(node)
-            .into_iter()
-            .filter_map(|(peer, kind)| {
-                (kind == RelationshipKind::Annotation
-                    && peer.element_kind != ElementKind::Documentation)
-                    .then_some(peer)
-            }),
-    )
-    .into_iter()
-    .map(element_ref)
-    .collect()
-}
-
-fn inherited_features(
-    semantic_graph: &SemanticGraph,
-    node: &SemanticNode,
-    effective_typing: &[&SemanticNode],
-) -> Vec<SysmlFeatureInspectorInheritedFeatureDto> {
-    let mut queue: VecDeque<&SemanticNode> = if node.element_kind.is_definition() {
-        relationship_targets_with_fallback(
-            semantic_graph,
-            node,
-            RelationshipKind::Specializes,
-            &["specializes"],
-        )
-        .into()
-    } else {
-        effective_typing.iter().copied().collect()
-    };
-    let direct_names: HashSet<String> = semantic_graph
-        .children_of(node)
-        .into_iter()
-        .map(|child| child.name.to_ascii_lowercase())
-        .collect();
-    let mut seen_owners = HashSet::new();
-    let mut seen_features = direct_names;
-    let mut inherited = Vec::new();
-
-    while let Some(owner) = queue.pop_front() {
-        if !seen_owners.insert(owner.id.clone()) {
-            continue;
-        }
-        for child in semantic_graph.children_of(owner) {
-            if semantic_role(&child.element_kind) != "usage" || child.name.trim().is_empty() {
-                continue;
-            }
-            if !seen_features.insert(child.name.to_ascii_lowercase()) {
-                continue;
-            }
-            inherited.push(SysmlFeatureInspectorInheritedFeatureDto {
-                feature: element_ref(child),
-                declared_in: element_ref(owner),
-            });
-        }
-        queue.extend(relationship_targets_with_typed_fallback(
-            semantic_graph,
-            owner,
-            RelationshipKind::Specializes,
-            &owner.declared_facts.relationships.specializes,
-        ));
-    }
-    inherited
-}
-
-fn semantic_role(kind: &ElementKind) -> &'static str {
-    if kind.is_definition() {
-        "definition"
-    } else {
-        match kind {
-            ElementKind::Package => "namespace",
-            ElementKind::Interface
-            | ElementKind::Flow
-            | ElementKind::Allocation
-            | ElementKind::Connection
-            | ElementKind::Binding
-            | ElementKind::DerivationConnection
-            | ElementKind::Import
-            | ElementKind::Dependency => "relationship",
-            ElementKind::Unknown(_) => "other",
-            _ => "usage",
-        }
+        referenced: SysmlFeatureInspectorReferenceDto::None,
     }
 }
 
 pub(crate) fn feature_inspector_element(
-    semantic_graph: &SemanticGraph,
-    node: &SemanticNode,
+    details: &ElementDetails,
+    source: Option<&str>,
 ) -> SysmlFeatureInspectorElementDto {
-    let parent = node
-        .parent_id
-        .as_ref()
-        .and_then(|parent_id| semantic_graph.get_node(parent_id))
-        .map(element_ref);
-    let typing_targets = typing_targets_from_typed_facts(semantic_graph, node);
-    let effective_typing_targets = effective_typing_targets(semantic_graph, node);
-    let specialization_targets = relationship_targets_with_typed_fallback(
-        semantic_graph,
-        node,
-        RelationshipKind::Specializes,
-        &node.declared_facts.relationships.specializes,
-    );
-    let subsetting_targets = subsetting_targets(semantic_graph, node);
-    let redefinition_targets = relationship_targets_with_typed_fallback(
-        semantic_graph,
-        node,
-        RelationshipKind::Redefinition,
-        typed_subsetting_family_targets(node, RelationshipKind::Redefinition),
-    );
-    let inherited_features = inherited_features(semantic_graph, node, &effective_typing_targets);
-    let documentation = node.source_text.doc.clone();
-    let multiplicity = multiplicity_text(node);
-    let direction = node
-        .declared_facts
-        .feature_properties
-        .as_ref()
-        .and_then(|properties| properties.direction.clone())
-        .or_else(|| {
-            node.attributes
-                .get("direction")
-                .and_then(|value| value.as_str())
-                .map(str::to_string)
-        });
-
+    let inspection = &details.inspection;
     SysmlFeatureInspectorElementDto {
-        id: node.id.qualified_name.clone(),
-        name: node.name.clone(),
-        qualified_name: node.id.qualified_name.clone(),
-        element_type: node.element_kind.as_str().to_string(),
-        role: semantic_role(&node.element_kind).to_string(),
-        declaration: language_service::signature_from_node(node)
-            .unwrap_or_else(|| format!("{} {};", node.element_kind, node.name)),
-        uri: node.id.uri.to_string(),
-        range: range_to_dto(node.range),
-        parent,
-        documentation,
-        multiplicity,
-        direction,
-        modifiers: feature_modifiers(semantic_graph, node),
-        attributes: {
-            let mut attrs = node.attributes.clone();
-            sysml_model::semantic::model_projection::project_expression_text_attributes(
-                &mut attrs, node,
-            );
-            sysml_model::semantic::model_projection::project_source_text_attributes(
-                &mut attrs, node,
-            );
-            sysml_model::semantic::model_projection::project_type_reference_attributes(
-                &mut attrs, node,
-            );
-            attrs
+        id: inspection.identity.as_str().to_string(),
+        name: inspection.name.as_deref().unwrap_or_default().to_string(),
+        qualified_name: inspection.qualified_name.to_string(),
+        element_type: inspection.kind.as_str().to_string(),
+        role: semantic_role(inspection.kind).to_string(),
+        declaration: declaration_text(details, source),
+        uri: inspection.location.document.to_string(),
+        range: range_dto(inspection.declaration_range),
+        parent: details.owner.as_ref().map(element_ref),
+        documentation: documentation(details),
+        multiplicity: multiplicity_text(inspection.multiplicity),
+        direction: inspection.direction.map(|direction| {
+            match direction {
+                FeatureDirection::In => "in",
+                FeatureDirection::Out => "out",
+                FeatureDirection::InOut => "inout",
+            }
+            .to_string()
+        }),
+        modifiers: modifiers(details),
+        evaluation: evaluation(&details.evaluation),
+        analysis: analysis(&details.analysis),
+        typing: resolution(&details.typing),
+        effective_typing: SysmlFeatureInspectorResolutionDto {
+            status: resolution_status(details.effective_typing.outcome).to_string(),
+            targets: details
+                .effective_typing
+                .types
+                .iter()
+                .map(|entry| element_ref(&entry.element))
+                .collect(),
+            candidates: Vec::new(),
         },
-        evaluation: evaluation(semantic_graph, node),
-        typing: resolution(has_typing_intent(node), typing_targets),
-        effective_typing: resolution(
-            has_typing_intent(node)
-                || has_typed_relationship_intent(&[
-                    &node.declared_facts.relationships.redefinition,
-                    &node.declared_facts.relationships.subsetting,
-                    &node.declared_facts.relationships.reference_subsetting,
-                    &node.declared_facts.relationships.cross_subsetting,
-                ]),
-            effective_typing_targets,
-        ),
-        specialization: resolution(has_specialization_intent(node), specialization_targets),
-        subsetting: resolution(
-            has_typed_relationship_intent(&[
-                &node.declared_facts.relationships.subsetting,
-                &node.declared_facts.relationships.reference_subsetting,
-                &node.declared_facts.relationships.cross_subsetting,
-            ]),
-            subsetting_targets,
-        ),
-        redefinition: resolution(
-            has_typed_relationship_intent(&[&node.declared_facts.relationships.redefinition]),
-            redefinition_targets,
-        ),
-        inherited_features,
-        metadata: metadata_refs(semantic_graph, node),
-        incoming_relationships: incoming_relationships(semantic_graph, node),
-        outgoing_relationships: outgoing_relationships(semantic_graph, node),
+        specialization: resolution(&details.specialization),
+        subsetting: resolution(&details.subsetting),
+        redefinition: resolution(&details.redefinition),
+        inherited_features: details
+            .inherited_features
+            .iter()
+            .map(inherited_feature)
+            .collect(),
+        metadata: details.metadata.iter().map(element_ref).collect(),
+        incoming_relationships: details.incoming.iter().map(relationship).collect(),
+        outgoing_relationships: details.outgoing.iter().map(relationship).collect(),
+    }
+}
+
+pub(crate) fn referenced_dto(
+    referenced: &ReferencedDetails,
+    source: Option<&str>,
+) -> SysmlFeatureInspectorReferenceDto {
+    match referenced {
+        ReferencedDetails::None => SysmlFeatureInspectorReferenceDto::None,
+        ReferencedDetails::Resolved(details) => SysmlFeatureInspectorReferenceDto::Resolved {
+            element: Box::new(feature_inspector_element(details, source)),
+        },
+        ReferencedDetails::Ambiguous(candidates) => SysmlFeatureInspectorReferenceDto::Ambiguous {
+            candidates: candidates
+                .iter()
+                .map(|details| feature_inspector_element(details, source))
+                .collect(),
+        },
+        ReferencedDetails::Unresolved => SysmlFeatureInspectorReferenceDto::Unresolved,
+        ReferencedDetails::Unsupported => SysmlFeatureInspectorReferenceDto::Unsupported,
+        ReferencedDetails::Incomplete => SysmlFeatureInspectorReferenceDto::Incomplete,
     }
 }
 
 pub fn build_sysml_feature_inspector_response(
-    semantic_graph: &SemanticGraph,
+    model: &PublishedModel,
     uri: &Url,
     position: Position,
+    source: Option<&str>,
 ) -> SysmlFeatureInspectorResultDto {
-    let requested_position = PositionDto {
-        line: position.line,
-        character: position.character,
+    let mut response = empty_feature_inspector_response(uri, position);
+    let Some(at) = details_at(model, uri, position) else {
+        return response;
     };
-    let containing_element = semantic_graph
-        .find_deepest_node_at_position(uri, to_core_position(position))
-        .filter(|node| node.id.uri == *uri)
-        .map(|node| feature_inspector_element(semantic_graph, node));
-
-    SysmlFeatureInspectorResultDto {
-        version: 2,
-        source_uri: uri.to_string(),
-        requested_position,
-        selection: SysmlFeatureInspectorSelectionDto {
-            kind: "other".to_string(),
-            text: None,
-            range: None,
-        },
-        language_help: None,
-        containing_element,
-        referenced_element: None,
-    }
+    response.containing_element = at
+        .containing
+        .as_ref()
+        .map(|details| feature_inspector_element(details, source));
+    response.referenced = referenced_dto(&at.referenced, source);
+    response
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use sysml_model::{
-        build_semantic_graph_from_documents, evaluate_expressions, SysmlDocument,
-        SysmlDocumentSourceKind,
+    use sysml_query::resolved_slice::{
+        build, BuildRequest, ConstructionStrategy, SourceDocument, SourceKind,
     };
 
-    fn graph() -> (SemanticGraph, sysml_model::NodeId) {
-        let document = SysmlDocument::from_memory_path(
-            "inspector-evaluation",
-            "model.sysml",
-            "package Demo { attribute value = 1; part def Empty; }".into(),
-            SysmlDocumentSourceKind::Workspace,
-            None,
-            None,
+    fn inspect(source: &str, line: u32, character: u32) -> SysmlFeatureInspectorResultDto {
+        let uri = Url::parse("file:///inspector.sysml").expect("uri");
+        let document =
+            SourceDocument::from_uri(uri.as_str(), source.to_string(), SourceKind::Workspace)
+                .expect("document");
+        let model = build(
+            BuildRequest::resolved(vec![document], ConstructionStrategy::Sequential)
+                .expect("request"),
         )
-        .expect("document");
-        let (graph, _) = build_semantic_graph_from_documents(&[document]).expect("graph");
-        let id = graph
-            .node_ids_by_qualified_name
-            .get("Demo::value")
-            .and_then(|ids| ids.first())
-            .cloned()
-            .expect("value");
-        (graph, id)
+        .expect("publication");
+        build_sysml_feature_inspector_response(
+            &model,
+            &uri,
+            Position::new(line, character),
+            Some(source),
+        )
     }
 
     #[test]
-    fn inspector_evaluation_is_not_run_before_phase() {
-        let (mut graph, id) = graph();
-        graph.invalidate_evaluation_facts();
-        let dto = feature_inspector_element(&graph, graph.get_node(&id).expect("node"));
+    fn evaluation_projects_the_published_state_without_inventing_a_value() {
+        let response = inspect(
+            "package Demo { attribute value = 1; part def Empty; }",
+            0,
+            25,
+        );
+        let element = response.containing_element.expect("value element");
+        assert!(
+            matches!(
+                element.evaluation,
+                SysmlFeatureInspectorEvaluationDto::Literal { ref value, unit: None }
+                    if value.as_i64() == Some(1)
+            ),
+            "{:?}",
+            element.evaluation
+        );
         assert!(matches!(
-            dto.evaluation,
-            SysmlFeatureInspectorEvaluationDto::NotRun
+            element.analysis,
+            SysmlFeatureInspectorAnalysisDto::NotApplicable
         ));
     }
 
     #[test]
-    fn inspector_evaluation_is_not_applicable_after_phase() {
-        let (mut graph, _) = graph();
-        evaluate_expressions(&mut graph);
-        let id = graph
-            .node_ids_by_qualified_name
-            .get("Demo::Empty")
-            .and_then(|ids| ids.first())
-            .cloned()
-            .expect("empty");
-        let dto = feature_inspector_element(&graph, graph.get_node(&id).expect("node"));
+    fn an_element_with_no_expression_is_not_applicable_rather_than_valueless() {
+        let response = inspect(
+            "package Demo { attribute value = 1; part def Empty; }",
+            0,
+            45,
+        );
+        let element = response.containing_element.expect("Empty element");
+        assert_eq!(element.name, "Empty");
         assert!(matches!(
-            dto.evaluation,
+            element.evaluation,
             SysmlFeatureInspectorEvaluationDto::NotApplicable
         ));
     }
 
+    /// The verdict channel and the value channel are projected separately, so a constraint that
+    /// evaluated to `false` reports a failing verdict rather than an absent value.
     #[test]
-    fn inspector_evaluation_projects_completed_typed_result_at_transport_boundary() {
-        let (mut graph, id) = graph();
-        evaluate_expressions(&mut graph);
-        let dto = feature_inspector_element(&graph, graph.get_node(&id).expect("node"));
+    fn a_constraint_reports_its_verdict_beside_its_value() {
+        let response = inspect("package Demo { constraint fails { false } }", 0, 27);
+        let element = response.containing_element.expect("constraint element");
         assert!(matches!(
-            dto.evaluation,
-            SysmlFeatureInspectorEvaluationDto::Result {
-                status: SysmlFeatureInspectorEvaluationStatusDto::Ok,
-                value: Some(serde_json::Value::Number(ref value)),
-                unit: None,
-                ..
-            } if value.as_i64() == Some(1)
+            element.analysis,
+            SysmlFeatureInspectorAnalysisDto::Verdict { passed: false }
         ));
+        assert!(matches!(
+            element.evaluation,
+            SysmlFeatureInspectorEvaluationDto::Literal { .. }
+        ));
+    }
+
+    /// The declaration line is the author's own text, cut at the body.
+    #[test]
+    fn the_declaration_is_the_authored_text_of_the_declaration_range() {
+        let response = inspect(
+            "package Demo {\n  part def Rover :> Base {\n    part wheel;\n  }\n}",
+            1,
+            11,
+        );
+        let element = response.containing_element.expect("Rover element");
+        assert_eq!(element.declaration, "part def Rover :> Base");
+    }
+
+    #[test]
+    fn multiplicity_renders_the_published_bounds() {
+        let response = inspect("package Demo { part def W; part w[0..*] : W; }", 0, 32);
+        assert_eq!(
+            response
+                .containing_element
+                .expect("w element")
+                .multiplicity
+                .as_deref(),
+            Some("0..*")
+        );
     }
 }
