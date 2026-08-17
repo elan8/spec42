@@ -240,11 +240,37 @@ export class FeatureInspectorViewProvider implements vscode.WebviewViewProvider 
       }
     }
 
-    function attrText(attributes, key) {
-      const value = attributes ? attributes[key] : undefined;
-      if (value === undefined || value === null || value === '') return undefined;
-      if (typeof value === 'object') return Array.isArray(value) ? value.filter(Boolean).join(', ') : undefined;
-      return String(value);
+    // The evaluated value with its unit, only for the states that carry one. A state without a
+    // value is shown by its own label instead, so a failed or non-constant expression is never
+    // rendered as a successful blank.
+    function evaluatedText(evaluation) {
+      if (!evaluation) return undefined;
+      if (evaluation.state !== 'literal' && evaluation.state !== 'evaluated') return undefined;
+      const value = String(evaluation.value);
+      return evaluation.unit ? value + ' [' + evaluation.unit + ']' : value;
+    }
+
+    function evaluationStateLabel(evaluation) {
+      switch (evaluation && evaluation.state) {
+        case 'notRun': return 'not evaluated';
+        case 'nonConstant': return 'not constant';
+        case 'cyclic': return 'cyclic value';
+        case 'unsupported': return 'unsupported expression';
+        case 'failed': return 'evaluation failed (' + evaluation.reason + ')';
+        default: return undefined;
+      }
+    }
+
+    function analysisLabel(analysis) {
+      switch (analysis && analysis.state) {
+        case 'verdict': return analysis.passed ? 'passed' : 'failed';
+        case 'computed': return analysis.unit
+          ? String(analysis.value) + ' [' + analysis.unit + ']'
+          : String(analysis.value);
+        case 'notRun': return 'not evaluated';
+        case 'unsettled': return 'not settled (' + analysis.evaluation + ')';
+        default: return undefined;
+      }
     }
 
     function elementRefRow(target, statusPill) {
@@ -278,14 +304,28 @@ export class FeatureInspectorViewProvider implements vscode.WebviewViewProvider 
       return el('span', 'pill ' + kind, label);
     }
 
+    // Every outcome the publication can settle on, shown as itself. An ambiguous family lists
+    // its candidates without promoting one of them to a target, and a partly resolved family
+    // says so rather than presenting the targets it did settle as the whole answer.
     function resolutionSection(nodes, title, resolution) {
       if (!resolution || resolution.status === 'notApplicable') return;
       const section = el('div', 'section');
       section.appendChild(el('div', 'title', title));
-      if (resolution.status === 'unresolved') {
-        section.appendChild(pill('unresolved', 'warning'));
+      if (resolution.status === 'unresolved' || resolution.status === 'unsupported') {
+        section.appendChild(pill(resolution.status, 'warning'));
         nodes.push(section);
         return;
+      }
+      if (resolution.status === 'ambiguous') {
+        section.appendChild(pill('ambiguous', 'warning'));
+        (resolution.candidates || []).forEach((candidate) => {
+          section.appendChild(elementRefRow(candidate, pill('candidate', 'warning')));
+        });
+        nodes.push(section);
+        return;
+      }
+      if (resolution.status === 'partial') {
+        section.appendChild(pill('partly resolved', 'warning'));
       }
       resolution.targets.forEach((target) => {
         section.appendChild(elementRefRow(target, pill('resolved', 'ok')));
@@ -429,8 +469,8 @@ export class FeatureInspectorViewProvider implements vscode.WebviewViewProvider 
       identity.appendChild(el('div', 'title', 'Identity'));
       field(identity, 'Kind', element.type);
       field(identity, 'Container', element.parent?.qualifiedName);
-      field(identity, 'Multiplicity', element.multiplicity || attrText(element.attributes, 'multiplicity'));
-      field(identity, 'Direction', element.direction || attrText(element.attributes, 'direction'));
+      field(identity, 'Multiplicity', element.multiplicity);
+      field(identity, 'Direction', element.direction);
       field(identity, 'Modifiers', element.modifiers?.join(', '));
       nodes.push(identity);
 
@@ -443,7 +483,7 @@ export class FeatureInspectorViewProvider implements vscode.WebviewViewProvider 
       resolutionSection(nodes, 'Redefines', element.redefinition);
       inheritedFeaturesSection(nodes, element.inheritedFeatures);
 
-      const doc = element.documentation || attrText(element.attributes, 'doc');
+      const doc = element.documentation;
       if (doc) {
         const documentation = el('div', 'section');
         documentation.appendChild(el('div', 'title', 'Documentation'));
@@ -452,17 +492,17 @@ export class FeatureInspectorViewProvider implements vscode.WebviewViewProvider 
       }
       elementRefsSection(nodes, 'Metadata', element.metadata);
 
-      const attrFields = [
-        ['Declared', attrText(element.attributes, 'value') || attrText(element.attributes, 'defaultValue')],
-        ['Evaluated', [attrText(element.attributes, 'evaluatedValue'), attrText(element.attributes, 'evaluatedUnit')].filter(Boolean).join(' ')],
+      const valueFields = [
+        ['Value', evaluatedText(element.evaluation) || evaluationStateLabel(element.evaluation)],
+        ['Result', analysisLabel(element.analysis)],
       ].filter(([, value]) => value);
-      if (attrFields.length) {
-        const attrSection = el('div', 'section');
-        attrSection.appendChild(el('div', 'title', 'Value'));
-        attrFields.forEach(([label, value]) => {
-          field(attrSection, label, value);
+      if (valueFields.length) {
+        const valueSection = el('div', 'section');
+        valueSection.appendChild(el('div', 'title', 'Value'));
+        valueFields.forEach(([label, value]) => {
+          field(valueSection, label, value);
         });
-        nodes.push(attrSection);
+        nodes.push(valueSection);
       }
 
       if (element.incomingRelationships?.length || element.outgoingRelationships?.length) {

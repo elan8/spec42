@@ -3,20 +3,22 @@
 use std::fmt;
 
 pub use sysml_resolution::{
-    AnnotationForm, AuthoredUnit, AuthoredValue, BuildMeasurements, Conformance,
-    ConformanceObstacle, Diagnostic, DiagnosticCode, DiagnosticLocation, DiagnosticOrigin,
-    DiagnosticSeverity, Documentation, EffectiveType, EffectiveTypeOrigin, ElementEvaluation,
-    ElementInspection, ElementInspectionAt, ElementKind, ElementModifier, ElementRelationship,
-    ElementSearch, ElementSource, EvaluatedScalar, EvaluationFailure, EvaluationState,
-    ExpectedMeasurement, FeatureDirection, MembershipFacts, MembershipKind, MembershipRole,
-    MultiplicityBound, MultiplicityFacts, NavigationTarget, OccurrenceRole, PortionKind,
-    PublicationCompleteness, PublicationIdentity, PublishedDiagnostics, QueryOutcome, ReferenceAt,
-    RelationshipProvenance, RelationshipTarget, RenameOutcome, RequirementConstraintKind,
-    RequirementUsageTyping, RequirementVerification, ResolvedUnit, SatisfyEndpoint,
-    SatisfyPolarity, SatisfyRelationship, SourceLocation, SpecializationScope, StateSubactionKind,
-    SubsettingConformance, SymbolEntry, SymbolIdentity, TextPosition, TextRange, TypeReference,
-    UnitResolution, ValueKind, VerificationOutcome, VerificationRequirement, Visibility,
-    VisibilityProvenance, VisibleMember,
+    AnalysisEvaluation, AnnotationForm, AuthoredUnit, AuthoredValue, BuildMeasurements,
+    Conformance, ConformanceObstacle, ConnectedElement, Diagnostic, DiagnosticCode,
+    DiagnosticLocation, DiagnosticOrigin, DiagnosticSeverity, Documentation, EffectiveType,
+    EffectiveTypeEntry, EffectiveTypeOrigin, EffectiveTyping, ElementDetails, ElementDetailsAt,
+    ElementEvaluation, ElementInspection, ElementInspectionAt, ElementKind, ElementModifier,
+    ElementRelationship, ElementSearch, ElementSource, EvaluatedScalar, EvaluationFailure,
+    EvaluationState, ExpectedMeasurement, FeatureDirection, InheritedFeature, MembershipFacts,
+    MembershipKind, MembershipRole, MultiplicityBound, MultiplicityFacts, NavigationTarget,
+    OccurrenceRole, PortionKind, PublicationCompleteness, PublicationIdentity,
+    PublishedDiagnostics, QueryOutcome, ReferenceAt, ReferencedDetails, RelationshipFamily,
+    RelationshipOutcome, RelationshipProvenance, RelationshipTarget, RenameOutcome,
+    RequirementConstraintKind, RequirementUsageTyping, RequirementVerification, ResolvedUnit,
+    SatisfyEndpoint, SatisfyPolarity, SatisfyRelationship, SourceLocation, SpecializationScope,
+    StateSubactionKind, SubsettingConformance, SymbolEntry, SymbolIdentity, TextPosition,
+    TextRange, TypeReference, UnitResolution, ValueKind, VerificationOutcome,
+    VerificationRequirement, Visibility, VisibilityProvenance, VisibleMember,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -488,6 +490,27 @@ impl InspectionQueries<'_> {
         self.model.inspect_at(document, position)
     }
 
+    /// Everything the publication settled about one element, as one coherent answer.
+    ///
+    /// The service a feature inspector consumes: one call rather than an inspection query, a type
+    /// query, an evaluation query and a relationship query whose results the consumer would have
+    /// to decide how to combine. The facade adapts nothing here -- every field, including which
+    /// relationship families are applicable and what each of them settled to, was decided by
+    /// `sysml_resolution` at the publication barrier.
+    pub fn element_details(&self, symbol: &SymbolIdentity) -> QueryOutcome<ElementDetails> {
+        self.model.element_details(symbol)
+    }
+
+    /// The element whose declaration encloses `position` and the element a reference there points
+    /// at, both in full detail.
+    pub fn element_details_at(
+        &self,
+        document: &str,
+        position: TextPosition,
+    ) -> QueryOutcome<ElementDetailsAt> {
+        self.model.element_details_at(document, position)
+    }
+
     /// Every element declared in one document, in source order.
     pub fn document_symbols(&self, document: &str) -> QueryOutcome<Box<[SymbolEntry]>> {
         self.model.document_symbols(document)
@@ -582,9 +605,11 @@ impl DebugQueries<'_> {
                     probe.qualifier.as_deref(),
                 ),
             )?;
-            write_inspection_at_outcome(
+            write_details_at_outcome(
                 output,
-                &self.model.inspect_at(&probe.document, probe.position),
+                &self
+                    .model
+                    .element_details_at(&probe.document, probe.position),
             )?;
             writeln!(output, "  )")?;
         }
@@ -776,9 +801,9 @@ fn write_members_outcome(
     writeln!(output, ")")
 }
 
-fn write_inspection_at_outcome(
+fn write_details_at_outcome(
     output: &mut dyn fmt::Write,
-    outcome: &QueryOutcome<ElementInspectionAt>,
+    outcome: &QueryOutcome<ElementDetailsAt>,
 ) -> fmt::Result {
     writeln!(output, "    (inspection")?;
     match outcome {
@@ -794,7 +819,7 @@ fn write_inspection_at_outcome(
                 }
                 None => writeln!(output, "      (containing (status none))")?,
             }
-            write_reference_at(output, &at.referenced)?;
+            write_referenced_details(output, &at.referenced)?;
         }
         _ => writeln!(output, "      (status {})", outcome_status(outcome))?,
     }
@@ -812,18 +837,27 @@ fn outcome_status<T>(outcome: &QueryOutcome<T>) -> &'static str {
     }
 }
 
-fn write_reference_at(output: &mut dyn fmt::Write, referenced: &ReferenceAt) -> fmt::Result {
+fn write_referenced_details(
+    output: &mut dyn fmt::Write,
+    referenced: &ReferencedDetails,
+) -> fmt::Result {
     match referenced {
-        ReferenceAt::None => writeln!(output, "      (referenced (status none))"),
-        ReferenceAt::Unresolved => writeln!(output, "      (referenced (status unresolved))"),
-        ReferenceAt::Unsupported => writeln!(output, "      (referenced (status unsupported))"),
-        ReferenceAt::Incomplete => writeln!(output, "      (referenced (status incomplete))"),
-        ReferenceAt::Resolved(inspection) => {
+        ReferencedDetails::None => writeln!(output, "      (referenced (status none))"),
+        ReferencedDetails::Unresolved => {
+            writeln!(output, "      (referenced (status unresolved))")
+        }
+        ReferencedDetails::Unsupported => {
+            writeln!(output, "      (referenced (status unsupported))")
+        }
+        ReferencedDetails::Incomplete => {
+            writeln!(output, "      (referenced (status incomplete))")
+        }
+        ReferencedDetails::Resolved(details) => {
             writeln!(output, "      (referenced (status resolved)")?;
-            write_element(output, "        ", inspection)?;
+            write_element(output, "        ", details)?;
             writeln!(output, "      )")
         }
-        ReferenceAt::Ambiguous(candidates) => {
+        ReferencedDetails::Ambiguous(candidates) => {
             writeln!(output, "      (referenced (status ambiguous)")?;
             for candidate in candidates.iter() {
                 write_element(output, "        ", candidate)?;
@@ -840,8 +874,9 @@ fn write_reference_at(output: &mut dyn fmt::Write, referenced: &ReferenceAt) -> 
 fn write_element(
     output: &mut dyn fmt::Write,
     indent: &str,
-    inspection: &ElementInspection,
+    details: &ElementDetails,
 ) -> fmt::Result {
+    let inspection = &details.inspection;
     writeln!(
         output,
         "{indent}(element (kind {:?})",
@@ -927,7 +962,102 @@ fn write_element(
     for relationship in inspection.relationships.iter() {
         write_relationship(output, indent, relationship)?;
     }
+    for (label, family) in [
+        ("typing", &details.typing),
+        ("specialization", &details.specialization),
+        ("subsetting", &details.subsetting),
+        ("redefinition", &details.redefinition),
+    ] {
+        write_family(output, indent, label, family)?;
+    }
+    if details.effective_typing.outcome != RelationshipOutcome::NotApplicable {
+        write!(
+            output,
+            "{indent}  (effective-typing (outcome {})",
+            details.effective_typing.outcome.as_str()
+        )?;
+        for entry in details.effective_typing.types.iter() {
+            write!(
+                output,
+                " (type (qualified-name {:?})",
+                entry.element.qualified_name
+            )?;
+            match &entry.origin {
+                EffectiveTypeOrigin::Direct => write!(output, " (origin direct))")?,
+                EffectiveTypeOrigin::Inherited(_) => write!(output, " (origin inherited))")?,
+            }
+        }
+        writeln!(output, ")")?;
+    }
+    for feature in details.inherited_features.iter() {
+        writeln!(
+            output,
+            "{indent}  (inherited-feature (qualified-name {:?}) (declared-in {:?}))",
+            feature.feature.qualified_name, feature.declared_in.qualified_name
+        )?;
+    }
+    for entry in details.metadata.iter() {
+        writeln!(
+            output,
+            "{indent}  (metadata (qualified-name {:?}))",
+            entry.qualified_name
+        )?;
+    }
+    for (label, connected) in [
+        ("incoming", &details.incoming),
+        ("outgoing", &details.outgoing),
+    ] {
+        for entry in connected.iter() {
+            writeln!(
+                output,
+                "{indent}  ({label} (kind {:?}) (peer {:?}) (provenance {}))",
+                entry.kind,
+                entry.peer.qualified_name,
+                match entry.provenance {
+                    RelationshipProvenance::Authored => "authored",
+                    RelationshipProvenance::Implied => "implied",
+                }
+            )?;
+        }
+    }
+    if details.analysis != AnalysisEvaluation::NotApplicable {
+        write!(output, "{indent}  (analysis {}", details.analysis.as_str())?;
+        match &details.analysis {
+            AnalysisEvaluation::Verdict(passed) => write!(output, " {passed}")?,
+            AnalysisEvaluation::Computed(value) => {
+                write!(output, " ")?;
+                write_scalar(output, value)?;
+            }
+            AnalysisEvaluation::Unsettled(state) => write!(output, " {state}")?,
+            AnalysisEvaluation::NotApplicable | AnalysisEvaluation::NotRun => {}
+        }
+        writeln!(output, ")")?;
+    }
     writeln!(output, "{indent})")
+}
+
+/// One relationship family, omitted entirely when the element declares nothing of its kind.
+fn write_family(
+    output: &mut dyn fmt::Write,
+    indent: &str,
+    label: &str,
+    family: &RelationshipFamily,
+) -> fmt::Result {
+    if family.outcome == RelationshipOutcome::NotApplicable {
+        return Ok(());
+    }
+    write!(
+        output,
+        "{indent}  ({label} (outcome {})",
+        family.outcome.as_str()
+    )?;
+    for target in family.targets.iter() {
+        write!(output, " (target {:?})", target.qualified_name)?;
+    }
+    for candidate in family.candidates.iter() {
+        write!(output, " (candidate {:?})", candidate.qualified_name)?;
+    }
+    writeln!(output, ")")
 }
 
 fn write_relationship(

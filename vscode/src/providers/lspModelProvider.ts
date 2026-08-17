@@ -146,15 +146,43 @@ export interface FeatureInspectorElementRef {
 }
 
 export interface FeatureInspectorResolution {
-  status: "resolved" | "unresolved" | "notApplicable";
+  status:
+    | "resolved"
+    | "partial"
+    | "unresolved"
+    | "ambiguous"
+    | "unsupported"
+    | "notApplicable";
   targets: FeatureInspectorElementRef[];
+  /** Alternatives of an ambiguous family. Deliberately not promoted into `targets`. */
+  candidates?: FeatureInspectorElementRef[];
 }
 
 export interface FeatureInspectorRelationship {
   type: string;
   peer: FeatureInspectorElementRef;
-  name?: string;
+  provenance: "authored" | "implied";
 }
+
+/** What an element's expression settled to. The value is carried only by the states that have
+ * one, so an absent value can never be read as a successful evaluation. */
+export type FeatureInspectorEvaluation =
+  | { state: "notApplicable" }
+  | { state: "notRun" }
+  | { state: "literal"; value: unknown; unit?: string }
+  | { state: "evaluated"; value: unknown; unit?: string }
+  | { state: "nonConstant" }
+  | { state: "cyclic" }
+  | { state: "unsupported" }
+  | { state: "failed"; reason: string };
+
+/** The verdict channel of an analysis case, verification case, requirement or constraint. */
+export type FeatureInspectorAnalysis =
+  | { state: "notApplicable" }
+  | { state: "notRun" }
+  | { state: "verdict"; passed: boolean }
+  | { state: "computed"; value: unknown; unit?: string }
+  | { state: "unsettled"; evaluation: string };
 
 export interface FeatureInspectorInheritedFeature {
   feature: FeatureInspectorElementRef;
@@ -169,7 +197,8 @@ export interface FeatureInspectorElement extends FeatureInspectorElementRef {
   multiplicity?: string;
   direction?: string;
   modifiers?: string[];
-  attributes: Record<string, unknown>;
+  evaluation: FeatureInspectorEvaluation;
+  analysis: FeatureInspectorAnalysis;
   typing: FeatureInspectorResolution;
   /** Added in protocol v2; optional so a 0.47 client can still inspect through a 0.46 server. */
   effectiveTyping?: FeatureInspectorResolution;
@@ -209,7 +238,26 @@ export interface FeatureInspectorResult {
   selection: FeatureInspectorSelection;
   languageHelp?: FeatureInspectorLanguageHelp;
   containingElement?: FeatureInspectorElement;
-  referencedElement?: FeatureInspectorElement;
+  referenced: FeatureInspectorReference;
+}
+
+/** What a reference under the cursor points at. A tagged outcome rather than a nullable element:
+ * "no reference here" and "a reference here that did not resolve" are different answers. */
+export type FeatureInspectorReference =
+  | { status: "none" }
+  | { status: "resolved"; element: FeatureInspectorElement }
+  | { status: "ambiguous"; candidates: FeatureInspectorElement[] }
+  | { status: "unresolved" }
+  | { status: "unsupported" }
+  | { status: "incomplete" };
+
+/** The referenced element, when the publication settled on exactly one. */
+export function resolvedReference(
+  result: FeatureInspectorResult | null | undefined
+): FeatureInspectorElement | undefined {
+  return result?.referenced?.status === "resolved"
+    ? result.referenced.element
+    : undefined;
 }
 
 export type NormalizedScope = NonNullable<SysMLModelParams["scope"]>[number];

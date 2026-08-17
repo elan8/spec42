@@ -231,6 +231,51 @@ pub enum ExpectedMeasurement {
     Required(Box<[SymbolIdentity]>),
 }
 
+/// What one publication settled about a verdict-bearing element's expression.
+///
+/// Deliberately a second channel beside [`ElementEvaluation`] rather than a field of it. An
+/// ordinary feature's expression *is* its value; an analysis case's, a verification case's, a
+/// requirement's or a constraint's expression *states an outcome about the model*. Folding the two
+/// would make "this attribute is `false`" and "this constraint failed" the same published fact.
+///
+/// The value channel is the same settled [`EvaluationState`] the element publishes, so the verdict
+/// and the value can never disagree; what this adds is which of the two questions the element's
+/// kind makes it an answer to.
+#[derive(Debug, Clone, PartialEq)]
+pub enum AnalysisEvaluation {
+    /// The element's kind does not make its expression a verdict or a computed result.
+    ///
+    /// An affirmative answer, distinct from [`AnalysisEvaluation::NotRun`] and from an element
+    /// that is verdict-bearing but whose expression did not settle.
+    NotApplicable,
+    /// The element is verdict-bearing and the build's [`EvaluationPolicy`] excluded evaluation.
+    NotRun,
+    /// The expression settled to a boolean, which for this element is a pass/fail verdict.
+    Verdict(bool),
+    /// The expression settled to a value that is not a verdict, such as an analysis result.
+    ///
+    /// Carries the unit when the author wrote one, because the magnitude alone is not the result.
+    Computed(EvaluatedScalar),
+    /// The element is verdict-bearing and its expression did not settle to a value.
+    ///
+    /// Carries the state that says why, so an unsupported shape, a cycle and a failed fold stay
+    /// distinguishable and none of them can be read as a failing verdict.
+    Unsettled(EvaluationState),
+}
+
+impl AnalysisEvaluation {
+    /// A stable kebab-case name for this outcome, for debug rendering and snapshot output.
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::NotApplicable => "not-applicable",
+            Self::NotRun => "not-run",
+            Self::Verdict(_) => "verdict",
+            Self::Computed(_) => "computed",
+            Self::Unsettled(_) => "unsettled",
+        }
+    }
+}
+
 /// Whether a build evaluates constant expressions.
 ///
 /// Makes [`EvaluationState::NotRun`] a declared outcome rather than an empty table that a consumer

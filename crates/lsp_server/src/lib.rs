@@ -39,14 +39,15 @@ pub use validation::{
     ValidatedDocument, ValidationReport, ValidationRequest, ValidationSummary,
 };
 pub use views::dto::{
-    SysmlClearCacheResultDto, SysmlFeatureInspectorElementDto, SysmlFeatureInspectorElementRefDto,
+    SysmlClearCacheResultDto, SysmlFeatureInspectorAnalysisDto, SysmlFeatureInspectorElementDto,
+    SysmlFeatureInspectorElementRefDto, SysmlFeatureInspectorEvaluationDto,
     SysmlFeatureInspectorInheritedFeatureDto, SysmlFeatureInspectorLanguageHelpDto,
-    SysmlFeatureInspectorParamsDto, SysmlFeatureInspectorRelationshipDto,
-    SysmlFeatureInspectorResolutionDto, SysmlFeatureInspectorResultDto,
-    SysmlFeatureInspectorSelectionDto, SysmlLibrarySearchItemDto, SysmlLibrarySearchPackageDto,
-    SysmlLibrarySearchParamsDto, SysmlLibrarySearchResultDto, SysmlLibrarySearchSourceDto,
-    SysmlModelResultDto, SysmlServerCachesDto, SysmlServerMemoryDto, SysmlServerStatsDto,
-    SysmlVisualizationParamsDto, TextDocumentIdentifierDto,
+    SysmlFeatureInspectorParamsDto, SysmlFeatureInspectorReferenceDto,
+    SysmlFeatureInspectorRelationshipDto, SysmlFeatureInspectorResolutionDto,
+    SysmlFeatureInspectorResultDto, SysmlFeatureInspectorSelectionDto, SysmlLibrarySearchItemDto,
+    SysmlLibrarySearchPackageDto, SysmlLibrarySearchParamsDto, SysmlLibrarySearchResultDto,
+    SysmlLibrarySearchSourceDto, SysmlModelResultDto, SysmlServerCachesDto, SysmlServerMemoryDto,
+    SysmlServerStatsDto, SysmlVisualizationParamsDto, TextDocumentIdentifierDto,
 };
 pub use views::{
     build_sysml_model_response, build_sysml_visualization_for_paths,

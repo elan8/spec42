@@ -1437,7 +1437,12 @@ pub(crate) fn reference_kind(kind: ReferenceKind) -> &'static str {
     }
 }
 
-fn relationship_kind(kind: ReferenceKind) -> Option<&'static str> {
+/// The relationship one reference kind states, named in the relationship channel.
+///
+/// Distinct from [`reference_kind`], which names the production that wrote it: `featureTyping` is
+/// the reference an author writes and `typing` is the relationship it establishes. `None` for the
+/// import kinds, which bring names into scope rather than relating two elements.
+pub(crate) fn relationship_kind(kind: ReferenceKind) -> Option<&'static str> {
     match kind {
         ReferenceKind::FeatureTyping => Some("typing"),
         ReferenceKind::Subclassification => Some("specialization"),

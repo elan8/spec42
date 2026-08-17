@@ -765,17 +765,29 @@ impl ResolvedSemanticModel {
             Ok(declaration) => declaration,
             Err(outcome) => return outcome,
         };
-        let Some(element) = self.symbol_identity(declaration) else {
-            return QueryOutcome::Unresolved;
-        };
+        match self.element_evaluation(declaration) {
+            Some(evaluation) => self.resolved_outcome(evaluation),
+            None => QueryOutcome::Unresolved,
+        }
+    }
+
+    /// The same settled evaluation, addressed by declaration rather than by published identity.
+    ///
+    /// The cohesive element-details answer already holds the declaration, and routing back through
+    /// the identity would make it unanswerable for the one case where two declarations share
+    /// one -- which is exactly the case details reports as ambiguous rather than as absent.
+    pub(super) fn element_evaluation(
+        &self,
+        declaration: DeclarationId,
+    ) -> Option<ElementEvaluation> {
         let units = self
             .expressions
             .units(declaration)
             .iter()
             .map(|unit| self.published_unit(unit))
             .collect::<Vec<_>>();
-        self.resolved_outcome(ElementEvaluation {
-            element,
+        Some(ElementEvaluation {
+            element: self.symbol_identity(declaration)?,
             state: self.evaluation_for(declaration),
             units: units.into_boxed_slice(),
             expected_measurement: self.published_measurement(declaration),

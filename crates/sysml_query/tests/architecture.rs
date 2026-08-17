@@ -491,6 +491,132 @@ fn the_migrated_expression_conformance_family_cannot_return_to_the_graph() {
     }
 }
 
+/// The modules that read element details from the publication must not be able to reach the
+/// mutable graph again.
+///
+/// Deleting the reconstruction helpers is not self-enforcing. A `&SemanticGraph` parameter added
+/// back to one of these functions, or a `sysml_model` import for "just one fact", restores exactly
+/// the second source of truth this migration removed -- and nothing else in the tree would fail.
+/// The guard is therefore on the module surface rather than on any one helper.
+#[test]
+fn the_migrated_inspector_and_symbol_modules_cannot_return_to_the_graph() {
+    let root = repository_root();
+    let migrated = [
+        "crates/lsp_server/src/views/feature_inspector.rs",
+        "crates/lsp_server/src/lsp_runtime/symbols.rs",
+    ];
+    // `SemanticGraph`/`SemanticNode` are the handles; `sysml_model` is the crate that owns them
+    // and every legacy evaluation and relationship helper besides. `evaluation_facts_for` and
+    // `expression_evaluation_for` are named individually because they are the node-keyed
+    // evaluation reads this migration replaced, and they would be reachable through a re-export.
+    let forbidden = [
+        "SemanticGraph",
+        "SemanticNode",
+        "sysml_model",
+        "evaluation_facts_for",
+        "expression_evaluation_for",
+        "ExpressionEvaluationQuery",
+        "outgoing_targets_by_kind",
+        "incoming_relationships(",
+        "nodes_named",
+        "node_ids_by_qualified_name",
+        "resolve_inherited_member_via_type",
+    ];
+    let mut violations = Vec::new();
+    for module in migrated {
+        let path = root.join(module);
+        let source = fs::read_to_string(&path).unwrap_or_else(|error| {
+            panic!("read migrated module {module}: {error}");
+        });
+        for name in forbidden {
+            if source.contains(name) {
+                violations.push(format!("{module}: reaches {name}"));
+            }
+        }
+    }
+    assert!(
+        violations.is_empty(),
+        "these modules read the immutable publication and must not reach the graph:\n{}",
+        violations.join("\n")
+    );
+}
+
+/// The consumer-side semantic reconstruction the inspector used to carry must stay deleted.
+///
+/// Each of these recovered a relationship target by normalizing authored text and searching for a
+/// name, or walked a hierarchy the type index now answers. They are named rather than described
+/// because a returning implementation would most likely return under its old name.
+#[test]
+fn the_inspector_reconstruction_helpers_stay_deleted() {
+    let root = repository_root();
+    let mut sources = Vec::new();
+    rust_sources(&root.join("crates/lsp_server/src"), &mut sources);
+    let deleted = [
+        "declared_target_candidates",
+        "relationship_targets_with_fallback",
+        "relationship_targets_with_typed_fallback",
+        "typing_targets_from_typed_facts",
+        "typed_subsetting_family_targets",
+        "effective_typing_targets",
+        "inherited_attributes_for_part_def",
+        "inherited_attribute_hint_lines",
+    ];
+    let mut violations = Vec::new();
+    for file in sources {
+        let source = fs::read_to_string(&file).expect("read lsp_server source");
+        for name in deleted {
+            if source.contains(name) {
+                violations.push(format!("{}: reintroduces {name}", file.display()));
+            }
+        }
+    }
+    assert!(
+        violations.is_empty(),
+        "the publication owns these answers now:\n{}",
+        violations.join("\n")
+    );
+}
+
+/// The inspector's wire contract must not grow a generic attribute map again.
+///
+/// The map was how presentation became a second truth store: a consumer read `evaluatedValue` and
+/// `attributeType` out of it and never learned that the publication had settled either. Every key
+/// it carried has a typed field now, and the two evaluation channels are their own types.
+#[test]
+fn the_inspector_dto_has_no_generic_attribute_map() {
+    let source = fs::read_to_string(repository_root().join("crates/lsp_server/src/views/dto.rs"))
+        .expect("read view DTOs");
+    let syntax = syn::parse_file(&source).expect("parse view DTOs");
+    let mut violations = Vec::new();
+    for item in syntax.items {
+        let Item::Struct(item) = item else {
+            continue;
+        };
+        if !item.ident.to_string().starts_with("SysmlFeatureInspector") {
+            continue;
+        }
+        let Fields::Named(fields) = item.fields else {
+            continue;
+        };
+        for field in fields.named {
+            let name = field
+                .ident
+                .as_ref()
+                .map(ToString::to_string)
+                .unwrap_or_default();
+            let ty = type_last_identifier(&field.ty).unwrap_or_default();
+            if name == "attributes" || ty == "HashMap" || ty == "BTreeMap" {
+                violations.push(format!("{}::{name} is a generic map", item.ident));
+            }
+        }
+    }
+    assert!(
+        violations.is_empty(),
+        "the feature inspector projects typed facts, not an attribute map:\n{}",
+        violations.join("\n")
+    );
+}
+
 #[test]
 fn query_facade_public_api_contains_no_raw_semantic_storage() {
     assert_source_tree_has_no_raw_semantic_storage(

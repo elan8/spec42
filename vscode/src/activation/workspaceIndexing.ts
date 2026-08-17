@@ -6,6 +6,7 @@ import {
   graphScopesForContext,
   hasWorkspaceFolder,
   isClientNotRunningError,
+  resolvedReference,
 } from "../providers/lspModelProvider";
 import type { LspModelProvider } from "../providers/lspModelProvider";
 import type { GraphNodeDTO, SemanticIndexReadyParams } from "../providers/sysmlModelTypes";
@@ -680,7 +681,7 @@ async function syncFeatureInspectorFromEditor(
       uri: doc.uri.toString(),
       totalMs: Date.now() - syncStartedAt,
       selectionKind: result.selection.kind,
-      elementId: (result.referencedElement ?? result.containingElement)?.id,
+      elementId: (resolvedReference(result) ?? result.containingElement)?.id,
     });
   } catch (error) {
     if (isClientNotRunningError(error)) {

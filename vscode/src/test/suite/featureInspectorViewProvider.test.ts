@@ -50,6 +50,7 @@ function inspectorResult(name: string): FeatureInspectorResult {
     sourceUri: "file:///model.sysml",
     requestedPosition: { line: 1, character: 2 },
     selection: { kind: "element", text: name },
+    referenced: { status: "none" },
     containingElement: {
       id: `P::${name}`,
       name,
@@ -62,7 +63,8 @@ function inspectorResult(name: string): FeatureInspectorResult {
         start: { line: 1, character: 2 },
         end: { line: 1, character: 10 },
       },
-      attributes: {},
+      evaluation: { state: "notApplicable" },
+      analysis: { state: "notApplicable" },
       typing: { status: "notApplicable", targets: [] },
       specialization: { status: "notApplicable", targets: [] },
       incomingRelationships: [],

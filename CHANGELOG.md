@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **The feature inspector reads the immutable publication.** `sysml_resolution` publishes
+  `element_details`: one cohesive answer per element carrying its inspection, what each authored
+  relationship family settled to, the types it has once inheritance is taken into account, the
+  features it inherits and the type that declares each, its metadata bindings, both directions of
+  its relationships with authored/implied provenance, and both evaluation channels -- the value and
+  a new `AnalysisEvaluation` verdict channel for analysis cases, verification cases, requirements
+  and constraints. `sysml/featureInspector` is now a projection of that and nothing else: the
+  qualified-name and simple-name target searches, the subsetting-chain and specialization-chain
+  walks, and the "found a target, call it resolved" status inference are deleted, as is the
+  unreachable inherited-attribute code lens that read evaluation facts by graph node. LSP type
+  hierarchy moves to `PublishedModel::types()`, where a subsetting or redefinition is a hierarchy
+  step as the specification says it is.
+
+  The `sysml/featureInspector` response changes with it. The generic `attributes` map is gone --
+  every key it carried is a typed field, and reading `evaluatedValue` out of a map is how
+  presentation became a second truth store. `evaluation` has one variant per published state so a
+  missing value cannot read as success, `analysis` is its own channel, relationship families report
+  `partial`, `ambiguous` and `unsupported` beside `resolved` and keep ambiguous candidates out of
+  `targets`, `referencedElement` becomes the tagged `referenced` outcome, relationships carry their
+  provenance, and element kinds are the published OMG metaclass names. Three answers change because
+  the publication owns them now: a KerML `feature`'s typing is authored-but-unresolved rather than
+  not applicable, an unqualified name does not cross two documents that both declare `package P`,
+  and an anonymously redefined feature is attributed to the type that declares it under a name.
+
 - **Expression, value and unit conformance moved to the immutable publication.** `sysml_resolution`
   now lowers authored unit tokens, `filter` conditions and invocation arities as typed facts, settles
   them at the publication barrier, and answers them through `PublishedModel::evaluation()` alongside

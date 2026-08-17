@@ -26,6 +26,7 @@ use crate::{
 };
 
 mod conformance;
+mod details;
 mod expression;
 mod expression_conformance;
 mod inspection;
