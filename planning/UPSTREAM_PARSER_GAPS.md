@@ -10,6 +10,29 @@ a scratch fixture run through `cargo run -p spec42-snapshot`, or both.
 
 ## Open
 
+- Gap 57. The anonymous subsetting/redefinition shorthand member -- `:> annotatedElement :
+  SysML::Usage;`, `:>> baseType = ...;` -- authors no declared name, but the parser populates the
+  member's `name` field with the subsetting target's spelling *and* reports the same spelling as the
+  `subsets`/`redefines` target. Verified against `7d4fd85` with a scratch fixture: `metadata def M {
+  :> annotatedElement : SysML::Usage; }` yields an `AttributeUsage` whose `name` is
+  `"annotatedElement"` alongside a subsetting relationship to `annotatedElement`.
+
+  KerML gives such a feature the subsetted feature's *effective* name; it does not give it a
+  declared one, and the difference is load-bearing for scope. The declared name puts the feature
+  into its own owner's owned name tier under exactly the name it is looking up, and that tier
+  shadows the inherited one the author meant, so the feature subsets itself. Two declarations in
+  `test/snapshots/sysml.library/requirement_derivation.md` are reported as `specialization_cycle`
+  for this reason, and every conformance question about them answers from a self-loop.
+
+  `sysml_resolution` cannot correct it locally. Excluding a specialization reference's own source
+  from its scope -- which it does for `Redefinition`, per
+  `planning/RESOLUTION_LAYER_DESIGN.md` section 11.1 -- is not enough here, because a metadata
+  definition commonly authors several of these shorthand members and they all acquire the same
+  declared name: excluding only the reference's own source makes two of them resolve to each other,
+  turning a self-loop into a two-cycle. Distinguishing a declared name from an effective one needs
+  the parser to stop reporting one, filed upstream against
+  `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+
 - Gap 41. KerML's implicit self-reference identifier `that` (e.g.
   `test/snapshots/sysml/examples`'s `trig_functions.md`: `inv unitBound { -1.0 <= that & that <=
   1.0 }` inside `datatype UnitBoundedReal :> Real { ... }`, 111 fixtures overall) has no
