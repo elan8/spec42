@@ -250,12 +250,18 @@ pub(crate) fn sysml_feature_inspector_result(
         ));
     };
     let text = entry.content.clone();
-    let mut response = crate::views::build_sysml_feature_inspector_response(
-        model,
-        &uri,
-        position,
-        Some(text.as_str()),
-    );
+    // Queried once: the response and the selection classification below are two readings of the
+    // same settled answer, and asking twice would suggest they could differ.
+    let at = crate::views::feature_inspector::details_at(model, &uri, position);
+    let mut response = match &at {
+        Some(at) => crate::views::feature_inspector::feature_inspector_response(
+            &uri,
+            position,
+            at,
+            Some(text.as_str()),
+        ),
+        None => crate::views::empty_feature_inspector_response(&uri, position),
+    };
 
     if let Some((unit, range)) = language_service::unit_value_suffix_selection_at_position(
         &text,
@@ -300,11 +306,10 @@ pub(crate) fn sysml_feature_inspector_result(
         return Ok(response);
     }
 
-    // The publication decides all three of these. A reference is a reference because the
-    // publication placed one at this position, not because a name lookup happened to succeed, and
-    // an unresolved or unsupported one is deliberately *not* a reference selection: the inspector
-    // has no target to show for it.
-    let at = crate::views::feature_inspector::details_at(model, &uri, position);
+    // The publication decides both of these. A reference is a reference because the publication
+    // placed one at this position, not because a name lookup happened to succeed, and an
+    // unresolved or unsupported one is deliberately *not* a reference selection: the inspector has
+    // no target to show for it.
     let on_reference = at.as_ref().is_some_and(|at| {
         matches!(
             at.referenced,

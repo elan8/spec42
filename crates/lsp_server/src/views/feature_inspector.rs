@@ -374,10 +374,11 @@ fn declaration_text(details: &ElementDetails, source: Option<&str>) -> String {
     }
 }
 
-/// The `text` covered by `range`, in LSP line/UTF-16-agnostic character terms.
+/// The `text` covered by a published range.
 ///
-/// Character offsets are counted in `char`s, which matches how the publication reports them for
-/// the ASCII-and-BMP sources this slice admits.
+/// Characters are counted as Unicode scalar values, which is what the publication's own column
+/// numbering counts. A range that does not land on a character boundary yields `None` rather than
+/// a slice taken from somewhere else, and the caller falls back.
 fn slice_range(text: &str, range: TextRange) -> Option<&str> {
     let start = byte_offset(text, range.start)?;
     let end = byte_offset(text, range.end)?;
@@ -537,22 +538,35 @@ pub(crate) fn referenced_dto(
     }
 }
 
-pub fn build_sysml_feature_inspector_response(
-    model: &PublishedModel,
+/// The protocol answer for one already-settled position.
+///
+/// Separate from [`build_sysml_feature_inspector_response`] so the request handler, which also
+/// needs the settled details to classify the selection, queries the publication once.
+pub(crate) fn feature_inspector_response(
     uri: &Url,
     position: Position,
+    at: &ElementDetailsAt,
     source: Option<&str>,
 ) -> SysmlFeatureInspectorResultDto {
     let mut response = empty_feature_inspector_response(uri, position);
-    let Some(at) = details_at(model, uri, position) else {
-        return response;
-    };
     response.containing_element = at
         .containing
         .as_ref()
         .map(|details| feature_inspector_element(details, source));
     response.referenced = referenced_dto(&at.referenced, source);
     response
+}
+
+pub fn build_sysml_feature_inspector_response(
+    model: &PublishedModel,
+    uri: &Url,
+    position: Position,
+    source: Option<&str>,
+) -> SysmlFeatureInspectorResultDto {
+    match details_at(model, uri, position) {
+        Some(at) => feature_inspector_response(uri, position, &at, source),
+        None => empty_feature_inspector_response(uri, position),
+    }
 }
 
 #[cfg(test)]
