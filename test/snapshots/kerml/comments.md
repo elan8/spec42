@@ -61,13 +61,7 @@ package Comments {
         (severity error)
         (code "recovered_attribute_body_element")
         (source "parser")
-        (range (start 36 2) (end 39 1))
-      )
-      (diagnostic
-        (severity warning)
-        (code "recovery_cascade_suppressed")
-        (source "parser")
-        (range (start 36 2) (end 39 1))
+        (range (start 42 2) (end 44 1))
       )
     )
   )
@@ -80,7 +74,7 @@ package Comments {
   (declarations
     (declaration (id (node (document "memory://snapshot/comments.md") (qualified-name "Comments"))) (kind package) (membership (kind owning) (visibility default)) (documentation (comment (locale "en_US") (text "\n * AAAA\n * BBBB\n *    CCC DDD    \n ")) (comment (text " Named Comment ")) (comment (text " Other Comment about Comment "))))
     (declaration (id (node (document "memory://snapshot/comments.md") (qualified-name "Comments::A"))) (kind class-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/comments.md") (qualified-name "Comments::C"))) (kind class-def) (membership (kind owning) (visibility default)) (documentation (doc (locale "en_US") (text " Documentation on Class C "))))
+    (declaration (id (node (document "memory://snapshot/comments.md") (qualified-name "Comments::C"))) (kind class-def) (membership (kind owning) (visibility default)) (documentation (doc (locale "en_US") (text " Documentation on Class C ")) (comment (text " Comment in Class C ")) (comment (text " Comment about Package "))))
   )
   (references
   )

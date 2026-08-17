@@ -43,9 +43,15 @@ part def Outer {
     (diagnostics
       (diagnostic
         (severity error)
-        (code "recovered_part_def_body_element")
+        (code "recovered_enumeration_body_element")
         (source "parser")
-        (range (start 4 4) (end 5 4))
+        (range (start 2 25) (end 2 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "parser")
+        (range (start 2 25) (end 2 39))
       )
       (diagnostic
         (severity warning)

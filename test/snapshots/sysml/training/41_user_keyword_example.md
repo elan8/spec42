@@ -83,7 +83,7 @@ package 'User Keyword Example' {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 19 2) (end 19 13))
+        (range (start 19 2) (end 19 12))
       )
       (diagnostic
         (severity warning)
@@ -95,7 +95,7 @@ package 'User Keyword Example' {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 25 2) (end 25 13))
+        (range (start 25 2) (end 25 12))
       )
       (diagnostic
         (severity warning)

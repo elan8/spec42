@@ -3160,11 +3160,6 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     // than a separate one -- both resolve through the identical lexical lookup fixed point, kept
     // as a distinct `ReferenceKind` purely so filter and annotation relationships stay distinct in
     // query output.
-    // A view-body `satisfy <viewpoint>;` statement's viewpoint reference
-    // (`ReferenceKind::SatisfyViewpoint`) names a type -- specifically a viewpoint -- exactly like
-    // `MetadataAnnotation`, so it joins the same `DeclarationDomain::Type`/ancestor-scoped lexical
-    // lookup rather than a separate slot list, kept as a distinct `ReferenceKind` purely so it
-    // stays distinct from ordinary typing/annotation relationships in query output.
     let metadata_annotation_slots: Vec<usize> = references
         .iter()
         .enumerate()
@@ -3174,7 +3169,6 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                 reference.kind(),
                 ReferenceKind::MetadataAnnotation
                     | ReferenceKind::FilterMetadataTest
-                    | ReferenceKind::SatisfyViewpoint
                     | ReferenceKind::AcceptPayloadType
                     | ReferenceKind::TypeCheckTarget
                     | ReferenceKind::MetaCastTarget
@@ -4215,7 +4209,6 @@ fn supported_import_domain(reference: &impl ResolutionReferenceFact) -> Option<D
         | ReferenceKind::FilterMetadataTest
         | ReferenceKind::SatisfySource
         | ReferenceKind::SatisfyTarget
-        | ReferenceKind::SatisfyViewpoint
         | ReferenceKind::AllocateSource
         | ReferenceKind::AllocateTarget
         | ReferenceKind::BindSource
@@ -4440,7 +4433,6 @@ fn build_effective_import_indexes<R: ResolutionReferenceFact>(
             | ReferenceKind::FilterMetadataTest
             | ReferenceKind::SatisfySource
             | ReferenceKind::SatisfyTarget
-            | ReferenceKind::SatisfyViewpoint
             | ReferenceKind::AllocateSource
             | ReferenceKind::AllocateTarget
             | ReferenceKind::BindSource

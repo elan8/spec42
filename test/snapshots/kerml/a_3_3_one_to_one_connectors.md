@@ -133,7 +133,7 @@ package OneToOneConnectorsExecution {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 31 1) (end 32 1))
+        (range (start 31 1) (end 31 6))
       )
       (diagnostic
         (severity warning)
@@ -145,7 +145,7 @@ package OneToOneConnectorsExecution {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 33 1) (end 34 1))
+        (range (start 33 1) (end 33 6))
       )
       (diagnostic
         (severity warning)
@@ -157,7 +157,7 @@ package OneToOneConnectorsExecution {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 38 1) (end 39 2))
+        (range (start 38 1) (end 38 6))
       )
       (diagnostic
         (severity warning)
@@ -169,7 +169,7 @@ package OneToOneConnectorsExecution {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 43 1) (end 44 1))
+        (range (start 43 1) (end 43 6))
       )
       (diagnostic
         (severity warning)
@@ -181,7 +181,7 @@ package OneToOneConnectorsExecution {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 51 1) (end 52 1))
+        (range (start 51 1) (end 51 6))
       )
       (diagnostic
         (severity warning)

@@ -79,7 +79,7 @@ package VehicleRequirementDerivation {
         (severity error)
         (code "recovered_requirement_body_element")
         (source "parser")
-        (range (start 16 2) (end 16 28))
+        (range (start 16 2) (end 17 2))
       )
       (diagnostic
         (severity warning)

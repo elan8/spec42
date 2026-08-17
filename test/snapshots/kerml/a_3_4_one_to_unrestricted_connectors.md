@@ -116,19 +116,19 @@ package OneToUnrestrictedConnectorsExecution {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 32 1) (end 33 1))
+        (range (start 32 1) (end 32 6))
       )
       (diagnostic
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 34 1) (end 35 1))
+        (range (start 34 1) (end 34 6))
       )
       (diagnostic
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 39 1) (end 40 1))
+        (range (start 39 1) (end 39 6))
       )
       (diagnostic
         (severity warning)
@@ -140,7 +140,7 @@ package OneToUnrestrictedConnectorsExecution {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 44 1) (end 45 1))
+        (range (start 44 1) (end 44 6))
       )
       (diagnostic
         (severity warning)
@@ -152,7 +152,7 @@ package OneToUnrestrictedConnectorsExecution {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 52 1) (end 53 1))
+        (range (start 52 1) (end 52 6))
       )
       (diagnostic
         (severity warning)

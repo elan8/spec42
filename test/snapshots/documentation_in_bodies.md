@@ -51,7 +51,7 @@ package DocTests {
   (declarations
     (declaration (id (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests"))) (kind package) (membership (kind owning) (visibility default)) (documentation (doc (text " Package-level documentation. "))))
     (declaration (id (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Car"))) (kind alias) (membership (kind alias) (visibility default)) (documentation (doc (text " Alias documentation. "))) (authored (membership (kind alias) (visibility default)) (relationships (aliasBinding (reference "Vehicle")))))
-    (declaration (id (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Color"))) (kind enum-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Color"))) (kind enum-def) (membership (kind owning) (visibility default)) (documentation (doc (text " Enum def documentation. "))))
     (declaration (id (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Color::red"))) (kind enum-literal) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Payload"))) (kind item-def) (membership (kind owning) (visibility default)) (documentation (doc (locale "en") (text " Full form doc with short name and locale. "))))
     (declaration (id (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Speed"))) (kind attribute-def) (membership (kind owning) (visibility default)) (documentation (doc (text " Named documentation. "))))

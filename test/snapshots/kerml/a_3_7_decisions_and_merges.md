@@ -249,13 +249,13 @@ package DecisionsAndMergesExecution {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 61 1) (end 62 1))
+        (range (start 61 1) (end 61 6))
       )
       (diagnostic
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 65 1) (end 66 1))
+        (range (start 65 1) (end 65 6))
       )
       (diagnostic
         (severity warning)
@@ -267,7 +267,7 @@ package DecisionsAndMergesExecution {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 67 1) (end 68 1))
+        (range (start 67 1) (end 67 6))
       )
       (diagnostic
         (severity warning)
@@ -291,13 +291,13 @@ package DecisionsAndMergesExecution {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 74 1) (end 75 1))
+        (range (start 74 1) (end 74 6))
       )
       (diagnostic
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 76 1) (end 77 1))
+        (range (start 76 1) (end 76 6))
       )
       (diagnostic
         (severity warning)
@@ -321,7 +321,7 @@ package DecisionsAndMergesExecution {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 83 1) (end 84 1))
+        (range (start 83 1) (end 83 6))
       )
       (diagnostic
         (severity warning)
@@ -333,7 +333,7 @@ package DecisionsAndMergesExecution {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 85 1) (end 86 1))
+        (range (start 85 1) (end 85 6))
       )
       (diagnostic
         (severity warning)
@@ -357,13 +357,13 @@ package DecisionsAndMergesExecution {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 92 1) (end 93 1))
+        (range (start 92 1) (end 92 6))
       )
       (diagnostic
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 94 1) (end 95 1))
+        (range (start 94 1) (end 94 6))
       )
       (diagnostic
         (severity warning)
@@ -387,7 +387,7 @@ package DecisionsAndMergesExecution {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 102 1) (end 103 1))
+        (range (start 102 1) (end 102 6))
       )
       (diagnostic
         (severity warning)

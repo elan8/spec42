@@ -30,7 +30,7 @@ use sysml_v2_parser_next::{
         ConnectionUsageMember as ParserConnectionUsage, ConstraintDef, ConstraintDefBody,
         ConstraintDefBodyElement, ConstraintUsage as ParserConstraintUsage, DefaultReferenceUsage,
         DefinitionBody, DefinitionBodyElement, DefinitionPrefix, Dependency, DoAction, DocComment,
-        EndDecl, EndIdentity, EntryAction, EnumDef, EnumerationBody,
+        EndDecl, EndIdentity, EntryAction, EnumDef, EnumerationBody, EnumerationBodyElement,
         EnumerationUsage as ParserEnumerationUsage, ExitAction, Expression, ExtendedDefinition,
         FeatureValue, FeatureValueKind as ParserFeatureValueKind, FinalState, FirstMergeBody,
         FirstMergeBodyElement, FirstStmt, FlowDef, FlowUsage, ForLoop, FrameMember, IfStmt, Import,
@@ -52,12 +52,13 @@ use sysml_v2_parser_next::{
         RenderingUsage as ParserRenderingUsage, RenderingUsageBody, RenderingUsageBodyElement,
         RequireConstraint, RequirementActorDecl, RequirementDef, RequirementDefBody,
         RequirementDefBodyElement, RequirementUsage as ParserRequirementUsage, ReturnDecl,
-        RootElement, Satisfy, SatisfyViewMember, SendPayload, Span, StakeholderMember, StateDef,
-        StateDefBody, StateDefBodyElement, StateUsage as ParserStateUsage, SubjectDecl,
-        SubsettingKind, SubsettingRelationship, TerminateStmt, TextualRepresentation, ThenAction,
-        ThenStmt, ThenTarget, Transition, TransitionAccept, TransitionEffect, TypedParameterMember,
-        UnaryOperator, UseCaseDef, UseCaseDefBody, UseCaseDefBodyElement,
-        UseCaseUsage as ParserUseCaseUsage, VariantTypedUsage, VariantUsage, VerificationCaseDef,
+        RootElement, SatisfiedRequirement, SatisfyRequirementUsage, SendPayload, Span,
+        StakeholderMember, StateDef, StateDefBody, StateDefBodyElement,
+        StateUsage as ParserStateUsage, SubjectDecl, SubsettingKind, SubsettingRelationship,
+        TerminateStmt, TextualRepresentation, ThenAction, ThenStmt, ThenTarget, Transition,
+        TransitionAccept, TransitionEffect, TypedParameterMember, UnaryOperator, UseCaseDef,
+        UseCaseDefBody, UseCaseDefBodyElement, UseCaseUsage as ParserUseCaseUsage,
+        VariantTypedUsage, VariantUsage, VerificationCaseDef,
         VerificationCaseUsage as ParserVerificationCaseUsage, VerifyRequirementMember, ViewBody,
         ViewBodyElement, ViewDef, ViewDefBody, ViewDefBodyElement, ViewUsage as ParserViewUsage,
         ViewpointDef, ViewpointUsage as ParserViewpointUsage, Visibility as ParserVisibility,
@@ -849,8 +850,8 @@ pub(crate) enum DeclarationKind {
     /// through the same `DeclarationDomain::Any` lexical lookup as other authored references;
     /// only reference resolution is modeled, not dependency-specific semantics (e.g. no
     /// standalone "Dependency" relationship classification beyond the two reference kinds).
-    /// `body_elements` (doc/comment/metadata only, BNF `RelationshipBody`) are walked through the
-    /// shared `lower_relationship_body_elements` helper used by `Import`/`AliasDef`.
+    /// Its `RelationshipBody` members (doc/comment/metadata only) are walked through the shared
+    /// `lower_relationship_body_elements` helper used by `Import`/`AliasDef`.
     Dependency,
     /// `#<keyword>+ def <Name> ...` (BNF ExtendedDefinition, `structure.rs` struct
     /// `ExtendedDefinition`, planning/UPSTREAM_PARSER_GAPS.md gap #12's short form), e.g. `#scenario def
@@ -1061,33 +1062,21 @@ pub(crate) enum ReferenceKind {
     /// filter statement's owner), mirroring `ExpressionOperand`'s "no anonymous nested-declaration
     /// scope shift" shape. See `lower_filter_expression`.
     FilterMetadataTest,
-    /// The authored `source` operand of a `satisfy <requirement> by <element>;` body element's
-    /// bare shorthand form (`Satisfy.source`, BNF `Satisfy` minus its optional
-    /// `InlineSatisfyRequirement` prefix), resolved through the same `DeclarationDomain::Any`
-    /// lexical lookup as `Succession`/`TransitionSource`: the satisfied requirement can be any
-    /// owned feature, not just a Type. Sourced at an anonymous `DeclarationKind::Satisfy` feature
-    /// owned by the enclosing package/part/occurrence declaration, mirroring `Transition`'s
-    /// nested-declaration shape. Only a simple/qualified name (`Expression::FeatureRef`) is
-    /// resolved; a dotted feature-chain (`Expression::MemberAccess`, e.g.
-    /// `satisfy r by vehicle.engine;`'s target) or any other expression shape is out of scope, as
-    /// is the fuller `satisfy requirement <name> : <Type> by <expr>;` form
-    /// (`Satisfy.inline_requirement`, which introduces a new anonymous requirement usage inline
-    /// rather than referencing an existing one) and the braced satisfy body's nested constraint
-    /// members (`Satisfy.body_elements`).
+    /// The satisfied requirement named by a satisfy usage's reference alternative
+    /// (`SatisfiedRequirement::Reference`, BNF `SatisfyRequirementUsage`'s
+    /// `OwnedReferenceSubsetting`), resolved through the same `DeclarationDomain::Any` lexical
+    /// lookup as `Succession`/`TransitionSource`: the satisfied requirement can be any owned
+    /// feature, not just a Type. Sourced at an anonymous `DeclarationKind::Satisfy` feature owned
+    /// by the enclosing package/part/occurrence/requirement/view declaration, mirroring
+    /// `Transition`'s nested-declaration shape. The production's other alternative,
+    /// `'requirement' UsageDeclaration` (`SatisfiedRequirement::Declaration`, which declares a
+    /// requirement inline rather than referencing an existing one), and the members of the
+    /// `RequirementBody` the usage owns are out of scope.
     SatisfySource,
-    /// The authored `target` operand (the `by <element>` clause) of a `satisfy <requirement> by
-    /// <element>;` body element's bare shorthand form (`Satisfy.target`), same shape and scope as
-    /// `SatisfySource`.
+    /// The authored subject of a satisfy usage's `by` clause
+    /// (`SatisfyRequirementUsage.subject`), same shape and scope as `SatisfySource`. Absent when
+    /// the author wrote no `by` clause, which the production allows.
     SatisfyTarget,
-    /// The authored viewpoint reference of a view-body `satisfy <viewpoint>;` statement
-    /// (`SatisfyViewMember.viewpoint_ref`, BNF `ViewBodyElement::Satisfy`) -- a genuinely distinct
-    /// AST shape from `Satisfy`/`SatisfySource`/`SatisfyTarget`: a single `QualifiedReferenceId`
-    /// naming a viewpoint (not a requirement/satisfying-element pair), so it resolves through the
-    /// same Subclassification/FeatureTyping `DeclarationDomain::Type` lexical lookup fixed point
-    /// as `FeatureTyping` rather than `DeclarationDomain::Any`. Sourced directly at the enclosing
-    /// `view` usage declaration (no anonymous nested-declaration scope shift is needed, since the
-    /// viewpoint reference is not itself paired with a second operand the way `Satisfy` is).
-    SatisfyViewpoint,
     /// The authored `source` operand of an `allocate <source> to <target>;` body element (BNF
     /// `Allocate`, `ast::Allocate.source`) -- the shorthand allocation *statement* form, distinct
     /// from `AllocationDefinition`/`AllocationUsage`'s declaration-side `ConnectorEnd` machinery
@@ -1111,8 +1100,8 @@ pub(crate) enum ReferenceKind {
     /// `vehicleFamily` part, referenced from `variant manualTransmission;` nested inside
     /// `variation part transmission { ... }`). Sourced directly at the enclosing `variation`
     /// declaration itself (no anonymous nested-declaration scope shift, unlike `Succession`/
-    /// `Satisfy`), since each `variant` member carries only a single operand -- mirroring
-    /// `SatisfyViewpoint`'s single-operand shape rather than `Succession`'s paired-ends shape.
+    /// `Satisfy`), since each `variant` member carries only a single operand -- a single-operand
+    /// shape rather than `Succession`'s paired-ends shape.
     /// Multiple `variant` members owned by the same variation declaration become multiple
     /// `Variant` references from that one source, distinguished by ordinal like any other
     /// multi-target reference family (e.g. `Subclassification`'s multiple `:>` targets). The typed
@@ -1128,7 +1117,7 @@ pub(crate) enum ReferenceKind {
     /// the same `DeclarationDomain::Any` lexical lookup fixed point as `Succession`/
     /// `SatisfySource` rather than the Subclassification/FeatureTyping `Type` domain. Sourced
     /// directly at the enclosing use case declaration (no anonymous nested-declaration scope
-    /// shift), mirroring `SatisfyViewpoint`/`Variant`'s single-operand shape rather than
+    /// shift), mirroring `Variant`'s single-operand shape rather than
     /// `Succession`'s paired-ends shape, since `include` carries only one target reference.
     /// Optional multiplicity (`IncludeUseCase.multiplicity`) and a nested body
     /// (`IncludeUseCase.body`, always `Semicolon` in practice) are out of scope for this slice.
@@ -1145,8 +1134,8 @@ pub(crate) enum ReferenceKind {
     /// (`Expression::FeatureRef`) exactly like `AllocateSource`; `BindingConnectorUsage.left` is
     /// already a `QualifiedReferenceId`, resolved directly like `AliasBinding`. Left/right
     /// multiplicities, the optional `binding <name>`/`: Type` prefix on either AST shape, and
-    /// `Bind`'s optional braced body (`Bind.body_elements`) are out of scope -- only the two
-    /// operand references themselves are resolved.
+    /// `Bind`'s braced body are out of scope -- only the two operand references themselves are
+    /// resolved.
     BindSource,
     /// The authored `target` operand (`right`) of a `bind <source> = <target>;` body element or a
     /// package-level `binding` statement (`Bind.right` / `BindingConnectorUsage.right`), same
@@ -1305,7 +1294,7 @@ pub(crate) enum ReferenceKind {
     /// usage (a feature, not a Type) as easily as a `concern def`, so it is not restricted to the
     /// Subclassification/FeatureTyping `Type` domain. Sourced at the `DeclarationKind::
     /// StakeholderUsage` declaration itself (no anonymous nested-declaration scope shift, mirroring
-    /// `SatisfyViewpoint`/`Variant`'s single-operand shape), since a `stakeholder` member carries
+    /// `Variant`'s single-operand shape), since a `stakeholder` member carries
     /// only one operand. The `:>>` redefinition spelling (`is_redefinition == true`) reuses the
     /// existing generic `ReferenceKind::Redefinition` instead of this kind.
     StakeholderTarget,
@@ -1313,7 +1302,7 @@ pub(crate) enum ReferenceKind {
     /// `PurposeMember`), same shape and scope as `StakeholderTarget`: a concern reference resolved
     /// through `DeclarationDomain::Any`, sourced directly at the enclosing requirement/viewpoint
     /// declaration (no anonymous nested-declaration scope shift -- a `purpose` member carries only
-    /// one operand and introduces no name of its own, mirroring `SatisfyViewpoint`).
+    /// one operand and introduces no name of its own, mirroring `Variant`).
     PurposeTarget,
     /// The shorthand `target` of a requirement/objective-body `verify <requirement>;` body element
     /// (`VerifyRequirementMember.target`, BNF `VerifyRequirementMember`'s bare shorthand form,
@@ -3057,11 +3046,15 @@ impl SemanticModelBuilder {
     /// `annotated` is `None` only where the construct owning the body mints no declaration of its
     /// own -- a `connect a to b { ... }` statement lowers its ends directly against the enclosing
     /// declaration -- so there is no element the annotation belongs to and attributing it to the
-    /// enclosing type would misreport it.
+    /// enclosing type would misreport it. The three documentation forms are simply not recorded
+    /// there (they are inert text with nowhere to hang); an `@Name` annotation is not, because it
+    /// carries a reference whose source declaration is exactly what is missing, so it is reported
+    /// as an explicit `family` unsupported member rather than dropped.
     fn lower_annotating_member(
         &mut self,
         document: DocumentId,
         annotated: Option<DeclarationId>,
+        family: UnsupportedFamily,
         member: &AnnotatingMember,
     ) -> Result<(), ConstructionError> {
         match member {
@@ -3072,7 +3065,10 @@ impl SemanticModelBuilder {
             }
             AnnotatingMember::MetadataAnnotation(node) => match annotated {
                 Some(annotated) => self.lower_metadata_annotation(document, annotated, node),
-                None => Ok(()),
+                None => {
+                    self.push_unsupported(document, family, node.span.clone());
+                    Ok(())
+                }
             },
         }
     }
@@ -3739,14 +3735,13 @@ impl SemanticModelBuilder {
                     node.span.clone(),
                 );
             }
-            PackageBodyElement::Doc(node) => {
-                self.record_root_doc_comment(owner, node)?;
-            }
-            PackageBodyElement::Comment(node) => {
-                self.record_root_comment_annotation(owner, node)?;
-            }
-            PackageBodyElement::TextualRep(node) => {
-                self.record_root_textual_representation(owner, node)?;
+            PackageBodyElement::Annotating(member) => {
+                self.lower_annotating_member(
+                    document,
+                    owner,
+                    UnsupportedFamily::PackageMember,
+                    member,
+                )?;
             }
             PackageBodyElement::Filter(node) => match owner {
                 Some(declaration) => self.lower_filter_condition(
@@ -3961,7 +3956,12 @@ impl SemanticModelBuilder {
             ),
             PackageBodyElement::Connect(node) => {
                 if let Some(owner) = owner {
-                    self.lower_bare_connect(document, owner, node)?;
+                    self.lower_bare_connect(
+                        document,
+                        owner,
+                        UnsupportedFamily::PackageMember,
+                        node,
+                    )?;
                 } else {
                     self.push_unsupported(
                         document,
@@ -3994,17 +3994,14 @@ impl SemanticModelBuilder {
                 UnsupportedFamily::PackageMember,
                 node.span.clone(),
             ),
-            PackageBodyElement::MetadataAnnotation(node) => match owner {
-                Some(owner) => self.lower_metadata_annotation(document, owner, node)?,
-                None => self.push_unsupported(
-                    document,
-                    UnsupportedFamily::PackageMember,
-                    node.span.clone(),
-                ),
-            },
             PackageBodyElement::PerformUsage(node) => self.lower_perform(document, owner, node)?,
             PackageBodyElement::BindingConnectorUsage(node) => match owner {
-                Some(owner) => self.lower_binding_connector_usage(document, owner, node)?,
+                Some(owner) => self.lower_binding_connector_usage(
+                    document,
+                    owner,
+                    UnsupportedFamily::PackageMember,
+                    node,
+                )?,
                 None => self.push_unsupported(
                     document,
                     UnsupportedFamily::PackageMember,
@@ -4319,14 +4316,13 @@ impl SemanticModelBuilder {
                     PartDefBodyElement::Perform(perform) => {
                         self.lower_perform(document, Some(declaration), perform)?;
                     }
-                    PartDefBodyElement::Doc(node) => {
-                        self.record_doc_comment(declaration, node)?;
-                    }
-                    PartDefBodyElement::Comment(node) => {
-                        self.record_comment_annotation(declaration, node)?;
-                    }
-                    PartDefBodyElement::MetadataAnnotation(node) => {
-                        self.lower_metadata_annotation(document, declaration, node)?;
+                    PartDefBodyElement::Annotating(member) => {
+                        self.lower_annotating_member(
+                            document,
+                            Some(declaration),
+                            UnsupportedFamily::PartDefinitionMember,
+                            member,
+                        )?;
                     }
                     PartDefBodyElement::Satisfy(node) => {
                         self.lower_satisfy(
@@ -4390,7 +4386,12 @@ impl SemanticModelBuilder {
                         self.lower_dependency(document, Some(declaration), node)?;
                     }
                     PartDefBodyElement::Connect(node) => {
-                        self.lower_bare_connect(document, declaration, node)?;
+                        self.lower_bare_connect(
+                            document,
+                            declaration,
+                            UnsupportedFamily::PartDefinitionMember,
+                            node,
+                        )?;
                     }
                     PartDefBodyElement::ViewpointUsage(node) => {
                         self.lower_viewpoint_usage(document, Some(declaration), node)?;
@@ -4398,8 +4399,7 @@ impl SemanticModelBuilder {
                     PartDefBodyElement::KermlClassifier(node) => {
                         self.lower_kerml_classifier_decl(document, Some(declaration), node)?;
                     }
-                    PartDefBodyElement::Annotation(_)
-                    | PartDefBodyElement::MetadataKeywordUsage(_)
+                    PartDefBodyElement::MetadataKeywordUsage(_)
                     | PartDefBodyElement::FlowUsage(_)
                     | PartDefBodyElement::ExhibitState(_)
                     | PartDefBodyElement::AllocationUsage(_) => self.push_unsupported(
@@ -4497,10 +4497,9 @@ impl SemanticModelBuilder {
     }
 
     /// Lowers one `PartUsageBodyElement` found inside a `part` usage/def body, and reused
-    /// verbatim by `Bind.body_elements` (BNF `Bind`'s optional braced body, `ast::structure::
-    /// Bind.body_elements: Vec<Node<PartUsageBodyElement>>` -- the same part-usage member set
-    /// `PartUsageBody` uses, per its own doc comment) rather than the blanket "every element is
-    /// unsupported" fallback `lower_bind` used before this dispatcher was factored out, and by
+    /// verbatim by every statement form whose body is `UsageBody = DefinitionBody` and which
+    /// mints an anonymous declaration to own it -- `bind`, `allocate`, a bare `connect`, and a
+    /// keyword-less binding connector all hold this same `PartUsageBody` member set -- and by
     /// `ref { ... }` bodies, which hold this same member set upstream (`RefBody =
     /// Body<PartUsageBodyElement>`). See `lower_part_usage`'s own doc comment for the per-arm
     /// recognized/unsupported shape.
@@ -4609,7 +4608,7 @@ impl SemanticModelBuilder {
                 self.lower_perform(document, Some(owner), perform)?;
             }
             PartUsageBodyElement::Annotating(member) => {
-                self.lower_annotating_member(document, Some(owner), member)?;
+                self.lower_annotating_member(document, Some(owner), family, member)?;
             }
             PartUsageBodyElement::KermlClassifier(node) => {
                 self.lower_kerml_classifier_decl(document, Some(owner), node)?;
@@ -4642,7 +4641,7 @@ impl SemanticModelBuilder {
                 self.lower_default_reference_usage(document, Some(owner), family, node)?;
             }
             PartUsageBodyElement::Connect(node) => {
-                self.lower_bare_connect(document, owner, node)?;
+                self.lower_bare_connect(document, owner, family, node)?;
             }
             PartUsageBodyElement::UseCaseUsage(node) => {
                 self.lower_use_case_usage(document, Some(owner), node)?;
@@ -4650,8 +4649,25 @@ impl SemanticModelBuilder {
             PartUsageBodyElement::VerificationCaseUsage(node) => {
                 self.lower_verification_case_usage(document, Some(owner), node)?;
             }
-            PartUsageBodyElement::Annotation(_)
-            | PartUsageBodyElement::FlowUsage(_)
+            PartUsageBodyElement::ViewDef(node) => {
+                self.lower_view_def(document, Some(owner), node)?;
+            }
+            PartUsageBodyElement::ViewUsage(node) => {
+                self.lower_view_usage(document, Some(owner), node)?;
+            }
+            PartUsageBodyElement::ViewpointDef(node) => {
+                self.lower_viewpoint_def(document, Some(owner), node)?;
+            }
+            PartUsageBodyElement::ViewpointUsage(node) => {
+                self.lower_viewpoint_usage(document, Some(owner), node)?;
+            }
+            PartUsageBodyElement::RenderingDef(node) => {
+                self.lower_rendering_def(document, Some(owner), node)?;
+            }
+            PartUsageBodyElement::RenderingUsage(node) => {
+                self.lower_rendering_usage(document, Some(owner), node)?;
+            }
+            PartUsageBodyElement::FlowUsage(_)
             | PartUsageBodyElement::SuccessionUsage(_)
             | PartUsageBodyElement::MetadataKeywordUsage(_)
             | PartUsageBodyElement::IncludeUseCase(_) => {
@@ -4685,7 +4701,12 @@ impl SemanticModelBuilder {
                     self.push_recovery(document, error.span.clone());
                 }
                 RelationshipBodyElement::Annotating(member) => {
-                    self.lower_annotating_member(document, annotated, member)?;
+                    self.lower_annotating_member(
+                        document,
+                        annotated,
+                        UnsupportedFamily::RelationshipBodyMember,
+                        member,
+                    )?;
                 }
                 RelationshipBodyElement::KermlFeature(node) => self.lower_kerml_feature_member(
                     document,
@@ -4948,8 +4969,13 @@ impl SemanticModelBuilder {
                 AttributeBodyElement::Error(error) => {
                     self.push_recovery(document, error.span.clone());
                 }
-                AttributeBodyElement::Doc(node) => {
-                    self.record_doc_comment(owner, node)?;
+                AttributeBodyElement::Annotating(member) => {
+                    self.lower_annotating_member(
+                        document,
+                        Some(owner),
+                        UnsupportedFamily::AttributeMember,
+                        member,
+                    )?;
                 }
                 AttributeBodyElement::AttributeDef(attribute) => {
                     self.lower_attribute_def(document, Some(owner), attribute)?;
@@ -4977,7 +5003,12 @@ impl SemanticModelBuilder {
                     self.lower_ref_decl(document, Some(owner), node)?;
                 }
                 AttributeBodyElement::Connect(node) => {
-                    self.lower_bare_connect(document, owner, node)?;
+                    self.lower_bare_connect(
+                        document,
+                        owner,
+                        UnsupportedFamily::AttributeMember,
+                        node,
+                    )?;
                 }
                 AttributeBodyElement::Bind(node) => {
                     self.lower_bind(document, owner, UnsupportedFamily::AttributeMember, node)?;
@@ -5070,8 +5101,26 @@ impl SemanticModelBuilder {
             self.lower_typing_relationship(document, declaration, relationship)?;
         }
         if let EnumerationBody::Brace { elements, .. } = &node.value.body {
-            for value in elements {
-                self.lower_enumerated_value(document, declaration, value)?;
+            for element in elements {
+                match &element.value {
+                    EnumerationBodyElement::Value(value) => {
+                        self.lower_enumerated_value(document, declaration, value)?;
+                    }
+                    // `EnumerationBody` names its own membership -- the annotating production plus
+                    // enumerated values, and nothing else -- so `enum def` shares the attribute
+                    // family it specializes rather than owning a family of its own.
+                    EnumerationBodyElement::Annotating(member) => {
+                        self.lower_annotating_member(
+                            document,
+                            Some(declaration),
+                            UnsupportedFamily::AttributeMember,
+                            member,
+                        )?;
+                    }
+                    EnumerationBodyElement::Error(error) => {
+                        self.push_recovery(document, error.span.clone());
+                    }
+                }
             }
         }
         Ok(())
@@ -6355,7 +6404,7 @@ impl SemanticModelBuilder {
     /// Lowers a viewpoint `purpose` member (BNF `PurposeMember`), an always-present concern
     /// reference (`PurposeMember.target`, no plain-declaration/redefinition alternatives the way
     /// `StakeholderMember` has), resolved as an authored `ReferenceKind::PurposeTarget` reference
-    /// sourced directly at the enclosing `owner` declaration, mirroring `SatisfyViewpoint`'s
+    /// sourced directly at the enclosing `owner` declaration, mirroring `Variant`'s
     /// single-operand, no-nested-declaration shape.
     fn lower_purpose_member(
         &mut self,
@@ -6674,8 +6723,13 @@ impl SemanticModelBuilder {
                 PerformBodyElement::AttributeUsage(attribute) => {
                     self.lower_attribute_usage(document, Some(owner), attribute)?;
                 }
-                PerformBodyElement::Doc(node) => {
-                    self.record_doc_comment(owner, node)?;
+                PerformBodyElement::Annotating(member) => {
+                    self.lower_annotating_member(
+                        document,
+                        Some(owner),
+                        UnsupportedFamily::ActionUsageMember,
+                        member,
+                    )?;
                 }
                 PerformBodyElement::Action(element) => {
                     self.lower_action_usage_body_element(document, owner, element)?;
@@ -6864,9 +6918,15 @@ impl SemanticModelBuilder {
     /// Lowers an `@Name{...}`/`@Name;` metadata annotation body element (`ast::MetadataAnnotation`,
     /// see `ReferenceKind::MetadataAnnotation`), applied to `owner` -- the declaration that owns
     /// the body the annotation appears in (a part usage, action def, state def, ...). Only the
-    /// annotation-target reference (`reference`, e.g. `Safety`) is resolved, sourced directly at
-    /// `owner`; `about_targets` and the nested `body` (feature-value overrides) are out of scope,
-    /// see the `ReferenceKind::MetadataAnnotation` doc comment.
+    /// annotation-target reference (`type_reference`, the production's required
+    /// `OwnedFeatureTyping`, e.g. `Safety`) is resolved, sourced directly at `owner`;
+    /// `about_targets` and the nested `body` (feature-value overrides) are out of scope, see the
+    /// `ReferenceKind::MetadataAnnotation` doc comment.
+    ///
+    /// `MetadataFeatureDeclaration`'s optional `Identification ( ':' | 'typed by' )` prefix is a
+    /// declared name, not a reference: `@t : Safety;` declares `t` and is typed by `Safety`, and
+    /// only the latter is the annotation target. The name is carried onto the annotation's own
+    /// declaration below when the annotation body mints one.
     fn lower_metadata_annotation(
         &mut self,
         document: DocumentId,
@@ -6875,7 +6935,7 @@ impl SemanticModelBuilder {
     ) -> Result<(), ConstructionError> {
         let span = self.documents[document.index()]
             .parsed
-            .qualified_reference(node.value.reference)
+            .qualified_reference(node.value.type_reference)
             .ok_or(ConstructionError::InvalidParserReference)?
             .metadata
             .span
@@ -6884,7 +6944,7 @@ impl SemanticModelBuilder {
             source: owner,
             kind: ReferenceKind::MetadataAnnotation,
             document,
-            local: node.value.reference,
+            local: node.value.type_reference,
             flags: RelationshipFlags::default(),
             span,
             import: None,
@@ -6896,20 +6956,37 @@ impl SemanticModelBuilder {
         // typed as an ordinary `AttributeUsage` (BNF-shared `AttributeBody`, exactly like `metadata
         // m : Safety { isMandatory = true; }`'s own body), but the `@Safety{...}` annotation form
         // has no named declaration of its own to own them (unlike a named `metadata m : Safety`
-        // usage) -- an anonymous `MetadataUsage`-kind declaration nested under `owner` gives the
-        // overrides a real owning scope without disturbing `owner`'s own member set or the
+        // usage) -- a `MetadataUsage`-kind declaration nested under `owner` gives the overrides a
+        // real owning scope without disturbing `owner`'s own member set or the
         // `MetadataAnnotation` reference above (still sourced directly at `owner`, unchanged).
+        // It is anonymous unless the author wrote `MetadataFeatureDeclaration`'s optional
+        // `Identification` prefix (`@t : Safety { ... }`), whose declared name and short name are
+        // the scope's own -- the annotated type is never borrowed as a stand-in for them.
         if matches!(&node.value.body, AttributeBody::Brace { elements, .. } if !elements.is_empty())
         {
+            let identification = node
+                .value
+                .declared_name
+                .as_ref()
+                .map(|declared| &declared.value.identification);
+            let name = identification
+                .and_then(|identification| identification.name.as_deref())
+                .filter(|name| !name.is_empty())
+                .map(|name| self.intern_name(name))
+                .transpose()?;
+            let short_name = self.intern_short_name(
+                identification.and_then(|identification| identification.short_name.as_ref()),
+            )?;
             let annotation_scope = self.push_typed_declaration(
                 document,
                 Some(owner),
                 DeclarationKind::MetadataUsage,
-                None,
+                name,
                 node.span.clone(),
-                // A synthesized scope for the annotation body's members; it has no authored
-                // declaration syntax of its own.
-                DeclarationFacts::none(),
+                DeclarationFacts {
+                    short_name,
+                    ..DeclarationFacts::none()
+                },
             )?;
             self.push_membership(
                 annotation_scope,
@@ -7046,14 +7123,13 @@ impl SemanticModelBuilder {
             ActionDefBodyElement::Perform(perform) => {
                 self.lower_perform(document, Some(owner), perform)?;
             }
-            ActionDefBodyElement::Doc(node) => {
-                self.record_doc_comment(owner, node)?;
-            }
-            ActionDefBodyElement::TextualRep(node) => {
-                self.record_textual_representation(owner, node)?;
-            }
-            ActionDefBodyElement::MetadataAnnotation(node) => {
-                self.lower_metadata_annotation(document, owner, node)?;
+            ActionDefBodyElement::Annotating(member) => {
+                self.lower_annotating_member(
+                    document,
+                    Some(owner),
+                    UnsupportedFamily::ActionDefinitionMember,
+                    member,
+                )?;
             }
             ActionDefBodyElement::Bind(node) => {
                 self.lower_bind(
@@ -7188,13 +7264,14 @@ impl SemanticModelBuilder {
             ActionDefBodyElement::ActionDef(node) => {
                 self.lower_action_def(document, Some(owner), node)?;
             }
-            ActionDefBodyElement::Annotation(_) | ActionDefBodyElement::MetadataKeywordUsage(_) => {
-                self.push_unsupported(
-                    document,
-                    UnsupportedFamily::ActionDefinitionMember,
-                    element.span.clone(),
-                )
+            ActionDefBodyElement::Dependency(node) => {
+                self.lower_dependency(document, Some(owner), node)?;
             }
+            ActionDefBodyElement::MetadataKeywordUsage(_) => self.push_unsupported(
+                document,
+                UnsupportedFamily::ActionDefinitionMember,
+                element.span.clone(),
+            ),
         }
         Ok(())
     }
@@ -7415,14 +7492,13 @@ impl SemanticModelBuilder {
                     param,
                 )?;
             }
-            ActionUsageBodyElement::Doc(node) => {
-                self.record_doc_comment(owner, node)?;
-            }
-            ActionUsageBodyElement::TextualRep(node) => {
-                self.record_textual_representation(owner, node)?;
-            }
-            ActionUsageBodyElement::MetadataAnnotation(node) => {
-                self.lower_metadata_annotation(document, owner, node)?;
+            ActionUsageBodyElement::Annotating(member) => {
+                self.lower_annotating_member(
+                    document,
+                    Some(owner),
+                    UnsupportedFamily::ActionUsageMember,
+                    member,
+                )?;
             }
             ActionUsageBodyElement::Bind(node) => {
                 self.lower_bind(document, owner, UnsupportedFamily::ActionUsageMember, node)?;
@@ -7557,8 +7633,10 @@ impl SemanticModelBuilder {
             ActionUsageBodyElement::ActionDef(node) => {
                 self.lower_action_def(document, Some(owner), node)?;
             }
-            ActionUsageBodyElement::Annotation(_)
-            | ActionUsageBodyElement::MetadataKeywordUsage(_) => self.push_unsupported(
+            ActionUsageBodyElement::Dependency(node) => {
+                self.lower_dependency(document, Some(owner), node)?;
+            }
+            ActionUsageBodyElement::MetadataKeywordUsage(_) => self.push_unsupported(
                 document,
                 UnsupportedFamily::ActionUsageMember,
                 element.span.clone(),
@@ -7748,11 +7826,8 @@ impl SemanticModelBuilder {
                     ActionDefBodyElement::ThenAction(then_action) => {
                         self.lower_then_action(document, owner, family, then_action)?;
                     }
-                    ActionDefBodyElement::Doc(node) => {
-                        self.record_doc_comment(owner, node)?;
-                    }
-                    ActionDefBodyElement::TextualRep(node) => {
-                        self.record_textual_representation(owner, node)?;
+                    ActionDefBodyElement::Annotating(member) => {
+                        self.lower_annotating_member(document, Some(owner), family, member)?;
                     }
                     ActionDefBodyElement::MergeStmt(node) => self.lower_first_merge_stmt(
                         document,
@@ -8826,8 +8901,13 @@ impl SemanticModelBuilder {
                 StateDefBodyElement::RequirementUsage(requirement_usage) => {
                     self.lower_requirement_usage(document, Some(owner), requirement_usage)?;
                 }
-                StateDefBodyElement::Doc(node) => {
-                    self.record_doc_comment(owner, node)?;
+                StateDefBodyElement::Annotating(member) => {
+                    self.lower_annotating_member(
+                        document,
+                        Some(owner),
+                        UnsupportedFamily::StateDefinitionMember,
+                        member,
+                    )?;
                 }
                 StateDefBodyElement::Entry(entry) => {
                     self.lower_state_entry_action(document, owner, entry)?;
@@ -8843,9 +8923,6 @@ impl SemanticModelBuilder {
                 }
                 StateDefBodyElement::Transition(transition) => {
                     self.lower_transition(document, owner, transition)?;
-                }
-                StateDefBodyElement::MetadataAnnotation(node) => {
-                    self.lower_metadata_annotation(document, owner, node)?;
                 }
                 StateDefBodyElement::InOutDecl(param) => {
                     self.lower_parameter_declaration(
@@ -8874,8 +8951,7 @@ impl SemanticModelBuilder {
                         UnsupportedFamily::StateDefinitionMember,
                         node,
                     )?,
-                StateDefBodyElement::Annotation(_)
-                | StateDefBodyElement::SuccessionUsage(_)
+                StateDefBodyElement::SuccessionUsage(_)
                 | StateDefBodyElement::MetadataKeywordUsage(_) => self.push_unsupported(
                     document,
                     UnsupportedFamily::StateDefinitionMember,
@@ -9299,43 +9375,48 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
-    /// Lowers a `satisfy <requirement> by <element>;` body element (BNF `Satisfy`, `ast::
-    /// Satisfy`) found inside a package/part def/part usage/occurrence body, as an anonymous
-    /// `DeclarationKind::Satisfy` feature owned by the enclosing `owner` declaration, mirroring
-    /// `lower_transition`'s nested-declaration shape. Only the bare shorthand form (`satisfy
-    /// <ref> by <ref>;`, `Satisfy::inline_requirement == None`) is resolved: both `source` (the
-    /// satisfied requirement) and `target` (the `by` satisfying element) are lowered as authored
-    /// `SatisfySource`/`SatisfyTarget` references when they are a simple/qualified name
-    /// (`Expression::FeatureRef`), resolved through the same `DeclarationDomain::Any` lexical
-    /// lookup fixed point `Succession`/`TransitionSource` use. `is_negated` (`not satisfy ...`)
-    /// does not change how the references resolve, so it is not modeled as a fact here. Out of
-    /// scope, left as an explicit `family` unsupported diagnostic: the fuller `satisfy
-    /// requirement <name> : <Type> by <expr>;` form (`inline_requirement`, which defines a new
-    /// anonymous requirement usage inline rather than referencing an existing one -- a
-    /// meaningfully different construct, not merely an unresolved reference), a dotted
-    /// feature-chain operand (`Expression::MemberAccess`), any other expression shape, and the
-    /// braced satisfy body's nested constraint members (`body_elements`).
+    /// Lowers a `SatisfyRequirementUsage` body element (`ast::SatisfyRequirementUsage`) as an
+    /// anonymous `DeclarationKind::Satisfy` feature owned by the enclosing `owner` declaration,
+    /// mirroring `lower_transition`'s nested-declaration shape.
+    ///
+    /// There is one satisfy production, and every scope that accepts a satisfy usage -- package,
+    /// part def, part usage, occurrence, requirement, view def, and view usage bodies -- reaches
+    /// it the same way, so all of them lower through here. The `by` clause's
+    /// `SatisfactionSubjectMember` and the reference alternative's `OwnedReferenceSubsetting` are
+    /// both source-backed `QualifiedReferenceId`s rather than expressions, so each resolves
+    /// directly as an authored `SatisfySource`/`SatisfyTarget` reference through the same
+    /// `DeclarationDomain::Any` lexical lookup fixed point `Succession`/`TransitionSource` use.
+    ///
+    /// `by` is optional in the production, so a satisfy usage written without one carries no
+    /// `SatisfyTarget` reference at all -- the satisfied requirement is never copied over to
+    /// fabricate a subject. The `assert` prefix and the `not` negation (`satisfy_negated`) do not
+    /// change how the references resolve.
+    ///
+    /// Out of scope, left as an explicit `family` unsupported diagnostic: the
+    /// `'requirement' UsageDeclaration` alternative (`SatisfiedRequirement::Declaration`, which
+    /// declares a new requirement inline rather than referencing an existing one -- a meaningfully
+    /// different construct, not merely an unresolved reference) and the members of the
+    /// `RequirementBody` the usage owns.
     fn lower_satisfy(
         &mut self,
         document: DocumentId,
         owner: DeclarationId,
         family: UnsupportedFamily,
-        node: &Node<Satisfy>,
+        node: &Node<SatisfyRequirementUsage>,
     ) -> Result<(), ConstructionError> {
-        if node.value.inline_requirement.is_some() {
+        let SatisfiedRequirement::Reference { reference } = node.value.requirement else {
             self.push_unsupported(document, family, node.span.clone());
             return Ok(());
-        }
+        };
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
             DeclarationKind::Satisfy,
             None,
             node.span.clone(),
-            // `ast::Satisfy` carries only `is_negated`, a satisfaction-polarity fact rather than a
-            // declaration modifier.
+            // Negation is a satisfaction-polarity fact rather than a declaration modifier.
             DeclarationFacts {
-                satisfy_negated: Some(node.value.is_negated),
+                satisfy_negated: Some(node.value.not_span.is_some()),
                 ..DeclarationFacts::none()
             },
         )?;
@@ -9345,25 +9426,51 @@ impl SemanticModelBuilder {
             Visibility::Default,
             node.span.clone(),
         )?;
-        self.lower_satisfy_operand(
+        self.push_satisfy_reference(
             document,
             declaration,
-            family,
             ReferenceKind::SatisfySource,
-            &node.value.source,
+            reference,
         )?;
-        self.lower_satisfy_operand(
-            document,
-            declaration,
-            family,
-            ReferenceKind::SatisfyTarget,
-            &node.value.target,
-        )?;
-        if let Some(elements) = &node.value.body_elements {
-            for element in elements {
-                self.push_unsupported(document, family, element.span.clone());
-            }
+        if let Some(subject) = &node.value.subject {
+            self.push_satisfy_reference(
+                document,
+                declaration,
+                ReferenceKind::SatisfyTarget,
+                subject.value.reference,
+            )?;
         }
+        for element in node.value.body.members() {
+            self.push_unsupported(document, family, element.span.clone());
+        }
+        Ok(())
+    }
+
+    /// Pushes one of a satisfy usage's two source-backed operands as an authored reference at its
+    /// anonymous satisfy declaration.
+    fn push_satisfy_reference(
+        &mut self,
+        document: DocumentId,
+        declaration: DeclarationId,
+        kind: ReferenceKind,
+        reference: QualifiedReferenceId,
+    ) -> Result<(), ConstructionError> {
+        let span = self.documents[document.index()]
+            .parsed
+            .qualified_reference(reference)
+            .ok_or(ConstructionError::InvalidParserReference)?
+            .metadata
+            .span
+            .clone();
+        self.push_reference(PendingReference {
+            source: declaration,
+            kind,
+            document,
+            local: reference,
+            flags: RelationshipFlags::default(),
+            span,
+            import: None,
+        })?;
         Ok(())
     }
 
@@ -9445,10 +9552,11 @@ impl SemanticModelBuilder {
     /// Mirrors `lower_satisfy`: an anonymous `DeclarationKind::Allocate` feature owned by `owner`,
     /// with `source`/`target` lowered as authored `AllocateSource`/`AllocateTarget` references
     /// when they are a simple/qualified name (`Expression::FeatureRef`), resolved through the
-    /// same `DeclarationDomain::Any` lexical lookup fixed point `Satisfy`/`Succession` use. Unlike
-    /// `Satisfy`, `Allocate` has no `inline_requirement`/`body_elements` to gate on: its `body` is
-    /// a bare `ConnectBody` (`;` or `{}`) with no structured content, so there is nothing further
-    /// to lower or flag as unsupported.
+    /// same `DeclarationDomain::Any` lexical lookup fixed point `Satisfy`/`Succession` use.
+    /// Unlike a satisfy usage, `Allocate` has no reference/declaration alternative to gate on. Its
+    /// body is `UsageBody = DefinitionBody`, the same part-usage member set `Bind`'s body uses, so
+    /// members are lowered against the anonymous allocate declaration through the shared
+    /// `lower_part_usage_body_element` walker.
     fn lower_allocate(
         &mut self,
         document: DocumentId,
@@ -9485,6 +9593,9 @@ impl SemanticModelBuilder {
             ReferenceKind::AllocateTarget,
             &node.value.target,
         )?;
+        for element in node.value.body.members() {
+            self.lower_part_usage_body_element(document, declaration, family, element)?;
+        }
         Ok(())
     }
 
@@ -9497,8 +9608,8 @@ impl SemanticModelBuilder {
     /// simple/qualified name (`Expression::FeatureRef`), resolved through the same
     /// `DeclarationDomain::Any` lexical lookup fixed point `Satisfy`/`Allocate` use (reusing
     /// `lower_satisfy_operand` directly). The optional `binding <name>`/`: Type`/multiplicity
-    /// prefix on either end is out of scope. `Bind.body_elements` (BNF `Bind`'s optional braced
-    /// body) is typed `Vec<Node<PartUsageBodyElement>>` -- the same part-usage member set
+    /// prefix on either end is out of scope. `Bind`'s body (BNF `Bind`'s `UsageBody`) is typed
+    /// `PartUsageBody` -- the same part-usage member set
     /// `PartUsageBody` uses (see its own doc comment) -- so each element dispatches through the
     /// shared `lower_part_usage_body_element`, owned by this `Bind`'s own anonymous declaration,
     /// rather than the blanket "every element unsupported" fallback used before that dispatcher
@@ -9539,7 +9650,7 @@ impl SemanticModelBuilder {
             ReferenceKind::BindTarget,
             &node.value.right,
         )?;
-        for element in &node.value.body_elements {
+        for element in node.value.body.members() {
             self.lower_part_usage_body_element(document, declaration, family, element)?;
         }
         Ok(())
@@ -9557,6 +9668,7 @@ impl SemanticModelBuilder {
         &mut self,
         document: DocumentId,
         owner: DeclarationId,
+        family: UnsupportedFamily,
         node: &Node<BindingConnectorUsage>,
     ) -> Result<(), ConstructionError> {
         let declaration = self.push_typed_declaration(
@@ -9588,6 +9700,9 @@ impl SemanticModelBuilder {
             ReferenceKind::BindTarget,
             node.value.right,
         )?;
+        for element in node.value.body.members() {
+            self.lower_part_usage_body_element(document, declaration, family, element)?;
+        }
         Ok(())
     }
 
@@ -9622,42 +9737,11 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
-    /// Lowers a view-body `satisfy <viewpoint>;` statement (BNF `ViewBodyElement::Satisfy`,
-    /// `ast::SatisfyViewMember`) -- a genuinely distinct AST shape from `Satisfy` (see
-    /// `ReferenceKind::SatisfyViewpoint`'s doc comment): a single viewpoint reference, not a
-    /// requirement/satisfying-element pair. Sourced directly at the enclosing `view` usage
-    /// `declaration` (no anonymous nested-declaration scope shift, unlike `lower_satisfy`), since
-    /// there is no second operand to keep distinguishable per-statement.
-    fn lower_view_satisfy(
-        &mut self,
-        document: DocumentId,
-        declaration: DeclarationId,
-        node: &Node<SatisfyViewMember>,
-    ) -> Result<(), ConstructionError> {
-        let span = self.documents[document.index()]
-            .parsed
-            .qualified_reference(node.value.viewpoint_ref)
-            .ok_or(ConstructionError::InvalidParserReference)?
-            .metadata
-            .span
-            .clone();
-        self.push_reference(PendingReference {
-            source: declaration,
-            kind: ReferenceKind::SatisfyViewpoint,
-            document,
-            local: node.value.viewpoint_ref,
-            flags: RelationshipFlags::default(),
-            span,
-            import: None,
-        })?;
-        Ok(())
-    }
-
     /// Lowers an `include <includedUseCase>;` body element inside a `use case def`/`use case`
     /// usage body (BNF `UseCaseDefBodyElement::IncludeUseCase`, `ast::IncludeUseCase`) -- see
     /// `ReferenceKind::IncludeUseCase`'s doc comment: a single-operand reference to an existing
     /// use case, sourced directly at the enclosing use case declaration (no anonymous
-    /// nested-declaration scope shift), mirroring `lower_view_satisfy`'s shape.
+    /// nested-declaration scope shift), mirroring `lower_variant_usage`'s shape.
     fn lower_include_use_case(
         &mut self,
         document: DocumentId,
@@ -9917,14 +10001,8 @@ impl SemanticModelBuilder {
                 RequirementDefBodyElement::Constraint(constraint) => {
                     self.lower_constraint_usage(document, Some(owner), constraint)?;
                 }
-                RequirementDefBodyElement::Doc(node) => {
-                    self.record_doc_comment(owner, node)?;
-                }
-                RequirementDefBodyElement::TextualRep(node) => {
-                    self.record_textual_representation(owner, node)?;
-                }
-                RequirementDefBodyElement::MetadataAnnotation(node) => {
-                    self.lower_metadata_annotation(document, owner, node)?;
+                RequirementDefBodyElement::Annotating(member) => {
+                    self.lower_annotating_member(document, Some(owner), unsupported, member)?;
                 }
                 // `subject;` shorthand: an entirely empty AST node (`ast::requirement::SubjectRef`
                 // has no fields at all) referencing the case-family subject already established
@@ -9962,8 +10040,13 @@ impl SemanticModelBuilder {
                 RequirementDefBodyElement::CalcUsage(node) => {
                     self.lower_calc_usage(document, Some(owner), node)?;
                 }
-                RequirementDefBodyElement::Annotation(_)
-                | RequirementDefBodyElement::MetadataKeywordUsage(_) => {
+                RequirementDefBodyElement::Dependency(node) => {
+                    self.lower_dependency(document, Some(owner), node)?;
+                }
+                RequirementDefBodyElement::Satisfy(node) => {
+                    self.lower_satisfy(document, owner, unsupported, node)?;
+                }
+                RequirementDefBodyElement::MetadataKeywordUsage(_) => {
                     self.push_unsupported(document, unsupported, element.span.clone())
                 }
             }
@@ -10742,11 +10825,8 @@ impl SemanticModelBuilder {
                 UseCaseDefBodyElement::InOutDecl(param) => {
                     self.lower_parameter_declaration(document, Some(owner), unsupported, param)?;
                 }
-                UseCaseDefBodyElement::Doc(node) => {
-                    self.record_doc_comment(owner, node)?;
-                }
-                UseCaseDefBodyElement::MetadataAnnotation(node) => {
-                    self.lower_metadata_annotation(document, owner, node)?;
+                UseCaseDefBodyElement::Annotating(member) => {
+                    self.lower_annotating_member(document, Some(owner), unsupported, member)?;
                 }
                 UseCaseDefBodyElement::AssertConstraint(node) => {
                     self.lower_assert_constraint_member(document, owner, unsupported, node)?
@@ -10811,8 +10891,7 @@ impl SemanticModelBuilder {
                     self.push_evaluation_fact(owner, classify_calc_expression(&expression.value));
                     self.lower_calc_expression(document, owner, unsupported, expression)?;
                 }
-                UseCaseDefBodyElement::Annotation(_)
-                | UseCaseDefBodyElement::MetadataKeywordUsage(_)
+                UseCaseDefBodyElement::MetadataKeywordUsage(_)
                 | UseCaseDefBodyElement::ActorRedefinitionAssignment(_)
                 | UseCaseDefBodyElement::FirstSuccession(_)
                 | UseCaseDefBodyElement::ThenUseCaseUsage(_)
@@ -10894,8 +10973,13 @@ impl SemanticModelBuilder {
                     PortDefBodyElement::ItemUsage(item_usage) => {
                         self.lower_item_usage(document, Some(declaration), item_usage)?;
                     }
-                    PortDefBodyElement::Doc(node) => {
-                        self.record_doc_comment(declaration, node)?;
+                    PortDefBodyElement::Annotating(member) => {
+                        self.lower_annotating_member(
+                            document,
+                            Some(declaration),
+                            UnsupportedFamily::PortDefinitionMember,
+                            member,
+                        )?;
                     }
                     PortDefBodyElement::RefDecl(ref_decl) => {
                         self.lower_ref_decl(document, Some(declaration), ref_decl)?;
@@ -11007,8 +11091,13 @@ impl SemanticModelBuilder {
                     PortBodyElement::ItemUsage(item_usage) => {
                         self.lower_item_usage(document, Some(declaration), item_usage)?;
                     }
-                    PortBodyElement::Doc(node) => {
-                        self.record_doc_comment(declaration, node)?;
+                    PortBodyElement::Annotating(member) => {
+                        self.lower_annotating_member(
+                            document,
+                            Some(declaration),
+                            UnsupportedFamily::PortDefinitionMember,
+                            member,
+                        )?;
                     }
                     PortBodyElement::InOutDecl(param) => {
                         self.lower_parameter_declaration(
@@ -11169,8 +11258,18 @@ impl SemanticModelBuilder {
                     ConnectionDefBodyElement::Error(error) => {
                         self.push_recovery(document, error.span.clone());
                     }
-                    ConnectionDefBodyElement::Doc(node) => {
-                        self.record_doc_comment(declaration, node)?;
+                    ConnectionDefBodyElement::MetadataKeywordUsage(_) => self.push_unsupported(
+                        document,
+                        UnsupportedFamily::ConnectionDefinitionMember,
+                        element.span.clone(),
+                    ),
+                    ConnectionDefBodyElement::Annotating(member) => {
+                        self.lower_annotating_member(
+                            document,
+                            Some(declaration),
+                            UnsupportedFamily::ConnectionDefinitionMember,
+                            member,
+                        )?;
                     }
                     ConnectionDefBodyElement::EndDecl(end_decl) => {
                         self.lower_end_decl(document, declaration, end_decl)?;
@@ -11288,8 +11387,9 @@ impl SemanticModelBuilder {
 
     /// Lowers an inline `connect from to to (, extra)*` statement (BNF `ConnectStmt`) as
     /// `ConnectorEnd` references from the owning connection def/usage declaration to each end's
-    /// target. Real annotation content in a braced body (`ConnectBody::Brace`) is out of scope --
-    /// only the endpoint references themselves are lowered.
+    /// target. `ConnectionUsage`'s body is `UsageBody`, so a braced body owns the whole usage
+    /// member set; a `connect` statement mints no declaration of its own, so those members have no
+    /// element to belong to and stay explicitly unsupported (see the body walk below).
     fn lower_connect_stmt(
         &mut self,
         document: DocumentId,
@@ -11301,9 +11401,19 @@ impl SemanticModelBuilder {
         for end in &node.value.extra_ends {
             self.lower_connector_end(document, owner, end)?;
         }
-        // A `connect` statement mints no declaration of its own, so a `doc` in its body has no
-        // element to bind to; see `lower_relationship_body_elements`.
-        self.lower_relationship_body_elements(document, None, &node.value.body_elements)?;
+        // `ConnectionUsage`'s body is `UsageBody`, so a braced `connect a to b { ... }` owns the
+        // whole usage member set. A `connect` statement mints no declaration of its own -- its ends
+        // are lowered directly against the enclosing `owner` -- so there is nothing for those
+        // members to belong to, and attributing them to `owner` would report them as its own. They
+        // stay an explicit unsupported member of the enclosing connection scope until the statement
+        // form owns a declaration.
+        for element in node.value.body.members() {
+            self.push_unsupported(
+                document,
+                UnsupportedFamily::ConnectionDefinitionMember,
+                element.span.clone(),
+            );
+        }
         Ok(())
     }
 
@@ -11432,8 +11542,18 @@ impl SemanticModelBuilder {
                     InterfaceDefBodyElement::Error(error) => {
                         self.push_recovery(document, error.span.clone());
                     }
-                    InterfaceDefBodyElement::Doc(node) => {
-                        self.record_doc_comment(declaration, node)?;
+                    InterfaceDefBodyElement::MetadataKeywordUsage(_) => self.push_unsupported(
+                        document,
+                        UnsupportedFamily::InterfaceDefinitionMember,
+                        element.span.clone(),
+                    ),
+                    InterfaceDefBodyElement::Annotating(member) => {
+                        self.lower_annotating_member(
+                            document,
+                            Some(declaration),
+                            UnsupportedFamily::InterfaceDefinitionMember,
+                            member,
+                        )?;
                     }
                     InterfaceDefBodyElement::EndDecl(end_decl) => {
                         self.lower_end_decl(document, declaration, end_decl)?;
@@ -11485,7 +11605,7 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<ParserInterfaceUsage>,
     ) -> Result<(), ConstructionError> {
-        let (name, interface_type, subsets, redefines, ends, body_elements) = match &node.value {
+        let (name, interface_type, subsets, redefines, ends, body) = match &node.value {
             ParserInterfaceUsage::TypedConnect {
                 name,
                 interface_type,
@@ -11493,7 +11613,7 @@ impl SemanticModelBuilder {
                 redefines,
                 from,
                 to,
-                body_elements,
+                body,
                 ..
             } => (
                 name.as_deref(),
@@ -11501,14 +11621,14 @@ impl SemanticModelBuilder {
                 subsets.as_ref(),
                 redefines.as_ref(),
                 vec![from, to],
-                body_elements,
+                body,
             ),
             ParserInterfaceUsage::Connection {
                 subsets,
                 redefines,
                 from,
                 to,
-                body_elements,
+                body,
                 ..
             } => (
                 None,
@@ -11516,14 +11636,14 @@ impl SemanticModelBuilder {
                 subsets.as_ref(),
                 redefines.as_ref(),
                 vec![from, to],
-                body_elements,
+                body,
             ),
             ParserInterfaceUsage::Declaration {
                 name,
                 interface_type,
                 subsets,
                 redefines,
-                body_elements,
+                body,
                 ..
             } => (
                 name.as_deref(),
@@ -11531,7 +11651,7 @@ impl SemanticModelBuilder {
                 subsets.as_ref(),
                 redefines.as_ref(),
                 Vec::new(),
-                body_elements,
+                body,
             ),
         };
         let name = name
@@ -11582,13 +11702,18 @@ impl SemanticModelBuilder {
         for end in ends {
             self.lower_interface_connector_expression(document, declaration, end)?;
         }
-        for element in body_elements {
+        for element in body.members() {
             match &element.value {
-                InterfaceUsageBodyElement::Doc(node) => {
-                    self.record_doc_comment(declaration, node)?;
+                InterfaceUsageBodyElement::Annotating(member) => {
+                    self.lower_annotating_member(
+                        document,
+                        Some(declaration),
+                        UnsupportedFamily::InterfaceDefinitionMember,
+                        member,
+                    )?;
                 }
                 InterfaceUsageBodyElement::EndDecl(end_decl) => {
-                    self.lower_end_decl(document, declaration, end_decl)?;
+                    self.lower_end_decl(document, declaration, end_decl.as_ref())?;
                 }
                 InterfaceUsageBodyElement::RefRedef { .. } => self.push_unsupported(
                     document,
@@ -11714,11 +11839,18 @@ impl SemanticModelBuilder {
                     ViewDefBodyElement::Error(error) => {
                         self.push_recovery(document, error.span.clone());
                     }
-                    ViewDefBodyElement::Doc(node) => {
-                        self.record_doc_comment(declaration, node)?;
-                    }
-                    ViewDefBodyElement::MetadataAnnotation(node) => {
-                        self.lower_metadata_annotation(document, declaration, node)?;
+                    ViewDefBodyElement::MetadataKeywordUsage(_) => self.push_unsupported(
+                        document,
+                        UnsupportedFamily::ViewDefinitionMember,
+                        element.span.clone(),
+                    ),
+                    ViewDefBodyElement::Annotating(member) => {
+                        self.lower_annotating_member(
+                            document,
+                            Some(declaration),
+                            UnsupportedFamily::ViewDefinitionMember,
+                            member,
+                        )?;
                     }
                     ViewDefBodyElement::RefDecl(ref_decl) => {
                         self.lower_ref_decl(document, Some(declaration), ref_decl)?;
@@ -11837,11 +11969,21 @@ impl SemanticModelBuilder {
                     ViewBodyElement::Error(error) => {
                         self.push_recovery(document, error.span.clone());
                     }
-                    ViewBodyElement::Doc(node) => {
-                        self.record_doc_comment(declaration, node)?;
+                    ViewBodyElement::Annotating(member) => {
+                        self.lower_annotating_member(
+                            document,
+                            Some(declaration),
+                            UnsupportedFamily::ViewDefinitionMember,
+                            member,
+                        )?;
                     }
                     ViewBodyElement::Satisfy(node) => {
-                        self.lower_view_satisfy(document, declaration, node)?;
+                        self.lower_satisfy(
+                            document,
+                            declaration,
+                            UnsupportedFamily::ViewDefinitionMember,
+                            node,
+                        )?;
                     }
                     ViewBodyElement::RefDecl(ref_decl) => {
                         self.lower_ref_decl(document, Some(declaration), ref_decl)?;
@@ -11956,8 +12098,13 @@ impl SemanticModelBuilder {
                     RenderingUsageBodyElement::Error(error) => {
                         self.push_recovery(document, error.span.clone());
                     }
-                    RenderingUsageBodyElement::Doc(node) => {
-                        self.record_doc_comment(declaration, node)?;
+                    RenderingUsageBodyElement::Annotating(member) => {
+                        self.lower_annotating_member(
+                            document,
+                            Some(declaration),
+                            UnsupportedFamily::RenderingDefinitionMember,
+                            member,
+                        )?;
                     }
                     RenderingUsageBodyElement::ViewUsage(node) => {
                         self.lower_view_usage(document, Some(declaration), node)?;
@@ -12047,8 +12194,18 @@ impl SemanticModelBuilder {
                             param,
                         )?;
                     }
-                    ConstraintDefBodyElement::Doc(node) => {
-                        self.record_doc_comment(declaration, node)?;
+                    ConstraintDefBodyElement::MetadataKeywordUsage(_) => self.push_unsupported(
+                        document,
+                        UnsupportedFamily::ConstraintDefinitionMember,
+                        element.span.clone(),
+                    ),
+                    ConstraintDefBodyElement::Annotating(member) => {
+                        self.lower_annotating_member(
+                            document,
+                            Some(declaration),
+                            UnsupportedFamily::ConstraintDefinitionMember,
+                            member,
+                        )?;
                     }
                     ConstraintDefBodyElement::Expression(expression) => {
                         self.push_evaluation_fact(
@@ -12061,9 +12218,6 @@ impl SemanticModelBuilder {
                             UnsupportedFamily::ConstraintDefinitionMember,
                             expression,
                         )?
-                    }
-                    ConstraintDefBodyElement::MetadataAnnotation(node) => {
-                        self.lower_metadata_annotation(document, declaration, node)?;
                     }
                     ConstraintDefBodyElement::AttributeUsage(attribute) => {
                         self.lower_attribute_usage(document, Some(declaration), attribute)?;
@@ -12364,8 +12518,25 @@ impl SemanticModelBuilder {
                             param,
                         )?;
                     }
-                    CalcDefBodyElement::Doc(node) => {
-                        self.record_doc_comment(declaration, node)?;
+                    CalcDefBodyElement::MetadataKeywordUsage(_) => self.push_unsupported(
+                        document,
+                        UnsupportedFamily::CalcDefinitionMember,
+                        element.span.clone(),
+                    ),
+                    // `CalculationBodyItem = ActionBodyItem | ReturnParameterMember`, so a
+                    // calculation body owns every action-body member as well as its own `return`.
+                    // They arrive through the action dispatcher rather than as restated variants,
+                    // and lower through the owner that already lowers them in an action body.
+                    CalcDefBodyElement::ActionMember(node) => {
+                        self.lower_action_def_body_element(document, declaration, node)?;
+                    }
+                    CalcDefBodyElement::Annotating(member) => {
+                        self.lower_annotating_member(
+                            document,
+                            Some(declaration),
+                            UnsupportedFamily::CalcDefinitionMember,
+                            member,
+                        )?;
                     }
                     CalcDefBodyElement::Expression(expression) => {
                         self.push_evaluation_fact(
@@ -12381,9 +12552,6 @@ impl SemanticModelBuilder {
                     }
                     CalcDefBodyElement::ReturnDecl(return_decl) => {
                         self.lower_return_decl(document, Some(declaration), return_decl)?;
-                    }
-                    CalcDefBodyElement::MetadataAnnotation(node) => {
-                        self.lower_metadata_annotation(document, declaration, node)?;
                     }
                     CalcDefBodyElement::AttributeUsage(nested) => {
                         self.lower_attribute_usage(document, Some(declaration), nested)?;
@@ -12427,9 +12595,6 @@ impl SemanticModelBuilder {
                     }
                     CalcDefBodyElement::Import(node) => {
                         self.lower_import(document, Some(declaration), node)?;
-                    }
-                    CalcDefBodyElement::Comment(node) => {
-                        self.record_comment_annotation(declaration, node)?;
                     }
                     CalcDefBodyElement::AssertConstraint(node) => {
                         self.lower_assert_constraint_member(
@@ -12595,8 +12760,13 @@ impl SemanticModelBuilder {
                 RenderingDefBodyElement::Error(error) => {
                     self.push_recovery(document, error.span.clone());
                 }
-                RenderingDefBodyElement::Doc(node) => {
-                    self.record_doc_comment(declaration, node)?;
+                RenderingDefBodyElement::Annotating(member) => {
+                    self.lower_annotating_member(
+                        document,
+                        Some(declaration),
+                        UnsupportedFamily::RenderingDefinitionMember,
+                        member,
+                    )?;
                 }
                 RenderingDefBodyElement::Filter(filter) => {
                     self.lower_filter_condition(
@@ -12685,9 +12855,6 @@ impl SemanticModelBuilder {
                 DefinitionBodyElement::Error(error) => {
                     self.push_recovery(document, error.span.clone());
                 }
-                DefinitionBodyElement::Doc(node) => {
-                    self.record_doc_comment(declaration, node)?;
-                }
                 DefinitionBodyElement::OccurrenceMember(member) => {
                     self.lower_occurrence_body_element(document, declaration, member)?;
                 }
@@ -12721,8 +12888,13 @@ impl SemanticModelBuilder {
             OccurrenceBodyElement::Error(error) => {
                 self.push_recovery(document, error.span.clone());
             }
-            OccurrenceBodyElement::Doc(node) => {
-                self.record_doc_comment(owner, node)?;
+            OccurrenceBodyElement::Annotating(member) => {
+                self.lower_annotating_member(
+                    document,
+                    Some(owner),
+                    UnsupportedFamily::OccurrenceDefinitionMember,
+                    member,
+                )?;
             }
             OccurrenceBodyElement::AttributeUsage(attribute) => {
                 self.lower_attribute_usage(document, Some(owner), attribute)?;
@@ -12770,7 +12942,7 @@ impl SemanticModelBuilder {
                 UnsupportedFamily::OccurrenceDefinitionMember,
                 node,
             )?,
-            OccurrenceBodyElement::Annotation(_)
+            OccurrenceBodyElement::MetadataKeywordUsage(_)
             | OccurrenceBodyElement::FlowUsage(_)
             | OccurrenceBodyElement::SuccessionUsage(_) => self.push_unsupported(
                 document,
@@ -12933,9 +13105,6 @@ impl SemanticModelBuilder {
                 DefinitionBodyElement::Error(error) => {
                     self.push_recovery(document, error.span.clone());
                 }
-                DefinitionBodyElement::Doc(node) => {
-                    self.record_doc_comment(declaration, node)?;
-                }
                 DefinitionBodyElement::OccurrenceMember(member) => {
                     self.lower_occurrence_body_element(document, declaration, member)?;
                 }
@@ -13002,9 +13171,6 @@ impl SemanticModelBuilder {
             match &element.value {
                 DefinitionBodyElement::Error(error) => {
                     self.push_recovery(document, error.span.clone());
-                }
-                DefinitionBodyElement::Doc(node) => {
-                    self.record_doc_comment(declaration, node)?;
                 }
                 DefinitionBodyElement::OccurrenceMember(member) => {
                     self.lower_occurrence_body_element(document, declaration, member)?;
@@ -13177,6 +13343,7 @@ impl SemanticModelBuilder {
         &mut self,
         document: DocumentId,
         owner: DeclarationId,
+        family: UnsupportedFamily,
         node: &Node<sysml_v2_parser_next::ast::Connect>,
     ) -> Result<(), ConstructionError> {
         let declaration = self.push_typed_declaration(
@@ -13201,6 +13368,9 @@ impl SemanticModelBuilder {
         }
         if let Some(relationship) = &node.value.redefines {
             self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        for element in node.value.body.members() {
+            self.lower_part_usage_body_element(document, declaration, family, element)?;
         }
         Ok(())
     }
@@ -13265,7 +13435,7 @@ impl SemanticModelBuilder {
     /// `AliasDef`/`Import`, `Dependency` has no `membership: Membership` field of its own, so
     /// membership is always synthesized as `MembershipKind::Feature`/`Visibility::Default` at the
     /// declaration's own span (matching `lower_satisfy`'s anonymous-relationship shape).
-    /// `body_elements` (doc/comment/metadata only) are walked through the same
+    /// Its `RelationshipBody` members (doc/comment/metadata only) are walked through the same
     /// `lower_relationship_body_elements` helper `AliasDef`/`Import` use.
     fn lower_dependency(
         &mut self,
@@ -13340,9 +13510,11 @@ impl SemanticModelBuilder {
                 import: None,
             })?;
         }
-        if let Some(elements) = &node.value.body_elements {
-            self.lower_relationship_body_elements(document, Some(declaration), elements)?;
-        }
+        self.lower_relationship_body_elements(
+            document,
+            Some(declaration),
+            node.value.body.braced_elements().unwrap_or_default(),
+        )?;
         Ok(())
     }
 
@@ -13400,7 +13572,7 @@ impl SemanticModelBuilder {
 
     /// Lowers a `variant <name>;` member (BNF `VariantUsageElement`'s untyped reference form,
     /// `ast::VariantUsage`) found inside a `variation part`/`variation part def` body, mirroring
-    /// `lower_view_satisfy`: the referenced sibling usage is a bare `QualifiedReferenceId` (not
+    /// `lower_purpose_member`: the referenced sibling usage is a bare `QualifiedReferenceId` (not
     /// wrapped in an `Expression`), resolved as an authored `Variant` reference sourced directly
     /// at the enclosing variation `owner` declaration through the same `DeclarationDomain::Any`
     /// lexical lookup fixed point as `Succession`/`SatisfySource` -- no anonymous nested-
@@ -18488,53 +18660,6 @@ mod tests {
                 && output.contains("(authored-target \"MissingType\")")
                 && output.contains("(status unresolved)"),
             "expected the unresolvable ref typing target to stay explicitly unresolved (not \
-             fabricated), got:\n{output}"
-        );
-    }
-
-    #[test]
-    fn view_body_satisfy_resolves_its_viewpoint_reference() {
-        let output = build_semantic_sexpr(
-            "package Demo {\n\
-             \tviewpoint def V;\n\
-             \tview def VD;\n\
-             \tview v : VD {\n\
-             \t\tsatisfy V;\n\
-             \t}\n\
-             }\n",
-        );
-        assert!(
-            output.contains("(kind satisfyViewpoint)"),
-            "expected a satisfyViewpoint relationship kind, got:\n{output}"
-        );
-        assert!(
-            output.contains(
-                "(kind satisfyViewpoint) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::v\""
-            ),
-            "expected the satisfyViewpoint reference to be sourced at the view declaration, \
-             got:\n{output}"
-        );
-        assert!(
-            !output.contains("(status unresolved)"),
-            "expected the viewpoint reference to resolve, got:\n{output}"
-        );
-    }
-
-    #[test]
-    fn view_body_satisfy_with_an_unresolvable_viewpoint_stays_explicitly_unresolved() {
-        let output = build_semantic_sexpr(
-            "package Demo {\n\
-             \tview def VD;\n\
-             \tview v : VD {\n\
-             \t\tsatisfy MissingViewpoint;\n\
-             \t}\n\
-             }\n",
-        );
-        assert!(
-            output.contains("(kind satisfyViewpoint)")
-                && output.contains("(authored-target \"MissingViewpoint\")")
-                && output.contains("(status unresolved)"),
-            "expected the unresolvable viewpoint reference to stay explicitly unresolved (not \
              fabricated), got:\n{output}"
         );
     }

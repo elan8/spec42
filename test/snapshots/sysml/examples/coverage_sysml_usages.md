@@ -51,6 +51,18 @@ part def Vehicle {
   (document "memory://snapshot/coverage_sysml_usages.md"
     (diagnostics
       (diagnostic
+        (severity error)
+        (code "recovered_enumeration_body_element")
+        (source "parser")
+        (range (start 5 20) (end 5 36))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "parser")
+        (range (start 5 20) (end 5 36))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
@@ -109,12 +121,6 @@ part def Vehicle {
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 29 28) (end 29 35))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_part_def_body_element")
-        (source "parser")
-        (range (start 30 4) (end 31 4))
       )
       (diagnostic
         (severity warning)

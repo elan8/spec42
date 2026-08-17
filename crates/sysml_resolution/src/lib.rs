@@ -1934,9 +1934,9 @@ mod tests {
         );
     }
 
-    /// `Bind.body_elements` (a `bind a = b { ... }` statement's optional braced body) is typed the
-    /// same `Vec<Node<PartUsageBodyElement>>` `PartUsageBody` uses, but every element was
-    /// unconditionally flagged unsupported rather than dispatched through the shared
+    /// A `bind a = b { ... }` statement's braced body is a `PartUsageBody`, the same part-usage
+    /// member set a part usage body holds, but every element was unconditionally flagged
+    /// unsupported rather than dispatched through the shared
     /// `lower_part_usage_body_element` -- confirmed against the Systems Library's `bind start =
     /// done { doc /* ... */ }` shape (`Systems Library/Actions.sysml`): a `doc` comment nested in a
     /// bind body must be recognized and bound to the owning `bind` declaration, not reported as an

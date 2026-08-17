@@ -109,7 +109,7 @@ package RequirementMetadataExample {
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 28 4) (end 28 10))
+        (range (start 28 4) (end 28 9))
       )
       (diagnostic
         (severity error)
@@ -121,7 +121,7 @@ package RequirementMetadataExample {
         (severity error)
         (code "recovered_requirement_body_element")
         (source "parser")
-        (range (start 30 5) (end 30 42))
+        (range (start 30 5) (end 31 4))
       )
     )
   )
