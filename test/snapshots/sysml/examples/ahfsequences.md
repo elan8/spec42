@@ -134,6 +134,12 @@ package AHFNorwaySequences {
   (document "memory://snapshot/ahfsequences.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 3 16) (end 3 32))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -156,6 +162,36 @@ package AHFNorwaySequences {
         (code "unresolved_import_target")
         (source "semantic")
         (range (start 6 16) (end 6 31))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 8 1) (end 120 2))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 11 3) (end 16 4))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 17 3) (end 25 4))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 26 3) (end 31 4))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 32 3) (end 36 4))
       )
       (diagnostic
         (severity warning)
@@ -204,6 +240,12 @@ package AHFNorwaySequences {
         (code "unsupported_occurrence_definition_member")
         (source "semantic")
         (range (start 53 3) (end 54 58))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 58 3) (end 61 4))
       )
       (diagnostic
         (severity warning)

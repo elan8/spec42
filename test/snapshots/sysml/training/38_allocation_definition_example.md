@@ -50,6 +50,12 @@ package 'Allocation Definition Example' {
   (document "memory://snapshot/38_allocation_definition_example.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 25 3) (end 27 4))
+      )
+      (diagnostic
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")

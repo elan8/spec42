@@ -43,6 +43,12 @@ package '14a-Language Extensions' {
   (document "memory://snapshot/14a_language_extensions.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 44))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
@@ -53,6 +59,18 @@ package '14a-Language Extensions' {
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 12 30) (end 12 46))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 17 1) (end 21 2))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 24 1) (end 28 2))
       )
     )
   )

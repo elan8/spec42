@@ -69,6 +69,12 @@ package '11a-View-Viewpoint' {
   (document "memory://snapshot/11a_view_viewpoint.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 3 17) (end 3 22))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -97,6 +103,12 @@ package '11a-View-Viewpoint' {
         (code "unresolved_import_target")
         (source "semantic")
         (range (start 32 17) (end 32 25))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 34 2) (end 34 26))
       )
       (diagnostic
         (severity warning)

@@ -115,6 +115,12 @@ standard library package VerificationCases {
   (document "memory://snapshot/verification_cases.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 7 16) (end 7 27))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")

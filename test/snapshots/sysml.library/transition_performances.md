@@ -78,6 +78,12 @@ standard library package TransitionPerformances {
   (document "memory://snapshot/transition_performances.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 7 16) (end 7 37))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")

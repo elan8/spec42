@@ -104,6 +104,12 @@ package 'Wheel Package - Updated' {
   (document "memory://snapshot/wheel_package_updated.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 6 16) (end 6 22))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")

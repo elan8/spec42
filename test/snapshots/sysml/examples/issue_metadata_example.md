@@ -42,6 +42,12 @@ package IssueMetadataExample {
   (document "memory://snapshot/issue_metadata_example.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 39))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -52,6 +58,30 @@ package IssueMetadataExample {
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 5 43) (end 5 48))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 19 4) (end 21 5))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 20 8) (end 20 39))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 22 4) (end 24 5))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 23 8) (end 23 38))
       )
       (diagnostic
         (severity warning)

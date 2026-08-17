@@ -331,6 +331,12 @@ package EVSample {
   (document "memory://snapshot/evsample.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 2 19) (end 2 24))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -787,6 +793,12 @@ package EVSample {
         (range (start 213 16) (end 213 22))
       )
       (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 217 4) (end 262 5))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
@@ -839,6 +851,12 @@ package EVSample {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 268 16) (end 268 22))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 272 4) (end 317 5))
       )
       (diagnostic
         (severity error)

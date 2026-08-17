@@ -34,6 +34,12 @@ standard library package Attributes {
   (document "memory://snapshot/attributes.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 6 19) (end 6 34))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")

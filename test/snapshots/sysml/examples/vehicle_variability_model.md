@@ -177,6 +177,18 @@ package VehicleVariabilityModel {
   (document "memory://snapshot/vehicle_variability_model.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 3 16) (end 3 34))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 31 10) (end 31 35))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
@@ -211,6 +223,12 @@ package VehicleVariabilityModel {
         (code "recovered_part_usage_body_element")
         (source "parser")
         (range (start 78 11) (end 83 11))
+      )
+      (diagnostic
+        (severity warning)
+        (code "analysis_evaluation_unresolved")
+        (source "semantic")
+        (range (start 106 10) (end 109 11))
       )
       (diagnostic
         (severity warning)
@@ -253,6 +271,12 @@ package VehicleVariabilityModel {
         (code "unsupported_part_usage_member")
         (source "semantic")
         (range (start 114 11) (end 114 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "analysis_evaluation_unresolved")
+        (source "semantic")
+        (range (start 136 7) (end 143 8))
       )
       (diagnostic
         (severity warning)

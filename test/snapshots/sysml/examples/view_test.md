@@ -58,6 +58,18 @@ package ViewTest {
   (document "memory://snapshot/view_test.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 2 2) (end 2 17))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 3 2) (end 3 18))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")

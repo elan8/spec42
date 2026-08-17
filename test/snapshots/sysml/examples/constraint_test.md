@@ -102,6 +102,12 @@ package ConstraintTest {
   (document "memory://snapshot/constraint_test.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 30))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -307,6 +313,12 @@ package ConstraintTest {
       )
       (diagnostic
         (severity warning)
+        (code "analysis_evaluation_unresolved")
+        (source "semantic")
+        (range (start 69 1) (end 74 2))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 70 17) (end 70 26))
@@ -364,6 +376,12 @@ package ConstraintTest {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 84 69) (end 84 90))
+      )
+      (diagnostic
+        (severity warning)
+        (code "analysis_evaluation_unresolved")
+        (source "semantic")
+        (range (start 87 1) (end 87 88))
       )
       (diagnostic
         (severity warning)

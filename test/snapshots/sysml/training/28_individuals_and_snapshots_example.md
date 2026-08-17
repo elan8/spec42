@@ -36,6 +36,12 @@ package 'Individuals and Snapshots Example' {
   (document "memory://snapshot/28_individuals_and_snapshots_example.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 15) (end 1 43))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")

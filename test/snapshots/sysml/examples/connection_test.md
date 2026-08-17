@@ -76,6 +76,30 @@ package ConnectionTest {
   (document "memory://snapshot/connection_test.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 2 1) (end 6 2))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 3 2) (end 5 3))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 4 3) (end 4 11))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 9 2) (end 9 9))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
@@ -88,6 +112,36 @@ package ConnectionTest {
         (range (start 16 10) (end 16 17))
       )
       (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 20 2) (end 20 9))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 26 1) (end 26 9))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 27 1) (end 27 9))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 28 1) (end 28 9))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 29 1) (end 29 9))
+      )
+      (diagnostic
         (severity error)
         (code "recovered_connection_def_body_element")
         (source "parser")
@@ -98,6 +152,12 @@ package ConnectionTest {
         (code "recovery_cascade_suppressed")
         (source "parser")
         (range (start 34 5) (end 35 5))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 40 2) (end 40 9))
       )
       (diagnostic
         (severity warning)

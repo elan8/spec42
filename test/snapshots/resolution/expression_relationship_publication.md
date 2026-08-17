@@ -12,6 +12,18 @@ package M { part def System { part a; part b; connect a to b; } }
 (fixture-diagnostics
   (document "memory://snapshot/expression_relationship_publication.md"
     (diagnostics
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 0 30) (end 0 37))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 0 38) (end 0 45))
+      )
     )
   )
 )

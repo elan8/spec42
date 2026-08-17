@@ -45,10 +45,22 @@ package 'Analysis Case Usage Example' {
   (document "memory://snapshot/33_analysis_case_usage_example.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 53))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
         (range (start 1 16) (end 1 53))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 3 1) (end 30 2))
       )
       (diagnostic
         (severity warning)

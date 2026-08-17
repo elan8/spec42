@@ -63,6 +63,12 @@ package '3c-Function-based Behavior-structure mod-1' {
   (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 16 1) (end 49 2))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")

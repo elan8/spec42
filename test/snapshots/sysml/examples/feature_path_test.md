@@ -55,6 +55,12 @@ package Q {
   (document "memory://snapshot/feature_path_test.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 8 4) (end 8 17))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
@@ -73,10 +79,22 @@ package Q {
         (range (start 26 1) (end 26 20))
       )
       (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 29 2) (end 33 3))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 32 8) (end 32 12))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 40 2) (end 40 25))
       )
     )
   )

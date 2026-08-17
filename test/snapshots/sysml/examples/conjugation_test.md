@@ -46,6 +46,24 @@ package ConjugationTest {
 (fixture-diagnostics
   (document "memory://snapshot/conjugation_test.md"
     (diagnostics
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 4 2) (end 4 13))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 5 2) (end 5 14))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 19 2) (end 22 3))
+      )
     )
   )
 )

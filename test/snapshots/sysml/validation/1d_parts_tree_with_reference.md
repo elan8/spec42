@@ -63,6 +63,18 @@ package '1d-Parts Tree with Reference' {
   (document "memory://snapshot/1d_parts_tree_with_reference.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 11 17) (end 11 31))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 13 2) (end 48 3))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")

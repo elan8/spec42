@@ -39,6 +39,12 @@ package 'Requirement Satisfaction' {
   (document "memory://snapshot/32_requirement_satisfaction.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 44))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -73,6 +79,12 @@ package 'Requirement Satisfaction' {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 13 49) (end 13 63))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 17 1) (end 24 2))
       )
       (diagnostic
         (severity warning)

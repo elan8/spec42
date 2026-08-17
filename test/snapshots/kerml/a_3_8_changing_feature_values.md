@@ -210,6 +210,12 @@ package ChangingFeatureValuesExecution {
   (document "memory://snapshot/a_3_8_changing_feature_values.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 6 16) (end 6 37))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")

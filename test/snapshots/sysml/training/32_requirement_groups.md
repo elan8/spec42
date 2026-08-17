@@ -45,6 +45,12 @@ package 'Requirement Groups' {
   (document "memory://snapshot/32_requirement_groups.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 44))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -55,6 +61,12 @@ package 'Requirement Groups' {
         (code "unresolved_import_target")
         (source "semantic")
         (range (start 2 16) (end 2 39))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 5 2) (end 5 30))
       )
       (diagnostic
         (severity warning)

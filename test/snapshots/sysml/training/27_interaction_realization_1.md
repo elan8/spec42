@@ -67,6 +67,12 @@ package 'Interaction Realization-1' {
   (document "memory://snapshot/27_interaction_realization_1.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 42))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")

@@ -76,6 +76,18 @@ package RequirementTest {
         (source "parser")
         (range (start 15 2) (end 16 1))
       )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 17 1) (end 17 8))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 18 1) (end 22 2))
+      )
     )
   )
 )

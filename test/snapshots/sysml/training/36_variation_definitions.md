@@ -47,6 +47,12 @@ package 'Variation Definitions' {
   (document "memory://snapshot/36_variation_definitions.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 34))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")

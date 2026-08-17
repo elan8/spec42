@@ -285,6 +285,12 @@ standard library package VectorFunctions {
   (document "memory://snapshot/vector_functions.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 8 16) (end 8 44))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")

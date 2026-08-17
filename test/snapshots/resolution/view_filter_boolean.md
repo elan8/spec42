@@ -29,6 +29,12 @@ package Views {
         (source "semantic")
         (range (start 3 9) (end 3 10))
       )
+      (diagnostic
+        (severity warning)
+        (code "invalid_import_filter")
+        (source "semantic")
+        (range (start 9 9) (end 9 10))
+      )
     )
   )
 )

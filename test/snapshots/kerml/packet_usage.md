@@ -28,6 +28,12 @@ package 'Packet Usage' {
   (document "memory://snapshot/packet_usage.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 0 15) (end 0 25))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")

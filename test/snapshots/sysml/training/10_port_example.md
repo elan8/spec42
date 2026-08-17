@@ -37,6 +37,18 @@ package 'Port Example' {
 (fixture-diagnostics
   (document "memory://snapshot/10_port_example.md"
     (diagnostics
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 19 2) (end 19 34))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 23 2) (end 23 35))
+      )
     )
   )
 )

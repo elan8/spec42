@@ -37,6 +37,12 @@ package Camera {
   (document "memory://snapshot/17_camera.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 41))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -55,6 +61,12 @@ package Camera {
         (range (start 9 16) (end 9 23))
       )
       (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 11 2) (end 14 3))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
@@ -71,6 +83,12 @@ package Camera {
         (code "unsupported_part_usage_member")
         (source "semantic")
         (range (start 16 2) (end 16 50))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 18 2) (end 21 3))
       )
       (diagnostic
         (severity warning)

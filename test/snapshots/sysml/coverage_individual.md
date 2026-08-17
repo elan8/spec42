@@ -50,6 +50,18 @@ package CoverageIndividual {
         (source "parser")
         (range (start 8 1) (end 9 1))
       )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 22 1) (end 22 20))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 23 1) (end 23 21))
+      )
     )
   )
 )

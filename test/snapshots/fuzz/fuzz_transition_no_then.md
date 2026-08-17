@@ -19,6 +19,12 @@ package P {
   (document "memory://snapshot/fuzz_transition_no_then.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_final_state")
+        (source "semantic")
+        (range (start 1 4) (end 5 5))
+      )
+      (diagnostic
         (severity error)
         (code "recovered_state_body_element")
         (source "parser")

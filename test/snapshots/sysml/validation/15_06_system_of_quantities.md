@@ -52,6 +52,12 @@ package '15_06-System of Quantities' {
   (document "memory://snapshot/15_06_system_of_quantities.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 19) (end 1 25))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")

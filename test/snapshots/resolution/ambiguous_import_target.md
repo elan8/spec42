@@ -49,6 +49,12 @@ package Use {
         )
       )
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 11) (end 1 20))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")

@@ -28,6 +28,30 @@ part def System {
   (document "memory://snapshot/coverage_connectors.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 0 13) (end 0 21))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 0 22) (end 0 30))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 1 13) (end 1 21))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 1 22) (end 1 30))
+      )
+      (diagnostic
         (severity error)
         (code "unrecognized_declaration_in_scope")
         (source "parser")

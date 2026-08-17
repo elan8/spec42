@@ -105,6 +105,12 @@ part def Vehicle {
         )
       )
       (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 21 4) (end 21 25))
+      )
+      (diagnostic
         (severity warning)
         (code "incompatible_type_kind")
         (source "semantic")

@@ -213,6 +213,12 @@ package TimingForStructuresExecution3 {
   (document "memory://snapshot/a_3_5_timing_for_structures.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 6 16) (end 6 57))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")

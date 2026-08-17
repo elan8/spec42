@@ -42,6 +42,12 @@ package '15_03-Value Expression' {
   (document "memory://snapshot/15_03_value_expression.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 19) (end 1 24))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")

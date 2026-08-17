@@ -43,6 +43,12 @@ package ExternalShapeRefExample {
   (document "memory://snapshot/external_shape_ref_example.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 36))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -77,6 +83,12 @@ package ExternalShapeRefExample {
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 13 23) (end 13 29))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 16 1) (end 29 2))
       )
       (diagnostic
         (severity warning)

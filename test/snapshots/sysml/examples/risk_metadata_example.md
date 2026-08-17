@@ -31,6 +31,12 @@ package RiskMetadataExample {
   (document "memory://snapshot/risk_metadata_example.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 31))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -41,6 +47,12 @@ package RiskMetadataExample {
         (code "unresolved_import_target")
         (source "semantic")
         (range (start 2 16) (end 2 32))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 4 4) (end 16 5))
       )
       (diagnostic
         (severity warning)

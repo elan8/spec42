@@ -76,6 +76,18 @@ package '3e-Function-based Behavior-item' {
   (document "memory://snapshot/3e_function_based_behavior_item.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 15) (end 1 29))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 16 2) (end 61 3))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")

@@ -51,6 +51,12 @@ standard library package RequirementDerivation {
   (document "memory://snapshot/requirement_derivation.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 3 15) (end 3 39))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")

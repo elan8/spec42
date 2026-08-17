@@ -54,6 +54,12 @@ package 'Requirement Definitions' {
   (document "memory://snapshot/32_requirement_definitions.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 22))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")

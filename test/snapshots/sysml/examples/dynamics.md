@@ -103,6 +103,12 @@ package Dynamics {
   (document "memory://snapshot/dynamics.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 34))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -281,6 +287,12 @@ package Dynamics {
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 37 24) (end 37 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "analysis_evaluation_unresolved")
+        (source "semantic")
+        (range (start 39 2) (end 46 3))
       )
       (diagnostic
         (severity warning)

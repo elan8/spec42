@@ -26,6 +26,13 @@ use super::expression::{conforms, RequiredMeasurement, UnitOutcome};
 use super::*;
 use crate::evaluation::EvaluatedScalar;
 
+/// The note attached to each admitted unit an ambiguous token could have named.
+const RELATED_UNIT_CANDIDATE: &str = "Admitted unit with this symbol.";
+/// The note attached to each measurement reference the feature's type admits.
+const RELATED_EXPECTED_DIMENSION: &str = "Measurement reference the feature's type admits.";
+/// The note attached to the calculation an incomplete invocation calls.
+const RELATED_CALLEE: &str = "Calculation invoked here.";
+
 /// Whether two types are comparable: one is the other, or one specialises the other.
 ///
 /// The value rules ask this rather than "does the value's type conform to the declared type".
@@ -88,9 +95,13 @@ impl ResolvedSemanticModel {
                 continue;
             }
             diagnostics.push(Diagnostic {
+                message: DiagnosticCode::AttributeValueTypeIncompatible
+                    .describe()
+                    .into(),
                 code: DiagnosticCode::AttributeValueTypeIncompatible,
                 severity: DiagnosticSeverity::Error,
                 origin: DiagnosticOrigin::Semantic,
+                subject: self.symbol_identity(value.declaration),
                 location: DiagnosticLocation {
                     document: writer::document_identity(self, document).into(),
                     range: document_range(&self.storage, document, &value.span)?,
@@ -121,14 +132,20 @@ impl ResolvedSemanticModel {
                 continue;
             }
             diagnostics.push(Diagnostic {
+                message: DiagnosticCode::AssignmentValueIncompatible
+                    .describe()
+                    .into(),
                 code: DiagnosticCode::AssignmentValueIncompatible,
                 severity: DiagnosticSeverity::Warning,
                 origin: DiagnosticOrigin::Semantic,
+                subject: self.symbol_identity(reference.source),
                 location: DiagnosticLocation {
                     document: writer::document_identity(self, document).into(),
                     range: document_range(&self.storage, document, &source.span)?,
                 },
-                related: Box::from([self.declaration_location(target)?]),
+                related: Box::from([
+                    self.related_declaration(target, conformance::RELATED_DECLARED)?
+                ]),
             });
         }
         Ok(())
@@ -181,21 +198,25 @@ impl ResolvedSemanticModel {
             };
             match &unit.outcome {
                 UnitOutcome::UnknownSymbol => diagnostics.push(Diagnostic {
+                    message: DiagnosticCode::UnknownUnitSymbol.describe().into(),
                     code: DiagnosticCode::UnknownUnitSymbol,
                     severity: DiagnosticSeverity::Warning,
                     origin: DiagnosticOrigin::Semantic,
+                    subject: self.symbol_identity(unit.declaration),
                     location,
                     related: Box::default(),
                 }),
                 UnitOutcome::Ambiguous(candidates) => {
                     let mut related = Vec::with_capacity(candidates.len());
                     for candidate in candidates.iter() {
-                        related.push(self.declaration_location(*candidate)?);
+                        related.push(self.related_declaration(*candidate, RELATED_UNIT_CANDIDATE)?);
                     }
                     diagnostics.push(Diagnostic {
+                        message: DiagnosticCode::AmbiguousUnitSymbol.describe().into(),
                         code: DiagnosticCode::AmbiguousUnitSymbol,
                         severity: DiagnosticSeverity::Warning,
                         origin: DiagnosticOrigin::Semantic,
+                        subject: self.symbol_identity(unit.declaration),
                         location,
                         related: related.into_boxed_slice(),
                     });
@@ -229,12 +250,14 @@ impl ResolvedSemanticModel {
                     }
                     let mut related = Vec::with_capacity(expected.len());
                     for want in expected.iter() {
-                        related.push(self.declaration_location(*want)?);
+                        related.push(self.related_declaration(*want, RELATED_EXPECTED_DIMENSION)?);
                     }
                     diagnostics.push(Diagnostic {
+                        message: DiagnosticCode::IncompatibleUnitDimension.describe().into(),
                         code: DiagnosticCode::IncompatibleUnitDimension,
                         severity: DiagnosticSeverity::Warning,
                         origin: DiagnosticOrigin::Semantic,
+                        subject: self.symbol_identity(unit.declaration),
                         location,
                         related: related.into_boxed_slice(),
                     });
@@ -278,9 +301,16 @@ impl ResolvedSemanticModel {
         }
 
         for filter in self.expressions.filters().iter() {
-            if filter.document != document || filter.form != FilterForm::View {
+            if filter.document != document {
                 continue;
             }
+            // A view filter and a package-level import filter are the same Boolean question at two
+            // sites, and each keeps its own code because a consumer suppresses them separately.
+            let code = match filter.form {
+                FilterForm::View => DiagnosticCode::NonBooleanViewFilter,
+                FilterForm::PackageImport => DiagnosticCode::InvalidImportFilter,
+                FilterForm::Rendering => continue,
+            };
             let Some(value) = filter.state.value() else {
                 continue;
             };
@@ -288,9 +318,11 @@ impl ResolvedSemanticModel {
                 continue;
             }
             diagnostics.push(Diagnostic {
-                code: DiagnosticCode::NonBooleanViewFilter,
+                message: code.describe().into(),
+                code,
                 severity: DiagnosticSeverity::Warning,
                 origin: DiagnosticOrigin::Semantic,
+                subject: self.symbol_identity(filter.owner),
                 location: DiagnosticLocation {
                     document: writer::document_identity(self, document).into(),
                     range: document_range(&self.storage, document, &filter.span)?,
@@ -325,14 +357,18 @@ impl ResolvedSemanticModel {
                 continue;
             }
             diagnostics.push(Diagnostic {
+                message: DiagnosticCode::CalculationArgumentsIncomplete
+                    .describe()
+                    .into(),
                 code: DiagnosticCode::CalculationArgumentsIncomplete,
                 severity: DiagnosticSeverity::Warning,
                 origin: DiagnosticOrigin::Semantic,
+                subject: self.symbol_identity(invocation.declaration),
                 location: DiagnosticLocation {
                     document: writer::document_identity(self, document).into(),
                     range: document_range(&self.storage, document, &invocation.span)?,
                 },
-                related: Box::from([self.declaration_location(invocation.callee)?]),
+                related: Box::from([self.related_declaration(invocation.callee, RELATED_CALLEE)?]),
             });
         }
         Ok(())

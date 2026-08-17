@@ -122,6 +122,12 @@ package 'Turbojet Stage Analysis' {
   (document "memory://snapshot/turbojet_stage_analysis.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 47))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -194,6 +200,12 @@ package 'Turbojet Stage Analysis' {
         (range (start 74 30) (end 74 34))
       )
       (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 82 5) (end 106 6))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
@@ -252,6 +264,12 @@ package 'Turbojet Stage Analysis' {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 101 99) (end 101 119))
+      )
+      (diagnostic
+        (severity warning)
+        (code "analysis_evaluation_unresolved")
+        (source "semantic")
+        (range (start 104 13) (end 104 122))
       )
       (diagnostic
         (severity warning)

@@ -34,6 +34,12 @@ package AliasTest {
   (document "memory://snapshot/alias_test.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 37))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -44,6 +50,18 @@ package AliasTest {
         (code "unresolved_specializes_reference")
         (source "semantic")
         (range (start 2 16) (end 2 23))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 5 8) (end 5 20))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 14 8) (end 14 19))
       )
       (diagnostic
         (severity warning)

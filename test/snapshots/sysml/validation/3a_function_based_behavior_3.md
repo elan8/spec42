@@ -85,6 +85,12 @@ package '3a-Function-based Behavior-5' {
   (document "memory://snapshot/3a_function_based_behavior_3.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 15) (end 1 29))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")

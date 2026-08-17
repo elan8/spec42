@@ -52,10 +52,22 @@ package VehicleRequirementDerivation {
   (document "memory://snapshot/vehicle_requirement_derivation.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 40))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
         (range (start 1 16) (end 1 40))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 3 1) (end 13 2))
       )
       (diagnostic
         (severity warning)
@@ -64,10 +76,22 @@ package VehicleRequirementDerivation {
         (range (start 4 20) (end 4 29))
       )
       (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 6 2) (end 8 3))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 7 21) (end 7 30))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 10 2) (end 12 3))
       )
       (diagnostic
         (severity warning)
@@ -86,6 +110,12 @@ package VehicleRequirementDerivation {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 17 25) (end 17 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "analysis_evaluation_unresolved")
+        (source "semantic")
+        (range (start 18 2) (end 18 42))
       )
       (diagnostic
         (severity warning)

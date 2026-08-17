@@ -495,6 +495,12 @@ standard library package KerML {
   (document "memory://snapshot/ker_ml.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 6 16) (end 6 31))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")

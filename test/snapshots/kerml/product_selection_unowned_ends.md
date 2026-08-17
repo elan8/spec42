@@ -59,6 +59,12 @@ package ProductSelection_UnownedEnds {
   (document "memory://snapshot/product_selection_unowned_ends.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 25 17) (end 25 50))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")

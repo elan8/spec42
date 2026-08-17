@@ -19,6 +19,12 @@ package C {
 (fixture-diagnostics
   (document "memory://snapshot/lexical_inner_shadow.md"
     (diagnostics
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 5 4) (end 5 11))
+      )
     )
   )
 )

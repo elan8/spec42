@@ -35,6 +35,12 @@ package DefaultValueTest {
         (source "semantic")
         (range (start 12 28) (end 12 29))
       )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 15 1) (end 15 19))
+      )
     )
   )
 )

@@ -67,6 +67,12 @@ package CauseAndEffectExample {
   (document "memory://snapshot/cause_and_effect_example.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 33))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -113,6 +119,12 @@ package CauseAndEffectExample {
         (code "recovery_cascade_suppressed")
         (source "parser")
         (range (start 24 17) (end 28 4))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 30 4) (end 30 11))
       )
       (diagnostic
         (severity warning)
@@ -191,6 +203,12 @@ package CauseAndEffectExample {
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 48 1) (end 48 11))
+      )
+      (diagnostic
+        (severity warning)
+        (code "connection_context_invalid")
+        (source "semantic")
+        (range (start 48 12) (end 53 2))
       )
       (diagnostic
         (severity warning)

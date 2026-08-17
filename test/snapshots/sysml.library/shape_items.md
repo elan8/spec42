@@ -911,6 +911,12 @@ standard library package ShapeItems {
   (document "memory://snapshot/shape_items.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 6 16) (end 6 37))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -1032,6 +1038,12 @@ standard library package ShapeItems {
       )
       (diagnostic
         (severity warning)
+        (code "analysis_evaluation_unresolved")
+        (source "semantic")
+        (range (start 33 2) (end 33 81))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 33 22) (end 33 30))
@@ -1113,6 +1125,12 @@ standard library package ShapeItems {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 68 11) (end 68 19))
+      )
+      (diagnostic
+        (severity warning)
+        (code "analysis_evaluation_unresolved")
+        (source "semantic")
+        (range (start 70 2) (end 72 48))
       )
       (diagnostic
         (severity warning)
@@ -2697,6 +2715,12 @@ standard library package ShapeItems {
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 667 14) (end 667 23))
+      )
+      (diagnostic
+        (severity information)
+        (code "duplicate_connection")
+        (source "semantic")
+        (range (start 668 2) (end 668 53))
       )
       (diagnostic
         (severity warning)

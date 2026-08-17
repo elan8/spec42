@@ -108,6 +108,12 @@ package VehicleUsages {
   (document "memory://snapshot/vehicle_usages.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 6 16) (end 6 21))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -336,6 +342,12 @@ package VehicleUsages {
         (range (start 80 21) (end 80 33))
       )
       (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 81 3) (end 81 24))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
@@ -352,6 +364,12 @@ package VehicleUsages {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 85 18) (end 85 26))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 86 4) (end 86 24))
       )
       (diagnostic
         (severity warning)

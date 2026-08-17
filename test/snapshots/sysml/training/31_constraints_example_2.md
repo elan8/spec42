@@ -44,6 +44,12 @@ package 'Constraints Example-2' {
   (document "memory://snapshot/31_constraints_example_2.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 22))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -102,6 +108,12 @@ package 'Constraints Example-2' {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 12 21) (end 12 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "analysis_evaluation_unresolved")
+        (source "semantic")
+        (range (start 16 2) (end 19 3))
       )
       (diagnostic
         (severity warning)

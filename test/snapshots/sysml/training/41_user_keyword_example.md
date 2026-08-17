@@ -44,6 +44,12 @@ package 'User Keyword Example' {
   (document "memory://snapshot/41_user_keyword_example.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 34))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -60,6 +66,12 @@ package 'User Keyword Example' {
         (code "unresolved_import_target")
         (source "semantic")
         (range (start 3 16) (end 3 39))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 6 2) (end 8 3))
       )
       (diagnostic
         (severity warning)

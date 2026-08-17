@@ -137,6 +137,12 @@ package ActionTest {
         (range (start 24 8) (end 24 12))
       )
       (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 30 3) (end 30 19))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")

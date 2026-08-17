@@ -66,6 +66,12 @@ package VehicleDefinitions {
   (document "memory://snapshot/vehicle_definitions.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 6 16) (end 6 31))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -100,6 +106,24 @@ package VehicleDefinitions {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 15 20) (end 15 29))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 20 2) (end 20 38))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 21 2) (end 21 39))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 24 2) (end 24 23))
       )
       (diagnostic
         (severity warning)

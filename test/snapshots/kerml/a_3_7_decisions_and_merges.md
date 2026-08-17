@@ -144,6 +144,12 @@ package DecisionsAndMergesExecution {
   (document "memory://snapshot/a_3_7_decisions_and_merges.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 6 16) (end 6 56))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")

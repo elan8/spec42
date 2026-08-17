@@ -27,6 +27,12 @@ package 'State Exhibition Example' {
   (document "memory://snapshot/26_state_exhibition_example.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 39))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")

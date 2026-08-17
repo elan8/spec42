@@ -217,6 +217,12 @@ package '8-Requirements' {
   (document "memory://snapshot/8_requirements.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 34))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -253,6 +259,18 @@ package '8-Requirements' {
         (range (start 11 31) (end 11 35))
       )
       (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 15 3) (end 15 35))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 20 3) (end 20 31))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
@@ -277,6 +295,12 @@ package '8-Requirements' {
         (range (start 125 29) (end 125 38))
       )
       (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 150 1) (end 191 2))
+      )
+      (diagnostic
         (severity warning)
         (code "unsupported_reference")
         (source "semantic")
@@ -293,6 +317,12 @@ package '8-Requirements' {
         (code "unsupported_requirement_definition_member")
         (source "semantic")
         (range (start 179 3) (end 181 4))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 193 1) (end 203 2))
       )
       (diagnostic
         (severity warning)

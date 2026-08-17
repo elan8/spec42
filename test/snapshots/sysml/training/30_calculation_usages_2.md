@@ -41,6 +41,12 @@ package 'Calculation Usages-2' {
   (document "memory://snapshot/30_calculation_usages_2.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 34))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")

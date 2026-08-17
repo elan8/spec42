@@ -63,6 +63,24 @@ package BodyMemberDispatch {
 (fixture-diagnostics
   (document "memory://snapshot/parser_body_member_dispatch.md"
     (diagnostics
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 8 4) (end 11 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "viewpoint_conformance_invalid_target_kind")
+        (source "semantic")
+        (range (start 37 16) (end 37 18))
+        (related-information
+          (related
+            (uri "memory://snapshot/parser_body_member_dispatch.md")
+            (range (start 6 4) (end 6 23))
+          )
+        )
+      )
     )
   )
 )

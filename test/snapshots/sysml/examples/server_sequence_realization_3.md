@@ -163,6 +163,12 @@ package ServerSequenceRealization_3 {
   (document "memory://snapshot/server_sequence_realization_3.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 36))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -193,10 +199,22 @@ package ServerSequenceRealization_3 {
         (range (start 13 21) (end 13 28))
       )
       (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 26 2) (end 41 3))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 27 25) (end 27 31))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 30 3) (end 32 4))
       )
       (diagnostic
         (severity error)
@@ -235,6 +253,18 @@ package ServerSequenceRealization_3 {
         (range (start 43 2) (end 45 3))
       )
       (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 47 2) (end 86 3))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 48 3) (end 50 4))
+      )
+      (diagnostic
         (severity error)
         (code "recovered_port_body_element")
         (source "parser")
@@ -245,6 +275,12 @@ package ServerSequenceRealization_3 {
         (code "recovery_cascade_suppressed")
         (source "parser")
         (range (start 49 4) (end 50 3))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 51 3) (end 54 4))
       )
       (diagnostic
         (severity warning)
@@ -379,10 +415,22 @@ package ServerSequenceRealization_3 {
         (range (start 88 2) (end 91 3))
       )
       (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 93 2) (end 112 3))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 94 23) (end 94 29))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 96 3) (end 99 4))
       )
       (diagnostic
         (severity error)

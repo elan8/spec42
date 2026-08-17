@@ -44,6 +44,12 @@ package OccurrenceTest {
   (document "memory://snapshot/occurrence_test.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 6 2) (end 6 9))
+      )
+      (diagnostic
         (severity error)
         (code "recovered_occurrence_def_body_element")
         (source "parser")

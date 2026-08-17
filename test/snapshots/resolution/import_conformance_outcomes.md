@@ -22,6 +22,12 @@ package Client {
   (document "memory://snapshot/import_conformance_outcomes.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 5 11) (end 5 20))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")

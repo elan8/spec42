@@ -29,6 +29,12 @@ package 'Items Example' {
   (document "memory://snapshot/08_items_example.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 31))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -45,6 +51,12 @@ package 'Items Example' {
         (code "recovered_part_def_body_element")
         (source "parser")
         (range (start 9 2) (end 11 2))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 11 2) (end 13 3))
       )
     )
   )

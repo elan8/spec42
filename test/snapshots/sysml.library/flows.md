@@ -138,6 +138,12 @@ standard library package Flows {
   (document "memory://snapshot/flows.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 7 19) (end 7 30))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")

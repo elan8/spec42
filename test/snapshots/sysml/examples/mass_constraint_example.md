@@ -129,6 +129,12 @@ package MassConstraintExample {
   (document "memory://snapshot/mass_constraint_example.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 22))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -243,10 +249,22 @@ package MassConstraintExample {
         (range (start 52 16) (end 52 25))
       )
       (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 54 2) (end 56 3))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 55 17) (end 55 26))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 58 2) (end 60 3))
       )
       (diagnostic
         (severity warning)
@@ -265,6 +283,12 @@ package MassConstraintExample {
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 65 18) (end 65 27))
+      )
+      (diagnostic
+        (severity warning)
+        (code "analysis_evaluation_unresolved")
+        (source "semantic")
+        (range (start 68 1) (end 73 2))
       )
       (diagnostic
         (severity warning)

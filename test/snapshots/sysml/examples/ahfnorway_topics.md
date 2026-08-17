@@ -172,6 +172,12 @@ package AHFNorway {
   (document "memory://snapshot/ahfnorway_topics.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 5 16) (end 5 32))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -226,10 +232,22 @@ package AHFNorway {
         (range (start 21 2) (end 21 6))
       )
       (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 21 7) (end 25 3))
+      )
+      (diagnostic
         (severity warning)
         (code "unsupported_port_definition_member")
         (source "semantic")
         (range (start 27 2) (end 27 6))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 27 7) (end 32 3))
       )
       (diagnostic
         (severity warning)
@@ -434,6 +452,24 @@ package AHFNorway {
         (code "unrecognized_declaration_in_scope")
         (source "parser")
         (range (start 105 14) (end 111 3))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 121 3) (end 143 4))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 122 4) (end 122 27))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 123 4) (end 123 27))
       )
       (diagnostic
         (severity warning)

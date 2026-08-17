@@ -298,6 +298,12 @@ package 'Vehicle Analysis Demo' {
   (document "memory://snapshot/vehicle_analysis_demo.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 19) (end 1 34))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -454,6 +460,18 @@ package 'Vehicle Analysis Demo' {
         (range (start 40 31) (end 40 35))
       )
       (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 42 9) (end 42 37))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 43 9) (end 43 37))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
@@ -482,6 +500,12 @@ package 'Vehicle Analysis Demo' {
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 55 42) (end 55 46))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 60 9) (end 60 37))
       )
       (diagnostic
         (severity warning)
@@ -884,6 +908,12 @@ package 'Vehicle Analysis Demo' {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 226 51) (end 226 80))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 237 1) (end 284 2))
       )
       (diagnostic
         (severity warning)

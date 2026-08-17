@@ -84,6 +84,18 @@ package StateTest {
   (document "memory://snapshot/state_test.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 6 1) (end 6 8))
+      )
+      (diagnostic
+        (severity information)
+        (code "missing_final_state")
+        (source "semantic")
+        (range (start 10 1) (end 45 2))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")

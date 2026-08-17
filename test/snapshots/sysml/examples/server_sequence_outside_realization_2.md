@@ -109,6 +109,12 @@ package ServerSequenceOutsideRealization_2 {
   (document "memory://snapshot/server_sequence_outside_realization_2.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 36))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -119,6 +125,12 @@ package ServerSequenceOutsideRealization_2 {
         (code "unresolved_import_target")
         (source "semantic")
         (range (start 2 16) (end 2 45))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 11 2) (end 24 3))
       )
       (diagnostic
         (severity warning)
@@ -139,6 +151,12 @@ package ServerSequenceOutsideRealization_2 {
         (range (start 17 30) (end 17 75))
       )
       (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 19 3) (end 19 43))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
@@ -155,6 +173,24 @@ package ServerSequenceOutsideRealization_2 {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 26 42) (end 26 66))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 28 2) (end 50 3))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 29 3) (end 29 42))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 30 3) (end 30 44))
       )
       (diagnostic
         (severity warning)
@@ -211,6 +247,12 @@ package ServerSequenceOutsideRealization_2 {
         (range (start 52 43) (end 52 68))
       )
       (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 54 2) (end 64 3))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
@@ -227,6 +269,12 @@ package ServerSequenceOutsideRealization_2 {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 56 30) (end 56 75))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 58 3) (end 58 45))
       )
       (diagnostic
         (severity error)

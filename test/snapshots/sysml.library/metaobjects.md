@@ -64,6 +64,12 @@ standard library package Metaobjects {
   (document "memory://snapshot/metaobjects.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 5 19) (end 5 34))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")

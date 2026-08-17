@@ -140,6 +140,12 @@ package '5-State-based Behavior-2' {
   (document "memory://snapshot/5_state_based_behavior_2.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 31))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -216,6 +222,12 @@ package '5-State-based Behavior-2' {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 78 43) (end 78 59))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 107 3) (end 109 4))
       )
       (diagnostic
         (severity warning)

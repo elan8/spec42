@@ -74,6 +74,12 @@ package VerificationTest {
         (source "semantic")
         (range (start 20 28) (end 20 31))
       )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 33 1) (end 37 2))
+      )
     )
   )
 )

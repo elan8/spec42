@@ -65,6 +65,48 @@ package '7a-Variant Configuration - General Concept' {
   (document "memory://snapshot/7a_variant_configuration_general_concept.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 4 1) (end 4 12))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 5 1) (end 5 12))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 6 1) (end 6 12))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 7 1) (end 7 12))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 8 1) (end 8 12))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 9 1) (end 9 12))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 13 2) (end 22 3))
+      )
+      (diagnostic
         (severity warning)
         (code "unsupported_part_usage_member")
         (source "semantic")
@@ -77,6 +119,12 @@ package '7a-Variant Configuration - General Concept' {
         (range (start 18 3) (end 21 4))
       )
       (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 24 2) (end 33 3))
+      )
+      (diagnostic
         (severity warning)
         (code "unsupported_part_usage_member")
         (source "semantic")
@@ -87,6 +135,12 @@ package '7a-Variant Configuration - General Concept' {
         (code "unsupported_part_usage_member")
         (source "semantic")
         (range (start 29 3) (end 32 4))
+      )
+      (diagnostic
+        (severity warning)
+        (code "analysis_evaluation_unresolved")
+        (source "semantic")
+        (range (start 35 2) (end 38 3))
       )
       (diagnostic
         (severity warning)

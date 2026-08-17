@@ -115,6 +115,12 @@ standard library package States {
   (document "memory://snapshot/states.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 7 16) (end 7 39))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -173,6 +179,18 @@ standard library package States {
         (code "unresolved_import_target")
         (source "semantic")
         (range (start 16 16) (end 16 39))
+      )
+      (diagnostic
+        (severity information)
+        (code "missing_final_state")
+        (source "semantic")
+        (range (start 18 1) (end 77 2))
+      )
+      (diagnostic
+        (severity information)
+        (code "missing_initial_state")
+        (source "semantic")
+        (range (start 18 1) (end 77 2))
       )
       (diagnostic
         (severity warning)

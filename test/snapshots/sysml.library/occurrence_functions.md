@@ -166,6 +166,12 @@ standard library package OccurrenceFunctions {
   (document "memory://snapshot/occurrence_functions.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 7 16) (end 7 39))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")

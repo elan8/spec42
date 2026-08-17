@@ -38,6 +38,24 @@ package '12b-Allocation' {
   (document "memory://snapshot/12b_allocation.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 9 2) (end 11 3))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 15 2) (end 19 3))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 16 3) (end 18 4))
+      )
+      (diagnostic
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")

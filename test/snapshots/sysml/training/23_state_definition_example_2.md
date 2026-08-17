@@ -34,6 +34,12 @@ package 'State Definition Example-2' {
 (fixture-diagnostics
   (document "memory://snapshot/23_state_definition_example_2.md"
     (diagnostics
+      (diagnostic
+        (severity information)
+        (code "missing_final_state")
+        (source "semantic")
+        (range (start 6 1) (end 20 2))
+      )
     )
   )
 )

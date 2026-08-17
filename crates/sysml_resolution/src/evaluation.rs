@@ -57,6 +57,17 @@ pub enum EvaluationFailure {
     UnresolvedOperand,
 }
 
+impl EvaluationFailure {
+    /// A stable kebab-case name for this failure, for diagnostic text and snapshot output.
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::DivisionByZero => "division-by-zero",
+            Self::TypeMismatch => "type-mismatch",
+            Self::UnresolvedOperand => "unresolved-operand",
+        }
+    }
+}
+
 /// What evaluation produced for one element.
 #[derive(Debug, Clone, PartialEq)]
 pub enum EvaluationState {

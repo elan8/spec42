@@ -92,6 +92,12 @@ package '10d-Dynamics Analysis' {
   (document "memory://snapshot/10d_dynamics_analysis.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 22))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")

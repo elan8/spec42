@@ -220,6 +220,12 @@ package '14c-Language-Extensions' {
   (document "memory://snapshot/14c_language_extensions.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 31))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -511,6 +517,12 @@ package '14c-Language-Extensions' {
       )
       (diagnostic
         (severity warning)
+        (code "connection_context_invalid")
+        (source "semantic")
+        (range (start 162 15) (end 162 50))
+      )
+      (diagnostic
+        (severity warning)
         (code "unsupported_attribute_member")
         (source "semantic")
         (range (start 164 3) (end 164 9))
@@ -577,15 +589,57 @@ package '14c-Language-Extensions' {
       )
       (diagnostic
         (severity warning)
+        (code "connection_context_invalid")
+        (source "semantic")
+        (range (start 186 13) (end 186 52))
+      )
+      (diagnostic
+        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 187 2) (end 187 13))
       )
       (diagnostic
         (severity warning)
+        (code "connection_context_invalid")
+        (source "semantic")
+        (range (start 187 14) (end 187 53))
+      )
+      (diagnostic
+        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 189 2) (end 189 7))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 191 3) (end 199 4))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 193 4) (end 196 5))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 197 4) (end 197 14))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 198 4) (end 198 19))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 201 3) (end 203 4))
       )
     )
   )

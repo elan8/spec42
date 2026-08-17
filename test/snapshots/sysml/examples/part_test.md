@@ -67,10 +67,28 @@ package PartTest {
   (document "memory://snapshot/part_test.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 6 2) (end 6 22))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 9 10) (end 9 31))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 18 2) (end 21 3))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 19 6) (end 19 13))
       )
       (diagnostic
         (severity error)
@@ -125,6 +143,12 @@ package PartTest {
         (code "unexpected_keyword_in_scope")
         (source "parser")
         (range (start 43 2) (end 44 2))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 44 2) (end 44 14))
       )
       (diagnostic
         (severity error)

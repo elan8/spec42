@@ -42,6 +42,12 @@ package CalculationExample {
   (document "memory://snapshot/calculation_test.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 22))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -94,6 +100,12 @@ package CalculationExample {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 22 34) (end 22 49))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 26 1) (end 26 39))
       )
       (diagnostic
         (severity warning)

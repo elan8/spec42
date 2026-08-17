@@ -31,6 +31,18 @@ package 'Port Conjugation Example' {
 (fixture-diagnostics
   (document "memory://snapshot/10_port_conjugation_example.md"
     (diagnostics
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 13 2) (end 13 31))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 17 2) (end 17 34))
+      )
     )
   )
 )

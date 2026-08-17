@@ -84,6 +84,12 @@ package JohnIndividualExample {
       )
       (diagnostic
         (severity warning)
+        (code "analysis_evaluation_unresolved")
+        (source "semantic")
+        (range (start 44 6) (end 44 37))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 44 26) (end 44 29))

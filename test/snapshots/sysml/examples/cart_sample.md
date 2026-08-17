@@ -76,6 +76,12 @@ package CartSample {
   (document "memory://snapshot/cart_sample.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 3 19) (end 3 46))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -152,6 +158,12 @@ package CartSample {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 27 31) (end 27 41))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 31 4) (end 62 5))
       )
       (diagnostic
         (severity warning)

@@ -18,21 +18,31 @@ use crate::{
     Conformance, ConformanceObstacle, Diagnostic, DiagnosticCode, DiagnosticLocation,
     DiagnosticOrigin, DiagnosticSeverity, EffectiveType, EffectiveTypeOrigin, ElementSearch,
     ElementSource, NavigationTarget, OccurrenceRole, PublicationCompleteness as PublicCompleteness,
-    PublishedDiagnostics, QueryOutcome, RelationshipProvenance, RelationshipTarget, RenameOutcome,
-    RequirementUsageTyping, RequirementVerification, SatisfyEndpoint, SatisfyPolarity,
-    SatisfyRelationship, SourceLocation, SpecializationScope, SubsettingConformance,
-    SymbolIdentity, TextPosition, TextRange, TypeReference, VerificationOutcome,
-    VerificationRequirement, VisibleMember,
+    PublishedDiagnostics, QueryOutcome, RelatedLocation, RelationshipProvenance,
+    RelationshipTarget, RenameOutcome, RequirementUsageTyping, RequirementVerification,
+    SatisfyEndpoint, SatisfyPolarity, SatisfyRelationship, SourceLocation, SpecializationScope,
+    SubsettingConformance, SymbolIdentity, TextPosition, TextRange, TypeReference,
+    VerificationOutcome, VerificationRequirement, VisibleMember,
 };
 
 mod conformance;
 mod details;
 mod expression;
 mod expression_conformance;
+mod host_conformance;
 mod inspection;
 mod structural;
 mod types;
 pub(crate) mod writer;
+
+/// The note attached to each declaration an ambiguous reference could have named.
+const RELATED_AMBIGUOUS_CANDIDATE: &str = "Candidate this reference could name.";
+
+/// The settled diagnostics of one publication with the per-document ranges that index them.
+///
+/// The two are derived together and are only correct together, so they are returned together
+/// rather than as two calls a caller could interleave.
+type DerivedDiagnostics = (Box<[Diagnostic]>, Box<[(u32, u32)]>);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum ResolutionError {
@@ -1243,6 +1253,12 @@ pub(crate) struct ResolvedSemanticModel {
     /// Settled at the publication barrier alongside the indexes, so reading them is a lookup and
     /// a broken storage invariant fails the build instead of a later query.
     diagnostics: Box<[Diagnostic]>,
+    /// Where each document's diagnostics begin and end inside `diagnostics`, by `DocumentId`.
+    ///
+    /// The derivation groups one document's diagnostics contiguously, so a document-scoped query
+    /// is a slice of the settled sequence rather than a scan of it. Built at the same barrier so
+    /// the two can never disagree.
+    diagnostics_by_document: Box<[(u32, u32)]>,
     metadata: PublicationMetadata,
 }
 
@@ -1703,8 +1719,9 @@ impl ResolvedSemanticModel {
     /// Only workspace-authored documents contribute. Library sources take part in the same
     /// semantic system, but their own diagnostics are not the authoring surface, and this also
     /// keeps the barrier's cost proportional to the workspace rather than to the library.
-    fn derive_diagnostics(&self) -> Result<Box<[Diagnostic]>, ResolutionError> {
+    fn derive_diagnostics(&self) -> Result<DerivedDiagnostics, ResolutionError> {
         let mut diagnostics = Vec::new();
+        let mut by_document = vec![(0u32, 0u32); self.storage.documents.len()];
         for document_index in writer::canonical_document_indices(self) {
             let document = &self.storage.documents[document_index];
             let document_id = DocumentId(document_index as u32);
@@ -1714,6 +1731,9 @@ impl ResolvedSemanticModel {
                 let range = parse_error_range(&document.parsed, error)
                     .ok_or(ResolutionError::InvalidStorage)?;
                 diagnostics.push(Diagnostic {
+                    // The parser owns both the code and the sentence; neither is re-derived here.
+                    message: error.message.as_str().into(),
+                    subject: None,
                     code: DiagnosticCode::Parser(match error.code.as_deref() {
                         Some(code) => code.into(),
                         None => UNCODED_PARSE_ERROR.into(),
@@ -1741,8 +1761,11 @@ impl ResolvedSemanticModel {
                 .iter()
                 .filter(|record| record.document == document_id)
             {
+                let code = unsupported_construct_code(record.family);
                 diagnostics.push(Diagnostic {
-                    code: unsupported_construct_code(record.family),
+                    message: code.describe().into(),
+                    subject: None,
+                    code,
                     severity: DiagnosticSeverity::Warning,
                     origin: DiagnosticOrigin::Semantic,
                     location: DiagnosticLocation {
@@ -1772,22 +1795,16 @@ impl ResolvedSemanticModel {
                 };
                 let mut related = Vec::new();
                 if let ResolutionStatus::Ambiguous(candidates) = status {
+                    // Every candidate, in the resolver's canonical candidate order: choosing one
+                    // would settle an ambiguity the publication deliberately left open.
                     for target in self.resolution.ambiguous_candidates(candidates) {
-                        let declaration = self
-                            .storage
-                            .declaration(*target)
-                            .ok_or(ResolutionError::InvalidStorage)?;
-                        related.push(DiagnosticLocation {
-                            document: writer::document_identity(self, declaration.document).into(),
-                            range: document_range(
-                                &self.storage,
-                                declaration.document,
-                                &declaration.span,
-                            )?,
-                        });
+                        related
+                            .push(self.related_declaration(*target, RELATED_AMBIGUOUS_CANDIDATE)?);
                     }
                 }
                 diagnostics.push(Diagnostic {
+                    message: code.describe().into(),
+                    subject: self.symbol_identity(reference.source),
                     code,
                     severity,
                     origin: DiagnosticOrigin::Semantic,
@@ -1802,6 +1819,8 @@ impl ResolvedSemanticModel {
             self.collect_conformance(document_id, &mut diagnostics)?;
             self.collect_structural_conformance(document_id, &mut diagnostics)?;
             self.collect_expression_conformance(document_id, &mut diagnostics)?;
+            self.collect_host_conformance(document_id, &mut diagnostics)?;
+            self.collect_library_context(document_id, first, &mut diagnostics)?;
 
             // Ordering is owned here so no consumer has to sort, and so the order cannot vary with
             // which storage collection a diagnostic happened to come from. The sort is stable, so
@@ -1813,8 +1832,34 @@ impl ResolvedSemanticModel {
                     .cmp(&right.location.range)
                     .then_with(|| left.code.as_str().cmp(right.code.as_str()))
             });
+            by_document[document_index] = (
+                u32::try_from(first).map_err(|_| ResolutionError::Capacity)?,
+                u32::try_from(diagnostics.len()).map_err(|_| ResolutionError::Capacity)?,
+            );
         }
-        Ok(diagnostics.into_boxed_slice())
+        Ok((
+            diagnostics.into_boxed_slice(),
+            by_document.into_boxed_slice(),
+        ))
+    }
+
+    /// The diagnostics one document owns, as the settled slice rather than a filtered scan.
+    ///
+    /// A document this publication did not admit has no diagnostics, which is a different answer
+    /// from "no diagnostic was reported": the caller asked about a document that is not part of
+    /// this model, and the empty slice says so alongside the publication's completeness.
+    pub(crate) fn published_document_diagnostics(&self, document: &str) -> PublishedDiagnostics {
+        let diagnostics = match self.documents.document(&self.storage, document) {
+            Some(id) => match self.diagnostics_by_document.get(id.index()) {
+                Some((start, end)) => self.diagnostics[*start as usize..*end as usize].into(),
+                None => Box::default(),
+            },
+            None => Box::default(),
+        };
+        PublishedDiagnostics {
+            completeness: self.completeness(),
+            diagnostics,
+        }
     }
 
     pub(crate) fn published_diagnostics(&self) -> PublishedDiagnostics {
@@ -3020,6 +3065,7 @@ impl SemanticModelStorage {
             evaluation,
             expressions: expression::ExpressionIndex::default(),
             diagnostics: Box::default(),
+            diagnostics_by_document: Box::default(),
             metadata: PublicationMetadata {
                 phase: PublicationPhase::Resolved,
                 completeness,
@@ -3031,7 +3077,9 @@ impl SemanticModelStorage {
         model.expressions = expression::ExpressionIndex::build(&model, filter_conditions)?;
         // Last barrier product: diagnostics report what every earlier phase settled, so they are
         // derived from the assembled model rather than from any one phase's intermediate state.
-        model.diagnostics = model.derive_diagnostics()?;
+        let (diagnostics, diagnostics_by_document) = model.derive_diagnostics()?;
+        model.diagnostics = diagnostics;
+        model.diagnostics_by_document = diagnostics_by_document;
         Ok(model)
     }
 }

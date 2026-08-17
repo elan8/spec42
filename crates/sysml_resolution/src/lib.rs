@@ -25,7 +25,7 @@ pub use details::{
 };
 pub use diagnostics::{
     Diagnostic, DiagnosticCode, DiagnosticLocation, DiagnosticOrigin, DiagnosticSeverity,
-    PublishedDiagnostics,
+    PublishedDiagnostics, RelatedLocation,
 };
 pub use element_kind::{
     ElementKind, MembershipRole, RequirementConstraintKind, StateSubactionKind,
@@ -500,12 +500,22 @@ impl PublishedResolution {
     /// over exactly these values, so no consumer recovers a code, severity, or outcome from
     /// presentation output or re-decides a rule.
     ///
-    /// This is **not** the whole diagnostic surface. Parser recovery, unmodelled constructs, and
-    /// authored-reference outcomes are here; the conformance families are still owned by
-    /// `sysml_diagnostics` over the mutable graph. See the [`diagnostics`] module documentation
-    /// before using this to replace a legacy diagnostic consumer.
+    /// This is the complete production validation surface; see the [`diagnostics`] module
+    /// documentation for the families it decides.
     pub fn diagnostics(&self) -> PublishedDiagnostics {
         self.model.published_diagnostics()
+    }
+
+    /// The diagnostics of one admitted document, read from the publication's own index.
+    ///
+    /// A slice of the settled sequence, so the cost is proportional to what is returned rather
+    /// than to the model. Repeating the query, or asking about documents in any order, returns
+    /// the same values: nothing here computes.
+    ///
+    /// A document this publication did not admit answers with no diagnostics and the same
+    /// completeness, which is why the completeness travels with them.
+    pub fn document_diagnostics(&self, document: &str) -> PublishedDiagnostics {
+        self.model.published_document_diagnostics(document)
     }
 
     pub fn target_at(
@@ -792,6 +802,113 @@ mod tests {
             .write_diagnostics_sexpr(&mut output)
             .unwrap();
         output
+    }
+
+    /// The typed diagnostics of one single-document publication.
+    fn diagnostics_for(source: &str) -> Vec<Diagnostic> {
+        published_for(source).diagnostics().diagnostics.into_vec()
+    }
+
+    fn published_for(source: &str) -> PublishedResolution {
+        let request = BuildRequest::new(
+            vec![SourceInput::new(
+                "memory://test.sysml",
+                source.to_string(),
+                SourceKind::Workspace,
+            )],
+            ConstructionSchedule::Sequential,
+            "contract-v1",
+        )
+        .unwrap();
+        build(request).unwrap()
+    }
+
+    /// The standard-view rule needs a library-admitted definition, and the source role that makes
+    /// a document a library is not expressible in the snapshot corpus, so it is pinned here.
+    #[test]
+    fn a_view_typed_by_a_non_standard_library_definition_is_reported() {
+        let publish = |library: &str| {
+            let request = BuildRequest::new(
+                vec![
+                    SourceInput::new(
+                        "memory://views.sysml",
+                        format!("library package Views {{ view def {library}; }}"),
+                        SourceKind::Library,
+                    ),
+                    SourceInput::new(
+                        "memory://test.sysml",
+                        format!("package P {{ import Views::*; view v : {library}; }}"),
+                        SourceKind::Workspace,
+                    ),
+                ],
+                ConstructionSchedule::Sequential,
+                "contract-v1",
+            )
+            .unwrap();
+            build(request)
+                .unwrap()
+                .document_diagnostics("memory://test.sysml")
+                .diagnostics
+                .iter()
+                .map(|diagnostic| diagnostic.code.as_str().to_string())
+                .collect::<Vec<_>>()
+        };
+        assert!(
+            publish("RequirementView").contains(&"view_type_non_standard".to_string()),
+            "{:?}",
+            publish("RequirementView")
+        );
+        assert!(
+            !publish("GeneralView").contains(&"view_type_non_standard".to_string()),
+            "a standard view definition is not reported: {:?}",
+            publish("GeneralView")
+        );
+    }
+
+    /// A workspace's own `view def` is the author's to define, whatever it is called.
+    #[test]
+    fn a_view_typed_by_a_workspace_definition_is_never_reported_as_non_standard() {
+        let published =
+            published_for("package P { view def RequirementView; view v : RequirementView; }");
+        assert!(!published
+            .diagnostics()
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == DiagnosticCode::ViewTypeNonStandard));
+    }
+
+    #[test]
+    fn a_document_query_answers_from_the_publication_index_and_repeats_identically() {
+        let published = published_for("package P { part def A; part def A; part b; }");
+        let first = published.document_diagnostics("memory://test.sysml");
+        let second = published.document_diagnostics("memory://test.sysml");
+        assert_eq!(first, second, "a repeated query returns identical values");
+        assert_eq!(
+            first.diagnostics.as_ref(),
+            published.diagnostics().diagnostics.as_ref(),
+            "the document slice is the publication's own sequence"
+        );
+        let absent = published.document_diagnostics("memory://absent.sysml");
+        assert!(absent.diagnostics.is_empty());
+        assert_eq!(
+            absent.completeness, first.completeness,
+            "completeness travels with the answer even when there is nothing to report"
+        );
+    }
+
+    #[test]
+    fn every_diagnostic_carries_an_owner_produced_message() {
+        let diagnostics = diagnostics_for(
+            "package P { part def A; part def A; part b; port def PD; \
+             part def D { port p : PD; } }",
+        );
+        assert!(!diagnostics.is_empty());
+        for diagnostic in &diagnostics {
+            assert!(
+                !diagnostic.message.trim().is_empty(),
+                "empty message: {diagnostic:#?}"
+            );
+        }
     }
 
     /// A nested `part` usage inside an `attribute def` body (BNF `AttributeBodyElement::PartUsage`,

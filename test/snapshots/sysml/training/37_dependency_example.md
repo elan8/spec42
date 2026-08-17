@@ -38,6 +38,24 @@ package 'Dependency Example' {
 (fixture-diagnostics
   (document "memory://snapshot/37_dependency_example.md"
     (diagnostics
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 2 1) (end 10 2))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 3 2) (end 5 3))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 7 2) (end 9 3))
+      )
     )
   )
 )

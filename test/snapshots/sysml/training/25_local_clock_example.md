@@ -44,6 +44,12 @@ package 'Local Clock Example' {
   (document "memory://snapshot/25_local_clock_example.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 36))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -60,6 +66,12 @@ package 'Local Clock Example' {
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 9 20) (end 9 26))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 11 2) (end 11 19))
       )
       (diagnostic
         (severity warning)

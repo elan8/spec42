@@ -44,6 +44,24 @@ package Demo {
           )
         )
       )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 12 4) (end 12 16))
+      )
+      (diagnostic
+        (severity warning)
+        (code "satisfy_invalid_endpoint_kind")
+        (source "semantic")
+        (range (start 13 12) (end 13 18))
+        (related-information
+          (related
+            (uri "memory://snapshot/model_diagnostic_categories.md")
+            (range (start 12 4) (end 12 16))
+          )
+        )
+      )
     )
   )
 )

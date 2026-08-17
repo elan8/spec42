@@ -101,6 +101,12 @@ package '15.10-Primitive Data Types' {
   (document "memory://snapshot/15_10_primitive_data_types.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 7 16) (end 7 37))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")

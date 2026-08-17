@@ -71,6 +71,24 @@ package 'Flashlight Example' {
   (document "memory://snapshot/flashlight_example.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 13 1) (end 42 2))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 14 2) (end 19 3))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 15 3) (end 15 35))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
@@ -87,6 +105,18 @@ package 'Flashlight Example' {
         (code "recovered_part_usage_body_element")
         (source "parser")
         (range (start 21 2) (end 25 2))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 25 2) (end 34 3))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 26 3) (end 26 36))
       )
       (diagnostic
         (severity warning)
@@ -111,6 +141,24 @@ package 'Flashlight Example' {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 30 16) (end 30 31))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 33 3) (end 33 30))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 35 2) (end 41 3))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 36 3) (end 36 30))
       )
       (diagnostic
         (severity warning)

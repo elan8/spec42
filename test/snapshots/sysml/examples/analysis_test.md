@@ -55,6 +55,12 @@ package AnalysisTest {
         (source "semantic")
         (range (start 19 2) (end 19 5))
       )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 32 1) (end 36 2))
+      )
     )
   )
 )

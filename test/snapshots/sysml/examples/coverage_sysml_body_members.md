@@ -66,6 +66,12 @@ part def Outer {
         (range (start 12 22) (end 12 37))
       )
       (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 15 4) (end 15 25))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")

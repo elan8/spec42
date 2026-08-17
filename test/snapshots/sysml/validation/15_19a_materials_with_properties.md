@@ -81,6 +81,12 @@ package '15_19a-Materials with Properties' {
   (document "memory://snapshot/15_19a_materials_with_properties.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 31))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")

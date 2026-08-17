@@ -59,6 +59,12 @@ probe element_details.md 22 15
         (source "semantic")
         (range (start 19 24) (end 19 31))
       )
+      (diagnostic
+        (severity warning)
+        (code "analysis_constraint_failed")
+        (source "semantic")
+        (range (start 22 4) (end 22 30))
+      )
     )
   )
 )

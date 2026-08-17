@@ -132,6 +132,12 @@ package TimeVaryingCarDriver {
   (document "memory://snapshot/time_varying_car_driver.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 19) (end 1 34))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")

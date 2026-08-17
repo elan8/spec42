@@ -25,6 +25,18 @@ package P {
         (source "semantic")
         (range (start 2 25) (end 2 29))
       )
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 5 8) (end 5 30))
+        (related-information
+          (related
+            (uri "memory://snapshot/implicit_redefinition.md")
+            (range (start 2 8) (end 2 30))
+          )
+        )
+      )
     )
   )
 )

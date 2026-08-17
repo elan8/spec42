@@ -123,6 +123,12 @@ standard library package SequenceFunctions {
   (document "memory://snapshot/sequence_functions.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 7 16) (end 7 30))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")

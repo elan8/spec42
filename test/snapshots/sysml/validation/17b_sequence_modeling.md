@@ -54,6 +54,12 @@ package '17b-Sequence-Modeling' {
   (document "memory://snapshot/17b_sequence_modeling.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 31))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -72,10 +78,22 @@ package '17b-Sequence-Modeling' {
         (range (start 11 21) (end 11 27))
       )
       (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 21 2) (end 23 3))
+      )
+      (diagnostic
         (severity warning)
         (code "unsupported_occurrence_definition_member")
         (source "semantic")
         (range (start 25 2) (end 25 40))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 27 2) (end 31 3))
       )
       (diagnostic
         (severity warning)
@@ -88,6 +106,12 @@ package '17b-Sequence-Modeling' {
         (code "unsupported_occurrence_definition_member")
         (source "semantic")
         (range (start 34 2) (end 34 40))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 36 2) (end 39 3))
       )
     )
   )

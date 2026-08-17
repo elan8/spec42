@@ -94,6 +94,12 @@ package 'Interaction Realization-2' {
   (document "memory://snapshot/27_interaction_realization_2.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 42))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -104,6 +110,12 @@ package 'Interaction Realization-2' {
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 3 17) (end 3 23))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 4 2) (end 6 3))
       )
       (diagnostic
         (severity warning)
@@ -148,16 +160,34 @@ package 'Interaction Realization-2' {
         (range (start 21 28) (end 21 44))
       )
       (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 22 3) (end 24 4))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 23 18) (end 23 26))
       )
       (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 25 3) (end 27 4))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 26 21) (end 26 32))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 28 3) (end 30 4))
       )
       (diagnostic
         (severity warning)
@@ -178,6 +208,12 @@ package 'Interaction Realization-2' {
         (range (start 36 23) (end 36 34))
       )
       (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 37 3) (end 39 4))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
@@ -194,6 +230,12 @@ package 'Interaction Realization-2' {
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 45 18) (end 45 24))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 46 3) (end 48 4))
       )
       (diagnostic
         (severity warning)

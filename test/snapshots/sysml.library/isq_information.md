@@ -970,6 +970,12 @@ standard library package ISQInformation {
   (document "memory://snapshot/isq_information.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 14 19) (end 14 37))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")

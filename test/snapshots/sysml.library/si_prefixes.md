@@ -60,6 +60,12 @@ standard library package SIPrefixes {
   (document "memory://snapshot/si_prefixes.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 6 16) (end 6 40))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")

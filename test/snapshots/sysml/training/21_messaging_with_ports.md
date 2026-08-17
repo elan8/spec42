@@ -51,6 +51,36 @@ package 'Messaging Example' {
 (fixture-diagnostics
   (document "memory://snapshot/21_messaging_with_ports.md"
     (diagnostics
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 13 1) (end 15 2))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 14 2) (end 14 19))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 17 1) (end 38 2))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 18 2) (end 18 16))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 19 2) (end 19 19))
+      )
     )
   )
 )

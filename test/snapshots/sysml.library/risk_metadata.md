@@ -112,6 +112,12 @@ standard library package RiskMetadata {
   (document "memory://snapshot/risk_metadata.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 6 16) (end 6 34))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -122,6 +128,12 @@ standard library package RiskMetadata {
         (code "unresolved_specializes_reference")
         (source "semantic")
         (range (start 8 24) (end 8 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "analysis_evaluation_unresolved")
+        (source "semantic")
+        (range (start 14 2) (end 14 51))
       )
       (diagnostic
         (severity warning)

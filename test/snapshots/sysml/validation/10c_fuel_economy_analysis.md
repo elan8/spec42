@@ -180,6 +180,12 @@ package '10c-Fuel Economy Analysis' {
   (document "memory://snapshot/10c_fuel_economy_analysis.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 31))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -298,6 +304,12 @@ package '10c-Fuel Economy Analysis' {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 137 8) (end 137 25))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 144 2) (end 164 3))
       )
       (diagnostic
         (severity warning)

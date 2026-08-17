@@ -25,6 +25,12 @@ package AddressBookModel {
   (document "memory://snapshot/address_book_model.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 0 15) (end 0 30))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")

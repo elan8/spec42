@@ -29,6 +29,12 @@ package ExtendedExamples {
         (range (start 2 30) (end 2 34))
       )
       (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 5 29) (end 5 36))
+      )
+      (diagnostic
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")

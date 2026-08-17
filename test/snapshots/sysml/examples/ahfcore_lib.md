@@ -67,6 +67,12 @@ library package AHFCoreLib {
   (document "memory://snapshot/ahfcore_lib.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 2 16) (end 2 32))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")

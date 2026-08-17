@@ -67,6 +67,12 @@ package MetadataTest {
   (document "memory://snapshot/metadata_test.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 44))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")

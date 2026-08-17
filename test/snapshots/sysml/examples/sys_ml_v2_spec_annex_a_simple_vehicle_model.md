@@ -1592,6 +1592,12 @@ package SimpleVehicleModel{
   (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 2 18) (end 2 32))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -1664,6 +1670,30 @@ package SimpleVehicleModel{
         (range (start 29 47) (end 29 54))
       )
       (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 30 16) (end 30 53))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 31 16) (end 31 43))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 32 16) (end 32 57))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 33 16) (end 33 43))
+      )
+      (diagnostic
         (severity warning)
         (code "unsupported_part_definition_member")
         (source "semantic")
@@ -1706,16 +1736,64 @@ package SimpleVehicleModel{
         (range (start 114 42) (end 114 53))
       )
       (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 115 16) (end 115 53))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 116 16) (end 116 44))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 117 16) (end 117 45))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 118 16) (end 118 47))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 119 16) (end 119 53))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 120 16) (end 120 34))
+      )
+      (diagnostic
         (severity warning)
         (code "unsupported_part_definition_member")
         (source "semantic")
         (range (start 122 16) (end 128 17))
       )
       (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 131 16) (end 131 39))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 135 36) (end 135 40))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 136 16) (end 136 46))
       )
       (diagnostic
         (severity warning)
@@ -1736,10 +1814,34 @@ package SimpleVehicleModel{
         (range (start 145 41) (end 145 60))
       )
       (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 148 16) (end 149 17))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 153 35) (end 153 46))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 154 16) (end 154 61))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 157 16) (end 157 59))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 162 16) (end 162 45))
       )
       (diagnostic
         (severity warning)
@@ -1748,10 +1850,34 @@ package SimpleVehicleModel{
         (range (start 163 16) (end 178 17))
       )
       (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 181 16) (end 181 48))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 182 16) (end 182 54))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 183 16) (end 183 57))
+      )
+      (diagnostic
         (severity warning)
         (code "unsupported_part_definition_member")
         (source "semantic")
         (range (start 184 16) (end 184 53))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 187 16) (end 187 53))
       )
       (diagnostic
         (severity warning)
@@ -1778,6 +1904,18 @@ package SimpleVehicleModel{
         (range (start 196 50) (end 196 63))
       )
       (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 197 16) (end 197 42))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 198 16) (end 198 42))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
@@ -1788,6 +1926,18 @@ package SimpleVehicleModel{
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 208 35) (end 208 39))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 252 16) (end 252 47))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 255 16) (end 255 45))
       )
       (diagnostic
         (severity warning)
@@ -2324,6 +2474,24 @@ package SimpleVehicleModel{
         (range (start 558 131) (end 558 146))
       )
       (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 563 20) (end 563 52))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 565 24) (end 565 62))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 566 24) (end 566 62))
+      )
+      (diagnostic
         (severity error)
         (code "recovered_part_usage_body_element")
         (source "parser")
@@ -2384,6 +2552,12 @@ package SimpleVehicleModel{
         (range (start 589 42) (end 589 51))
       )
       (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 590 24) (end 590 53))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
@@ -2396,6 +2570,12 @@ package SimpleVehicleModel{
         (range (start 597 55) (end 597 59))
       )
       (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 602 28) (end 602 65))
+      )
+      (diagnostic
         (severity error)
         (code "recovered_port_body_element")
         (source "parser")
@@ -2406,6 +2586,48 @@ package SimpleVehicleModel{
         (code "recovery_cascade_suppressed")
         (source "parser")
         (range (start 604 32) (end 605 28))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 609 28) (end 609 65))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 615 28) (end 615 57))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 616 28) (end 616 55))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 617 28) (end 617 56))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 619 24) (end 632 25))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 621 32) (end 621 65))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 627 32) (end 627 66))
       )
       (diagnostic
         (severity warning)
@@ -2450,6 +2672,12 @@ package SimpleVehicleModel{
         (range (start 641 78) (end 641 119))
       )
       (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 648 24) (end 650 25))
+      )
+      (diagnostic
         (severity warning)
         (code "unsupported_part_usage_member")
         (source "semantic")
@@ -2474,10 +2702,28 @@ package SimpleVehicleModel{
         (range (start 661 42) (end 661 51))
       )
       (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 662 24) (end 662 53))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 666 42) (end 666 51))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 667 24) (end 667 53))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 668 24) (end 668 53))
       )
       (diagnostic
         (severity warning)
@@ -2486,10 +2732,22 @@ package SimpleVehicleModel{
         (range (start 673 69) (end 673 85))
       )
       (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 684 24) (end 684 66))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 684 38) (end 684 44))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 685 24) (end 685 54))
       )
       (diagnostic
         (severity warning)
@@ -2498,10 +2756,28 @@ package SimpleVehicleModel{
         (range (start 685 44) (end 685 52))
       )
       (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 687 20) (end 692 21))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 688 24) (end 688 47))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 688 37) (end 688 45))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 689 24) (end 689 71))
       )
       (diagnostic
         (severity warning)
@@ -2510,10 +2786,28 @@ package SimpleVehicleModel{
         (range (start 689 43) (end 689 49))
       )
       (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 690 24) (end 690 42))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 691 24) (end 691 73))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 691 44) (end 691 50))
+      )
+      (diagnostic
+        (severity warning)
+        (code "invalid_allocation_endpoints")
+        (source "semantic")
+        (range (start 703 20) (end 703 105))
       )
       (diagnostic
         (severity warning)
@@ -2646,6 +2940,24 @@ package SimpleVehicleModel{
         (code "unresolved_reference")
         (source "semantic")
         (range (start 739 60) (end 739 93))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 748 24) (end 748 32))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 749 24) (end 749 32))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 752 20) (end 782 21))
       )
       (diagnostic
         (severity warning)
@@ -3014,6 +3326,12 @@ package SimpleVehicleModel{
         (range (start 936 12) (end 936 23))
       )
       (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 940 12) (end 953 13))
+      )
+      (diagnostic
         (severity error)
         (code "recovered_port_body_element")
         (source "parser")
@@ -3026,6 +3344,12 @@ package SimpleVehicleModel{
         (range (start 943 24) (end 944 20))
       )
       (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 955 12) (end 971 13))
+      )
+      (diagnostic
         (severity error)
         (code "missing_semicolon")
         (source "parser")
@@ -3036,6 +3360,12 @@ package SimpleVehicleModel{
         (code "recovered_part_usage_body_element")
         (source "parser")
         (range (start 967 20) (end 971 12))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 973 12) (end 1012 13))
       )
       (diagnostic
         (severity warning)
@@ -3632,10 +3962,34 @@ package SimpleVehicleModel{
         (range (start 1234 37) (end 1234 61))
       )
       (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 1238 12) (end 1249 13))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1240 46) (end 1240 55))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 1241 16) (end 1248 17))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 1242 20) (end 1244 21))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 1245 20) (end 1247 21))
       )
       (diagnostic
         (severity warning)
@@ -3648,6 +4002,12 @@ package SimpleVehicleModel{
         (code "unresolved_import_target")
         (source "semantic")
         (range (start 1312 22) (end 1312 55))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 1318 16) (end 1319 17))
       )
       (diagnostic
         (severity warning)
@@ -3998,6 +4358,12 @@ package SimpleVehicleModel{
         (range (start 1485 16) (end 1485 67))
       )
       (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 1490 12) (end 1515 13))
+      )
+      (diagnostic
         (severity warning)
         (code "unsupported_part_usage_member")
         (source "semantic")
@@ -4023,6 +4389,12 @@ package SimpleVehicleModel{
       )
       (diagnostic
         (severity warning)
+        (code "analysis_evaluation_unresolved")
+        (source "semantic")
+        (range (start 1508 16) (end 1511 17))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1509 29) (end 1509 47))
@@ -4044,6 +4416,24 @@ package SimpleVehicleModel{
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1510 73) (end 1510 115))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 1512 16) (end 1512 32))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 1513 16) (end 1513 39))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 1514 16) (end 1514 38))
       )
       (diagnostic
         (severity warning)

@@ -114,6 +114,12 @@ package FeatureAdvancedCoverage {
         (range (start 21 8) (end 22 8))
       )
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 28 11) (end 28 16))
+      )
+      (diagnostic
         (severity warning)
         (code "unsupported_filtered_import")
         (source "semantic")

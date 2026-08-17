@@ -93,6 +93,12 @@ standard library package CauseAndEffect {
   (document "memory://snapshot/cause_and_effect.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 3 15) (end 3 38))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")

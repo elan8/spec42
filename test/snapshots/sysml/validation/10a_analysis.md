@@ -88,6 +88,12 @@ package '10a-Analysis' {
   (document "memory://snapshot/10a_analysis.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 22))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -110,6 +116,12 @@ package '10a-Analysis' {
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 7 10) (end 7 19))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 10 2) (end 33 3))
       )
       (diagnostic
         (severity warning)
@@ -154,10 +166,22 @@ package '10a-Analysis' {
         (range (start 15 4) (end 15 33))
       )
       (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 18 3) (end 20 4))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 19 11) (end 19 20))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 22 3) (end 24 4))
       )
       (diagnostic
         (severity warning)
@@ -166,10 +190,22 @@ package '10a-Analysis' {
         (range (start 23 14) (end 23 23))
       )
       (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 26 3) (end 28 4))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 27 11) (end 27 20))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 30 3) (end 32 4))
       )
       (diagnostic
         (severity warning)
@@ -188,6 +224,12 @@ package '10a-Analysis' {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 51 3) (end 51 15))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 69 2) (end 73 3))
       )
     )
   )

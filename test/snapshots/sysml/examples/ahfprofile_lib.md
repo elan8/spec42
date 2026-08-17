@@ -129,6 +129,12 @@ library package AHFProfileMetadata{
   (document "memory://snapshot/ahfprofile_lib.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 2 16) (end 2 31))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -153,6 +159,12 @@ library package AHFProfileMetadata{
         (range (start 10 29) (end 10 35))
       )
       (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 31 2) (end 31 26))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
@@ -175,6 +187,12 @@ library package AHFProfileMetadata{
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 41 26) (end 41 32))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 47 2) (end 47 19))
       )
       (diagnostic
         (severity warning)

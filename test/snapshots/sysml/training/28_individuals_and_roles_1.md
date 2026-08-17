@@ -34,6 +34,12 @@ package 'Individuals and Roles' {
   (document "memory://snapshot/28_individuals_and_roles_1.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 44))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")

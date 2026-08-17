@@ -37,6 +37,12 @@ standard library package StringFunctions {
   (document "memory://snapshot/string_functions.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 7 15) (end 7 30))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")

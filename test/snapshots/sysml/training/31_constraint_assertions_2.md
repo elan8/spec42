@@ -49,6 +49,12 @@ package 'Constraint Assertions-2' {
   (document "memory://snapshot/31_constraint_assertions_2.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 22))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -77,6 +83,12 @@ package 'Constraint Assertions-2' {
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 10 17) (end 10 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "analysis_evaluation_unresolved")
+        (source "semantic")
+        (range (start 13 1) (end 18 2))
       )
       (diagnostic
         (severity warning)

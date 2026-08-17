@@ -26,6 +26,12 @@ part def Camera {
   (document "memory://snapshot/camera.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 32))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -36,6 +42,18 @@ part def Camera {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 3 34) (end 3 60))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 5 1) (end 7 2))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 9 1) (end 11 2))
       )
     )
   )

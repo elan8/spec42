@@ -13,6 +13,12 @@ import ScalarValues::*;
   (document "memory://snapshot/import_wildcard.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 0 7) (end 0 22))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")

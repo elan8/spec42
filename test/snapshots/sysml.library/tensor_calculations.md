@@ -62,6 +62,12 @@ standard library package TensorCalculations {
   (document "memory://snapshot/tensor_calculations.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 6 19) (end 6 40))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")

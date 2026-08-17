@@ -16,6 +16,12 @@ package InvalidMult {
 (fixture-diagnostics
   (document "memory://snapshot/invalid_multiplicity.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "invalid_multiplicity")
+        (source "semantic")
+        (range (start 1 19) (end 1 25))
+      )
     )
   )
 )

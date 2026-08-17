@@ -63,6 +63,18 @@ package '14b-Language-Extensions' {
   (document "memory://snapshot/14b_language_extensions.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 11 18) (end 11 33))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 28 5) (end 28 24))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
@@ -75,6 +87,24 @@ package '14b-Language-Extensions' {
         (range (start 31 40) (end 31 63))
       )
       (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 34 5) (end 34 34))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 35 5) (end 35 33))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 36 5) (end 36 26))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
@@ -85,6 +115,12 @@ package '14b-Language-Extensions' {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 39 46) (end 39 68))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 43 6) (end 43 25))
       )
     )
   )

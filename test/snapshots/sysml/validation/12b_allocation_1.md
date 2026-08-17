@@ -68,6 +68,12 @@ package '12b-Allocation-1' {
   (document "memory://snapshot/12b_allocation_1.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 21))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -78,6 +84,12 @@ package '12b-Allocation-1' {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 16 44) (end 16 55))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 39 3) (end 41 4))
       )
       (diagnostic
         (severity warning)

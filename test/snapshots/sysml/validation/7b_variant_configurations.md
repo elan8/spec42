@@ -152,6 +152,12 @@ package '7b-Variant Configurations' {
   (document "memory://snapshot/7b_variant_configurations.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "missing_library_context")
+        (source "semantic")
+        (range (start 1 16) (end 1 36))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
@@ -162,6 +168,48 @@ package '7b-Variant Configurations' {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 32 22) (end 32 40))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 35 4) (end 35 35))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 40 5) (end 40 34))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 45 4) (end 45 35))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 46 4) (end 46 35))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 51 5) (end 51 44))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 55 3) (end 57 4))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 56 4) (end 56 46))
       )
       (diagnostic
         (severity warning)
@@ -219,6 +267,12 @@ package '7b-Variant Configurations' {
       )
       (diagnostic
         (severity warning)
+        (code "analysis_evaluation_unresolved")
+        (source "semantic")
+        (range (start 113 3) (end 116 4))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 114 21) (end 114 47))
@@ -264,6 +318,12 @@ package '7b-Variant Configurations' {
         (code "unsupported_part_usage_member")
         (source "semantic")
         (range (start 121 5) (end 121 46))
+      )
+      (diagnostic
+        (severity warning)
+        (code "analysis_evaluation_unresolved")
+        (source "semantic")
+        (range (start 124 7) (end 129 8))
       )
       (diagnostic
         (severity warning)
