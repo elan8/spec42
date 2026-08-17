@@ -69,6 +69,12 @@ standard library package RequirementDerivation {
         (range (start 6 56) (end 6 72))
       )
       (diagnostic
+        (severity error)
+        (code "specialization_cycle")
+        (source "semantic")
+        (range (start 13 2) (end 13 37))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
@@ -97,6 +103,12 @@ standard library package RequirementDerivation {
         (code "unresolved_specializes_reference")
         (source "semantic")
         (range (start 17 53) (end 17 69))
+      )
+      (diagnostic
+        (severity error)
+        (code "specialization_cycle")
+        (source "semantic")
+        (range (start 24 2) (end 24 37))
       )
       (diagnostic
         (severity warning)

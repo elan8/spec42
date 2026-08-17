@@ -2288,11 +2288,23 @@ impl ResolvedSemanticModel {
             .iter()
             .filter(|(_, source)| match source {
                 types::EffectiveTypeSource::Direct => true,
+                // Discard a typing the specific side inherited along a chain that runs *through*
+                // the general side: the general side has that typing too, so it cannot be the
+                // thing that fails to conform to it.
+                //
+                // The test is that `general` reaches `from`, not the reverse. `trueEvaluations
+                // subsets booleanEvaluations subsets evaluations` inherits `Evaluation` from
+                // `evaluations`, and `evaluations` is an ancestor of the general side rather than
+                // a descendant, so asking whether `evaluations` reaches `booleanEvaluations`
+                // answered no and kept a typing both sides share. The rule then demanded that
+                // `Evaluation` conform to `BooleanEvaluation` -- the general side's own narrower
+                // typing -- and reported the Kernel Semantic Library's own declarations as
+                // incompatible.
                 types::EffectiveTypeSource::Inherited(from) => {
                     *from != general
                         && !self.types.specialization().reaches(
-                            *from,
                             general,
+                            *from,
                             types::SpecializationScope::FeatureSpecialization,
                         )
                 }
@@ -4481,7 +4493,9 @@ fn resolve_reference<R: ResolutionReferenceFact>(
     // A qualified or absolute path can name the specializing feature just as an unqualified one
     // can, and it is no more well-formed for having been spelled out.
     if let Some(excluded) = excluded {
-        scratch.candidates.retain(|candidate| *candidate != excluded);
+        scratch
+            .candidates
+            .retain(|candidate| *candidate != excluded);
     }
     status_from_candidates(scratch.candidates, scratch.ambiguous_candidates)
 }

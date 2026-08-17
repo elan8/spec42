@@ -106,6 +106,30 @@ package Entailment {
         (source "semantic")
         (range (start 30 37) (end 30 45))
       )
+      (diagnostic
+        (severity error)
+        (code "subsetting_type_incompatible")
+        (source "semantic")
+        (range (start 59 44) (end 59 50))
+        (related-information
+          (related
+            (uri "memory://snapshot/kerml_type_relationships.md")
+            (range (start 52 4) (end 52 25))
+          )
+        )
+      )
+      (diagnostic
+        (severity error)
+        (code "subsetting_type_incompatible")
+        (source "semantic")
+        (range (start 69 43) (end 69 50))
+        (related-information
+          (related
+            (uri "memory://snapshot/kerml_type_relationships.md")
+            (range (start 53 4) (end 53 27))
+          )
+        )
+      )
     )
   )
 )

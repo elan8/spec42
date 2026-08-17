@@ -24,6 +24,18 @@ package Demo {
 (fixture-diagnostics
   (document "memory://snapshot/enum_name_not_semantic.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "incompatible_type_kind")
+        (source "semantic")
+        (range (start 6 26) (end 6 41))
+        (related-information
+          (related
+            (uri "memory://snapshot/enum_name_not_semantic.md")
+            (range (start 4 4) (end 4 29))
+          )
+        )
+      )
     )
   )
 )

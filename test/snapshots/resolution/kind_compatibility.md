@@ -85,6 +85,144 @@ package Kinds {
 (fixture-diagnostics
   (document "memory://snapshot/kind_compatibility.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "incompatible_type_kind")
+        (source "semantic")
+        (range (start 15 20) (end 15 27))
+        (related-information
+          (related
+            (uri "memory://snapshot/kind_compatibility.md")
+            (range (start 3 4) (end 3 23))
+          )
+        )
+      )
+      (diagnostic
+        (severity warning)
+        (code "incompatible_type_kind")
+        (source "semantic")
+        (range (start 16 22) (end 16 26))
+        (related-information
+          (related
+            (uri "memory://snapshot/kind_compatibility.md")
+            (range (start 5 4) (end 5 18))
+          )
+        )
+      )
+      (diagnostic
+        (severity warning)
+        (code "incompatible_type_kind")
+        (source "semantic")
+        (range (start 21 27) (end 21 34))
+        (related-information
+          (related
+            (uri "memory://snapshot/kind_compatibility.md")
+            (range (start 1 4) (end 1 21))
+          )
+        )
+      )
+      (diagnostic
+        (severity warning)
+        (code "incompatible_specializes_kind")
+        (source "semantic")
+        (range (start 28 22) (end 28 29))
+        (related-information
+          (related
+            (uri "memory://snapshot/kind_compatibility.md")
+            (range (start 3 4) (end 3 23))
+          )
+        )
+      )
+      (diagnostic
+        (severity error)
+        (code "redefinition_multiplicity_widened")
+        (source "semantic")
+        (range (start 40 8) (end 40 38))
+        (related-information
+          (related
+            (uri "memory://snapshot/kind_compatibility.md")
+            (range (start 31 8) (end 31 38))
+          )
+        )
+      )
+      (diagnostic
+        (severity error)
+        (code "redefinition_multiplicity_widened")
+        (source "semantic")
+        (range (start 43 8) (end 43 38))
+        (related-information
+          (related
+            (uri "memory://snapshot/kind_compatibility.md")
+            (range (start 31 8) (end 31 38))
+          )
+        )
+      )
+      (diagnostic
+        (severity error)
+        (code "redefinition_multiplicity_widened")
+        (source "semantic")
+        (range (start 46 8) (end 46 38))
+        (related-information
+          (related
+            (uri "memory://snapshot/kind_compatibility.md")
+            (range (start 31 8) (end 31 38))
+          )
+        )
+      )
+      (diagnostic
+        (severity error)
+        (code "redefinition_type_incompatible")
+        (source "semantic")
+        (range (start 55 8) (end 55 36))
+        (related-information
+          (related
+            (uri "memory://snapshot/kind_compatibility.md")
+            (range (start 31 8) (end 31 38))
+          )
+        )
+      )
+      (diagnostic
+        (severity warning)
+        (code "incompatible_subset_redefine_kind")
+        (source "semantic")
+        (range (start 65 23) (end 65 30))
+        (related-information
+          (related
+            (uri "memory://snapshot/kind_compatibility.md")
+            (range (start 63 8) (end 63 33))
+          )
+        )
+      )
+      (diagnostic
+        (severity error)
+        (code "subsetting_type_incompatible")
+        (source "semantic")
+        (range (start 66 33) (end 66 37))
+        (related-information
+          (related
+            (uri "memory://snapshot/kind_compatibility.md")
+            (range (start 62 8) (end 62 28))
+          )
+        )
+      )
+      (diagnostic
+        (severity error)
+        (code "specialization_cycle")
+        (source "semantic")
+        (range (start 70 4) (end 70 28))
+      )
+      (diagnostic
+        (severity error)
+        (code "specialization_cycle")
+        (source "semantic")
+        (range (start 71 4) (end 71 28))
+      )
+      (diagnostic
+        (severity error)
+        (code "specialization_cycle")
+        (source "semantic")
+        (range (start 72 4) (end 72 34))
+      )
     )
   )
 )

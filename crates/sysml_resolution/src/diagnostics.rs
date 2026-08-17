@@ -164,6 +164,20 @@ pub enum DiagnosticCode {
     AmbiguousImportTarget,
     AmbiguousReference,
 
+    /// A usage is typed by a definition of an incompatible metaclass family.
+    IncompatibleTypeKind,
+    /// A definition specializes a definition of an incompatible metaclass family.
+    IncompatibleSpecializationKind,
+    /// A usage subsets or redefines a feature of an incompatible metaclass family.
+    IncompatibleSubsettingKind,
+    /// A declaration reaches itself through specialization.
+    SpecializationCycle,
+    /// A redefining feature admits values its redefined feature's multiplicity excludes.
+    RedefinitionMultiplicityWidened,
+    /// A redefining feature's types do not conform to the redefined feature's.
+    RedefinitionTypeIncompatible,
+    /// A subsetting feature's types do not conform to the subsetted feature's.
+    SubsettingTypeIncompatible,
     /// A type owns exactly one `unions`, `intersects` or `differences` operand.
     ///
     /// KerML requires zero or at least two: a union, intersection or difference of one type is
@@ -220,6 +234,13 @@ impl DiagnosticCode {
             Self::NonConvergedResolution => "non_converged_resolution",
             Self::AmbiguousImportTarget => "ambiguous_import_target",
             Self::AmbiguousReference => "ambiguous_reference",
+            Self::IncompatibleTypeKind => "incompatible_type_kind",
+            Self::IncompatibleSpecializationKind => "incompatible_specializes_kind",
+            Self::IncompatibleSubsettingKind => "incompatible_subset_redefine_kind",
+            Self::SpecializationCycle => "specialization_cycle",
+            Self::RedefinitionMultiplicityWidened => "redefinition_multiplicity_widened",
+            Self::RedefinitionTypeIncompatible => "redefinition_type_incompatible",
+            Self::SubsettingTypeIncompatible => "subsetting_type_incompatible",
             Self::SingleTypeRelationshipOperand => "single_type_relationship_operand",
         }
     }
