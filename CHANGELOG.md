@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Bumped the pinned `sysml-v2-parser-next` revision `7eb7869` → `7d4fd85`.** The shared
+  `RefPrefix` modifier chain (`abstract`/`variation`, `derived`, `constant`, `ref`, and the
+  `in`/`out`/`inout` direction) is now accepted on every usage rather than a hand-picked few, and
+  nine body-element sets gained the members the spec always allowed them: `ref` declarations in
+  requirement, port, view, view-def, rendering and occurrence bodies; `end` and in/out parameter
+  declarations in part-usage bodies; connection usages in occurrence bodies; concern and calc
+  usages in requirement bodies; use-case, case and verification-case usages in use-case bodies;
+  viewpoint usages and `satisfy` members in view-def bodies; and `require` constraints in
+  constraint-def bodies. `sysml_resolution` lowers all of them through the owners that already
+  existed for each node kind, and `item` usages now carry their `variation`, `derived` and
+  `constant` modifier facts (`ItemUsage`'s bare `is_abstract` flag became the two-valued
+  `usage_prefix`, so `variation item` is representable for the first time). Across the snapshot
+  corpus `unsupported_parser_construct` falls 230 → 6 and `unsupported_grammar_form` 270 → 46,
+  parser recovery diagnostics fall 114 → 104, and resolved references rise 16839 → 17497 with no
+  fixture losing a resolution.
 - **Bumped the pinned `sysml-v2-parser-next` revision `cb026cd` → `7eb7869`.** The parser's opaque
   `Other(String)` body member is gone from eleven scopes: content a scope cannot parse is now a
   recovery node with its authored span and a diagnostic, and a spec-valid member the scope does not

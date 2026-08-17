@@ -1,11 +1,11 @@
 # Upstream sysml-v2-parser gaps blocking spec42 snapshot work
 
 Tracks semantic gaps discovered while closing the snapshot delta on the parser-owned pipeline that
-trace back to the pinned `sysml-v2-parser-next` revision (`7eb7869`) rather than to
+trace back to the pinned `sysml-v2-parser-next` revision (`7d4fd85`) rather than to
 `sysml_resolution`/`sysml_query`. Each entry carries enough detail to file/update an upstream issue
 against `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
 
-Every entry below was re-verified against `7eb7869` by direct inspection of the parser checkout, by
+Every entry below was re-verified against `7d4fd85` by direct inspection of the parser checkout, by
 a scratch fixture run through `cargo run -p spec42-snapshot`, or both.
 
 ## Open
@@ -36,10 +36,10 @@ a scratch fixture run through `cargo run -p spec42-snapshot`, or both.
   small, hand-picked subset of the member kinds a `requirement def` body may legally contain --
   unlike sibling body enums (`PartDefBodyElement`, `ActionDefBodyElement`,
   `ConstraintDefBodyElement`, and now `StateDefBodyElement`), it has no variant for the general
-  action/constraint/succession/`ref`/port/calc usage-member zoo, nor for nested definitions of its
-  own kind. Re-verified against `7eb7869`: still missing a `Ref`/`RefDecl` variant (`ref
-  requirement :>> self: RequirementCheck;`, `ref part actors : Part[0..*] { ... }` --
-  `test/snapshots/sysml.library/requirements.md`, `views.md`), a parameter-member variant for `in
+  action/succession/port usage-member zoo, nor for nested definitions of its
+  own kind. Re-verified against `7d4fd85`, which closed three of the sub-gaps -- the enum now
+  carries `RefDecl`, `ConcernUsage`, and `CalcUsage` variants, all dispatched by
+  `lower_requirement_shaped_body`. Still missing: a parameter-member variant for `in
   ref`/`in calc` members (`test/snapshots/sysml.library/trade_studies.md`), a `Port`/`Allocate`
   variant (`sys_ml_v2_spec_annex_a_simple_vehicle_model.md:912,877`), a nested-`requirement def`
   variant (only a `RequirementUsage` variant exists, not a def;
@@ -60,7 +60,7 @@ a scratch fixture run through `cargo run -p spec42-snapshot`, or both.
 - Gap 52. Three SysML declaration-modifier prefixes have no representation in the pinned parser at
   all, so the canonical declaration-fact family (`DeclarationModifiers` in
   `crates/sysml_resolution/src/model.rs`) cannot include them and an element inspector cannot
-  report them: `readonly`, SysML `variable`, and `unique`. Re-verified against `7eb7869` -- the AST
+  report them: `readonly`, SysML `variable`, and `unique`. Re-verified against `7d4fd85` -- the AST
   design note at `src/ast/membership.rs` states they are deliberately out of scope; `readonly` and
   `variable` have no token, field, or starter anywhere in `src/parser`, and `unique` is now
   consumed as a recognized default (`src/parser/attribute.rs`, "recognized and consumed, but not
@@ -77,7 +77,7 @@ a scratch fixture run through `cargo run -p spec42-snapshot`, or both.
 - Gap 53. Several usage/definition nodes are missing a `multiplicity`, `nonunique`, or `short_name`
   field their siblings all carry, so the canonical multiplicity/short-name facts are absent for
   those declaration kinds rather than merely unwritten. Confirmed by direct field-by-field
-  inspection of `src/ast/`, re-verified field-by-field against `7eb7869`:
+  inspection of `src/ast/`, re-verified field-by-field against `7d4fd85`:
   (a) **no `multiplicity` field**: `AttributeDef` (`structure.rs`; contrast `AttributeUsage`, which
   has one), `ConstraintUsage` (`view.rs`), `RequirementUsage` (`requirement.rs`), `CalcUsage`
   (`view.rs`), `RequirementActorDecl` (`requirement.rs`; contrast `ActorUsage`, which has one);
@@ -108,7 +108,7 @@ a scratch fixture run through `cargo run -p spec42-snapshot`, or both.
   parses with the `doc` element dropped entirely, unlike every sibling body-element enum
   (`PartDefBodyElement`, `AttributeBodyElement`, `RelationshipBodyElement`, …), all of which carry
   `Doc`/`Comment`/`TextualRep` variants. Confirmed against `cb026cd` while lowering the
-  documentation fact family, and still true at `7eb7869` (the shared `Body<E>` container
+  documentation fact family, and still true at `7d4fd85` (the shared `Body<E>` container
   rename from `values` to `elements` did not widen the member type):
   `test/snapshots/documentation_in_bodies.md`'s `enum def Color`
   authors a doc comment that no fact family can recover, while the `part def`/`attribute def`/
@@ -161,3 +161,12 @@ disappearing with the gap entries they closed.
   `has_constraint_keyword == false` form.
 
 - **`KermlFeatureMember.crosses` and `is_const`.** Both typed; neither is lowered as a fact.
+
+- **`CollectionOperatorBody.doc`.** A collection operator body's `doc /* ... */` annotation is
+  typed upstream, but the whole collection-operator expression family is still unlowered here
+  (`lower_expression` has no arm for it), so there is no declaration to attach the fact to yet.
+
+- **`ItemUsage.subsets`.** `lower_item_usage` lowers `redefines` but not the `:>` clause, so an
+  authored `item items : Item[0..*] nonunique :> objects;` publishes its typing and drops its
+  subsetting. Pre-dates the `7d4fd85` bump; the one-line fix is the same
+  `lower_subsetting_relationship` call every sibling usage already makes.
