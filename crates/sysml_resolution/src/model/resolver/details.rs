@@ -148,12 +148,7 @@ impl ResolvedSemanticModel {
         let subsetting = self.family(id, Family::Subsetting);
         let redefinition = self.family(id, Family::Redefinition);
         let effective_typing = self.effective_typing(id, &typing, &subsetting, &redefinition);
-        let evaluation = match self.evaluate(&inspection.identity) {
-            QueryOutcome::Resolved(evaluation)
-            | QueryOutcome::Recovered(evaluation)
-            | QueryOutcome::UnsupportedWith(evaluation) => evaluation,
-            _ => return None,
-        };
+        let evaluation = self.element_evaluation(id)?;
         Some(ElementDetails {
             owner: declaration.owner.and_then(|owner| self.symbol_entry(owner)),
             analysis: self.analysis_evaluation(id, &evaluation.state),
