@@ -1,11 +1,8 @@
 use url::Url;
 
 use sysml_model::semantic::graph::SemanticGraph;
-use sysml_model::UnitRegistry;
 
-use super::engine_impl::{
-    compute_semantic_diagnostics, compute_semantic_diagnostics_with_unit_registry,
-};
+use super::engine_impl::compute_semantic_diagnostics;
 use super::ordering::canonicalize_diagnostics;
 use super::types::{DiagnosticsOptions, SemanticDiagnostic};
 
@@ -19,19 +16,6 @@ pub fn collect_diagnostics_from_graph(
     options: DiagnosticsOptions,
 ) -> Vec<SemanticDiagnostic> {
     let mut diagnostics = compute_semantic_diagnostics(graph, uri, options);
-    canonicalize_diagnostics(&mut diagnostics);
-    diagnostics
-}
-
-/// Collects semantic diagnostics reusing a workspace-level [`UnitRegistry`].
-pub fn collect_diagnostics_from_graph_with_unit_registry(
-    graph: &SemanticGraph,
-    uri: &Url,
-    options: DiagnosticsOptions,
-    unit_registry: &UnitRegistry,
-) -> Vec<SemanticDiagnostic> {
-    let mut diagnostics =
-        compute_semantic_diagnostics_with_unit_registry(graph, uri, options, unit_registry);
     canonicalize_diagnostics(&mut diagnostics);
     diagnostics
 }

@@ -13,9 +13,7 @@ mod shared_rules;
 pub mod types;
 
 pub use document::collect_document_diagnostics;
-pub use engine::{
-    collect_diagnostics_from_graph, collect_diagnostics_from_graph_with_unit_registry,
-};
+pub use engine::collect_diagnostics_from_graph;
 pub use model::collect_document_diagnostics_from_model;
 pub use ordering::canonicalize_diagnostics;
 pub use sexpr::write_diagnostics_sexpr;

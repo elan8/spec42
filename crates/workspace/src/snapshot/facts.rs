@@ -7,7 +7,7 @@ use sha2::{Digest, Sha256};
 use sysml_diagnostics::{DiagnosticSeverity, SemanticDiagnostic};
 use sysml_model::{
     typed_by_reference, DeclaredLiteral, EvaluationStatus, ExpressionEvaluationQuery,
-    SemanticGraph, SysmlDocument, UnitRegistry,
+    SemanticGraph, SysmlDocument,
 };
 use url::Url;
 
@@ -33,7 +33,6 @@ pub(crate) fn collect_host_validation_report(
     strict_diagnostics: bool,
 ) -> crate::error::WorkspaceResult<HostValidationReport> {
     let target_urls = target_file_urls(target_files)?;
-    let unit_registry = UnitRegistry::from_graph(graph);
     // Keyed by normalized URI: document URIs may differ from `target_urls` in drive-letter
     // case (documents come from whatever the caller/provider constructed, `target_urls` is
     // always canonicalized by `path_to_file_url`), so raw string keys would silently miss.
@@ -53,14 +52,8 @@ pub(crate) fn collect_host_validation_report(
             .get(language_service::uri::normalize_uri(uri).as_str())
             .copied()
             .unwrap_or("");
-        let diagnostics = collect_host_document_diagnostics(
-            graph,
-            &unit_registry,
-            library_urls,
-            uri,
-            text,
-            strict_diagnostics,
-        );
+        let diagnostics =
+            collect_host_document_diagnostics(graph, library_urls, uri, text, strict_diagnostics);
         host_documents.push(HostValidatedDocument {
             uri: uri.to_string(),
             diagnostics,
@@ -1066,7 +1059,6 @@ fn target_file_urls(
 
 fn collect_host_document_diagnostics(
     graph: &SemanticGraph,
-    unit_registry: &UnitRegistry,
     library_urls: &[Url],
     uri: &Url,
     text: &str,
@@ -1074,7 +1066,6 @@ fn collect_host_document_diagnostics(
 ) -> Vec<SemanticDiagnostic> {
     let mut diagnostics = sysml_diagnostics::collect_document_diagnostics(
         graph,
-        unit_registry,
         !library_urls.is_empty(),
         uri,
         text,

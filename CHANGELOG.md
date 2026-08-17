@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Expression, value and unit conformance moved to the immutable publication.** `sysml_resolution`
+  now lowers authored unit tokens, `filter` conditions and invocation arities as typed facts, settles
+  them at the publication barrier, and answers them through `PublishedModel::evaluation()` alongside
+  the evaluated value and the measurement reference a feature's type requires. A unit token resolves
+  to the unit declaration it names -- `[kg]` is `SI::kilogram` -- and its dimension is that unit's
+  measurement-reference type, so dimension compatibility is the ordinary specialization question
+  rather than a string comparison against a hand-maintained alias table. "No catalog admitted",
+  "unknown symbol", "ambiguous symbol" and "not a single unit symbol" are each their own outcome.
+  `sysml_diagnostics::checks::expression_conformance` and the graph-derived unit catalog it read
+  (`UnitRegistry::from_graph`, `graph_ingest`, `type_resolver`) are deleted. `invalid_enumeration_value`
+  is retired: a string literal is not an enumeration literal whether or not the enum declares a member
+  of that name, so `attribute_value_type_mismatch` reports it, and reports any value whose type is
+  unrelated to its feature's. Hover reads the published evaluation for both the evaluated value and
+  the unit literal; the LSP and CLI pipelines pick the codes up when `sysml_diagnostics` migrates.
+
 - **Bumped the pinned `sysml-v2-parser-next` revision `7eb7869` → `7d4fd85`.** The shared
   `RefPrefix` modifier chain (`abstract`/`variation`, `derived`, `constant`, `ref`, and the
   `in`/`out`/`inout` direction) is now accepted on every usage rather than a hand-picked few, and

@@ -1,11 +1,17 @@
-use sysml_model::{EvaluatedValue, SemanticGraph, SemanticNode};
+use sysml_model::{SemanticGraph, SemanticNode};
+use sysml_query::resolved_slice::{ElementEvaluation, EvaluatedScalar};
 
-fn evaluated_value_to_inline_text(value: &EvaluatedValue) -> String {
+/// The inline rendering of one evaluated value.
+///
+/// A quantity renders as its magnitude; hover shows the unit as its own field, so repeating it
+/// here would print it twice.
+fn evaluated_scalar_inline_text(value: &EvaluatedScalar) -> String {
     match value {
-        EvaluatedValue::Integer(value) => value.to_string(),
-        EvaluatedValue::Real(value) => value.to_string(),
-        EvaluatedValue::Boolean(value) => value.to_string(),
-        EvaluatedValue::String(value) => value.clone(),
+        EvaluatedScalar::Integer(value) => value.to_string(),
+        EvaluatedScalar::Real(value) => value.to_string(),
+        EvaluatedScalar::Boolean(value) => value.to_string(),
+        EvaluatedScalar::String(value) => value.to_string(),
+        EvaluatedScalar::Quantity { magnitude, .. } => evaluated_scalar_inline_text(magnitude),
     }
 }
 
@@ -317,10 +323,17 @@ pub fn signature_from_node(node: &SemanticNode) -> Option<String> {
     Some(signature)
 }
 
+/// Renders one element's hover markdown.
+///
+/// `evaluation` is what the immutable publication settled for the same element, supplied by the
+/// caller that resolved it. Hover formats it; it does not evaluate an expression, and it does not
+/// read an evaluated value from the mutable graph, which would let two surfaces disagree about
+/// what one element evaluates to.
 pub fn hover_markdown_for_node(
     graph: &SemanticGraph,
     node: &SemanticNode,
     show_location: bool,
+    evaluation: Option<&ElementEvaluation>,
 ) -> String {
     let mut md = String::new();
     let code_block = signature_from_node(node)
@@ -393,19 +406,16 @@ pub fn hover_markdown_for_node(
     {
         append_field(&mut body, "Value", value);
     }
-    if let Some(evaluation) = graph
-        .evaluation_facts_for(node)
-        .and_then(|facts| facts.expression.as_ref())
-    {
-        if let Some(value) = evaluation
-            .value
-            .as_ref()
-            .map(evaluated_value_to_inline_text)
-        {
-            append_field(&mut body, "Evaluated value", &value);
-        }
-        if let Some(unit) = evaluation.unit.as_deref().filter(|unit| !unit.is_empty()) {
-            append_field(&mut body, "Unit", unit);
+    if let Some(evaluation) = evaluation {
+        if let Some(value) = evaluation.state.value() {
+            append_field(
+                &mut body,
+                "Evaluated value",
+                &evaluated_scalar_inline_text(value),
+            );
+            if let EvaluatedScalar::Quantity { unit, .. } = value {
+                append_field(&mut body, "Unit", unit);
+            }
         }
     }
 
@@ -459,7 +469,7 @@ mod tests {
         let uri = Url::parse("file:///w.sysml").expect("uri");
         let graph = build_graph_from_doc(&root, &uri);
         let widget = graph_node(&graph, &uri, "part def", "Widget");
-        let hover = hover_markdown_for_node(&graph, widget, false);
+        let hover = hover_markdown_for_node(&graph, widget, false, None);
         assert!(
             hover.contains("A widget that does widget things."),
             "hover should include the doc comment text: {hover}"
@@ -475,7 +485,7 @@ mod tests {
         let uri = Url::parse("file:///w.sysml").expect("uri");
         let graph = build_graph_from_doc(&root, &uri);
         let widget = graph_node(&graph, &uri, "part def", "Widget");
-        let hover = hover_markdown_for_node(&graph, widget, false);
+        let hover = hover_markdown_for_node(&graph, widget, false, None);
         assert!(
             hover.starts_with("```sysml"),
             "hover with no doc comment should go straight from the signature block to fields: {hover}"
@@ -496,7 +506,7 @@ mod tests {
         let mut graph = build_graph_from_doc(&root, &uri);
         link_workspace_relationships(&mut graph);
         let c = graph_node(&graph, &uri, "part def", "C");
-        let hover = hover_markdown_for_node(&graph, c, false);
+        let hover = hover_markdown_for_node(&graph, c, false, None);
         assert!(
             hover.contains("P::A") && hover.contains("P::B"),
             "hover should list every specialization target, not just the first: {hover}"
@@ -536,7 +546,7 @@ mod tests {
             .into_iter()
             .find(|node| node.element_kind == "stakeholder")
             .expect("stakeholder node");
-        let hover = hover_markdown_for_node(&graph, stakeholder, false);
+        let hover = hover_markdown_for_node(&graph, stakeholder, false, None);
         assert!(
             hover.contains("stakeholder"),
             "hover should include stakeholder kind: {hover}"
@@ -578,7 +588,7 @@ mod tests {
             widget.source_text.doc.is_some(),
             "doc text should be captured on the typed source_text fact"
         );
-        let hover = hover_markdown_for_node(&graph, widget, false);
+        let hover = hover_markdown_for_node(&graph, widget, false, None);
         assert!(
             hover.contains("First line of documentation.")
                 && hover.contains("Second line of documentation."),

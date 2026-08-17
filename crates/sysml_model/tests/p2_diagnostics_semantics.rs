@@ -378,30 +378,6 @@ fn accept_payload_with_wrong_kind_emits_diagnostic() {
 }
 
 #[test]
-fn view_filter_non_boolean_emits_diagnostic_for_non_boolean_literal() {
-    let doc = workspace_doc(
-        "view_filter.sysml",
-        r#"package Demo {
-  view def StructuralView;
-  view structure : StructuralView {
-    filter 42;
-  }
-}"#,
-    );
-    let uri = doc.uri.clone();
-    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
-    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
-    assert!(
-        has_code(&diagnostics, "view_filter_non_boolean"),
-        "expected view_filter_non_boolean, got: {:?}",
-        diagnostics
-            .iter()
-            .map(|d| (&d.code, &d.message))
-            .collect::<Vec<_>>()
-    );
-}
-
-#[test]
 fn view_metaclass_filter_does_not_emit_non_boolean_diagnostic() {
     let doc = workspace_doc(
         "view_metaclass_filter.sysml",
@@ -450,33 +426,6 @@ fn classification_filter_does_not_emit_non_boolean_diagnostic() {
             .iter()
             .filter(|d| d.code == "view_filter_non_boolean")
             .map(|d| &d.message)
-            .collect::<Vec<_>>()
-    );
-}
-
-#[test]
-fn verification_assignment_value_mismatch_emits_diagnostic() {
-    let doc = workspace_doc(
-        "assign_value.sysml",
-        r#"package Demo {
-  part def System {
-    attribute count : Integer;
-  }
-  verification def VerifyCount {
-    subject system : System;
-    assign system.count := "text";
-  }
-}"#,
-    );
-    let uri = doc.uri.clone();
-    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
-    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
-    assert!(
-        has_code(&diagnostics, "assignment_value_incompatible"),
-        "expected assignment_value_incompatible, got: {:?}",
-        diagnostics
-            .iter()
-            .map(|d| (&d.code, &d.message))
             .collect::<Vec<_>>()
     );
 }

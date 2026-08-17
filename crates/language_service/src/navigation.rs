@@ -1,6 +1,10 @@
 use sysml_model::{
     resolve_expression_endpoint_strict, resolve_type_reference_targets, ResolveResult,
-    TextPosition, TextRange, UnitRegistry,
+    TextPosition, TextRange,
+};
+use sysml_query::resolved_slice::{
+    AuthoredUnit, ElementEvaluation, PublishedModel, QueryOutcome, ReferenceAt, SymbolIdentity,
+    UnitResolution,
 };
 
 use crate::dto::HoverResult;
@@ -9,7 +13,7 @@ use crate::lookup::collect_symbol_matches_for_lookup;
 use crate::presentation_hover::hover_markdown_for_node;
 use crate::references::TYPE_LOOKUP_ELEMENT_KINDS;
 use crate::symbol::symbol_hover_markdown;
-use crate::text::{unit_value_suffix_at_position, word_at_position};
+use crate::text::word_at_position;
 use crate::workspace::WorkspaceSnapshot;
 
 pub fn hover_at_position(
@@ -39,7 +43,7 @@ pub fn hover_at_position(
         },
     });
 
-    if let Some(md) = unit_literal_hover_markdown(workspace, &text, position) {
+    if let Some(md) = unit_literal_hover_markdown(workspace, &uri_norm, position) {
         return Some(HoverResult {
             contents: md,
             range,
@@ -58,17 +62,26 @@ pub fn hover_at_position(
                         .qualified_name
                         .ends_with(&format!("::{}", lookup_name))
             });
+        let evaluation = element_evaluation_at(workspace, &uri_norm, position);
         let markdown = if let Some(target) = target_match.as_ref() {
-            hover_markdown_for_node(graph, target, target.id.uri != uri_norm)
+            hover_markdown_for_node(
+                graph,
+                target,
+                target.id.uri != uri_norm,
+                evaluation.as_ref(),
+            )
         } else {
-            hover_markdown_for_node(graph, node, node.id.uri != uri_norm)
+            hover_markdown_for_node(graph, node, node.id.uri != uri_norm, evaluation.as_ref())
         };
         let markdown = if target_match.is_none() && word != node.name {
             match resolve_hover_type_reference_target(workspace, node, &word, &lookup_name) {
-                Some(target) => {
-                    hover_markdown_for_node(graph, target, target.id.uri != uri_norm)
-                }
-                None => unit_literal_hover_markdown(workspace, &text, position)
+                Some(target) => hover_markdown_for_node(
+                    graph,
+                    target,
+                    target.id.uri != uri_norm,
+                    evaluation.as_ref(),
+                ),
+                None => unit_literal_hover_markdown(workspace, &uri_norm, position)
                     .or_else(|| keyword_hover_markdown(&lookup_name))
                     .unwrap_or_else(|| {
                         format!(
@@ -88,7 +101,12 @@ pub fn hover_at_position(
 
     if let Some(target) = resolve_hover_reference_target(workspace, &uri_norm, position, &word) {
         return Some(HoverResult {
-            contents: hover_markdown_for_node(graph, target, target.id.uri != uri_norm),
+            contents: hover_markdown_for_node(
+                graph,
+                target,
+                target.id.uri != uri_norm,
+                element_evaluation_at(workspace, &uri_norm, position).as_ref(),
+            ),
             range,
         });
     }
@@ -124,7 +142,7 @@ pub fn hover_at_position(
         });
     }
 
-    if let Some(md) = unit_literal_hover_markdown(workspace, &text, position) {
+    if let Some(md) = unit_literal_hover_markdown(workspace, &uri_norm, position) {
         return Some(HoverResult {
             contents: md,
             range,
@@ -227,22 +245,110 @@ fn resolve_hover_reference_target<'a>(
     None
 }
 
-fn unit_registry_for_hover(workspace: &impl WorkspaceSnapshot) -> UnitRegistry {
-    UnitRegistry::from_graph(workspace.semantic_graph())
-}
-
+/// The unit token under the cursor, rendered from what the publication settled for it.
+///
+/// The publication owns the token: its authored spelling, its exact range, and whether it names a
+/// unit, names several, names none, or is a unit expression this engine does not decompose. Hover
+/// selects the token covering the cursor and formats the outcome; it does not look a symbol up in
+/// a catalog of its own, and every state it can show is one the owner published.
 fn unit_literal_hover_markdown(
     workspace: &impl WorkspaceSnapshot,
-    text: &str,
-    pos: TextPosition,
+    uri: &url::Url,
+    position: TextPosition,
 ) -> Option<String> {
-    let unit_expr = unit_value_suffix_at_position(text, pos.line, pos.character)?;
-    let registry = unit_registry_for_hover(workspace);
-    Some(
-        registry
-            .hover_markdown_for_unit_literal(&unit_expr)
-            .unwrap_or_else(|| UnitRegistry::hover_markdown_for_unknown_unit_literal(&unit_expr)),
-    )
+    let unit = element_evaluation_at(workspace, uri, position)?
+        .units
+        .iter()
+        .find(|unit| range_covers(unit.location.range, position))
+        .cloned()?;
+    Some(unit_hover_markdown(&unit))
+}
+
+fn unit_hover_markdown(unit: &AuthoredUnit) -> String {
+    let mut lines = vec![
+        format!("**Unit literal** `[{}]`", unit.authored),
+        String::new(),
+    ];
+    match &unit.resolution {
+        UnitResolution::Resolved(resolved) => {
+            lines.push(format!("*{}*", resolved.unit.as_str()));
+            for dimension in resolved.dimensions.iter() {
+                lines.push(format!("Measured in `{}`", dimension.as_str()));
+            }
+        }
+        UnitResolution::UnknownSymbol => lines.push(
+            "No unit with this symbol is declared in the admitted measurement catalog.".to_string(),
+        ),
+        UnitResolution::Ambiguous(candidates) => {
+            lines.push("Several admitted units carry this symbol:".to_string());
+            for candidate in candidates.iter() {
+                lines.push(format!("- `{}`", candidate.as_str()));
+            }
+        }
+        UnitResolution::UnsupportedExpression => lines.push(
+            "This is a unit expression rather than a single unit symbol, which Spec42 does not \
+             decompose."
+                .to_string(),
+        ),
+        UnitResolution::CatalogUnavailable => lines.push(
+            "No measurement catalog is admitted to this workspace, so unit symbols cannot be \
+             resolved."
+                .to_string(),
+        ),
+    }
+    lines.join("\n")
+}
+
+/// The settled evaluation of the element a cursor position identifies.
+///
+/// Prefers what a reference under the cursor points at, and falls back to the declaration the
+/// cursor is inside, mirroring what hover renders for the same position.
+fn element_evaluation_at(
+    workspace: &impl WorkspaceSnapshot,
+    uri: &url::Url,
+    position: TextPosition,
+) -> Option<ElementEvaluation> {
+    let model = workspace.published_model()?;
+    let at = resolved(model.inspection().inspect_at(uri.as_str(), probe(position)))?;
+    let symbol = match &at.referenced {
+        ReferenceAt::Resolved(inspection) => Some(inspection.identity.clone()),
+        _ => at
+            .containing
+            .as_ref()
+            .map(|containing| containing.identity.clone()),
+    }?;
+    element_evaluation(model, &symbol)
+}
+
+fn element_evaluation(
+    model: &PublishedModel,
+    symbol: &SymbolIdentity,
+) -> Option<ElementEvaluation> {
+    resolved(model.evaluation().evaluate(symbol))
+}
+
+/// The value of an outcome that carried one, whatever completeness it was published under.
+fn resolved<T>(outcome: QueryOutcome<T>) -> Option<T> {
+    match outcome {
+        QueryOutcome::Resolved(value)
+        | QueryOutcome::Recovered(value)
+        | QueryOutcome::UnsupportedWith(value) => Some(value),
+        _ => None,
+    }
+}
+
+fn probe(position: TextPosition) -> sysml_query::resolved_slice::TextPosition {
+    sysml_query::resolved_slice::TextPosition {
+        line: position.line,
+        character: position.character,
+    }
+}
+
+fn range_covers(range: sysml_query::resolved_slice::TextRange, position: TextPosition) -> bool {
+    let after_start =
+        (range.start.line, range.start.character) <= (position.line, position.character);
+    let before_end = (position.line, position.character) <= (range.end.line, range.end.character);
+    after_start && before_end
 }
 
 pub fn hover(

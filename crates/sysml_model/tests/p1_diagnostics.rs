@@ -286,21 +286,6 @@ fn cross_category_short_name_collision_is_not_distinguishable_in_a_package() {
 }
 
 #[test]
-fn emits_attribute_value_type_mismatch_for_boolean_on_real() {
-    let input = r#"
-        package P {
-            part def Device {
-                part subsystem {
-                    attribute ratedVoltage : Real = true;
-                }
-            }
-        }
-    "#;
-    let diags = diags_for(input);
-    assert!(has_code(&diags, "attribute_value_type_mismatch"));
-}
-
-#[test]
 fn part_feature_redefinition_does_not_emit_subset_kind_warnings() {
     let input = r#"
         package DutchGridProfile {
