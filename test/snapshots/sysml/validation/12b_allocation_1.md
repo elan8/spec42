@@ -92,7 +92,7 @@ package '12b-Allocation-1' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:ae82e7099dc27604c1368eaff5be48ff11690cd1b44014c410d0006167e757b7") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:ae82e7099dc27604c1368eaff5be48ff11690cd1b44014c410d0006167e757b7") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/12b_allocation_1.md") (qualified-name "12b-Allocation-1"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/12b_allocation_1.md") (path (named (kind package) (name "12b-Allocation-1")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "SI") (import (shape namespace) (recursive false))))))
@@ -196,6 +196,8 @@ package '12b-Allocation-1' {
     (relationship (kind typing) (source (node (document "memory://snapshot/12b_allocation_1.md") (qualified-name "12b-Allocation-1::RequirementModel::torqueGeneration::generator"))) (target (node (document "memory://snapshot/12b_allocation_1.md") (qualified-name "12b-Allocation-1::LogicalModel::TorqueGenerator"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/12b_allocation_1.md") (qualified-name "12b-Allocation-1::RequirementModel::torqueGeneration::generator"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/12b_allocation_1.md") (path (named (kind package) (name "12b-Allocation-1")) (named (kind package) (name "RequirementModel")) (named (kind requirement) (name "torqueGeneration")) (anonymous (kind require-constraint) (ordinal 0))))) (state unsupported))
+    (unit (declaration (node (document "memory://snapshot/12b_allocation_1.md") (path (named (kind package) (name "12b-Allocation-1")) (named (kind package) (name "RequirementModel")) (named (kind requirement) (name "torqueGeneration")) (anonymous (kind require-constraint) (ordinal 0))))) (ordinal 0) (authored "N*m") (start 10 44) (end 10 47) (outcome (status catalog-unavailable)))
   )
 )
 ~~~

@@ -53,7 +53,7 @@ package MassRollup_1 {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:050cb6d5a2677fd04625c53665d71621fc0745133638e729e678c91c4095fcb8") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:050cb6d5a2677fd04625c53665d71621fc0745133638e729e678c91c4095fcb8") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/mass_rollup_1.md") (qualified-name "MassRollup_1"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/mass_rollup_1.md") (path (named (kind package) (name "MassRollup_1")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "NumericalFunctions") (import (shape namespace) (recursive false))))))
@@ -91,6 +91,7 @@ package MassRollup_1 {
     (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/mass_rollup_1.md") (qualified-name "MassRollup_1::MassedThing::totalMass"))) (target (node (document "memory://snapshot/mass_rollup_1.md") (qualified-name "MassRollup_1::MassedThing::totalMass"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/mass_rollup_1.md") (qualified-name "MassRollup_1::MassedThing::totalMass"))) (kind memberAccessOperand) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/mass_rollup_1.md") (qualified-name "MassRollup_1::MassedThing::totalMass"))) (state unsupported))
   )
 )
 ~~~

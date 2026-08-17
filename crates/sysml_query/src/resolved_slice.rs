@@ -3,19 +3,20 @@
 use std::fmt;
 
 pub use sysml_resolution::{
-    AnnotationForm, AuthoredValue, BuildMeasurements, Conformance, ConformanceObstacle, Diagnostic,
-    DiagnosticCode, DiagnosticLocation, DiagnosticOrigin, DiagnosticSeverity, Documentation,
-    EffectiveType, EffectiveTypeOrigin, ElementInspection, ElementInspectionAt, ElementKind,
-    ElementModifier, ElementRelationship, ElementSearch, ElementSource, EvaluatedScalar,
-    EvaluationFailure, EvaluationState, FeatureDirection, MembershipFacts, MembershipKind,
-    MembershipRole, MultiplicityBound, MultiplicityFacts, NavigationTarget, OccurrenceRole,
-    PortionKind, PublicationCompleteness, PublicationIdentity, PublishedDiagnostics, QueryOutcome,
-    ReferenceAt, RelationshipProvenance, RelationshipTarget, RenameOutcome,
-    RequirementConstraintKind, RequirementUsageTyping, RequirementVerification, SatisfyEndpoint,
+    AnnotationForm, AuthoredUnit, AuthoredValue, BuildMeasurements, Conformance,
+    ConformanceObstacle, Diagnostic, DiagnosticCode, DiagnosticLocation, DiagnosticOrigin,
+    DiagnosticSeverity, Documentation, EffectiveType, EffectiveTypeOrigin, ElementEvaluation,
+    ElementInspection, ElementInspectionAt, ElementKind, ElementModifier, ElementRelationship,
+    ElementSearch, ElementSource, EvaluatedScalar, EvaluationFailure, EvaluationState,
+    ExpectedMeasurement, FeatureDirection, MembershipFacts, MembershipKind, MembershipRole,
+    MultiplicityBound, MultiplicityFacts, NavigationTarget, OccurrenceRole, PortionKind,
+    PublicationCompleteness, PublicationIdentity, PublishedDiagnostics, QueryOutcome, ReferenceAt,
+    RelationshipProvenance, RelationshipTarget, RenameOutcome, RequirementConstraintKind,
+    RequirementUsageTyping, RequirementVerification, ResolvedUnit, SatisfyEndpoint,
     SatisfyPolarity, SatisfyRelationship, SourceLocation, SpecializationScope, StateSubactionKind,
     SubsettingConformance, SymbolEntry, SymbolIdentity, TextPosition, TextRange, TypeReference,
-    ValueKind, VerificationOutcome, VerificationRequirement, Visibility, VisibilityProvenance,
-    VisibleMember,
+    UnitResolution, ValueKind, VerificationOutcome, VerificationRequirement, Visibility,
+    VisibilityProvenance, VisibleMember,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -250,6 +251,10 @@ impl PublishedModel {
         TypeQueries { model: &self.inner }
     }
 
+    pub fn evaluation(&self) -> EvaluationQueries<'_> {
+        EvaluationQueries { model: &self.inner }
+    }
+
     pub fn diagnostics(&self) -> DiagnosticQueries<'_> {
         DiagnosticQueries { model: &self.inner }
     }
@@ -262,12 +267,11 @@ impl PublishedModel {
 /// at the publication barrier, so a host, a generator, and the canonical snapshot projection
 /// cannot disagree about what one publication reported.
 ///
-/// This does not yet cover the conformance families -- kind compatibility, structural-feature,
-/// view metadata, behavior, connection, expression, import, and requirement-case conformance are
-/// still evaluated by `sysml_diagnostics` over the mutable graph. Read
-/// `sysml_resolution::diagnostics`'s module documentation and `PRODUCTION_CUTOVER.md` before
-/// pointing a legacy diagnostic consumer at this service, or it will silently stop reporting
-/// roughly thirty public codes.
+/// This does not yet cover every conformance family -- view metadata, behavior, connection,
+/// import, and requirement-case conformance are still evaluated by `sysml_diagnostics` over the
+/// mutable graph. Read `sysml_resolution::diagnostics`'s module documentation and
+/// `PRODUCTION_CUTOVER.md` before pointing a legacy diagnostic consumer at this service, or it
+/// will silently stop reporting the codes those families own.
 pub struct DiagnosticQueries<'a> {
     model: &'a sysml_resolution::PublishedResolution,
 }
@@ -277,6 +281,24 @@ impl DiagnosticQueries<'_> {
     /// that produced them. Only workspace-authored documents are reported.
     pub fn published(&self) -> PublishedDiagnostics {
         self.model.diagnostics()
+    }
+}
+
+/// Evaluated values, evaluation states, authored units and required measurement references.
+///
+/// One cohesive answer per element, so a consumer showing a value with its unit makes one call
+/// rather than combining an inspection query, a type query and a relationship query and deciding
+/// for itself how they relate. The facade adapts; it evaluates nothing, resolves no unit, and
+/// manufactures no outcome -- every field was settled by `sysml_resolution` at the publication
+/// barrier.
+pub struct EvaluationQueries<'a> {
+    model: &'a sysml_resolution::PublishedResolution,
+}
+
+impl EvaluationQueries<'_> {
+    /// What this publication settled for one element's authored expression.
+    pub fn evaluate(&self, symbol: &SymbolIdentity) -> QueryOutcome<ElementEvaluation> {
+        self.model.evaluate(symbol)
     }
 }
 

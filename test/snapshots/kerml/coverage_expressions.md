@@ -117,11 +117,18 @@ package ExpressionCoverage {
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::sel"))) (target (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::items"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::sel"))) (kind expressionOperand) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::all_v"))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::arr"))) (state unsupported))
     (evaluated (declaration (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::coll"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::cond"))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::h"))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::meta_access"))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::n"))) (state unsupported))
     (evaluated (declaration (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::r"))) (state literal) (value (kind real) (real 3.14)))
     (evaluated (declaration (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::s"))) (state literal) (value (kind string) (value "hello")))
     (evaluated (declaration (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::sel"))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::seq"))) (state non-constant))
+    (unit (declaration (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::arr"))) (ordinal 0) (authored "0") (start 11 24) (end 11 25) (outcome (status catalog-unavailable)))
   )
 )
 ~~~

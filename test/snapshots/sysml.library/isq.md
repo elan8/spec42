@@ -341,6 +341,7 @@ standard library package ISQ {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/isq.md") (path (named (kind library-package) (name "ISQ")) (named (kind attribute-def) (name "TemperatureDifferenceUnit")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/isq.md") (path (named (kind library-package) (name "ISQ")) (named (kind attribute-def) (name "TemperatureDifferenceUnit")) (named (kind attribute) (name "thermodynamicTemperaturePF")) (anonymous (kind attribute) (ordinal 0))))) (state unsupported))
     (evaluated (declaration (node (document "memory://snapshot/isq.md") (path (named (kind library-package) (name "ISQ")) (named (kind attribute-def) (name "TemperatureDifferenceUnit")) (named (kind attribute) (name "thermodynamicTemperaturePF")) (anonymous (kind attribute) (ordinal 1))))) (state literal) (value (kind integer) (integer 1)))
   )
 )

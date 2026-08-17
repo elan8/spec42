@@ -372,7 +372,7 @@ standard library package Flows {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:c9a64a01c4c777e61a25df439dd681fafb88806988181a2c8727245e55eb87bb") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:c9a64a01c4c777e61a25df439dd681fafb88806988181a2c8727245e55eb87bb") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/flows.md") (qualified-name "Flows"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n     * This package defines the base types for flows and related behavioral elements \n     * in the SysML language.\n     "))))
     (declaration (id (node (document "memory://snapshot/flows.md") (path (named (kind library-package) (name "Flows")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Links::Link") (import (shape membership) (recursive false))))))
@@ -549,6 +549,8 @@ standard library package Flows {
     (relationship (kind redefinition) (source (node (document "memory://snapshot/flows.md") (qualified-name "Flows::SuccessionFlow::target"))) (target (node (document "memory://snapshot/flows.md") (qualified-name "Flows::Flow::target"))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/flows.md") (qualified-name "Flows::Message::seBeforeNum"))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/flows.md") (qualified-name "Flows::Message::teAfterNum"))) (state unsupported))
   )
 )
 ~~~

@@ -780,6 +780,11 @@ standard library package Items {
     (relationship (kind typing) (source (node (document "memory://snapshot/items.md") (qualified-name "Items::items"))) (target (node (document "memory://snapshot/items.md") (qualified-name "Items::Item"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/items.md") (qualified-name "Items::items"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/items.md") (path (named (kind library-package) (name "Items")) (named (kind item-def) (name "Item")) (named (kind item) (name "boundingShapes")) (anonymous (kind item) (ordinal 0)) (anonymous (kind assert-constraint) (ordinal 0))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/items.md") (path (named (kind library-package) (name "Items")) (named (kind item-def) (name "Item")) (named (kind item) (name "boundingShapes")) (anonymous (kind item) (ordinal 1)) (anonymous (kind assert-constraint) (ordinal 0))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/items.md") (path (named (kind library-package) (name "Items")) (named (kind item-def) (name "Item")) (named (kind item) (name "envelopingShapes")) (anonymous (kind assert-constraint) (ordinal 0))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/items.md") (path (named (kind library-package) (name "Items")) (named (kind item-def) (name "Item")) (named (kind item) (name "envelopingShapes")) (anonymous (kind assert-constraint) (ordinal 1))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/items.md") (path (named (kind library-package) (name "Items")) (named (kind item-def) (name "Item")) (named (kind item) (name "envelopingShapes")) (anonymous (kind assert-constraint) (ordinal 2))))) (state unsupported))
     (evaluated (declaration (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::isSolid"))) (state non-constant))
   )
 )

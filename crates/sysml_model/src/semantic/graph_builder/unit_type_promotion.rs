@@ -9,7 +9,24 @@ use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::NodeId;
 use crate::semantic::relationships::{add_specializes_edge_if_exists, add_typing_edge_if_exists};
 use crate::semantic::text_span::TextRange;
-use crate::semantic::units::type_resolver::is_unit_type_name;
+
+/// The KerML library type names this promoter treats as unit types.
+///
+/// A spelling test, and deliberately kept as one: it decides which *declaration text* in a KerML
+/// library file this builder promotes into a node, before any semantic fact exists to ask. It is
+/// not a semantic classification -- what a unit is, and what it measures, is settled by
+/// `sysml_resolution` from typing and specialization, not from a name ending in `Unit`.
+const MEASUREMENT_UNIT_ROOTS: &[&str] = &[
+    "MeasurementUnit",
+    "SimpleUnit",
+    "DerivedUnit",
+    "ScalarMeasurementReference",
+];
+
+fn is_unit_type_name(name: &str) -> bool {
+    let base = name.rsplit("::").next().unwrap_or(name).trim();
+    base.ends_with("Unit") || MEASUREMENT_UNIT_ROOTS.contains(&base)
+}
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ParsedUnitAttributeDef {

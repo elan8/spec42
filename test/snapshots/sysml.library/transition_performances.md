@@ -599,8 +599,10 @@ standard library package TransitionPerformances {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/transition_performances.md") (qualified-name "TransitionPerformances::NonStateTransitionPerformance::isTriggerAfter"))) (state literal) (value (kind boolean) (boolean true)))
+    (evaluated (declaration (node (document "memory://snapshot/transition_performances.md") (qualified-name "TransitionPerformances::NonStateTransitionPerformance::taNum"))) (state unsupported))
     (evaluated (declaration (node (document "memory://snapshot/transition_performances.md") (qualified-name "TransitionPerformances::TPCGuardConstraint"))) (state unresolved-operand))
     (evaluated (declaration (node (document "memory://snapshot/transition_performances.md") (path (named (kind library-package) (name "TransitionPerformances")) (named (kind kerml-association-structure) (name "TPCGuardConstraint")) (anonymous (kind kerml-invariant) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::accNum"))) (state unsupported))
     (evaluated (declaration (node (document "memory://snapshot/transition_performances.md") (path (named (kind library-package) (name "TransitionPerformances")) (named (kind kerml-behavior) (name "TransitionPerformance")) (named (kind kerml-step) (name "accept")) (anonymous (kind kerml-feature) (ordinal 0))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::triggerTarget"))) (state unresolved-operand))
   )

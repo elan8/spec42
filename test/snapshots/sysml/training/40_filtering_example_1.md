@@ -160,6 +160,8 @@ package 'Filtering Example-1' {
     (evaluated (declaration (node (document "memory://snapshot/40_filtering_example_1.md") (path (named (kind package) (name "Filtering Example-1")) (named (kind part) (name "vehicle")) (named (kind part) (name "interior")) (named (kind part) (name "driverAirBag")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "isMandatory"))))) (state literal) (value (kind boolean) (boolean false)))
     (evaluated (declaration (node (document "memory://snapshot/40_filtering_example_1.md") (path (named (kind package) (name "Filtering Example-1")) (named (kind part) (name "vehicle")) (named (kind part) (name "interior")) (named (kind part) (name "seatBelt")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "isMandatory"))))) (state literal) (value (kind boolean) (boolean true)))
     (evaluated (declaration (node (document "memory://snapshot/40_filtering_example_1.md") (path (named (kind package) (name "Filtering Example-1")) (named (kind part) (name "vehicle")) (named (kind part) (name "wheelAssy")) (named (kind part) (name "antilockBrakes")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "isMandatory"))))) (state literal) (value (kind boolean) (boolean false)))
+    (filter (owner (node (document "memory://snapshot/40_filtering_example_1.md") (qualified-name "Filtering Example-1::Mandatory Safety Features"))) (form package-import) (state unsupported) (start 34 9) (end 34 40))
+    (filter (owner (node (document "memory://snapshot/40_filtering_example_1.md") (qualified-name "Filtering Example-1::Safety Features"))) (form package-import) (state unsupported) (start 28 9) (end 28 16))
   )
 )
 ~~~

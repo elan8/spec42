@@ -326,9 +326,13 @@ package 'Calculation Usages-1' {
     (evaluated (declaration (node (document "memory://snapshot/30_calculation_usages_1.md") (qualified-name "Calculation Usages-1::VehicleDynamics::straightLineDynamics::acc::tp"))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/30_calculation_usages_1.md") (qualified-name "Calculation Usages-1::VehicleDynamics::straightLineDynamics::acc::v"))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/30_calculation_usages_1.md") (qualified-name "Calculation Usages-1::VehicleDynamics::straightLineDynamics::pos::dt"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/30_calculation_usages_1.md") (qualified-name "Calculation Usages-1::VehicleDynamics::straightLineDynamics::pos::v0"))) (state unsupported))
     (evaluated (declaration (node (document "memory://snapshot/30_calculation_usages_1.md") (qualified-name "Calculation Usages-1::VehicleDynamics::straightLineDynamics::pos::x0"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/30_calculation_usages_1.md") (qualified-name "Calculation Usages-1::VehicleDynamics::straightLineDynamics::v_out"))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/30_calculation_usages_1.md") (qualified-name "Calculation Usages-1::VehicleDynamics::straightLineDynamics::vel::a"))) (state unsupported))
     (evaluated (declaration (node (document "memory://snapshot/30_calculation_usages_1.md") (qualified-name "Calculation Usages-1::VehicleDynamics::straightLineDynamics::vel::dt"))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/30_calculation_usages_1.md") (qualified-name "Calculation Usages-1::VehicleDynamics::straightLineDynamics::vel::v0"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/30_calculation_usages_1.md") (qualified-name "Calculation Usages-1::VehicleDynamics::straightLineDynamics::x_out"))) (state unsupported))
   )
 )
 ~~~

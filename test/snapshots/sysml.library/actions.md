@@ -1851,8 +1851,11 @@ standard library package Actions {
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "ForLoopAction")) (anonymous (kind assign) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
     (evaluated (declaration (node (document "memory://snapshot/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "ForLoopAction")) (anonymous (kind while) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "ForLoopAction")) (anonymous (kind while) (ordinal 0)) (anonymous (kind assign) (ordinal 0))))) (state unsupported))
     (evaluated (declaration (node (document "memory://snapshot/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "ForLoopAction")) (anonymous (kind while) (ordinal 0)) (anonymous (kind assign) (ordinal 1))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/actions.md") (qualified-name "Actions::TerminateAction::terminateOccurrence::occ"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/actions.md") (qualified-name "Actions::WhileLoopAction::untilTest"))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/actions.md") (qualified-name "Actions::WhileLoopAction::whileTest"))) (state unsupported))
     (evaluated (declaration (node (document "memory://snapshot/actions.md") (qualified-name "Actions::assignmentActions::target"))) (state non-constant))
   )
 )

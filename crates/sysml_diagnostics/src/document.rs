@@ -2,9 +2,8 @@ use url::Url;
 
 use sysml_model::semantic::graph::SemanticGraph;
 use sysml_model::semantic::text_span::{TextPosition, TextRange};
-use sysml_model::UnitRegistry;
 
-use super::engine::collect_diagnostics_from_graph_with_unit_registry;
+use super::engine::collect_diagnostics_from_graph;
 use super::ordering::canonicalize_diagnostics;
 use super::shared_rules::{
     collect_untyped_part_usage_diagnostics, missing_library_context_diagnostic,
@@ -18,7 +17,6 @@ use super::types::{DiagnosticSeverity, DiagnosticsOptions, SemanticDiagnostic};
 /// independently-maintained implementations.
 pub fn collect_document_diagnostics(
     graph: &SemanticGraph,
-    unit_registry: &UnitRegistry,
     has_library_paths: bool,
     uri: &Url,
     text: &str,
@@ -37,11 +35,10 @@ pub fn collect_document_diagnostics(
     };
 
     if allow_semantic {
-        diagnostics.extend(collect_diagnostics_from_graph_with_unit_registry(
+        diagnostics.extend(collect_diagnostics_from_graph(
             graph,
             uri,
             DiagnosticsOptions::default(),
-            unit_registry,
         ));
 
         let has_unresolved = has_semantic_code(&diagnostics, "unresolved_type_reference")

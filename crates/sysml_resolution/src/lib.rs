@@ -25,7 +25,10 @@ pub use diagnostics::{
 pub use element_kind::{
     ElementKind, MembershipRole, RequirementConstraintKind, StateSubactionKind,
 };
-pub use evaluation::{EvaluatedScalar, EvaluationFailure, EvaluationPolicy, EvaluationState};
+pub use evaluation::{
+    AuthoredUnit, ElementEvaluation, EvaluatedScalar, EvaluationFailure, EvaluationPolicy,
+    EvaluationState, ExpectedMeasurement, ResolvedUnit, UnitResolution,
+};
 pub use inspection::{
     AnnotationForm, AuthoredValue, Documentation, ElementInspection, ElementInspectionAt,
     ElementModifier, ElementRelationship, FeatureDirection, MembershipFacts, MembershipKind,
@@ -532,6 +535,12 @@ impl PublishedResolution {
         qualifier: Option<&str>,
     ) -> QueryOutcome<Box<[VisibleMember]>> {
         self.model.visible_members(document, position, qualifier)
+    }
+
+    /// The settled evaluation of one element: value, state, authored units and required
+    /// measurement, from facts this publication fixed before it became visible.
+    pub fn evaluate(&self, symbol: &SymbolIdentity) -> QueryOutcome<ElementEvaluation> {
+        self.model.evaluate(symbol)
     }
 
     /// Everything this publication knows about one element.
@@ -2486,6 +2495,132 @@ mod tests {
             .collect()
     }
 
+    /// The identity of the declaration containing `needle`, and the publication it belongs to.
+    fn probe_symbol(
+        published: &PublishedResolution,
+        source: &str,
+        document: &str,
+        needle: &str,
+    ) -> SymbolIdentity {
+        match published.inspect_at(document, position_of(source, needle)) {
+            QueryOutcome::Resolved(at) => {
+                at.containing
+                    .expect("the probe must land inside a declaration")
+                    .identity
+            }
+            other => panic!("the probe must resolve to an inspection, got: {other:?}"),
+        }
+    }
+
+    /// How many index entries one settled evaluation query visits.
+    fn evaluate_cost(sources: &[(&str, &str)], document: &str, needle: &str) -> u64 {
+        let published = publication_for(sources);
+        let source = sources
+            .iter()
+            .find(|(identity, _)| *identity == document)
+            .expect("the probed document is in the workspace")
+            .1;
+        let symbol = probe_symbol(&published, source, document, needle);
+        let (outcome, visited) =
+            crate::model::resolver::measure_visited_index_entries(|| published.evaluate(&symbol));
+        assert!(
+            matches!(outcome, QueryOutcome::Resolved(_)),
+            "the evaluation query must resolve, got: {outcome:?}"
+        );
+        visited
+    }
+
+    /// A workspace whose probed declaration carries a value and a unit token.
+    const EVALUATED: &str = "package P {\n  attribute mass = 1750 [kg];\n}";
+
+    /// An evaluation answer is three indexed lookups and the rows they name, so a workspace that
+    /// grows elsewhere costs nothing here. A scan of the evaluation, unit or measurement tables
+    /// would return the same answer; only the measurement separates them.
+    #[test]
+    fn evaluation_cost_is_independent_of_the_rest_of_the_workspace() {
+        let small = evaluate_cost(
+            &[("memory://e.sysml", EVALUATED)],
+            "memory://e.sysml",
+            "1750",
+        );
+        let large_source = format!("package Other {{\n{}}}\n", padding(500));
+        let large = evaluate_cost(
+            &[
+                ("memory://e.sysml", EVALUATED),
+                ("memory://other.sysml", &large_source),
+            ],
+            "memory://e.sysml",
+            "1750",
+        );
+        assert_eq!(
+            small, large,
+            "500 declarations in another document changed what one evaluation query reads"
+        );
+    }
+
+    /// Repeating the query repeats the same lookups: nothing is resolved, folded or memoised on
+    /// the way out, so a second call cannot be cheaper -- or more expensive -- than the first.
+    #[test]
+    fn repeating_an_evaluation_query_does_the_same_work() {
+        let published = publication_for(&[("memory://e.sysml", EVALUATED)]);
+        let symbol = probe_symbol(&published, EVALUATED, "memory://e.sysml", "1750");
+        let measure = || {
+            crate::model::resolver::measure_visited_index_entries(|| published.evaluate(&symbol))
+        };
+        let (first, first_cost) = measure();
+        let (second, second_cost) = measure();
+        assert_eq!(
+            first, second,
+            "a repeated evaluation query changed its answer"
+        );
+        assert_eq!(
+            first_cost, second_cost,
+            "a repeated evaluation query changed its work"
+        );
+    }
+
+    /// Inspection and evaluation project the same settled state, so asking one first cannot
+    /// change what the other answers or what it costs.
+    #[test]
+    fn inspection_and_evaluation_agree_in_either_order() {
+        let evaluation_first = {
+            let published = publication_for(&[("memory://e.sysml", EVALUATED)]);
+            let symbol = probe_symbol(&published, EVALUATED, "memory://e.sysml", "1750");
+            let (evaluation, cost) = crate::model::resolver::measure_visited_index_entries(|| {
+                published.evaluate(&symbol)
+            });
+            let inspection = published.inspect(&symbol);
+            (evaluation, inspection, cost)
+        };
+        let inspection_first = {
+            let published = publication_for(&[("memory://e.sysml", EVALUATED)]);
+            let symbol = probe_symbol(&published, EVALUATED, "memory://e.sysml", "1750");
+            let inspection = published.inspect(&symbol);
+            let (evaluation, cost) = crate::model::resolver::measure_visited_index_entries(|| {
+                published.evaluate(&symbol)
+            });
+            (evaluation, inspection, cost)
+        };
+        assert_eq!(
+            evaluation_first.0, inspection_first.0,
+            "query order changed the evaluation answer"
+        );
+        assert_eq!(
+            evaluation_first.2, inspection_first.2,
+            "query order changed the evaluation query's work"
+        );
+        let QueryOutcome::Resolved(evaluation) = &evaluation_first.0 else {
+            panic!("the probe must resolve");
+        };
+        let QueryOutcome::Resolved(inspection) = &evaluation_first.1 else {
+            panic!("the probe must resolve");
+        };
+        assert_eq!(
+            evaluation.state, inspection.evaluation,
+            "inspection and the evaluation service must project one canonical result"
+        );
+    }
+
     /// The contract the publication-time index exists to keep: what an inspection reads is this
     /// declaration's own facts, so a workspace that grows elsewhere costs nothing here.
     ///
@@ -3446,6 +3581,191 @@ package P {
             "feature-conformance decisions must not depend on library-stratum reuse"
         );
         for code in ["incompatible_type_kind", "specialization_cycle"] {
+            assert!(
+                seeded.contains(code),
+                "the parity workspace must actually exercise {code}, got: {seeded}"
+            );
+        }
+    }
+
+    /// A minimal but structurally faithful measurement library.
+    ///
+    /// The unit rules are rooted in library declarations, so parity for them cannot be shown
+    /// against a library that declares none. This mirrors the standard library's shape exactly
+    /// where the rules read it: `MeasurementUnit` as the root of unit types, `TensorQuantityValue`
+    /// with the `mRef` feature a quantity value redefines, and units declared as attribute usages
+    /// carrying a short-name symbol.
+    const MEASUREMENT_LIBRARY_SOURCE: &str = concat!(
+        "standard library package ScalarValues { datatype Boolean; datatype String; ",
+        "datatype Real; datatype Integer :> Real; }\n",
+        "standard library package MeasurementReferences { ",
+        "abstract attribute def MeasurementUnit; ",
+        "attribute def MassUnit :> MeasurementUnit; ",
+        "attribute def DurationUnit :> MeasurementUnit; }\n",
+        "standard library package Quantities { ",
+        "abstract attribute def TensorQuantityValue { ",
+        "attribute mRef : MeasurementReferences::MeasurementUnit; } ",
+        "attribute def MassValue :> TensorQuantityValue { ",
+        "attribute :>> mRef : MeasurementReferences::MassUnit; } }\n",
+        "standard library package SI { ",
+        "attribute <kg> kilogram : MeasurementReferences::MassUnit; ",
+        "attribute <s> second : MeasurementReferences::DurationUnit; }",
+    );
+
+    /// A workspace exercising every migrated expression-conformance rule that reads the library.
+    const MEASUREMENT_WORKSPACE: &str = concat!(
+        "package W { ",
+        "attribute good : Quantities::MassValue = 1 [kg]; ",
+        "attribute wrongDimension : Quantities::MassValue = 1 [s]; ",
+        "attribute unknownUnit : Quantities::MassValue = 1 [zz]; ",
+        "attribute mistyped : ScalarValues::Boolean = \"no\"; ",
+        "constraint def Counted { 1 + 2 } }",
+    );
+
+    /// One publication of `workspace` against the measurement library above.
+    fn against_measurement_library(
+        workspace: &str,
+        schedule: ConstructionSchedule,
+    ) -> PublishedResolution {
+        build(
+            BuildRequest::new(
+                vec![
+                    SourceInput::new(
+                        "memory://workspace.sysml",
+                        workspace.to_string(),
+                        SourceKind::Workspace,
+                    ),
+                    SourceInput::new(
+                        "memory://measurement.sysml",
+                        MEASUREMENT_LIBRARY_SOURCE.to_string(),
+                        SourceKind::StandardLibrary,
+                    ),
+                ],
+                schedule,
+                "contract-v1",
+            )
+            .expect("measurement request"),
+        )
+        .expect("measurement build")
+    }
+
+    fn measurement_publication(schedule: ConstructionSchedule) -> String {
+        render_publication(&against_measurement_library(
+            MEASUREMENT_WORKSPACE,
+            schedule,
+        ))
+    }
+
+    /// Whether an element is quantity-typed can only be answered against the library that declares
+    /// what a quantity value is. Without it the answer is unknown, and publishing "not a quantity"
+    /// would state as a fact about the model what is really a missing input -- silently ruling out
+    /// the unit rules rather than reporting that they could not be applied.
+    #[test]
+    fn a_missing_quantity_library_leaves_measurement_applicability_unavailable() {
+        let workspace = "package P { attribute plain = 1; }";
+        let published = publication_for(&[("memory://q.sysml", workspace)]);
+        let symbol = probe_symbol(&published, workspace, "memory://q.sysml", "plain");
+        let QueryOutcome::Resolved(evaluation) = published.evaluate(&symbol) else {
+            panic!("the probe must resolve");
+        };
+        assert_eq!(
+            evaluation.expected_measurement,
+            ExpectedMeasurement::Unavailable
+        );
+    }
+
+    /// With the library admitted, the same shape of element gets the affirmative answer.
+    #[test]
+    fn an_admitted_quantity_library_answers_a_non_quantity_element_affirmatively() {
+        let workspace = "package P { attribute plain : ScalarValues::Integer = 1; }";
+        let published = against_measurement_library(workspace, ConstructionSchedule::Sequential);
+        let symbol = probe_symbol(&published, workspace, "memory://workspace.sysml", "plain");
+        let QueryOutcome::Resolved(evaluation) = published.evaluate(&symbol) else {
+            panic!("the probe must resolve");
+        };
+        assert_eq!(
+            evaluation.expected_measurement,
+            ExpectedMeasurement::NotApplicable
+        );
+    }
+
+    fn render_publication(published: &PublishedResolution) -> String {
+        let mut semantic = String::new();
+        published
+            .debug()
+            .write_semantic_sexpr(&mut semantic)
+            .expect("semantic");
+        let mut types = String::new();
+        published
+            .debug()
+            .write_types_sexpr(&mut types)
+            .expect("types");
+        let mut diagnostics = String::new();
+        published
+            .debug()
+            .write_diagnostics_sexpr(&mut diagnostics)
+            .expect("diagnostics");
+        format!("{semantic}\n{types}\n{diagnostics}")
+    }
+
+    /// Every migrated expression rule the parity cases below rely on actually firing.
+    const MEASUREMENT_CODES: [&str; 4] = [
+        "incompatible_unit_dimension",
+        "unknown_unit_symbol",
+        "attribute_value_type_mismatch",
+        "non_boolean_expression",
+    ];
+
+    /// Evaluation, unit resolution and the decisions they feed must not depend on the schedule
+    /// that built the publication.
+    #[test]
+    fn parallel_and_sequential_construction_publish_the_same_evaluation_and_units() {
+        let sequential = measurement_publication(ConstructionSchedule::Sequential);
+        let parallel = measurement_publication(ConstructionSchedule::Parallel);
+        assert_eq!(
+            sequential, parallel,
+            "evaluation, unit and measurement facts must not depend on construction schedule"
+        );
+        for code in MEASUREMENT_CODES {
+            assert!(
+                sequential.contains(code),
+                "the parity workspace must actually exercise {code}, got: {sequential}"
+            );
+        }
+    }
+
+    /// The same facts, reached through a settled library stratum rather than a cold solve.
+    #[test]
+    fn a_seeded_publication_matches_an_unseeded_one_for_evaluation_and_units() {
+        let library = std::sync::Arc::new(
+            build_library_stratum(vec![SourceInput::new(
+                "memory://measurement.sysml",
+                MEASUREMENT_LIBRARY_SOURCE.to_string(),
+                SourceKind::StandardLibrary,
+            )])
+            .expect("measurement stratum"),
+        );
+        let seeded = build(
+            BuildRequest::with_library(
+                vec![SourceInput::new(
+                    "memory://workspace.sysml",
+                    MEASUREMENT_WORKSPACE.to_string(),
+                    SourceKind::Workspace,
+                )],
+                ConstructionSchedule::Sequential,
+                "contract-v1",
+                library,
+            )
+            .expect("seeded request"),
+        )
+        .expect("seeded build");
+        let seeded = render_publication(&seeded);
+        assert_eq!(
+            seeded,
+            measurement_publication(ConstructionSchedule::Sequential),
+            "unit and evaluation decisions must not depend on library-stratum reuse"
+        );
+        for code in MEASUREMENT_CODES {
             assert!(
                 seeded.contains(code),
                 "the parity workspace must actually exercise {code}, got: {seeded}"

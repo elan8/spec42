@@ -158,17 +158,16 @@ fn assert_constraint_emits_failed_analysis_diagnostic_when_false() {
     );
 }
 
+/// A numeric constraint result is evaluated but carries no verdict.
+///
+/// Reporting it is no longer this graph's job: `non_boolean_expression` is settled by the
+/// immutable publication from the same settled evaluation, so the assertion that survives here is
+/// the one this evaluator owns -- that the analysis ran and produced no pass/fail.
 #[test]
-fn assert_constraint_with_numeric_result_emits_non_boolean_diagnostic() {
+fn assert_constraint_with_numeric_result_evaluates_without_a_verdict() {
     let graph = build_graph(NON_BOOLEAN_ASSERT_SYSML);
     assert_eq!(
         analysis_result(&graph, "Grid::Feeder"),
         Some((sysml_model::EvaluationStatus::Ok, None))
-    );
-    assert!(
-        diagnostics_for(&graph)
-            .iter()
-            .any(|diag| diag.code == "non_boolean_expression"),
-        "expected non_boolean_expression for a typed numeric constraint result"
     );
 }

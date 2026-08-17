@@ -78,6 +78,7 @@ package P {
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/fuzz_named_argument.md") (qualified-name "P::b"))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/fuzz_named_argument.md") (qualified-name "P::f"))) (state non-constant))
+    (invocation (declaration (node (document "memory://snapshot/fuzz_named_argument.md") (qualified-name "P::f"))) (callee (node (document "memory://snapshot/fuzz_named_argument.md") (qualified-name "P::F"))) (supplied 2) (required 1) (start 2 18) (end 2 33))
   )
 )
 ~~~

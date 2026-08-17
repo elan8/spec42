@@ -192,7 +192,11 @@ package 'Analysis Case Usage Example' {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/33_analysis_case_usage_example.md") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::cityAnalysis::scenario"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/33_analysis_case_usage_example.md") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::cityScenario"))) (state unsupported))
     (evaluated (declaration (node (document "memory://snapshot/33_analysis_case_usage_example.md") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::highwayAnalysis::scenario"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/33_analysis_case_usage_example.md") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::highwayScenario"))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/33_analysis_case_usage_example.md") (path (named (kind package) (name "Analysis Case Usage Example")) (named (kind part) (name "vehicleFuelEconomyAnalysisContext")) (named (kind part) (name "vehicle_c1")) (anonymous (kind attribute) (ordinal 0))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/33_analysis_case_usage_example.md") (path (named (kind package) (name "Analysis Case Usage Example")) (named (kind part) (name "vehicleFuelEconomyAnalysisContext")) (named (kind part) (name "vehicle_c1")) (anonymous (kind attribute) (ordinal 1))))) (state unsupported))
   )
 )
 ~~~

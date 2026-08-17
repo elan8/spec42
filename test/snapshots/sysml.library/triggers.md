@@ -589,8 +589,10 @@ standard library package Triggers {
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/triggers.md") (qualified-name "Triggers::TriggerWhen::changeSignal"))) (target (node (document "memory://snapshot/triggers.md") (qualified-name "Triggers::TriggerWhen::monitor"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/triggers.md") (qualified-name "Triggers::TriggerWhen::changeSignal"))) (kind expressionOperand) (ordinal 1)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/triggers.md") (path (named (kind library-package) (name "Triggers")) (named (kind kerml-structure) (name "TimeSignal")) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (state unsupported))
     (evaluated (declaration (node (document "memory://snapshot/triggers.md") (qualified-name "Triggers::TriggerAfter::clock"))) (state unresolved-operand))
     (evaluated (declaration (node (document "memory://snapshot/triggers.md") (qualified-name "Triggers::TriggerAfter::monitor"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/triggers.md") (qualified-name "Triggers::TriggerAfter::signal"))) (state unsupported))
     (evaluated (declaration (node (document "memory://snapshot/triggers.md") (path (named (kind library-package) (name "Triggers")) (named (kind kerml-function) (name "TriggerAt")) (anonymous (kind kerml-step) (ordinal 0)) (named (kind parameter) (name "observer"))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/triggers.md") (path (named (kind library-package) (name "Triggers")) (named (kind kerml-function) (name "TriggerAt")) (anonymous (kind kerml-step) (ordinal 0)) (named (kind parameter) (name "signal"))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/triggers.md") (qualified-name "Triggers::TriggerAt::clock"))) (state unresolved-operand))
@@ -600,6 +602,7 @@ standard library package Triggers {
     (evaluated (declaration (node (document "memory://snapshot/triggers.md") (path (named (kind library-package) (name "Triggers")) (named (kind kerml-function) (name "TriggerWhen")) (anonymous (kind kerml-step) (ordinal 0)) (named (kind parameter) (name "signal"))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/triggers.md") (qualified-name "Triggers::TriggerWhen::changeSignal"))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/triggers.md") (qualified-name "Triggers::TriggerWhen::monitor"))) (state unresolved-operand))
+    (invocation (declaration (node (document "memory://snapshot/triggers.md") (qualified-name "Triggers::TriggerAfter::signal"))) (callee (node (document "memory://snapshot/triggers.md") (qualified-name "Triggers::TriggerAt"))) (supplied 4) (required 2) (start 178 3) (end 178 65))
   )
 )
 ~~~

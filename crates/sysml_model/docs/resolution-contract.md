@@ -56,15 +56,17 @@ KerML `SemanticMetadata` from library sources is materialized as `metadata def` 
 
 ### Unit resolution
 
-Unit literals in attribute values (`10 [kV]`) resolve through `UnitRegistry::from_graph`:
+This graph does not resolve unit literals. What a unit token names, what it measures, and whether a
+quantity value's unit suits its feature's type are settled by `sysml_resolution` at its publication
+barrier and read through `sysml_query`'s evaluation service; the graph-derived catalog that used to
+recover those facts from node names is deleted.
 
-1. **Graph index** — ingest `attribute` / `attribute def` nodes with `shortName`, `unitConversion`, `unitValueExpr`, and `UnitPrefix` metadata materialized during graph build (`unit_metadata.rs`, `graph_ingest.rs`).
-2. **Derivation** — SI-prefixed symbols (`kV`, `MW`), compound units (`MWh`), and algebraic derived units are computed in `finalize_ingest` from graph-ingested base symbols.
-3. **Quantity compatibility** — `incompatible_unit_dimension` compares the attribute quantity type against the unit literal dimension using `is_measurement_unit_compatible` (MeasurementUnit ancestry in the linked graph).
+What remains here is `UnitRegistry`, the conversion and composition table the graph expression
+evaluator uses for quantity arithmetic. It is populated explicitly by its owner and is never
+ingested from a graph, so a unit-bearing expression this evaluator cannot convert stays explicitly
+unresolved rather than being rescaled from a symbol it recovered from a name.
 
-Library closure loads QUDV/SI packages into the semantic graph when imports or unit literals require them; the registry does not re-parse catalog text or read paths from disk.
-
-Workspace models containing unit literals (`[…]` after numeric values) seed the quantity library closure (`Measurement`, `ISQ`, `SI`, `SIPrefixes`, …) even without explicit quantity imports.
+Library closure still loads QUDV/SI packages into the semantic graph when imports require them.
 
 ## Regression gate
 

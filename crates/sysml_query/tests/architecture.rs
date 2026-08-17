@@ -415,6 +415,82 @@ fn the_migrated_feature_conformance_families_cannot_return_to_the_graph() {
     }
 }
 
+/// Expression conformance, its evaluated-value rules and its unit catalog are owned by the
+/// immutable publication, and this keeps a graph-based version from coming back.
+///
+/// Two-sided, like the feature-conformance guard: the check module must stay gone, no
+/// `sysml_diagnostics` source may name a code the publication now settles, and the graph-derived
+/// unit catalog those rules were built on must not reappear. The catalog is the specific risk --
+/// it decided unit-ness from a name ending in `Unit` and compared dimensions as strings, which is
+/// the spelling-driven inference the typed unit facts replaced.
+#[test]
+fn the_migrated_expression_conformance_family_cannot_return_to_the_graph() {
+    let root = repository_root();
+    assert!(
+        !root
+            .join("crates/sysml_diagnostics/src/checks/expression_conformance.rs")
+            .exists(),
+        "expression_conformance.rs is owned by sysml_resolution; it must not return to \
+         sysml_diagnostics"
+    );
+
+    let migrated = [
+        "attribute_value_type_mismatch",
+        "assignment_value_incompatible",
+        "unknown_unit_symbol",
+        "ambiguous_unit_symbol",
+        "incompatible_unit_dimension",
+        "non_boolean_expression",
+        "view_filter_non_boolean",
+        "calculation_binding_mismatch",
+    ];
+    let mut sources = Vec::new();
+    rust_sources(&root.join("crates/sysml_diagnostics/src"), &mut sources);
+    let mut violations = Vec::new();
+    for file in sources {
+        let source = fs::read_to_string(&file).expect("read diagnostic source");
+        for code in migrated {
+            // Matched with its opening quote, so the distinct
+            // `inherited_attribute_value_type_mismatch` rule -- which reports a case the
+            // publication cannot type yet, and is tracked in `PRODUCTION_CUTOVER.md` -- is not
+            // mistaken for a reintroduction of the migrated one.
+            if source.contains(&format!("\"{code}\"")) {
+                violations.push(format!("{}: reintroduces {code}", file.display()));
+            }
+        }
+    }
+    assert!(
+        violations.is_empty(),
+        "these codes are settled by the immutable publication:\n{}",
+        violations.join("\n")
+    );
+
+    // The graph-derived unit catalog is gone with them. `UnitRegistry` survives as the graph
+    // evaluator's own conversion table, populated by its owner; what must not return is the
+    // ingest that recovered units from node names and the queries only the deleted rules used.
+    let units = root.join("crates/sysml_model/src/semantic/units");
+    for module in ["graph_ingest.rs", "type_resolver.rs"] {
+        assert!(
+            !units.join(module).exists(),
+            "{module} recovered unit facts from the graph and must not return"
+        );
+    }
+    let registry =
+        fs::read_to_string(units.join("registry.rs")).expect("read the unit conversion table");
+    for helper in [
+        "from_graph",
+        "from_semantic_graph",
+        "is_recognized_unit_expression",
+        "unit_expression_dimension",
+        "hover_markdown_for_unit_literal",
+    ] {
+        assert!(
+            !registry.contains(helper),
+            "{helper} served only the deleted expression-conformance and hover paths"
+        );
+    }
+}
+
 #[test]
 fn query_facade_public_api_contains_no_raw_semantic_storage() {
     assert_source_tree_has_no_raw_semantic_storage(

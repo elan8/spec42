@@ -195,6 +195,7 @@ package 'User Keyword Example' {
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/41_user_keyword_example.md") (path (named (kind package) (name "User Keyword Example")) (named (kind extended-definition) (name "DeviceFailure")) (named (kind extended-definition) (name "battery old")) (anonymous (kind default-reference) (ordinal 0))))) (state literal) (value (kind real) (real 0.01)))
     (evaluated (declaration (node (document "memory://snapshot/41_user_keyword_example.md") (path (named (kind package) (name "User Keyword Example")) (named (kind extended-definition) (name "DeviceFailure")) (named (kind extended-definition) (name "device shutoff")) (anonymous (kind default-reference) (ordinal 0))))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/41_user_keyword_example.md") (path (named (kind package) (name "User Keyword Example")) (named (kind extended-definition) (name "DeviceFailure")) (named (kind extended-definition) (name "power low")) (anonymous (kind constraint) (ordinal 0))))) (state unsupported))
   )
 )
 ~~~

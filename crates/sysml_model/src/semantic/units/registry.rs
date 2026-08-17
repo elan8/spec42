@@ -1,8 +1,5 @@
 use std::collections::{BTreeMap, HashMap, HashSet};
 
-use crate::semantic::graph::SemanticGraph;
-use crate::semantic::units::graph_ingest::ingest_units_from_graph;
-
 #[derive(Debug, Clone, PartialEq)]
 pub struct UnitDef {
     pub symbol: String,
@@ -54,27 +51,15 @@ impl CanonicalUnitExpr {
 }
 
 impl UnitRegistry {
-    /// Builds a unit index from the linked semantic graph (graph-only path).
-    pub fn from_graph(graph: &SemanticGraph) -> Self {
-        let mut registry = UnitRegistry::default();
-        ingest_units_from_graph(graph, &mut registry);
-        registry.finalize_ingest();
-        registry
-    }
-
-    /// Alias for [`Self::from_graph`].
-    pub fn from_semantic_graph(graph: &SemanticGraph) -> Self {
-        Self::from_graph(graph)
-    }
-
-    pub(crate) fn ingest_unit_prefix(&mut self, name: &str, symbol: Option<&str>, factor: f64) {
+    /// Records one unit prefix and the factor it scales its reference unit by.
+    pub fn ingest_unit_prefix(&mut self, name: &str, symbol: Option<&str>, factor: f64) {
         self.prefixes_by_name.insert(name.to_string(), factor);
         if let Some(symbol) = symbol {
             self.prefixes_by_symbol.insert(symbol.to_string(), factor);
         }
     }
 
-    pub(crate) fn prefix_factor_by_name(&self, prefix_name: &str) -> Option<f64> {
+    pub fn prefix_factor_by_name(&self, prefix_name: &str) -> Option<f64> {
         self.prefixes_by_name.get(prefix_name).copied().or_else(|| {
             prefix_name
                 .rsplit_once("::")
@@ -82,7 +67,8 @@ impl UnitRegistry {
         })
     }
 
-    pub(crate) fn ingest_unit_def(&mut self, def: UnitDef) {
+    /// Records one unit definition.
+    pub fn ingest_unit_def(&mut self, def: UnitDef) {
         self.upsert_unit_def(def);
     }
 
@@ -90,71 +76,8 @@ impl UnitRegistry {
         self.by_symbol.get(&normalize_symbol(symbol))
     }
 
-    pub fn hover_markdown_for_unit_literal(&self, raw_unit: &str) -> Option<String> {
-        let cleaned = strip_quotes(raw_unit.trim());
-        if cleaned.is_empty() {
-            return None;
-        }
-        let factors = parse_unit_expression(&cleaned).ok()?;
-        let mut lines = vec![format!("**Unit literal** `[{}]`", cleaned), String::new()];
-        for (symbol, exp) in factors {
-            if self.conflicted_symbols.contains(&symbol) {
-                lines.push(format!("*{symbol}* — ambiguous unit metadata"));
-                continue;
-            }
-            let def = self.by_symbol.get(&symbol)?;
-            let mut line = format!("*{}*", def.symbol);
-            if exp != 1 {
-                line.push_str(&format!("^{exp}"));
-            }
-            line.push_str(&format!(" — `{}`", def.dimension));
-            if let Some(ref_unit) = &def.reference_unit {
-                line.push_str(&format!(", reference `{ref_unit}`"));
-            }
-            lines.push(line);
-        }
-        Some(lines.join("\n"))
-    }
-
-    pub fn hover_markdown_for_unknown_unit_literal(raw_unit: &str) -> String {
-        format!(
-            "**Unit literal** `[{}]`\n\nSysML value-expression unit suffix. Not found in indexed quantity/unit catalogs.",
-            raw_unit.trim()
-        )
-    }
-
     pub fn has_symbol(&self, symbol: &str) -> bool {
         self.by_symbol.contains_key(&normalize_symbol(symbol))
-    }
-
-    /// Returns true when every factor in a unit expression resolves against indexed catalogs.
-    pub fn is_recognized_unit_expression(&self, raw_unit: &str) -> bool {
-        if self.canonicalize_unit_expr(Some(raw_unit)).is_ok() {
-            return true;
-        }
-        let normalized = normalize_symbol(raw_unit);
-        if let Some(def) = self.by_symbol.get(&normalized) {
-            if let Some(expr) = &def.algebraic_expr {
-                return self.canonicalize_unit_expr(Some(expr)).is_ok();
-            }
-        }
-        false
-    }
-
-    /// Returns the quantity-unit dimension string for a recognized unit expression (e.g. `PowerUnit`).
-    pub fn unit_expression_dimension(&self, raw_unit: &str) -> Option<String> {
-        let factors = parse_unit_expression(raw_unit).ok()?;
-        let [(symbol, 1)] = factors.as_slice() else {
-            return None;
-        };
-        self.by_symbol
-            .get(symbol)
-            .map(|def| def.dimension.clone())
-            .or_else(|| {
-                self.reduce_to_root(symbol)
-                    .ok()
-                    .map(|reduced| reduced.dimension)
-            })
     }
 
     pub fn convert_value(&self, value: f64, from: &str, to: &str) -> Result<f64, UnitError> {
@@ -282,7 +205,8 @@ impl UnitRegistry {
         self.by_symbol.insert(key, def);
     }
 
-    fn finalize_ingest(&mut self) {
+    /// Resolves algebraic definitions once every unit has been ingested.
+    pub fn finalize_ingest(&mut self) {
         self.resolve_algebraic_unit_definitions();
     }
 
@@ -441,363 +365,92 @@ fn strip_quotes(value: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::path::Path;
-    use url::Url;
 
-    use crate::semantic::graph_builder::build_graph_from_doc;
-    use crate::semantic::relationships::link_workspace_relationships;
-    use sysml_v2_parser::parse;
-
-    const SI_PREFIXES: &str = r#"
-package SIPrefixes {
-    attribute kilo: UnitPrefix { :>> symbol = "k"; :>> conversionFactor = 1E3; }
-    attribute mega: UnitPrefix { :>> symbol = "M"; :>> conversionFactor = 1E6; }
-    attribute centi: UnitPrefix { :>> symbol = "c"; :>> conversionFactor = 1E-2; }
-}
-"#;
-
-    fn registry_from_sysml(content: &str) -> UnitRegistry {
-        let uri = Url::parse("file:///test/units.sysml").expect("uri");
-        let parsed = parse(content).expect("parse");
-        let mut graph = build_graph_from_doc(&parsed, &uri);
-        link_workspace_relationships(&mut graph);
-        UnitRegistry::from_graph(&graph)
-    }
-
-    fn with_prefixes(units: &str) -> String {
-        format!("{SI_PREFIXES}\npackage Units {{\n{units}\n}}")
-    }
-
-    #[test]
-    fn km_graph_carries_conversion_metadata() {
-        let content = with_prefixes(
-            "attribute <m> metre : LengthUnit;\nattribute <km> kilometre : LengthUnit { :>> unitConversion: ConversionByPrefix { :>> prefix = kilo; :>> referenceUnit = m; } }",
-        );
-        let uri = Url::parse("file:///test/units.sysml").expect("uri");
-        let parsed = parse(&content).expect("parse");
-        let graph = build_graph_from_doc(&parsed, &uri);
-        let km = graph
-            .nodes_for_uri(&uri)
-            .into_iter()
-            .find(|n| n.name == "kilometre")
-            .expect("kilometre");
-        let conv = km
-            .declared_facts
-            .unit
-            .as_ref()
-            .and_then(|u| u.conversion.as_ref())
-            .expect("unitConversion fact");
-        assert_eq!(conv.reference_unit.as_deref(), Some("m"));
-    }
-
-    #[test]
-    fn prefix_metadata_does_not_declare_combined_unit_symbols() {
-        let registry = registry_from_sysml(&with_prefixes(
-            "attribute <V> volt : ElectricPotentialUnit;",
-        ));
-        assert!(registry.prefix_factor_by_name("kilo").is_some());
-        assert!(registry.has_symbol("V"), "volt shortName should index as V");
-        assert!(
-            !registry.has_symbol("kV"),
-            "a prefix and base unit do not implicitly declare an atomic kV model element"
-        );
-        assert!(!registry.is_recognized_unit_expression("kV"));
-    }
-
-    #[test]
-    fn converts_affine_absolute_temperature_units() {
-        let registry = registry_from_sysml(&with_prefixes(
-            r#"attribute <K> kelvin : ThermodynamicTemperatureUnit, TemperatureDifferenceUnit;
-            attribute <'°C'> 'degree celsius' : TemperatureDifferenceUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = K; :>> conversionFactor = 1; } }
-            attribute <'°F'> 'degree Fahrenheit' : TemperatureDifferenceUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = K; :>> conversionFactor = 5/9; } }
-            attribute <'°C_abs'> 'degree celsius absolute' : IntervalScale {
-                attribute :>> unit = '°C';
-                private attribute zeroDegreeCelsiusInKelvin: ThermodynamicTemperatureValue = 273.15 [K];
-            }
-            attribute <'°F_abs'> 'degree fahrenheit absolute' : IntervalScale {
-                :>> unit = '°F';
-                private attribute zeroDegreeFahrenheitInKelvin: ThermodynamicTemperatureValue = 229835/900 [K];
-            }"#,
-        ));
-        let f_abs = registry.get("°F_abs").expect("°F_abs");
-        assert!(
-            (f_abs.conversion_factor - 5.0 / 9.0).abs() < 1e-9,
-            "factor={}",
-            f_abs.conversion_factor
-        );
-        assert!(
-            (f_abs.conversion_offset - 229835.0 / 900.0).abs() < 1e-6,
-            "offset={}",
-            f_abs.conversion_offset
-        );
-        let c_abs = registry.get("°C_abs").expect("°C_abs");
-        assert!((c_abs.conversion_offset - 273.15).abs() < 1e-9);
-        let converted = registry
-            .convert_value(32.0, "°F_abs", "°C_abs")
-            .expect("°F_abs->°C_abs");
-        assert!((converted - 0.0).abs() < 1e-9, "converted={converted}");
-    }
-
-    #[test]
-    fn parses_conversion_entries_from_graph() {
-        let registry = registry_from_sysml(&with_prefixes(
-            "attribute <m> metre : LengthUnit;\nattribute <ft> 'foot' : LengthUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = m; :>> conversionFactor = 3.048E-01; } }",
-        ));
-        let def = registry.get("ft").expect("ft def");
-        assert_eq!(def.dimension, "LengthUnit");
-        assert_eq!(def.reference_unit.as_deref(), Some("m"));
-        assert_eq!(def.conversion_factor, 0.3048);
-    }
-
-    #[test]
-    fn converts_between_compatible_units() {
-        let registry = registry_from_sysml(&with_prefixes(
-            "attribute <m> 'metre' : LengthUnit;\nattribute <ft> 'foot' : LengthUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = m; :>> conversionFactor = 3.048E-01; } }",
-        ));
-        let converted = registry.convert_value(1.0, "m", "ft").expect("m->ft");
-        assert!((converted - 3.280839895).abs() < 1e-6);
-    }
-
-    #[test]
-    fn rejects_incompatible_dimensions() {
-        let registry = registry_from_sysml(&with_prefixes(
-            "attribute <m> 'metre' : LengthUnit;\nattribute <kg> 'kilogram' : MassUnit;",
-        ));
-        let err = registry
-            .convert_value(1.0, "m", "kg")
-            .expect_err("incompatible");
-        assert_eq!(err, UnitError::IncompatibleDimension);
-    }
-
-    #[test]
-    fn fahrenheit_short_name_materializes_on_graph() {
-        let content = with_prefixes(
-            "attribute <K> kelvin : TemperatureDifferenceUnit;\nattribute <'\u{00B0}F'> 'degree Fahrenheit' : TemperatureDifferenceUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = K; :>> conversionFactor = 5/9; } }",
-        );
-        let uri = Url::parse("file:///test/units.sysml").expect("uri");
-        let parsed = parse(&content).expect("parse");
-        let graph = build_graph_from_doc(&parsed, &uri);
-        let f = graph
-            .nodes_for_uri(&uri)
-            .into_iter()
-            .find(|n| n.name == "degree Fahrenheit")
-            .expect("degree Fahrenheit node");
-        assert_eq!(
-            f.declared_facts.short_name.as_deref(),
-            Some("\u{00B0}F"),
-            "facts: {:?}",
-            f.declared_facts
-        );
-        let conv = f
-            .declared_facts
-            .unit
-            .as_ref()
-            .and_then(|u| u.conversion.as_ref())
-            .expect("conv");
-        assert_eq!(conv.conversion_factor, Some(5.0 / 9.0));
-    }
-
-    #[test]
-    fn parses_fractional_conversion_factor() {
-        let registry = registry_from_sysml(&with_prefixes(
-            "attribute <K> 'kelvin' : TemperatureDifferenceUnit;\nattribute <'\u{00B0}F'> 'degree Fahrenheit' : TemperatureDifferenceUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = K; :>> conversionFactor = 5/9; :>> isExact = true; } }",
-        ));
-        assert!(
-            registry.has_symbol("K"),
-            "kelvin shortName K should be indexed"
-        );
-        assert!(
-            registry.has_symbol("\u{00B0}F"),
-            "degree Fahrenheit shortName should be indexed"
-        );
-        let c = registry.convert_value(9.0, "\u{00B0}F", "K").expect("F->K");
-        assert!((c - 5.0).abs() < 1e-9);
-    }
-
-    #[test]
-    fn ingests_conversion_by_prefix_units() {
-        let registry = registry_from_sysml(&with_prefixes(
-            "attribute <m> 'metre' : LengthUnit;\nattribute <km> kilometre : LengthUnit { :>> unitConversion: ConversionByPrefix { :>> prefix = kilo; :>> referenceUnit = m; } }",
-        ));
-        assert!(registry.is_recognized_unit_expression("km"));
-        let def = registry.get("km").expect("km def");
-        assert_eq!(def.dimension, "LengthUnit");
-        assert_eq!(def.reference_unit.as_deref(), Some("m"));
-        assert!((def.conversion_factor - 1E3).abs() < 1e-9);
-    }
-
-    #[test]
-    fn resolves_qualified_si_unit_literals() {
-        let registry = registry_from_sysml(&with_prefixes("attribute <s> second : DurationUnit;"));
-        assert!(registry.is_recognized_unit_expression("SI::s"));
-    }
-
-    #[test]
-    fn undeclared_engineering_unit_symbols_are_rejected() {
-        let registry = registry_from_sysml(&with_prefixes(
-            r#"
-            attribute <V> volt : ElectricPotentialUnit;
-            attribute <W> watt : PowerUnit;
-            attribute <A> ampere : ElectricCurrentUnit;
-            attribute <h> hour: DurationUnit;
-            attribute <s> second : DurationUnit;
-            attribute <m> metre : LengthUnit;
-            "#,
-        ));
-        for unit in ["kV", "MW", "MVA", "MWh", "km"] {
-            assert!(
-                !registry.is_recognized_unit_expression(unit),
-                "undeclared atomic unit {unit} must not be synthesized"
-            );
+    /// The catalog is populated by its owner, not ingested from a graph, so the tests build one
+    /// the same way the evaluator would.
+    fn unit(
+        symbol: &str,
+        dimension: &str,
+        reference: Option<&str>,
+        factor: f64,
+        offset: f64,
+    ) -> UnitDef {
+        UnitDef {
+            symbol: symbol.to_string(),
+            dimension: dimension.to_string(),
+            reference_unit: reference.map(str::to_string),
+            conversion_factor: factor,
+            conversion_offset: offset,
+            algebraic_expr: None,
         }
     }
 
-    #[test]
-    fn declared_algebraic_compound_unit_has_explicit_dimension() {
-        let registry = registry_from_sysml(&with_prefixes(
-            r#"
-            attribute <W> watt : PowerUnit;
-            attribute <h> hour: DurationUnit;
-            attribute <Wh> wattHour : EnergyUnit = W * h;
-            "#,
+    fn catalog() -> UnitRegistry {
+        let mut registry = UnitRegistry::default();
+        registry.ingest_unit_def(unit("m", "LengthUnit", None, 1.0, 0.0));
+        registry.ingest_unit_def(unit("km", "LengthUnit", Some("m"), 1000.0, 0.0));
+        registry.ingest_unit_def(unit("s", "DurationUnit", None, 1.0, 0.0));
+        registry.ingest_unit_def(unit("K", "ThermodynamicTemperatureUnit", None, 1.0, 0.0));
+        registry.ingest_unit_def(unit(
+            "degC",
+            "ThermodynamicTemperatureUnit",
+            Some("K"),
+            1.0,
+            273.15,
         ));
+        registry.finalize_ingest();
+        registry
+    }
 
+    #[test]
+    fn converts_between_units_of_one_dimension() {
+        let registry = catalog();
+        assert_eq!(registry.convert_value(2.0, "km", "m"), Ok(2000.0));
+        assert_eq!(registry.convert_value(2000.0, "m", "km"), Ok(2.0));
+    }
+
+    /// A conversion across dimensions is an explicit error, never a silently rescaled number.
+    #[test]
+    fn rejects_a_conversion_across_dimensions() {
         assert_eq!(
-            registry.unit_expression_dimension("Wh").as_deref(),
-            Some("EnergyUnit")
+            catalog().convert_value(1.0, "m", "s"),
+            Err(UnitError::IncompatibleDimension)
         );
-        assert!(!registry.is_recognized_unit_expression("MWh"));
-        assert!(!registry.is_recognized_unit_expression("VA"));
     }
 
+    /// An affine scale carries an offset, so its conversion is not a bare multiplication.
     #[test]
-    fn composite_expression_without_named_unit_has_no_claimed_dimension() {
-        let registry = registry_from_sysml(&with_prefixes(
-            "attribute <m> 'metre' : LengthUnit;\nattribute <s> second : DurationUnit;",
-        ));
-
-        assert!(registry.is_recognized_unit_expression("m/s"));
-        assert_eq!(registry.unit_expression_dimension("m/s"), None);
+    fn converts_an_affine_scale_through_its_offset() {
+        let registry = catalog();
+        let kelvin = registry.convert_value(0.0, "degC", "K").expect("convert");
+        assert!((kelvin - 273.15).abs() < 1e-9, "got {kelvin}");
     }
 
+    /// A symbol no unit was ingested for is unknown, which is distinct from a wrong dimension.
     #[test]
-    fn qualified_unit_prefix_type_is_ingested_without_synthesizing_symbols() {
-        let registry = registry_from_sysml(
-            r#"
-            package SI {
-                attribute kilo: SI::UnitPrefix { :>> symbol = "k"; :>> conversionFactor = 1E3; }
-                attribute <V> volt : SI::ElectricPotentialUnit;
-            }
-            "#,
-        );
-
-        assert!(registry.prefix_factor_by_name("kilo").is_some());
-        assert!(!registry.is_recognized_unit_expression("kV"));
-    }
-
-    #[test]
-    fn custom_measurement_unit_type_is_discovered_from_graph_ancestry() {
-        let registry = registry_from_sysml(
-            r#"
-            package Measurement {
-                attribute def MeasurementUnit;
-                attribute def WidgetMeasure :> MeasurementUnit;
-                attribute <widget> widget : WidgetMeasure;
-            }
-            "#,
-        );
-
-        assert!(registry.is_recognized_unit_expression("widget"));
+    fn an_uningested_symbol_is_unknown() {
         assert_eq!(
-            registry.unit_expression_dimension("widget").as_deref(),
-            Some("WidgetMeasure")
+            catalog().convert_value(1.0, "furlong", "m"),
+            Err(UnitError::UnknownUnit)
         );
     }
 
     #[test]
-    fn hover_markdown_for_known_unit_literal() {
-        let registry = registry_from_sysml(&with_prefixes(
-            "attribute <V> volt : ElectricPotentialUnit;",
-        ));
-        let md = registry
-            .hover_markdown_for_unit_literal("V")
-            .expect("V hover");
-        assert!(md.contains("Unit literal"));
-        assert!(md.contains('V'));
-    }
-
-    #[test]
-    fn hover_markdown_for_composite_unit_literal() {
-        let registry = registry_from_sysml(&with_prefixes(
-            "attribute <m> 'metre' : LengthUnit;\nattribute <s> second : DurationUnit;",
-        ));
-        let md = registry
-            .hover_markdown_for_unit_literal("m/s")
-            .expect("m/s hover");
-        assert!(md.contains("m"));
-        assert!(md.contains("s"));
-    }
-
-    #[test]
-    fn ingests_monetary_units_from_graph() {
-        let registry = registry_from_sysml(
-            "package MonetaryUnits { attribute <EUR> 'euro' : MonetaryUnit; attribute <USD> 'US dollar' : MonetaryUnit; }",
-        );
-        assert!(registry.has_symbol("EUR"));
-        assert!(registry.has_symbol("USD"));
-        assert_eq!(
-            registry.get("EUR").map(|def| def.dimension.as_str()),
-            Some("MonetaryUnit")
-        );
-    }
-
-    #[test]
-    fn canonicalizes_multiply_and_divide_units() {
-        let registry = registry_from_sysml(&with_prefixes(
-            "attribute <m> 'metre' : LengthUnit;\nattribute <s> second : DurationUnit;\nattribute <cm> 'centimetre' : LengthUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = m; :>> conversionFactor = 1E-02; } }",
-        ));
+    fn a_product_composes_the_units_of_both_operands() {
+        let registry = catalog();
         let (value, unit) = registry
-            .compose_product(2.0, Some("cm"), 3.0, Some("m"), false)
-            .expect("multiply");
-        assert!((value - 0.06).abs() < 1e-9);
-        assert_eq!(unit.as_deref(), Some("m^2"));
-        let (value, unit) = registry
-            .compose_product(10.0, Some("m"), 2.0, Some("s"), true)
-            .expect("divide");
-        assert!((value - 5.0).abs() < 1e-9);
-        assert_eq!(unit.as_deref(), Some("m/s"));
+            .compose_product(3.0, Some("m"), 2.0, Some("s"), false)
+            .expect("compose");
+        assert_eq!(value, 6.0);
+        assert_eq!(unit.as_deref(), Some("m*s"));
     }
 
     #[test]
-    fn resolves_algebraic_derived_units() {
-        let registry = registry_from_sysml(&with_prefixes(
-            "attribute <m> metre : LengthUnit;\nattribute <kg> kilogram : MassUnit;\nattribute <s> second : DurationUnit;\nattribute newton : ForceUnit = kg * m / s^2;",
-        ));
-        assert!(
-            registry.is_recognized_unit_expression("newton"),
-            "algebraic derived unit should resolve"
-        );
-    }
-
-    #[test]
-    fn custom_unit_definitions_materialize_from_graph() {
-        let registry = registry_from_sysml(
-            "package CustomMeasurements { attribute <widget> widget : WidgetUnit; }",
-        );
-        assert!(registry.is_recognized_unit_expression("widget"));
-    }
-
-    #[test]
-    fn stdlib_path_contains_si_and_imperial_pairs_when_available() {
-        let path = Path::new(
-            "C:/Git/sysml-v2-release/sysml.library/Domain Libraries/Quantities and Units/USCustomaryUnits.sysml",
-        );
-        if !path.is_file() {
-            return;
-        }
-        let contents = std::fs::read_to_string(path).expect("read customary units");
-        assert!(contents.contains("<ft>") && contents.contains("referenceUnit = m"));
-        assert!(contents.contains("<lb>") && contents.contains("referenceUnit = kg"));
-        assert!(contents.contains("<lbf>") && contents.contains("referenceUnit = N"));
+    fn a_quotient_of_one_unit_by_itself_is_dimensionless() {
+        let registry = catalog();
+        let (_, unit) = registry
+            .compose_product(6.0, Some("m"), 2.0, Some("m"), true)
+            .expect("compose");
+        assert_eq!(unit, None);
     }
 }

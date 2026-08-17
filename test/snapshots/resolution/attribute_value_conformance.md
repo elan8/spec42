@@ -1,0 +1,252 @@
+# META
+~~~ini
+description=Authored values are judged against the type of the feature they are bound to
+type=file
+libraries=standard
+~~~
+# SOURCE
+~~~sysml
+package Values {
+	enum def Status {
+		enum approved;
+		enum draft;
+	}
+	part def Vehicle {
+		attribute isReady : ScalarValues::Boolean = true;
+		attribute notReady : ScalarValues::Boolean = "yes";
+		attribute wheels : ScalarValues::Integer = 4;
+		attribute widened : ScalarValues::Real = 4;
+		attribute miscounted : ScalarValues::Integer = false;
+		attribute status : Status = Status::approved;
+		attribute spelled : Status = "approved";
+		attribute untyped = "anything";
+	}
+}
+~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "memory://snapshot/attribute_value_conformance.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "attribute_value_type_mismatch")
+        (source "semantic")
+        (range (start 7 45) (end 7 52))
+      )
+      (diagnostic
+        (severity error)
+        (code "attribute_value_type_mismatch")
+        (source "semantic")
+        (range (start 10 47) (end 10 54))
+      )
+      (diagnostic
+        (severity error)
+        (code "attribute_value_type_mismatch")
+        (source "semantic")
+        (range (start 12 29) (end 12 41))
+      )
+    )
+  )
+)
+~~~
+# SMG
+~~~sexpr
+(semantic-model
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:de9e4049c9c42b9d57c9f71bf2eed1bde301ff34e2575d8837fa5d3be3be8196") (contract-version "parser-owned-resolution-v1") (admitted (standard-library 94)))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Status"))) (kind enum-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Status::approved"))) (kind enum-literal) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Status::draft"))) (kind enum-literal) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::isReady"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ScalarValues::Boolean")))))
+    (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::miscounted"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ScalarValues::Integer")))))
+    (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::notReady"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ScalarValues::Boolean")))))
+    (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::spelled"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Status")))))
+    (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::status"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Status")) (expressionOperand (reference "Status::approved")))))
+    (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::untyped"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)))
+    (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::wheels"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ScalarValues::Integer")))))
+    (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::widened"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ScalarValues::Real")))))
+  )
+  (references
+    (reference (id (source (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::isReady"))) (kind featureTyping) (ordinal 0))
+      (authored-target "ScalarValues::Boolean")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Boolean")))))
+    (reference (id (source (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::miscounted"))) (kind featureTyping) (ordinal 0))
+      (authored-target "ScalarValues::Integer")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Integer")))))
+    (reference (id (source (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::notReady"))) (kind featureTyping) (ordinal 0))
+      (authored-target "ScalarValues::Boolean")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Boolean")))))
+    (reference (id (source (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::spelled"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Status")
+      (outcome (status resolved) (target (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Status")))))
+    (reference (id (source (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::status"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Status")
+      (outcome (status resolved) (target (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Status")))))
+    (reference (id (source (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::status"))) (kind expressionOperand) (ordinal 0))
+      (authored-target "Status::approved")
+      (outcome (status resolved) (target (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Status::approved")))))
+    (reference (id (source (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::wheels"))) (kind featureTyping) (ordinal 0))
+      (authored-target "ScalarValues::Integer")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Integer")))))
+    (reference (id (source (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::widened"))) (kind featureTyping) (ordinal 0))
+      (authored-target "ScalarValues::Real")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Real")))))
+  )
+  (relationships
+    (relationship (kind typing) (source (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::isReady"))) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Boolean"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::isReady"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::miscounted"))) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Integer"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::miscounted"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::notReady"))) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Boolean"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::notReady"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::spelled"))) (target (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Status"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::spelled"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::status"))) (target (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Status"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::status"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::status"))) (target (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Status::approved"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::status"))) (kind expressionOperand) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::wheels"))) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Integer"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::wheels"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::widened"))) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Real"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::widened"))) (kind featureTyping) (ordinal 0)))
+  )
+  (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::isReady"))) (state literal) (value (kind boolean) (boolean true)))
+    (evaluated (declaration (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::miscounted"))) (state literal) (value (kind boolean) (boolean false)))
+    (evaluated (declaration (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::notReady"))) (state literal) (value (kind string) (value "yes")))
+    (evaluated (declaration (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::spelled"))) (state literal) (value (kind string) (value "approved")))
+    (evaluated (declaration (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::status"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::untyped"))) (state literal) (value (kind string) (value "anything")))
+    (evaluated (declaration (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::wheels"))) (state literal) (value (kind integer) (integer 4)))
+    (evaluated (declaration (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::widened"))) (state literal) (value (kind integer) (integer 4)))
+  )
+)
+~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Status")))
+      (subtype (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::spelled")) (scopes any))
+      (subtype (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::status")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Status::approved")))
+      (featured-by (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Status")))
+    )
+    (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Status::draft")))
+      (featured-by (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Status")))
+    )
+    (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::isReady")))
+      (featured-by (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle")))
+      (type (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Boolean")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Boolean")) (source direct))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Boolean")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::ScalarValue")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::miscounted")))
+      (featured-by (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle")))
+      (type (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Integer")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Integer")) (source direct))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Complex")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Integer")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Number")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::NumericalValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Rational")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Real")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::ScalarValue")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::notReady")))
+      (featured-by (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle")))
+      (type (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Boolean")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Boolean")) (source direct))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Boolean")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::ScalarValue")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::spelled")))
+      (featured-by (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle")))
+      (type (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Status")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Status")) (source direct))
+      (supertype (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Status")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::status")))
+      (featured-by (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle")))
+      (type (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Status")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Status")) (source direct))
+      (supertype (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Status")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::untyped")))
+      (featured-by (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle")))
+    )
+    (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::wheels")))
+      (featured-by (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle")))
+      (type (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Integer")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Integer")) (source direct))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Complex")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Integer")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Number")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::NumericalValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Rational")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Real")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::ScalarValue")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::widened")))
+      (featured-by (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle")))
+      (type (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Real")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Real")) (source direct))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Complex")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Number")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::NumericalValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Real")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::ScalarValue")) (scopes any))
+    )
+)
+~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (query (document "memory://snapshot/attribute_value_conformance.md") (range (start 6 22) (end 6 43)) (probe (position 6 22))
+    (reference (id (source (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::isReady"))) (kind featureTyping) (ordinal 0) (authored-target "ScalarValues::Boolean")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Boolean")))))
+    )
+  )
+  (query (document "memory://snapshot/attribute_value_conformance.md") (range (start 10 25) (end 10 46)) (probe (position 10 25))
+    (reference (id (source (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::miscounted"))) (kind featureTyping) (ordinal 0) (authored-target "ScalarValues::Integer")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Integer")))))
+    )
+  )
+  (query (document "memory://snapshot/attribute_value_conformance.md") (range (start 7 23) (end 7 44)) (probe (position 7 23))
+    (reference (id (source (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::notReady"))) (kind featureTyping) (ordinal 0) (authored-target "ScalarValues::Boolean")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Boolean")))))
+    )
+  )
+  (query (document "memory://snapshot/attribute_value_conformance.md") (range (start 12 22) (end 12 28)) (probe (position 12 22))
+    (reference (id (source (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::spelled"))) (kind featureTyping) (ordinal 0) (authored-target "Status")
+      (outcome (status resolved) (target (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Status")))))
+    )
+  )
+  (query (document "memory://snapshot/attribute_value_conformance.md") (range (start 11 21) (end 11 27)) (probe (position 11 21))
+    (reference (id (source (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::status"))) (kind featureTyping) (ordinal 0) (authored-target "Status")
+      (outcome (status resolved) (target (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Status")))))
+    )
+  )
+  (query (document "memory://snapshot/attribute_value_conformance.md") (range (start 11 30) (end 11 46)) (probe (position 11 30))
+    (reference (id (source (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::status"))) (kind expressionOperand) (ordinal 0) (authored-target "Status::approved")
+      (outcome (status resolved) (target (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Status::approved")))))
+    )
+  )
+  (query (document "memory://snapshot/attribute_value_conformance.md") (range (start 8 21) (end 8 42)) (probe (position 8 21))
+    (reference (id (source (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::wheels"))) (kind featureTyping) (ordinal 0) (authored-target "ScalarValues::Integer")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Integer")))))
+    )
+  )
+  (query (document "memory://snapshot/attribute_value_conformance.md") (range (start 9 22) (end 9 40)) (probe (position 9 22))
+    (reference (id (source (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle::widened"))) (kind featureTyping) (ordinal 0) (authored-target "ScalarValues::Real")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Real")))))
+    )
+  )
+)
+~~~

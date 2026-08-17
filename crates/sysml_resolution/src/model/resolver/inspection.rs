@@ -429,7 +429,7 @@ impl ResolvedSemanticModel {
     ///
     /// One indexed lookup, not a search of the evaluation table: an inspector renders many
     /// elements, and a scan here would make each one cost the size of the model.
-    fn evaluation_for(&self, id: DeclarationId) -> EvaluationState {
+    pub(super) fn evaluation_for(&self, id: DeclarationId) -> EvaluationState {
         record_visited_index_entries(2);
         self.facts
             .evaluation

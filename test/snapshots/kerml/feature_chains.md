@@ -142,7 +142,7 @@ package FeatureChains {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:48b26c0fd1f2ee265267ec9d5aa8c99bcbc717e80655b227e364c9b1741bccf9") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:48b26c0fd1f2ee265267ec9d5aa8c99bcbc717e80655b227e364c9b1741bccf9") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::A"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
@@ -202,6 +202,7 @@ package FeatureChains {
     (relationship (kind typing) (source (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::f"))) (target (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::F"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::f"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::A::g"))) (state unsupported))
   )
 )
 ~~~

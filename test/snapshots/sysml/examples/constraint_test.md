@@ -716,7 +716,10 @@ package ConstraintTest {
     (evaluated (declaration (node (document "memory://snapshot/constraint_test.md") (qualified-name "ConstraintTest::massAnalysis3"))) (state unresolved-operand))
     (evaluated (declaration (node (document "memory://snapshot/constraint_test.md") (qualified-name "ConstraintTest::massLimitation"))) (state unresolved-operand))
     (evaluated (declaration (node (document "memory://snapshot/constraint_test.md") (path (named (kind package) (name "ConstraintTest")) (named (kind part) (name "vehicle1b")) (named (kind assert-constraint) (name "massAnalysis")) (named (kind default-reference) (name "attribute"))))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/constraint_test.md") (path (named (kind package) (name "ConstraintTest")) (named (kind part) (name "vehicle1b")) (named (kind assert-constraint) (name "massAnalysis")) (named (kind default-reference) (name "attribute") (occurrence 1))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/constraint_test.md") (qualified-name "ConstraintTest::vehicle2b::massAnalysis2::componentMasses"))) (state unsupported))
     (evaluated (declaration (node (document "memory://snapshot/constraint_test.md") (qualified-name "ConstraintTest::vehicle2b::massAnalysis2::totalMass"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/constraint_test.md") (path (named (kind package) (name "ConstraintTest")) (named (kind part) (name "vehicle4")) (anonymous (kind assert-constraint) (ordinal 0))))) (state unsupported))
   )
 )
 ~~~

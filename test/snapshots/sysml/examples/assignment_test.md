@@ -248,7 +248,10 @@ package AssignmentTest {
     (evaluated (declaration (node (document "memory://snapshot/assignment_test.md") (path (named (kind package) (name "AssignmentTest")) (named (kind part-def) (name "Counter")) (named (kind action) (name "decr")) (anonymous (kind assign) (ordinal 0))))) (state evaluated) (value (kind integer) (integer -1)))
     (evaluated (declaration (node (document "memory://snapshot/assignment_test.md") (path (named (kind package) (name "AssignmentTest")) (named (kind part-def) (name "Counter")) (named (kind action) (name "incr")) (anonymous (kind assign) (ordinal 0))))) (state evaluated) (value (kind integer) (integer 1)))
     (evaluated (declaration (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::Increment"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::Increment"))) (state unsupported))
     (evaluated (declaration (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::Increment"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/assignment_test.md") (path (named (kind package) (name "AssignmentTest")) (named (kind action) (name "a")) (anonymous (kind assign) (ordinal 0))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/assignment_test.md") (path (named (kind package) (name "AssignmentTest")) (named (kind action) (name "a")) (anonymous (kind assign) (ordinal 1))))) (state unsupported))
   )
 )
 ~~~

@@ -396,6 +396,7 @@ standard library package TradeStudies {
     (evaluated (declaration (node (document "memory://snapshot/trade_studies.md") (path (named (kind library-package) (name "TradeStudies")) (named (kind requirement-def) (name "MinimizeObjective")) (anonymous (kind attribute) (ordinal 0))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/trade_studies.md") (qualified-name "TradeStudies::TradeStudy::selectedAlternative"))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/trade_studies.md") (path (named (kind library-package) (name "TradeStudies")) (named (kind requirement-def) (name "TradeStudyObjective")) (anonymous (kind require-constraint) (ordinal 0))))) (state non-constant))
+    (invocation (declaration (node (document "memory://snapshot/trade_studies.md") (path (named (kind library-package) (name "TradeStudies")) (named (kind requirement-def) (name "TradeStudyObjective")) (anonymous (kind require-constraint) (ordinal 0))))) (callee (node (document "memory://snapshot/trade_studies.md") (qualified-name "TradeStudies::TradeStudyObjective::eval"))) (supplied 1) (required 0) (start 76 23) (end 76 48))
   )
 )
 ~~~

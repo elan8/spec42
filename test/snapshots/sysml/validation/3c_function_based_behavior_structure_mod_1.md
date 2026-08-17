@@ -197,6 +197,8 @@ package '3c-Function-based Behavior-structure mod-1' {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (path (named (kind package) (name "3c-Function-based Behavior-structure mod-1")) (named (kind part) (name "vehicle-trailer system")) (anonymous (kind action) (ordinal 0)) (anonymous (kind assign) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (path (named (kind package) (name "3c-Function-based Behavior-structure mod-1")) (named (kind part) (name "vehicle-trailer system")) (anonymous (kind action) (ordinal 0)) (anonymous (kind assign) (ordinal 1))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (path (named (kind package) (name "3c-Function-based Behavior-structure mod-1")) (named (kind part) (name "vehicle-trailer system")) (anonymous (kind action) (ordinal 0)) (named (kind action) (name "destroy connection of trailer to vehicle")) (named (kind parameter) (name "occ"))))) (state unsupported))
   )
 )
 ~~~

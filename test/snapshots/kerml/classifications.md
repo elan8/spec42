@@ -86,6 +86,8 @@ package Classifications {
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/classifications.md") (qualified-name "Classifications::a"))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/classifications.md") (qualified-name "Classifications::b"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/classifications.md") (qualified-name "Classifications::y"))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/classifications.md") (qualified-name "Classifications::z"))) (state unsupported))
   )
 )
 ~~~

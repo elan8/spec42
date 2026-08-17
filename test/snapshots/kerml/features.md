@@ -320,6 +320,7 @@ package Features {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/features.md") (qualified-name "Features::Vehicle::vin"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/features.md") (qualified-name "Features::Vehicle::w"))) (state unsupported))
     (evaluated (declaration (node (document "memory://snapshot/features.md") (qualified-name "Features::Vehicle::x"))) (state unresolved-operand))
   )
 )

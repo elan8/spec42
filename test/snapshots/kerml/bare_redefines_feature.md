@@ -95,6 +95,7 @@ class A {
   (relationships
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/bare_redefines_feature.md") (path (named (kind class-def) (name "A")) (named (kind kerml-feature) (name "portions")) (anonymous (kind kerml-feature) (ordinal 0))))) (state unsupported))
     (evaluated (declaration (node (document "memory://snapshot/bare_redefines_feature.md") (qualified-name "A::spaceTimeEnclosedPoints"))) (state unresolved-operand))
     (evaluated (declaration (node (document "memory://snapshot/bare_redefines_feature.md") (qualified-name "A::spaceTimeEnclosedPoints::innerSpaceDimension"))) (state literal) (value (kind integer) (integer 0)))
   )

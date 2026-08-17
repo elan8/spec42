@@ -368,7 +368,7 @@ standard library package BaseFunctions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:75244994eaf64be1cc40bcfe7f79d1a319f5b4b327301fd3fed868ea21cc58fb") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:75244994eaf64be1cc40bcfe7f79d1a319f5b4b327301fd3fed868ea21cc58fb") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/base_functions.md") (qualified-name "BaseFunctions"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package defines a basic set of functions defined on all kinds of values. \n\t * Most correspond to similarly named operators in the KerML expression syntax.\n\t "))))
     (declaration (id (node (document "memory://snapshot/base_functions.md") (path (named (kind library-package) (name "BaseFunctions")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Base::Anything") (import (shape membership) (recursive false))))))
@@ -588,6 +588,8 @@ standard library package BaseFunctions {
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/base_functions.md") (path (named (kind library-package) (name "BaseFunctions")) (named (kind kerml-function) (name "!==")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/base_functions.md") (qualified-name "BaseFunctions::!==::y"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/base_functions.md") (path (named (kind library-package) (name "BaseFunctions")) (named (kind kerml-function) (name "!==")) (anonymous (kind parameter) (ordinal 0))))) (kind expressionOperand) (ordinal 1)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/base_functions.md") (path (named (kind library-package) (name "BaseFunctions")) (named (kind kerml-function) (name "!=")) (anonymous (kind parameter) (ordinal 0))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/base_functions.md") (path (named (kind library-package) (name "BaseFunctions")) (named (kind kerml-function) (name "!==")) (anonymous (kind parameter) (ordinal 0))))) (state unsupported))
   )
 )
 ~~~

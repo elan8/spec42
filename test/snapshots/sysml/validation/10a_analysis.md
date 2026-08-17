@@ -196,7 +196,7 @@ package '10a-Analysis' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:f2396f6496b97f2feca2ddba2d175a44d6ece1086a2d61db58b234e5f33cc103") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:f2396f6496b97f2feca2ddba2d175a44d6ece1086a2d61db58b234e5f33cc103") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/10a_analysis.md") (path (named (kind package) (name "10a-Analysis")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ISQ") (import (shape namespace) (recursive false))))))
@@ -311,6 +311,8 @@ package '10a-Analysis' {
     (relationship (kind typing) (source (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleAnalysisModel::massAnalysisContext::analysisPlan"))) (target (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleAnalysisModel::AnalysisPlan"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleAnalysisModel::massAnalysisContext::analysisPlan"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisCase"))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/10a_analysis.md") (path (named (kind package) (name "10a-Analysis")) (named (kind package) (name "VehicleDesignModel")) (named (kind part) (name "vehicle")) (anonymous (kind attribute) (ordinal 0))))) (state unsupported))
   )
 )
 ~~~

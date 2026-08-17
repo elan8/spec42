@@ -518,7 +518,14 @@ standard library package Clocks {
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/clocks.md") (qualified-name "Clocks::Clock::timeFlowConstraint"))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/clocks.md") (qualified-name "Clocks::DurationOf::clock"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/clocks.md") (qualified-name "Clocks::DurationOf::duration"))) (state unsupported))
     (evaluated (declaration (node (document "memory://snapshot/clocks.md") (qualified-name "Clocks::TimeOf::clock"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/clocks.md") (qualified-name "Clocks::TimeOf::startTimeConstraint"))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/clocks.md") (qualified-name "Clocks::TimeOf::timeContinuityConstraint"))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/clocks.md") (qualified-name "Clocks::TimeOf::timeOrderingConstraint"))) (state unsupported))
+    (invocation (declaration (node (document "memory://snapshot/clocks.md") (qualified-name "Clocks::DurationOf::duration"))) (callee (node (document "memory://snapshot/clocks.md") (qualified-name "Clocks::TimeOf"))) (supplied 2) (required 1) (start 119 3) (end 119 27))
+    (invocation (declaration (node (document "memory://snapshot/clocks.md") (qualified-name "Clocks::DurationOf::duration"))) (callee (node (document "memory://snapshot/clocks.md") (qualified-name "Clocks::TimeOf"))) (supplied 2) (required 1) (start 119 30) (end 119 56))
+    (invocation (declaration (node (document "memory://snapshot/clocks.md") (qualified-name "Clocks::TimeOf::startTimeConstraint"))) (callee (node (document "memory://snapshot/clocks.md") (qualified-name "Clocks::TimeOf"))) (supplied 2) (required 1) (start 78 19) (end 78 45))
   )
 )
 ~~~

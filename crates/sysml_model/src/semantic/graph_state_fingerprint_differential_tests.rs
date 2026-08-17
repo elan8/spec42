@@ -191,25 +191,6 @@ fn assert_observable_query_surface_matches(
         "{step}: source-origin/standard-library classification diverged"
     );
 
-    // Units: every unit-typed node's resolved unit type name must agree (`UnitRegistry` itself
-    // has no public equality/introspection contract, so this compares its actual query surface
-    // instead of its private internals).
-    for uri in left.all_uris() {
-        for node in left.nodes_for_uri(&uri) {
-            if !crate::semantic::units::type_resolver::is_unit_type_name_in_graph(left, &node.name)
-            {
-                continue;
-            }
-            assert!(
-                crate::semantic::units::type_resolver::is_unit_type_name_in_graph(
-                    right, &node.name
-                ),
-                "{step}: unit-type classification diverged for {:?}",
-                node.id
-            );
-        }
-    }
-
     // Evaluation queries.
     for uri in left.all_uris() {
         for node in left.nodes_for_uri(&uri) {

@@ -544,10 +544,6 @@ pub(super) fn is_booleanish_filter_expression(condition: &str) -> bool {
         || trimmed.contains('@')
 }
 
-pub(super) fn is_boolean_literal_value(value: &str) -> bool {
-    matches!(value.trim().to_ascii_lowercase().as_str(), "true" | "false")
-}
-
 pub(super) fn declared_specializes_refs(node: &SemanticNode) -> Vec<String> {
     node.declared_facts
         .relationships

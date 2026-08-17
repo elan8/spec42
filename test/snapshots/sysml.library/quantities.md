@@ -508,6 +508,8 @@ standard library package Quantities {
     (relationship (kind typing) (source (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::vectorQuantities"))) (target (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::VectorQuantityValue"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::vectorQuantities"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/quantities.md") (path (named (kind library-package) (name "Quantities")) (named (kind attribute-def) (name "TensorQuantityValue")) (anonymous (kind attribute) (ordinal 0))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::TensorQuantityValue::boundMatch"))) (state unsupported))
     (evaluated (declaration (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::TensorQuantityValue::orderSum"))) (state non-constant))
   )
 )

@@ -1,0 +1,170 @@
+# META
+~~~ini
+description=An assignment's value is judged against the type of the feature its left-hand side names
+type=file
+libraries=standard
+~~~
+# SOURCE
+~~~sysml
+package Assignments {
+	part def Counter {
+		attribute count : ScalarValues::Integer := 0;
+		attribute ready : ScalarValues::Boolean := false;
+		action increment {
+			assign count := 1;
+		}
+		action mistype {
+			assign count := "one";
+		}
+		action flag {
+			assign ready := true;
+		}
+	}
+}
+~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "memory://snapshot/assignment_value_conformance.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "assignment_value_incompatible")
+        (source "semantic")
+        (range (start 8 3) (end 8 25))
+        (related-information
+          (related
+            (uri "memory://snapshot/assignment_value_conformance.md")
+            (range (start 2 2) (end 2 47))
+          )
+        )
+      )
+    )
+  )
+)
+~~~
+# SMG
+~~~sexpr
+(semantic-model
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:e7261efe3ff23340ca3b896a4807aedd379287000177f7746b46a5c71de0f1fb") (contract-version "parser-owned-resolution-v1") (admitted (standard-library 94)))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments::Counter"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments::Counter::count"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind assign)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ScalarValues::Integer")))))
+    (declaration (id (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments::Counter::flag"))) (kind action) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/assignment_value_conformance.md") (path (named (kind package) (name "Assignments")) (named (kind part-def) (name "Counter")) (named (kind action) (name "flag")) (anonymous (kind assign) (ordinal 0))))) (kind assign) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (assignTarget (reference "ready")))))
+    (declaration (id (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments::Counter::increment"))) (kind action) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/assignment_value_conformance.md") (path (named (kind package) (name "Assignments")) (named (kind part-def) (name "Counter")) (named (kind action) (name "increment")) (anonymous (kind assign) (ordinal 0))))) (kind assign) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (assignTarget (reference "count")))))
+    (declaration (id (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments::Counter::mistype"))) (kind action) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/assignment_value_conformance.md") (path (named (kind package) (name "Assignments")) (named (kind part-def) (name "Counter")) (named (kind action) (name "mistype")) (anonymous (kind assign) (ordinal 0))))) (kind assign) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (assignTarget (reference "count")))))
+    (declaration (id (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments::Counter::ready"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind assign)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ScalarValues::Boolean")))))
+  )
+  (references
+    (reference (id (source (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments::Counter::count"))) (kind featureTyping) (ordinal 0))
+      (authored-target "ScalarValues::Integer")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Integer")))))
+    (reference (id (source (node (document "memory://snapshot/assignment_value_conformance.md") (path (named (kind package) (name "Assignments")) (named (kind part-def) (name "Counter")) (named (kind action) (name "flag")) (anonymous (kind assign) (ordinal 0))))) (kind assignTarget) (ordinal 0))
+      (authored-target "ready")
+      (outcome (status resolved) (target (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments::Counter::ready")))))
+    (reference (id (source (node (document "memory://snapshot/assignment_value_conformance.md") (path (named (kind package) (name "Assignments")) (named (kind part-def) (name "Counter")) (named (kind action) (name "increment")) (anonymous (kind assign) (ordinal 0))))) (kind assignTarget) (ordinal 0))
+      (authored-target "count")
+      (outcome (status resolved) (target (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments::Counter::count")))))
+    (reference (id (source (node (document "memory://snapshot/assignment_value_conformance.md") (path (named (kind package) (name "Assignments")) (named (kind part-def) (name "Counter")) (named (kind action) (name "mistype")) (anonymous (kind assign) (ordinal 0))))) (kind assignTarget) (ordinal 0))
+      (authored-target "count")
+      (outcome (status resolved) (target (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments::Counter::count")))))
+    (reference (id (source (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments::Counter::ready"))) (kind featureTyping) (ordinal 0))
+      (authored-target "ScalarValues::Boolean")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Boolean")))))
+  )
+  (relationships
+    (relationship (kind typing) (source (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments::Counter::count"))) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Integer"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments::Counter::count"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind assignTarget) (source (node (document "memory://snapshot/assignment_value_conformance.md") (path (named (kind package) (name "Assignments")) (named (kind part-def) (name "Counter")) (named (kind action) (name "flag")) (anonymous (kind assign) (ordinal 0))))) (target (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments::Counter::ready"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/assignment_value_conformance.md") (path (named (kind package) (name "Assignments")) (named (kind part-def) (name "Counter")) (named (kind action) (name "flag")) (anonymous (kind assign) (ordinal 0))))) (kind assignTarget) (ordinal 0)))
+    (relationship (kind assignTarget) (source (node (document "memory://snapshot/assignment_value_conformance.md") (path (named (kind package) (name "Assignments")) (named (kind part-def) (name "Counter")) (named (kind action) (name "increment")) (anonymous (kind assign) (ordinal 0))))) (target (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments::Counter::count"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/assignment_value_conformance.md") (path (named (kind package) (name "Assignments")) (named (kind part-def) (name "Counter")) (named (kind action) (name "increment")) (anonymous (kind assign) (ordinal 0))))) (kind assignTarget) (ordinal 0)))
+    (relationship (kind assignTarget) (source (node (document "memory://snapshot/assignment_value_conformance.md") (path (named (kind package) (name "Assignments")) (named (kind part-def) (name "Counter")) (named (kind action) (name "mistype")) (anonymous (kind assign) (ordinal 0))))) (target (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments::Counter::count"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/assignment_value_conformance.md") (path (named (kind package) (name "Assignments")) (named (kind part-def) (name "Counter")) (named (kind action) (name "mistype")) (anonymous (kind assign) (ordinal 0))))) (kind assignTarget) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments::Counter::ready"))) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Boolean"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments::Counter::ready"))) (kind featureTyping) (ordinal 0)))
+  )
+  (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments::Counter::count"))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/assignment_value_conformance.md") (path (named (kind package) (name "Assignments")) (named (kind part-def) (name "Counter")) (named (kind action) (name "flag")) (anonymous (kind assign) (ordinal 0))))) (state literal) (value (kind boolean) (boolean true)))
+    (evaluated (declaration (node (document "memory://snapshot/assignment_value_conformance.md") (path (named (kind package) (name "Assignments")) (named (kind part-def) (name "Counter")) (named (kind action) (name "increment")) (anonymous (kind assign) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/assignment_value_conformance.md") (path (named (kind package) (name "Assignments")) (named (kind part-def) (name "Counter")) (named (kind action) (name "mistype")) (anonymous (kind assign) (ordinal 0))))) (state literal) (value (kind string) (value "one")))
+    (evaluated (declaration (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments::Counter::ready"))) (state literal) (value (kind boolean) (boolean false)))
+  )
+)
+~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments::Counter::count")))
+      (featured-by (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments::Counter")))
+      (type (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Integer")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Integer")) (source direct))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Complex")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Integer")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Number")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::NumericalValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Rational")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Real")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::ScalarValue")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments::Counter::flag")))
+      (featured-by (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments::Counter")))
+    )
+    (declaration (id (node (document "memory://snapshot/assignment_value_conformance.md") (path (named (kind package) (name "Assignments")) (named (kind part-def) (name "Counter")) (named (kind action) (name "flag")) (anonymous (kind assign) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments::Counter::flag")))
+    )
+    (declaration (id (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments::Counter::increment")))
+      (featured-by (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments::Counter")))
+    )
+    (declaration (id (node (document "memory://snapshot/assignment_value_conformance.md") (path (named (kind package) (name "Assignments")) (named (kind part-def) (name "Counter")) (named (kind action) (name "increment")) (anonymous (kind assign) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments::Counter::increment")))
+    )
+    (declaration (id (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments::Counter::mistype")))
+      (featured-by (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments::Counter")))
+    )
+    (declaration (id (node (document "memory://snapshot/assignment_value_conformance.md") (path (named (kind package) (name "Assignments")) (named (kind part-def) (name "Counter")) (named (kind action) (name "mistype")) (anonymous (kind assign) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments::Counter::mistype")))
+    )
+    (declaration (id (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments::Counter::ready")))
+      (featured-by (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments::Counter")))
+      (type (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Boolean")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Boolean")) (source direct))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Boolean")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::ScalarValue")) (scopes any))
+    )
+)
+~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (query (document "memory://snapshot/assignment_value_conformance.md") (range (start 2 20) (end 2 41)) (probe (position 2 20))
+    (reference (id (source (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments::Counter::count"))) (kind featureTyping) (ordinal 0) (authored-target "ScalarValues::Integer")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Integer")))))
+    )
+  )
+  (query (document "memory://snapshot/assignment_value_conformance.md") (range (start 11 10) (end 11 15)) (probe (position 11 10))
+    (reference (id (source (node (document "memory://snapshot/assignment_value_conformance.md") (path (named (kind package) (name "Assignments")) (named (kind part-def) (name "Counter")) (named (kind action) (name "flag")) (anonymous (kind assign) (ordinal 0))))) (kind assignTarget) (ordinal 0) (authored-target "ready")
+      (outcome (status resolved) (target (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments::Counter::ready")))))
+    )
+  )
+  (query (document "memory://snapshot/assignment_value_conformance.md") (range (start 5 10) (end 5 15)) (probe (position 5 10))
+    (reference (id (source (node (document "memory://snapshot/assignment_value_conformance.md") (path (named (kind package) (name "Assignments")) (named (kind part-def) (name "Counter")) (named (kind action) (name "increment")) (anonymous (kind assign) (ordinal 0))))) (kind assignTarget) (ordinal 0) (authored-target "count")
+      (outcome (status resolved) (target (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments::Counter::count")))))
+    )
+  )
+  (query (document "memory://snapshot/assignment_value_conformance.md") (range (start 8 10) (end 8 15)) (probe (position 8 10))
+    (reference (id (source (node (document "memory://snapshot/assignment_value_conformance.md") (path (named (kind package) (name "Assignments")) (named (kind part-def) (name "Counter")) (named (kind action) (name "mistype")) (anonymous (kind assign) (ordinal 0))))) (kind assignTarget) (ordinal 0) (authored-target "count")
+      (outcome (status resolved) (target (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments::Counter::count")))))
+    )
+  )
+  (query (document "memory://snapshot/assignment_value_conformance.md") (range (start 3 20) (end 3 41)) (probe (position 3 20))
+    (reference (id (source (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments::Counter::ready"))) (kind featureTyping) (ordinal 0) (authored-target "ScalarValues::Boolean")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Boolean")))))
+    )
+  )
+)
+~~~

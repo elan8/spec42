@@ -13,10 +13,8 @@ pub(crate) fn collect_document_diagnostics(
     text: &str,
     postprocess: DiagnosticsPostprocessOptions,
 ) -> Vec<Diagnostic> {
-    let unit_registry = sysml_model::UnitRegistry::from_graph(semantic_graph);
     let diagnostics: Vec<Diagnostic> = sysml_diagnostics::collect_document_diagnostics(
         semantic_graph,
-        &unit_registry,
         !library_paths.is_empty(),
         uri,
         text,

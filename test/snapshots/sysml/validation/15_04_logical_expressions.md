@@ -164,6 +164,7 @@ package '15_04-Logical Expressions' {
     (relationship (kind typing) (source (node (document "memory://snapshot/15_04_logical_expressions.md") (qualified-name "15_04-Logical Expressions::Vehicle::transmission"))) (target (node (document "memory://snapshot/15_04_logical_expressions.md") (qualified-name "15_04-Logical Expressions::Transmission"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/15_04_logical_expressions.md") (qualified-name "15_04-Logical Expressions::Vehicle::transmission"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/15_04_logical_expressions.md") (path (named (kind package) (name "15_04-Logical Expressions")) (named (kind part-def) (name "Vehicle")) (anonymous (kind assert-constraint) (ordinal 0))))) (state unsupported))
     (evaluated (declaration (node (document "memory://snapshot/15_04_logical_expressions.md") (path (named (kind package) (name "15_04-Logical Expressions")) (named (kind part-def) (name "Vehicle")) (anonymous (kind assert-constraint) (ordinal 1))))) (state non-constant))
   )
 )

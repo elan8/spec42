@@ -529,6 +529,7 @@ package ServerSequenceOutsideRealization_2 {
     (evaluated (declaration (node (document "memory://snapshot/server_sequence_outside_realization_2.md") (path (named (kind package) (name "ServerSequenceOutsideRealization_2")) (named (kind package) (name "Configuration")) (named (kind part) (name "consumer_2")) (anonymous (kind attribute) (ordinal 0))))) (state unresolved-operand))
     (evaluated (declaration (node (document "memory://snapshot/server_sequence_outside_realization_2.md") (path (named (kind package) (name "ServerSequenceOutsideRealization_2")) (named (kind package) (name "Configuration")) (named (kind part) (name "producer_2")) (anonymous (kind attribute) (ordinal 0))))) (state unresolved-operand))
     (evaluated (declaration (node (document "memory://snapshot/server_sequence_outside_realization_2.md") (path (named (kind package) (name "ServerSequenceOutsideRealization_2")) (named (kind package) (name "Configuration")) (named (kind part) (name "server_2")) (anonymous (kind attribute) (ordinal 0))))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/server_sequence_outside_realization_2.md") (qualified-name "ServerSequenceOutsideRealization_2::Configuration::server_2::serverBehavior::delivering"))) (state unsupported))
   )
 )
 ~~~

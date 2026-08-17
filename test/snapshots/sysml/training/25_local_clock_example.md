@@ -145,6 +145,7 @@ package 'Local Clock Example' {
     (relationship (kind transitionTrigger) (source (node (document "memory://snapshot/25_local_clock_example.md") (path (named (kind package) (name "Local Clock Example")) (named (kind part-def) (name "Server")) (named (kind state) (name "ServerBehavior")) (anonymous (kind transition) (ordinal 0))))) (target (node (document "memory://snapshot/25_local_clock_example.md") (qualified-name "Local Clock Example::Start"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/25_local_clock_example.md") (path (named (kind package) (name "Local Clock Example")) (named (kind part-def) (name "Server")) (named (kind state) (name "ServerBehavior")) (anonymous (kind transition) (ordinal 0))))) (kind transitionTrigger) (ordinal 0)))
   )
   (evaluation
+    (unit (declaration (node (document "memory://snapshot/25_local_clock_example.md") (path (named (kind package) (name "Local Clock Example")) (named (kind part-def) (name "Server")) (named (kind state) (name "ServerBehavior")) (anonymous (kind transition) (ordinal 3))))) (ordinal 0) (authored "SI::min") (start 27 19) (end 27 26) (outcome (status catalog-unavailable)))
   )
 )
 ~~~

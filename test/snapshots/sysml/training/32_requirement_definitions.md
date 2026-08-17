@@ -193,6 +193,9 @@ package 'Requirement Definitions' {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/32_requirement_definitions.md") (path (named (kind package) (name "Requirement Definitions")) (named (kind requirement-def) (name "MassLimitationRequirement")) (anonymous (kind require-constraint) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/32_requirement_definitions.md") (path (named (kind package) (name "Requirement Definitions")) (named (kind requirement-def) (name "VehicleMassLimitationRequirement")) (anonymous (kind attribute) (ordinal 0))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/32_requirement_definitions.md") (path (named (kind package) (name "Requirement Definitions")) (named (kind requirement-def) (name "VehicleMassLimitationRequirement")) (anonymous (kind assume-constraint) (ordinal 0))))) (state unsupported))
+    (unit (declaration (node (document "memory://snapshot/32_requirement_definitions.md") (path (named (kind package) (name "Requirement Definitions")) (named (kind requirement-def) (name "VehicleMassLimitationRequirement")) (anonymous (kind assume-constraint) (ordinal 0))))) (ordinal 0) (authored "kg") (start 26 43) (end 26 45) (outcome (status catalog-unavailable)))
   )
 )
 ~~~

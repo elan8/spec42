@@ -47,6 +47,12 @@ package TextualRepresentationTest {
       )
       (diagnostic
         (severity warning)
+        (code "non_boolean_expression")
+        (source "semantic")
+        (range (start 5 5) (end 8 6))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 6 6) (end 6 9))

@@ -356,7 +356,7 @@ standard library package TensorCalculations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:2f389f45a2013aabb415fcb4473243cf867f1b992f5a1ee36539c82c518b723d") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:2f389f45a2013aabb415fcb4473243cf867f1b992f5a1ee36539c82c518b723d") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/tensor_calculations.md") (qualified-name "TensorCalculations"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package package defines calculations for the construction of and computations on TensorQuantityValues.\n\t "))))
     (declaration (id (node (document "memory://snapshot/tensor_calculations.md") (path (named (kind library-package) (name "TensorCalculations")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Boolean") (import (shape membership) (recursive false))))))
@@ -567,6 +567,7 @@ standard library package TensorCalculations {
   (relationships
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/tensor_calculations.md") (qualified-name "TensorCalculations::[::n"))) (state unsupported))
   )
 )
 ~~~

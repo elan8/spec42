@@ -7,8 +7,8 @@ use std::{collections::HashSet, time::Instant};
 use url::Url;
 
 use crate::checks::{
-    behavior_conformance, connection_conformance, expression_conformance, import_conformance,
-    name_resolution, requirement_case_conformance, view_metadata_conformance,
+    behavior_conformance, connection_conformance, import_conformance, name_resolution,
+    requirement_case_conformance, view_metadata_conformance,
 };
 use crate::helpers::*;
 use crate::relationship_endpoint_messages::builder_relationship_diagnostic_to_emit;
@@ -16,7 +16,7 @@ use crate::types::DiagnosticsOptions;
 use crate::types::{DiagnosticRelatedInfo, DiagnosticSeverity};
 use crate::SemanticDiagnostic;
 use sysml_model::{
-    resolve_inherited_member_via_type, RelationshipKind, ResolveResult, SemanticGraph, UnitRegistry,
+    resolve_inherited_member_via_type, RelationshipKind, ResolveResult, SemanticGraph,
 };
 
 fn is_view_kind(kind: &sysml_model::ElementKind) -> bool {
@@ -63,18 +63,7 @@ fn analysis_evaluation_diagnostic_applies(
 pub fn compute_semantic_diagnostics(
     graph: &SemanticGraph,
     uri: &Url,
-    options: DiagnosticsOptions,
-) -> Vec<SemanticDiagnostic> {
-    let unit_registry = UnitRegistry::from_graph(graph);
-    compute_semantic_diagnostics_with_unit_registry(graph, uri, options, &unit_registry)
-}
-
-/// Like [`compute_semantic_diagnostics`] but reuses a workspace-level unit registry.
-pub fn compute_semantic_diagnostics_with_unit_registry(
-    graph: &SemanticGraph,
-    uri: &Url,
     _options: DiagnosticsOptions,
-    unit_registry: &UnitRegistry,
 ) -> Vec<SemanticDiagnostic> {
     let mut diagnostics = Vec::new();
     let total_start = Instant::now();
@@ -688,22 +677,6 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
         "14_connection_conformance".to_string(),
         t14.elapsed().as_millis(),
         diagnostics.len().saturating_sub(d14),
-    ));
-
-    // 15) P1 expression/value/unit conformance.
-    let t15 = Instant::now();
-    let d15 = diagnostics.len();
-    diagnostics.extend(
-        expression_conformance::collect_expression_conformance_diagnostics(
-            graph,
-            uri,
-            unit_registry,
-        ),
-    );
-    section_timings.push((
-        "15_expression_conformance".to_string(),
-        t15.elapsed().as_millis(),
-        diagnostics.len().saturating_sub(d15),
     ));
 
     // 16) P2 behavior conformance (perform, transitions, succession).

@@ -626,6 +626,7 @@ standard library package Observation {
     (evaluated (declaration (node (document "memory://snapshot/observation.md") (qualified-name "Observation::ChangeMonitor::startObservation::observation::changeSignal"))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/observation.md") (path (named (kind library-package) (name "Observation")) (named (kind kerml-behavior) (name "ObserveChange")) (named (kind kerml-step) (name "transfer")) (named (kind kerml-feature) (name "source")) (anonymous (kind kerml-feature) (ordinal 0))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/observation.md") (path (named (kind library-package) (name "Observation")) (named (kind kerml-behavior) (name "ObserveChange")) (named (kind kerml-step) (name "wait")) (anonymous (kind parameter) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/observation.md") (path (named (kind library-package) (name "Observation")) (named (kind kerml-behavior) (name "ObserveChange")) (named (kind kerml-step) (name "wait")) (anonymous (kind parameter) (ordinal 1)) (named (kind parameter) (name "onOccurrence"))))) (state unsupported))
   )
 )
 ~~~

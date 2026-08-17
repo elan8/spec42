@@ -152,12 +152,22 @@ Spec areas: 7.6, 8.2.2.6, 8.4.2.
 
 Spec areas: 7.7, 7.8, 7.19, 7.20, 8.4.3, 8.4.4, 8.4.15, 8.4.16, 9.2.
 
-- Done: `attribute_value_type_mismatch` — scalar literal incompatible with declared attribute type.
-- Done: `invalid_enumeration_value` — string literal not declared on enum type.
-- Done: `unknown_unit_symbol` — unit suffix not in indexed quantity/unit catalogs.
-- Done: `incompatible_unit_dimension` — recognized unit suffix incompatible with attribute quantity type dimension.
-- Done: `non_boolean_expression` — constraint/assert/filter not Boolean-typed (when evaluation reports it).
-- Done: `calculation_binding_mismatch` — invocation arity below declared parameter count (when graph captures arg count).
+This family is settled by the immutable publication (`sysml_resolution`) and read through
+`PublishedModel::diagnostics()`. The LSP and CLI pipelines described above still assemble their
+diagnostics from `sysml_diagnostics`, so they report these codes again once that consumer migrates.
+
+- Done: `attribute_value_type_mismatch` — an authored value whose type is unrelated to the type of
+  the feature it is bound to. Subsumes the former `invalid_enumeration_value`: a string literal is
+  not an enumeration literal, whether or not the enum happens to declare a member of that name.
+- Done: `assignment_value_incompatible` — the same rule for an `assign` statement's left-hand side.
+- Done: `unknown_unit_symbol` — a unit token naming no unit in the admitted measurement catalog.
+- Done: `ambiguous_unit_symbol` — a unit token naming several admitted units.
+- Done: `incompatible_unit_dimension` — a quantity value measured in a unit whose measurement
+  reference the feature's quantity type does not admit.
+- Done: `non_boolean_expression` — a constraint body that settles to a non-Boolean constant.
+- Done: `view_filter_non_boolean` — the same for a `view`/`view def` filter condition.
+- Done: `calculation_binding_mismatch` — a calculation invocation supplying fewer arguments than the
+  callee has bindable parameters.
 - Done: `redefinition_multiplicity_widened` — multiplicity conformance across redefinition (see typing section).
 
 ### P1: ports, connections, interfaces, and flows

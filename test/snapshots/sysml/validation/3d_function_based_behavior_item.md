@@ -309,6 +309,7 @@ package '3d-Function-based Behavior-item' {
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/3d_function_based_behavior_item.md") (path (named (kind package) (name "3d-Function-based Behavior-item")) (named (kind package) (name "Usages")) (named (kind part) (name "context")) (named (kind part) (name "pump")) (named (kind perform-action) (name "pumpFuel")) (anonymous (kind perform-parameter-binding) (ordinal 0))))) (state unresolved-operand))
     (evaluated (declaration (node (document "memory://snapshot/3d_function_based_behavior_item.md") (path (named (kind package) (name "3d-Function-based Behavior-item")) (named (kind package) (name "Usages")) (named (kind part) (name "context")) (named (kind part) (name "pump")) (named (kind perform-action) (name "pumpFuel")) (anonymous (kind perform-parameter-binding) (ordinal 1))))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/3d_function_based_behavior_item.md") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle::fuelTank::fuelLevel"))) (state unsupported))
   )
 )
 ~~~

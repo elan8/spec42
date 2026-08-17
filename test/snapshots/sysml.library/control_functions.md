@@ -869,6 +869,7 @@ standard library package ControlFunctions {
     (evaluated (declaration (node (document "memory://snapshot/control_functions.md") (path (named (kind library-package) (name "ControlFunctions")) (named (kind kerml-function) (name "anyTrue")) (anonymous (kind parameter) (ordinal 0))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/control_functions.md") (path (named (kind library-package) (name "ControlFunctions")) (named (kind kerml-function) (name "maximize")) (anonymous (kind parameter) (ordinal 0))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/control_functions.md") (path (named (kind library-package) (name "ControlFunctions")) (named (kind kerml-function) (name "minimize")) (anonymous (kind parameter) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/control_functions.md") (path (named (kind library-package) (name "ControlFunctions")) (named (kind kerml-function) (name "selectOne")) (anonymous (kind parameter) (ordinal 0))))) (state unsupported))
   )
 )
 ~~~

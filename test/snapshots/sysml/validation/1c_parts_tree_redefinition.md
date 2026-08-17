@@ -304,6 +304,8 @@ package '1c-Parts Tree Redefinition' {
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (qualified-name "1c-Parts Tree Redefinition::Usages::vehicle1::mass"))) (state literal) (value (kind quantity) (magnitude (value (kind integer) (integer 1750))) (unit "kg")))
     (evaluated (declaration (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (qualified-name "1c-Parts Tree Redefinition::Usages::vehicle1_c1::mass"))) (state literal) (value (kind quantity) (magnitude (value (kind integer) (integer 2000))) (unit "kg")))
+    (unit (declaration (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (qualified-name "1c-Parts Tree Redefinition::Usages::vehicle1::mass"))) (ordinal 0) (authored "kg") (start 21 58) (end 21 60) (outcome (status catalog-unavailable)))
+    (unit (declaration (node (document "memory://snapshot/1c_parts_tree_redefinition.md") (qualified-name "1c-Parts Tree Redefinition::Usages::vehicle1_c1::mass"))) (ordinal 0) (authored "kg") (start 45 51) (end 45 53) (outcome (status catalog-unavailable)))
   )
 )
 ~~~

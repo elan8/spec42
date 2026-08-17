@@ -6,6 +6,7 @@
 use std::fmt;
 
 use super::*;
+use crate::evaluation::EvaluatedScalar;
 
 pub(super) fn write_semantic(
     model: &ResolvedSemanticModel,
@@ -620,38 +621,192 @@ fn write_evaluation(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) 
         write!(output, ") (state {})", fact.state.as_str())?;
         // The value is rendered only where the state carries one, so a failure cannot be mistaken
         // for a value of some fallback kind.
-        if fact.state.value().is_some() {
+        if let Some(value) = fact.state.value() {
             write!(output, " ")?;
-            write_evaluated_value(&fact.outcome, output)?;
+            write_evaluated_scalar(value, output)?;
         }
         writeln!(output, ")")?;
     }
+    write_units(model, output)?;
+    write_measurements(model, output)?;
+    write_filters(model, output)?;
+    write_invocations(model, output)?;
     writeln!(output, "  )")
 }
 
-fn write_evaluated_value(value: &EvaluatedValue, output: &mut dyn fmt::Write) -> fmt::Result {
+/// Every authored unit token, with the spelling the author used and what it resolved to.
+fn write_units(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fmt::Result {
+    for index in canonical_declaration_indices(model) {
+        let declaration = DeclarationId(index as u32);
+        for unit in model.expressions.units(declaration) {
+            write!(output, "    (unit (declaration ")?;
+            write_node_identity(model, unit.declaration, output)?;
+            write!(
+                output,
+                ") (ordinal {}) (authored {:?}) ",
+                unit.ordinal,
+                model.storage.symbol(unit.text).unwrap_or_default()
+            )?;
+            match document_range(&model.storage, unit.document, &unit.span) {
+                Ok(range) => write_range(output, range)?,
+                Err(_) => write!(output, "(range invalid)")?,
+            }
+            write!(output, " (outcome ")?;
+            match &unit.outcome {
+                expression::UnitOutcome::Resolved { unit, dimensions } => {
+                    write!(output, "(status resolved) (unit ")?;
+                    write_node_identity(model, *unit, output)?;
+                    write!(output, ")")?;
+                    for dimension in dimensions.iter() {
+                        write!(output, " (dimension ")?;
+                        write_node_identity(model, *dimension, output)?;
+                        write!(output, ")")?;
+                    }
+                }
+                expression::UnitOutcome::UnknownSymbol => write!(output, "(status unknown)")?,
+                expression::UnitOutcome::Ambiguous(candidates) => {
+                    write!(output, "(status ambiguous)")?;
+                    for candidate in candidates.iter() {
+                        write!(output, " (candidate ")?;
+                        write_node_identity(model, *candidate, output)?;
+                        write!(output, ")")?;
+                    }
+                }
+                expression::UnitOutcome::UnsupportedExpression => {
+                    write!(output, "(status unsupported)")?
+                }
+                expression::UnitOutcome::CatalogUnavailable => {
+                    write!(output, "(status catalog-unavailable)")?
+                }
+            }
+            writeln!(output, "))")?;
+        }
+    }
+    Ok(())
+}
+
+/// The measurement reference each quantity-valued declaration requires of its values.
+///
+/// Only declarations that require one are rendered: "this is not a quantity" is the common case,
+/// and printing it for every declaration would bury the ones that are.
+fn write_measurements(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fmt::Result {
+    for index in canonical_declaration_indices(model) {
+        let declaration = DeclarationId(index as u32);
+        match model.expressions.required_measurement(declaration) {
+            expression::RequiredMeasurement::NotApplicable => continue,
+            expression::RequiredMeasurement::Indeterminate => {
+                write!(output, "    (measurement (declaration ")?;
+                write_node_identity(model, declaration, output)?;
+                writeln!(output, ") (status indeterminate))")?;
+            }
+            expression::RequiredMeasurement::Required(dimensions) => {
+                write!(output, "    (measurement (declaration ")?;
+                write_node_identity(model, declaration, output)?;
+                write!(output, ") (status required)")?;
+                for dimension in dimensions.iter() {
+                    write!(output, " (dimension ")?;
+                    write_node_identity(model, *dimension, output)?;
+                    write!(output, ")")?;
+                }
+                writeln!(output, ")")?;
+            }
+        }
+    }
+    Ok(())
+}
+
+fn write_filters(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fmt::Result {
+    let mut filters = model
+        .expressions
+        .filters()
+        .iter()
+        .filter(|filter| is_projected_declaration(model, filter.owner))
+        .collect::<Vec<_>>();
+    filters.sort_by_key(|filter| {
+        (
+            document_identity(model, filter.document),
+            declaration_path_key(model, filter.owner),
+        )
+    });
+    for filter in filters {
+        write!(output, "    (filter (owner ")?;
+        write_node_identity(model, filter.owner, output)?;
+        write!(
+            output,
+            ") (form {}) (state {}) ",
+            filter_form_name(filter.form),
+            filter.state.as_str()
+        )?;
+        match document_range(&model.storage, filter.document, &filter.span) {
+            Ok(range) => write_range(output, range)?,
+            Err(_) => write!(output, "(range invalid)")?,
+        }
+        if let Some(value) = filter.state.value() {
+            write!(output, " ")?;
+            write_evaluated_scalar(value, output)?;
+        }
+        writeln!(output, ")")?;
+    }
+    Ok(())
+}
+
+fn filter_form_name(form: FilterForm) -> &'static str {
+    match form {
+        FilterForm::View => "view",
+        FilterForm::Rendering => "rendering",
+        FilterForm::PackageImport => "package-import",
+    }
+}
+
+fn write_invocations(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fmt::Result {
+    let mut invocations = model
+        .expressions
+        .invocations()
+        .iter()
+        .filter(|invocation| is_projected_declaration(model, invocation.declaration))
+        .collect::<Vec<_>>();
+    invocations.sort_by_key(|invocation| {
+        (
+            document_identity(model, invocation.document),
+            declaration_path_key(model, invocation.declaration),
+        )
+    });
+    for invocation in invocations {
+        write!(output, "    (invocation (declaration ")?;
+        write_node_identity(model, invocation.declaration, output)?;
+        write!(output, ") (callee ")?;
+        write_node_identity(model, invocation.callee, output)?;
+        write!(
+            output,
+            ") (supplied {}) (required {}) ",
+            invocation.supplied, invocation.required
+        )?;
+        match document_range(&model.storage, invocation.document, &invocation.span) {
+            Ok(range) => write_range(output, range)?,
+            Err(_) => write!(output, "(range invalid)")?,
+        }
+        writeln!(output, ")")?;
+    }
+    Ok(())
+}
+
+fn write_evaluated_scalar(value: &EvaluatedScalar, output: &mut dyn fmt::Write) -> fmt::Result {
     match value {
-        EvaluatedValue::Boolean(value) => {
+        EvaluatedScalar::Boolean(value) => {
             write!(output, "(value (kind boolean) (boolean {value}))")
         }
-        EvaluatedValue::Integer(value) => {
+        EvaluatedScalar::Integer(value) => {
             write!(output, "(value (kind integer) (integer {value}))")
         }
-        EvaluatedValue::Real(value) => write!(output, "(value (kind real) (real {value}))"),
-        EvaluatedValue::String(value) => {
+        EvaluatedScalar::Real(value) => write!(output, "(value (kind real) (real {value}))"),
+        EvaluatedScalar::String(value) => {
             write!(output, "(value (kind string) (value {value:?}))")
         }
-        EvaluatedValue::Quantity(magnitude, unit) => {
+        EvaluatedScalar::Quantity { magnitude, unit } => {
             write!(output, "(value (kind quantity) (magnitude ")?;
-            write_evaluated_value(magnitude, output)?;
+            write_evaluated_scalar(magnitude, output)?;
             write!(output, ") (unit {unit:?}))")
         }
-        EvaluatedValue::NotEvaluated => write!(output, "(value (kind not-evaluated))"),
-        EvaluatedValue::UnresolvedOperand => write!(output, "(value (kind unresolved-operand))"),
-        EvaluatedValue::NonConstant => write!(output, "(value (kind non-constant))"),
-        EvaluatedValue::NonConverged => write!(output, "(value (kind non-converged))"),
-        EvaluatedValue::DivisionByZero => write!(output, "(value (kind division-by-zero))"),
-        EvaluatedValue::TypeMismatch => write!(output, "(value (kind type-mismatch))"),
     }
 }
 
@@ -1367,6 +1522,9 @@ mod tests {
             symbols: SymbolTableBuilder::default().freeze(),
             paths: SymbolPathArenaBuilder::default().freeze(),
             evaluation_facts: Box::new([]),
+            unit_tokens: Box::new([]),
+            filter_conditions: Box::new([]),
+            invocations: Box::new([]),
         };
         let (direct_names, effective_imports, memberships, resolution) = resolve_dense(
             &storage.declarations,
@@ -1376,7 +1534,11 @@ mod tests {
             None,
         )
         .unwrap();
-        let evaluation = compute_evaluation(&storage, &resolution, EvaluationPolicy::Evaluate);
+        let (evaluation, filter_conditions) =
+            match compute_evaluation(&storage, &resolution, EvaluationPolicy::Evaluate) {
+                SettledEvaluation::Settled { facts, filters } => (facts, Some(filters)),
+                SettledEvaluation::Vacuous => (Box::default(), None),
+            };
         let identities = IdentityIndex::build(&storage).unwrap();
         let documents = DocumentIndex::build(&storage).unwrap();
         let reverse_references =
@@ -1404,6 +1566,7 @@ mod tests {
             types: type_facts,
             resolution,
             evaluation,
+            expressions: expression::ExpressionIndex::default(),
             diagnostics: Box::default(),
             metadata: PublicationMetadata {
                 phase: PublicationPhase::Resolved,
@@ -1411,6 +1574,7 @@ mod tests {
                 has_evaluation: false,
             },
         };
+        model.expressions = expression::ExpressionIndex::build(&model, filter_conditions).unwrap();
         model.diagnostics = model.derive_diagnostics().unwrap();
         let mut output = String::new();
         model

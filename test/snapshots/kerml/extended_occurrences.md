@@ -216,7 +216,7 @@ package ExtendedOccurrences {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:3d83147000b14eef7f50c10362c18c6e228d220c5fef96c7c57258ca5abdeb93") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:3d83147000b14eef7f50c10362c18c6e228d220c5fef96c7c57258ca5abdeb93") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/extended_occurrences.md") (qualified-name "ExtendedOccurrences"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/extended_occurrences.md") (qualified-name "ExtendedOccurrences::ExtendedObject"))) (kind kerml-structure) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "ExtendedOccurrence")))))
@@ -379,6 +379,8 @@ package ExtendedOccurrences {
     (relationship (kind typing) (source (node (document "memory://snapshot/extended_occurrences.md") (qualified-name "ExtendedOccurrences::Timeslice::interval"))) (target (node (document "memory://snapshot/extended_occurrences.md") (qualified-name "ExtendedOccurrences::Interval"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/extended_occurrences.md") (qualified-name "ExtendedOccurrences::Timeslice::interval"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/extended_occurrences.md") (qualified-name "ExtendedOccurrences::ExtendedOccurrence::while::result"))) (state unsupported))
+    (invocation (declaration (node (document "memory://snapshot/extended_occurrences.md") (qualified-name "ExtendedOccurrences::ExtendedOccurrence::while::result"))) (callee (node (document "memory://snapshot/extended_occurrences.md") (qualified-name "ExtendedOccurrences::ExtendedOccurrence::at"))) (supplied 1) (required 1) (start 26 40) (end 26 62))
   )
 )
 ~~~

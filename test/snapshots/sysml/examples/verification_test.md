@@ -81,7 +81,7 @@ package VerificationTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:71d66e748beeaff18ed1e468cffbe9f8a327239ede88af42ec57d23a8d8502cb") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:71d66e748beeaff18ed1e468cffbe9f8a327239ede88af42ec57d23a8d8502cb") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::R"))) (kind requirement-def) (membership (kind owning) (visibility default)) (documentation (doc (text " ... "))))
@@ -143,6 +143,7 @@ package VerificationTest {
     (relationship (kind typing) (source (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::vv"))) (target (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::V"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::vv"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase"))) (state unsupported))
   )
 )
 ~~~
