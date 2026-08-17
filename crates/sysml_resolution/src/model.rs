@@ -276,20 +276,19 @@ pub(crate) enum DeclarationKind {
     /// attribute usages and nested case structure, mirroring `CaseDefinition`/
     /// `AnalysisCaseDefinition` lowering. Verification-specific semantics are out of scope here;
     /// only ownership, specialization, and owned-member structure are lowered. `verification`
-    /// usage lowering (`DeclarationKind::VerificationCaseUsage`): unlike `CaseUsage`/
-    /// `AnalysisCaseUsage`, `VerificationCaseUsage` still has no `subsets`/`redefines` field at
-    /// all (not just a stale "dropped" bug) -- only `name`/`type_name`/`is_abstract`/body are
-    /// lowered; a header-level `:>`/`:>>` clause still fails to parse into this node at all
+    /// usage lowering (`DeclarationKind::VerificationCaseUsage`): `name`/`type_name`/
+    /// `is_abstract`/`multiplicity`/`subsets`/body are lowered. `VerificationCaseUsage` still has
+    /// no `redefines` field, so a header-level `:>>` clause fails to parse into this node at all
     /// (falls to raw-text recovery instead, per planning/UPSTREAM_PARSER_GAPS.md's `AllocationUsage`/
-    /// `FlowUsage`/`ViewpointUsage` gap class).
+    /// `FlowUsage` gap class).
     VerificationCaseDefinition,
     /// `use case def` (BNF UseCaseDefinition): a type whose owned members are attribute usages
     /// and nested case structure, mirroring `CaseDefinition`/`AnalysisCaseDefinition` lowering.
     /// Use-case-specific semantics (actor/include structure) are out of scope here; only
     /// ownership, specialization, and owned-member structure are lowered. `use case` usage
     /// lowering (`DeclarationKind::UseCaseUsage`): like `VerificationCaseUsage`, `UseCaseUsage`
-    /// still has no `subsets`/`redefines`/multiplicity field at all -- only `name`/`type_name`/
-    /// `is_abstract`/body are lowered.
+    /// still has no `redefines` field -- `name`/`type_name`/`is_abstract`/`multiplicity`/
+    /// `subsets`/body are lowered.
     UseCaseDefinition,
     /// `viewpoint def` (BNF ViewpointDefinition, Clause 8.2.2.27): a type whose owned members
     /// share `RequirementDefBody` with `RequirementDefinition`, mirroring `lower_requirement_def`
@@ -362,16 +361,14 @@ pub(crate) enum DeclarationKind {
     /// `UnsupportedFamily::PackageMember`.
     RenderingUsage,
     /// A package/definition/usage-level `use case` feature member (BNF UseCaseUsage), mirroring
-    /// `lower_case_usage`: ownership, membership, a `:` typing target, and owned-member structure
-    /// via the shared `lower_case_family_def_body` walker. `ast::UseCaseUsage` has no
-    /// `subsets`/`redefines`/multiplicity field at all (unlike `CaseUsage`/`AnalysisCaseUsage`),
-    /// so only the plain `use case <name>[: <Type>] { ... }` header shape reaches this lowering;
-    /// a `[mult] nonunique :> <target>` header (the Systems Library's own base-feature
-    /// declaration idiom) still fails to parse into `UseCaseUsage` at all.
+    /// `lower_case_usage`: ownership, membership, a `:` typing target, a `[mult]` multiplicity, a
+    /// `:>` subsetting clause, and owned-member structure via the shared
+    /// `lower_case_family_def_body` walker. `ast::UseCaseUsage` still has no `redefines` field,
+    /// so a `:>>` header clause fails to parse into `UseCaseUsage` at all.
     UseCaseUsage,
     /// A package/definition/usage-level `verification` feature member (BNF
     /// VerificationCaseUsage), mirroring `UseCaseUsage`'s lowering (shares the same field
-    /// shape/limitation: no `subsets`/`redefines`/multiplicity field on `ast::VerificationCaseUsage`).
+    /// shape/limitation: no `redefines` field on `ast::VerificationCaseUsage`).
     VerificationCaseUsage,
     /// A package/definition/usage-level `viewpoint` feature member (BNF ViewpointUsage),
     /// mirroring `lower_viewpoint_def`: ownership, membership, an optional `:` typing target, and
@@ -444,7 +441,7 @@ pub(crate) enum DeclarationKind {
     /// A package/definition/usage-level `calc` feature member (BNF CalculationUsage), mirroring
     /// `lower_analysis_case_usage`: ownership, membership, a `:` typing target, and `redefines`
     /// (a bare `Vec<QualifiedReferenceId>`, not a `SubsettingRelationship` node the way other
-    /// usage kinds' `redefines` field is shaped -- `CalcUsage` has no `subsets` field at all).
+    /// usage kinds' `redefines` field is shaped) and a `:>` `subsets` clause.
     /// Direction (`in`/`out`/`inout`)/value-binding/body content are out of scope, sharing
     /// `UnsupportedFamily::CalcDefinitionMember` with the `def` form.
     CalcUsage,
@@ -4486,6 +4483,8 @@ impl SemanticModelBuilder {
         node: &Node<RefDecl>,
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declared_name(&node.value.name)?;
+        let (is_abstract, variation) =
+            definition_prefix_modifiers(node.value.usage_prefix.as_ref());
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -4494,10 +4493,14 @@ impl SemanticModelBuilder {
             node.span.clone(),
             DeclarationFacts {
                 modifiers: DeclarationModifiers {
-                    // The `ref` keyword is this declaration's own form, not a prefix modifier on
-                    // some other usage, so `reference` stays false here.
+                    is_abstract,
+                    variation,
+                    derived: node.value.is_derived,
+                    constant: node.value.is_constant,
                     ordered: node.value.ordered,
                     nonunique: node.value.nonunique,
+                    // The `ref` keyword is this declaration's own form, not a prefix modifier on
+                    // some other usage, so `reference` stays false here.
                     ..DeclarationModifiers::default()
                 },
                 direction: direction_fact(node.value.direction.as_ref()),
@@ -5920,6 +5923,13 @@ impl SemanticModelBuilder {
                 span,
                 import: None,
             })?;
+        }
+        // The trailing `:>>` clause on a *named* return declaration (`return verdict :
+        // VerdictKind :>> result;`). `target` above is the leading anonymous form, where the
+        // redefinition target stands in for the declaration name; both spellings lower to the
+        // same `Redefinition` relationship.
+        if let Some(relationship) = &node.value.redefines {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
         }
         if let Some(feature_value) = &node.value.value {
             self.record_feature_value(declaration, feature_value)?;
@@ -9753,14 +9763,21 @@ impl SemanticModelBuilder {
             (DeclarationKind::ConcernUsage, MembershipKind::Feature)
         };
         let name = self.intern_declared_name(&node.value.name)?;
-        // `ast::ConcernUsage` carries no modifier, multiplicity, direction, or short name.
+        // `ast::ConcernUsage` carries no direction or short name.
         let declaration = self.push_typed_declaration(
             document,
             owner,
             kind,
             name,
             node.span.clone(),
-            DeclarationFacts::none(),
+            DeclarationFacts {
+                modifiers: DeclarationModifiers {
+                    is_abstract: node.value.is_abstract,
+                    ..DeclarationModifiers::default()
+                },
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -10023,6 +10040,7 @@ impl SemanticModelBuilder {
                     is_abstract: node.value.is_abstract,
                     ..DeclarationModifiers::default()
                 },
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
                 ..DeclarationFacts::none()
             },
         )?;
@@ -10068,10 +10086,10 @@ impl SemanticModelBuilder {
     }
 
     /// Lowers a package/definition/usage-level `use case` feature member (BNF UseCaseUsage),
-    /// mirroring `lower_case_usage`. Unlike `CaseUsage`/`AnalysisCaseUsage`, `ast::UseCaseUsage`
-    /// has no `subsets`/`redefines`/multiplicity field at all (see
-    /// `DeclarationKind::UseCaseUsage`), so only `name`/`type_name` are lowered as facts; owned
-    /// members are walked through the shared `lower_case_family_def_body`.
+    /// mirroring `lower_case_usage`. `ast::UseCaseUsage` still has no `redefines` field (see
+    /// `DeclarationKind::UseCaseUsage`), so `name`/`type_name`/`is_abstract`/`multiplicity`/
+    /// `subsets` are lowered as facts; owned members are walked through the shared
+    /// `lower_case_family_def_body`.
     fn lower_use_case_usage(
         &mut self,
         document: DocumentId,
@@ -10090,8 +10108,9 @@ impl SemanticModelBuilder {
                     is_abstract: node.value.is_abstract,
                     ..DeclarationModifiers::default()
                 },
-                // `ast::UseCaseUsage` has no multiplicity/`nonunique` fields; see
+                // `ast::UseCaseUsage` has no `nonunique` field; see
                 // planning/UPSTREAM_PARSER_GAPS.md Gap 53.
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
                 ..DeclarationFacts::none()
             },
         )?;
@@ -10122,6 +10141,9 @@ impl SemanticModelBuilder {
                 import: None,
             })?;
         }
+        if let Some(relationship) = &node.value.subsets {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
         self.lower_case_family_def_body(
             document,
             declaration,
@@ -10132,8 +10154,7 @@ impl SemanticModelBuilder {
 
     /// Lowers a package/definition/usage-level `verification` feature member (BNF
     /// VerificationCaseUsage), mirroring `lower_use_case_usage` (shares the same field
-    /// shape/limitation: no `subsets`/`redefines`/multiplicity field on
-    /// `ast::VerificationCaseUsage`).
+    /// shape/limitation: no `redefines` field on `ast::VerificationCaseUsage`).
     fn lower_verification_case_usage(
         &mut self,
         document: DocumentId,
@@ -10152,8 +10173,9 @@ impl SemanticModelBuilder {
                     is_abstract: node.value.is_abstract,
                     ..DeclarationModifiers::default()
                 },
-                // `ast::VerificationCaseUsage` has no multiplicity/`nonunique` fields; see
+                // `ast::VerificationCaseUsage` has no `nonunique` field; see
                 // planning/UPSTREAM_PARSER_GAPS.md Gap 53.
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
                 ..DeclarationFacts::none()
             },
         )?;
@@ -10184,6 +10206,9 @@ impl SemanticModelBuilder {
                 import: None,
             })?;
         }
+        if let Some(relationship) = &node.value.subsets {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
         self.lower_case_family_def_body(
             document,
             declaration,
@@ -10196,7 +10221,7 @@ impl SemanticModelBuilder {
     /// Verification-specific semantics are explicitly out of scope; unrecognized body elements
     /// fall through to `unsupported_verification_case_definition_member`. `verification` usage
     /// lowering (`DeclarationKind::VerificationCaseUsage`, `lower_verification_case_usage`): see
-    /// its own doc comment for the remaining `subsets`/`redefines`/multiplicity gap.
+    /// its own doc comment for the remaining `redefines` gap.
     fn lower_verification_case_def(
         &mut self,
         document: DocumentId,
@@ -11299,6 +11324,10 @@ impl SemanticModelBuilder {
             node.span.clone(),
             DeclarationFacts {
                 short_name,
+                modifiers: DeclarationModifiers {
+                    is_abstract: node.value.is_abstract,
+                    ..DeclarationModifiers::default()
+                },
                 ..DeclarationFacts::none()
             },
         )?;
@@ -12093,6 +12122,10 @@ impl SemanticModelBuilder {
             node.span.clone(),
             DeclarationFacts {
                 short_name,
+                modifiers: DeclarationModifiers {
+                    is_abstract: node.value.is_abstract,
+                    ..DeclarationModifiers::default()
+                },
                 direction: direction_fact(node.value.direction.as_ref()),
                 // `ast::CalcUsage` has no `multiplicity` field; see planning/UPSTREAM_PARSER_GAPS.md.
                 ..DeclarationFacts::none()
@@ -12151,6 +12184,9 @@ impl SemanticModelBuilder {
                 })?;
             }
         }
+        if let Some(relationship) = &node.value.subsets {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
         self.lower_calc_def_body(document, declaration, &node.value.body)
     }
 
@@ -12177,6 +12213,10 @@ impl SemanticModelBuilder {
             node.span.clone(),
             DeclarationFacts {
                 short_name,
+                modifiers: DeclarationModifiers {
+                    is_abstract: node.value.is_abstract,
+                    ..DeclarationModifiers::default()
+                },
                 ..DeclarationFacts::none()
             },
         )?;
