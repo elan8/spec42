@@ -234,7 +234,7 @@ Tracked limitations (`S42-LIM-*`) addressed in this cycle:
 - `S42-LIM-007`: named `transition … first source then target` no longer counts as initial (`sysml-v2-parser` + `state.rs`).
 - `S42-LIM-008`: cyclic state machines suppress `missing_final_state` guidance (`behavior_conformance.rs`).
 - `S42-LIM-009`: bundled `MonetaryUnits` indexed for `[EUR]` (`evaluation/units.rs`).
-- `S42-LIM-010`: remove implicit redefines heuristic false positives (`kind_compatibility.rs`).
+- `S42-LIM-010`: implicit redefines no longer heuristic — the immutable publication reports over the redefinitions its resolver derives (`sysml_resolution` `conformance.rs`).
 - `S42-LIM-015`: named and `about`-bound metadata usages inside a `part def` body — closed, see below.
 
 Optional env-gated integration baseline: `SYSML_ROBOT_VACUUM_DIR` → `robot_vacuum_baseline.rs`.
@@ -279,18 +279,37 @@ Historical sequencing notes from the original diagnostic rollout (most categorie
 - Prefer checks over the semantic graph when possible, but use parser AST/ranges for token-precise diagnostics.
 - Each new diagnostic should include a fixture, LSP/CLI coverage, catalog entry, and quick-fix metadata when the fix is mechanical.
 
+## Retired codes
+
+| Retired code | Replaced by | Why |
+|---|---|---|
+| `unresolved_redefines_target` | `unresolved_reference` | The legacy kind check resolved a redefines target itself and reported its own failure. A `Redefinition` reference is now an ordinary authored reference whose settled outcome the publication reports, so an unresolved one produces the resolution-owned code at the authored range like every other unresolved reference. The legacy suppressions for metadata restriction shorthand went with it: those references are unresolved and are now reported as such. |
+| `end_feature_has_direction` | *(none)* | KerML 8.3.3.3.1 forbids a direction on an end feature, but the pinned parser accepts no spelling that authors both, so the code could never fire. See `planning/UPSTREAM_PARSER_GAPS.md`, Gap 59. |
+
+`incompatible_subset_redefine_kind`, `subsetting_type_incompatible` and their siblings also cover
+reference and cross subsetting, but neither reference kind resolves in the current slice -- both
+publish `unsupported_reference`, and an unsupported prerequisite settles no conformance verdict on
+top of it.
+
 ## Spec alignment notes (June 2026)
 
 Fixes applied against `SysML_v2.txt` after drone-example and vacuum-corpus audits:
 
 ### Kind compatibility (`incompatible_type_kind`)
 
-| Usage kind | Spec rule | Fix |
-|---|---|---|
-| `actor`, `stakeholder` | `ActorUsage` / `StakeholderUsage` are `PartUsage`; typed by part or item definitions (§7.11.2, §7.21.2, §7.22.2) | Allow `part def`, `item def`, `occurrence def`; removed non-spec `actor def` target |
-| `part` | Part usages may use item definitions (§7.11.2) | Added `item def` |
-| `item` | Item usages may use part definitions (part defs are item defs) | Added `part def` |
-| `subject`, `ref` | `ReferenceUsage` may reference any Classifier (§8.3.6.3) | Skip kind check when typing resolves |
+Owned by `sysml_resolution`, and no longer a per-usage-kind allowlist. A typing, specialization or
+subsetting reference is well-formed when its two sides' metaclass families are comparable in the
+SysML metamodel's own generalization hierarchy -- `PartUsage :> ItemUsage :> OccurrenceUsage`,
+`StateUsage :> ActionUsage`, `RequirementUsage :> ConstraintUsage` and the rest -- in either
+direction. That subsumes each row the table here used to carry, including the part/item cases, and
+also admits the ones a flat list could not state: `action substates : StateAction[0..*];` is
+well-formed because a state is an action.
+
+A side outside the SysML definition/usage space -- a namespace, an alias, a KerML classifier, or an
+anonymous scope the lowering mints -- settles no decision rather than passing silently. A metadata
+definition types a usage of any family, which is the reflective idiom the SysML abstract-syntax
+library is written in; the legacy check reached the same conclusion by testing whether the authored
+path spelled `SysML::`.
 
 ### Boolean filter expressions
 

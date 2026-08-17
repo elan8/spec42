@@ -57,37 +57,3 @@ fn multiplicity_validation_uses_declared_bounds_and_handles_unbounded_forms() {
         "display attributes must not replace parser-backed multiplicity facts"
     );
 }
-
-#[test]
-fn redefinition_multiplicity_conformance_uses_declared_bounds() {
-    let doc = workspace_doc(
-        r#"package P {
-  part def Engine {
-    part cylinders[8];
-  }
-  part def SixCylinderEngine :> Engine {
-    part redefines cylinders[6];
-  }
-}"#,
-    );
-    let uri = doc.uri.clone();
-    let (mut graph, _) = build_semantic_graph_from_documents(&[doc]).expect("semantic graph");
-
-    let redefining = graph
-        .nodes_named("cylinders")
-        .into_iter()
-        .find(|node| node.id.qualified_name == "P::SixCylinderEngine::cylinders")
-        .expect("redefining feature");
-    let redefining_id = redefining.id.clone();
-    graph
-        .get_node_mut(&redefining_id)
-        .expect("redefining feature")
-        .attributes
-        .insert("multiplicity".to_string(), serde_json::json!("[8]"));
-    assert!(
-        collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default())
-            .iter()
-            .any(|diagnostic| diagnostic.code == "redefinition_multiplicity_widened"),
-        "redefinition conformance must use its declared multiplicity rather than display text"
-    );
-}

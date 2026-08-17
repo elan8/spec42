@@ -12,9 +12,7 @@ use crate::SemanticGraph;
 /// - A qualified path to an *unrelated* feature (`subsets` doesn't require any typing/specializes
 ///   relationship between the two owners) — resolved via a direct qualified-name lookup.
 /// - A bare name resolved relative to `owner`'s own typing/specialization chain (the common
-///   `redefines` case, matching a member inherited from a supertype) — mirroring how the
-///   `unresolved_redefines_target`/`incompatible_subset_redefine_kind` diagnostics already resolve
-///   the same attribute (`diagnostics/checks/kind_compatibility.rs`).
+///   `redefines` case, matching a member inherited from a supertype).
 ///   Both are tried since either shape is legal SysML and the attribute alone doesn't say which.
 fn resolve_redefines_or_subsets_targets<'a>(
     semantic_graph: &'a SemanticGraph,

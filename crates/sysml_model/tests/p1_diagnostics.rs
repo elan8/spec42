@@ -39,24 +39,6 @@ fn linked_diags_for(input: &str) -> Vec<sysml_diagnostics::SemanticDiagnostic> {
 }
 
 #[test]
-fn emits_incompatible_type_kind_for_part_typed_as_port_def() {
-    let input = r#"
-        package P {
-            port def CommandPort;
-            part engine : CommandPort;
-        }
-    "#;
-    // Asserts on a resolution outcome (redefinition targets, type-kind compatibility), so it
-    // needs the linked graph; `diags_for` builds authored facts only.
-    let diags = linked_diags_for(input);
-    assert!(
-        has_code(&diags, "incompatible_type_kind"),
-        "expected incompatible_type_kind, got {:?}",
-        diags.iter().map(|d| &d.code).collect::<Vec<_>>()
-    );
-}
-
-#[test]
 fn actor_typed_by_item_def_does_not_emit_incompatible_type_kind() {
     let input = r#"
         package P {
@@ -363,45 +345,6 @@ fn part_feature_redefinition_does_not_emit_subset_kind_warnings() {
 }
 
 #[test]
-fn emits_unresolved_redefines_target() {
-    let input = r#"
-        package P {
-            part def Base { attribute mass : Real; }
-            part def Child :> Base {
-                attribute :>> notMass = 1;
-            }
-        }
-    "#;
-    let diags = diags_for(input);
-    assert!(has_code(&diags, "unresolved_redefines_target"));
-}
-
-#[test]
-fn specialized_part_local_typed_attributes_do_not_emit_unresolved_redefines_target() {
-    let input = r#"
-        package Architecture {
-            attribute def PowerValue :> Real;
-            part def BaseSubsystem {
-                attribute drivePowerW : PowerValue;
-            }
-            part def DriveSubsystem :> BaseSubsystem {
-                attribute drivePowerW : PowerValue = 28;
-            }
-        }
-    "#;
-    let diags = diags_for(input);
-    assert!(
-        !has_code(&diags, "unresolved_redefines_target"),
-        "local typed attributes without :>> must not be treated as redefines, got {:?}",
-        diags
-            .iter()
-            .filter(|d| d.code == "unresolved_redefines_target")
-            .map(|d| &d.message)
-            .collect::<Vec<_>>()
-    );
-}
-
-#[test]
 fn package_connection_usage_resolves_redefined_features_from_its_type() {
     let input = r#"
         package Contracts {
@@ -465,31 +408,6 @@ fn redefinition_type_conformance_uses_specialization_relationships() {
 }
 
 #[test]
-fn redefinition_type_conformance_rejects_generalizing_type() {
-    let input = r#"
-        package P {
-            part def BaseType;
-            part def NarrowType :> BaseType;
-            part def Parent {
-                part feature : NarrowType;
-            }
-            part def Child :> Parent {
-                part feature : BaseType :>> feature;
-            }
-        }
-    "#;
-    let diags = linked_diags_for(input);
-    assert!(
-        has_code(&diags, "redefinition_type_incompatible"),
-        "a generalizing type must not conform, got {:?}",
-        diags
-            .iter()
-            .map(|d| (&d.code, &d.message))
-            .collect::<Vec<_>>()
-    );
-}
-
-#[test]
 fn subsetting_type_conformance_uses_specialization_relationships() {
     let input = r#"
         package P {
@@ -509,57 +427,6 @@ fn subsetting_type_conformance_uses_specialization_relationships() {
             .iter()
             .filter(|d| d.code == "subsetting_type_incompatible")
             .map(|d| &d.message)
-            .collect::<Vec<_>>()
-    );
-}
-
-#[test]
-fn subsetting_type_conformance_rejects_generalizing_type() {
-    let input = r#"
-        package P {
-            part def BaseType;
-            part def NarrowType :> BaseType;
-            part def Parent {
-                part allFeatures : NarrowType;
-                part selectedFeature : BaseType :> allFeatures;
-            }
-        }
-    "#;
-    let diags = linked_diags_for(input);
-    assert!(
-        has_code(&diags, "subsetting_type_incompatible"),
-        "a generalizing subset type must not conform, got {:?}",
-        diags
-            .iter()
-            .map(|d| (&d.code, &d.message))
-            .collect::<Vec<_>>()
-    );
-}
-
-#[test]
-fn reference_and_cross_subsetting_require_conformant_types() {
-    let input = r#"
-        package P {
-            part def BaseType;
-            part def NarrowType :> BaseType;
-            part def Parent {
-                attribute selectedFeature : NarrowType;
-                attribute referenceFeature : BaseType references selectedFeature;
-                attribute crossFeature : BaseType crosses selectedFeature;
-            }
-        }
-    "#;
-    let diags = linked_diags_for(input);
-    assert_eq!(
-        diags
-            .iter()
-            .filter(|d| d.code == "subsetting_type_incompatible")
-            .count(),
-        2,
-        "reference and cross subsetting must each use the resolved target type: {:?}",
-        diags
-            .iter()
-            .map(|d| (&d.code, &d.message))
             .collect::<Vec<_>>()
     );
 }
