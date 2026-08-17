@@ -277,6 +277,9 @@ package 'Derivation Constraints' {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::Dynamics"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/31_derivation_constraints.md") (path (named (kind package) (name "Derivation Constraints")) (named (kind part) (name "vehicle1")) (anonymous (kind assert-constraint) (ordinal 0))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::vehicle2::totalMass"))) (state unsupported))
+    (unit (declaration (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::Dynamics"))) (ordinal 0) (authored "kg") (start 21 11) (end 21 13) (outcome (status catalog-unavailable)))
   )
 )
 ~~~

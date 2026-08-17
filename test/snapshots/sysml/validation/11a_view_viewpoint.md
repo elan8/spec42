@@ -207,6 +207,9 @@ package '11a-View-Viewpoint' {
     (evaluated (declaration (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::frontAxleAssembly::mass"))) (state literal) (value (kind quantity) (magnitude (value (kind integer) (integer 150))) (unit "kg")))
     (evaluated (declaration (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::mass"))) (state literal) (value (kind quantity) (magnitude (value (kind integer) (integer 2500))) (unit "SI::kg")))
     (evaluated (declaration (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::rearAxleAssembly::mass"))) (state literal) (value (kind quantity) (magnitude (value (kind integer) (integer 250))) (unit "kg")))
+    (unit (declaration (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::frontAxleAssembly::mass"))) (ordinal 0) (authored "kg") (start 13 38) (end 13 40) (outcome (status catalog-unavailable)))
+    (unit (declaration (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::mass"))) (ordinal 0) (authored "SI::kg") (start 11 38) (end 11 44) (outcome (status catalog-unavailable)))
+    (unit (declaration (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::rearAxleAssembly::mass"))) (ordinal 0) (authored "kg") (start 21 38) (end 21 40) (outcome (status catalog-unavailable)))
   )
 )
 ~~~

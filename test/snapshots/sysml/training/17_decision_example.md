@@ -124,7 +124,7 @@ package 'Decision Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:b4c682eb8f56fcb40c60c69fefa6cf3b1c10ee71080937769745bb2552e2c6d2") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b4c682eb8f56fcb40c60c69fefa6cf3b1c10ee71080937769745bb2552e2c6d2") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/17_decision_example.md") (qualified-name "Decision Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/17_decision_example.md") (path (named (kind package) (name "Decision Example")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))
@@ -213,6 +213,9 @@ package 'Decision Example' {
     (relationship (kind typing) (source (node (document "memory://snapshot/17_decision_example.md") (qualified-name "Decision Example::ChargeBattery::monitor"))) (target (node (document "memory://snapshot/17_decision_example.md") (qualified-name "Decision Example::MonitorBattery"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/17_decision_example.md") (qualified-name "Decision Example::ChargeBattery::monitor"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/17_decision_example.md") (path (named (kind package) (name "Decision Example")) (named (kind action-def) (name "ChargeBattery")) (anonymous (kind if) (ordinal 0))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/17_decision_example.md") (path (named (kind package) (name "Decision Example")) (named (kind action-def) (name "ChargeBattery")) (anonymous (kind if) (ordinal 1))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/17_decision_example.md") (qualified-name "Decision Example::ChargeBattery::addCharge::charge"))) (state unsupported))
   )
 )
 ~~~

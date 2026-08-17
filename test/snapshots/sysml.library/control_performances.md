@@ -363,7 +363,7 @@ standard library package ControlPerformances {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:4374b5e56a6b66d8eff91d505af4f134ce37ada0ab5677bed0860a7b491dd573") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:4374b5e56a6b66d8eff91d505af4f134ce37ada0ab5677bed0860a7b491dd573") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package defines Behaviors to be used to type Steps that control the sequencing of performance\n\t * of other Steps. \n\t "))))
     (declaration (id (node (document "memory://snapshot/control_performances.md") (path (named (kind library-package) (name "ControlPerformances")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Boolean") (import (shape membership) (recursive false))))))
@@ -613,6 +613,10 @@ standard library package ControlPerformances {
     (relationship (kind typing) (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::whileDecision"))) (target (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::IfThenPerformance"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/control_performances.md") (qualified-name "ControlPerformances::LoopPerformance::whileDecision"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/control_performances.md") (path (named (kind library-package) (name "ControlPerformances")) (named (kind kerml-behavior) (name "IfElsePerformance")) (anonymous (kind kerml-invariant) (ordinal 0))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/control_performances.md") (path (named (kind library-package) (name "ControlPerformances")) (named (kind kerml-behavior) (name "IfThenElsePerformance")) (anonymous (kind kerml-invariant) (ordinal 0))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/control_performances.md") (path (named (kind library-package) (name "ControlPerformances")) (named (kind kerml-behavior) (name "IfThenPerformance")) (anonymous (kind kerml-invariant) (ordinal 0))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/control_performances.md") (path (named (kind library-package) (name "ControlPerformances")) (named (kind kerml-behavior) (name "LoopPerformance")) (anonymous (kind kerml-invariant) (ordinal 0))))) (state unsupported))
   )
 )
 ~~~

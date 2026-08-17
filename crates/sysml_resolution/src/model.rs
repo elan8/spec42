@@ -2033,7 +2033,17 @@ fn state_action_body_has_content(body: &StateDefBody) -> bool {
 /// supported-shape boundary, without pushing any reference or diagnostic (a pure, side-effect-free
 /// mirror used only to decide whether/how to publish an evaluation fact). See `EvaluatedValue`.
 fn classify_constraint_expression(node: &Expression) -> ExpressionEvalShape {
-    let mut ordinal = 0u32;
+    classify_constraint_expression_from(node, 0)
+}
+
+/// Classifies a constraint-body expression whose operand ordinals continue an earlier expression's.
+///
+/// A declaration usually owns one expression, and its operand ordinals start at zero. A view owning
+/// two `filter` statements is the exception: both conditions are lowered against the view, so the
+/// second one's operand references are numbered after the first one's, and classifying it from zero
+/// would pair every leaf with the wrong reference.
+fn classify_constraint_expression_from(node: &Expression, start: u32) -> ExpressionEvalShape {
+    let mut ordinal = start;
     match classify_constraint_node(node, &mut ordinal) {
         None => ExpressionEvalShape::Unsupported,
         Some(tree) if eval_node_is_pure_literal(&tree) => {
@@ -2673,13 +2683,86 @@ struct PendingReference {
 }
 
 /// A construction-time-classified evaluation candidate: the declaration a supported constraint/
-/// calc expression belongs to, plus its `ExpressionEvalShape`. Only `Literal`/`HasOperand` shapes
-/// are ever stored (see `SemanticModelBuilder::push_evaluation_fact`); `Unsupported` publishes no
-/// fact, keeping the evaluation pass strictly within slice 1's supported syntactic scope.
+/// calc expression belongs to, plus its `ExpressionEvalShape`.
+///
+/// `Unsupported` is stored like every other shape. "This declaration authored an expression whose
+/// shape is outside the evaluated slice" and "this declaration authored no expression at all" are
+/// different facts, and dropping the first would publish the second in its place.
 #[derive(Debug, Clone)]
 struct PendingEvaluationFact {
     declaration: DeclarationId,
     shape: ExpressionEvalShape,
+}
+
+/// One authored unit token: the `kg` in `10 [kg]`.
+///
+/// Kept apart from the quantity value it qualifies. The value carries the token's spelling because
+/// a consumer rendering `10 [kg]` needs it; this record carries the token's *identity site* -- the
+/// document and the exact range inside the brackets -- which is what a diagnostic about the unit
+/// must point at. Neither is derivable from the other.
+#[derive(Debug, Clone)]
+struct AuthoredUnitToken {
+    /// The declaration whose expression the token was written in.
+    declaration: DeclarationId,
+    document: DocumentId,
+    /// Authored order within `declaration`, left to right, assigned in lockstep with lowering.
+    ordinal: u32,
+    /// The token exactly as the author wrote it, never normalized to a canonical unit identity.
+    text: SymbolId,
+    /// The token's own range: the text between `[` and `]`, excluding the brackets.
+    span: Span,
+}
+
+/// Which member form a `filter` statement was written in.
+///
+/// The rule that a filter condition must be Boolean is authored per SysML §on view definitions; a
+/// package-level `filter` is the import-filtering production and is a different statement with a
+/// different owner. Recording the form is what lets a rule address one of them without asking the
+/// owner's metaclass to stand in for the syntax the author used.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum FilterForm {
+    /// A `filter` inside a `view def` or `view` body.
+    View,
+    /// A `filter` inside a `rendering def` body.
+    Rendering,
+    /// A `filter` written directly in a package body, filtering its imports.
+    PackageImport,
+}
+
+/// One authored `filter` condition.
+///
+/// A filter's condition is lowered against its owning declaration rather than a declaration of its
+/// own -- the parser gives it no identity, and minting one would invent an element the author did
+/// not write -- so it needs its own fact to carry the range and the classified expression a rule
+/// about *this* condition must read.
+#[derive(Debug, Clone)]
+struct AuthoredFilterCondition {
+    /// The view, rendering or package the filter is written in.
+    owner: DeclarationId,
+    document: DocumentId,
+    form: FilterForm,
+    /// The condition expression's own range.
+    span: Span,
+    shape: ExpressionEvalShape,
+}
+
+/// One authored invocation, paired with the callee reference that names what it invokes.
+///
+/// The argument count is a property of the call site and exists nowhere else: the callee's own
+/// declaration says how many parameters it has, and the resolved reference says which callee it
+/// is, but only this record says how many arguments were written.
+#[derive(Debug, Clone)]
+struct AuthoredInvocation {
+    /// The declaration the invocation was written in.
+    declaration: DeclarationId,
+    document: DocumentId,
+    /// The `ReferenceKind::InvocationCallee` reference naming the callee, so the settled callee is
+    /// read from that reference's resolution outcome rather than re-resolved here.
+    callee: AuthoredReferenceId,
+    /// How many arguments the author wrote.
+    argument_count: u32,
+    /// The invocation expression's own range.
+    span: Span,
 }
 
 #[derive(Debug)]
@@ -2697,6 +2780,9 @@ struct SemanticModelStorage {
     symbols: SymbolTable,
     paths: SymbolPathArena,
     evaluation_facts: Box<[PendingEvaluationFact]>,
+    unit_tokens: Box<[AuthoredUnitToken]>,
+    filter_conditions: Box<[AuthoredFilterCondition]>,
+    invocations: Box<[AuthoredInvocation]>,
 }
 
 impl SemanticModelStorage {
@@ -2731,6 +2817,9 @@ struct SemanticModelBuilder {
     unsupported: Vec<UnsupportedRecord>,
     recovery: Vec<RecoveryRecord>,
     evaluation_facts: Vec<PendingEvaluationFact>,
+    unit_tokens: Vec<AuthoredUnitToken>,
+    filter_conditions: Vec<AuthoredFilterCondition>,
+    invocations: Vec<AuthoredInvocation>,
     symbols: SymbolTableBuilder,
     paths: SymbolPathArenaBuilder,
     path_scratch: Vec<SymbolId>,
@@ -2740,6 +2829,9 @@ struct SemanticModelBuilder {
     /// order it was written in. Keyed by owner alone: an owner's ends are lowered in source order
     /// by one walker, so the counter is the authored position.
     next_positional_end_ordinals: BTreeMap<DeclarationId, u32>,
+    /// Counts each declaration's authored unit tokens, so each carries the order it was written
+    /// in rather than the order the table happened to be filled.
+    next_unit_token_ordinals: BTreeMap<DeclarationId, u32>,
 }
 
 impl SemanticModelBuilder {
@@ -3247,15 +3339,24 @@ impl SemanticModelBuilder {
     /// helper has no `UnsupportedFamily` to publish a diagnostic against (the invocation itself is
     /// a supported shape; only this specific callee sub-shape is not), so it silently resolves
     /// nothing for that callee rather than fabricating a reference.
+    ///
+    /// `argument_count` and `span` describe the call site itself. They are recorded only when the
+    /// callee resolves through an `InvocationCallee` reference, because an invocation whose callee
+    /// this helper cannot name has nothing to compare its arguments against, and a record without a
+    /// callee would be an argument count attributed to no callee at all.
     fn lower_invocation_callee(
         &mut self,
         document: DocumentId,
         declaration: DeclarationId,
         callee: &Node<Expression>,
+        argument_count: usize,
+        span: Span,
     ) -> Result<(), ConstructionError> {
         match &callee.value {
             Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => {
-                self.push_invocation_callee_reference(document, declaration, *target)
+                let reference =
+                    self.push_invocation_callee_reference(document, declaration, *target)?;
+                self.push_invocation(declaration, document, reference, argument_count, span)
             }
             Expression::MemberAccess { .. } => {
                 if let Some(chain) = flatten_member_access_chain(callee) {
@@ -3281,7 +3382,7 @@ impl SemanticModelBuilder {
         document: DocumentId,
         declaration: DeclarationId,
         target: QualifiedReferenceId,
-    ) -> Result<(), ConstructionError> {
+    ) -> Result<AuthoredReferenceId, ConstructionError> {
         let span = self.documents[document.index()]
             .parsed
             .qualified_reference(target)
@@ -3297,8 +3398,7 @@ impl SemanticModelBuilder {
             flags: RelationshipFlags::default(),
             span,
             import: None,
-        })?;
-        Ok(())
+        })
     }
 
     /// Pushes one `ReferenceKind::MetaCastTarget` reference for an `Expression::MetaCast`'s
@@ -3372,18 +3472,93 @@ impl SemanticModelBuilder {
         self.recovery.push(RecoveryRecord { document, span });
     }
 
-    /// Records one evaluation candidate for a slice-1-supported constraint/calc expression,
-    /// classified by `classify_constraint_expression`/`classify_calc_expression` at the point the
-    /// expression is lowered. `Unsupported` is deliberately dropped here rather than stored: an
-    /// expression shape slice 1 does not recognize must publish no evaluation fact at all (mirrors
-    /// its existing `unsupported_constraint_definition_member`/`unsupported_calc_definition_member`
-    /// diagnostic boundary).
+    /// Records one evaluation candidate for a constraint/calc expression, classified by
+    /// `classify_constraint_expression`/`classify_calc_expression` at the point the expression is
+    /// lowered.
+    ///
+    /// An `Unsupported` shape is recorded like any other. The publication has to be able to say
+    /// "an expression is here and this engine does not evaluate its shape"; dropping the record
+    /// would leave the declaration indistinguishable from one that authored no expression, which
+    /// is a different fact about the model.
     fn push_evaluation_fact(&mut self, declaration: DeclarationId, shape: ExpressionEvalShape) {
-        if matches!(shape, ExpressionEvalShape::Unsupported) {
-            return;
-        }
         self.evaluation_facts
             .push(PendingEvaluationFact { declaration, shape });
+    }
+
+    /// Records one authored unit token, in lockstep with the classifier that counts them.
+    fn push_unit_token(
+        &mut self,
+        declaration: DeclarationId,
+        document: DocumentId,
+        text: &str,
+        span: Span,
+    ) -> Result<(), ConstructionError> {
+        let text = self.symbols.intern(text)?;
+        let ordinal = self
+            .next_unit_token_ordinals
+            .entry(declaration)
+            .or_insert(0);
+        let assigned = *ordinal;
+        *ordinal = ordinal.checked_add(1).ok_or(ConstructionError::Capacity)?;
+        self.unit_tokens.push(AuthoredUnitToken {
+            declaration,
+            document,
+            ordinal: assigned,
+            text,
+            span,
+        });
+        Ok(())
+    }
+
+    /// Records one authored `filter` condition against the declaration it was written in.
+    fn push_filter_condition(
+        &mut self,
+        owner: DeclarationId,
+        document: DocumentId,
+        form: FilterForm,
+        span: Span,
+        shape: ExpressionEvalShape,
+    ) -> Result<(), ConstructionError> {
+        self.filter_conditions.push(AuthoredFilterCondition {
+            owner,
+            document,
+            form,
+            span,
+            shape,
+        });
+        Ok(())
+    }
+
+    /// Records one authored invocation's argument count against the callee reference naming it.
+    fn push_invocation(
+        &mut self,
+        declaration: DeclarationId,
+        document: DocumentId,
+        callee: AuthoredReferenceId,
+        argument_count: usize,
+        span: Span,
+    ) -> Result<(), ConstructionError> {
+        self.invocations.push(AuthoredInvocation {
+            declaration,
+            document,
+            callee,
+            argument_count: u32::try_from(argument_count)
+                .map_err(|_| ConstructionError::Capacity)?,
+            span,
+        });
+        Ok(())
+    }
+
+    /// How many `ExpressionOperand` references this declaration has already been given.
+    ///
+    /// The classifier assigns each `EvalNode::Operand` leaf the ordinal the matching reference will
+    /// receive, so an expression lowered after another one at the same declaration -- a view's
+    /// second `filter`, say -- must start counting where the first left off.
+    fn expression_operand_offset(&self, declaration: DeclarationId) -> u32 {
+        self.next_reference_ordinals
+            .get(&(declaration, ReferenceKind::ExpressionOperand))
+            .copied()
+            .unwrap_or(0)
     }
 
     fn freeze(self) -> SemanticModelStorage {
@@ -3400,6 +3575,9 @@ impl SemanticModelBuilder {
             symbols: self.symbols.freeze(),
             paths: self.paths.freeze(),
             evaluation_facts: self.evaluation_facts.into_boxed_slice(),
+            unit_tokens: self.unit_tokens.into_boxed_slice(),
+            filter_conditions: self.filter_conditions.into_boxed_slice(),
+            invocations: self.invocations.into_boxed_slice(),
         }
     }
 
@@ -3571,9 +3749,12 @@ impl SemanticModelBuilder {
                 self.record_root_textual_representation(owner, node)?;
             }
             PackageBodyElement::Filter(node) => match owner {
-                Some(declaration) => {
-                    self.lower_filter_expression(document, declaration, &node.value.condition)?
-                }
+                Some(declaration) => self.lower_filter_condition(
+                    document,
+                    declaration,
+                    FilterForm::PackageImport,
+                    &node.value.condition,
+                )?,
                 None => {
                     self.push_unsupported(
                         document,
@@ -8103,8 +8284,10 @@ impl SemanticModelBuilder {
             | Expression::LiteralReal(_)
             | Expression::LiteralBoolean(_)
             | Expression::LiteralString(_)
-            | Expression::LiteralWithUnit { .. }
             | Expression::Null => Ok(()),
+            Expression::LiteralWithUnit { unit, .. } => {
+                self.lower_unit_token(document, declaration, unit)
+            }
             Expression::Index { base, index } => {
                 self.lower_constraint_expression(document, declaration, family, base)?;
                 self.lower_constraint_expression(document, declaration, family, index)
@@ -8154,7 +8337,13 @@ impl SemanticModelBuilder {
                 self.lower_constraint_expression(document, declaration, family, right)
             }
             Expression::Invocation { callee, args } => {
-                self.lower_invocation_callee(document, declaration, callee)?;
+                self.lower_invocation_callee(
+                    document,
+                    declaration,
+                    callee,
+                    args.len(),
+                    node.span.clone(),
+                )?;
                 for arg in args {
                     self.lower_constraint_expression(document, declaration, family, &arg.value)?;
                 }
@@ -8248,8 +8437,10 @@ impl SemanticModelBuilder {
             | Expression::LiteralReal(_)
             | Expression::LiteralBoolean(_)
             | Expression::LiteralString(_)
-            | Expression::LiteralWithUnit { .. }
             | Expression::Null => Ok(()),
+            Expression::LiteralWithUnit { unit, .. } => {
+                self.lower_unit_token(document, declaration, unit)
+            }
             Expression::Index { base, index } => {
                 self.lower_calc_expression(document, declaration, family, base)?;
                 self.lower_calc_expression(document, declaration, family, index)
@@ -8299,7 +8490,13 @@ impl SemanticModelBuilder {
                 self.lower_calc_expression(document, declaration, family, right)
             }
             Expression::Invocation { callee, args } => {
-                self.lower_invocation_callee(document, declaration, callee)?;
+                self.lower_invocation_callee(
+                    document,
+                    declaration,
+                    callee,
+                    args.len(),
+                    node.span.clone(),
+                )?;
                 for arg in args {
                     self.lower_calc_expression(document, declaration, family, &arg.value)?;
                 }
@@ -8381,6 +8578,41 @@ impl SemanticModelBuilder {
     /// references are resolved. Any other expression shape falls through to
     /// `UnsupportedFamily::PackageMember`'s `unsupported_package_member` diagnostic, matching the
     /// unconditional `unsupported_package_member` this statement produced before this slice.
+    /// Records the authored unit token of a `value [unit]` quantity literal.
+    ///
+    /// `unit` is the parser's bracketed unit node, whose span is exactly the token between the
+    /// brackets, so a diagnostic about the unit points at the unit and not at the whole literal.
+    /// A shape `quantity_unit_text` does not recognise records nothing rather than a guess: the
+    /// literal still publishes its value, and no unit fact claims a token that was not written.
+    fn lower_unit_token(
+        &mut self,
+        document: DocumentId,
+        declaration: DeclarationId,
+        unit: &Node<Expression>,
+    ) -> Result<(), ConstructionError> {
+        let Some(text) = quantity_unit_text(&unit.value) else {
+            return Ok(());
+        };
+        self.push_unit_token(declaration, document, &text, unit.span.clone())
+    }
+
+    /// Lowers one authored `filter` condition: its references, and the classified expression that
+    /// lets the barrier settle what it evaluates to.
+    fn lower_filter_condition(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        form: FilterForm,
+        condition: &Node<Expression>,
+    ) -> Result<(), ConstructionError> {
+        let shape = classify_constraint_expression_from(
+            &condition.value,
+            self.expression_operand_offset(owner),
+        );
+        self.push_filter_condition(owner, document, form, condition.span.clone(), shape)?;
+        self.lower_filter_expression(document, owner, condition)
+    }
+
     fn lower_filter_expression(
         &mut self,
         document: DocumentId,
@@ -8391,8 +8623,10 @@ impl SemanticModelBuilder {
             Expression::LiteralInteger(_)
             | Expression::LiteralReal(_)
             | Expression::LiteralBoolean(_)
-            | Expression::LiteralString(_)
-            | Expression::LiteralWithUnit { .. } => Ok(()),
+            | Expression::LiteralString(_) => Ok(()),
+            Expression::LiteralWithUnit { unit, .. } => {
+                self.lower_unit_token(document, declaration, unit)
+            }
             Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => {
                 let span = self.documents[document.index()]
                     .parsed
@@ -8458,7 +8692,13 @@ impl SemanticModelBuilder {
                 self.lower_filter_expression(document, declaration, right)
             }
             Expression::Invocation { callee, args } => {
-                self.lower_invocation_callee(document, declaration, callee)?;
+                self.lower_invocation_callee(
+                    document,
+                    declaration,
+                    callee,
+                    args.len(),
+                    node.span.clone(),
+                )?;
                 for arg in args {
                     self.lower_filter_expression(document, declaration, &arg.value)?;
                 }
@@ -9175,7 +9415,13 @@ impl SemanticModelBuilder {
                 }
             }
             Expression::Invocation { callee, args } => {
-                self.lower_invocation_callee(document, owner, callee)?;
+                self.lower_invocation_callee(
+                    document,
+                    owner,
+                    callee,
+                    args.len(),
+                    node.span.clone(),
+                )?;
                 for arg in args {
                     self.lower_satisfy_operand(document, owner, family, kind, &arg.value)?;
                 }
@@ -11489,9 +11735,10 @@ impl SemanticModelBuilder {
                         )?;
                     }
                     ViewDefBodyElement::Filter(filter) => {
-                        self.lower_filter_expression(
+                        self.lower_filter_condition(
                             document,
                             declaration,
+                            FilterForm::View,
                             &filter.value.condition,
                         )?;
                     }
@@ -11600,9 +11847,10 @@ impl SemanticModelBuilder {
                         self.lower_ref_decl(document, Some(declaration), ref_decl)?;
                     }
                     ViewBodyElement::Filter(filter) => {
-                        self.lower_filter_expression(
+                        self.lower_filter_condition(
                             document,
                             declaration,
+                            FilterForm::View,
                             &filter.value.condition,
                         )?;
                     }
@@ -12351,7 +12599,12 @@ impl SemanticModelBuilder {
                     self.record_doc_comment(declaration, node)?;
                 }
                 RenderingDefBodyElement::Filter(filter) => {
-                    self.lower_filter_expression(document, declaration, &filter.value.condition)?;
+                    self.lower_filter_condition(
+                        document,
+                        declaration,
+                        FilterForm::Rendering,
+                        &filter.value.condition,
+                    )?;
                 }
                 RenderingDefBodyElement::RefDecl(ref_decl) => {
                     self.lower_ref_decl(document, Some(declaration), ref_decl)?;
@@ -14652,25 +14905,33 @@ mod tests {
         );
     }
 
+    /// An expression whose shape this engine does not evaluate says so.
+    ///
+    /// It previously published nothing, which made the declaration indistinguishable from one that
+    /// authored no expression at all -- and a consumer asking "does this element have a value" got
+    /// the same answer for "there is nothing here" and "there is something here I cannot fold".
+    ///
+    /// See `constraint_unsupported_expression_shape_still_falls_through_to_diagnostic`: an
+    /// invocation and `-`/`not` unary ops are supported (reference-resolvable) shapes, so this uses
+    /// `~x` (`UnaryOperator::BitNot`), still genuinely unsupported.
     #[test]
-    fn constraint_unsupported_arithmetic_shape_publishes_no_evaluation_fact() {
-        // See `constraint_unsupported_expression_shape_still_falls_through_to_diagnostic`: an
-        // invocation and `-`/`not` unary ops are now supported (reference-resolvable) shapes, so
-        // this uses `~x` (`UnaryOperator::BitNot`), still genuinely unsupported, to exercise the
-        // no-evaluation-fact path.
+    fn constraint_unsupported_expression_shape_publishes_an_unsupported_evaluation_state() {
         let output = build_semantic_sexpr(
             "package Demo {\n\
              \tconstraint def C { ~x }\n\
              }\n",
         );
         assert!(
-            !output.contains("(evaluated (declaration"),
-            "expected an unsupported (non-comparison) expression shape to publish no evaluation \
-             fact at all, got:\n{output}"
+            output.contains(
+                "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
+                 (qualified-name \"Demo::C\"))) (state unsupported))"
+            ),
+            "expected an unsupported expression shape to publish the explicit unsupported state, \
+             got:\n{output}"
         );
         assert!(
-            output.contains("(has-evaluation false)"),
-            "expected has-evaluation to stay false when nothing evaluates, got:\n{output}"
+            !output.contains("(value "),
+            "an unsupported expression must carry no value, got:\n{output}"
         );
     }
 

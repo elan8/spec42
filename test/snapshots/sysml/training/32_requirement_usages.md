@@ -162,7 +162,12 @@ package 'Requirement Usages' {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/32_requirement_usages.md") (path (named (kind package) (name "Requirement Usages")) (named (kind requirement) (name "emptyVehicleMassLimit")) (anonymous (kind attribute) (ordinal 0))))) (state literal) (value (kind quantity) (magnitude (value (kind integer) (integer 1500))) (unit "kg")))
+    (evaluated (declaration (node (document "memory://snapshot/32_requirement_usages.md") (path (named (kind package) (name "Requirement Usages")) (named (kind requirement) (name "emptyVehicleMassLimit")) (anonymous (kind assume-constraint) (ordinal 0))))) (state unsupported))
     (evaluated (declaration (node (document "memory://snapshot/32_requirement_usages.md") (path (named (kind package) (name "Requirement Usages")) (named (kind requirement) (name "fullVehicleMassLimit")) (anonymous (kind attribute) (ordinal 0))))) (state literal) (value (kind quantity) (magnitude (value (kind integer) (integer 2000))) (unit "kg")))
+    (evaluated (declaration (node (document "memory://snapshot/32_requirement_usages.md") (path (named (kind package) (name "Requirement Usages")) (named (kind requirement) (name "fullVehicleMassLimit")) (anonymous (kind assume-constraint) (ordinal 0))))) (state unsupported))
+    (unit (declaration (node (document "memory://snapshot/32_requirement_usages.md") (path (named (kind package) (name "Requirement Usages")) (named (kind requirement) (name "emptyVehicleMassLimit")) (anonymous (kind attribute) (ordinal 0))))) (ordinal 0) (authored "kg") (start 16 32) (end 16 34) (outcome (status catalog-unavailable)))
+    (unit (declaration (node (document "memory://snapshot/32_requirement_usages.md") (path (named (kind package) (name "Requirement Usages")) (named (kind requirement) (name "emptyVehicleMassLimit")) (anonymous (kind assume-constraint) (ordinal 0))))) (ordinal 0) (authored "kg") (start 20 25) (end 20 27) (outcome (status catalog-unavailable)))
+    (unit (declaration (node (document "memory://snapshot/32_requirement_usages.md") (path (named (kind package) (name "Requirement Usages")) (named (kind requirement) (name "fullVehicleMassLimit")) (anonymous (kind attribute) (ordinal 0))))) (ordinal 0) (authored "kg") (start 6 32) (end 6 34) (outcome (status catalog-unavailable)))
   )
 )
 ~~~

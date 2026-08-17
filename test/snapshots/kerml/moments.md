@@ -244,8 +244,10 @@ package Moments {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/moments.md") (qualified-name "Moments::InstantOccurrence"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/moments.md") (qualified-name "Moments::InstantOccurrence"))) (state unsupported))
     (evaluated (declaration (node (document "memory://snapshot/moments.md") (qualified-name "Moments::UniversalEternity"))) (state unresolved-operand))
     (evaluated (declaration (node (document "memory://snapshot/moments.md") (qualified-name "Moments::UniversalEternity"))) (state unresolved-operand))
+    (unit (declaration (node (document "memory://snapshot/moments.md") (qualified-name "Moments::InstantOccurrence"))) (ordinal 0) (authored "1") (start 26 29) (end 26 30) (outcome (status catalog-unavailable)))
   )
 )
 ~~~

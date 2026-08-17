@@ -55,7 +55,7 @@ package 'Conditional Succession Example-2' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d12745b09f40a6fabe37f90af438c499c4bf267a9a3ba9fa67a3574860aafa36") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d12745b09f40a6fabe37f90af438c499c4bf267a9a3ba9fa67a3574860aafa36") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/16_conditional_succession_example_2.md") (qualified-name "Conditional Succession Example-2"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/16_conditional_succession_example_2.md") (qualified-name "Conditional Succession Example-2::Focus"))) (kind action-def) (membership (kind owning) (visibility default)))
@@ -144,6 +144,7 @@ package 'Conditional Succession Example-2' {
     (relationship (kind typing) (source (node (document "memory://snapshot/16_conditional_succession_example_2.md") (qualified-name "Conditional Succession Example-2::takePicture::shoot"))) (target (node (document "memory://snapshot/16_conditional_succession_example_2.md") (qualified-name "Conditional Succession Example-2::Shoot"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/16_conditional_succession_example_2.md") (qualified-name "Conditional Succession Example-2::takePicture::shoot"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/16_conditional_succession_example_2.md") (path (named (kind package) (name "Conditional Succession Example-2")) (named (kind action) (name "takePicture")) (anonymous (kind if) (ordinal 0))))) (state unsupported))
   )
 )
 ~~~

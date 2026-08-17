@@ -820,7 +820,11 @@ standard library package NumericalFunctions {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/numerical_functions.md") (path (named (kind library-package) (name "NumericalFunctions")) (named (kind kerml-function) (name "product1")) (anonymous (kind kerml-invariant) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/numerical_functions.md") (path (named (kind library-package) (name "NumericalFunctions")) (named (kind kerml-function) (name "product1")) (anonymous (kind parameter) (ordinal 0))))) (state unsupported))
     (evaluated (declaration (node (document "memory://snapshot/numerical_functions.md") (path (named (kind library-package) (name "NumericalFunctions")) (named (kind kerml-function) (name "sum0")) (anonymous (kind kerml-invariant) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/numerical_functions.md") (path (named (kind library-package) (name "NumericalFunctions")) (named (kind kerml-function) (name "sum0")) (anonymous (kind parameter) (ordinal 0))))) (state unsupported))
+    (invocation (declaration (node (document "memory://snapshot/numerical_functions.md") (path (named (kind library-package) (name "NumericalFunctions")) (named (kind kerml-function) (name "product1")) (anonymous (kind kerml-invariant) (ordinal 0))))) (callee (node (document "memory://snapshot/numerical_functions.md") (qualified-name "NumericalFunctions::isUnit"))) (supplied 1) (required 1) (start 39 8) (end 39 19))
+    (invocation (declaration (node (document "memory://snapshot/numerical_functions.md") (path (named (kind library-package) (name "NumericalFunctions")) (named (kind kerml-function) (name "sum0")) (anonymous (kind kerml-invariant) (ordinal 0))))) (callee (node (document "memory://snapshot/numerical_functions.md") (qualified-name "NumericalFunctions::isZero"))) (supplied 1) (required 1) (start 34 9) (end 34 21))
   )
 )
 ~~~

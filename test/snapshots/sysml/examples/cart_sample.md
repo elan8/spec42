@@ -438,6 +438,8 @@ package CartSample {
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/cart_sample.md") (path (named (kind package) (name "CartSample")) (named (kind part) (name "context")) (named (kind part) (name "pusher")) (named (kind action) (name "pusherBehavior")) (anonymous (kind calc) (ordinal 0))))) (target (node (document "memory://snapshot/cart_sample.md") (qualified-name "CartSample::context::pusher::pusherForce"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/cart_sample.md") (path (named (kind package) (name "CartSample")) (named (kind part) (name "context")) (named (kind part) (name "pusher")) (named (kind action) (name "pusherBehavior")) (anonymous (kind calc) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/cart_sample.md") (path (named (kind package) (name "CartSample")) (named (kind part) (name "context")) (named (kind part) (name "cart")) (named (kind action) (name "cartBehavior")) (anonymous (kind calc) (ordinal 0))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/cart_sample.md") (path (named (kind package) (name "CartSample")) (named (kind part) (name "context")) (named (kind part) (name "cart")) (named (kind action) (name "cartBehavior")) (anonymous (kind calc) (ordinal 1))))) (state unsupported))
     (evaluated (declaration (node (document "memory://snapshot/cart_sample.md") (path (named (kind package) (name "CartSample")) (named (kind part) (name "context")) (named (kind part) (name "pusher")) (named (kind action) (name "pusherBehavior")) (anonymous (kind calc) (ordinal 0))))) (state non-constant))
   )
 )

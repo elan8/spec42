@@ -25,7 +25,10 @@ pub use diagnostics::{
 pub use element_kind::{
     ElementKind, MembershipRole, RequirementConstraintKind, StateSubactionKind,
 };
-pub use evaluation::{EvaluatedScalar, EvaluationFailure, EvaluationPolicy, EvaluationState};
+pub use evaluation::{
+    AuthoredUnit, ElementEvaluation, EvaluatedScalar, EvaluationFailure, EvaluationPolicy,
+    EvaluationState, ExpectedMeasurement, ResolvedUnit, UnitResolution,
+};
 pub use inspection::{
     AnnotationForm, AuthoredValue, Documentation, ElementInspection, ElementInspectionAt,
     ElementModifier, ElementRelationship, FeatureDirection, MembershipFacts, MembershipKind,
@@ -532,6 +535,12 @@ impl PublishedResolution {
         qualifier: Option<&str>,
     ) -> QueryOutcome<Box<[VisibleMember]>> {
         self.model.visible_members(document, position, qualifier)
+    }
+
+    /// The settled evaluation of one element: value, state, authored units and required
+    /// measurement, from facts this publication fixed before it became visible.
+    pub fn evaluate(&self, symbol: &SymbolIdentity) -> QueryOutcome<ElementEvaluation> {
+        self.model.evaluate(symbol)
     }
 
     /// Everything this publication knows about one element.
@@ -2484,6 +2493,132 @@ mod tests {
                 )
             })
             .collect()
+    }
+
+    /// The identity of the declaration containing `needle`, and the publication it belongs to.
+    fn probe_symbol(
+        published: &PublishedResolution,
+        source: &str,
+        document: &str,
+        needle: &str,
+    ) -> SymbolIdentity {
+        match published.inspect_at(document, position_of(source, needle)) {
+            QueryOutcome::Resolved(at) => {
+                at.containing
+                    .expect("the probe must land inside a declaration")
+                    .identity
+            }
+            other => panic!("the probe must resolve to an inspection, got: {other:?}"),
+        }
+    }
+
+    /// How many index entries one settled evaluation query visits.
+    fn evaluate_cost(sources: &[(&str, &str)], document: &str, needle: &str) -> u64 {
+        let published = publication_for(sources);
+        let source = sources
+            .iter()
+            .find(|(identity, _)| *identity == document)
+            .expect("the probed document is in the workspace")
+            .1;
+        let symbol = probe_symbol(&published, source, document, needle);
+        let (outcome, visited) =
+            crate::model::resolver::measure_visited_index_entries(|| published.evaluate(&symbol));
+        assert!(
+            matches!(outcome, QueryOutcome::Resolved(_)),
+            "the evaluation query must resolve, got: {outcome:?}"
+        );
+        visited
+    }
+
+    /// A workspace whose probed declaration carries a value and a unit token.
+    const EVALUATED: &str = "package P {\n  attribute mass = 1750 [kg];\n}";
+
+    /// An evaluation answer is three indexed lookups and the rows they name, so a workspace that
+    /// grows elsewhere costs nothing here. A scan of the evaluation, unit or measurement tables
+    /// would return the same answer; only the measurement separates them.
+    #[test]
+    fn evaluation_cost_is_independent_of_the_rest_of_the_workspace() {
+        let small = evaluate_cost(
+            &[("memory://e.sysml", EVALUATED)],
+            "memory://e.sysml",
+            "1750",
+        );
+        let large_source = format!("package Other {{\n{}}}\n", padding(500));
+        let large = evaluate_cost(
+            &[
+                ("memory://e.sysml", EVALUATED),
+                ("memory://other.sysml", &large_source),
+            ],
+            "memory://e.sysml",
+            "1750",
+        );
+        assert_eq!(
+            small, large,
+            "500 declarations in another document changed what one evaluation query reads"
+        );
+    }
+
+    /// Repeating the query repeats the same lookups: nothing is resolved, folded or memoised on
+    /// the way out, so a second call cannot be cheaper -- or more expensive -- than the first.
+    #[test]
+    fn repeating_an_evaluation_query_does_the_same_work() {
+        let published = publication_for(&[("memory://e.sysml", EVALUATED)]);
+        let symbol = probe_symbol(&published, EVALUATED, "memory://e.sysml", "1750");
+        let measure = || {
+            crate::model::resolver::measure_visited_index_entries(|| published.evaluate(&symbol))
+        };
+        let (first, first_cost) = measure();
+        let (second, second_cost) = measure();
+        assert_eq!(
+            first, second,
+            "a repeated evaluation query changed its answer"
+        );
+        assert_eq!(
+            first_cost, second_cost,
+            "a repeated evaluation query changed its work"
+        );
+    }
+
+    /// Inspection and evaluation project the same settled state, so asking one first cannot
+    /// change what the other answers or what it costs.
+    #[test]
+    fn inspection_and_evaluation_agree_in_either_order() {
+        let evaluation_first = {
+            let published = publication_for(&[("memory://e.sysml", EVALUATED)]);
+            let symbol = probe_symbol(&published, EVALUATED, "memory://e.sysml", "1750");
+            let (evaluation, cost) = crate::model::resolver::measure_visited_index_entries(|| {
+                published.evaluate(&symbol)
+            });
+            let inspection = published.inspect(&symbol);
+            (evaluation, inspection, cost)
+        };
+        let inspection_first = {
+            let published = publication_for(&[("memory://e.sysml", EVALUATED)]);
+            let symbol = probe_symbol(&published, EVALUATED, "memory://e.sysml", "1750");
+            let inspection = published.inspect(&symbol);
+            let (evaluation, cost) = crate::model::resolver::measure_visited_index_entries(|| {
+                published.evaluate(&symbol)
+            });
+            (evaluation, inspection, cost)
+        };
+        assert_eq!(
+            evaluation_first.0, inspection_first.0,
+            "query order changed the evaluation answer"
+        );
+        assert_eq!(
+            evaluation_first.2, inspection_first.2,
+            "query order changed the evaluation query's work"
+        );
+        let QueryOutcome::Resolved(evaluation) = &evaluation_first.0 else {
+            panic!("the probe must resolve");
+        };
+        let QueryOutcome::Resolved(inspection) = &evaluation_first.1 else {
+            panic!("the probe must resolve");
+        };
+        assert_eq!(
+            evaluation.state, inspection.evaluation,
+            "inspection and the evaluation service must project one canonical result"
+        );
     }
 
     /// The contract the publication-time index exists to keep: what an inspection reads is this

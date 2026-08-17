@@ -20,6 +20,16 @@ classifier-only one. The producers behind it are published at the barrier; the l
 `specializes_transitively`/`feature_typing_conforms` and their consumers migrate with the
 diagnostics and views slices.
 
+`PublishedModel::evaluation()` answers one cohesive question per element: what its authored
+expression settled to, the unit tokens it wrote with their own ranges and outcomes, and the
+measurement reference its type requires. A unit is a declaration -- the `SI::kilogram` an authored
+`[kg]` names -- and its dimension is the measurement-reference type it is an instance of, so
+comparing dimensions is the same specialization question every other type query asks rather than a
+string comparison. Whether the catalog is admitted at all, whether a symbol is unknown, ambiguous,
+or a unit expression this engine does not decompose, are each their own outcome, so a workspace
+built without the measurement libraries reports that it has none rather than that its units are
+wrong. Element inspection projects the same settled evaluation state, so the two cannot disagree.
+
 Publications admit the whole configured library set. `LibraryStratum::build` parses and solves a
 library once so later publications reuse it, which is what makes admitting the standard library
 affordable on a rebuild-per-keystroke host; see `planning/RESOLUTION_LAYER_DESIGN.md` §5.5.1 for

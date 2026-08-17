@@ -309,6 +309,8 @@ package '1a-Parts Tree' {
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/1a_parts_tree.md") (qualified-name "1a-Parts Tree::Usages::vehicle1::mass"))) (state literal) (value (kind quantity) (magnitude (value (kind integer) (integer 1750))) (unit "kg")))
     (evaluated (declaration (node (document "memory://snapshot/1a_parts_tree.md") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1::mass"))) (state literal) (value (kind quantity) (magnitude (value (kind integer) (integer 2000))) (unit "kg")))
+    (unit (declaration (node (document "memory://snapshot/1a_parts_tree.md") (qualified-name "1a-Parts Tree::Usages::vehicle1::mass"))) (ordinal 0) (authored "kg") (start 38 50) (end 38 52) (outcome (status catalog-unavailable)))
+    (unit (declaration (node (document "memory://snapshot/1a_parts_tree.md") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1::mass"))) (ordinal 0) (authored "kg") (start 81 50) (end 81 52) (outcome (status catalog-unavailable)))
   )
 )
 ~~~

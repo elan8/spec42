@@ -400,6 +400,7 @@ standard library package Interfaces {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::excludingOnce"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::excludingOnce::position"))) (state unsupported))
   )
 )
 ~~~

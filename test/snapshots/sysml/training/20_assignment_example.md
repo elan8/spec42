@@ -335,6 +335,8 @@ package 'For Loop Example' {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/20_assignment_example.md") (path (named (kind package) (name "For Loop Example")) (named (kind action-def) (name "ComputeMotion")) (anonymous (kind for-loop) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/20_assignment_example.md") (path (named (kind package) (name "For Loop Example")) (named (kind action-def) (name "ComputeMotion")) (anonymous (kind for-loop) (ordinal 0)) (anonymous (kind assign) (ordinal 0))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/20_assignment_example.md") (path (named (kind package) (name "For Loop Example")) (named (kind action-def) (name "ComputeMotion")) (anonymous (kind for-loop) (ordinal 0)) (anonymous (kind assign) (ordinal 1))))) (state unsupported))
     (evaluated (declaration (node (document "memory://snapshot/20_assignment_example.md") (path (named (kind package) (name "For Loop Example")) (named (kind action-def) (name "ComputeMotion")) (anonymous (kind for-loop) (ordinal 0)) (anonymous (kind assign) (ordinal 2))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/20_assignment_example.md") (path (named (kind package) (name "For Loop Example")) (named (kind action-def) (name "ComputeMotion")) (anonymous (kind for-loop) (ordinal 0)) (named (kind perform-action) (name "dynamics")) (anonymous (kind perform-parameter-binding) (ordinal 0))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/20_assignment_example.md") (path (named (kind package) (name "For Loop Example")) (named (kind action-def) (name "ComputeMotion")) (anonymous (kind for-loop) (ordinal 0)) (named (kind perform-action) (name "dynamics")) (anonymous (kind perform-parameter-binding) (ordinal 1))))) (state non-constant))
@@ -342,6 +344,7 @@ package 'For Loop Example' {
     (evaluated (declaration (node (document "memory://snapshot/20_assignment_example.md") (path (named (kind package) (name "For Loop Example")) (named (kind action-def) (name "ComputeMotion")) (anonymous (kind for-loop) (ordinal 0)) (named (kind perform-action) (name "dynamics")) (anonymous (kind perform-parameter-binding) (ordinal 3))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/20_assignment_example.md") (path (named (kind package) (name "For Loop Example")) (named (kind action-def) (name "ComputeMotion")) (anonymous (kind for-loop) (ordinal 0)) (named (kind perform-action) (name "dynamics")) (anonymous (kind perform-parameter-binding) (ordinal 4))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/20_assignment_example.md") (qualified-name "For Loop Example::ComputeMotion::position"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/20_assignment_example.md") (qualified-name "For Loop Example::ComputeMotion::positions"))) (state unsupported))
     (evaluated (declaration (node (document "memory://snapshot/20_assignment_example.md") (qualified-name "For Loop Example::ComputeMotion::speed"))) (state non-constant))
   )
 )

@@ -73,7 +73,7 @@ package AssignTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:f48cf36000dd05e36f81d233a04f7fa6c90e07194251c45fbfb722d2c47d2ad6") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:f48cf36000dd05e36f81d233a04f7fa6c90e07194251c45fbfb722d2c47d2ad6") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/assign_seq_index.md") (qualified-name "AssignTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/assign_seq_index.md") (qualified-name "AssignTest::A"))) (kind action-def) (membership (kind owning) (visibility default)))
@@ -110,6 +110,9 @@ package AssignTest {
   (relationships
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/assign_seq_index.md") (path (named (kind package) (name "AssignTest")) (named (kind action-def) (name "A")) (anonymous (kind assign) (ordinal 0))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/assign_seq_index.md") (path (named (kind package) (name "AssignTest")) (named (kind action-def) (name "A")) (anonymous (kind assign) (ordinal 1))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/assign_seq_index.md") (path (named (kind package) (name "AssignTest")) (named (kind action-def) (name "A")) (anonymous (kind assign) (ordinal 2))))) (state unsupported))
   )
 )
 ~~~

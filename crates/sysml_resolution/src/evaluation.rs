@@ -14,6 +14,8 @@
 
 use std::fmt;
 
+use crate::{SourceLocation, SymbolIdentity};
+
 /// A computed constant value.
 ///
 /// `PartialEq` but not `Eq`, because [`EvaluatedScalar::Real`] carries an `f64`.
@@ -122,6 +124,102 @@ impl fmt::Display for EvaluationState {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         formatter.write_str(self.as_str())
     }
+}
+
+/// One unit declaration the publication's unit catalog admits.
+///
+/// `dimensions` is the measurement-reference type or types the unit is an instance of -- `ISQ::
+/// MassUnit` for `SI::kilogram`. It is the dimension as a *typed identity*, never a name: two
+/// dimensions are the same one when they are the same declaration, and compatibility between them
+/// is the ordinary specialization question, answered by the same closure every other type query
+/// uses.
+///
+/// It is a list because a unit may be an instance of several: the SI kelvin is declared
+/// `attribute <K> kelvin : ThermodynamicTemperatureUnit, TemperatureDifferenceUnit`, and reporting
+/// one of the two would make a correct use of the other look wrong. Non-empty by construction: a
+/// declaration with no measurement-reference type is not a unit and never enters the catalog.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ResolvedUnit {
+    /// The unit declaration itself, such as `SI::kilogram`.
+    pub unit: SymbolIdentity,
+    /// The measurement-reference types it is an instance of, in canonical order.
+    pub dimensions: Box<[SymbolIdentity]>,
+}
+
+/// What the publication settled for one authored unit token.
+///
+/// Every state is its own variant because they mean different things to a consumer and to a rule.
+/// "This publication admits no unit catalog" is not "this symbol is unknown", and "the parser hands
+/// this layer an opaque token it cannot resolve" is neither.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum UnitResolution {
+    /// The token names exactly one unit in the admitted catalog.
+    Resolved(ResolvedUnit),
+    /// A catalog is admitted and no unit in it carries this symbol.
+    UnknownSymbol,
+    /// Several admitted units carry this symbol, so choosing one would be a guess.
+    Ambiguous(Box<[SymbolIdentity]>),
+    /// The token is not a single unit symbol.
+    ///
+    /// The parser hands a unit over as opaque text rather than as a reference, because a unit may
+    /// contain operators (`m/s^2`, `kg*m`). This layer resolves a token that is a plain name and
+    /// says so explicitly for one that is not, rather than reimplementing a unit-expression
+    /// grammar over text the parser declined to model.
+    UnsupportedExpression,
+    /// No unit catalog was admitted to this publication, so no token can be looked up in one.
+    ///
+    /// Distinct from [`UnitResolution::UnknownSymbol`]: a workspace built without the measurement
+    /// libraries has not written a wrong unit, it has not supplied the catalog that would settle
+    /// the question.
+    CatalogUnavailable,
+}
+
+/// One unit token exactly as it was authored, and what the publication settled for it.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct AuthoredUnit {
+    /// The token as written between the brackets, never normalized to the unit's declared name.
+    pub authored: Box<str>,
+    /// The token's own range: the text inside the brackets, so a diagnostic about the unit points
+    /// at the unit rather than at the literal that carries it.
+    pub location: SourceLocation,
+    pub resolution: UnitResolution,
+}
+
+/// Everything one publication settled about one element's authored expression.
+///
+/// The three channels stay separate on purpose. [`ElementEvaluation::state`] says what happened and
+/// carries the value when there is one; [`ElementEvaluation::units`] carries the authored unit
+/// tokens with their own provenance and outcomes; [`ElementEvaluation::expected_measurement`] says
+/// what the element's declared type asks a unit to be. Folding any of them into another would make
+/// one of the questions unanswerable.
+#[derive(Debug, Clone, PartialEq)]
+pub struct ElementEvaluation {
+    pub element: SymbolIdentity,
+    pub state: EvaluationState,
+    /// The unit tokens authored in this element's expression, in authored order.
+    ///
+    /// Empty for an expression with no unit token. A consumer reading a value's unit reads the
+    /// value's own [`EvaluatedScalar::Quantity`] spelling; this is the resolution of every token
+    /// the author wrote, which is a different and larger set.
+    pub units: Box<[AuthoredUnit]>,
+    pub expected_measurement: ExpectedMeasurement,
+}
+
+/// The measurement reference an element's declared type requires of its value.
+///
+/// A quantity-valued feature is typed by a quantity value definition -- `ISQ::MassValue` -- whose
+/// measurement-reference feature is typed by the dimension its values must be measured in. That
+/// requirement is a fact about the *feature*, independent of whether a value was authored, which
+/// is why it is published beside the evaluation rather than inside it.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum ExpectedMeasurement {
+    /// The element is not typed by a quantity value, so no measurement reference is required.
+    NotApplicable,
+    /// The element is typed by a quantity value whose measurement reference is not settled: the
+    /// type resolved but its measurement-reference feature has no type this publication can read.
+    Indeterminate,
+    /// The element's values must be measured in one of these measurement-reference types.
+    Required(Box<[SymbolIdentity]>),
 }
 
 /// Whether a build evaluates constant expressions.

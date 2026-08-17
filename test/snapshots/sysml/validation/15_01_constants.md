@@ -221,6 +221,11 @@ package '15_01-Constants' {
     (evaluated (declaration (node (document "memory://snapshot/15_01_constants.md") (path (named (kind package) (name "15_01-Constants")) (named (kind package) (name "Mathematical Constants")) (named (kind attribute-def) (name "e")) (anonymous (kind assert-constraint) (ordinal 0))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/15_01_constants.md") (path (named (kind package) (name "15_01-Constants")) (named (kind package) (name "Mathematical Constants")) (named (kind attribute-def) (name "pi")) (anonymous (kind assert-constraint) (ordinal 0))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/15_01_constants.md") (qualified-name "15_01-Constants::Model X Context::amplifier gain"))) (state literal) (value (kind quantity) (magnitude (value (kind real) (real 3.5))) (unit "one")))
+    (unit (declaration (node (document "memory://snapshot/15_01_constants.md") (qualified-name "15_01-Constants::Fundamental Physical Constants::electron to proton mass ratio"))) (ordinal 0) (authored "one") (start 43 88) (end 43 91) (outcome (status catalog-unavailable)))
+    (unit (declaration (node (document "memory://snapshot/15_01_constants.md") (qualified-name "15_01-Constants::Fundamental Physical Constants::fine structure constant"))) (ordinal 0) (authored "one") (start 42 87) (end 42 90) (outcome (status catalog-unavailable)))
+    (unit (declaration (node (document "memory://snapshot/15_01_constants.md") (qualified-name "15_01-Constants::Fundamental Physical Constants::speed of light in vacuum"))) (ordinal 0) (authored "m/s") (start 44 74) (end 44 77) (outcome (status catalog-unavailable)))
+    (unit (declaration (node (document "memory://snapshot/15_01_constants.md") (qualified-name "15_01-Constants::Global Context::nominal earth gravitational acceleration"))) (ordinal 0) (authored "m/s²") (start 48 90) (end 48 97) (outcome (status catalog-unavailable)))
+    (unit (declaration (node (document "memory://snapshot/15_01_constants.md") (qualified-name "15_01-Constants::Model X Context::amplifier gain"))) (ordinal 0) (authored "one") (start 52 60) (end 52 63) (outcome (status catalog-unavailable)))
   )
 )
 ~~~

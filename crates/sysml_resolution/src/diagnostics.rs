@@ -18,11 +18,15 @@
 //!   subsetting family, specialization cycles, multiplicity and type conformance under
 //!   redefinition and subsetting, KerML type-relationship cardinality, and the structural feature
 //!   rules (connector-end counts, end-feature restrictions, variation members, redefinition
-//!   featuring type, end and direction, and subsetting uniqueness).
+//!   featuring type, end and direction, and subsetting uniqueness);
+//! - expression conformance: the type of an authored value against the feature it is bound or
+//!   assigned to, the resolution and dimension of an authored unit token, constraint bodies and
+//!   view filters that settle to a non-Boolean constant, and calculation invocations that leave
+//!   parameters unbound.
 //!
 //! The remaining conformance families are **not** here. View metadata, behavior, connection,
-//! expression, import, and requirement-case conformance are still evaluated by `sysml_diagnostics`
-//! over the mutable semantic graph.
+//! import, and requirement-case conformance are still evaluated by `sysml_diagnostics` over the
+//! mutable semantic graph.
 //!
 //! A consumer that swaps `sysml_diagnostics` for this contract as it stands would therefore stop
 //! reporting those codes. Do not treat this as a drop-in replacement for the legacy diagnostic

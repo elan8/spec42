@@ -162,6 +162,7 @@ package MassRollup {
     (relationship (kind redefinition) (source (node (document "memory://snapshot/mass_rollup.md") (path (named (kind package) (name "MassRollup")) (named (kind part) (name "simpleThing")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/mass_rollup.md") (qualified-name "MassRollup::MassedThing::totalMass"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/mass_rollup.md") (path (named (kind package) (name "MassRollup")) (named (kind part) (name "simpleThing")) (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/mass_rollup.md") (path (named (kind package) (name "MassRollup")) (named (kind part) (name "compositeThing")) (anonymous (kind attribute) (ordinal 0))))) (state unsupported))
     (evaluated (declaration (node (document "memory://snapshot/mass_rollup.md") (path (named (kind package) (name "MassRollup")) (named (kind part) (name "simpleThing")) (anonymous (kind attribute) (ordinal 0))))) (state unresolved-operand))
   )
 )

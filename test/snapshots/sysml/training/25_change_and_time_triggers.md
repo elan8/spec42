@@ -234,6 +234,7 @@ package 'Change and Time Triggers' {
     (relationship (kind typing) (direction in) (source (node (document "memory://snapshot/25_change_and_time_triggers.md") (qualified-name "Change and Time Triggers::healthStates::vehicle"))) (target (node (document "memory://snapshot/25_change_and_time_triggers.md") (qualified-name "Change and Time Triggers::Vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/25_change_and_time_triggers.md") (qualified-name "Change and Time Triggers::healthStates::vehicle"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (unit (declaration (node (document "memory://snapshot/25_change_and_time_triggers.md") (path (named (kind package) (name "Change and Time Triggers")) (named (kind state) (name "healthStates")) (anonymous (kind transition) (ordinal 2))))) (ordinal 0) (authored "h") (start 35 19) (end 35 20) (outcome (status catalog-unavailable)))
   )
 )
 ~~~

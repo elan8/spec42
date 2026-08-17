@@ -145,7 +145,7 @@ package 'Time Constraints' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:0162c5a148ec814d505bd1d3f39a960a673b833c10a6374b970ca83ff1c66f1d") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:0162c5a148ec814d505bd1d3f39a960a673b833c10a6374b970ca83ff1c66f1d") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/31_time_constraints.md") (path (named (kind package) (name "Time Constraints")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ISQ::TemperatureValue") (import (shape membership) (recursive false))))))
@@ -253,6 +253,9 @@ package 'Time Constraints' {
     (relationship (kind typing) (direction in) (source (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::healthStates::vehicle"))) (target (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::Vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::healthStates::vehicle"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/31_time_constraints.md") (path (named (kind package) (name "Time Constraints")) (named (kind state) (name "healthStates")) (named (kind state) (name "maintenance")) (anonymous (kind assert-constraint) (ordinal 0))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/31_time_constraints.md") (path (named (kind package) (name "Time Constraints")) (named (kind state) (name "healthStates")) (named (kind state) (name "maintenance")) (anonymous (kind assert-constraint) (ordinal 1))))) (state unsupported))
+    (unit (declaration (node (document "memory://snapshot/31_time_constraints.md") (path (named (kind package) (name "Time Constraints")) (named (kind state) (name "healthStates")) (named (kind state) (name "maintenance")) (anonymous (kind assert-constraint) (ordinal 1))))) (ordinal 0) (authored "s") (start 28 70) (end 28 71) (outcome (status catalog-unavailable)))
   )
 )
 ~~~

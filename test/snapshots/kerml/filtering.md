@@ -252,6 +252,8 @@ package Filtering {
     (evaluated (declaration (node (document "memory://snapshot/filtering.md") (path (named (kind package) (name "Filtering")) (named (kind package) (name "DesignModel")) (named (kind kerml-structure) (name "System")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "approved"))))) (state literal) (value (kind boolean) (boolean true)))
     (evaluated (declaration (node (document "memory://snapshot/filtering.md") (path (named (kind package) (name "Filtering")) (named (kind package) (name "DesignModel")) (named (kind kerml-structure) (name "System")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "approver"))))) (state literal) (value (kind string) (value "John Smith")))
     (evaluated (declaration (node (document "memory://snapshot/filtering.md") (path (named (kind package) (name "Filtering")) (named (kind package) (name "DesignModel")) (named (kind kerml-structure) (name "System")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "level"))))) (state literal) (value (kind integer) (integer 2)))
+    (filter (owner (node (document "memory://snapshot/filtering.md") (qualified-name "Filtering::Meta"))) (form package-import) (state unresolved-operand) (start 41 9) (end 42 29))
+    (filter (owner (node (document "memory://snapshot/filtering.md") (qualified-name "Filtering::UpperLevelApprovals"))) (form package-import) (state non-constant) (start 25 12) (end 26 54))
   )
 )
 ~~~

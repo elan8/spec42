@@ -183,6 +183,7 @@ standard library package DerivationConnections {
     (relationship (kind typing) (source (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::derivations"))) (target (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::Derivation"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::derivations"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::Derivation::originalImpliesDerived"))) (state unsupported))
     (evaluated (declaration (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::Derivation::originalNotDerived"))) (state non-constant))
   )
 )

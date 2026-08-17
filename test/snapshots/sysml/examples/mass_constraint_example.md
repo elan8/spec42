@@ -662,10 +662,15 @@ package MassConstraintExample {
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::MassConstraint3"))) (state unresolved-operand))
     (evaluated (declaration (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::MassLimit"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::Vehicle1::m"))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/mass_constraint_example.md") (path (named (kind package) (name "MassConstraintExample")) (named (kind part-def) (name "Vehicle2")) (anonymous (kind assert-constraint) (ordinal 0))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::Vehicle3::massConstraint::partMasses"))) (state unsupported))
     (evaluated (declaration (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::Vehicle3::massConstraint::totalMass"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::Vehicle5::m"))) (state unsupported))
     (evaluated (declaration (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::Vehicle5::ml::mass"))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::Vehicle5::ml::maxMass"))) (state literal) (value (kind quantity) (magnitude (value (kind integer) (integer 2500))) (unit "kg")))
     (evaluated (declaration (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::mc"))) (state unresolved-operand))
+    (unit (declaration (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::Vehicle5::ml::maxMass"))) (ordinal 0) (authored "kg") (start 102 22) (end 102 24) (outcome (status catalog-unavailable)))
   )
 )
 ~~~

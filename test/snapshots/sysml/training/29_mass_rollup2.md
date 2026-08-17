@@ -142,6 +142,7 @@ package MassRollup2 {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/29_mass_rollup2.md") (qualified-name "MassRollup2::MassedThing::totalMass"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/29_mass_rollup2.md") (path (named (kind package) (name "MassRollup2")) (named (kind part) (name "compositeThing")) (anonymous (kind attribute) (ordinal 0))))) (state unsupported))
   )
 )
 ~~~

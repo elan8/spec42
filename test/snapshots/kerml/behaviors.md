@@ -115,6 +115,8 @@ package Behaviors {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::A::b::x1"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::A::y"))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::C::z"))) (state unsupported))
   )
 )
 ~~~

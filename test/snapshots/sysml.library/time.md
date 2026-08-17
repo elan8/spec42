@@ -1101,6 +1101,8 @@ standard library package Time {
     (evaluated (declaration (node (document "memory://snapshot/time.md") (qualified-name "Time::TimeOf::clock"))) (state unresolved-operand))
     (evaluated (declaration (node (document "memory://snapshot/time.md") (path (named (kind library-package) (name "Time")) (named (kind attribute-def) (name "TimeScale")) (anonymous (kind attribute) (ordinal 1))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/time.md") (path (named (kind library-package) (name "Time")) (named (kind attribute-def) (name "UtcTimeInstantValue")) (anonymous (kind attribute) (ordinal 0))))) (state unresolved-operand))
+    (invocation (declaration (node (document "memory://snapshot/time.md") (path (named (kind library-package) (name "Time")) (named (kind attribute-def) (name "Iso8601DateTime")) (anonymous (kind attribute) (ordinal 0))))) (callee (node (document "memory://snapshot/time.md") (qualified-name "Time::Iso8601DateTime::getElapsedUtcTime"))) (supplied 1) (required 1) (start 207 25) (end 207 47))
+    (invocation (declaration (node (document "memory://snapshot/time.md") (path (named (kind library-package) (name "Time")) (named (kind attribute-def) (name "Iso8601DateTimeStructure")) (anonymous (kind attribute) (ordinal 0))))) (callee (node (document "memory://snapshot/time.md") (qualified-name "Time::Iso8601DateTimeStructure::getElapsedUtcTime"))) (supplied 9) (required 9) (start 234 25) (end 234 121))
   )
 )
 ~~~

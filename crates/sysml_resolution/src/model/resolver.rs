@@ -10,7 +10,10 @@ use super::element_kind;
 use super::evaluation;
 use super::*;
 use crate::diagnostics::UNCODED_PARSE_ERROR;
-use crate::evaluation::{EvaluationPolicy, EvaluationState};
+use crate::evaluation::{
+    AuthoredUnit, ElementEvaluation, EvaluationPolicy, EvaluationState, ExpectedMeasurement,
+    ResolvedUnit, UnitResolution,
+};
 use crate::{
     Conformance, ConformanceObstacle, Diagnostic, DiagnosticCode, DiagnosticLocation,
     DiagnosticOrigin, DiagnosticSeverity, EffectiveType, EffectiveTypeOrigin, ElementSearch,
@@ -23,6 +26,7 @@ use crate::{
 };
 
 mod conformance;
+mod expression;
 mod inspection;
 mod structural;
 mod types;
@@ -946,13 +950,16 @@ impl ResolutionResults {
     }
 }
 
-/// The published outcome of evaluating one `PendingEvaluationFact`: the declaration the supported
-/// constraint/calc expression belongs to, and its final `EvaluatedValue`. See `compute_evaluation`.
+/// The published outcome of evaluating one `PendingEvaluationFact`: the declaration whose
+/// constraint/calc expression it belongs to, and what evaluation settled for it.
+///
+/// The folding algebra's own `EvaluatedValue` is deliberately not kept here. It is the lattice the
+/// fixed point needs, not a fact about the model, and `EvaluationState` already carries the value
+/// where there is one -- keeping both would make two representations of one answer, with nothing
+/// stopping them from disagreeing.
 #[derive(Debug, Clone, PartialEq)]
 struct EvaluationFact {
     declaration: DeclarationId,
-    outcome: EvaluatedValue,
-    /// The published projection of `outcome`; see `model::evaluation`.
     state: EvaluationState,
 }
 
@@ -984,23 +991,37 @@ fn compute_evaluation(
     storage: &SemanticModelStorage,
     resolution: &ResolutionResults,
     policy: EvaluationPolicy,
-) -> Box<[EvaluationFact]> {
+) -> SettledEvaluation {
     if policy == EvaluationPolicy::Skip {
         // A declared outcome, not an absent one: every element that has an expression reports
         // that no attempt was made, which a consumer can tell apart from "nothing to evaluate".
-        return storage
-            .evaluation_facts
-            .iter()
-            .filter(|pending| !matches!(pending.shape, ExpressionEvalShape::Unsupported))
-            .map(|pending| EvaluationFact {
-                declaration: pending.declaration,
-                outcome: EvaluatedValue::NotEvaluated,
-                state: EvaluationState::NotRun,
-            })
-            .collect();
+        //
+        // An unsupported shape still reports `Unsupported`: the policy decides whether evaluation
+        // ran, and the shape is outside the evaluated slice whether it ran or not.
+        let skipped = |shape: &ExpressionEvalShape| match shape {
+            ExpressionEvalShape::Unsupported => EvaluationState::Unsupported,
+            _ => EvaluationState::NotRun,
+        };
+        return SettledEvaluation {
+            facts: storage
+                .evaluation_facts
+                .iter()
+                .map(|pending| EvaluationFact {
+                    declaration: pending.declaration,
+                    state: skipped(&pending.shape),
+                })
+                .collect(),
+            filters: storage
+                .filter_conditions
+                .iter()
+                .map(|condition| SettledFilterCondition {
+                    state: skipped(&condition.shape),
+                })
+                .collect(),
+        };
     }
     if resolution.solver_status != SolverStatus::Converged {
-        return Box::new([]);
+        return SettledEvaluation::default();
     }
 
     // operand_targets[declaration][ordinal] = the ExpressionOperand reference's resolved target,
@@ -1026,12 +1047,17 @@ fn compute_evaluation(
         slot[ordinal] = target;
     }
 
-    // Every declaration that published an evaluation candidate at all -- the only declarations
-    // constant propagation can ever look up a value for. A resolved operand reference whose
-    // target is *not* in this set has no known constant, settling immediately as `NonConstant`.
+    // Every declaration whose expression can ever settle to a constant -- the only declarations
+    // constant propagation can look up a value for. A resolved operand reference whose target is
+    // *not* in this set has no known constant, settling immediately as `NonConstant`.
+    //
+    // An unsupported shape is excluded on purpose. It publishes a fact, but never a value, so a
+    // dependent expression must settle against it now rather than wait for a value that cannot
+    // arrive and then be reported as a dependency cycle.
     let has_fact: std::collections::BTreeSet<DeclarationId> = storage
         .evaluation_facts
         .iter()
+        .filter(|pending| !matches!(pending.shape, ExpressionEvalShape::Unsupported))
         .map(|pending| pending.declaration)
         .collect();
 
@@ -1081,6 +1107,9 @@ fn compute_evaluation(
     // (directly or transitively self-referential), not a longer-than-expected acyclic chain --
     // the bound already covers every acyclic chain up to the total fact count.
     for pending in storage.evaluation_facts.iter() {
+        if matches!(pending.shape, ExpressionEvalShape::Unsupported) {
+            continue;
+        }
         outcomes
             .entry(pending.declaration)
             .or_insert(EvaluatedValue::NonConverged);
@@ -1089,18 +1118,93 @@ fn compute_evaluation(
     let mut facts = Vec::with_capacity(storage.evaluation_facts.len());
     for pending in storage.evaluation_facts.iter() {
         if matches!(pending.shape, ExpressionEvalShape::Unsupported) {
+            facts.push(EvaluationFact {
+                declaration: pending.declaration,
+                state: EvaluationState::Unsupported,
+            });
             continue;
         }
-        let Some(outcome) = outcomes.get(&pending.declaration).cloned() else {
+        let Some(outcome) = outcomes.get(&pending.declaration) else {
             continue;
         };
         facts.push(EvaluationFact {
             declaration: pending.declaration,
-            state: evaluation::evaluation_state(&outcome, &pending.shape),
-            outcome,
+            state: evaluation::evaluation_state(outcome, &pending.shape),
         });
     }
-    facts.into_boxed_slice()
+
+    // Filter conditions settle after the declaration fixed point, against its result. They are
+    // read-only consumers of it: a condition defines no declaration's value, so nothing can depend
+    // on one, and folding them here cannot change what any declaration evaluated to.
+    let filters = storage
+        .filter_conditions
+        .iter()
+        .map(|condition| SettledFilterCondition {
+            state: fold_settled_expression(
+                &condition.shape,
+                condition.owner,
+                &operand_targets,
+                &outcomes,
+            ),
+        })
+        .collect();
+
+    SettledEvaluation {
+        facts: facts.into_boxed_slice(),
+        filters,
+    }
+}
+
+/// Everything the evaluation pass settled: one outcome per declaration expression, and one per
+/// authored `filter` condition, in the storage order of the facts they were classified from.
+#[derive(Debug, Default)]
+struct SettledEvaluation {
+    facts: Box<[EvaluationFact]>,
+    /// Parallel to `SemanticModelStorage::filter_conditions`, so a condition's authored facts and
+    /// its settled state are read together without a second key.
+    filters: Box<[SettledFilterCondition]>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+struct SettledFilterCondition {
+    state: EvaluationState,
+}
+
+/// Folds one already-classified expression against the constants a settled publication holds.
+///
+/// The declaration fixed point above settles every expression a declaration *owns*. A `filter`
+/// condition is not one: it is written inside a declaration whose own value it does not define, so
+/// it never contributes a constant and never participates in the fixed point. It is folded once,
+/// afterwards, against the same settled operand targets and constants, which is exactly the
+/// "consume settled facts, publish nothing back" shape the barrier requires.
+fn fold_settled_expression(
+    shape: &ExpressionEvalShape,
+    owner: DeclarationId,
+    operand_targets: &std::collections::BTreeMap<DeclarationId, Vec<Option<DeclarationId>>>,
+    outcomes: &std::collections::BTreeMap<DeclarationId, EvaluatedValue>,
+) -> EvaluationState {
+    match shape {
+        ExpressionEvalShape::Unsupported => EvaluationState::Unsupported,
+        ExpressionEvalShape::Literal(value) | ExpressionEvalShape::ConstantFolded(value) => {
+            evaluation::evaluation_state(value, shape)
+        }
+        ExpressionEvalShape::HasOperand(tree) => {
+            let targets = operand_targets.get(&owner);
+            let value = fold_eval_node(tree, &mut |ordinal: u32| {
+                match targets.and_then(|targets| targets.get(ordinal as usize).copied().flatten()) {
+                    None => EvaluatedValue::UnresolvedOperand,
+                    // A target with no settled constant of its own is correctly not a constant:
+                    // the declaration fixed point has already run to completion, so an absent
+                    // entry is an answer, not a pending one.
+                    Some(target) => outcomes
+                        .get(&target)
+                        .cloned()
+                        .unwrap_or(EvaluatedValue::NonConstant),
+                }
+            });
+            evaluation::evaluation_state(&value, shape)
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -1117,6 +1221,8 @@ pub(crate) struct ResolvedSemanticModel {
     types: types::TypeIndex,
     resolution: ResolutionResults,
     evaluation: Box<[EvaluationFact]>,
+    /// Settled unit, measurement and filter facts over the expressions this publication admitted.
+    expressions: expression::ExpressionIndex,
     /// Settled at the publication barrier alongside the indexes, so reading them is a lookup and
     /// a broken storage invariant fails the build instead of a later query.
     diagnostics: Box<[Diagnostic]>,
@@ -2859,7 +2965,10 @@ impl SemanticModelStorage {
         } else {
             PublicationCompleteness::Complete
         };
-        let evaluation = compute_evaluation(&self, &resolution, policy);
+        let SettledEvaluation {
+            facts: evaluation,
+            filters: filter_conditions,
+        } = compute_evaluation(&self, &resolution, policy);
         let has_evaluation = !evaluation.is_empty();
         let identities = IdentityIndex::build(&self)?;
         let documents = DocumentIndex::build(&self)?;
@@ -2890,6 +2999,7 @@ impl SemanticModelStorage {
             types: type_facts,
             resolution,
             evaluation,
+            expressions: expression::ExpressionIndex::default(),
             diagnostics: Box::default(),
             metadata: PublicationMetadata {
                 phase: PublicationPhase::Resolved,
@@ -2897,6 +3007,9 @@ impl SemanticModelStorage {
                 has_evaluation,
             },
         };
+        // Expression facts read the type closure and the settled evaluation, so they are assembled
+        // once the model holds both, and before diagnostics, which report what they settled.
+        model.expressions = expression::ExpressionIndex::build(&model, &filter_conditions)?;
         // Last barrier product: diagnostics report what every earlier phase settled, so they are
         // derived from the assembled model rather than from any one phase's intermediate state.
         model.diagnostics = model.derive_diagnostics()?;

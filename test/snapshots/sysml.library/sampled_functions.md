@@ -543,8 +543,18 @@ standard library package SampledFunctions {
     (relationship (kind invocationCallee) (source (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::interpolateLinear::result"))) (target (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::interpolateLinear::Linear"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::interpolateLinear::result"))) (kind invocationCallee) (ordinal 2)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/sampled_functions.md") (path (named (kind library-package) (name "SampledFunctions")) (named (kind calc-def) (name "Domain")) (anonymous (kind parameter) (ordinal 0))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/sampled_functions.md") (path (named (kind library-package) (name "SampledFunctions")) (named (kind calc-def) (name "Range")) (anonymous (kind parameter) (ordinal 0))))) (state unsupported))
     (evaluated (declaration (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::Sample::sampling"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/sampled_functions.md") (path (named (kind library-package) (name "SampledFunctions")) (named (kind attribute-def) (name "SampledFunction")) (anonymous (kind assert-constraint) (ordinal 0))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::interpolateLinear::Linear::f"))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::interpolateLinear::Linear::result"))) (state unsupported))
     (evaluated (declaration (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::interpolateLinear::domainValues"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::interpolateLinear::index"))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::interpolateLinear::result"))) (state unsupported))
+    (invocation (declaration (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::interpolateLinear::domainValues"))) (callee (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::Domain"))) (supplied 1) (required 1) (start 100 35) (end 100 45))
+    (invocation (declaration (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::interpolateLinear::result"))) (callee (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::interpolateLinear::Linear"))) (supplied 3) (required 3) (start 114 58) (end 114 113))
+    (invocation (declaration (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::interpolateLinear::result"))) (callee (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::interpolateLinear::Linear"))) (supplied 3) (required 3) (start 115 8) (end 115 63))
   )
 )
 ~~~

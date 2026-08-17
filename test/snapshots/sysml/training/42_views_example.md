@@ -171,6 +171,7 @@ package 'Views Example' {
     (relationship (kind typing) (source (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::vehicle structure view"))) (target (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::Part Structure View"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::vehicle structure view"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (filter (owner (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::Part Structure View"))) (form view) (state unsupported) (start 7 9) (end 7 26))
   )
 )
 ~~~

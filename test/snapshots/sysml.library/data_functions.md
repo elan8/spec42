@@ -457,7 +457,7 @@ standard library package DataFunctions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:1a0f4d2fc5439d6d8e940fd6b02ffc4716a4da0d6f6a7a66dedb1d6371902567") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:1a0f4d2fc5439d6d8e940fd6b02ffc4716a4da0d6f6a7a66dedb1d6371902567") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/data_functions.md") (qualified-name "DataFunctions"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package defines the abstract base functions corresponding to all the unary and binary operators \n\t * in the KerML expression notation that might be defined on various kinds of DataValues.\n\t "))))
     (declaration (id (node (document "memory://snapshot/data_functions.md") (path (named (kind library-package) (name "DataFunctions")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Base::DataValue") (import (shape membership) (recursive false))))))
@@ -757,6 +757,7 @@ standard library package DataFunctions {
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/data_functions.md") (path (named (kind library-package) (name "DataFunctions")) (named (kind kerml-function) (name "===")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/data_functions.md") (qualified-name "DataFunctions::===::y"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/data_functions.md") (path (named (kind library-package) (name "DataFunctions")) (named (kind kerml-function) (name "===")) (anonymous (kind parameter) (ordinal 0))))) (kind expressionOperand) (ordinal 1)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/data_functions.md") (path (named (kind library-package) (name "DataFunctions")) (named (kind kerml-function) (name "===")) (anonymous (kind parameter) (ordinal 0))))) (state unsupported))
   )
 )
 ~~~

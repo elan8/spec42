@@ -211,6 +211,8 @@ package 'Constraints Example-1' {
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::MassConstraint"))) (state unresolved-operand))
     (evaluated (declaration (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Vehicle::massConstraint::massLimit"))) (state literal) (value (kind quantity) (magnitude (value (kind integer) (integer 2500))) (unit "kg")))
+    (evaluated (declaration (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Vehicle::massConstraint::partMasses"))) (state unsupported))
+    (unit (declaration (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::Vehicle::massConstraint::massLimit"))) (ordinal 0) (authored "kg") (start 18 23) (end 18 25) (outcome (status catalog-unavailable)))
   )
 )
 ~~~

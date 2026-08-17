@@ -217,7 +217,7 @@ package JohnIndividualExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:56855a5c0d68c6f385b02c5c364523e96d510c33f0f8f978afc28b02bedfd9fe") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:56855a5c0d68c6f385b02c5c364523e96d510c33f0f8f978afc28b02bedfd9fe") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/john_individual_example.md") (path (named (kind package) (name "JohnIndividualExample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Objects") (import (shape namespace) (recursive false))))))
@@ -373,6 +373,7 @@ package JohnIndividualExample {
     (relationship (kind redefinition) (source (node (document "memory://snapshot/john_individual_example.md") (path (named (kind package) (name "JohnIndividualExample")) (named (kind class-def) (name "UnitedStatesWithJohnAsPresident")) (anonymous (kind kerml-feature) (ordinal 1))))) (target (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::UnitedStates::presidentOfUS"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/john_individual_example.md") (path (named (kind package) (name "JohnIndividualExample")) (named (kind class-def) (name "UnitedStatesWithJohnAsPresident")) (anonymous (kind kerml-feature) (ordinal 1))))) (kind redefinition) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/john_individual_example.md") (path (named (kind package) (name "JohnIndividualExample")) (named (kind class-def) (name "UnitedStates")) (named (kind kerml-feature) (name "presidentOfUS")) (anonymous (kind kerml-invariant) (ordinal 0))))) (state unsupported))
   )
 )
 ~~~

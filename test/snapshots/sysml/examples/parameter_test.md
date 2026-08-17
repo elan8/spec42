@@ -126,6 +126,8 @@ package ParameterTest {
     (evaluated (declaration (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::c"))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::f"))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::g"))) (state non-constant))
+    (invocation (declaration (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::f"))) (callee (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::F"))) (supplied 2) (required 2) (start 10 15) (end 10 22))
+    (invocation (declaration (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::g"))) (callee (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::F"))) (supplied 2) (required 2) (start 11 15) (end 11 30))
   )
 )
 ~~~

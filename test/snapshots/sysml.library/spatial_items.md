@@ -965,9 +965,17 @@ standard library package SpatialItems {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem::subSpatialParts"))) (target (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem::subSpatialItems"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem::subSpatialParts"))) (kind subsetting) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::CurrentDisplacementOf::clock"))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::CurrentPositionOf::clock"))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::DisplacementOf::clock"))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::PositionOf::clock"))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/spatial_items.md") (path (named (kind library-package) (name "SpatialItems")) (named (kind item-def) (name "SpatialItem")) (named (kind item) (name "componentItems")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind attribute) (ordinal 0))))) (state unsupported))
     (evaluated (declaration (node (document "memory://snapshot/spatial_items.md") (path (named (kind library-package) (name "SpatialItems")) (named (kind item-def) (name "SpatialItem")) (named (kind item) (name "componentItems")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind attribute) (ordinal 1))))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/spatial_items.md") (path (named (kind library-package) (name "SpatialItems")) (named (kind item-def) (name "SpatialItem")) (named (kind item) (name "componentItems")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind attribute) (ordinal 0))))) (state unsupported))
     (evaluated (declaration (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem::coordinateFrame"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem::cunionNum"))) (state unsupported))
     (evaluated (declaration (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem::originPointConstraint"))) (state non-constant))
+    (invocation (declaration (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem::originPointConstraint"))) (callee (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::CurrentPositionOf"))) (supplied 2) (required 2) (start 58 16) (end 58 52))
   )
 )
 ~~~

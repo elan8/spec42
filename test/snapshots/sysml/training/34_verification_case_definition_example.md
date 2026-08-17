@@ -254,7 +254,13 @@ package 'Verification Case Definition Example' {
     (relationship (kind typing) (source (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::vehicleMassRequirement::vehicle"))) (target (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::Vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::vehicleMassRequirement::vehicle"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::VehicleMassTest::evaluateData::massProcessed"))) (state unsupported))
     (evaluated (declaration (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::VehicleMassTest::evaluateData::verdict"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::VehicleMassTest::processData::massMeasured"))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::VehicleMassTest::verdict"))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/34_verification_case_definition_example.md") (path (named (kind package) (name "Verification Case Definition Example")) (named (kind requirement) (name "vehicleMassRequirement")) (anonymous (kind require-constraint) (ordinal 0))))) (state unsupported))
+    (unit (declaration (node (document "memory://snapshot/34_verification_case_definition_example.md") (path (named (kind package) (name "Verification Case Definition Example")) (named (kind requirement) (name "vehicleMassRequirement")) (anonymous (kind require-constraint) (ordinal 0))))) (ordinal 0) (authored "SI::kg") (start 13 25) (end 13 31) (outcome (status catalog-unavailable)))
+    (invocation (declaration (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::VehicleMassTest::evaluateData::verdict"))) (callee (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::vehicleMassRequirement"))) (supplied 2) (required 0) (start 40 11) (end 40 84))
   )
 )
 ~~~

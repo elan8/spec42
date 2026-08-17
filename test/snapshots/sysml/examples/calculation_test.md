@@ -203,6 +203,10 @@ package CalculationExample {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::MassSum::totalMass"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::masses1"))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::masses2"))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::ms::partMasses"))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/calculation_test.md") (path (named (kind package) (name "CalculationExample")) (named (kind part) (name "vehicle")) (anonymous (kind attribute) (ordinal 0))))) (state unsupported))
   )
 )
 ~~~

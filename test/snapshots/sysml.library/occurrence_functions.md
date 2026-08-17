@@ -774,6 +774,7 @@ standard library package OccurrenceFunctions {
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/occurrence_functions.md") (qualified-name "OccurrenceFunctions::removeOldAt::removeStep::seq"))) (target (node (document "memory://snapshot/occurrence_functions.md") (qualified-name "OccurrenceFunctions::removeOldAt::group"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/occurrence_functions.md") (qualified-name "OccurrenceFunctions::removeOldAt::removeStep::seq"))) (kind expressionOperand) (ordinal 0)))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/occurrence_functions.md") (path (named (kind library-package) (name "OccurrenceFunctions")) (named (kind kerml-function) (name "===")) (anonymous (kind parameter) (ordinal 0))))) (state unsupported))
     (evaluated (declaration (node (document "memory://snapshot/occurrence_functions.md") (path (named (kind library-package) (name "OccurrenceFunctions")) (named (kind kerml-function) (name "addNew")) (anonymous (kind parameter) (ordinal 0))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/occurrence_functions.md") (path (named (kind library-package) (name "OccurrenceFunctions")) (named (kind kerml-function) (name "addNew")) (anonymous (kind kerml-step) (ordinal 0)) (named (kind parameter) (name "seq1"))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/occurrence_functions.md") (path (named (kind library-package) (name "OccurrenceFunctions")) (named (kind kerml-function) (name "addNew")) (anonymous (kind kerml-step) (ordinal 0)) (named (kind parameter) (name "seq2"))))) (state non-constant))
@@ -788,8 +789,11 @@ standard library package OccurrenceFunctions {
     (evaluated (declaration (node (document "memory://snapshot/occurrence_functions.md") (qualified-name "OccurrenceFunctions::removeOld::removeStep::seq"))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/occurrence_functions.md") (qualified-name "OccurrenceFunctions::removeOld::removeStep::values"))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/occurrence_functions.md") (qualified-name "OccurrenceFunctions::removeOldAt::destroyStep::occ"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/occurrence_functions.md") (qualified-name "OccurrenceFunctions::removeOldAt::oldOcc"))) (state unsupported))
     (evaluated (declaration (node (document "memory://snapshot/occurrence_functions.md") (qualified-name "OccurrenceFunctions::removeOldAt::removeStep::index"))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/occurrence_functions.md") (qualified-name "OccurrenceFunctions::removeOldAt::removeStep::seq"))) (state non-constant))
+    (invocation (declaration (node (document "memory://snapshot/occurrence_functions.md") (path (named (kind library-package) (name "OccurrenceFunctions")) (named (kind kerml-function) (name "addNew")) (anonymous (kind kerml-step) (ordinal 0)) (named (kind parameter) (name "seq2"))))) (callee (node (document "memory://snapshot/occurrence_functions.md") (qualified-name "OccurrenceFunctions::create"))) (supplied 1) (required 1) (start 86 13) (end 86 24))
+    (invocation (declaration (node (document "memory://snapshot/occurrence_functions.md") (path (named (kind library-package) (name "OccurrenceFunctions")) (named (kind kerml-function) (name "addNewAt")) (anonymous (kind kerml-step) (ordinal 0)) (named (kind parameter) (name "values"))))) (callee (node (document "memory://snapshot/occurrence_functions.md") (qualified-name "OccurrenceFunctions::create"))) (supplied 1) (required 1) (start 105 15) (end 105 26))
   )
 )
 ~~~

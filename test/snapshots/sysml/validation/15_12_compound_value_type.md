@@ -173,6 +173,7 @@ package '15_12-Compound Value Type' {
     (evaluated (declaration (node (document "memory://snapshot/15_12_compound_value_type.md") (path (named (kind package) (name "15_12-Compound Value Type")) (named (kind attribute-def) (name "frenchTireInfo")) (anonymous (kind attribute) (ordinal 0))))) (state literal) (value (kind string) (value "Michelin")))
     (evaluated (declaration (node (document "memory://snapshot/15_12_compound_value_type.md") (path (named (kind package) (name "15_12-Compound Value Type")) (named (kind attribute-def) (name "frenchTireInfo")) (anonymous (kind attribute) (ordinal 1))))) (state literal) (value (kind quantity) (magnitude (value (kind real) (real 18))) (unit "in")))
     (evaluated (declaration (node (document "memory://snapshot/15_12_compound_value_type.md") (path (named (kind package) (name "15_12-Compound Value Type")) (named (kind attribute-def) (name "frenchTireInfo")) (anonymous (kind attribute) (ordinal 2))))) (state literal) (value (kind integer) (integer 245)))
+    (unit (declaration (node (document "memory://snapshot/15_12_compound_value_type.md") (path (named (kind package) (name "15_12-Compound Value Type")) (named (kind attribute-def) (name "frenchTireInfo")) (anonymous (kind attribute) (ordinal 1))))) (ordinal 0) (authored "in") (start 27 38) (end 27 42) (outcome (status catalog-unavailable)))
   )
 )
 ~~~
