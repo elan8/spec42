@@ -342,6 +342,7 @@ fn write_declaration_facts(
         && facts.portion_kind.is_none()
         && facts.direction.is_none()
         && facts.multiplicity.is_none()
+        && facts.positional_end.is_none()
     {
         return Ok(());
     }
@@ -369,6 +370,9 @@ fn write_declaration_facts(
         output.write_str(") (upper ")?;
         write_multiplicity_bound(multiplicity.upper, output)?;
         output.write_str("))")?;
+    }
+    if let Some(position) = facts.positional_end {
+        write!(output, " (positional-end {position})")?;
     }
     output.write_char(')')
 }

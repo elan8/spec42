@@ -2319,6 +2319,18 @@ struct DeclarationFacts {
     multiplicity: Option<MultiplicityRecord>,
     /// Authored polarity for an anonymous satisfy relationship declaration.
     satisfy_negated: Option<bool>,
+    /// This declaration's position among its owner's authored connector ends (BNF `EndDecl`).
+    ///
+    /// Present only on a declaration lowered from an `end` member of a connection/interface/
+    /// occurrence definition body, and it is what makes a connector end *positional*: KerML orders
+    /// a connector's ends, and the source/target distinction of a binary connection-like
+    /// definition is that order and nothing else. An `end` member's declared label is optional and
+    /// carries no ordering, so recovering the position from a name would be a guess.
+    ///
+    /// Absent on every other declaration, including a feature carrying the `end` modifier prefix:
+    /// that prefix says a feature *is* an end, while this fact says which end of its owner it is.
+    /// The two are distinct and both are needed.
+    positional_end: Option<u32>,
 }
 
 impl DeclarationFacts {
@@ -2700,6 +2712,10 @@ struct SemanticModelBuilder {
     path_scratch: Vec<SymbolId>,
     next_anonymous_ordinals: BTreeMap<(DocumentId, Option<DeclarationId>, DeclarationKind), u32>,
     next_reference_ordinals: BTreeMap<(DeclarationId, ReferenceKind), u32>,
+    /// Counts each owner's authored `end` members so every positional connector end carries the
+    /// order it was written in. Keyed by owner alone: an owner's ends are lowered in source order
+    /// by one walker, so the counter is the authored position.
+    next_positional_end_ordinals: BTreeMap<DeclarationId, u32>,
 }
 
 impl SemanticModelBuilder {
@@ -2779,6 +2795,17 @@ impl SemanticModelBuilder {
     /// future lowering site has to make an explicit decision about the declaration's modifiers,
     /// multiplicity, direction, and short name. A site with nothing to record passes
     /// `DeclarationFacts::none()`; a site that simply forgets does not compile.
+    /// The next authored position among `owner`'s connector ends.
+    fn next_positional_end_ordinal(
+        &mut self,
+        owner: DeclarationId,
+    ) -> Result<u32, ConstructionError> {
+        let ordinal = self.next_positional_end_ordinals.entry(owner).or_insert(0);
+        let value = *ordinal;
+        *ordinal = ordinal.checked_add(1).ok_or(ConstructionError::Capacity)?;
+        Ok(value)
+    }
+
     fn push_typed_declaration(
         &mut self,
         document: DocumentId,
@@ -10890,6 +10917,7 @@ impl SemanticModelBuilder {
             EndIdentity::Declaration(label) => self.intern_declared_name(&label.value)?,
             EndIdentity::Derivation(_) => None,
         };
+        let positional_end = self.next_positional_end_ordinal(owner)?;
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
@@ -10898,6 +10926,7 @@ impl SemanticModelBuilder {
             node.span.clone(),
             DeclarationFacts {
                 multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                positional_end: Some(positional_end),
                 ..DeclarationFacts::none()
             },
         )?;
