@@ -182,6 +182,9 @@ package VehicleRequirementDerivation {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/vehicle_requirement_derivation.md") (path (named (kind package) (name "VehicleRequirementDerivation")) (anonymous (kind connection-def) (ordinal 0)))))
+      (positional-ends (authored 3) (effective 3))
+    )
     (declaration (id (node (document "memory://snapshot/vehicle_requirement_derivation.md") (path (named (kind package) (name "VehicleRequirementDerivation")) (anonymous (kind connection-def) (ordinal 0)) (anonymous (kind connection) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/vehicle_requirement_derivation.md") (path (named (kind package) (name "VehicleRequirementDerivation")) (anonymous (kind connection-def) (ordinal 0)))))
     )

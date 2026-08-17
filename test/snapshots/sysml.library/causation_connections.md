@@ -229,6 +229,7 @@ standard library package CausationConnections {
 ~~~sexpr
 (types
     (declaration (id (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::Causation")))
+      (positional-ends (authored 2) (effective 2))
       (supertype (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::Multicausation")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::Causation::theCauses")))

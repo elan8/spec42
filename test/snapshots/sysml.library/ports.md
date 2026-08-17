@@ -195,6 +195,7 @@ standard library package Ports {
       (subtype (node (document "memory://snapshot/ports.md") (qualified-name "Ports::Port::subports")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/ports.md") (path (named (kind library-package) (name "Ports")) (named (kind port-def) (name "Port")) (anonymous (kind ref) (ordinal 0)))))
+      (positional-ends (authored 2) (effective 2))
       (featured-by (node (document "memory://snapshot/ports.md") (qualified-name "Ports::Port")))
     )
     (declaration (id (node (document "memory://snapshot/ports.md") (path (named (kind library-package) (name "Ports")) (named (kind port-def) (name "Port")) (anonymous (kind ref) (ordinal 0)) (named (kind connection) (name "source")))))

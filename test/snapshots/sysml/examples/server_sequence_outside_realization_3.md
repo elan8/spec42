@@ -737,6 +737,9 @@ package ServerSequenceOutsideRealization_3 {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/server_sequence_outside_realization_3.md") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::PublicationInterface")))
+      (positional-ends (authored 2) (effective 2))
+    )
     (declaration (id (node (document "memory://snapshot/server_sequence_outside_realization_3.md") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::PublicationInterface::source")))
       (featured-by (node (document "memory://snapshot/server_sequence_outside_realization_3.md") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::PublicationInterface")))
       (type (node (document "memory://snapshot/server_sequence_outside_realization_3.md") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::PublicationPort")) (provenance authored))
@@ -757,6 +760,9 @@ package ServerSequenceOutsideRealization_3 {
     )
     (declaration (id (node (document "memory://snapshot/server_sequence_outside_realization_3.md") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::PublicationPort::publish")))
       (featured-by (node (document "memory://snapshot/server_sequence_outside_realization_3.md") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::PublicationPort")))
+    )
+    (declaration (id (node (document "memory://snapshot/server_sequence_outside_realization_3.md") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::SubscriptionInterface")))
+      (positional-ends (authored 2) (effective 2))
     )
     (declaration (id (node (document "memory://snapshot/server_sequence_outside_realization_3.md") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::SubscriptionInterface::source")))
       (featured-by (node (document "memory://snapshot/server_sequence_outside_realization_3.md") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::SubscriptionInterface")))

@@ -170,6 +170,7 @@ package AllocationTest {
       (subtype (node (document "memory://snapshot/allocation_test.md") (path (named (kind package) (name "AllocationTest")) (named (kind part) (name "l")) (anonymous (kind part) (ordinal 0)))) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest::Logical_to_Physical")))
+      (positional-ends (authored 2) (effective 2))
       (supertype (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest::A")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/allocation_test.md") (qualified-name "AllocationTest::Logical_to_Physical::logical")))

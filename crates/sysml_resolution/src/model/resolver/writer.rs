@@ -61,6 +61,8 @@ fn write_types(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fm
             canonical_targets(model, model.types.effective_types(declaration).to_vec());
         let featuring = model.types.featuring_type(declaration);
         let set_operands = model.types.set_operands(declaration);
+        let authored_ends = model.types.authored_ends(declaration);
+        let effective_ends = model.types.effective_ends(declaration);
         if !cyclic
             && supertypes.is_empty()
             && direct_types.is_empty()
@@ -68,6 +70,7 @@ fn write_types(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fm
             && effective_types.is_empty()
             && featuring.is_none()
             && set_operands.is_empty()
+            && effective_ends == 0
         {
             continue;
         }
@@ -78,6 +81,14 @@ fn write_types(model: &ResolvedSemanticModel, output: &mut dyn fmt::Write) -> fm
             write!(output, " (cyclic true)")?;
         }
         writeln!(output)?;
+        if effective_ends > 0 {
+            // Both counts, always: a reader cannot tell an inherited end pair from an authored one
+            // if only the effective total is published.
+            writeln!(
+                output,
+                "      (positional-ends (authored {authored_ends}) (effective {effective_ends}))",
+            )?;
+        }
         if let Some(featuring) = featuring {
             write!(output, "      (featured-by ")?;
             write_node_identity(model, featuring, output)?;

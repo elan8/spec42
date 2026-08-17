@@ -237,6 +237,7 @@ library package 'Model Library Example' {
 ~~~sexpr
 (types
     (declaration (id (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::Causation")))
+      (positional-ends (authored 2) (effective 2))
       (subtype (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::causations")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::Causation::cause")))
@@ -296,6 +297,7 @@ library package 'Model Library Example' {
       (subtype (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::situations")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::causations")))
+      (positional-ends (authored 0) (effective 2))
       (type (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::Causation")) (provenance authored))
       (effective-type (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::Causation")) (source direct))
       (supertype (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::Causation")) (scopes any))

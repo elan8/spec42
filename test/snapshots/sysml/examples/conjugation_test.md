@@ -161,6 +161,7 @@ package ConjugationTest {
 ~~~sexpr
 (types
     (declaration (id (node (document "memory://snapshot/conjugation_test.md") (qualified-name "ConjugationTest::A")))
+      (positional-ends (authored 2) (effective 2))
       (subtype (node (document "memory://snapshot/conjugation_test.md") (qualified-name "ConjugationTest::B1::a")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/conjugation_test.md") (qualified-name "ConjugationTest::A::p1")))
@@ -176,6 +177,7 @@ package ConjugationTest {
       (supertype (node (document "memory://snapshot/conjugation_test.md") (qualified-name "ConjugationTest::P")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/conjugation_test.md") (qualified-name "ConjugationTest::B1::a")))
+      (positional-ends (authored 2) (effective 2))
       (featured-by (node (document "memory://snapshot/conjugation_test.md") (qualified-name "ConjugationTest::B1")))
       (type (node (document "memory://snapshot/conjugation_test.md") (qualified-name "ConjugationTest::A")) (provenance authored))
       (effective-type (node (document "memory://snapshot/conjugation_test.md") (qualified-name "ConjugationTest::A")) (source direct))
@@ -194,6 +196,7 @@ package ConjugationTest {
       (supertype (node (document "memory://snapshot/conjugation_test.md") (qualified-name "ConjugationTest::P")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/conjugation_test.md") (qualified-name "ConjugationTest::B1::i")))
+      (positional-ends (authored 2) (effective 2))
       (featured-by (node (document "memory://snapshot/conjugation_test.md") (qualified-name "ConjugationTest::B1")))
       (type (node (document "memory://snapshot/conjugation_test.md") (qualified-name "ConjugationTest::I")) (provenance authored))
       (effective-type (node (document "memory://snapshot/conjugation_test.md") (qualified-name "ConjugationTest::I")) (source direct))
@@ -239,6 +242,7 @@ package ConjugationTest {
       (supertype (node (document "memory://snapshot/conjugation_test.md") (qualified-name "ConjugationTest::P")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/conjugation_test.md") (qualified-name "ConjugationTest::I")))
+      (positional-ends (authored 2) (effective 2))
       (subtype (node (document "memory://snapshot/conjugation_test.md") (qualified-name "ConjugationTest::B1::i")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/conjugation_test.md") (qualified-name "ConjugationTest::I::p1")))

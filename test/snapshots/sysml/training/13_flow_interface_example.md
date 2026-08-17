@@ -148,6 +148,7 @@ package 'Flow Interface Example' {
 ~~~sexpr
 (types
     (declaration (id (node (document "memory://snapshot/13_flow_interface_example.md") (qualified-name "Flow Interface Example::FuelInterface")))
+      (positional-ends (authored 2) (effective 2))
       (subtype (node (document "memory://snapshot/13_flow_interface_example.md") (path (named (kind package) (name "Flow Interface Example")) (named (kind part) (name "vehicle")) (anonymous (kind interface) (ordinal 0)))) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/13_flow_interface_example.md") (qualified-name "Flow Interface Example::FuelInterface::consumerPort")))
@@ -165,6 +166,7 @@ package 'Flow Interface Example' {
       (supertype (node (document "memory://snapshot/13_flow_interface_example.md") (qualified-name "Flow Interface Example::Vehicle")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/13_flow_interface_example.md") (path (named (kind package) (name "Flow Interface Example")) (named (kind part) (name "vehicle")) (anonymous (kind interface) (ordinal 0)))))
+      (positional-ends (authored 0) (effective 2))
       (featured-by (node (document "memory://snapshot/13_flow_interface_example.md") (qualified-name "Flow Interface Example::vehicle")))
       (type (node (document "memory://snapshot/13_flow_interface_example.md") (qualified-name "Flow Interface Example::FuelInterface")) (provenance authored))
       (effective-type (node (document "memory://snapshot/13_flow_interface_example.md") (qualified-name "Flow Interface Example::FuelInterface")) (source direct))

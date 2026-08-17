@@ -556,6 +556,7 @@ standard library package Flows {
 ~~~sexpr
 (types
     (declaration (id (node (document "memory://snapshot/flows.md") (qualified-name "Flows::Flow")))
+      (positional-ends (authored 2) (effective 2))
       (supertype (node (document "memory://snapshot/flows.md") (qualified-name "Flows::Message")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/flows.md") (qualified-name "Flows::MessageAction")) (scopes any subclassification))
       (subtype (node (document "memory://snapshot/flows.md") (qualified-name "Flows::SuccessionFlow")) (scopes any subclassification))
@@ -605,12 +606,14 @@ standard library package Flows {
       (subtype (node (document "memory://snapshot/flows.md") (qualified-name "Flows::Message::payload")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/flows.md") (qualified-name "Flows::SuccessionFlow")))
+      (positional-ends (authored 2) (effective 2))
       (supertype (node (document "memory://snapshot/flows.md") (qualified-name "Flows::Flow")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/flows.md") (qualified-name "Flows::Message")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/flows.md") (qualified-name "Flows::MessageAction")) (scopes any subclassification))
       (subtype (node (document "memory://snapshot/flows.md") (qualified-name "Flows::SuccessionFlow::self")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/flows.md") (qualified-name "Flows::SuccessionFlow::self")))
+      (positional-ends (authored 0) (effective 2))
       (featured-by (node (document "memory://snapshot/flows.md") (qualified-name "Flows::SuccessionFlow")))
       (type (node (document "memory://snapshot/flows.md") (qualified-name "Flows::SuccessionFlow")) (provenance authored))
       (effective-type (node (document "memory://snapshot/flows.md") (qualified-name "Flows::SuccessionFlow")) (source direct))

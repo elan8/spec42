@@ -306,6 +306,21 @@ pub(crate) struct TypeIndex {
     /// a set-membership statement answer a generalization question. The set semantics they do
     /// entail are derived by the conformance query from this table, with their own provenance.
     set_operands: Rows<(u32, SetOperator, DeclarationId)>,
+    /// How many positional connector ends each declaration authors, indexed by ordinal.
+    authored_ends: Box<[u32]>,
+    /// How many positional ends each declaration effectively has.
+    ///
+    /// A connection-like declaration that specializes another inherits its ends, and ends it
+    /// authors itself redefine the inherited ones positionally rather than adding to them. The
+    /// effective count is therefore the larger of what it authors and the most any of its
+    /// specialization ancestors authors -- read straight off the transitive closure, so no separate
+    /// fixed point is needed.
+    ///
+    /// Kept beside `authored_ends` rather than replacing it: a rule that asks "did the author write
+    /// one end" and a rule that asks "does this declaration have two ends" are different questions,
+    /// and the legacy check could only answer the first, which is why it fell silent whenever an
+    /// ancestor declared any end at all.
+    effective_ends: Box<[u32]>,
 }
 
 /// A KerML type-relationship operator, as a set operation over what its operands classify.
@@ -464,6 +479,39 @@ impl TypeIndex {
         }
         let set_operands = Rows::build(count, set_operands)?;
 
+        let mut authored_ends = vec![0u32; count];
+        for (index, facts) in storage.declaration_facts.iter().enumerate() {
+            if facts.positional_end.is_none() {
+                continue;
+            }
+            let Some(owner) = storage
+                .declarations
+                .get(index)
+                .and_then(|declaration| declaration.owner)
+            else {
+                continue;
+            };
+            let slot = authored_ends
+                .get_mut(owner.index())
+                .ok_or(ResolutionError::InvalidStorage)?;
+            *slot = slot.checked_add(1).ok_or(ResolutionError::Capacity)?;
+        }
+        let mut effective_ends = authored_ends.clone();
+        for index in 0..count {
+            let declaration =
+                DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+            for (ancestor, _) in specialization.entries(declaration) {
+                let inherited = authored_ends
+                    .get(ancestor.index())
+                    .copied()
+                    .unwrap_or_default();
+                let slot = effective_ends
+                    .get_mut(index)
+                    .ok_or(ResolutionError::InvalidStorage)?;
+                *slot = (*slot).max(inherited);
+            }
+        }
+
         let mut featuring = Vec::with_capacity(count);
         for index in 0..count {
             let declaration =
@@ -479,6 +527,8 @@ impl TypeIndex {
             effective_types,
             featuring: featuring.into_boxed_slice(),
             set_operands,
+            authored_ends: authored_ends.into_boxed_slice(),
+            effective_ends: effective_ends.into_boxed_slice(),
         })
     }
 
@@ -537,6 +587,24 @@ impl TypeIndex {
             .iter()
             .filter(move |(_, candidate, _)| *candidate == operator)
             .map(|(_, _, target)| *target)
+    }
+}
+
+impl TypeIndex {
+    /// How many positional connector ends `declaration` authors itself.
+    pub(crate) fn authored_ends(&self, declaration: DeclarationId) -> u32 {
+        self.authored_ends
+            .get(declaration.index())
+            .copied()
+            .unwrap_or_default()
+    }
+
+    /// How many positional ends `declaration` has, counting those it inherits.
+    pub(crate) fn effective_ends(&self, declaration: DeclarationId) -> u32 {
+        self.effective_ends
+            .get(declaration.index())
+            .copied()
+            .unwrap_or_default()
     }
 }
 

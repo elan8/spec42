@@ -407,6 +407,7 @@ standard library package Interfaces {
 ~~~sexpr
 (types
     (declaration (id (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::BinaryInterface")))
+      (positional-ends (authored 2) (effective 2))
       (supertype (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::Interface")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/interfaces.md") (path (named (kind library-package) (name "Interfaces")) (named (kind interface-def) (name "BinaryInterface")) (anonymous (kind ref) (ordinal 0)))))

@@ -118,6 +118,9 @@ standard library package Allocations {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/allocations.md") (qualified-name "Allocations::Allocation")))
+      (positional-ends (authored 2) (effective 2))
+    )
     (declaration (id (node (document "memory://snapshot/allocations.md") (qualified-name "Allocations::Allocation::source")))
       (featured-by (node (document "memory://snapshot/allocations.md") (qualified-name "Allocations::Allocation")))
     )

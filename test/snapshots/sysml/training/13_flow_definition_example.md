@@ -136,6 +136,9 @@ package 'Flow Definition Example' {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/13_flow_definition_example.md") (qualified-name "Flow Definition Example::FuelFlow")))
+      (positional-ends (authored 2) (effective 2))
+    )
     (declaration (id (node (document "memory://snapshot/13_flow_definition_example.md") (path (named (kind package) (name "Flow Definition Example")) (named (kind flow-def) (name "FuelFlow")) (anonymous (kind ref) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/13_flow_definition_example.md") (qualified-name "Flow Definition Example::FuelFlow")))
     )

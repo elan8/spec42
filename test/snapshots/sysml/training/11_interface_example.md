@@ -133,6 +133,7 @@ package 'Interface Example' {
 ~~~sexpr
 (types
     (declaration (id (node (document "memory://snapshot/11_interface_example.md") (qualified-name "Interface Example::FuelInterface")))
+      (positional-ends (authored 2) (effective 2))
       (subtype (node (document "memory://snapshot/11_interface_example.md") (path (named (kind package) (name "Interface Example")) (named (kind part) (name "vehicle")) (anonymous (kind interface) (ordinal 0)))) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/11_interface_example.md") (qualified-name "Interface Example::FuelInterface::consumerPort")))
@@ -150,6 +151,7 @@ package 'Interface Example' {
       (supertype (node (document "memory://snapshot/11_interface_example.md") (qualified-name "Interface Example::Vehicle")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/11_interface_example.md") (path (named (kind package) (name "Interface Example")) (named (kind part) (name "vehicle")) (anonymous (kind interface) (ordinal 0)))))
+      (positional-ends (authored 0) (effective 2))
       (featured-by (node (document "memory://snapshot/11_interface_example.md") (qualified-name "Interface Example::vehicle")))
       (type (node (document "memory://snapshot/11_interface_example.md") (qualified-name "Interface Example::FuelInterface")) (provenance authored))
       (effective-type (node (document "memory://snapshot/11_interface_example.md") (qualified-name "Interface Example::FuelInterface")) (source direct))

@@ -89,6 +89,9 @@ package Ends {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/positional_connector_ends.md") (qualified-name "Ends::Coupling")))
+      (positional-ends (authored 2) (effective 2))
+    )
     (declaration (id (node (document "memory://snapshot/positional_connector_ends.md") (qualified-name "Ends::Coupling::left")))
       (featured-by (node (document "memory://snapshot/positional_connector_ends.md") (qualified-name "Ends::Coupling")))
       (type (node (document "memory://snapshot/positional_connector_ends.md") (qualified-name "Ends::Pump")) (provenance authored))
@@ -100,6 +103,9 @@ package Ends {
       (type (node (document "memory://snapshot/positional_connector_ends.md") (qualified-name "Ends::Tank")) (provenance authored))
       (effective-type (node (document "memory://snapshot/positional_connector_ends.md") (qualified-name "Ends::Tank")) (source direct))
       (supertype (node (document "memory://snapshot/positional_connector_ends.md") (qualified-name "Ends::Tank")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/positional_connector_ends.md") (qualified-name "Ends::Feed")))
+      (positional-ends (authored 2) (effective 2))
     )
     (declaration (id (node (document "memory://snapshot/positional_connector_ends.md") (qualified-name "Ends::Feed::reservoir")))
       (featured-by (node (document "memory://snapshot/positional_connector_ends.md") (qualified-name "Ends::Feed")))
@@ -117,6 +123,9 @@ package Ends {
       (subtype (node (document "memory://snapshot/positional_connector_ends.md") (qualified-name "Ends::Coupling::left")) (scopes any))
       (subtype (node (document "memory://snapshot/positional_connector_ends.md") (qualified-name "Ends::Feed::supply")) (scopes any))
       (subtype (node (document "memory://snapshot/positional_connector_ends.md") (qualified-name "Ends::Reversed::supply")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/positional_connector_ends.md") (qualified-name "Ends::Reversed")))
+      (positional-ends (authored 2) (effective 2))
     )
     (declaration (id (node (document "memory://snapshot/positional_connector_ends.md") (qualified-name "Ends::Reversed::reservoir")))
       (featured-by (node (document "memory://snapshot/positional_connector_ends.md") (qualified-name "Ends::Reversed")))

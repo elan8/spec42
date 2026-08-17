@@ -360,6 +360,7 @@ standard library package Connections {
 ~~~sexpr
 (types
     (declaration (id (node (document "memory://snapshot/connections.md") (qualified-name "Connections::BinaryConnection")))
+      (positional-ends (authored 2) (effective 2))
       (supertype (node (document "memory://snapshot/connections.md") (qualified-name "Connections::Connection")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/connections.md") (qualified-name "Connections::BinaryConnection::source")))
