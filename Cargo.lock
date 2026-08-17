@@ -822,12 +822,11 @@ dependencies = [
  "serde",
  "sha2",
  "spec42-generator-protocol",
- "tempfile",
+ "sysml_query",
  "thiserror 2.0.19",
  "wasmparser 0.253.0",
  "wasmtime",
  "wat",
- "workspace",
 ]
 
 [[package]]
