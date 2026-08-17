@@ -115,6 +115,8 @@ probe ambiguous_import_candidates.md 5 18
           (declaration (range (start 5 4) (end 5 23)))
           (membership (kind feature) (visibility public) (provenance default))
           (relationship (kind "featureTyping") (provenance authored) (authored "Thing") (target ambiguous 2))
+          (typing (outcome ambiguous) (candidate "A::Thing") (candidate "B::Thing"))
+          (effective-typing (outcome ambiguous))
         )
       )
       (referenced (status ambiguous)
