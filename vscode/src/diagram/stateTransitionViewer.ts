@@ -5,6 +5,7 @@ import type { LspClientHandles } from "../activation/lspClient";
 import {
   isPathInsideWorkspace,
   parseLspGenerationResult,
+  parseStateTransitionViewCatalog,
   parseSourceNavigation,
   readSvgMetadata,
   selectSingleSvg,
@@ -92,7 +93,30 @@ export class StateTransitionViewer {
     this.activeAbort = abort;
     const current = ++this.generation;
     try {
-      const artifact = await this.generate(document, abort.signal);
+      const catalog = parseStateTransitionViewCatalog(await this.handles.client.sendRequest(
+        "spec42/stateTransitionViews",
+        { modelUri: document.uri.toString() }
+      ));
+      const choices = catalog.views.filter((view) => view.source.uri === document.uri.toString());
+      if (choices.length === 0) {
+        throw new Error("The active file does not author a StateTransitionView.");
+      }
+      let selected = choices[0];
+      if (choices.length > 1) {
+        const picked = await vscode.window.showQuickPick(
+          choices.map((view) => ({
+            label: view.name,
+            description: view.exposedMachine.label,
+            detail: view.semanticId,
+            view,
+          })),
+          { placeHolder: "Select a state-transition view from the active file", matchOnDescription: true, matchOnDetail: true }
+        );
+        if (!picked) return;
+        selected = picked.view;
+      }
+      if (abort.signal.aborted || current !== this.generation) return;
+      const artifact = await this.generate(document, selected.handle, catalog.modelDigest, abort.signal);
       if (current !== this.generation) return;
       this.lastArtifact = artifact;
       this.show(artifact);
@@ -104,7 +128,12 @@ export class StateTransitionViewer {
     }
   }
 
-  private async generate(document: vscode.TextDocument, signal: AbortSignal): Promise<Artifact> {
+  private async generate(
+    document: vscode.TextDocument,
+    viewHandle: string,
+    expectedModelDigest: string,
+    signal: AbortSignal
+  ): Promise<Artifact> {
     const plugin = this.dependencies.resolvePluginPath(this.context);
     let module: Buffer;
     try { module = await fs.readFile(plugin); }
@@ -113,9 +142,8 @@ export class StateTransitionViewer {
     const result = parseLspGenerationResult(await this.handles.client.sendRequest("spec42/generate", {
       generatorBase64: module.toString("base64"),
       modelUri: document.uri.toString(),
-      // View summaries carry source provenance, so the active saved document is an
-      // unambiguous selector even when one workspace publication contains many views.
-      args: [document.uri.toString()],
+      args: [viewHandle],
+      expectedModelDigest,
     }));
     if (signal.aborted) throw new Error("generation was cancelled");
     const svgName = selectSingleSvg(result.artifacts.map((artifact) => artifact.path));

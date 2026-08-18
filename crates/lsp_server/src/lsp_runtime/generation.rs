@@ -9,6 +9,7 @@ use generator_host::{
 };
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
+use spec42_generator_protocol::StateTransitionViewSummary;
 use sysml_query::resolved_slice::PublishedModel;
 
 const MAX_PLUGIN_BYTES: usize = 16 * 1024 * 1024;
@@ -21,6 +22,7 @@ pub(crate) struct GenerateParams {
     pub(crate) model_uri: String,
     #[serde(default)]
     pub(crate) args: Vec<String>,
+    pub(crate) expected_model_digest: Option<String>,
 }
 
 impl GenerateParams {
@@ -68,6 +70,19 @@ pub(crate) struct GenerateResult {
     pub(crate) timings: GenerationTimings,
 }
 
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub(crate) struct StateTransitionViewsParams {
+    pub(crate) model_uri: String,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub(crate) struct StateTransitionViewsResult {
+    pub(crate) model_digest: String,
+    pub(crate) views: Vec<StateTransitionViewSummary>,
+}
+
 pub(crate) struct GeneratorService {
     runtime: Arc<GeneratorRuntime>,
     /// Entries are keyed by the digest of the exact core Wasm bytes. `PreparedGenerator` already
@@ -93,6 +108,7 @@ impl GeneratorService {
         module_bytes: &[u8],
         publication: Arc<PublishedModel>,
         args: &[String],
+        expected_model_digest: Option<&str>,
     ) -> Result<GenerateResult, String> {
         if module_bytes.len() > MAX_PLUGIN_BYTES {
             return Err(format!(
@@ -130,6 +146,11 @@ impl GeneratorService {
             QueryLimits::default(),
         ));
         let model_digest = model.model_digest();
+        if let Some(expected) = expected_model_digest {
+            if expected != model_digest {
+                return Err("the semantic publication changed while selecting a view; choose the view again".to_owned());
+            }
+        }
         let execution = self
             .runtime
             .execute_prepared(
@@ -169,6 +190,23 @@ impl GeneratorService {
                 compilation_cache_misses: self.runtime.compilation_cache_misses(),
                 compilation_cache_error: self.runtime.compilation_cache_error().map(str::to_owned),
             },
+        })
+    }
+
+    pub(crate) fn state_transition_views(
+        publication: Arc<PublishedModel>,
+    ) -> Result<StateTransitionViewsResult, String> {
+        let model = GeneratorModelView::new(
+            Arc::clone(&publication),
+            publication.publication().source_digest(),
+            env!("CARGO_PKG_VERSION"),
+            QueryLimits::default(),
+        );
+        Ok(StateTransitionViewsResult {
+            model_digest: model.model_digest(),
+            views: model
+                .state_transition_views()
+                .map_err(|error| error.to_string())?,
         })
     }
 }
@@ -215,10 +253,10 @@ mod tests {
         let service = GeneratorService::new().expect("generator service");
         let module = empty_generator("same");
         let cold = service
-            .generate(&module, publication(), &[])
+            .generate(&module, publication(), &[], None)
             .expect("cold generation");
         let warm = service
-            .generate(&module, publication(), &[])
+            .generate(&module, publication(), &[], None)
             .expect("warm generation");
         assert!(!cold.timings.prepared_reused);
         assert!(warm.timings.prepared_reused);
@@ -227,8 +265,13 @@ mod tests {
         assert_eq!(cold.generator_digest, warm.generator_digest);
         assert_eq!(cold.artifacts.len(), warm.artifacts.len());
 
+        let stale = service
+            .generate(&module, publication(), &[], Some("blake3:stale"))
+            .expect_err("stale catalog selection must not execute");
+        assert!(stale.contains("publication changed"));
+
         let changed = service
-            .generate(&empty_generator("changed"), publication(), &[])
+            .generate(&empty_generator("changed"), publication(), &[], None)
             .expect("changed generation");
         assert!(!changed.timings.prepared_reused);
         assert_ne!(changed.generator_digest, warm.generator_digest);

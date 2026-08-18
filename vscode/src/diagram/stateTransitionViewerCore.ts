@@ -30,6 +30,46 @@ export type LspGenerationResult = {
   };
 };
 
+export type StateTransitionViewChoice = {
+  handle: string;
+  semanticId: string;
+  name: string;
+  exposedMachine: { semanticId: string; label: string };
+  source: { uri: string };
+};
+
+export type StateTransitionViewCatalog = {
+  modelDigest: string;
+  views: StateTransitionViewChoice[];
+};
+
+export function parseStateTransitionViewCatalog(value: unknown): StateTransitionViewCatalog {
+  if (!value || typeof value !== "object") throw new Error("Spec42 returned an invalid state-transition catalog.");
+  const candidate = value as Record<string, unknown>;
+  if (typeof candidate.modelDigest !== "string" || !Array.isArray(candidate.views)) {
+    throw new Error("Spec42 state-transition catalog is missing its model identity or views.");
+  }
+  const views = candidate.views.map((entry) => {
+    if (!entry || typeof entry !== "object") throw new Error("Spec42 returned an invalid state-transition view.");
+    const view = entry as Record<string, unknown>;
+    const machine = view.exposedMachine as Record<string, unknown> | undefined;
+    const source = view.source as Record<string, unknown> | undefined;
+    if (typeof view.handle !== "string" || typeof view.semanticId !== "string" || typeof view.name !== "string" ||
+        !machine || typeof machine.semanticId !== "string" || typeof machine.label !== "string" ||
+        !source || typeof source.uri !== "string") {
+      throw new Error("Spec42 returned malformed state-transition view identity.");
+    }
+    return {
+      handle: view.handle,
+      semanticId: view.semanticId,
+      name: view.name,
+      exposedMachine: { semanticId: machine.semanticId, label: machine.label },
+      source: { uri: source.uri },
+    };
+  });
+  return { modelDigest: candidate.modelDigest, views };
+}
+
 export function parseLspGenerationResult(value: unknown): LspGenerationResult {
   if (!value || typeof value !== "object") throw new Error("Spec42 returned an invalid generation result.");
   const candidate = value as Record<string, unknown>;

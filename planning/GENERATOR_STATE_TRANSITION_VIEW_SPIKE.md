@@ -248,6 +248,12 @@ query or generator ABI. The extension contributes `Spec42: Open State Transition
 base64 bytes for the packaged Roc plugin through `spec42/generate`, and displays the returned SVG in a
 readonly webview panel.
 
+Before generation, the extension calls `spec42/stateTransitionViews` against the same immutable
+publication. It filters the typed catalog by the active document's source provenance. One match opens
+directly; multiple matches are shown in a Quick Pick with view and exposed-machine labels. The chosen
+opaque handle and catalog model digest are passed to `spec42/generate`, which rejects a stale selection
+if the publication changed in between.
+
 For the spike, generation operates on saved workspace files. If a relevant SysML document is dirty,
 the command asks the user to save or cancel. Generation then consumes the current coherent LSP
 `PublishedModel`; it never builds a second publication from disk.

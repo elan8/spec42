@@ -18,6 +18,7 @@ workspace_session = { path = "../workspace_session" }
 language_service = { path = "../language_service" }
 generator_api = { path = "../generator_api" }
 generator_host = { path = "../generator_host" }
+spec42-generator-protocol = { path = "../generator_protocol" }
 base64 = "0.22"
 sysml_diagnostics = { path = "../sysml_diagnostics" }
 sysml_source = { path = "../sysml_source" }
@@ -45,5 +46,4 @@ rayon = "1.12"
 # Used by LSP integration tests when constructing `file://` URIs.
 url = "2"
 server = { path = "../server", default-features = false }
-spec42-generator-protocol = { path = "../generator_protocol" }
 wat = "1"
