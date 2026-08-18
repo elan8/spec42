@@ -25,6 +25,10 @@ Everything runs locally. Models stay in your workspace; Spec42 does not require 
 - Workspace-aware indexing for multi-file models and configured libraries.
 - **Feature Inspector** for resolved typing, inheritance, relationships, values, and keyword help.
 - Bundled SysML standard library plus searchable Elan8 domain and method libraries.
+- A local **Open Diagram** command backed by the packaged Rust WASM generator and D3/ELK renderer.
+  Its picker is filtered by the standard view usages authored in the active file. State-transition
+  projections are implemented; the other declared views currently identify their missing typed
+  query explicitly in the diagram panel.
 - Built-in Copilot Language Model Tools for check, doctor, model summary, and diagnostic explanation.
 
 ## Views
@@ -44,7 +48,7 @@ Everything runs locally. Models stay in your workspace; Spec42 does not require 
 
 1. Install **SysML v2 Editor** from the Visual Studio Marketplace.
 2. Open a `.sysml` or `.kerml` file — or pick the starred **timer** example from the Spec42 sidebar.
-3. Use navigation, diagnostics, and **Feature Inspector** as you explore.
+3. Use navigation, diagnostics, **Feature Inspector**, and **Open Diagram** as you explore.
 
 Full walkthrough: **[Getting Started](https://elan8.github.io/spec42/guide/getting-started)**.
 

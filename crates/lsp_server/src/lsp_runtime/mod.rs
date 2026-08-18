@@ -26,8 +26,8 @@ use custom::{
     sysml_feature_inspector_result, sysml_library_search_result, sysml_server_stats_result,
 };
 use generation::{
-    GenerateParams, GenerateResult, GeneratorService, StateTransitionViewsParams,
-    StateTransitionViewsResult,
+    DiagramViewsParams, DiagramViewsResult, GenerateParams, GenerateResult, GeneratorService,
+    StateTransitionViewsParams, StateTransitionViewsResult,
 };
 
 struct Backend {
@@ -510,14 +510,56 @@ impl Backend {
                 "the workspace has no current immutable semantic publication",
             )
         })?;
-        tokio::task::spawn_blocking(move || GeneratorService::state_transition_views(publication))
-            .await
-            .map_err(|error| {
-                tower_lsp::jsonrpc::Error::invalid_params(format!(
-                    "state-transition catalog worker did not complete: {error}"
-                ))
-            })?
-            .map_err(tower_lsp::jsonrpc::Error::invalid_params)
+        let service = Arc::clone(&self.generator_service);
+        tokio::task::spawn_blocking(move || {
+            let service = service
+                .as_ref()
+                .as_ref()
+                .map_err(|message| message.clone())?;
+            service.state_transition_views(publication)
+        })
+        .await
+        .map_err(|error| {
+            tower_lsp::jsonrpc::Error::invalid_params(format!(
+                "state-transition catalog worker did not complete: {error}"
+            ))
+        })?
+        .map_err(tower_lsp::jsonrpc::Error::invalid_params)
+    }
+
+    async fn spec42_diagram_views(&self, params: DiagramViewsParams) -> Result<DiagramViewsResult> {
+        let model_uri = Url::parse(&params.model_uri).map_err(|error| {
+            tower_lsp::jsonrpc::Error::invalid_params(format!("invalid model URI: {error}"))
+        })?;
+        let state = self.handle.snapshot();
+        if !state
+            .index
+            .contains_key(&crate::common::util::normalize_file_uri(&model_uri))
+        {
+            return Err(tower_lsp::jsonrpc::Error::invalid_params(
+                "model URI is not part of the current workspace publication",
+            ));
+        }
+        let publication = state.published_model.clone().ok_or_else(|| {
+            tower_lsp::jsonrpc::Error::invalid_params(
+                "the workspace has no current immutable semantic publication",
+            )
+        })?;
+        let service = Arc::clone(&self.generator_service);
+        tokio::task::spawn_blocking(move || {
+            let service = service
+                .as_ref()
+                .as_ref()
+                .map_err(|message| message.clone())?;
+            service.diagram_views(publication)
+        })
+        .await
+        .map_err(|error| {
+            tower_lsp::jsonrpc::Error::invalid_params(format!(
+                "diagram catalog worker did not complete: {error}"
+            ))
+        })?
+        .map_err(tower_lsp::jsonrpc::Error::invalid_params)
     }
 
     async fn sysml_library_search(
@@ -587,6 +629,7 @@ pub async fn run(config: Arc<Spec42Config>, server_name: &str) {
     .custom_method("sysml/clearCache", Backend::sysml_clear_cache)
     .custom_method("sysml/librarySearch", Backend::sysml_library_search)
     .custom_method("spec42/generate", Backend::spec42_generate)
+    .custom_method("spec42/diagramViews", Backend::spec42_diagram_views)
     .custom_method(
         "spec42/stateTransitionViews",
         Backend::spec42_state_transition_views,

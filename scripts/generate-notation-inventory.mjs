@@ -122,7 +122,7 @@ function inferStatus(name, views) {
     return "shared (action-flow-view)";
   }
   if (base.includes("state-transition") || base === "initial" || base === "final") {
-    return "shared (state-transition-view)";
+    return "VS Code diagram renderer (state-transition-view)";
   }
   if (views.includes("general-view") || views.includes("interconnection-view")) {
     if (views === "—") return "WONTFIX (not in shipped UI)";

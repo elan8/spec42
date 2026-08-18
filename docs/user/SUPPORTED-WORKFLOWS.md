@@ -18,7 +18,7 @@ These are the workflows the project is actively hardening for `1.0` and treats a
 - Folding ranges
 - Deterministic CLI validation reports for CI (`text`, `json`, `sarif`, `junit`)
 - Optional Sysand package-manager detection and dependency-root ingestion
-- Generator plugins over the immutable model query API. Built-in diagram views and CLI SVG/JSON diagram export are disabled while a diagram generator plugin is defined.
+- Generator plugins over the immutable model query API.
 - Generated conformance reporting for language, validation, views, CLI, and Sysand integration
 
 ## Usable With Caveats
@@ -29,13 +29,16 @@ These workflows are available and useful, but still have known limits that shoul
   The extension can truncate discovery per workspace folder and file type based on `spec42.workspace.maxFilesPerPattern` (legacy `sysml-language-server.workspace.maxFilesPerPattern` is still supported).
 - Library path indexing
   Useful for hover, definition, and completion, but dependent on parser coverage and available files.
-- Diagram semantics and rendering are not currently a built-in supported workflow. Existing renderer design documents are historical input for the generator-plugin replacement, not an active product contract.
+- The VS Code diagram command exercises a packaged WASM generator, versioned JSON render product,
+  and D3/ELK webview for all eight declared views. State-transition views use the implemented typed
+  projection; the other views show explicit incomplete-query states.
 
 ## Experimental Areas
 
 The following areas are intentionally not release-gating for `1.0`:
 
-- Diagram generation/export, pending a generator plugin with a typed render-product contract
+- Typed semantic projections for general, interconnection, action-flow, sequence, browser, grid,
+  and geometry diagram products
 - Full visual parity between CLI SVG and the VS Code renderer; the 1.0 CLI target is stable ELK layout/routing parity for routed views
 - Broader SysML v2 language coverage outside the currently well-tested subset
 - Deep semantic validation beyond the currently published typed rules

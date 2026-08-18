@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Diagrams now cross the generator boundary.** The repository-owned Rust WASM diagram plugin
+  emits a versioned JSON render product from the immutable model query API, and the VS Code webview
+  renders it with the relocated D3/ELK package. All eight view kinds are selectable from the start:
+  state transitions use their typed projection, while views awaiting owner-defined queries report
+  explicit incomplete products instead of reconstructing semantic graphs. The obsolete Rust
+  `diagram` crate is removed and `generator-plugins` is the home for production WASM plugins.
+
 - **Every diagnostic Spec42 reports is settled by the immutable publication.** `sysml_resolution`
   now owns the conformance families the graph engine ran -- namespace identity, connection,
   behavior, requirement/case, view and inherited-value conformance -- and the two authoring hints,

@@ -40,9 +40,10 @@ supersession behavior are established.
 
 ## Deliberately disabled products
 
-- Built-in diagrams, view catalogs, render caches, and diagram CLI export are removed. The intended
-  replacement is a generator plugin consuming typed model queries and producing a versioned render
-  artifact.
+- Built-in diagram semantics, view catalogs, render caches, and diagram CLI export are removed. A
+  repository-owned generator plugin produces a versioned render artifact for the VS Code renderer.
+  State transitions consume their typed projection; every other declared view reports explicit
+  incompleteness until its owner-defined query exists.
 - Graph-shaped model DTOs and semantic snapshot comparison are removed. A future comparison product
   must compare typed facts by stable identity.
 - Call hierarchy and monikers are disabled until the publication owns typed behavior/`perform`

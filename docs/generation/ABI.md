@@ -264,6 +264,6 @@ version, so it changes on every Spec42 release) in generated output.
 5. Return a Postcard `Result<Vec<Artifact>, String>` at a packed pointer and length.
 
 For Rust, `spec42-generator-sdk` does all of this; `export!(YourGenerator)` emits the export
-set. See `generator-examples/rust`. For other languages, the table above is the whole
+set. See `generator-plugins/example`. For other languages, the table above is the whole
 contract — `crates/generator_conformance` can run its corpus against any module, so a new
 implementation can be checked against the same suite the Rust SDK is.

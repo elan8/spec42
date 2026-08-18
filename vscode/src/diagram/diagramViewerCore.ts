@@ -13,7 +13,35 @@ export type SourceNavigation = {
   endCharacter: number;
 };
 
-export type SvgMetadata = { modelDigest: string; viewName: string };
+export const DIAGRAM_VIEWS = [
+  { id: "general-view", label: "General View", queryStatus: "stubbed" },
+  { id: "interconnection-view", label: "Interconnection View", queryStatus: "stubbed" },
+  { id: "action-flow-view", label: "Action Flow View", queryStatus: "stubbed" },
+  { id: "state-transition-view", label: "State Transition View", queryStatus: "implemented" },
+  { id: "sequence-view", label: "Sequence View", queryStatus: "stubbed" },
+  { id: "browser-view", label: "Browser View", queryStatus: "stubbed" },
+  { id: "grid-view", label: "Grid View", queryStatus: "stubbed" },
+  { id: "geometry-view", label: "Geometry View", queryStatus: "stubbed" },
+] as const;
+
+export type DiagramViewId = typeof DIAGRAM_VIEWS[number]["id"];
+
+export type DiagramProduct = {
+  schemaVersion: 1;
+  modelDigest: string;
+  view: { id: DiagramViewId; name: string };
+  completeness: {
+    status: "complete" | "incomplete";
+    reasons: Array<{ code: string; message: string; requiredQuery: string }>;
+  };
+  preparedView: {
+    title: string;
+    view: DiagramViewId;
+    nodes: unknown[];
+    edges: unknown[];
+    meta?: Record<string, unknown>;
+  };
+};
 
 export type LspGenerationResult = {
   modelDigest: string;
@@ -42,6 +70,45 @@ export type StateTransitionViewCatalog = {
   modelDigest: string;
   views: StateTransitionViewChoice[];
 };
+
+export type DiagramViewCatalog = {
+  modelDigest: string;
+  views: Array<{
+    kind: DiagramViewId;
+    semanticId: string;
+    name: string;
+    source: { uri: string };
+  }>;
+};
+
+export function parseDiagramViewCatalog(value: unknown): DiagramViewCatalog {
+  if (!value || typeof value !== "object") throw new Error("Spec42 returned an invalid diagram catalog.");
+  const candidate = value as Record<string, unknown>;
+  if (typeof candidate.modelDigest !== "string" || !Array.isArray(candidate.views)) {
+    throw new Error("Spec42 diagram catalog is missing its model identity or views.");
+  }
+  const views = candidate.views.map((entry) => {
+    if (!entry || typeof entry !== "object") throw new Error("Spec42 returned an invalid diagram view.");
+    const view = entry as Record<string, unknown>;
+    const source = view.source as Record<string, unknown> | undefined;
+    if (!DIAGRAM_VIEWS.some((known) => known.id === view.kind) || typeof view.semanticId !== "string" ||
+        typeof view.name !== "string" || !source || typeof source.uri !== "string") {
+      throw new Error("Spec42 returned malformed diagram view identity.");
+    }
+    return { kind: view.kind as DiagramViewId, semanticId: view.semanticId, name: view.name, source: { uri: source.uri } };
+  });
+  return { modelDigest: candidate.modelDigest, views };
+}
+
+export function diagramViewsForDocument(
+  catalog: DiagramViewCatalog,
+  documentUri: string
+): Array<typeof DIAGRAM_VIEWS[number]> {
+  const authoredKinds = new Set(catalog.views
+    .filter((view) => view.source.uri === documentUri)
+    .map((view) => view.kind));
+  return DIAGRAM_VIEWS.filter((view) => authoredKinds.has(view.id));
+}
 
 export function parseStateTransitionViewCatalog(value: unknown): StateTransitionViewCatalog {
   if (!value || typeof value !== "object") throw new Error("Spec42 returned an invalid state-transition catalog.");
@@ -144,47 +211,41 @@ export function parseGenerationReport(value: unknown): GenerationReport {
   return { status: candidate.status, model_digest: candidate.model_digest };
 }
 
-export function selectSingleSvg(paths: string[]): string {
-  const svgPaths = paths.filter((candidate) => path.extname(candidate).toLowerCase() === ".svg");
-  if (svgPaths.length !== 1) {
-    throw new Error(`Expected exactly one SVG artifact, but generator produced ${svgPaths.length}.`);
+export function selectSingleDiagramJson(paths: string[]): string {
+  const jsonPaths = paths.filter((candidate) => path.extname(candidate).toLowerCase() === ".json" && !candidate.startsWith(".spec42-"));
+  if (jsonPaths.length !== 1) {
+    throw new Error(`Expected exactly one diagram JSON artifact, but generator produced ${jsonPaths.length}.`);
   }
-  return svgPaths[0];
+  return jsonPaths[0];
 }
 
-/** SVG is inserted into a privileged webview document, so reject active or external content. */
-export function validateStandaloneSvg(svg: string): string {
-  if (Buffer.byteLength(svg, "utf8") > 16 * 1024 * 1024) {
-    throw new Error("Generated SVG exceeds the 16 MiB viewer limit.");
+export function parseDiagramProduct(text: string): DiagramProduct {
+  if (Buffer.byteLength(text, "utf8") > 16 * 1024 * 1024) {
+    throw new Error("Generated diagram product exceeds the 16 MiB viewer limit.");
   }
-  if (!/^\s*(?:<\?xml[^>]*>\s*)?<svg\b/i.test(svg)) {
-    throw new Error("Generated artifact is not a standalone SVG document.");
+  let value: unknown;
+  try { value = JSON.parse(text); }
+  catch { throw new Error("Generated diagram product is not valid JSON."); }
+  if (!value || typeof value !== "object") throw new Error("Generated diagram product is not an object.");
+  const product = value as Record<string, unknown>;
+  const view = product.view as Record<string, unknown> | undefined;
+  const completeness = product.completeness as Record<string, unknown> | undefined;
+  const prepared = product.preparedView as Record<string, unknown> | undefined;
+  if (product.schemaVersion !== 1 || typeof product.modelDigest !== "string" ||
+      !view || !DIAGRAM_VIEWS.some((candidate) => candidate.id === view.id) || typeof view.name !== "string" ||
+      !completeness || !["complete", "incomplete"].includes(String(completeness.status)) || !Array.isArray(completeness.reasons) ||
+      !prepared || prepared.view !== view.id || typeof prepared.title !== "string" ||
+      !Array.isArray(prepared.nodes) || !Array.isArray(prepared.edges)) {
+    throw new Error("Generated diagram product does not match schema version 1.");
   }
-  const forbidden = [
-    /<!\s*DOCTYPE\b/i,
-    /<\s*script\b/i,
-    /<\s*(?:foreignObject|iframe|object|embed|audio|video)\b/i,
-    /\bon[a-z]+\s*=/i,
-    /\bsrc\s*=/i,
-    /\bhref\s*=\s*["'](?!#)/i,
-    /@import\b/i,
-    /url\s*\(\s*["']?\s*(?:https?:|data:|javascript:|file:|\/\/)/i,
-  ];
-  if (forbidden.some((pattern) => pattern.test(svg))) {
-    throw new Error("Generated SVG contains active or external content and was not displayed.");
+  for (const reason of completeness.reasons) {
+    if (!reason || typeof reason !== "object") throw new Error("Generated diagram product has a malformed completeness reason.");
+    const candidate = reason as Record<string, unknown>;
+    if (typeof candidate.code !== "string" || typeof candidate.message !== "string" || typeof candidate.requiredQuery !== "string") {
+      throw new Error("Generated diagram product has a malformed completeness reason.");
+    }
   }
-  return svg;
-}
-
-export function readSvgMetadata(svg: string): SvgMetadata {
-  const root = svg.match(/^\s*(?:<\?xml[^>]*>\s*)?<svg\b([^>]*)>/i)?.[1];
-  const attribute = (name: string) => root?.match(new RegExp(`\\b${name}\\s*=\\s*["']([^"']+)["']`, "i"))?.[1];
-  const modelDigest = attribute("data-model-digest");
-  const viewName = attribute("data-view-name");
-  if (!modelDigest || !viewName) {
-    throw new Error("Generated SVG is missing data-model-digest or data-view-name provenance.");
-  }
-  return { modelDigest, viewName };
+  return value as DiagramProduct;
 }
 
 function nonNegativeInteger(value: unknown): value is number {

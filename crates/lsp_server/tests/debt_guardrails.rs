@@ -48,7 +48,7 @@ fn kernel_semantic_layer_contains_only_shims_and_runtime_modules() {
 fn frontend_normalize_payload_line_count_does_not_increase() {
     let manifest = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     let repo_root = manifest.parent().and_then(Path::parent).expect("repo root");
-    let normalize_path = repo_root.join("shared/diagram-renderer/src/prepare/normalize-payload.ts");
+    let normalize_path = repo_root.join("vscode/diagram-renderer/src/prepare/normalize-payload.ts");
     let contents = fs::read_to_string(normalize_path).expect("normalize-payload.ts");
     const MAX_NORMALIZE_PAYLOAD_LINES: usize = 100;
     let line_count = contents.lines().count();

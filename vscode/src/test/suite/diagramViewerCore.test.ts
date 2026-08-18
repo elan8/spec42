@@ -2,17 +2,19 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   buildGenerateArgv,
+  diagramViewsForDocument,
+  DIAGRAM_VIEWS,
   isPathInsideWorkspace,
+  parseDiagramProduct,
+  parseDiagramViewCatalog,
   parseGenerationReport,
   parseLspGenerationResult,
   parseStateTransitionViewCatalog,
   parseSourceNavigation,
-  readSvgMetadata,
-  selectSingleSvg,
-  validateStandaloneSvg,
-} from "../../diagram/stateTransitionViewerCore";
+  selectSingleDiagramJson,
+} from "../../diagram/diagramViewerCore";
 
-describe("state transition viewer core", () => {
+describe("diagram viewer core", () => {
   it("builds a bounded saved-file generation invocation", () => {
     assert.deepEqual(buildGenerateArgv("/plugin.wasm", "/w/model.sysml", "/tmp/out", "/w", ["/lib"]), [
       "generate", "/plugin.wasm", "/w/model.sysml", "--output", "/tmp/out", "--format", "json",
@@ -28,17 +30,24 @@ describe("state transition viewer core", () => {
     assert.throws(() => parseGenerationReport({ status: "generated" }));
   });
 
-  it("selects exactly one SVG", () => {
-    assert.equal(selectSingleSvg(["view.svg", ".spec42-generator-manifest.json"]), "view.svg");
-    assert.throws(() => selectSingleSvg([]));
-    assert.throws(() => selectSingleSvg(["a.svg", "b.svg"]));
+  it("declares all renderer views at the plugin boundary", () => {
+    assert.deepEqual(DIAGRAM_VIEWS.map((view) => view.id), [
+      "general-view", "interconnection-view", "action-flow-view", "state-transition-view",
+      "sequence-view", "browser-view", "grid-view", "geometry-view",
+    ]);
+  });
+
+  it("selects exactly one diagram JSON artifact", () => {
+    assert.equal(selectSingleDiagramJson(["diagram.json", ".spec42-generator-manifest.json"]), "diagram.json");
+    assert.throws(() => selectSingleDiagramJson([]));
+    assert.throws(() => selectSingleDiagramJson(["a.json", "b.json"]));
   });
 
   it("validates persistent LSP artifacts and timing identity", () => {
     const value = {
       modelDigest: "blake3:model",
       generatorDigest: "sha256:guest",
-      artifacts: [{ path: "view.svg", content: [60, 115, 118, 103, 62] }],
+      artifacts: [{ path: "diagram.json", content: [123, 125] }],
       timings: {
         modulePrepareMs: 0,
         guestExecutionUs: 1000,
@@ -50,7 +59,7 @@ describe("state transition viewer core", () => {
       },
     };
     assert.deepEqual(parseLspGenerationResult(value), value);
-    assert.throws(() => parseLspGenerationResult({ ...value, artifacts: [{ path: "view.svg", content: [256] }] }));
+    assert.throws(() => parseLspGenerationResult({ ...value, artifacts: [{ path: "diagram.json", content: [256] }] }));
   });
 
   it("validates typed state-transition view choices", () => {
@@ -81,24 +90,47 @@ describe("state transition viewer core", () => {
     assert.throws(() => parseStateTransitionViewCatalog({ ...value, views: [{ name: "missing identity" }] }));
   });
 
-  it("rejects active and external SVG content", () => {
-    assert.equal(validateStandaloneSvg('<svg xmlns="http://www.w3.org/2000/svg"><path d="M0 0"/></svg>').startsWith("<svg"), true);
-    for (const unsafe of [
-      "<svg><script>alert(1)</script></svg>",
-      '<svg><image href="https://example.com/a.png"/></svg>',
-      '<svg><a href="command:evil">bad</a></svg>',
-      '<svg><style>@import "https://example.com/a.css"</style></svg>',
-      '<!DOCTYPE svg><svg></svg>',
-      '<svg><g onclick="alert(1)"/></svg>',
-      '<svg><foreignObject>bad</foreignObject></svg>',
-    ]) assert.throws(() => validateStandaloneSvg(unsafe));
+  it("offers only diagram capabilities authored by the active document", () => {
+    const catalog = parseDiagramViewCatalog({
+      modelDigest: "blake3:model",
+      views: [{
+        kind: "state-transition-view",
+        semanticId: "P::lifecycle",
+        name: "lifecycle",
+        source: { uri: "file:///workspace/views.sysml" },
+      }, {
+        kind: "general-view",
+        semanticId: "P::structure",
+        name: "structure",
+        source: { uri: "file:///workspace/views.sysml" },
+      }, {
+        kind: "grid-view",
+        semanticId: "Q::matrix",
+        name: "matrix",
+        source: { uri: "file:///workspace/other.sysml" },
+      }],
+    });
+    assert.deepEqual(
+      diagramViewsForDocument(catalog, "file:///workspace/views.sysml").map((view) => view.id),
+      ["general-view", "state-transition-view"]
+    );
+    assert.deepEqual(diagramViewsForDocument(catalog, "file:///workspace/structure.sysml"), []);
   });
 
-  it("reads authoritative SVG identity metadata", () => {
-    assert.deepEqual(readSvgMetadata('<svg data-view-name="Door lifecycle" data-model-digest="sha256:abc"></svg>'), {
-      modelDigest: "sha256:abc", viewName: "Door lifecycle",
-    });
-    assert.throws(() => readSvgMetadata("<svg></svg>"));
+  it("validates the versioned render product and explicit incompleteness", () => {
+    const value = {
+      schemaVersion: 1,
+      modelDigest: "blake3:model",
+      view: { id: "general-view", name: "General View" },
+      completeness: {
+        status: "incomplete",
+        reasons: [{ code: "diagram.query.unsupported", message: "not implemented", requiredQuery: "general_view" }],
+      },
+      preparedView: { title: "General View", view: "general-view", nodes: [], edges: [] },
+    };
+    assert.deepEqual(parseDiagramProduct(JSON.stringify(value)), value);
+    assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, schemaVersion: 2 })));
+    assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, preparedView: { ...value.preparedView, view: "grid-view" } })));
   });
 
   it("validates bounded source navigation", () => {

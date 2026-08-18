@@ -15,10 +15,7 @@ impl Guest for ExampleGenerator {
             &format!("model {}", info.model_digest),
         );
 
-        let mut markdown = format!(
-            "# Generated model\n\nArguments: `{}`\n\n",
-            args.join(" ")
-        );
+        let mut markdown = format!("# Generated model\n\nArguments: `{}`\n\n", args.join(" "));
         for part in &parts {
             markdown.push_str(&format!("- `{}`\n", part.qualified_name));
             for feature in model::effective_features(&part.handle)? {

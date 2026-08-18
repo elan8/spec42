@@ -1,6 +1,6 @@
 # Diagram renderer
 
-Shared D3 + ELK renderer for Spec42 **SysML visualizer views** (`SYSML_ENABLED_VIEWS`), used by the VS Code extension. Embedding hosts may consume a subset of views (for example **general** and **interconnection** only).
+D3 + ELK renderer owned by the VS Code package for Spec42 diagram-generator products.
 
 | View | Layout | Module |
 |------|--------|--------|
@@ -15,8 +15,9 @@ Shared D3 + ELK renderer for Spec42 **SysML visualizer views** (`SYSML_ENABLED_V
 
 Browser and Grid implement the presentation forms described by SysML v2 §9.2.20. Geometry remains provisional: Spec42 does not yet extract and render model-authored spatial coordinates, shapes, orientation, or 3D viewing parameters. Filtered standard views such as case/requirement-style views are projected through `general-view` with filters preserved by the backend.
 
-This renderer is not currently connected to a built-in semantic diagram product. A future diagram
-generator plugin may reuse it after defining a typed, versioned render-artifact contract.
+The renderer consumes the versioned JSON artifact emitted by `generator-plugins/diagram`. Semantic
+membership and relationships belong to typed generator queries; this package owns only preparation,
+layout, interaction, and drawing.
 
 ## Notation-neutral theme
 
@@ -48,7 +49,7 @@ Logic lives in `src/node-notation.ts` (`resolveNodeChrome`).
 After changing renderer sources, run from `vscode/`:
 
 ```bash
-npm run build:webview
+npm run build:diagram-webview
 ```
 
-`media/webview/visualizer.js` is gitignored; the bundle must be rebuilt locally.
+`media/diagram-viewer.js` is generated for extension packaging and is gitignored.

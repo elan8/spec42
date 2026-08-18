@@ -50,6 +50,27 @@ pub struct ElementSummary {
     pub library_element: bool,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum DiagramViewKind {
+    GeneralView,
+    InterconnectionView,
+    ActionFlowView,
+    StateTransitionView,
+    SequenceView,
+    BrowserView,
+    GridView,
+    GeometryView,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct DiagramViewSummary {
+    pub kind: DiagramViewKind,
+    pub semantic_id: String,
+    pub name: String,
+    pub source: SourceReference,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct MultiplicitySummary {
     pub lower: Option<String>,
@@ -641,6 +662,69 @@ impl GeneratorModelView {
             .iter()
             .map(|feature| self.summary(&feature.identity))
             .collect::<Result<Vec<_>, _>>()?;
+        self.enforce_limit(values.len())?;
+        Ok(values)
+    }
+
+    /// Catalogs authored standard view usages from the immutable typing facts. Presentation
+    /// clients use this to offer only diagram kinds actually authored in a document.
+    pub fn diagram_views(&self) -> Result<Vec<DiagramViewSummary>, ModelQueryError> {
+        const STANDARD_VIEWS: [(&str, DiagramViewKind); 8] = [
+            ("GeneralView", DiagramViewKind::GeneralView),
+            ("InterconnectionView", DiagramViewKind::InterconnectionView),
+            ("ActionFlowView", DiagramViewKind::ActionFlowView),
+            ("StateTransitionView", DiagramViewKind::StateTransitionView),
+            ("SequenceView", DiagramViewKind::SequenceView),
+            ("BrowserView", DiagramViewKind::BrowserView),
+            ("GridView", DiagramViewKind::GridView),
+            ("GeometryView", DiagramViewKind::GeometryView),
+        ];
+        let mut definitions = HashMap::new();
+        for (name, kind) in STANDARD_VIEWS {
+            let matches = self
+                .by_identity
+                .values()
+                .filter(|entry| {
+                    entry.source == ElementSource::StandardLibrary
+                        && entry.entry.kind == ElementKind::ViewDefinition
+                        && entry.entry.name.as_deref() == Some(name)
+                })
+                .map(|entry| entry.entry.identity.clone())
+                .collect::<Vec<_>>();
+            match matches.as_slice() {
+                [identity] => {
+                    definitions.insert(identity.clone(), kind);
+                }
+                [] => {}
+                _ => {
+                    return Err(ModelQueryError::Ambiguous(format!(
+                        "standard library contains multiple {name} definitions"
+                    )))
+                }
+            }
+        }
+        let mut values = Vec::new();
+        for registered in self.by_identity.values().filter(|value| {
+            value.source == ElementSource::Workspace && value.entry.kind == ElementKind::ViewUsage
+        }) {
+            let types = outcome(
+                self.model.types().direct_types(&registered.entry.identity),
+                "diagram view typing",
+            )?;
+            for ty in types.iter() {
+                let Some(kind) = definitions.get(&ty.symbol).copied() else {
+                    continue;
+                };
+                let inspection = self.inspection(&registered.entry.identity, "diagram view")?;
+                values.push(DiagramViewSummary {
+                    kind,
+                    semantic_id: registered.entry.identity.as_str().to_owned(),
+                    name: display_label(&registered.entry),
+                    source: inspection_source(&inspection),
+                });
+            }
+        }
+        values.sort_by(|a, b| a.semantic_id.cmp(&b.semantic_id));
         self.enforce_limit(values.len())?;
         Ok(values)
     }

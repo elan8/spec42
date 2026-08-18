@@ -3,7 +3,7 @@ use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
 use base64::Engine as _;
-use generator_api::{ArtifactLimits, GeneratorModelView, QueryLimits};
+use generator_api::{ArtifactLimits, DiagramViewKind, GeneratorModelView, QueryLimits};
 use generator_host::{
     CancellationHandle, GeneratorRuntime, PreparedGenerator, RuntimeLimits, RuntimeOptions,
 };
@@ -13,6 +13,7 @@ use sysml_query::resolved_slice::PublishedModel;
 
 const MAX_PLUGIN_BYTES: usize = 16 * 1024 * 1024;
 const MAX_PREPARED_MODULES: usize = 8;
+const MAX_MODEL_VIEWS: usize = 4;
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -75,6 +76,24 @@ pub(crate) struct StateTransitionViewsParams {
     pub(crate) model_uri: String,
 }
 
+pub(crate) type DiagramViewsParams = StateTransitionViewsParams;
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub(crate) struct DiagramViewsResult {
+    pub(crate) model_digest: String,
+    pub(crate) views: Vec<DiagramViewChoice>,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub(crate) struct DiagramViewChoice {
+    pub(crate) kind: DiagramViewKind,
+    pub(crate) semantic_id: String,
+    pub(crate) name: String,
+    pub(crate) source: StateTransitionSourceChoice,
+}
+
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub(crate) struct StateTransitionViewsResult {
@@ -110,6 +129,10 @@ pub(crate) struct GeneratorService {
     /// Entries are keyed by the digest of the exact core Wasm bytes. `PreparedGenerator` already
     /// belongs to this service's engine, so no path, timestamp, or external identity participates.
     prepared: Mutex<HashMap<String, Arc<PreparedGenerator>>>,
+    /// Query handles are scoped to one immutable `GeneratorModelView`. Reusing the adapter for
+    /// the same dependency-complete publication identity lets a catalog handle be consumed by a
+    /// subsequent generator request without turning handles into a second semantic identity.
+    models: Mutex<HashMap<String, Arc<GeneratorModelView>>>,
 }
 
 impl GeneratorService {
@@ -122,7 +145,33 @@ impl GeneratorService {
         Ok(Self {
             runtime: Arc::new(runtime),
             prepared: Mutex::new(HashMap::new()),
+            models: Mutex::new(HashMap::new()),
         })
+    }
+
+    fn model_for(
+        &self,
+        publication: Arc<PublishedModel>,
+    ) -> Result<Arc<GeneratorModelView>, String> {
+        let publication_identity = publication.publication().source_digest().to_owned();
+        let mut models = self
+            .models
+            .lock()
+            .map_err(|_| "generator model cache is unavailable".to_owned())?;
+        if let Some(model) = models.get(&publication_identity) {
+            return Ok(Arc::clone(model));
+        }
+        let model = Arc::new(GeneratorModelView::new(
+            Arc::clone(&publication),
+            &publication_identity,
+            env!("CARGO_PKG_VERSION"),
+            QueryLimits::default(),
+        ));
+        if models.len() == MAX_MODEL_VIEWS {
+            models.clear();
+        }
+        models.insert(publication_identity, Arc::clone(&model));
+        Ok(model)
     }
 
     pub(crate) fn generate(
@@ -161,12 +210,7 @@ impl GeneratorService {
             }
         };
         let module_prepare_ms = prepare_started.elapsed().as_millis();
-        let model = Arc::new(GeneratorModelView::new(
-            Arc::clone(&publication),
-            publication.publication().source_digest(),
-            env!("CARGO_PKG_VERSION"),
-            QueryLimits::default(),
-        ));
+        let model = self.model_for(publication)?;
         let model_digest = model.model_digest();
         if let Some(expected) = expected_model_digest {
             if expected != model_digest {
@@ -216,14 +260,10 @@ impl GeneratorService {
     }
 
     pub(crate) fn state_transition_views(
+        &self,
         publication: Arc<PublishedModel>,
     ) -> Result<StateTransitionViewsResult, String> {
-        let model = GeneratorModelView::new(
-            Arc::clone(&publication),
-            publication.publication().source_digest(),
-            env!("CARGO_PKG_VERSION"),
-            QueryLimits::default(),
-        );
+        let model = self.model_for(publication)?;
         let views = model
             .state_transition_views()
             .map_err(|error| error.to_string())?
@@ -242,6 +282,30 @@ impl GeneratorService {
             })
             .collect();
         Ok(StateTransitionViewsResult {
+            model_digest: model.model_digest(),
+            views,
+        })
+    }
+
+    pub(crate) fn diagram_views(
+        &self,
+        publication: Arc<PublishedModel>,
+    ) -> Result<DiagramViewsResult, String> {
+        let model = self.model_for(publication)?;
+        let views = model
+            .diagram_views()
+            .map_err(|error| error.to_string())?
+            .into_iter()
+            .map(|view| DiagramViewChoice {
+                kind: view.kind,
+                semantic_id: view.semantic_id,
+                name: view.name,
+                source: StateTransitionSourceChoice {
+                    uri: view.source.uri,
+                },
+            })
+            .collect();
+        Ok(DiagramViewsResult {
             model_digest: model.model_digest(),
             views,
         })
@@ -269,6 +333,33 @@ mod tests {
         Arc::new(build(request).expect("published model"))
     }
 
+    fn state_transition_publication() -> Arc<PublishedModel> {
+        let standard = SourceDocument::from_memory_path(
+            "lsp-generator-tests",
+            "standard.sysml",
+            "standard library package StandardViewDefinitions { view def StateTransitionView; }\n"
+                .to_owned(),
+            SourceKind::StandardLibrary,
+        )
+        .expect("standard view document");
+        let workspace = SourceDocument::from_memory_path(
+            "lsp-generator-tests",
+            "views.sysml",
+            "package P {\n\
+             \tprivate import StandardViewDefinitions::*;\n\
+             \tstate def Machine { then ready; state ready; final done; transition finish first ready then done; }\n\
+             \tview lifecycle : StateTransitionView { expose Machine; }\n\
+             }\n"
+                .to_owned(),
+            SourceKind::Workspace,
+        )
+        .expect("workspace view document");
+        let request =
+            BuildRequest::resolved(vec![standard, workspace], ConstructionStrategy::Sequential)
+                .expect("build request");
+        Arc::new(build(request).expect("published state-transition model"))
+    }
+
     fn empty_generator(name: &str) -> Vec<u8> {
         let packed_result = 2_u64 << 32 | 1024;
         wat::parse_str(format!(
@@ -283,6 +374,14 @@ mod tests {
                 (i64.const {packed_result})))"#
         ))
         .expect("valid guest")
+    }
+
+    fn packaged_diagram_generator() -> Vec<u8> {
+        std::fs::read(
+            std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+                .join("../../vscode/generators/diagram.wasm"),
+        )
+        .expect("packaged diagram generator; run scripts/build-repository-generator-plugins.sh")
     }
 
     #[test]
@@ -314,6 +413,65 @@ mod tests {
         assert_ne!(changed.generator_digest, warm.generator_digest);
         assert_eq!(changed.model_digest, warm.model_digest);
         assert_eq!(changed.artifacts.len(), warm.artifacts.len());
+    }
+
+    #[test]
+    fn catalog_handle_remains_valid_for_generation_on_the_same_publication() {
+        let service = GeneratorService::new().expect("generator service");
+        let publication = state_transition_publication();
+        let catalog = service
+            .state_transition_views(Arc::clone(&publication))
+            .expect("state-transition catalog");
+        let diagram_catalog = service
+            .diagram_views(Arc::clone(&publication))
+            .expect("diagram catalog");
+        let [view] = catalog.views.as_slice() else {
+            panic!(
+                "expected one state-transition view, got {}",
+                catalog.views.len()
+            );
+        };
+
+        let generation_model = service
+            .model_for(Arc::clone(&publication))
+            .expect("generation model adapter");
+        let projection = generation_model
+            .state_transition_view(&view.handle)
+            .expect("catalog handle must remain valid for guest generation");
+
+        let generated = service
+            .generate(
+                &packaged_diagram_generator(),
+                Arc::clone(&publication),
+                &["state-transition-view".to_owned(), view.handle.clone()],
+                Some(&catalog.model_digest),
+            )
+            .expect("catalog handle must survive through actual guest execution");
+        let artifact = generated
+            .artifacts
+            .iter()
+            .find(|artifact| artifact.path == "diagram.json")
+            .expect("diagram artifact");
+        let product: serde_json::Value =
+            serde_json::from_slice(&artifact.content).expect("diagram JSON product");
+
+        assert_eq!(projection.model_digest, catalog.model_digest);
+        assert_eq!(diagram_catalog.model_digest, catalog.model_digest);
+        assert_eq!(diagram_catalog.views.len(), 1);
+        assert_eq!(
+            diagram_catalog.views[0].kind,
+            DiagramViewKind::StateTransitionView
+        );
+        assert_eq!(projection.view.semantic_id, view.semantic_id);
+        assert_eq!(
+            projection.machine.semantic_id,
+            view.exposed_machine.semantic_id
+        );
+        assert_eq!(product["modelDigest"], catalog.model_digest);
+        assert_eq!(product["view"]["id"], "state-transition-view");
+        assert!(product["preparedView"]["nodes"]
+            .as_array()
+            .is_some_and(|nodes| !nodes.is_empty()));
     }
 
     #[test]

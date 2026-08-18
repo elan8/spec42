@@ -10,11 +10,11 @@ mod path;
 pub use artifacts::{Artifact, ArtifactError, ArtifactLimits, ArtifactSet};
 pub use diagnostics::{GeneratorDiagnostic, GeneratorDiagnosticLevel};
 pub use model::{
-    ElementDetail, ElementSummary, GeneratorModelView, ModelQueryError, MultiplicitySummary,
-    QueryLimits, RelationshipSummary, RequirementUsageTypingSummary,
-    RequirementVerificationSummary, SatisfyEndpointSummary, SatisfyPolaritySummary,
-    SatisfyRelationshipSummary, SourceRange, TypingProvenanceSummary, VerificationOutcomeSummary,
-    VerificationRequirementSummary, GENERATOR_SEMANTIC_API_VERSION,
+    DiagramViewKind, DiagramViewSummary, ElementDetail, ElementSummary, GeneratorModelView,
+    ModelQueryError, MultiplicitySummary, QueryLimits, RelationshipSummary,
+    RequirementUsageTypingSummary, RequirementVerificationSummary, SatisfyEndpointSummary,
+    SatisfyPolaritySummary, SatisfyRelationshipSummary, SourceRange, TypingProvenanceSummary,
+    VerificationOutcomeSummary, VerificationRequirementSummary, GENERATOR_SEMANTIC_API_VERSION,
 };
 pub use path::{
     ArtifactPath, ArtifactPathError, MAX_ARTIFACT_PATH_BYTES, MAX_ARTIFACT_SEGMENT_BYTES,

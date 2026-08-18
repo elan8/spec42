@@ -8,6 +8,4 @@ publish = false
 crate-type = ["cdylib"]
 
 [dependencies]
-spec42-generator-sdk = { path = "../../crates/generator_sdk" }
-
-[workspace]
+spec42-generator-sdk.workspace = true

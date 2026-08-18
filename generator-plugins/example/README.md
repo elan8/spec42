@@ -4,14 +4,14 @@ Build a core module for the authority-free target:
 
 ```sh
 rustup target add wasm32-unknown-unknown
-cargo build --manifest-path generator-examples/rust/Cargo.toml --target wasm32-unknown-unknown --release
+cargo build --manifest-path generator-plugins/Cargo.toml -p spec42-example-generator --target wasm32-unknown-unknown --release
 ```
 
 Run it from the repository root:
 
 ```sh
 cargo run -p server --bin spec42 -- generate \
-  generator-examples/rust/target/wasm32-unknown-unknown/release/spec42_example_generator.wasm \
+  generator-plugins/target/wasm32-unknown-unknown/release/spec42_example_generator.wasm \
   path/to/model.sysml \
   --output generated \
   -- target=rust

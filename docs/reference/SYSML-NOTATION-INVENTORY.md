@@ -1,8 +1,8 @@
 # SysML notation inventory (generated)
 
-Generated: 2026-08-04
+Generated: 2026-08-18
 
-Source: `C:\Git\elan8\spec42\third_party\sysml-v2-release\bnf\images` (34 entries)
+Source: `/Users/luke/Documents/GitHub/spec42/third_party/sysml-v2-release/bnf/images` (34 entries)
 
 Shipped product views: **general-view**, **interconnection-view** (+ behavior views).
 
