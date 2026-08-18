@@ -5,7 +5,7 @@ specification; `crates/generator_sdk` is one implementation of it, not its defin
 guest written in any language that can emit the imports and exports below is equally valid.
 
 <!-- generated:abi-header -->
-Current version: **ABI 4**. Compatibility token: `0xa18f24b386a7570d`.
+Current version: **ABI 4**. Compatibility token: `0xa78504676b7c86ee`.
 <!-- /generated:abi-header -->
 
 The tables below and `generator-abi.json` are generated from the contract declaration in
@@ -112,6 +112,9 @@ impossible and `0` unambiguously means "success, nothing written".
 | 5 | `typed_by` | `String` | `Option<ElementSummary>` |
 | 6 | `relationships` | `String` | `Vec<Relationship>` |
 | 7 | `effective_features` | `String` | `Vec<ElementSummary>` |
+| 8 | `requirement_typing` | `String` | `RequirementUsageTyping` |
+| 9 | `satisfy_relationships` | `()` | `Vec<SatisfyRelationship>` |
+| 10 | `requirement_verifications` | `()` | `Vec<RequirementVerification>` |
 <!-- /generated:abi-operations -->
 
 Note that `find` takes `Option<String>`: `None` means "every element". An empty string is
