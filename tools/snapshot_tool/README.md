@@ -77,16 +77,31 @@ checked-in source snapshots and their canonical S-expression sections.
 
 ## Generator snapshots
 
-A fixture with `type=generate` names a repository-owned WebAssembly test plugin in `META`:
+A fixture with `type=generate` selects a repository-owned WebAssembly plugin in `META`. Plugin
+selection is closed: fixtures cannot provide filesystem paths. Conformance fixtures use the
+canonical `conformance:<name>` form (the legacy bare name remains accepted), while diagram
+fixtures use `repository:diagram`:
 
 ```markdown
 # META
 ~~~ini
 type=generate
 libraries=standard
-plugin=requirements_csv
+plugin=conformance:requirements_csv
 ~~~
 ```
+
+Diagram fixtures select one authored view by its exact catalog identity and kind. The runner
+resolves this pair through the immutable typed catalog and passes the resulting opaque handle to
+the guest; it never guesses from a display name:
+
+```ini
+plugin=repository:diagram
+viewKind=general-view
+viewSemanticId=<exact catalog semantic identity>
+```
+
+`viewKind` and `viewSemanticId` must occur together and are invalid for conformance plugins.
 
 The runner executes that plugin against both the sequential and parallel immutable publications.
 Outcome, diagnostics, artifact paths, and exact artifact bytes must agree before the canonical

@@ -65,12 +65,26 @@ enum LibrarySelection {
     Standard,
 }
 
+/// Closed repository-owned generator selection. Fixtures never supply filesystem paths.
+#[derive(Debug, Clone, PartialEq, Eq)]
+enum GeneratorPlugin {
+    Conformance(String),
+    RepositoryDiagram,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct DiagramSelection {
+    kind: String,
+    semantic_id: String,
+}
+
 /// Generator selection parsed from fixture metadata. Execution is deliberately kept separate from
 /// Markdown parsing so the runner can provide the immutable publication to whichever WASM host it
 /// uses without making the snapshot format depend on that host.
 #[derive(Debug, Clone, PartialEq, Eq)]
 struct GenerationRequest {
-    plugin: String,
+    plugin: GeneratorPlugin,
+    diagram_selection: Option<DiagramSelection>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -376,14 +390,12 @@ fn execute_generation(
     request: &GenerationRequest,
     fixture_path: &Path,
 ) -> Result<GeneratedArtifacts, String> {
-    let plugin_path = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../../generator-tests/plugins/target/wasm32-unknown-unknown/release")
-        .join(format!("spec42_conformance_{}.wasm", request.plugin));
+    let plugin_path = generator_plugin_path(&request.plugin);
     let module = fs::read(&plugin_path).map_err(|error| {
         format!(
             "{}: failed to read generator plugin `{}` at {}: {error}; run scripts/build-generator-plugins.sh",
             fixture_path.display(),
-            request.plugin,
+            generator_plugin_label(&request.plugin),
             plugin_path.display()
         )
     })?;
@@ -394,6 +406,7 @@ fn execute_generation(
         env!("CARGO_PKG_VERSION"),
         QueryLimits::default(),
     ));
+    let args = generation_arguments(request, &model, fixture_path)?;
     let runtime = GeneratorRuntime::new().map_err(|error| {
         format!(
             "{}: generator runtime failed: {error}",
@@ -404,7 +417,7 @@ fn execute_generation(
         .execute(
             &module,
             model,
-            &[],
+            &args,
             RuntimeLimits::default(),
             ArtifactLimits::default(),
             CancellationHandle::new(),
@@ -428,6 +441,39 @@ fn execute_generation(
         artifacts.insert_utf8(path.to_string(), contents)?;
     }
     Ok(artifacts)
+}
+
+fn generator_plugin_label(plugin: &GeneratorPlugin) -> String {
+    match plugin {
+        GeneratorPlugin::Conformance(name) => format!("conformance:{name}"),
+        GeneratorPlugin::RepositoryDiagram => "repository:diagram".to_string(),
+    }
+}
+
+fn generator_plugin_path(plugin: &GeneratorPlugin) -> PathBuf {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+    match plugin {
+        GeneratorPlugin::Conformance(name) => root
+            .join("generator-tests/plugins/target/wasm32-unknown-unknown/release")
+            .join(format!("spec42_conformance_{name}.wasm")),
+        GeneratorPlugin::RepositoryDiagram => root
+            .join("generator-plugins/target/wasm32-unknown-unknown/release")
+            .join("spec42_diagram_generator.wasm"),
+    }
+}
+
+fn generation_arguments(
+    request: &GenerationRequest,
+    _model: &GeneratorModelView,
+    fixture_path: &Path,
+) -> Result<Vec<String>, String> {
+    if request.diagram_selection.is_some() {
+        return Err(format!(
+            "{}: typed diagram selection requires the unified diagram-view query contract",
+            fixture_path.display()
+        ));
+    }
+    Ok(Vec::new())
 }
 
 struct OwnedSections {
@@ -641,6 +687,8 @@ fn parse_fixture_meta(fixture: &str, fallback_name: &str) -> Result<FixtureMeta,
     let mut selection = LibrarySelection::None;
     let mut fixture_type = None;
     let mut plugin = None;
+    let mut view_kind = None;
+    let mut view_semantic_id = None;
     let mut seen = HashSet::new();
     for (line_index, line) in text.lines().enumerate() {
         if line.trim().is_empty() || line.trim_start().starts_with('#') {
@@ -654,7 +702,11 @@ fn parse_fixture_meta(fixture: &str, fallback_name: &str) -> Result<FixtureMeta,
         };
         let key = key.trim();
         let value = value.trim();
-        if matches!(key, "libraries" | "type" | "plugin") && !seen.insert(key) {
+        if matches!(
+            key,
+            "libraries" | "type" | "plugin" | "viewKind" | "viewSemanticId"
+        ) && !seen.insert(key)
+        {
             return Err(format!("{fallback_name}: duplicate META key {key:?}"));
         }
         match key {
@@ -677,11 +729,45 @@ fn parse_fixture_meta(fixture: &str, fallback_name: &str) -> Result<FixtureMeta,
                 }
                 plugin = Some(value.to_string());
             }
+            "viewKind" => {
+                if value.is_empty() {
+                    return Err(format!("{fallback_name}: META viewKind must not be empty"));
+                }
+                view_kind = Some(value.to_string());
+            }
+            "viewSemanticId" => {
+                if value.is_empty() {
+                    return Err(format!(
+                        "{fallback_name}: META viewSemanticId must not be empty"
+                    ));
+                }
+                view_semantic_id = Some(value.to_string());
+            }
             _ => {}
         }
     }
     let generation = match (fixture_type.as_deref(), plugin) {
-        (Some("generate"), Some(plugin)) => Some(GenerationRequest { plugin }),
+        (Some("generate"), Some(plugin)) => {
+            let plugin = parse_generator_plugin(&plugin, fallback_name)?;
+            let diagram_selection = match (view_kind, view_semantic_id) {
+                (Some(kind), Some(semantic_id)) => Some(DiagramSelection { kind, semantic_id }),
+                (None, None) => None,
+                _ => {
+                    return Err(format!(
+                    "{fallback_name}: META viewKind and viewSemanticId must be specified together"
+                ))
+                }
+            };
+            if diagram_selection.is_some() && plugin != GeneratorPlugin::RepositoryDiagram {
+                return Err(format!(
+                    "{fallback_name}: typed view selection is only valid with plugin=repository:diagram"
+                ));
+            }
+            Some(GenerationRequest {
+                plugin,
+                diagram_selection,
+            })
+        }
         (Some("generate"), None) => {
             return Err(format!(
                 "{fallback_name}: META type=generate requires a plugin"
@@ -692,12 +778,34 @@ fn parse_fixture_meta(fixture: &str, fallback_name: &str) -> Result<FixtureMeta,
                 "{fallback_name}: META plugin is only valid with type=generate"
             ))
         }
+        _ if view_kind.is_some() || view_semantic_id.is_some() => {
+            return Err(format!(
+                "{fallback_name}: view selection is only valid with type=generate"
+            ))
+        }
         _ => None,
     };
     Ok(FixtureMeta {
         libraries: selection,
         generation,
     })
+}
+
+fn parse_generator_plugin(value: &str, fallback_name: &str) -> Result<GeneratorPlugin, String> {
+    if value == "repository:diagram" {
+        return Ok(GeneratorPlugin::RepositoryDiagram);
+    }
+    let name = value.strip_prefix("conformance:").unwrap_or(value);
+    if name.is_empty()
+        || !name
+            .bytes()
+            .all(|byte| byte.is_ascii_lowercase() || byte.is_ascii_digit() || byte == b'_')
+    {
+        return Err(format!(
+            "{fallback_name}: unknown or unsafe META plugin {value:?}"
+        ));
+    }
+    Ok(GeneratorPlugin::Conformance(name.to_string()))
 }
 
 fn validate_artifact_path(path: &str) -> Result<(), String> {
@@ -1107,7 +1215,8 @@ mod tests {
             FixtureMeta {
                 libraries: LibrarySelection::Standard,
                 generation: Some(GenerationRequest {
-                    plugin: "requirements_csv".to_string()
+                    plugin: GeneratorPlugin::Conformance("requirements_csv".to_string()),
+                    diagram_selection: None,
                 })
             }
         );
@@ -1123,6 +1232,54 @@ mod tests {
             let error = parse_fixture_meta(&fixture, "fixture.md").unwrap_err();
             assert!(error.contains(expected), "unexpected error: {error}");
         }
+    }
+
+    #[test]
+    fn parses_closed_typed_diagram_selection() {
+        let diagram = "# META\n~~~ini\ntype=generate\nplugin=repository:diagram\nviewKind=general-view\nviewSemanticId=semantic:view:42\n~~~\n";
+        assert_eq!(
+            parse_fixture_meta(diagram, "fixture.md")
+                .unwrap()
+                .generation,
+            Some(GenerationRequest {
+                plugin: GeneratorPlugin::RepositoryDiagram,
+                diagram_selection: Some(DiagramSelection {
+                    kind: "general-view".to_string(),
+                    semantic_id: "semantic:view:42".to_string(),
+                }),
+            })
+        );
+    }
+
+    #[test]
+    fn rejects_invalid_generator_selection_metadata() {
+        for (meta, expected) in [
+            (
+                "type=generate\nplugin=repository:diagram\nviewKind=general-view",
+                "must be specified together",
+            ),
+            (
+                "type=generate\nplugin=requirements_csv\nviewKind=general-view\nviewSemanticId=id",
+                "only valid with plugin=repository:diagram",
+            ),
+            ("type=generate\nplugin=../../escape", "unknown or unsafe"),
+            (
+                "type=file\nviewKind=general-view\nviewSemanticId=id",
+                "only valid with type=generate",
+            ),
+        ] {
+            let fixture = format!("# META\n~~~ini\n{meta}\n~~~\n");
+            let error = parse_fixture_meta(&fixture, "fixture.md").unwrap_err();
+            assert!(error.contains(expected), "unexpected error: {error}");
+        }
+    }
+
+    #[test]
+    fn repository_plugin_paths_are_closed() {
+        assert!(generator_plugin_path(&GeneratorPlugin::RepositoryDiagram)
+            .ends_with("generator-plugins/target/wasm32-unknown-unknown/release/spec42_diagram_generator.wasm"));
+        assert!(generator_plugin_path(&GeneratorPlugin::Conformance("example".to_string()))
+            .ends_with("generator-tests/plugins/target/wasm32-unknown-unknown/release/spec42_conformance_example.wasm"));
     }
 
     #[test]
