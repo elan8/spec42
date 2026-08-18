@@ -113,7 +113,9 @@ export class StateTransitionViewer {
     const result = parseLspGenerationResult(await this.handles.client.sendRequest("spec42/generate", {
       generatorBase64: module.toString("base64"),
       modelUri: document.uri.toString(),
-      args: [],
+      // View summaries carry source provenance, so the active saved document is an
+      // unambiguous selector even when one workspace publication contains many views.
+      args: [document.uri.toString()],
     }));
     if (signal.aborted) throw new Error("generation was cancelled");
     const svgName = selectSingleSvg(result.artifacts.map((artifact) => artifact.path));
