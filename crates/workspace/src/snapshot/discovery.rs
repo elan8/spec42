@@ -63,10 +63,8 @@ pub fn discover_target_files(targets: &[PathBuf]) -> WorkspaceResult<Vec<PathBuf
 
 /// Convert a filesystem path to a canonicalized, drive-letter-normalized `file://` URL.
 ///
-/// Public so embedders constructing publications directly can compute `library_urls` for
-/// [`crate::validate_workspace`] with the same normalization
-/// `snapshot::build::build_workspace_snapshot` applies — see `SPEC42-ISSUES.md` in downstream
-/// consumers for what silently diverging normalization once broke.
+/// Public so embedders constructing publications directly can compute `library_urls` with the
+/// same normalization that workspace snapshot construction applies.
 pub fn path_to_file_url(path: &Path) -> WorkspaceResult<Url> {
     let absolute = if path.is_absolute() {
         path.to_path_buf()
