@@ -9,7 +9,6 @@ use generator_host::{
 };
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
-use spec42_generator_protocol::StateTransitionViewSummary;
 use sysml_query::resolved_slice::PublishedModel;
 
 const MAX_PLUGIN_BYTES: usize = 16 * 1024 * 1024;
@@ -80,7 +79,30 @@ pub(crate) struct StateTransitionViewsParams {
 #[serde(rename_all = "camelCase")]
 pub(crate) struct StateTransitionViewsResult {
     pub(crate) model_digest: String,
-    pub(crate) views: Vec<StateTransitionViewSummary>,
+    pub(crate) views: Vec<StateTransitionViewChoice>,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub(crate) struct StateTransitionViewChoice {
+    pub(crate) handle: String,
+    pub(crate) semantic_id: String,
+    pub(crate) name: String,
+    pub(crate) exposed_machine: StateTransitionMachineChoice,
+    pub(crate) source: StateTransitionSourceChoice,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub(crate) struct StateTransitionMachineChoice {
+    pub(crate) semantic_id: String,
+    pub(crate) label: String,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub(crate) struct StateTransitionSourceChoice {
+    pub(crate) uri: String,
 }
 
 pub(crate) struct GeneratorService {
@@ -202,11 +224,26 @@ impl GeneratorService {
             env!("CARGO_PKG_VERSION"),
             QueryLimits::default(),
         );
+        let views = model
+            .state_transition_views()
+            .map_err(|error| error.to_string())?
+            .into_iter()
+            .map(|view| StateTransitionViewChoice {
+                handle: view.handle,
+                semantic_id: view.semantic_id,
+                name: view.name,
+                exposed_machine: StateTransitionMachineChoice {
+                    semantic_id: view.exposed_machine.semantic_id,
+                    label: view.exposed_machine.label,
+                },
+                source: StateTransitionSourceChoice {
+                    uri: view.source.uri,
+                },
+            })
+            .collect();
         Ok(StateTransitionViewsResult {
             model_digest: model.model_digest(),
-            views: model
-                .state_transition_views()
-                .map_err(|error| error.to_string())?,
+            views,
         })
     }
 }
@@ -277,5 +314,37 @@ mod tests {
         assert_ne!(changed.generator_digest, warm.generator_digest);
         assert_eq!(changed.model_digest, warm.model_digest);
         assert_eq!(changed.artifacts.len(), warm.artifacts.len());
+    }
+
+    #[test]
+    fn catalog_lsp_dto_uses_camel_case_at_every_level() {
+        let value = serde_json::to_value(StateTransitionViewsResult {
+            model_digest: "blake3:model".to_owned(),
+            views: vec![StateTransitionViewChoice {
+                handle: "view:one".to_owned(),
+                semantic_id: "semantic:one".to_owned(),
+                name: "operations".to_owned(),
+                exposed_machine: StateTransitionMachineChoice {
+                    semantic_id: "machine:one".to_owned(),
+                    label: "Operations".to_owned(),
+                },
+                source: StateTransitionSourceChoice {
+                    uri: "file:///workspace/model.sysml".to_owned(),
+                },
+            }],
+        })
+        .expect("catalog JSON");
+        assert_eq!(value["modelDigest"], "blake3:model");
+        assert_eq!(value["views"][0]["semanticId"], "semantic:one");
+        assert_eq!(
+            value["views"][0]["exposedMachine"]["semanticId"],
+            "machine:one"
+        );
+        assert_eq!(
+            value["views"][0]["source"]["uri"],
+            "file:///workspace/model.sysml"
+        );
+        assert!(value["views"][0].get("semantic_id").is_none());
+        assert!(value["views"][0].get("exposed_machine").is_none());
     }
 }
