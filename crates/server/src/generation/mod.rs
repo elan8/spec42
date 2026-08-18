@@ -15,11 +15,6 @@ use generator_host::{
 };
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
-use sysml_model::SysmlDocumentSourceKind;
-use sysml_query::resolved_slice::{
-    build as build_published_model, BuildRequest, ConstructionStrategy,
-    SourceDocument as QuerySourceDocument, SourceKind as QuerySourceKind,
-};
 
 pub mod apply;
 pub mod plan;
@@ -259,30 +254,10 @@ pub fn run_generate(cli: &Cli, args: &GenerateArgs) -> Result<ExitCode, String> 
         return Ok(ExitCode::from(EXIT_MODEL_INVALID));
     }
 
-    let query_sources = snapshot
-        .documents()
-        .iter()
-        .map(|document| {
-            let source_kind = match document.source_kind {
-                SysmlDocumentSourceKind::Workspace => QuerySourceKind::Workspace,
-                SysmlDocumentSourceKind::StandardLibrary => QuerySourceKind::StandardLibrary,
-                SysmlDocumentSourceKind::Library => QuerySourceKind::Library,
-                SysmlDocumentSourceKind::External => QuerySourceKind::External,
-            };
-            QuerySourceDocument::from_uri(
-                document.uri.as_str(),
-                document.content.clone(),
-                source_kind,
-            )
-        })
-        .collect::<Result<Vec<_>, _>>()
-        .map_err(|error| format!("failed to prepare immutable generator sources: {error}"))?;
-    let query_request = BuildRequest::resolved(query_sources, ConstructionStrategy::Parallel)
-        .map_err(|error| format!("failed to prepare immutable generator model: {error}"))?;
-    let publication = Arc::new(
-        build_published_model(query_request)
-            .map_err(|error| format!("failed to build immutable generator model: {error}"))?,
-    );
+    // The host snapshot owns the coherent publication for this exact document revision. Reusing
+    // it keeps validation and generation on one semantic identity instead of rebuilding a second
+    // model with independently mapped source provenance.
+    let publication = snapshot.published_model_arc();
     let model = Arc::new(GeneratorModelView::new(
         Arc::clone(&publication),
         publication.publication().source_digest(),

@@ -1,4 +1,4 @@
-﻿use sysml_model::{TextPosition, TextRange};
+﻿use sysml_query::resolved_slice::{TextPosition, TextRange};
 use tower_lsp::lsp_types::{Position, Range};
 
 pub fn to_core_position(position: Position) -> TextPosition {

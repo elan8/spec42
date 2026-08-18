@@ -1,7 +1,6 @@
 //! Typed output returned by the embedding API.
 
 use crate::snapshot::metadata::HostArtifactMetadata;
-use crate::snapshot::projection::HostSemanticProjection;
 use crate::snapshot::validation::HostValidationReport;
 
 /// Typed result of projecting a workspace.
@@ -11,6 +10,5 @@ use crate::snapshot::validation::HostValidationReport;
 #[derive(Debug, Clone)]
 pub struct Spec42ProjectionOutput {
     pub metadata: HostArtifactMetadata,
-    pub semantic_projection: HostSemanticProjection,
     pub validation_report: HostValidationReport,
 }

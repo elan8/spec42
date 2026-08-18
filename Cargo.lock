@@ -1151,8 +1151,8 @@ dependencies = [
  "serde",
  "serde_json",
  "sysml-v2-parser 0.54.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "sysml_model",
  "sysml_query",
+ "sysml_source",
  "tempfile",
  "url",
 ]
@@ -1245,8 +1245,8 @@ dependencies = [
  "server",
  "sysml-v2-parser 0.54.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "sysml_diagnostics",
- "sysml_model",
  "sysml_query",
+ "sysml_source",
  "sysml_tokens",
  "tempfile",
  "thiserror 2.0.19",
@@ -1802,7 +1802,6 @@ dependencies = [
  "serde_json",
  "sha2",
  "sysml-v2-parser 0.54.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "sysml_model",
  "sysml_query",
  "tempfile",
  "tokio",
@@ -2041,25 +2040,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "sysml_model"
-version = "0.50.0"
-dependencies = [
- "ignore",
- "petgraph",
- "rayon",
- "serde",
- "serde_json",
- "sha2",
- "source_identity",
- "sysml-v2-parser 0.54.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "tempfile",
- "thiserror 2.0.19",
- "ts-rs",
- "url",
- "walkdir",
-]
-
-[[package]]
 name = "sysml_query"
 version = "0.50.0"
 dependencies = [
@@ -2074,8 +2054,17 @@ version = "0.50.0"
 dependencies = [
  "hashbrown 0.17.1",
  "rayon",
+ "serde",
  "source_identity",
  "sysml-v2-parser 0.54.0 (git+https://github.com/lukewilliamboswell/sysml-v2-parser.git?rev=204ca48000c452970beb7568d84e0ac80898a767)",
+]
+
+[[package]]
+name = "sysml_source"
+version = "0.50.0"
+dependencies = [
+ "source_identity",
+ "url",
 ]
 
 [[package]]
@@ -2390,29 +2379,6 @@ dependencies = [
  "tracing",
  "tracing-core",
  "tracing-log",
-]
-
-[[package]]
-name = "ts-rs"
-version = "11.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4994acea2522cd2b3b85c1d9529a55991e3ad5e25cdcd3de9d505972c4379424"
-dependencies = [
- "serde_json",
- "thiserror 2.0.19",
- "ts-rs-macros",
-]
-
-[[package]]
-name = "ts-rs-macros"
-version = "11.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ee6ff59666c9cbaec3533964505d39154dc4e0a56151fdea30a09ed0301f62e2"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.119",
- "termcolor",
 ]
 
 [[package]]
@@ -2865,6 +2831,7 @@ dependencies = [
  "blake3",
  "directories",
  "dirs",
+ "ignore",
  "kpar",
  "language_service",
  "petgraph",
@@ -2878,8 +2845,8 @@ dependencies = [
  "syn 2.0.119",
  "sysml-v2-parser 0.54.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "sysml_diagnostics",
- "sysml_model",
  "sysml_query",
+ "sysml_source",
  "tempfile",
  "thiserror 2.0.19",
  "toml",

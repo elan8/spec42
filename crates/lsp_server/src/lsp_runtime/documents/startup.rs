@@ -68,13 +68,9 @@ pub(crate) async fn initialized(
     server_name: &str,
     runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
 ) {
-    let (workspace_roots, library_paths, standard_library_paths) = {
+    let (workspace_roots, library_paths) = {
         let snap = handle.snapshot();
-        (
-            snap.workspace_roots.clone(),
-            snap.library_paths.clone(),
-            snap.standard_library_paths.clone(),
-        )
+        (snap.workspace_roots.clone(), snap.library_paths.clone())
     };
     let cfg = runtime_config
         .get()
@@ -141,9 +137,6 @@ pub(crate) async fn initialized(
             .await
             .ok();
         }
-        tokio::task::spawn_blocking(crate::workspace::library_graph_cache::evict_stale_entries)
-            .await
-            .ok();
         let parse_worker_start = Instant::now();
         let parsed_entries = tokio::task::spawn_blocking(move || {
             // Workspace files are not cached — they change on every edit.
@@ -157,115 +150,60 @@ pub(crate) async fn initialized(
             .iter()
             .map(|entry| (entry.uri.to_string(), entry.content.clone()))
             .collect();
-        let closure_seed_signature = {
-            let workspace_sources: Vec<sysml_model::WorkspaceSource<'_>> = workspace_closure_inputs
-                .iter()
-                .map(|(path, content)| sysml_model::WorkspaceSource {
-                    path: path.as_str(),
-                    content: content.as_str(),
-                })
-                .collect();
-            sysml_model::library_closure_seed_signature(
-                &workspace_sources,
-                &sysml_model::LibraryClosureOptions::default(),
-            )
-        };
-
-        // --- Library graph cache check (Level 1 + Level 2) ---
-        // If the library graph was built previously and library files haven't
-        // changed (verified via file metadata fingerprint), skip all library
-        // disk I/O, parsing, and graph construction.
-        // Keep a clone for the post-rebuild cache store call (cache miss path).
-        let library_paths_for_store = library_paths_for_closure.clone();
-        let standard_library_paths_for_store = standard_library_paths.clone();
-        let closure_seed_signature_for_store = closure_seed_signature.clone();
-        let library_graph_cache_hit =
-            if !crate::workspace::library_closure::library_full_scan_enabled()
-                && !library_paths_for_closure.is_empty()
+        // Library graph caching belonged to the mutable graph lifecycle. Load the dependency
+        // closure explicitly; future reuse must cache immutable, dependency-complete publications.
+        let (_library_parsed_count, _library_total_count, parsed_entries) = {
+            let library_entries = match tokio::task::spawn_blocking(move || {
+                let workspace_sources: Vec<workspace::WorkspaceSource<'_>> =
+                    workspace_closure_inputs
+                        .iter()
+                        .map(|(path, content)| workspace::WorkspaceSource {
+                            path: path.as_str(),
+                            content: content.as_str(),
+                        })
+                        .collect();
+                crate::workspace::library_closure::load_library_closure_scan_entries(
+                    &workspace_sources,
+                    &library_paths_for_closure,
+                )
+            })
+            .await
             {
-                let lp = library_paths_for_closure.clone();
-                let standard = standard_library_paths.clone();
-                let signature = closure_seed_signature.clone();
-                tokio::task::spawn_blocking(move || {
-                    crate::workspace::library_graph_cache::load(&lp, &standard, &signature)
-                })
-                .await
-                .ok()
-                .flatten()
-            } else {
-                None
-            };
-
-        let (_library_parsed_count, _library_total_count, parsed_entries) =
-            if let Some(cached_graph) = library_graph_cache_hit.as_ref() {
-                // Cache hit: inject the pre-built library graph into state now so the
-                // relink loop can merge workspace documents on top of it.
-                handle
-                    .inject_cached_library_graph(cached_graph.clone())
-                    .await
-                    .ok();
-                if perf_logging_enabled {
-                    info!(
-                        trace_id = %startup_trace_id.as_deref().unwrap_or("-"),
-                        "startup:library-graph-cache:hit"
-                    );
-                }
-                // Only workspace entries go through relink; library graph is pre-loaded.
-                (0usize, 0usize, parsed_entries)
-            } else {
-                // Cache miss: load library files from disk the normal way.
-                let library_entries = match tokio::task::spawn_blocking(move || {
-                    let workspace_sources: Vec<sysml_model::WorkspaceSource<'_>> =
-                        workspace_closure_inputs
-                            .iter()
-                            .map(|(path, content)| sysml_model::WorkspaceSource {
-                                path: path.as_str(),
-                                content: content.as_str(),
-                            })
-                            .collect();
-                    crate::workspace::library_closure::load_library_closure_scan_entries(
-                        &workspace_sources,
-                        &library_paths_for_closure,
-                    )
-                })
-                .await
-                {
-                    Ok(Ok(entries)) => entries,
-                    Ok(Err(err)) => {
-                        warn!("library import closure load failed: {err}");
-                        Vec::new()
-                    }
-                    Err(err) => {
-                        warn!("library import closure task failed: {err}");
-                        Vec::new()
-                    }
-                };
-                let library_parsed = if library_entries.is_empty() {
+                Ok(Ok(entries)) => entries,
+                Ok(Err(err)) => {
+                    warn!("library import closure load failed: {err}");
                     Vec::new()
-                } else {
-                    let parallel =
-                        library_entries.len() >= parallel_parse_min_files && should_parallel_parse;
-                    // Library files are stable between upgrades — use the parse cache.
-                    tokio::task::spawn_blocking(move || {
-                        parse_scanned_entries(library_entries, parallel, cache_dir)
-                    })
-                    .await
-                    .unwrap_or_default()
-                };
-                let lpc = library_parsed
-                    .iter()
-                    .filter(|e| e.parse_metadata.parse_cached)
-                    .count();
-                let ltc = library_parsed.len();
-                info!(
-                    library_cache_hits = lpc,
-                    library_total = ltc,
-                    "startup: library parse cache stats"
-                );
-                let combined = parsed_entries.into_iter().chain(library_parsed).collect();
-                (lpc, ltc, combined)
+                }
+                Err(err) => {
+                    warn!("library import closure task failed: {err}");
+                    Vec::new()
+                }
             };
-        let library_graph_cache_was_hit = library_graph_cache_hit.is_some();
+            let library_parsed = if library_entries.is_empty() {
+                Vec::new()
+            } else {
+                let parallel =
+                    library_entries.len() >= parallel_parse_min_files && should_parallel_parse;
+                // Library files are stable between upgrades — use the parse cache.
+                tokio::task::spawn_blocking(move || {
+                    parse_scanned_entries(library_entries, parallel, cache_dir)
+                })
+                .await
+                .unwrap_or_default()
+            };
+            let lpc = library_parsed
+                .iter()
+                .filter(|e| e.parse_metadata.parse_cached)
+                .count();
+            let ltc = library_parsed.len();
+            info!(
+                library_cache_hits = lpc,
+                library_total = ltc,
+                "startup: library parse cache stats"
+            );
+            let combined: Vec<_> = parsed_entries.into_iter().chain(library_parsed).collect();
+            (lpc, ltc, combined)
+        };
         let merge_index_start = Instant::now();
         for parsed_entry in &parsed_entries {
             let uri_norm = util::normalize_file_uri(&parsed_entry.uri);
@@ -300,23 +238,19 @@ pub(crate) async fn initialized(
                 library_paths_snapshot,
                 standard_library_paths_snapshot,
             ) = handle.relink_snapshot();
-            let base_graph_for_rebuild =
-                library_graph_cache_was_hit.then(|| handle.snapshot().semantic_graph.clone());
-            let (new_graph, new_symbols, staged_relink_metrics) =
-                tokio::task::spawn_blocking(move || {
-                    crate::workspace::rebuild_semantic_graph_staged(
-                        &index_snapshot,
-                        &library_paths_snapshot,
-                        &standard_library_paths_snapshot,
-                        base_graph_for_rebuild,
-                        true, // startup: settle fully before first use, not the live-edit fast path
-                    )
-                })
-                .await
-                .unwrap_or_else(|e| panic!("startup relink task panicked: {e:?}"));
+            let (new_symbols, staged_relink_metrics) = tokio::task::spawn_blocking(move || {
+                crate::workspace::rebuild_publication_inputs_staged(
+                    &index_snapshot,
+                    &library_paths_snapshot,
+                    &standard_library_paths_snapshot,
+                    true, // startup: settle fully before first use, not the live-edit fast path
+                )
+            })
+            .await
+            .unwrap_or_else(|e| panic!("startup relink task panicked: {e:?}"));
 
             let outcome = handle
-                .commit_startup_relink_or_stale(snapshot_publication, new_graph, new_symbols)
+                .commit_startup_relink_or_stale(snapshot_publication, new_symbols)
                 .await;
             match outcome {
                 Ok(crate::workspace::handle::StartupRelinkOutcome::Committed) => {
@@ -333,30 +267,6 @@ pub(crate) async fn initialized(
                     relink_metrics = fallback_metrics;
                     relink_used_fallback = true;
                 }
-            }
-
-            // On cache miss, persist the newly-built library graph so future startups
-            // can skip the ~10s disk I/O + ~2.4s graph construction.
-            if !library_graph_cache_was_hit
-                && !relink_used_fallback
-                && !library_paths_for_store.is_empty()
-                && !crate::workspace::library_closure::library_full_scan_enabled()
-            {
-                let snap = handle.snapshot();
-                let graph_to_cache = snap
-                    .semantic_graph
-                    .extract_library_subgraph(&snap.library_paths);
-                let lp = library_paths_for_store.clone();
-                let standard = standard_library_paths_for_store.clone();
-                let signature = closure_seed_signature_for_store.clone();
-                tokio::task::spawn_blocking(move || {
-                    crate::workspace::library_graph_cache::store(
-                        &lp,
-                        &standard,
-                        &signature,
-                        &graph_to_cache,
-                    );
-                });
             }
 
             let snap = handle.snapshot();
@@ -385,7 +295,7 @@ pub(crate) async fn initialized(
                 }
                 uris_loaded.push(uri_norm.clone());
                 if util::uri_under_any_library(uri_norm, &snap.library_paths) {
-                    let graph_nodes_for_uri = snap.semantic_graph.nodes_for_uri(uri_norm).len();
+                    let graph_nodes_for_uri = 0;
                     let symbol_entries_count = snap
                         .symbol_table
                         .iter()
@@ -501,7 +411,6 @@ pub(crate) async fn initialized(
                 ),
                 ("loaded", uris_loaded.len().to_string()),
                 ("candidateFiles", summary.candidate_files.to_string()),
-                ("libraryCacheHit", library_graph_cache_was_hit.to_string()),
             ],
         )
         .await;

@@ -62,11 +62,7 @@ The Action exposes the installed binary path as `executable-path`, so workflows 
     format: text
     upload-sarif: false
 
-- run: |
-    "${{ steps.spec42.outputs.executable-path }}" diagrams export examples/office \
-      --view general-view \
-      --format svg \
-      --output target/diagrams
+- run: "${{ steps.spec42.outputs.executable-path }} generate --help"
 ```
 
 ## Requirements and pitfalls

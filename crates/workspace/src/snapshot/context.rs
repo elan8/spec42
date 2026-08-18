@@ -31,19 +31,13 @@ impl CancellationToken {
 pub struct HostResourceLimits {
     pub max_documents: Option<usize>,
     pub max_total_bytes: Option<u64>,
-    pub max_graph_nodes: Option<usize>,
-    pub max_graph_relationships: Option<usize>,
 }
 
 /// Pipeline phases reported through optional progress callbacks.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum HostPipelinePhase {
     LoadingDocuments,
-    BuildingGraph,
-    BuildingLanguageWorkspace,
-    BuildingViewCatalog,
     CollectingValidation,
-    ProjectingModel,
 }
 
 /// Host execution context for workspace loading.
@@ -134,29 +128,4 @@ impl HostContext {
         Ok(())
     }
 
-    pub(crate) fn enforce_graph_limits(
-        &self,
-        node_count: usize,
-        relationship_count: usize,
-    ) -> WorkspaceResult<()> {
-        if let Some(max_graph_nodes) = self.limits.max_graph_nodes {
-            if node_count > max_graph_nodes {
-                return Err(WorkspaceError::resource_limit_exceeded(
-                    "max_graph_nodes",
-                    format!("semantic graph has {node_count} nodes, limit is {max_graph_nodes}"),
-                ));
-            }
-        }
-        if let Some(max_graph_relationships) = self.limits.max_graph_relationships {
-            if relationship_count > max_graph_relationships {
-                return Err(WorkspaceError::resource_limit_exceeded(
-                    "max_graph_relationships",
-                    format!(
-                        "semantic graph has {relationship_count} relationships, limit is {max_graph_relationships}"
-                    ),
-                ));
-            }
-        }
-        Ok(())
-    }
 }

@@ -229,7 +229,7 @@ export async function layoutPrepared(prepared: PreparedView): Promise<LayoutResu
     }
     // The embedded QuickJS ELK worker has a lower recursion ceiling than browsers. A large graph
     // with package containment can exceed it even though the same graph lays out in the webview.
-    // Retry the exact semantic graph without ELK hierarchy; package frames are still drawn from
+    // Retry the exact render product without ELK hierarchy; package frames are still drawn from
     // the semantic package groups after layout.
     const flatGraph = {
       id: "root",

@@ -26,7 +26,7 @@ a scratch fixture run through `cargo run -p spec42-snapshot`, or both.
 
   `sysml_resolution` cannot correct it locally. Excluding a specialization reference's own source
   from its scope -- which it does for `Redefinition`, per
-  `planning/RESOLUTION_LAYER_DESIGN.md` section 11.1 -- is not enough here, because a metadata
+  the reference's own source from redefinition scope -- is not enough here, because a metadata
   definition commonly authors several of these shorthand members and they all acquire the same
   declared name: excluding only the reference's own source makes two of them resolve to each other,
   turning a self-loop into a two-cycle. Distinguishing a declared name from an effective one needs

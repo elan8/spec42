@@ -32,8 +32,6 @@ export type WorkspaceLifecycle = {
   progress?: string;
 };
 
-type LifecycleSurface = "statusBar" | "explorer" | "visualizer";
-
 let snapshotProvider: (() => WorkspaceLifecycleInput) | undefined;
 
 export function registerWorkspaceLifecycleSnapshotProvider(
@@ -120,7 +118,7 @@ export function deriveWorkspaceLifecycle(
   ) {
     return {
       phase: "buildingWorkspaceModel",
-      detail: "Building cross-file workspace model for Model Explorer and diagrams.",
+      detail: "Building the cross-file workspace model.",
     };
   }
 
@@ -152,62 +150,6 @@ export function deriveWorkspaceLifecycle(
 
 export function getWorkspaceLifecycle(): WorkspaceLifecycle {
   return deriveWorkspaceLifecycle(getWorkspaceLifecycleInput());
-}
-
-export function getLifecycleMessage(
-  surface: LifecycleSurface,
-  phase: WorkspaceLifecyclePhase,
-  _detail?: string
-): string {
-  switch (surface) {
-    case "statusBar":
-      switch (phase) {
-        case "serverStarting":
-          return "Starting SysML server";
-        case "validatingFiles":
-          return "Validating files";
-        case "buildingWorkspaceModel":
-          return "Building workspace model";
-        case "degraded":
-          return "Workspace degraded";
-        case "workspaceReady":
-          return "";
-      }
-      break;
-    case "explorer":
-      switch (phase) {
-        case "validatingFiles":
-          return "Validating files — workspace model not built yet";
-        case "buildingWorkspaceModel":
-          return "Building workspace model";
-        case "degraded":
-          return "Workspace results may be incomplete";
-        default:
-          return "";
-      }
-      break;
-    case "visualizer":
-      switch (phase) {
-        case "serverStarting":
-          return "Starting SysML language server...";
-        case "validatingFiles":
-          return "Validating SysML files...";
-        case "buildingWorkspaceModel":
-          return "Building workspace model...";
-        case "workspaceReady":
-          return "Preparing diagram...";
-        case "degraded":
-          return "Workspace model may be incomplete...";
-      }
-      break;
-  }
-  return "";
-}
-
-export function getVisualizerLoadingMessage(): string {
-  const lifecycle = getWorkspaceLifecycle();
-  const message = getLifecycleMessage("visualizer", lifecycle.phase, lifecycle.detail);
-  return message || "Loading workspace model...";
 }
 
 type WorkspaceLifecycleListener = () => void;

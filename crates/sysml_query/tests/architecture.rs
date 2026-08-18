@@ -5,20 +5,13 @@ use std::process::Command;
 
 use serde_json::Value;
 use syn::visit::{self, Visit};
-use syn::{Fields, ImplItem, Item, ReturnType, Signature, Type, UseTree, Visibility};
+use syn::{Fields, Item, ReturnType, Signature, Type, UseTree, Visibility};
 
 const DESIGNATED_CONSUMERS: &[&str] = &[
     "spec42-resolution-benchmark",
     "spec42-snapshot",
     "workspace_session",
 ];
-/// Crates that still reach the legacy mutable semantic graph directly.
-///
-/// `sysml_query` is deliberately absent: the facade now depends only on `sysml_resolution`, which
-/// is what `facade_depends_only_on_the_immutable_resolution_owner` pins. Every crate below is an
-/// unmigrated consumer tracked in `PRODUCTION_CUTOVER.md`, and this list may only shrink.
-const TRANSITIONAL_DIRECT_CONSUMERS: &[&str] =
-    &["language_service", "lsp_server", "server", "workspace"];
 
 const FORBIDDEN_PUBLIC_TYPES: &[&str] = &[
     "SemanticGraph",
@@ -37,41 +30,8 @@ const FORBIDDEN_PUBLIC_TYPES: &[&str] = &[
     "DeclaredSemanticFacts",
 ];
 
-/// Forbidden names that the immutable publication also, independently, defines.
-///
-/// `sysml_model::semantic::publication::EvaluationState` is a crate-private storage struct;
-/// `sysml_resolution::EvaluationState` is the published evaluation contract. They are two distinct
-/// types that happen to share a spelling, and the identifier-based ban above cannot tell them
-/// apart. The exemption is keyed on the *root* of the use path, so the publication's type reaches
-/// the facade without the storage type's ban losing an identifier.
+/// Published immutable contracts whose names intentionally overlap the generic raw-storage ban.
 const PUBLISHED_RESOLUTION_TYPES: &[&str] = &["EvaluationState"];
-
-/// The exemption must stay pinned to a real collision, not become a general escape hatch: if the
-/// mutable model's type is renamed or removed, the name should go back to being plainly forbidden.
-#[test]
-fn every_publication_exemption_names_a_real_collision() {
-    let storage = fs::read_to_string(
-        repository_root().join("crates/sysml_model/src/semantic/publication.rs"),
-    )
-    .expect("read publication storage");
-    let published =
-        fs::read_to_string(repository_root().join("crates/sysml_resolution/src/evaluation.rs"))
-            .expect("read published evaluation contract");
-    for name in PUBLISHED_RESOLUTION_TYPES {
-        assert!(
-            FORBIDDEN_PUBLIC_TYPES.contains(name),
-            "{name} is exempted from a ban it is not subject to"
-        );
-        assert!(
-            storage.contains(&format!("struct {name}")),
-            "{name} no longer collides with a mutable-model storage type; drop the exemption"
-        );
-        assert!(
-            published.contains(&format!("pub enum {name}")),
-            "{name} is not a published contract type; drop the exemption"
-        );
-    }
-}
 
 #[test]
 fn designated_consumers_use_the_query_facade_and_direct_model_dependencies_do_not_expand() {
@@ -117,14 +77,9 @@ fn designated_consumers_use_the_query_facade_and_direct_model_dependencies_do_no
         }
     }
 
-    let known = TRANSITIONAL_DIRECT_CONSUMERS
-        .iter()
-        .copied()
-        .collect::<BTreeSet<_>>();
-    assert_eq!(
-        direct_model_dependencies, known,
-        "direct sysml_model dependency inventory changed; additions bypass the query boundary, \
-         while removals must shrink TRANSITIONAL_DIRECT_CONSUMERS in the same change"
+    assert!(
+        direct_model_dependencies.is_empty(),
+        "the deleted sysml_model crate must not return as a dependency: {direct_model_dependencies:?}"
     );
 }
 
@@ -205,6 +160,7 @@ fn immutable_snapshot_runner_has_an_exact_graph_free_dependency_boundary() {
         BTreeSet::from([
             "hashbrown".to_owned(),
             "rayon".to_owned(),
+            "serde".to_owned(),
             "source_identity".to_owned(),
             "sysml-v2-parser-next".to_owned(),
         ]),
@@ -233,12 +189,6 @@ fn immutable_snapshot_runner_has_an_exact_graph_free_dependency_boundary() {
         "legacy diagnostics reached snapshot runner:\n{tree}"
     );
 
-    assert!(
-        !root
-            .join("crates/sysml_model/src/semantic/semantic_model_builder.rs")
-            .exists(),
-        "the parser-owned semantic builder must have exactly one owner"
-    );
     assert!(root.join("crates/sysml_resolution/src/model.rs").exists());
 }
 
@@ -536,10 +486,7 @@ fn workspace_publication_owner_contains_no_raw_semantic_storage() {
 #[test]
 fn workspace_cannot_restore_the_retired_semantic_publication_wrapper() {
     let root = repository_root();
-    let files = [
-        root.join("crates/workspace/src/lib.rs"),
-        root.join("crates/workspace/src/semantic/mod.rs"),
-    ];
+    let files = [root.join("crates/workspace/src/lib.rs")];
     let retired_types = BTreeSet::from([
         "AuthoredReferenceId",
         "ConstructionStrategy",
@@ -610,64 +557,6 @@ fn assert_source_tree_has_no_raw_semantic_storage(source_root: &Path) {
         source_root.display(),
         violations.join("\n")
     );
-}
-
-#[test]
-fn model_publication_has_no_raw_model_or_index_escape_hatch() {
-    let file = repository_root().join("crates/sysml_model/src/semantic/publication.rs");
-    let source = fs::read_to_string(&file).expect("read publication source");
-    let syntax = syn::parse_file(&source).expect("parse publication source");
-    let forbidden_methods = BTreeSet::from([
-        "facts",
-        "evaluation_facts",
-        "graph",
-        "indexes",
-        "node",
-        "raw_graph",
-        "resolution",
-        "structural_graph",
-        "view",
-    ]);
-    let mut violations = Vec::new();
-    for item in syntax.items {
-        match item {
-            Item::Struct(item)
-                if matches!(
-                    item.ident.to_string().as_str(),
-                    "ResolutionFact"
-                        | "ResolutionState"
-                        | "ResolutionView"
-                        | "ResolvedRelationship"
-                        | "EvaluationState"
-                        | "SemanticQueryIndexes"
-                ) && is_public(&item.vis) =>
-            {
-                violations.push(format!("raw type {} is public", item.ident));
-            }
-            Item::Impl(item) => {
-                let owner = type_last_identifier(&item.self_ty);
-                if !matches!(owner.as_deref(), Some("SemanticModel" | "ResolutionView")) {
-                    continue;
-                }
-                for member in item.items {
-                    let ImplItem::Fn(function) = member else {
-                        continue;
-                    };
-                    if is_public(&function.vis)
-                        && forbidden_methods.contains(function.sig.ident.to_string().as_str())
-                    {
-                        violations.push(format!(
-                            "public {}::{} is a forbidden storage escape hatch",
-                            owner.as_deref().unwrap_or("unknown"),
-                            function.sig.ident
-                        ));
-                    }
-                }
-            }
-            _ => {}
-        }
-    }
-    assert!(violations.is_empty(), "{}", violations.join("\n"));
 }
 
 struct PublicApiVisitor<'a> {

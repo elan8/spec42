@@ -506,7 +506,7 @@ pub(crate) enum DeclarationKind {
     /// `requirement vehicleSpecification`. Structurally a plain typed feature declaration --
     /// name plus an optional `FeatureTyping` reference to the declared type -- mirroring
     /// `lower_parameter_declaration`'s shape but without a direction fact. Per
-    /// planning/RESOLUTION_LAYER_DESIGN.md §5.4, `Subject` is a derived case-level relationship projected
+    /// `Subject` is a derived case-level relationship projected
     /// from this ordinary `FeatureTyping` fact by a later query-layer owner, not a distinct
     /// authored reference kind here; multiplicity and the bare `subject = expr;`/`subject;`
     /// shorthand forms are left unlowered, matching `ParameterUsage`'s scope.
@@ -964,8 +964,8 @@ pub(crate) enum ReferenceKind {
     Disjoining,
     /// The authored target of an `alias X for Y;` member (`AliasDef::target`), resolved through
     /// the same lexical lookup fixed point as every other authored reference kind. Named
-    /// `AliasBinding` to match planning/RESOLUTION_LAYER_DESIGN.md's "alias binding" vocabulary (section
-    /// 10.1) rather than inventing new terminology.
+    /// `AliasBinding` to use the semantic contract's "alias binding" vocabulary rather than
+    /// inventing new terminology.
     AliasBinding,
     /// The authored target of a connector end (`ConnectStmt`'s `from`/`to`/extra ends, or a bare
     /// `EndDecl`'s `::>`/`references` target), resolved through the same lexical lookup fixed
@@ -1400,7 +1400,7 @@ pub(crate) enum EvaluatedValue {
     /// references upstream either). The magnitude is boxed so it stays exactly the `Boolean`/
     /// `Integer`/`Real`/`String` variant the wrapped literal would have folded to on its own --
     /// this is a widen, not a new numeric type, matching the minimal-but-honest posture of not
-    /// fabricating a richer "physical quantity" concept `planning/RESOLUTION_LAYER_DESIGN.md` never
+    /// fabricating a richer "physical quantity" concept the semantic model does not
     /// anticipates. `fold_literal_comparison`/`fold_arithmetic`/`fold_unary` do not special-case
     /// this variant: their generic numeric-widening fallback (`as_f64`) does not match it, so any
     /// operation involving a `Quantity` conservatively folds to `NonConstant` rather than silently

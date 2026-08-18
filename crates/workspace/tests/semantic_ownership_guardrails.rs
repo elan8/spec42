@@ -46,7 +46,7 @@ const RELATIONSHIP_PROJECTION_KEYS: &[&str] = &[
     "metaclassRole",
     "refTarget",
     "keyword",
-    // `planning/UNIFY_CACHE_PROGRESS.md` B9: `parameterType` is a pure duplicate of the
+    // `parameterType` is a pure duplicate of the
     // first `DeclaredRelationshipFacts::typing` target (same family as `partType`/`portType`/
     // `refType`/`attributeType` above). `payloadType`/`acceptType` are not relationship-typing
     // duplicates -- they back the genuinely separate `DeclaredSemanticFacts::
@@ -65,7 +65,7 @@ const RELATIONSHIP_PROJECTION_KEYS: &[&str] = &[
 const RETIRED_TYPING_PROJECTION_KEYS: &[&str] = &[
     // Redundant with `attach_declared_subsetting_family`'s
     // `DeclaredRelationshipFacts::reference_subsetting`/`cross_subsetting` typed facts: an
-    // exhaustive sweep found no reader anywhere (`planning/UNIFY_CACHE_PROGRESS.md` B9).
+    // exhaustive sweep found no reader anywhere.
     "referencesFeature",
     "crossesFeature",
     "actionType",
@@ -149,10 +149,7 @@ fn membership_import_key_guard_rejects_code_and_ignores_comments() {
 #[test]
 fn post_construction_semantic_and_diagnostic_consumers_do_not_read_relationship_projections() {
     let root = repository_root();
-    let roots = [
-        root.join("crates/sysml_model/src/semantic"),
-        root.join("crates/sysml_diagnostics/src"),
-    ];
+    let roots = [root.join("crates/sysml_diagnostics/src")];
     let mut violations = Vec::new();
     for scan_root in roots {
         visit_production_modules(&scan_root, &mut |path| {
@@ -344,8 +341,7 @@ fn is_excluded(path: &Path) -> bool {
         // Boundary DTO projection (`project_source_text_attributes`,
         // `project_relationship_target_attributes`, `project_expression_text_attributes`):
         // projects typed facts onto a transport DTO's `attributes` map at construction sites
-        // only, never reading the map back into a semantic decision (`planning/UNIFY_CACHE_PROGRESS.md`
-        // chunk D/G, precedented by `project_expression_text_attributes` in chunk E).
+        // only, never reading the map back into a semantic decision.
         "model_projection.rs",
     ];
     path.components().any(|component| {

@@ -2,7 +2,7 @@
 //!
 //! These specifically guard the property that motivated the whole migration: a slow
 //! background rebuild (relink, or the startup workspace scan) must never block an unrelated,
-//! cheap read request (hover) behind it. Before the migration, `sysml_model_result` held the
+//! cheap read request (hover) behind it. Before the migration, the mutable model result held the
 //! server's single `RwLock` read guard for the duration of a full workspace visualization
 //! rebuild, so *any* concurrent request queued behind it for as long as that rebuild took
 //! (20-30+ seconds on a real workspace). Under the actor, reads only ever look at the latest

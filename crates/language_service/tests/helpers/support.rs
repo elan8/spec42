@@ -3,7 +3,8 @@
 #![allow(dead_code)]
 
 use language_service::{complete, dto::SourceLocation, InMemoryWorkspace};
-use sysml_model::{SysmlDocument, SysmlDocumentSourceKind, TextPosition};
+use sysml_query::resolved_slice::TextPosition;
+use sysml_source::{SysmlDocument, SysmlDocumentSourceKind};
 
 pub fn document(path: &str, content: &str) -> SysmlDocument {
     SysmlDocument::from_memory_path(

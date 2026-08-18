@@ -1,8 +1,7 @@
 # Canonical resolution performance gate
 
 This report-only command measures the one opaque whole-model
-`sysml_query::resolved_slice::PublishedModel` build required by
-`planning/RESOLUTION_LAYER_DESIGN.md` §11.3. Every workload selects SOURCE sections from the checked-in
+`sysml_query::resolved_slice::PublishedModel` build. Every workload selects SOURCE sections from the checked-in
 snapshot corpus. It performs no network access, scoped-resolver comparison, semantic fallback, or
 machine-specific timing assertion.
 

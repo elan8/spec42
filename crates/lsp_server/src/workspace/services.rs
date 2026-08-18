@@ -1,17 +1,12 @@
 use crate::common::util;
-use crate::semantic;
 use crate::workspace::library_search;
 use crate::workspace::parse_cache;
-#[cfg(test)]
-use crate::workspace::state::ServerState;
 use crate::workspace::state::{DocumentStore, IndexEntry, ParseMetadata};
 use rayon::prelude::*;
 use std::path::Path;
 use std::time::Instant;
 use sysml_v2_parser::RootNamespace;
 use tower_lsp::lsp_types::{MessageType, TextDocumentContentChangeEvent, Url};
-use workspace::semantic::WorkspaceParsedDocument;
-use workspace::{IncrementalWorkspace, SysmlDocumentSourceKind};
 
 fn elapsed_ms(start: Instant) -> u32 {
     start.elapsed().as_millis().max(1) as u32
@@ -71,10 +66,7 @@ fn parse_scanned_entry(uri: Url, content: String, cache_dir: Option<&Path>) -> P
                 content,
                 parsed: Some(root),
                 parse_errors: vec![],
-                parse_metadata: ParseMetadata {
-                    parse_time_ms: 0,
-                    parse_cached: true,
-                },
+                parse_metadata: ParseMetadata { parse_cached: true },
             };
         }
         tracing::debug!(uri = %uri, "parse cache miss — parsing and storing");
@@ -93,7 +85,7 @@ fn parse_scanned_entry_cold(uri: Url, content: String) -> ParsedScanEntry {
     let parsed_result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         util::parse_for_editor(&content)
     }));
-    let parse_time_ms = elapsed_ms(parse_start);
+    let _parse_time_ms = elapsed_ms(parse_start);
     let parser_panicked = parsed_result.is_err();
     let (parsed, mut parse_errors) = match parsed_result {
         Ok(result) => {
@@ -122,7 +114,6 @@ fn parse_scanned_entry_cold(uri: Url, content: String) -> ParsedScanEntry {
         parsed,
         parse_errors,
         parse_metadata: ParseMetadata {
-            parse_time_ms,
             parse_cached: false,
         },
     }
@@ -163,17 +154,10 @@ fn update_symbol_table_for_uri(
     }
 }
 
-fn update_semantic_graph_for_uri(
-    state: &mut impl DocumentStore,
-    uri: &Url,
-    doc: Option<&RootNamespace>,
-    evaluate: bool,
-) {
-    semantic::patch_graph_for_document(state.semantic_graph_mut(), uri, doc, evaluate);
-}
-
 fn refresh_symbols_for_uri(state: &mut impl DocumentStore, uri: &Url) {
-    let mut new_entries = semantic::symbol_entries_for_uri(state.semantic_graph(), uri);
+    // TODO(follow-up): query symbols from the committed immutable publication after the actor
+    // publishes the edit. The graph-derived symbol path is intentionally retired.
+    let mut new_entries = Vec::new();
     if let Some(index_entry) = state.index().get(uri) {
         library_search::add_short_name_symbol_entries(&mut new_entries, &index_entry.content, uri);
     }
@@ -190,16 +174,15 @@ pub(crate) fn store_parsed_document_text(
     parse_errors: &[String],
     diagnostic_count: usize,
     context: &str,
-    evaluate: bool,
+    _evaluate: bool,
 ) -> Option<String> {
-    update_semantic_graph_for_uri(state, uri_norm, parsed.as_ref(), evaluate);
     state.index_mut().insert(
         uri_norm.clone(),
         IndexEntry {
             content: text,
             parsed,
             parse_metadata,
-            include_in_semantic_graph: true,
+            admitted_to_publication: true,
         },
     );
     crate::workspace::state::refresh_published_model(state);
@@ -212,9 +195,7 @@ pub(crate) fn store_document_text(
     uri_norm: &Url,
     text: String,
 ) -> Option<String> {
-    let parse_start = Instant::now();
     let parsed_result = util::parse_for_editor(&text);
-    let parse_time_ms = elapsed_ms(parse_start);
     let parse_errors = parsed_result
         .errors
         .iter()
@@ -227,7 +208,6 @@ pub(crate) fn store_document_text(
         text,
         Some(parsed_result.root),
         ParseMetadata {
-            parse_time_ms,
             parse_cached: false,
         },
         &parse_errors,
@@ -245,9 +225,7 @@ pub(crate) fn store_document_text_fast(
     uri_norm: &Url,
     text: String,
 ) -> Option<String> {
-    let parse_start = Instant::now();
     let parsed_result = util::parse_for_editor(&text);
-    let parse_time_ms = elapsed_ms(parse_start);
     let parse_errors = parsed_result
         .errors
         .iter()
@@ -260,7 +238,6 @@ pub(crate) fn store_document_text_fast(
         text,
         Some(parsed_result.root),
         ParseMetadata {
-            parse_time_ms,
             parse_cached: false,
         },
         &parse_errors,
@@ -298,7 +275,7 @@ pub(crate) fn ingest_parsed_scan_entries(
         );
         loaded.push((uri_norm, warning));
     }
-    semantic::evaluate_expressions(state.semantic_graph_mut());
+    crate::workspace::state::refresh_published_model(state);
     loaded
 }
 
@@ -317,7 +294,7 @@ pub(crate) fn ingest_parsed_scan_entries_batch(
                 content: entry.content,
                 parsed: entry.parsed,
                 parse_metadata: entry.parse_metadata,
-                include_in_semantic_graph: true,
+                admitted_to_publication: true,
             },
         );
         let warning = warning_from_parse_errors(
@@ -333,19 +310,13 @@ pub(crate) fn ingest_parsed_scan_entries_batch(
 }
 
 /// Applies incoming text edits to the in-memory document only (no parsing, no
-/// semantic graph work). Cheap and safe to run while holding the server's
+/// semantic publication work). Cheap and safe to run while holding the server's
 /// write lock. Returns whether the content actually changed, so the caller
 /// can decide whether a (potentially slow) parse is needed.
 mod edits;
 mod rebuild;
 pub(crate) use edits::{apply_content_changes, apply_parsed_document_update, remove_document};
-#[cfg(test)]
-pub(crate) use edits::{apply_document_changes, apply_document_changes_fast};
 pub(crate) use rebuild::{
     clear_documents_under_roots, index_library_paths_for_search, rebuild_all_document_links,
-    rebuild_semantic_graph_staged,
+    rebuild_publication_inputs_staged,
 };
-
-#[cfg(test)]
-#[allow(clippy::field_reassign_with_default)]
-mod tests;

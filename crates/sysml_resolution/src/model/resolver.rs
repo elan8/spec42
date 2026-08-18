@@ -3728,7 +3728,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
 
         // A redefinition/subsetting reference owned by a *usage* (not a def/type) cannot reach its
         // target through the usage's own ancestor closure -- a plain usage has no Subclassification
-        // ancestors of its own. Instead, per planning/RESOLUTION_LAYER_DESIGN.md, the target must be reached
+        // ancestors of its own. Instead, the target must be reached
         // by first following the usage's own settled `FeatureTyping` reference to its type, then
         // searching that type's directly-owned members and its already-computed ancestor closure
         // (built above from Subclassification, independently of this step). This is why it runs
@@ -4016,7 +4016,7 @@ fn detect_cyclic_alias_bindings<R: ResolutionReferenceFact>(
 /// authored reference (for example a `FeatureTyping` on `device : DeviceAlias`) resolves to an
 /// alias declaration, this follows that alias's own resolved `AliasBinding` chain -- transitively,
 /// through alias-of-alias -- to the ultimate non-alias target and publishes an `implied` (per
-/// planning/RESOLUTION_LAYER_DESIGN.md's provenance vocabulary) relationship of the *same* reference kind
+/// provenance) relationship of the *same* reference kind
 /// straight from the original source to that ultimate target. This makes aliasing "transparent"
 /// for downstream typing without weakening or replacing the alias's own authored `AliasBinding`
 /// fact, which remains published as its own (authored-provenance) reference/relationship. A cycle
@@ -4639,7 +4639,7 @@ fn resolve_reference<R: ResolutionReferenceFact>(
         .ok_or(ResolutionError::InvalidStorage)?;
     // KerML Redefinition relates a feature to a *different* feature, so the redefining feature is
     // not in its own redefinition scope: the Pilot's `KerMLScope` excludes it, and
-    // planning/RESOLUTION_LAYER_DESIGN.md section 11.1 requires "Redefinition excludes owned
+    // Redefinition excludes owned
     // first-scope candidates".
     //
     // Without this, `feature annotatedElement : Element[1..*] redefines annotatedElement;` -- the
@@ -4667,7 +4667,7 @@ fn resolve_reference<R: ResolutionReferenceFact>(
         // When the first segment is also the last (a plain unqualified reference), the winning
         // precedence tier's candidates *are* the final resolution target, so domain compatibility
         // is applied per tier below (an incompatible-domain local binding still shadows a
-        // compatible outer/imported one; see planning/RESOLUTION_LAYER_DESIGN.md section 11.1). When more
+        // compatible outer/imported one. When more
         // segments follow, this first segment denotes an intermediate namespace/type owner, not
         // the reference's final target, so no domain filtering applies here: `Any` accepts
         // everything and the tier logic degrades to plain name-presence shadowing.
@@ -4747,7 +4747,7 @@ fn resolve_reference<R: ResolutionReferenceFact>(
 
 /// Walks the enclosing-namespace chain from `owner` outward. At each level, owned members take
 /// precedence over inherited (ancestor-scoped) members, which take precedence over imports, per
-/// the scope-origin precedence in `planning/RESOLUTION_LAYER_DESIGN.md` section 6 ("owned members, then
+/// the canonical scope-origin precedence ("owned members, then
 /// inherited/general members, then imports"). `inherited_names` is `None` for reference kinds that
 /// do not read inherited scope (for example Subclassification itself).
 ///
@@ -7635,7 +7635,7 @@ mod tests {
     fn local_feature_shadows_an_incompatible_imported_type_of_the_same_name() {
         // C::T (a PartUsage feature) is domain-incompatible as a FeatureTyping target, but it is
         // still owned directly by C, the reference's enclosing namespace, so per
-        // planning/RESOLUTION_LAYER_DESIGN.md section 11.1 it must shadow the imported, domain-compatible
+        // it must shadow the imported, domain-compatible
         // A::T rather than being silently discarded in favor of the import or left Unresolved.
         let fixture = local_shadow_fixture(false);
         let (_, _, _, resolution) = resolve_fixture(&fixture);

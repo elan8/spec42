@@ -15,8 +15,7 @@ export type FeatureInspectorRange = FeatureInspectorElementRef["range"];
  * side that consumes it.
  *
  * Modeled on `LibraryWebviewViewProvider` (single-file inline HTML/CSS/JS, no build step) rather
- * than the diagram-canvas `VisualizationPanel` -- this panel is structured text/lists, not a
- * diagram.
+ * as structured text and lists.
  */
 export class FeatureInspectorViewProvider implements vscode.WebviewViewProvider {
   private view: vscode.WebviewView | undefined;
@@ -116,7 +115,7 @@ export class FeatureInspectorViewProvider implements vscode.WebviewViewProvider 
   }
 
   /** Pins the inspector to the element at `position` in `uri`. Used when the caller only has a
-   * source location (e.g. a diagram node click) rather than a full FeatureInspectorElementRef. */
+   * source location rather than a full FeatureInspectorElementRef. */
   async inspectAt(uri: string, position: FeatureInspectorRange["start"]): Promise<void> {
     this.pinned = true;
     try {

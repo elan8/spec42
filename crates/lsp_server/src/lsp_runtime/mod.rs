@@ -22,10 +22,8 @@ use crate::views::dto;
 use crate::workspace::state::ServerState;
 use crate::workspace::{RuntimeConfig, WorkspaceHandle};
 use custom::{
-    sysml_feature_inspector_result, sysml_library_search_result, sysml_model_result,
-    sysml_server_stats_result, sysml_visualization_result,
+    sysml_feature_inspector_result, sysml_library_search_result, sysml_server_stats_result,
 };
-use sysml_model::SysmlVisualizationResultDto;
 
 struct Backend {
     client: Client,
@@ -390,15 +388,6 @@ impl LanguageServer for Backend {
         )
     }
 
-    async fn moniker(&self, params: MonikerParams) -> Result<Option<Vec<Moniker>>> {
-        let state = self.handle.snapshot();
-        features::moniker(
-            &state,
-            params.text_document_position_params.text_document.uri,
-            params.text_document_position_params.position,
-        )
-    }
-
     async fn prepare_type_hierarchy(
         &self,
         params: TypeHierarchyPrepareParams,
@@ -426,211 +415,9 @@ impl LanguageServer for Backend {
         let state = self.handle.snapshot();
         features::subtypes(&state, params.item.uri.clone(), params.item.selection_range)
     }
-
-    async fn prepare_call_hierarchy(
-        &self,
-        params: CallHierarchyPrepareParams,
-    ) -> Result<Option<Vec<CallHierarchyItem>>> {
-        let state = self.handle.snapshot();
-        features::prepare_call_hierarchy(
-            &state,
-            params.text_document_position_params.text_document.uri,
-            params.text_document_position_params.position,
-        )
-    }
-
-    async fn incoming_calls(
-        &self,
-        params: CallHierarchyIncomingCallsParams,
-    ) -> Result<Option<Vec<CallHierarchyIncomingCall>>> {
-        let state = self.handle.snapshot();
-        features::incoming_calls(&state, params.item.uri.clone(), params.item.selection_range)
-    }
-
-    async fn outgoing_calls(
-        &self,
-        params: CallHierarchyOutgoingCallsParams,
-    ) -> Result<Option<Vec<CallHierarchyOutgoingCall>>> {
-        let state = self.handle.snapshot();
-        features::outgoing_calls(&state, params.item.uri.clone(), params.item.selection_range)
-    }
 }
 
 impl Backend {
-    async fn wait_for_stable_snapshot(&self) {
-        // Wait for any in-flight async relink to complete so downstream responses
-        // reflect a fully-resolved semantic graph (satisfy/perform/subject edges etc).
-        // The snapshot handle wakes when the actor publishes a new state (no polling).
-        let mut snapshot_rx = self.handle.snapshot_handle();
-        let _ = tokio::time::timeout(
-            std::time::Duration::from_secs(30),
-            snapshot_rx.wait_for(|s| {
-                !matches!(
-                    s.session.lifecycle(),
-                    workspace::SessionLifecycle::Reindexing
-                )
-            }),
-        )
-        .await;
-    }
-
-    async fn sysml_model(&self, params: serde_json::Value) -> Result<dto::SysmlModelResultDto> {
-        let request_start = Instant::now();
-        // Log handler dispatch time BEFORE the (former) lock acquisition so we can compare
-        // against the frontend's getModelRequestStart timestamp and see how long
-        // the request sat in the transport/queue before reaching this handler.
-        {
-            let is_perf = self
-                .runtime_config
-                .get()
-                .map(|c| c.perf_logging_enabled)
-                .unwrap_or(false);
-            if is_perf {
-                self.client
-                    .log_message(
-                        MessageType::INFO,
-                        "[SysML][perf] {\"event\":\"backend:sysmlModelHandlerStart\"}",
-                    )
-                    .await;
-            }
-        }
-        self.wait_for_stable_snapshot().await;
-        let read_lock_wait_start = Instant::now();
-        let state = self.handle.snapshot();
-        let read_lock_wait_ms = read_lock_wait_start.elapsed().as_millis().max(1);
-        let perf_logging_enabled = self
-            .runtime_config
-            .get()
-            .expect("initialize precedes all other LSP requests")
-            .perf_logging_enabled;
-        let (response, parse_cached_uri) = sysml_model_result(
-            &self.client,
-            &self.handle,
-            &state,
-            &self.config,
-            params,
-            perf_logging_enabled,
-        )
-        .await?;
-        drop(state);
-
-        let cache_mark_lock_wait_start = Instant::now();
-        if let Some(uri) = parse_cached_uri {
-            self.handle.mark_parse_cached(uri).await.ok();
-        }
-        let cache_mark_lock_wait_ms = cache_mark_lock_wait_start.elapsed().as_millis().max(1);
-        let total_ms = request_start.elapsed().as_millis().max(1);
-        let parse_time_ms = response
-            .stats
-            .as_ref()
-            .map(|stats| stats.parse_time_ms)
-            .unwrap_or(0);
-        let model_build_time_ms = response
-            .stats
-            .as_ref()
-            .map(|stats| stats.model_build_time_ms)
-            .unwrap_or(0);
-        let node_count = response
-            .graph
-            .as_ref()
-            .map(|graph| graph.nodes.len())
-            .unwrap_or(0);
-        let edge_count = response
-            .graph
-            .as_ref()
-            .map(|graph| graph.edges.len())
-            .unwrap_or(0);
-        let client = self.client.clone();
-        tokio::spawn(async move {
-            if !perf_logging_enabled {
-                return;
-            }
-            client
-                .log_message(
-                    MessageType::INFO,
-                    format!(
-                        "[SysML][perf] {{\"event\":\"backend:sysmlModelRequest\",\"lockWaitMs\":{},\"readLockWaitMs\":{},\"cacheMarkLockWaitMs\":{},\"totalMs\":{},\"parseTimeMs\":{},\"modelBuildTimeMs\":{},\"graphNodes\":{},\"graphEdges\":{}}}",
-                        read_lock_wait_ms + cache_mark_lock_wait_ms,
-                        read_lock_wait_ms,
-                        cache_mark_lock_wait_ms,
-                        total_ms,
-                        parse_time_ms,
-                        model_build_time_ms,
-                        node_count,
-                        edge_count,
-                    ),
-                )
-                .await;
-        });
-        Ok(response)
-    }
-
-    async fn sysml_visualization(
-        &self,
-        params: serde_json::Value,
-    ) -> Result<SysmlVisualizationResultDto> {
-        let request_start = Instant::now();
-        self.wait_for_stable_snapshot().await;
-        let state = self.handle.snapshot();
-        let perf_logging_enabled = self
-            .runtime_config
-            .get()
-            .expect("initialize precedes all other LSP requests")
-            .perf_logging_enabled;
-        let (response, build_meta) =
-            sysml_visualization_result(&self.handle, &state, params).await?;
-        drop(state);
-        if perf_logging_enabled {
-            let graph_nodes = response
-                .graph
-                .as_ref()
-                .map(|graph| graph.nodes.len())
-                .unwrap_or(0);
-            let graph_edges = response
-                .graph
-                .as_ref()
-                .map(|graph| graph.edges.len())
-                .unwrap_or(0);
-            let general_view_nodes = response
-                .general_view_graph
-                .as_ref()
-                .map(|graph| graph.nodes.len())
-                .unwrap_or(0);
-            let general_view_edges = response
-                .general_view_graph
-                .as_ref()
-                .map(|graph| graph.edges.len())
-                .unwrap_or(0);
-            let model_build_time_ms = response
-                .stats
-                .as_ref()
-                .map(|stats| stats.model_build_time_ms)
-                .unwrap_or(0);
-            self.client
-                .log_message(
-                    MessageType::INFO,
-                    format!(
-                        "[SysML][perf] {{\"event\":\"backend:sysmlVisualizationRequest\",\"view\":\"{}\",\"modelReady\":{},\"totalMs\":{},\"cacheHit\":{},\"ibdMs\":{},\"viewEvalMs\":{},\"sceneMs\":{},\"modelBuildTimeMs\":{},\"graphNodes\":{},\"graphEdges\":{},\"generalViewNodes\":{},\"generalViewEdges\":{},\"viewCandidates\":{}}}",
-                        response.view,
-                        response.model_ready,
-                        request_start.elapsed().as_millis().max(1),
-                        build_meta.cache_hit,
-                        build_meta.ibd_ms,
-                        build_meta.view_eval_ms,
-                        build_meta.scene_ms,
-                        model_build_time_ms,
-                        graph_nodes,
-                        graph_edges,
-                        general_view_nodes,
-                        general_view_edges,
-                        response.view_candidates.len(),
-                    ),
-                )
-                .await;
-        }
-        Ok(response)
-    }
-
     async fn sysml_feature_inspector(
         &self,
         params: serde_json::Value,
@@ -711,8 +498,8 @@ pub async fn run(config: Arc<Spec42Config>, server_name: &str) {
         server_name: server_name.clone(),
         runtime_config: Arc::clone(&runtime_config),
     })
-    .custom_method("sysml/model", Backend::sysml_model)
-    .custom_method("sysml/visualization", Backend::sysml_visualization)
+    // TODO(follow-up): Model projections and diagrams return as generator plugins consuming
+    // typed immutable-model queries. Do not restore the legacy graph DTO custom methods.
     .custom_method("sysml/featureInspector", Backend::sysml_feature_inspector)
     .custom_method("sysml/serverStats", Backend::sysml_server_stats)
     .custom_method("sysml/clearCache", Backend::sysml_clear_cache)

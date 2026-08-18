@@ -7,12 +7,6 @@
     "outDir": "out",
     "rootDir": "src",
     "baseUrl": ".",
-    "paths": {
-      "@spec42/diagram-renderer/prepare": ["src/visualization/webview/shims/diagram-renderer-prepare.ts"],
-      "@spec42/diagram-renderer/renderer": ["src/visualization/webview/shims/diagram-renderer-renderer.ts"],
-      "@spec42/diagram-renderer/behavior-interaction": ["src/visualization/webview/shims/diagram-renderer-behavior-interaction.ts"],
-      "@spec42/diagram-renderer/pipeline-export": ["src/visualization/webview/shims/diagram-renderer-pipeline-export.ts"]
-    },
     "strict": true,
     "sourceMap": true,
     "declaration": true,
@@ -21,5 +15,5 @@
     "skipLibCheck": true
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "out", "src/visualization/webview/**/*"]
+  "exclude": ["node_modules", "out"]
 }

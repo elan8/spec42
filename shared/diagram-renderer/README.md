@@ -15,7 +15,8 @@ Shared D3 + ELK renderer for Spec42 **SysML visualizer views** (`SYSML_ENABLED_V
 
 Browser and Grid implement the presentation forms described by SysML v2 §9.2.20. Geometry remains provisional: Spec42 does not yet extract and render model-authored spatial coordinates, shapes, orientation, or 3D viewing parameters. Filtered standard views such as case/requirement-style views are projected through `general-view` with filters preserved by the backend.
 
-For the full picture (legacy vs shared vs SysML v2 spec) and the conformance roadmap, see [`docs/architecture/SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md`](../../docs/architecture/SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md).
+This renderer is not currently connected to a built-in semantic diagram product. A future diagram
+generator plugin may reuse it after defining a typed, versioned render-artifact contract.
 
 ## Notation-neutral theme
 

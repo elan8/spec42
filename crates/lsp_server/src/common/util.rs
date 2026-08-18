@@ -118,7 +118,7 @@ pub fn import_statement_ranges(content: &str) -> Vec<Range> {
 
 /// Returns true if `uri` is under any of the library path roots (path prefix check).
 pub fn uri_under_any_library(uri: &Url, library_paths: &[Url]) -> bool {
-    crate::semantic::uri_under_any_library(uri, library_paths)
+    language_service::uri::uri_under_any_library(uri, library_paths)
 }
 
 /// Parse library paths from LSP config (initialization_options or didChangeConfiguration settings).

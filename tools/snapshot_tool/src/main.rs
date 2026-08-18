@@ -101,10 +101,9 @@ impl GeneratedArtifacts {
 
 /// The directory of the checked-in standard-library corpus, relative to the snapshot root.
 ///
-/// The runner cannot reach the packaged KPAR standard library: `workspace` depends on
-/// `sysml_model`, which is outside this binary's enforced dependency closure. The library fixtures
-/// already carry the same pinned library text in their own `SOURCE` sections, so they are the
-/// admission input as well as fixtures in their own right.
+/// The runner deliberately admits only checked-in source fixtures rather than reaching into host
+/// library packaging. Library fixtures carry the pinned library text in their own `SOURCE`
+/// sections, so they are the admission input as well as fixtures in their own right.
 const STANDARD_LIBRARY_DIRECTORY: &str = "sysml.library";
 
 /// Lazily loaded library sources, shared by every fixture that admits them.

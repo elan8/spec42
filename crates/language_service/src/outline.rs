@@ -1,6 +1,5 @@
 //! Document outline and folding ranges from parsed AST.
 
-use sysml_model::semantic::ast_util::{identification_name, span_to_range};
 use sysml_v2_parser::ast::{
     PackageBody, PackageBodyElement, PartDefBody, PartDefBodyElement, PartUsageBody,
     PartUsageBodyElement, PortDefBody, PortDefBodyElement, RootElement,
@@ -8,6 +7,7 @@ use sysml_v2_parser::ast::{
 use sysml_v2_parser::RootNamespace;
 
 use crate::dto::{FoldingRangeDto, FoldingRangeKindDto, OutlineSymbol};
+use crate::syntax::{identification_name, span_to_range};
 
 pub fn document_symbols(root: &RootNamespace) -> Vec<OutlineSymbol> {
     let mut out = Vec::new();

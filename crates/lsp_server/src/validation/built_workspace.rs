@@ -9,7 +9,7 @@ use std::collections::{BTreeSet, HashMap};
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use sysml_model::{SemanticGraph, SysmlDocument, WorkspaceParsedDocument};
+use sysml_source::SysmlDocument;
 use sysml_query::resolved_slice::PublishedModel;
 use tower_lsp::lsp_types::{Diagnostic, Url};
 use workspace::{
@@ -28,8 +28,7 @@ use super::{SemanticValidationReport, ValidatedDocument, ValidationReport, Valid
 /// Pre-built workspace ingredients for report assembly without rescanning or rebuilding.
 #[derive(Debug, Clone)]
 pub struct BuiltWorkspaceInput {
-    pub semantic_graph: SemanticGraph,
-    /// The publication validation reports from, admitted from the same documents as the graph.
+    /// The publication validation reports from.
     pub published_model: Arc<PublishedModel>,
     /// Every document the provider loaded, including ones that failed the graph builder's
     /// strict parse. Indexed for raw text below so `collect_diagnostics_for_document` can
@@ -37,7 +36,6 @@ pub struct BuiltWorkspaceInput {
     /// documents dropped from `parsed_documents` silently vanish from the index and produce
     /// zero diagnostics instead of a parse error.
     pub all_documents: Vec<SysmlDocument>,
-    pub parsed_documents: Vec<WorkspaceParsedDocument>,
     pub library_urls: Vec<Url>,
     pub workspace_root: Option<PathBuf>,
 }
@@ -48,10 +46,8 @@ pub fn built_workspace_input_from_snapshot(
     snapshot: &HostWorkspaceSnapshot,
 ) -> BuiltWorkspaceInput {
     BuiltWorkspaceInput {
-        semantic_graph: snapshot.semantic_graph().clone(),
         published_model: snapshot.published_model_arc(),
         all_documents: snapshot.documents().to_vec(),
-        parsed_documents: snapshot.parsed_documents().to_vec(),
         library_urls: snapshot.library_urls().to_vec(),
         workspace_root: Some(snapshot.workspace_root().to_path_buf()),
     }
@@ -128,9 +124,6 @@ pub fn semantic_report_from_built_workspace(
     let documents = collect_target_documents(&state, &target_files, request.strict_diagnostics)?;
     let summary = summarize(&documents);
     let advice = build_advice(&documents, request.library_paths.is_empty());
-    let semantic_model =
-        workspace::project_semantic_model(&state.semantic_graph, &target_files, &[])
-            .map_err(|err| err.to_string())?;
 
     let mut report = ValidationReport {
         workspace_root: workspace_root.map(|path| path.display().to_string()),
@@ -146,10 +139,7 @@ pub fn semantic_report_from_built_workspace(
     for hook in &config.pipeline_hooks {
         hook.after_validate(&mut report)?;
     }
-    Ok(SemanticValidationReport {
-        validation: report,
-        semantic_model,
-    })
+    Ok(SemanticValidationReport { validation: report })
 }
 
 fn server_state_from_built(
@@ -162,34 +152,18 @@ fn server_state_from_built(
             document.uri.clone(),
             IndexEntry {
                 content: document.content.clone(),
-                parsed: None,
+                parsed: Some(crate::common::util::parse_for_editor(&document.content).root),
                 parse_metadata: ParseMetadata::default(),
-                include_in_semantic_graph: true,
+                admitted_to_publication: true,
             },
         );
     }
-    for document in &built.parsed_documents {
-        index.insert(
-            document.uri.clone(),
-            IndexEntry {
-                content: document.content.clone(),
-                parsed: Some(document.parsed.clone()),
-                parse_metadata: ParseMetadata {
-                    parse_time_ms: document.parse_time_ms,
-                    parse_cached: document.parse_cached,
-                },
-                include_in_semantic_graph: true,
-            },
-        );
-    }
-
     let mut session = workspace::WorkspaceSession::new();
     session.begin_startup();
     session.complete_startup();
     ServerState {
         workspace_roots: workspace_root_url.iter().cloned().collect(),
         library_paths: built.library_urls.clone(),
-        semantic_graph: built.semantic_graph.clone(),
         published_model: Some(built.published_model.clone()),
         index,
         session,
@@ -255,92 +229,4 @@ fn collect_diagnostics_for_document(
         diagnostics_core::validation_reporting(strict_diagnostics),
         diagnostics_core::validation_postprocess_options(strict_diagnostics),
     )
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    fn test_engine(cache: &tempfile::TempDir, library_paths: Vec<PathBuf>) -> Spec42Engine {
-        workspace::EngineBuilder::default()
-            .cache_dir(cache.path().to_path_buf())
-            .no_stdlib(true)
-            .library_paths(library_paths)
-            .build()
-            .expect("engine")
-    }
-
-    #[test]
-    fn batch_diagnostics_do_not_inherit_the_callers_small_stack() {
-        let temp = tempfile::tempdir().expect("tempdir");
-        let model = temp.path().join("Wide.sysml");
-        let mut source = String::from("package Wide {\n");
-        for index in 0..100 {
-            source.push_str(&format!("attribute value{index} : Real;\n"));
-        }
-        source.push_str("}\n");
-        std::fs::write(&model, &source).expect("model");
-
-        let uri = path_to_file_url(&model).expect("model URI");
-        let mut state = ServerState::default();
-        state.index.insert(
-            uri,
-            IndexEntry {
-                content: source,
-                parsed: None,
-                parse_metadata: ParseMetadata::default(),
-                include_in_semantic_graph: true,
-            },
-        );
-
-        let worker = std::thread::Builder::new()
-            .name("small-stack-diagnostics-caller".into())
-            .stack_size(256 * 1024)
-            .spawn(move || collect_target_documents(&state, &[model], false))
-            .expect("small-stack caller");
-        let documents = worker
-            .join()
-            .expect("caller must not overflow")
-            .expect("diagnostics");
-        assert_eq!(documents.len(), 1);
-    }
-
-    #[test]
-    fn validate_paths_with_semantics_validates_kerml_target() {
-        let temp = tempfile::tempdir().expect("tempdir");
-        let cache = tempfile::tempdir().expect("cache dir");
-        let workspace_dir = temp.path().join("workspace");
-        std::fs::create_dir_all(&workspace_dir).expect("workspace dir");
-        std::fs::write(
-            workspace_dir.join("Core.kerml"),
-            "package Core { classifier Thing; }",
-        )
-        .expect("kerml source");
-
-        let engine = test_engine(&cache, Vec::new());
-        let config = Arc::new(crate::default_server_config());
-        let request = ValidationRequest {
-            targets: vec![workspace_dir.clone()],
-            workspace_root: Some(workspace_dir),
-            library_paths: Vec::new(),
-            parallel_enabled: false,
-            strict_diagnostics: false,
-        };
-
-        let report = validate_paths_with_semantics(&engine, &config, request).expect("report");
-        assert!(
-            report
-                .semantic_model
-                .nodes
-                .iter()
-                .any(|node| node.qualified_name == "Core::Thing"),
-            "Core::Thing from the .kerml target should reach the projection, got {:?}",
-            report
-                .semantic_model
-                .nodes
-                .iter()
-                .map(|n| &n.qualified_name)
-                .collect::<Vec<_>>()
-        );
-    }
 }

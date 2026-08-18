@@ -56,7 +56,7 @@ fn cli_explain_diagnostic_returns_catalog_entry() {
 }
 
 #[test]
-fn cli_model_summary_respects_max_nodes() {
+fn cli_model_summary_is_validation_only_until_typed_projection_lands() {
     with_isolated_data_dir(|| {
         let path = kitchen_timer_path();
         let path = path.canonicalize().unwrap_or(path);
@@ -75,7 +75,7 @@ fn cli_model_summary_respects_max_nodes() {
             cli.get("truncation")
                 .and_then(|t| t.get("nodes_returned"))
                 .and_then(|v| v.as_u64()),
-            Some(1)
+            Some(0)
         );
         assert_eq!(
             cli.get("summary")

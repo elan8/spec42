@@ -17,9 +17,7 @@ import { registerSpec42LmTools } from "../lmTools/spec42LmTools";
 import { runSpec42Json } from "../lmTools/spec42Cli";
 import type { SysandStatusViewModel } from "../library/libraryStatusViewModel";
 import { LspModelProvider } from "../providers/lspModelProvider";
-import { VisualizationPanel } from "../visualization/visualizationPanel";
 import { notifyWorkspaceLifecycleChanged } from "./workspaceLifecycle";
-import { setVisualizationGateState } from "../visualization/visualizationGate";
 import {
   getConfigBoolean,
   getConfigString,
@@ -419,12 +417,10 @@ export function startLanguageClient(
   context.subscriptions.push(
     client.onDidChangeState(({ newState }) => {
       if (newState === State.Starting) {
-        setVisualizationGateState({ languageClientReady: false });
         setServerHealth(context, "starting", "Starting SysML language server.");
       } else if (newState === State.Running) {
         restartCount = 0;
         crashDialogShown = false;
-        setVisualizationGateState({ languageClientReady: true });
         setServerHealth(context, "ready", "SysML language server is ready.");
         notifyWorkspaceLifecycleChanged();
       } else if (newState === State.Stopped && !manualStopInProgress) {
@@ -437,19 +433,16 @@ export function startLanguageClient(
       restartCount = 0;
       crashDialogShown = false;
       languageClientReady = true;
-      setVisualizationGateState({ languageClientReady: true });
       setServerHealth(context, "ready", "SysML language server is ready.");
       notifyWorkspaceLifecycleChanged();
       log("Language client ready, waiting for semantic index before workspace model load");
       logStartupPhase("languageClient:ready");
       onClientReady();
-      VisualizationPanel.currentPanel?.notifyWorkspaceLifecycleChanged();
     })
     .catch((error) => {
       const detail =
         error instanceof Error ? error.message : String(error ?? "unknown startup failure");
       languageClientReady = false;
-      setVisualizationGateState({ languageClientReady: false });
       setServerHealth(context, "crashed", `Startup failed: ${detail}`);
       logError("Language client failed to start", error);
       void showServerIssue(
@@ -516,7 +509,6 @@ async function performLanguageClientRestart(
   const stopTimeoutMs = process.env.CI ? 20000 : 10000;
   const waitTimeoutMs = restartWaitMs();
 
-  handles.lspModelProvider.clearModelCache();
   callbacks.onBeforeRestart?.();
   languageClientReady = false;
   manualStopInProgress = true;
@@ -540,7 +532,6 @@ async function performLanguageClientRestart(
     const startPromise = handles.client.start();
     activeClientReadyPromise = startPromise.then(() => undefined);
     await startPromise;
-    handles.lspModelProvider.clearModelCache();
     callbacks.onRestartComplete();
     vscode.window.showInformationMessage("SysML language server restarted.");
   } finally {
@@ -631,17 +622,6 @@ export function registerServerConfigChangeHandler(
         event.affectsConfiguration("spec42.disabledLibraries") ||
         event.affectsConfiguration("spec42.kparLibraryPaths") ||
         event.affectsConfiguration("spec42.development.diagnoseLibraryPaths");
-
-      if (verboseLoggingChanged && VisualizationPanel.currentPanel) {
-        const panelDoc = VisualizationPanel.currentPanel.getDocument();
-        VisualizationPanel.currentPanel.dispose();
-        VisualizationPanel.createOrShow(
-          context,
-          panelDoc,
-          undefined,
-          lspModelProviderRef
-        );
-      }
 
       if (performanceLoggingConfigChanged) {
         void vscode.window

@@ -12,7 +12,7 @@ use crate::workspace::state::IndexEntry;
 
 /// Workspace documents (excluding `provider_uri`) that import a top-level package from
 /// `provider_uri`. Takes `index`/`library_paths` directly (rather than a `ServerState`) since
-/// this only ever reads raw source/parsed data, never the semantic graph — callers already
+/// this only ever reads raw source/parsed data, never published semantics — callers already
 /// have these values on hand (e.g. from a relink snapshot) without needing to read back
 /// post-commit state.
 pub(crate) fn workspace_uris_importing_declarations_from(
@@ -151,7 +151,7 @@ mod tests {
             content: content.to_string(),
             parsed,
             parse_metadata: ParseMetadata::default(),
-            include_in_semantic_graph: true,
+            admitted_to_publication: true,
         }
     }
 

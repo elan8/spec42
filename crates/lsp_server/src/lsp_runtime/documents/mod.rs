@@ -72,19 +72,14 @@ fn schedule_semantic_relink_after_change(
                 snap.index.clone(),
                 snap.library_paths.clone(),
                 snap.standard_library_paths.clone(),
-                // Library files are not stored in the index when loaded from the
-                // graph cache (cache hit path). Pass the library graph snapshot so
-                // library types survive the workspace rebuild regardless of whether
-                // library_paths is empty or not.
-                snap.library_graph_snapshot.clone(),
             )
         };
-        let (index, library_paths, standard_library_paths, base_graph) = snapshot;
+        let (index, library_paths, standard_library_paths) = snapshot;
         let perf_logging_enabled = runtime_config
             .get()
             .expect("initialize precedes all other LSP requests")
             .perf_logging_enabled;
-        let library_snapshot_uris = base_graph.as_ref().map(|g| g.all_uris().len()).unwrap_or(0);
+        let library_snapshot_uris = 0;
         let relink_start = Instant::now();
         let staged = tokio::task::spawn_blocking(move || {
             // Wave 1: structural relink only (`evaluate: false`) — publish diagnostics from
@@ -92,16 +87,15 @@ fn schedule_semantic_relink_after_change(
             // Wave 2 (`schedule_expression_evaluation`), so a slow whole-graph evaluation pass
             // never delays the near-instant structural feedback (unresolved references, etc.)
             // a live edit should get. See Track C in `docs/engineering`.
-            crate::workspace::rebuild_semantic_graph_staged(
+            crate::workspace::rebuild_publication_inputs_staged(
                 &index,
                 &library_paths,
                 &standard_library_paths,
-                base_graph,
                 false,
             )
         })
         .await;
-        let Ok((new_graph, new_symbols, relink_metrics)) = staged else {
+        let Ok((new_symbols, relink_metrics)) = staged else {
             client
                 .log_message(
                     MessageType::WARNING,
@@ -112,7 +106,7 @@ fn schedule_semantic_relink_after_change(
         };
 
         // Compute diagnostics URIs from the locally-known (pre-commit) index/library_paths.
-        // This function only ever reads raw source/parsed data, never the semantic graph, so
+        // This function only ever reads raw source/parsed data, never published semantics, so
         // the pre-relink snapshot's index is exactly as good as a post-commit read would be.
         let snap_for_diag = handle.snapshot();
         let mut diag_uris =
@@ -133,7 +127,7 @@ fn schedule_semantic_relink_after_change(
         // closing the race where diagnostics collection could previously read a stale
         // (pre-commit) lifecycle and wrongly suppress transient-startup diagnostic codes.
         let committed = handle
-            .report_relink_result(token, new_graph, new_symbols)
+            .report_relink_result(token, new_symbols)
             .await
             .unwrap_or(false);
 
@@ -238,26 +232,7 @@ fn schedule_expression_evaluation(
         {
             return; // superseded before evaluation even started — don't waste the work
         }
-        let graph = handle.snapshot().semantic_graph.clone(); // cheap Arc clone
-
-        let evaluated = tokio::task::spawn_blocking(move || {
-            let mut graph = graph;
-            crate::semantic::evaluate_workspace_graph(&mut graph);
-            graph
-        })
-        .await;
-        let Ok(evaluated_graph) = evaluated else {
-            return;
-        };
-
-        let committed = handle
-            .report_evaluation_result(expected_publication, evaluated_graph)
-            .await
-            .unwrap_or(false);
-        if committed {
-            // Workspace-wide, not `[changed_uri]` — see the doc comment above.
-            publish_workspace_diagnostics(&client, &handle, &runtime_config, None).await;
-        }
+        publish_workspace_diagnostics(&client, &handle, &runtime_config, None).await;
     });
 }
 
@@ -280,9 +255,10 @@ async fn log_perf(client: &Client, enabled: bool, event: &str, fields: Vec<(&str
 
 fn workspace_file_count(state: &ServerState) -> usize {
     state
-        .semantic_graph
-        .workspace_uris_excluding_libraries(&state.library_paths)
-        .len()
+        .index
+        .keys()
+        .filter(|uri| !crate::common::util::uri_under_any_library(uri, &state.library_paths))
+        .count()
 }
 
 pub(crate) struct SemanticIndexReady;
@@ -351,7 +327,7 @@ mod tests {
                 content: "package Demo { part def Thing; }".to_string(),
                 parsed: None,
                 parse_metadata: Default::default(),
-                include_in_semantic_graph: true,
+                admitted_to_publication: true,
             },
         );
         let handle = WorkspaceHandle::spawn(state);
@@ -375,7 +351,7 @@ mod tests {
                 content: "package Demo { part def Thing; }".to_string(),
                 parsed: None,
                 parse_metadata: Default::default(),
-                include_in_semantic_graph: true,
+                admitted_to_publication: true,
             },
         );
         let handle = WorkspaceHandle::spawn(state);

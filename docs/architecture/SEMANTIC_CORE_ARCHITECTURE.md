@@ -1,207 +1,56 @@
-# sysml_model Architecture and Functionality
+# Immutable semantic core architecture
 
-This document explains what `sysml_model` does, how its modules fit together, and how visualization is built from the semantic graph.
+Spec42 admits source documents into one immutable `PublishedModel`. The publication owns semantic
+facts, diagnostics, identities, ordering, completeness, and evaluation results for an exact input
+identity. Hosts share that publication through `Arc`; they do not rebuild it or maintain a second
+semantic representation.
 
-## Purpose
+## Ownership
 
-`sysml_model` is the reusable, non-LSP semantic engine for SysML v2:
+| Layer | Responsibility |
+|---|---|
+| `sysml-v2-parser` | Source-fidelity syntax and editor recovery |
+| `sysml_resolution` | Semantic construction, resolution, diagnostics, evaluation, and publication identity |
+| `sysml_query` | Opaque typed query facade over the immutable publication |
+| `workspace` | Source admission and atomic publication ownership |
+| `language_service` | Protocol-neutral editor features over typed queries |
+| `lsp_server` and `server` | Thin protocol and CLI adapters |
+| `generator_api` and `generator_host` | Sandboxed consumers of typed immutable model queries |
 
-- it ingests SysML documents from pluggable sources
-- parses and links them into a `SemanticGraph`
-- provides semantic resolution/evaluation helpers
-- exposes visualization-oriented DTOs and graph-first visualization metadata APIs
-
-The crate is designed to be consumed by multiple hosts (`lsp_server`, `workspace`, embedding services, and future integrators), without hard-coding filesystem or editor runtime concerns into the semantic core.
-
-## Consumer boundaries
-
-| Consumer | Uses `sysml_model` for |
-| --- | --- |
-| `lsp_server` | LSP/runtime adapters, tower-lsp diagnostics postprocess, validation pipeline orchestration |
-| `workspace` | single-build workspace snapshots: graph construction, render snapshot, host diagnostics, view preparation |
-| `language_service` | editor intelligence over `WorkspaceSnapshot` (built from snapshot documents) |
-
-`workspace` owns immutable snapshot assembly. It calls `build_semantic_graph_from_documents`, `build_render_snapshot`, and `build_sysml_visualization_workspace` once per load. Server surfaces reuse the same graph through `kernel::semantic_report_from_built_workspace` for CLI-equivalent diagnostics.
-
-
-## High-Level Capabilities
-
-- Source-agnostic SysML ingestion through provider abstractions
-- Graph construction from parsed AST (`build_graph_from_doc`)
-- Workspace-wide relationship linking
-- Semantic resolution (imports, references, names, typing/specialization)
-- Expression evaluation and unit-aware calculations
-- Shared DTOs for model/graph/visualization payloads
-- Graph-first visualization entrypoint (`build_sysml_visualization_from_graph`)
-
-## Module Overview
-
-- `semantic/source/*`
-  - `SysmlDocument`, `SysmlDocumentProvider`, `InMemoryDocumentProvider`
-  - filesystem adapter provider (`FileSystemDocumentProvider`)
-- `semantic/workspace_graph.rs`
-  - provider/document-based graph assembly
-  - `build_semantic_graph_from_documents`
-  - `build_semantic_graph_with_provider`
-- `semantic/graph_builder/*`
-  - AST-to-graph construction
-- `semantic/relationships.rs`
-  - workspace relationship linking and resolution
-- `semantic/import_resolution.rs`, `semantic/reference_resolution.rs`, `semantic/resolution/*`
-  - symbol and type/reference resolution
-- `semantic/evaluation/*`
-  - semantic expression evaluation + units
-- `semantic/dto.rs`
-  - shared DTO types for graph/model/visualization
-- `semantic/model_projection.rs`, `semantic/ibd.rs`, `semantic/extracted_model.rs`, `semantic/sequence_views/*`
-  - reusable visualization helper logic
-- `semantic/visualization_entry.rs`
-  - graph-first visualization API surface
-- `semantic/diagnostics/*`
-  - neutral diagnostics DTOs and graph-first diagnostics engine
-
-## Source-Agnostic Ingestion Flow
-
-```mermaid
-flowchart TD
-  provider["SysmlDocumentProvider"] --> documents["Vec SysmlDocument"]
-  documents --> parseStage["parse SysML content"]
-  parseStage --> astDocs["Parsed RootNamespace docs"]
-  astDocs --> graphBuild["build_graph_from_doc per document"]
-  graphBuild --> mergedGraph["SemanticGraph merge"]
-  mergedGraph --> linker["link_workspace_relationships"]
-  linker --> finalGraph["SemanticGraph ready for consumers"]
+```text
+sources + configuration
+        │
+        ▼
+ parser-owned syntax/recovery
+        │
+        ▼
+ sysml_resolution publication barrier
+        │
+        ▼
+ Arc<PublishedModel>
+   ├── diagnostics/navigation/edits/completion
+   ├── inspection/types/evaluation
+   └── generator model queries
 ```
 
-### Providers
+Every consumer of one workspace revision receives the same publication handle. Full rebuilds are
+the current correctness path. Incremental graph patching and persistent semantic graph caches were
+removed; immutable incremental construction may return only after cold/full equivalence and
+supersession behavior are established.
 
-Current provider implementations:
+## Deliberately disabled products
 
-- `FileSystemDocumentProvider` (filesystem traversal + file load)
-- `InMemoryDocumentProvider` (already-loaded content, e.g. API/DB pipeline)
+- Built-in diagrams, view catalogs, render caches, and diagram CLI export are removed. The intended
+  replacement is a generator plugin consuming typed model queries and producing a versioned render
+  artifact.
+- Graph-shaped model DTOs and semantic snapshot comparison are removed. A future comparison product
+  must compare typed facts by stable identity.
+- Call hierarchy and monikers are disabled until the publication owns typed behavior/`perform`
+  relationships.
+- `model-summary` is validation-only. A bounded structural summary requires its own typed query;
+  hosts must not reconstruct one from display names or serialized output.
+- Import and ambiguous-name quick fixes are disabled until typed queries provide candidates,
+  provenance, and authored replacement/insertion ranges.
 
-Future provider examples:
-
-- DB-backed provider (repository or revision storage)
-- remote/blob provider
-- cached/streaming provider
-
-## Semantic Graph Pipeline
-
-```mermaid
-flowchart TD
-  doc["SysmlDocument (uri, content, metadata)"] --> parse["sysml_v2_parser::parse"]
-  parse --> ast["RootNamespace AST"]
-  ast --> graphDoc["build_graph_from_doc(ast, uri)"]
-  graphDoc --> merge["graph.merge(...)"]
-  merge --> link["link_workspace_relationships(...)"]
-  link --> semanticGraph["SemanticGraph"]
-```
-
-### Output Artifacts
-
-Graph assembly returns:
-
-- `SemanticGraph`: linked semantic model across the workspace
-- parsed document metadata (content, parse timings, cache flags) for callers that need richer context
-
-## Visualization Architecture (Graph-First)
-
-Visualization should consume semantic graph data, not directly depend on filesystem scanning.
-
-```mermaid
-flowchart TD
-  ingestion["Provider based ingestion"] --> graphApi["build_semantic_graph_with_provider"]
-  graphApi --> semanticGraph["SemanticGraph"]
-  semanticGraph --> vizEntry["build_sysml_visualization_from_graph"]
-  vizEntry --> vizMetadata["View candidates and selected metadata"]
-  semanticGraph --> helperModules["model_projection / ibd / sequence_views / extracted_model"]
-  helperModules --> hostPayload["Host-level response assembly"]
-```
-
-### Key Principle
-
-- `sysml_model` owns semantic and reusable projection logic.
-- Hosts (`lsp_server`, embedding services) decide transport/runtime concerns and final response wiring.
-
-This enables multiple ingestion backends (filesystem, DB, in-memory) while preserving one semantic pipeline.
-
-## Visualization Snapshot and PreparedView (Pass 3)
-
-Pass 3 introduces a single snapshot model for diagram rendering:
-
-- `WorkspaceRenderSnapshot` keyed by `(semantic_state_version, workspace_root_uri)`
-- eager `ViewIndex` (`view_candidates`, evaluated views, projected metadata)
-- lazy `ModelExplorerBundle` (workspace graph/model + full IBD)
-- lazy per-view `PreparedViewDto` generation in Rust (`semantic/prepared_view/*`)
-
-The LSP visualization response now carries `preparedView` as the render contract for webview layout/SVG.
-TypeScript semantic prepare remains as fallback for non-LSP/headless compatibility paths.
-
-## Consumer Boundaries
-
-### `language_service` (editor intelligence)
-
-- sits between `sysml_model` and protocol adapters (`lsp_server` LSP, in-browser HTTP/Monaco hosts)
-- exposes navigation APIs against logical document paths and `TextPosition` / `TextRange`
-- no dependency on `tower-lsp`, `tokio`, or `lsp_server`
-- `InMemoryWorkspace` supports headless tests and host-style in-memory document pipelines
-
-### `lsp_server` (LSP/runtime host)
-
-- uses filesystem provider for workspace scans
-- uses semantic graph and helper projections for model/visualization endpoints
-- maps semantic-core diagnostics into LSP diagnostics at the boundary
-- delegates navigation (hover, definition, references) to `language_service` via `WorkspaceSnapshot`
-- keeps LSP protocol/runtime behavior outside sysml_model and language_service
-
-### Embedding hosts (service/API)
-
-- can use in-memory (or future DB) providers
-- avoids temporary workspace-only coupling for semantic graph creation
-- consumes graph-first visualization metadata API from sysml_model
-- can depend on `language_service` for editor navigation without the LSP stack
-- maps semantic-core diagnostics into host-specific storage/API DTOs at the boundary
-
-## Data Contracts
-
-Shared DTOs in `sysml_model::semantic::dto` provide:
-
-- graph primitives (`SysmlGraphDto`, `GraphNodeDto`, `GraphEdgeDto`)
-- model structure (`SysmlElementDto`, `WorkspaceModelDto`)
-- visualization metadata (`SysmlVisualizationViewCandidateDto`, `SysmlVisualizationResultDto`)
-- stats (`SysmlModelStatsDto`)
-
-This keeps host responses aligned around a common semantic contract.
-
-Core boundary notes:
-
-- `sysml_model` now uses neutral core span types (`TextPosition`, `TextRange`) and `url::Url`.
-- LSP-specific mappings happen in `lsp_server` boundary adapters only.
-- Semantic diagnostics rule evaluation is owned by `sysml_model::semantic::diagnostics`.
-- `lsp_server` diagnostics code is limited to parser/runtime orchestration plus mapping
-  `SemanticDiagnostic` to `tower_lsp::lsp_types::Diagnostic`.
-- Kernel core↔LSP span conversions are centralized in `kernel::common::text_span` as
-  the single conversion entrypoint for runtime/view modules.
-
-## Extension Guidance
-
-When adding new functionality:
-
-1. Add new data source as a `SysmlDocumentProvider` (do not add direct filesystem logic into graph core).
-2. Keep semantic/graph logic in `sysml_model`.
-3. Keep transport/runtime concerns in host crates.
-4. Prefer graph-first APIs for reusable features.
-5. Add tests for provider parity and graph behavior consistency.
-
-## Summary
-
-`sysml_model` is now structured as a reusable semantic platform:
-
-- source abstraction for ingestion
-- graph-centric semantic processing
-- reusable visualization helper logic
-- reusable diagnostics engine with neutral contracts
-- host-agnostic contracts for model/visualization/diagnostics outputs
-
-This enables multiple ingestion backends (filesystem, DB, in-memory) while preserving one semantic pipeline.
+These are unsupported states, not compatibility gaps hidden by a fallback. New semantic capability
+belongs first in `sysml_resolution`, then in a typed `sysml_query` contract, and only then in a host.

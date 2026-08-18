@@ -3,7 +3,7 @@
 use std::collections::{BTreeMap, BTreeSet};
 
 use sysml_diagnostics::{DiagnosticRelatedInfo, DiagnosticSeverity, SemanticDiagnostic};
-use sysml_model::TextRange;
+use sysml_query::resolved_slice::{TextPosition, TextRange};
 
 use crate::error::{WorkspaceError, WorkspaceResult};
 use crate::snapshot::HostValidationReport;
@@ -117,8 +117,8 @@ fn diagnostics_by_uri(
 /// says so once rather than in every field.
 fn comparison_range(range: sysml_query::resolved_slice::TextRange) -> TextRange {
     TextRange::new(
-        sysml_model::TextPosition::new(range.start.line, range.start.character),
-        sysml_model::TextPosition::new(range.end.line, range.end.character),
+        TextPosition::new(range.start.line, range.start.character),
+        TextPosition::new(range.end.line, range.end.character),
     )
 }
 

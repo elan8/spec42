@@ -2,7 +2,7 @@
 
 use std::collections::HashSet;
 
-use sysml_model::{SysmlDocument, SysmlDocumentProvider};
+use sysml_source::{SysmlDocument, SysmlDocumentProvider};
 use url::Url;
 
 /// Overlay added/changed documents and remove logical URIs from a base provider.

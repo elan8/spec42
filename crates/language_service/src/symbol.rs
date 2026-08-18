@@ -1,7 +1,6 @@
-use sysml_model::{SemanticGraph, SemanticNode, TextPosition, TextRange};
+use sysml_query::resolved_slice::{TextPosition, TextRange};
+use sysml_query::resolved_slice::{PublishedModel, QueryOutcome};
 use url::Url;
-
-use crate::presentation_hover::signature_from_node;
 
 /// Neutral symbol table entry for editor lookup (no LSP types).
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -15,28 +14,45 @@ pub struct SymbolEntry {
     pub signature: Option<String>,
 }
 
-/// Collects symbol entries for a URI from the semantic graph.
-pub fn symbol_entries_for_uri(graph: &SemanticGraph, uri: &Url) -> Vec<SymbolEntry> {
-    let mut out = Vec::new();
-    for node in graph.nodes_for_uri(uri) {
-        let container_name = node
-            .parent_id
-            .as_ref()
-            .and_then(|pid| graph.get_node(pid))
-            .map(|p| p.name.clone());
-        let description = format!("{} '{}'", node.element_kind, node.name);
-        let signature = signature_from_node(node);
-        out.push(SymbolEntry {
-            name: node.name.clone(),
-            uri: node.id.uri.clone(),
-            range: node.range,
-            container_name,
-            detail: Some(node.element_kind.as_str().to_string()),
-            description: Some(description),
-            signature,
-        });
-    }
-    out
+/// Collects the immutable publication's symbols for one document.
+pub fn symbol_entries_for_uri(model: &PublishedModel, uri: &Url) -> Vec<SymbolEntry> {
+    let symbols = match model.inspection().document_symbols(uri.as_str()) {
+        QueryOutcome::Resolved(value)
+        | QueryOutcome::Recovered(value)
+        | QueryOutcome::UnsupportedWith(value) => value,
+        _ => return Vec::new(),
+    };
+    symbols
+        .into_vec()
+        .into_iter()
+        .filter_map(|symbol| {
+            let name = symbol.name?.into_string();
+            let container_name = symbol
+                .qualified_name
+                .rsplit_once("::")
+                .map(|(owner, _)| owner.to_string());
+            let detail = symbol.kind.as_str().to_string();
+            let range = TextRange::new(
+                TextPosition::new(
+                    symbol.location.range.start.line,
+                    symbol.location.range.start.character,
+                ),
+                TextPosition::new(
+                    symbol.location.range.end.line,
+                    symbol.location.range.end.character,
+                ),
+            );
+            Some(SymbolEntry {
+                description: Some(format!("{detail} '{name}'")),
+                signature: None,
+                name,
+                uri: Url::parse(&symbol.location.document).ok()?,
+                range,
+                container_name,
+                detail: Some(detail),
+            })
+        })
+        .collect()
 }
 
 /// Builds Markdown for symbol hover from a neutral symbol entry.
@@ -101,43 +117,12 @@ pub fn find_reference_ranges(source: &str, name: &str) -> Vec<TextRange> {
     ranges
 }
 
-pub fn symbol_entry_node_id(
-    graph: &SemanticGraph,
-    entry: &SymbolEntry,
-) -> Option<sysml_model::NodeId> {
-    let entry_uri = crate::uri::normalize_uri(&entry.uri);
-    graph
-        .nodes_for_uri(&entry_uri)
-        .into_iter()
-        .find(|node| node.name == entry.name && node.range == entry.range)
-        .map(|node| node.id.clone())
-}
-
-pub fn location_node_id(
-    graph: &SemanticGraph,
-    uri: &Url,
-    lookup_name: &str,
-    range: TextRange,
-) -> Option<sysml_model::NodeId> {
-    graph
-        .nodes_for_uri(uri)
-        .into_iter()
-        .find(|node| node.name == lookup_name && node.range == range)
-        .map(|node| node.id.clone())
-}
-
-pub fn node_to_source_location(path: &str, node: &SemanticNode) -> crate::dto::SourceLocation {
-    crate::dto::SourceLocation {
-        path: path.to_string(),
-        range: node.range,
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
-    use sysml_model::build_graph_from_doc;
-    use sysml_v2_parser::parse;
+    use sysml_query::resolved_slice::{
+        BuildRequest, ConstructionStrategy, SourceDocument, SourceKind,
+    };
     use url::Url;
 
     #[test]
@@ -149,10 +134,14 @@ mod tests {
     #[test]
     fn symbol_entries_for_uri_includes_definitions() {
         let input = "package P { part def Engine { } }";
-        let root = parse(input).expect("parse");
         let uri = Url::parse("file:///test.sysml").expect("uri");
-        let graph = build_graph_from_doc(&root, &uri);
-        let symbols = symbol_entries_for_uri(&graph, &uri);
+        let source =
+            SourceDocument::from_uri(uri.as_str(), input.to_string(), SourceKind::Workspace)
+                .unwrap();
+        let request =
+            BuildRequest::resolved(vec![source], ConstructionStrategy::Sequential).unwrap();
+        let model = sysml_query::resolved_slice::build(request).unwrap();
+        let symbols = symbol_entries_for_uri(&model, &uri);
         let names: Vec<_> = symbols.iter().map(|s| s.name.as_str()).collect();
         assert!(names.contains(&"P"));
         assert!(names.contains(&"Engine"));

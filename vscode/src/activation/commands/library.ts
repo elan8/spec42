@@ -2,8 +2,6 @@ import * as vscode from "vscode";
 import { LibraryWebviewViewProvider } from "../../library/libraryWebviewViewProvider";
 import { KPAR_LIBRARIES_DEFAULTS, kparLibraryDefaults } from "../../generated/kparLibrariesDefaults";
 import { classifyKparLibraryStatus } from "../../library/libraryStatusViewModel";
-import { runSpec42 } from "../../lmTools/spec42Cli";
-import { logError } from "../../logger";
 import {
   getDisabledLibraries,
   getKparLibraryPathOverrides,
@@ -38,27 +36,12 @@ async function promptRestartToApplyLibraryChange(message: string): Promise<void>
   }
 }
 
-/**
- * Deletes the on-disk built-library-graph cache (`library_graph_cache.rs`) so a
- * stale entry for the previous library configuration never lingers. Best-effort:
- * a failure here (e.g. server binary not found) shouldn't block the setting change.
- */
-async function clearGraphCache(
-  handles: Pick<LspClientHandles, "serverCommand" | "workspaceRoot">
-): Promise<void> {
-  try {
-    await runSpec42(handles.serverCommand, ["libraries", "clear-graph-cache"], handles.workspaceRoot);
-  } catch (error) {
-    logError("Failed to clear the library graph cache", error);
-  }
-}
-
 export function registerLibraryCommands(
   context: vscode.ExtensionContext,
   libraryWebviewProvider: LibraryWebviewViewProvider,
   handles: Pick<
     LspClientHandles,
-    "readSysandStatus" | "lspModelProvider" | "serverCommand" | "workspaceRoot"
+    "readSysandStatus" | "lspModelProvider"
   >
 ): void {
   context.subscriptions.push(
@@ -183,7 +166,6 @@ export function registerLibraryCommands(
           ? disabled.filter((entry) => entry !== id)
           : [...disabled, id];
         await updateDisabledLibraries(nextDisabled);
-        await clearGraphCache(handles);
         libraryWebviewProvider.refresh();
         await promptRestartToApplyLibraryChange(
           `${id} is now ${nextDisabled.includes(id) ? "disabled" : "enabled"}. Restart the SysML language server to apply this change.`
@@ -236,7 +218,6 @@ export function registerLibraryCommands(
         }
         const overrides = { ...getKparLibraryPathOverrides(), [id]: picked.fsPath };
         await updateKparLibraryPaths(overrides);
-        await clearGraphCache(handles);
         libraryWebviewProvider.refresh();
         await promptRestartToApplyLibraryChange(
           `Library "${id}" will use ${picked.fsPath}. Restart the SysML language server to apply this change.`
@@ -269,7 +250,6 @@ export function registerLibraryCommands(
         const next = { ...overrides };
         delete next[id];
         await updateKparLibraryPaths(next);
-        await clearGraphCache(handles);
         libraryWebviewProvider.refresh();
         await promptRestartToApplyLibraryChange(
           `Removed the local/custom path for "${id}". Restart the SysML language server to apply this change.`

@@ -92,7 +92,7 @@ export function showChannel(): void {
 }
 
 /**
- * Get the SysML output channel for appending lines (used by visualization panel).
+ * Get the SysML output channel for appending extension and server logs.
  */
 export function getOutputChannel(): vscode.OutputChannel {
   return getChannel();

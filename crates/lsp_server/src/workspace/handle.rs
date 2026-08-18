@@ -16,7 +16,6 @@ use tower_lsp::lsp_types::{MessageType, TextDocumentContentChangeEvent, Url};
 use workspace_session::{MutatePanicked, Mutation, PublicationToken, SessionActor, SnapshotHandle};
 
 use crate::language::SymbolEntry;
-use crate::semantic::SemanticGraph;
 use crate::workspace::services::{ParsedScanEntry, RebuildAllDocumentLinksMetrics};
 use crate::workspace::state::{IndexEntry, ServerState};
 
@@ -51,12 +50,6 @@ impl WorkspaceHandle {
         self.snapshot.current()
     }
 
-    /// A cloned handle for callers that want their own `wait_for` subscription (e.g. the
-    /// `sysml/model` handler waiting for `Reindexing → Ready`).
-    pub(crate) fn snapshot_handle(&self) -> SnapshotHandle<ServerState> {
-        self.snapshot.clone()
-    }
-
     // --- Startup ---------------------------------------------------------------------
 
     pub(crate) async fn set_startup_config(
@@ -81,19 +74,6 @@ impl WorkspaceHandle {
 
     pub(crate) async fn complete_startup(&self) -> Result<u64, MutatePanicked> {
         self.actor.mutate(|s| s.session.complete_startup()).await
-    }
-
-    pub(crate) async fn inject_cached_library_graph(
-        &self,
-        graph: SemanticGraph,
-    ) -> Result<(), MutatePanicked> {
-        self.actor
-            .mutate(move |s| {
-                s.semantic_graph = graph.clone();
-                s.library_graph_snapshot = Some(graph);
-                s.session.bump_version();
-            })
-            .await
     }
 
     pub(crate) async fn ingest_startup_scan(
@@ -132,7 +112,6 @@ impl WorkspaceHandle {
     pub(crate) async fn commit_startup_relink_or_stale(
         &self,
         expected_publication: PublicationToken,
-        new_graph: SemanticGraph,
         new_symbols: Vec<SymbolEntry>,
     ) -> Result<StartupRelinkOutcome, MutatePanicked> {
         self.actor
@@ -140,8 +119,9 @@ impl WorkspaceHandle {
                 if !s.session.is_publication_current(&expected_publication) {
                     return Mutation::Unchanged(StartupRelinkOutcome::Stale);
                 }
-                s.semantic_graph = new_graph;
                 s.symbol_table = new_symbols;
+                crate::workspace::state::refresh_published_model(s);
+                crate::workspace::state::refresh_symbol_table_from_publication(s);
                 s.session.bump_version();
                 Mutation::Changed(StartupRelinkOutcome::Committed)
             })
@@ -347,44 +327,18 @@ impl WorkspaceHandle {
     pub(crate) async fn report_relink_result(
         &self,
         token: workspace_session::RelinkToken,
-        new_graph: SemanticGraph,
         new_symbols: Vec<SymbolEntry>,
     ) -> Result<bool, MutatePanicked> {
         self.actor
             .mutate_if_changed(move |s| {
                 if s.session.commit_relink(&token) {
-                    s.semantic_graph = new_graph;
                     s.symbol_table = new_symbols;
+                    crate::workspace::state::refresh_published_model(s);
+                    crate::workspace::state::refresh_symbol_table_from_publication(s);
                     Mutation::Changed(true)
                 } else {
                     Mutation::Unchanged(false)
                 }
-            })
-            .await
-            .map(|outcome| outcome.value)
-    }
-
-    /// Commits an evaluated graph only if `expected_publication` still matches the live session —
-    /// i.e. no relink has landed since evaluation was kicked off. Unlike `report_relink_result`,
-    /// this does NOT go through `RelinkToken`/`commit_relink`: evaluation never changes the
-    /// session lifecycle (`Ready`/`Reindexing`), it's an orthogonal side-channel update to just
-    /// `semantic_graph`, so an owner-scoped publication check (same pattern as
-    /// `commit_startup_relink_or_stale`/`update_render_cache`) is the right primitive here, not
-    /// the relink lifecycle machinery. Returns whether the commit applied, so the caller can
-    /// skip republishing diagnostics for a discarded (superseded) evaluation.
-    pub(crate) async fn report_evaluation_result(
-        &self,
-        expected_publication: PublicationToken,
-        evaluated_graph: SemanticGraph,
-    ) -> Result<bool, MutatePanicked> {
-        self.actor
-            .mutate_if_changed(move |s| {
-                if !s.session.is_publication_current(&expected_publication) {
-                    return Mutation::Unchanged(false);
-                }
-                s.semantic_graph = evaluated_graph;
-                s.session.bump_version();
-                Mutation::Changed(true)
             })
             .await
             .map(|outcome| outcome.value)
@@ -465,26 +419,9 @@ impl WorkspaceHandle {
             .await
     }
 
-    // --- custom RPC methods (sysml/model, sysml/clearCache) -------------------------------
+    // --- cache management ---------------------------------------------------------------
 
-    pub(crate) async fn mark_parse_cached(&self, uri: Url) -> Result<(), MutatePanicked> {
-        self.actor
-            .mutate_if_changed(move |s| {
-                if s.index
-                    .get(&uri)
-                    .is_none_or(|entry| entry.parse_metadata.parse_cached)
-                {
-                    return Mutation::Unchanged(());
-                }
-                crate::lsp_runtime::custom::mark_sysml_model_parse_cached(s, &uri);
-                s.session.bump_version();
-                Mutation::Changed(())
-            })
-            .await
-            .map(|outcome| outcome.value)
-    }
-
-    /// Clears index, symbol table, semantic graph, and the actor-owned render cache.
+    /// Clears indexed documents, symbols, and the current immutable publication.
     pub(crate) async fn clear_cache_state(&self) -> Result<(usize, usize), MutatePanicked> {
         self.actor
             .mutate_if_changed(|s| {
@@ -494,420 +431,5 @@ impl WorkspaceHandle {
             })
             .await
             .map(|outcome| outcome.value)
-    }
-
-    /// Commits a render-cache mutation only when `expected_publication` still matches the live
-    /// session. Returns `None` when a concurrent edit superseded the build.
-    pub(crate) async fn update_render_cache<R: Send + 'static>(
-        &self,
-        expected_publication: PublicationToken,
-        apply: impl FnOnce(&mut workspace::ViewRenderCache) -> R + Send + 'static,
-    ) -> Result<Option<R>, MutatePanicked> {
-        self.actor
-            .mutate_if_changed(move |s| {
-                if !s.session.is_publication_current(&expected_publication) {
-                    return Mutation::Unchanged(None);
-                }
-                // Deliberately does not bump the session version: this cache entry is written
-                // *for* the current publication version, so bumping here would make the entry
-                // stale the instant it's written -- the next `cached_response` lookup would read
-                // the bumped version and never match what was just cached. `Mutation::Changed`
-                // alone already signals the actor that a real mutation happened.
-                let value = apply(&mut s.render_cache);
-                Mutation::Changed(Some(value))
-            })
-            .await
-            .map(|outcome| outcome.value)
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::workspace::state::{IndexEntry, ParseMetadata, ServerState};
-
-    fn ready_state() -> ServerState {
-        let mut state = ServerState::default();
-        state.session.complete_startup();
-        state
-    }
-
-    fn insert_document(state: &mut ServerState, uri: &Url, content: &str) {
-        state.index.insert(
-            uri.clone(),
-            IndexEntry {
-                content: content.to_string(),
-                parsed: None,
-                parse_metadata: ParseMetadata::default(),
-                include_in_semantic_graph: true,
-            },
-        );
-    }
-
-    #[tokio::test]
-    async fn same_document_content_is_a_true_publication_no_op() {
-        let uri = Url::parse("file:///same.sysml").unwrap();
-        let mut state = ready_state();
-        insert_document(&mut state, &uri, "package Same;");
-        let handle = WorkspaceHandle::spawn(state);
-        let before = handle.snapshot();
-        let publication = before.session.publication();
-
-        let result = handle
-            .store_document_text_fast(uri, "package Same;".to_string())
-            .await
-            .unwrap();
-
-        assert_eq!(result, (None, None));
-        let after = handle.snapshot();
-        assert!(Arc::ptr_eq(&before, &after));
-        assert_eq!(after.session.publication(), publication);
-    }
-
-    #[tokio::test]
-    async fn changed_document_content_invalidates_older_publication() {
-        let uri = Url::parse("file:///changed.sysml").unwrap();
-        let mut state = ready_state();
-        insert_document(&mut state, &uri, "package Before;");
-        let handle = WorkspaceHandle::spawn(state);
-        let before = handle.snapshot().session.publication();
-
-        handle
-            .refresh_document(uri.clone(), "package After;".to_string())
-            .await
-            .unwrap();
-
-        let after = handle.snapshot();
-        assert!(!after.session.is_publication_current(&before));
-        assert_eq!(after.index[&uri].content, "package After;");
-    }
-
-    #[tokio::test]
-    async fn document_edit_publishes_text_parse_and_relink_state_together() {
-        let uri = Url::parse("file:///atomic.sysml").unwrap();
-        let mut state = ready_state();
-        insert_document(&mut state, &uri, "package Before;");
-        crate::workspace::state::refresh_published_model(&mut state);
-        let handle = WorkspaceHandle::spawn(state);
-
-        let (edit, warnings) = handle
-            .prepare_document_content_edit(
-                uri.clone(),
-                2,
-                vec![TextDocumentContentChangeEvent {
-                    range: None,
-                    range_length: None,
-                    text: "package After;".to_string(),
-                }],
-            )
-            .await
-            .unwrap();
-        assert!(warnings.is_empty());
-        let edit = edit.unwrap();
-
-        // Preparing and parsing prospective text never leaks it through the reader snapshot.
-        let before = handle.snapshot();
-        assert_eq!(before.index[&uri].content, "package Before;");
-        assert_eq!(
-            before.session.lifecycle(),
-            workspace::SessionLifecycle::Ready
-        );
-
-        let parsed = crate::common::util::parse_for_editor(&edit.content);
-        let observer = {
-            let handle = handle.clone();
-            let uri = uri.clone();
-            tokio::spawn(async move {
-                for _ in 0..128 {
-                    let snapshot = handle.snapshot();
-                    match snapshot.index[&uri].content.as_str() {
-                        "package Before;" => {
-                            assert!(snapshot.index[&uri].parsed.is_none());
-                            assert_eq!(
-                                snapshot.session.lifecycle(),
-                                workspace::SessionLifecycle::Ready
-                            );
-                            let outcome = snapshot
-                                .published_model
-                                .as_ref()
-                                .unwrap()
-                                .navigation()
-                                .target_at(
-                                    uri.as_str(),
-                                    sysml_query::resolved_slice::TextPosition {
-                                        line: 0,
-                                        character: 9,
-                                    },
-                                );
-                            assert!(matches!(
-                                outcome,
-                                sysml_query::resolved_slice::QueryOutcome::Resolved(target)
-                                    if target.name.as_ref() == "Before"
-                            ));
-                        }
-                        "package After;" => {
-                            assert!(snapshot.index[&uri].parsed.is_some());
-                            assert_eq!(
-                                snapshot.session.lifecycle(),
-                                workspace::SessionLifecycle::Reindexing
-                            );
-                            assert!(snapshot.semantic_graph.all_uris().contains(&uri));
-                            let outcome = snapshot
-                                .published_model
-                                .as_ref()
-                                .unwrap()
-                                .navigation()
-                                .target_at(
-                                    uri.as_str(),
-                                    sysml_query::resolved_slice::TextPosition {
-                                        line: 0,
-                                        character: 9,
-                                    },
-                                );
-                            assert!(matches!(
-                                outcome,
-                                sysml_query::resolved_slice::QueryOutcome::Resolved(target)
-                                    if target.name.as_ref() == "After"
-                            ));
-                        }
-                        other => panic!("unexpected published document text: {other}"),
-                    }
-                    tokio::task::yield_now().await;
-                }
-            })
-        };
-        let (token, _) = handle
-            .apply_parsed_document_update(edit, parsed, 1)
-            .await
-            .unwrap();
-        assert!(token.is_some());
-
-        let after = handle.snapshot();
-        assert_eq!(after.index[&uri].content, "package After;");
-        assert!(after.index[&uri].parsed.is_some());
-        assert_eq!(
-            after.session.lifecycle(),
-            workspace::SessionLifecycle::Reindexing
-        );
-        observer.await.unwrap();
-    }
-
-    #[tokio::test]
-    async fn superseded_parse_cannot_replace_the_current_semantic_publication() {
-        let uri = Url::parse("file:///superseded-navigation.sysml").unwrap();
-        let mut state = ready_state();
-        insert_document(&mut state, &uri, "package Before;");
-        crate::workspace::state::refresh_published_model(&mut state);
-        let handle = WorkspaceHandle::spawn(state);
-
-        let stale = PreparedDocumentEdit {
-            uri: uri.clone(),
-            version: 2,
-            base_content: "package Before;".to_string(),
-            content: "package Stale;".to_string(),
-        };
-        let current = PreparedDocumentEdit {
-            uri: uri.clone(),
-            version: 3,
-            base_content: "package Before;".to_string(),
-            content: "package Current;".to_string(),
-        };
-        handle
-            .apply_parsed_document_update(
-                current,
-                crate::common::util::parse_for_editor("package Current;"),
-                1,
-            )
-            .await
-            .unwrap();
-        let (token, warnings) = handle
-            .apply_parsed_document_update(
-                stale,
-                crate::common::util::parse_for_editor("package Stale;"),
-                1,
-            )
-            .await
-            .unwrap();
-        assert!(token.is_none());
-        assert!(warnings.is_empty());
-
-        let snapshot = handle.snapshot();
-        assert_eq!(snapshot.index[&uri].content, "package Current;");
-        let outcome = snapshot
-            .published_model
-            .as_ref()
-            .unwrap()
-            .navigation()
-            .target_at(
-                uri.as_str(),
-                sysml_query::resolved_slice::TextPosition {
-                    line: 0,
-                    character: 9,
-                },
-            );
-        assert!(matches!(
-            outcome,
-            sysml_query::resolved_slice::QueryOutcome::Resolved(target)
-                if target.name.as_ref() == "Current"
-        ));
-    }
-
-    #[tokio::test]
-    async fn removing_a_document_invalidates_older_publication() {
-        let uri = Url::parse("file:///removed.sysml").unwrap();
-        let mut state = ready_state();
-        insert_document(&mut state, &uri, "package Removed;");
-        let handle = WorkspaceHandle::spawn(state);
-        let before = handle.snapshot().session.publication();
-
-        handle.remove_document(uri.clone()).await.unwrap();
-
-        let after = handle.snapshot();
-        assert!(!after.session.is_publication_current(&before));
-        assert!(!after.index.contains_key(&uri));
-    }
-
-    #[tokio::test]
-    async fn unchanged_library_paths_retain_the_published_snapshot() {
-        let handle = WorkspaceHandle::spawn(ready_state());
-        let before = handle.snapshot();
-        let publication = before.session.publication();
-
-        assert!(!handle
-            .begin_library_reindex_if_changed(Vec::new())
-            .await
-            .unwrap());
-
-        let after = handle.snapshot();
-        assert!(Arc::ptr_eq(&before, &after));
-        assert_eq!(after.session.publication(), publication);
-    }
-
-    #[tokio::test]
-    async fn publication_from_another_handle_is_rejected() {
-        let seed = ready_state();
-        let first = WorkspaceHandle::spawn(seed.clone());
-        let second = WorkspaceHandle::spawn(seed);
-        let foreign = first.snapshot().session.publication();
-
-        assert!(!second
-            .report_evaluation_result(foreign, SemanticGraph::new())
-            .await
-            .unwrap());
-    }
-
-    #[tokio::test]
-    async fn out_of_order_relink_completion_discards_the_superseded_result() {
-        let handle = WorkspaceHandle::spawn(ready_state());
-        let stale = handle.schedule_relink_if_ready().await.unwrap().unwrap();
-        let current = handle.schedule_relink_if_ready().await.unwrap().unwrap();
-
-        assert!(!handle
-            .report_relink_result(stale, SemanticGraph::new(), Vec::new())
-            .await
-            .unwrap());
-        assert!(handle
-            .report_relink_result(current, SemanticGraph::new(), Vec::new())
-            .await
-            .unwrap());
-    }
-
-    /// Track C: `report_evaluation_result` must commit when the session hasn't moved on since
-    /// evaluation was kicked off, and must silently discard (not commit, not panic) when a
-    /// newer relink/edit has bumped the version in the meantime — the same "supersede, don't
-    /// block" discipline `report_relink_result`/`update_render_cache` already follow.
-    #[tokio::test]
-    async fn report_evaluation_result_commits_only_when_version_still_current() {
-        let handle = WorkspaceHandle::spawn(ServerState::default());
-        let expected_publication = handle.snapshot().session.publication();
-
-        let evaluated_graph = SemanticGraph::new();
-        let committed = handle
-            .report_evaluation_result(expected_publication, evaluated_graph)
-            .await
-            .expect("actor mutate should not panic");
-        assert!(committed, "matching version should commit");
-    }
-
-    #[tokio::test]
-    async fn report_evaluation_result_discards_stale_version() {
-        let handle = WorkspaceHandle::spawn(ServerState::default());
-        let stale_publication = handle.snapshot().session.publication();
-
-        // Bump the version, simulating a relink/edit that landed while evaluation was running.
-        handle.complete_startup().await.expect("complete startup");
-
-        let evaluated_graph = SemanticGraph::new();
-        let committed = handle
-            .report_evaluation_result(stale_publication, evaluated_graph)
-            .await
-            .expect("actor mutate should not panic");
-        assert!(!committed, "stale version must not commit");
-    }
-
-    /// `report_relink_result` must commit (and the caller sees `Ok(true)`) when the token is
-    /// still current — this is the path that must be synchronous-on-await so a subsequent
-    /// `handle.snapshot()` (e.g. for diagnostics collection) never races ahead of the commit.
-    #[tokio::test]
-    async fn report_relink_result_commits_when_token_current() {
-        let handle = WorkspaceHandle::spawn(ServerState::default());
-        handle
-            .complete_startup()
-            .await
-            .expect("actor mutate should not panic");
-        let token = handle
-            .schedule_relink_if_ready()
-            .await
-            .expect("actor mutate should not panic")
-            .expect("fresh session should be ready to schedule a relink");
-
-        let new_graph = SemanticGraph::new();
-        let committed = handle
-            .report_relink_result(token, new_graph, Vec::new())
-            .await
-            .expect("actor mutate should not panic");
-        assert!(committed, "current token should commit");
-
-        assert!(matches!(
-            handle.snapshot().session.lifecycle(),
-            workspace::SessionLifecycle::Ready
-        ));
-    }
-
-    /// A superseded token (a newer relink scheduled after this one) must not commit — the
-    /// caller uses this to skip publishing diagnostics for a discarded, stale relink result.
-    #[tokio::test]
-    async fn report_relink_result_discards_superseded_token() {
-        let handle = WorkspaceHandle::spawn(ServerState::default());
-        handle
-            .complete_startup()
-            .await
-            .expect("actor mutate should not panic");
-        let stale_token = handle
-            .schedule_relink_if_ready()
-            .await
-            .expect("actor mutate should not panic")
-            .expect("fresh session should be ready to schedule a relink");
-
-        // Commit the stale token first so the session returns to `Ready`, then schedule a
-        // second relink — this mints a newer token that supersedes any future commit attempt
-        // using `stale_token`.
-        let first_new_graph = SemanticGraph::new();
-        handle
-            .report_relink_result(stale_token, first_new_graph, Vec::new())
-            .await
-            .expect("actor mutate should not panic");
-        handle
-            .schedule_relink_if_ready()
-            .await
-            .expect("actor mutate should not panic")
-            .expect("session should be ready to schedule another relink");
-
-        let superseded_new_graph = SemanticGraph::new();
-        let committed = handle
-            .report_relink_result(stale_token, superseded_new_graph, Vec::new())
-            .await
-            .expect("actor mutate should not panic");
-        assert!(!committed, "superseded token must not commit");
     }
 }

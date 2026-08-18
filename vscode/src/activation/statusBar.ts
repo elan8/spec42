@@ -6,8 +6,6 @@ import {
 } from "../diagnostics/workspaceDiagnostics";
 import { hasWorkspaceFolder } from "../providers/lspModelProvider";
 import type { LspModelProvider } from "../providers/lspModelProvider";
-import { setVisualizationGateState } from "../visualization/visualizationGate";
-import { VisualizationPanel } from "../visualization/visualizationPanel";
 import { log } from "../logger";
 import {
   formatSpec42StatusBar,
@@ -90,15 +88,7 @@ export function setServerHealth(
   const previousState = serverHealthState;
   serverHealthState = state;
   serverHealthDetail = detail;
-  setVisualizationGateState({ serverHealthState: state });
   log("Server health:", state, detail);
-  if (
-    VisualizationPanel.currentPanel &&
-    (state === "ready" || state === "degraded" || state === "indexing") &&
-    state !== previousState
-  ) {
-    VisualizationPanel.currentPanel.notifyWorkspaceLifecycleChanged();
-  }
   updateStatusBar(context);
 }
 
@@ -168,8 +158,6 @@ async function showSpec42StatusActions(): Promise<void> {
   const selected = await vscode.window.showQuickPick(
     [
       { label: "$(issues) Open Problems", command: "workbench.actions.view.problems" },
-      { label: "$(list-tree) Show Model Explorer", command: "sysml.showModelExplorer" },
-      { label: "$(graph) Open Visualizer", command: "sysml.showVisualizer" },
       { label: "$(star-full) Open Recommended Example", command: "spec42.examples.openRecommended" },
       { label: "$(output) Show SysML Output", command: "sysml.showOutput" },
       { label: "$(debug-restart) Restart Server", command: "sysml.restartServer" },

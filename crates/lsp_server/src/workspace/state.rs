@@ -1,5 +1,4 @@
 use crate::language::SymbolEntry;
-use crate::semantic;
 use std::sync::Arc;
 use sysml_v2_parser::RootNamespace;
 use tower_lsp::lsp_types::Url;
@@ -7,7 +6,6 @@ use workspace_session::{RelinkToken, TracksRelink};
 
 #[derive(Debug, Clone, Copy, Default)]
 pub(crate) struct ParseMetadata {
-    pub(crate) parse_time_ms: u32,
     pub(crate) parse_cached: bool,
 }
 
@@ -16,8 +14,8 @@ pub(crate) struct IndexEntry {
     pub(crate) content: String,
     pub(crate) parsed: Option<RootNamespace>,
     pub(crate) parse_metadata: ParseMetadata,
-    /// When `false`, the file is indexed for `sysml/librarySearch` only (not merged into the semantic graph).
-    pub(crate) include_in_semantic_graph: bool,
+    /// When `false`, the file is indexed for `sysml/librarySearch` only and is not admitted.
+    pub(crate) admitted_to_publication: bool,
 }
 
 /// A settled library stratum together with the inputs it was built from.
@@ -71,21 +69,12 @@ pub(crate) struct ServerState {
     /// addition to the workspace's own, so an author editing a library file sees its diagnostics
     /// without every workspace inheriting the whole library's.
     pub(crate) open_in_editor: std::collections::BTreeSet<Url>,
-    pub(crate) semantic_graph: semantic::SemanticGraph,
     pub(crate) published_model: Option<Arc<sysml_query::resolved_slice::PublishedModel>>,
     /// The configured libraries, parsed and solved once.
     ///
     /// Rebuilding the publication on every document change would otherwise re-parse and re-solve
     /// the whole standard library each time, which measures as the entire cost of the rebuild.
     pub(crate) library_stratum: Option<CachedLibraryStratum>,
-    /// Snapshot of the library-only portion of the semantic graph.
-    ///
-    /// Set during startup when library files are loaded from cache (no library paths
-    /// configured) or extracted from the full graph on cache miss. Passed as `base_graph`
-    /// to `rebuild_semantic_graph_staged` during async relinking so that library types
-    /// remain available even though they are not stored in the `index`.
-    pub(crate) library_graph_snapshot: Option<semantic::SemanticGraph>,
-    pub(crate) render_cache: workspace::ViewRenderCache,
 }
 
 impl TracksRelink for ServerState {
@@ -105,8 +94,6 @@ pub(crate) trait DocumentStore {
     fn index(&self) -> &std::collections::HashMap<Url, IndexEntry>;
     fn index_mut(&mut self) -> &mut std::collections::HashMap<Url, IndexEntry>;
     fn symbol_table_mut(&mut self) -> &mut Vec<SymbolEntry>;
-    fn semantic_graph(&self) -> &semantic::SemanticGraph;
-    fn semantic_graph_mut(&mut self) -> &mut semantic::SemanticGraph;
     fn published_model_mut(
         &mut self,
     ) -> &mut Option<Arc<sysml_query::resolved_slice::PublishedModel>>;
@@ -126,12 +113,6 @@ impl DocumentStore for ServerState {
     }
     fn symbol_table_mut(&mut self) -> &mut Vec<SymbolEntry> {
         &mut self.symbol_table
-    }
-    fn semantic_graph(&self) -> &semantic::SemanticGraph {
-        &self.semantic_graph
-    }
-    fn semantic_graph_mut(&mut self) -> &mut semantic::SemanticGraph {
-        &mut self.semantic_graph
     }
     fn published_model_mut(
         &mut self,
@@ -167,7 +148,7 @@ pub(crate) fn refresh_published_model(state: &mut impl DocumentStore) {
     let mut entries = state
         .index()
         .iter()
-        .filter(|(_, entry)| entry.include_in_semantic_graph)
+        .filter(|(_, entry)| entry.admitted_to_publication)
         .collect::<Vec<_>>();
     // Sorted so the stratum key is a property of the library's content rather than of hash-map
     // iteration order.
@@ -211,6 +192,28 @@ pub(crate) fn refresh_published_model(state: &mut impl DocumentStore) {
         .map(|request| request.reporting(reported))
         .and_then(|request| build(request).ok())
         .map(Arc::new);
+}
+
+/// Replaces the symbol projection from the committed immutable publication.
+pub(crate) fn refresh_symbol_table_from_publication(state: &mut ServerState) {
+    let Some(model) = state.published_model.as_deref() else {
+        state.symbol_table.clear();
+        return;
+    };
+    let mut symbols = Vec::new();
+    let mut uris = state.index.keys().cloned().collect::<Vec<_>>();
+    uris.sort();
+    for uri in uris {
+        symbols.extend(crate::language::symbol_entries_for_uri(model, &uri));
+        if let Some(entry) = state.index.get(&uri) {
+            crate::workspace::library_search::add_short_name_symbol_entries(
+                &mut symbols,
+                &entry.content,
+                &uri,
+            );
+        }
+    }
+    state.symbol_table = symbols;
 }
 
 /// Returns the stratum for the current library documents, rebuilding it only when they change.
@@ -291,7 +294,7 @@ mod tests {
                     content: content.to_string(),
                     parsed: None,
                     parse_metadata: ParseMetadata::default(),
-                    include_in_semantic_graph: true,
+                    admitted_to_publication: true,
                 },
             );
         }

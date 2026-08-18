@@ -1,14 +1,11 @@
-//! Concrete cache artifact payloads (`planning/UNIFY_CACHE_PLAN.md` §6.2, §6.3, §6.4).
+//! Concrete source-derived cache artifact payloads.
 //!
-//! This module defines the three artifact kinds that plan step 4 permits building ahead of the
-//! semantic-graph round-trip prerequisites (`planning/ROUNDTRIP_SEMGRAPH_PREREQS.md` §8): [`ParseOutcome`],
-//! [`LibraryIndex`], and [`LibraryClosure`]. `LibrarySemanticGraph` and `WorkspaceSemanticGraph`
-//! remain undefined here; they stay gated behind the semantic-node attribute bag removal (B9) and
-//! `SemanticGraphRecordV1` (B5), neither of which is complete on this branch.
+//! This module defines the three source-derived artifact kinds: [`ParseOutcome`],
+//! [`LibraryIndex`], and [`LibraryClosure`]. Immutable semantic publications are rebuilt from
+//! dependency-complete inputs and are not serialized legacy-graph cache artifacts.
 //!
-//! Nothing in production wires these artifacts to a call site yet (plan step 5,
-//! `SemanticBuildService`, is out of scope for this slice). They exist as standalone, fully
-//! tested `CacheArtifact` implementations ready for that routing work.
+//! Nothing in production wires these artifacts to a call site yet. They exist as standalone,
+//! fully tested `CacheArtifact` implementations ready for a future explicitly owned routing path.
 
 pub mod library_closure;
 pub mod library_index;
