@@ -173,6 +173,12 @@
         "category": "SysML"
       },
       {
+        "command": "spec42.diagram.openStateTransitionView",
+        "title": "Open State Transition View",
+        "icon": "$(type-hierarchy-sub)",
+        "category": "Spec42"
+      },
+      {
         "command": "spec42.examples.refresh",
         "title": "Refresh Examples View",
         "icon": "$(refresh)",
@@ -522,6 +528,11 @@
           "default": "spec42",
           "description": "Path to the Spec42 server binary (or 'spec42' if on PATH)."
         },
+        "spec42.stateTransitionViewer.pluginPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to a compatible prebuilt state-transition-view Wasm plugin. When empty, the extension uses its packaged generators/state-transition-view.wasm artifact."
+        },
         "spec42.libraryPaths": {
           "type": "array",
           "items": {
@@ -606,6 +617,7 @@
     "build:extension": "node scripts/build-extension.js",
     "compile": "npm run typecheck && tsc -p ./ && npm run build:extension",
     "test:lm-cli-unit": "tsc -p ./ && node --test out/test/suite/spec42Cli.test.js",
+    "test:diagram-unit": "tsc -p ./ && node --test out/test/suite/stateTransitionViewerCore.test.js",
     "typecheck": "tsc -p ./ --noEmit",
     "watch": "tsc -watch -p ./",
     "test": "vscode-test",

@@ -127,6 +127,7 @@ impl Corpus {
                     }
                     let runtime = GeneratorRuntime::with_options(RuntimeOptions {
                         fuel_metering: metered,
+                        compilation_cache: false,
                     })
                     .map_err(|error| error.to_string())?;
                     let module =

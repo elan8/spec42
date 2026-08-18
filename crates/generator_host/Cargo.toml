@@ -5,9 +5,10 @@ edition.workspace = true
 description = "Sandboxed WebAssembly module host for Spec42 generators"
 
 [dependencies]
+directories = "5"
 generator_api = { path = "../generator_api" }
 spec42-generator-protocol = { path = "../generator_protocol" }
-wasmtime = { version = "47", default-features = false, features = ["cranelift", "runtime", "std"] }
+wasmtime = { version = "47", default-features = false, features = ["cache", "cranelift", "runtime", "std"] }
 wasmparser = "0.253"
 postcard = { workspace = true }
 serde = { workspace = true }
@@ -16,4 +17,5 @@ thiserror = { workspace = true }
 
 [dev-dependencies]
 wat = "1"
+tempfile = "3.27.0"
 sysml_query = { path = "../sysml_query" }

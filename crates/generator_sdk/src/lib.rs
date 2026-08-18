@@ -10,6 +10,7 @@ use serde::{de::DeserializeOwned, Serialize};
 pub use spec42_generator_protocol as protocol;
 pub use spec42_generator_protocol::{
     Artifact, ElementDetail, ElementSummary, Multiplicity, Relationship,
+    StateTransitionViewProjection, StateTransitionViewSummary,
 };
 
 /// Starting size of the query response buffer. Responses larger than this cost one extra
@@ -133,10 +134,13 @@ fn call_query<T: DeserializeOwned>(operation: i32, request: &impl Serialize) -> 
 
 pub mod model {
     pub use spec42_generator_protocol::{
-        ElementDetail, ElementSummary, ModelInfo, Multiplicity, Relationship,
-        RelationshipProvenance, RequirementUsageTyping, RequirementVerification, SatisfyEndpoint,
-        SatisfyPolarity, SatisfyRelationship, SourceRange, TypingProvenance, VerificationOutcome,
-        VerificationRequirement,
+        ElementDetail, ElementIdentity, ElementSummary, ModelInfo, Multiplicity,
+        ProjectionCompleteness, ProjectionFeature, Relationship, RelationshipProvenance,
+        RequirementUsageTyping, RequirementVerification, SatisfyEndpoint, SatisfyPolarity,
+        SatisfyRelationship, SourceRange, SourceReference, StateMachineIdentity,
+        StateMachineSummary, StateTransitionEdge, StateTransitionNode, StateTransitionNodeKind,
+        StateTransitionViewProjection, StateTransitionViewSummary, TransitionTrigger,
+        TypingProvenance, UnsupportedReason, VerificationOutcome, VerificationRequirement,
     };
 
     use super::call;
@@ -184,6 +188,14 @@ pub mod model {
 
     pub fn effective_features(element: &str) -> Result<Vec<ElementSummary>, String> {
         call::<query::EffectiveFeatures>(&element.to_owned())
+    }
+
+    pub fn state_transition_views() -> Result<Vec<StateTransitionViewSummary>, String> {
+        call::<query::StateTransitionViews>(&())
+    }
+
+    pub fn state_transition_view(handle: &str) -> Result<StateTransitionViewProjection, String> {
+        call::<query::StateTransitionView>(&handle.to_owned())
     }
 }
 

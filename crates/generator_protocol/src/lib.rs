@@ -39,6 +39,8 @@ struct WireSchema {
     satisfy_relationship: SatisfyRelationship,
     satisfy_endpoint: SatisfyEndpoint,
     requirement_verification: RequirementVerification,
+    state_transition_view_summary: StateTransitionViewSummary,
+    state_transition_view_projection: StateTransitionViewProjection,
     verification_requirement: VerificationRequirement,
     verification_outcome: VerificationOutcome,
     level: Level,
@@ -648,6 +650,120 @@ pub struct RequirementVerification {
     pub outcome: VerificationOutcome,
     pub recovered: bool,
 }
+
+/// Source provenance carried by notation-ready semantic projections.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct SourceReference {
+    pub uri: String,
+    pub range: SourceRange,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct ElementIdentity {
+    pub semantic_id: String,
+    pub label: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct StateMachineIdentity {
+    pub semantic_id: String,
+    pub label: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct StateTransitionViewSummary {
+    pub handle: String,
+    pub semantic_id: String,
+    pub name: String,
+    pub exposed_machine: StateMachineIdentity,
+    pub source: SourceReference,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct StateMachineSummary {
+    pub semantic_id: String,
+    pub label: String,
+    pub source: SourceReference,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum StateTransitionNodeKind {
+    Initial,
+    State,
+    Final,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct StateTransitionNode {
+    pub semantic_id: String,
+    pub label: String,
+    pub kind: StateTransitionNodeKind,
+    pub source: SourceReference,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct UnsupportedReason {
+    pub code: String,
+    pub message: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum ProjectionFeature {
+    Absent,
+    Supported {
+        label: String,
+        source: SourceReference,
+    },
+    Unsupported {
+        reason: UnsupportedReason,
+    },
+    Unresolved,
+    Ambiguous,
+    Recovery,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum TransitionTrigger {
+    None,
+    Accept {
+        label: String,
+        target: Option<ElementIdentity>,
+        source: SourceReference,
+    },
+    Unsupported {
+        reason: UnsupportedReason,
+    },
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct StateTransitionEdge {
+    pub semantic_id: String,
+    pub label: Option<String>,
+    pub source: String,
+    pub target: String,
+    pub trigger: TransitionTrigger,
+    pub guard: ProjectionFeature,
+    pub effect: ProjectionFeature,
+    pub provenance: RelationshipProvenance,
+    pub source_reference: SourceReference,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum ProjectionCompleteness {
+    Complete,
+    Incomplete { reasons: Vec<UnsupportedReason> },
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct StateTransitionViewProjection {
+    pub schema_version: u32,
+    pub model_digest: String,
+    pub view: StateTransitionViewSummary,
+    pub machine: StateMachineSummary,
+    pub nodes: Vec<StateTransitionNode>,
+    pub transitions: Vec<StateTransitionEdge>,
+    pub completeness: ProjectionCompleteness,
+}
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -732,7 +848,7 @@ mod tests {
     #[test]
     fn the_wire_schema_fingerprint_is_pinned() {
         assert_eq!(
-            SCHEMA_FINGERPRINT, 0x0410_39af_27dd_4a86,
+            SCHEMA_FINGERPRINT, 0xabe4_ebba_02d9_f5b5,
             "the generator wire schema changed; every guest must be rebuilt"
         );
     }
@@ -740,7 +856,7 @@ mod tests {
     #[test]
     fn the_compatibility_token_is_pinned() {
         assert_eq!(
-            COMPATIBILITY_TOKEN, 0xa785_0467_6b7c_86ee,
+            COMPATIBILITY_TOKEN, 0xff11_6fca_64bb_7b92,
             "the generator ABI contract changed; every guest must be rebuilt"
         );
     }

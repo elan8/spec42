@@ -3,8 +3,8 @@
   "semanticApiVersion": "0.1.0",
   "namespace": "spec42:generator-abi/4",
   "importModule": "spec42",
-  "schemaFingerprint": "0x041039af27dd4a86",
-  "compatibilityToken": "0xa78504676b7c86ee",
+  "schemaFingerprint": "0xabe4ebba02d9f5b5",
+  "compatibilityToken": "0xff116fca64bb7b92",
   "operations": [
     { "name": "Info", "code": 0, "request": "()", "response": "ModelInfo" },
     { "name": "Roots", "code": 1, "request": "()", "response": "Vec<ElementSummary>" },
@@ -16,7 +16,9 @@
     { "name": "EffectiveFeatures", "code": 7, "request": "String", "response": "Vec<ElementSummary>" },
     { "name": "RequirementTyping", "code": 8, "request": "String", "response": "RequirementUsageTyping" },
     { "name": "SatisfyRelationships", "code": 9, "request": "()", "response": "Vec<SatisfyRelationship>" },
-    { "name": "RequirementVerifications", "code": 10, "request": "()", "response": "Vec<RequirementVerification>" }
+    { "name": "RequirementVerifications", "code": 10, "request": "()", "response": "Vec<RequirementVerification>" },
+    { "name": "StateTransitionViews", "code": 11, "request": "()", "response": "Vec<StateTransitionViewSummary>" },
+    { "name": "StateTransitionView", "code": 12, "request": "String", "response": "StateTransitionViewProjection" }
   ],
   "diagnosticLevels": [
     { "name": "Debug", "code": 0 },

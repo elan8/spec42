@@ -317,6 +317,10 @@ abi_contract! {
         SatisfyRelationships = 9 => ((), Vec<SatisfyRelationship>),
         /// Authoritative verification-to-requirement links and explicit outcome states.
         RequirementVerifications = 10 => ((), Vec<RequirementVerification>),
+        /// Authored views whose canonical semantics select one state machine.
+        StateTransitionViews = 11 => ((), Vec<StateTransitionViewSummary>),
+        /// Notation-ready semantic projection for one catalog handle.
+        StateTransitionView = 12 => (String, StateTransitionViewProjection),
     }
 
     /// Severity of a generator diagnostic.

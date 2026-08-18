@@ -3,6 +3,12 @@ use std::sync::{Arc, Mutex};
 
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
+use spec42_generator_protocol::{
+    ElementIdentity, ProjectionCompleteness, ProjectionFeature, SourceReference,
+    StateMachineIdentity, StateMachineSummary, StateTransitionEdge, StateTransitionNode,
+    StateTransitionNodeKind, StateTransitionViewProjection, StateTransitionViewSummary,
+    TransitionTrigger,
+};
 use spec42_generator_protocol::{Metaclass, RelationshipKind as ApiRelationshipKind};
 use sysml_query::resolved_slice::{
     AnnotationForm, ElementKind, ElementModifier, ElementSearch, ElementSource, EvaluatedScalar,
@@ -639,6 +645,281 @@ impl GeneratorModelView {
         Ok(values)
     }
 
+    /// Catalog authored state-transition views whose type and single exposed machine are resolved.
+    pub fn state_transition_views(
+        &self,
+    ) -> Result<Vec<StateTransitionViewSummary>, ModelQueryError> {
+        let standard_view = self.standard_state_transition_view()?;
+        let mut values = Vec::new();
+        for registered in self.by_identity.values().filter(|value| {
+            value.source == ElementSource::Workspace && value.entry.kind == ElementKind::ViewUsage
+        }) {
+            let types = outcome(
+                self.model.types().direct_types(&registered.entry.identity),
+                "state-transition view typing",
+            )?;
+            if !types.iter().any(|ty| ty.symbol == standard_view) {
+                continue;
+            }
+            let machine = self.exposed_machine(&registered.entry.identity)?;
+            values.push(self.view_summary(&registered.entry.identity, &machine)?);
+        }
+        values.sort_by(|a, b| a.semantic_id.cmp(&b.semantic_id));
+        self.enforce_limit(values.len())?;
+        Ok(values)
+    }
+
+    fn standard_state_transition_view(&self) -> Result<SymbolIdentity, ModelQueryError> {
+        let matches = self
+            .by_identity
+            .values()
+            .filter(|entry| {
+                entry.source == ElementSource::StandardLibrary
+                    && entry.entry.kind == ElementKind::ViewDefinition
+                    && entry.entry.name.as_deref() == Some("StateTransitionView")
+            })
+            .map(|entry| entry.entry.identity.clone())
+            .collect::<Vec<_>>();
+        match matches.as_slice() {
+            [identity] => Ok(identity.clone()),
+            [] => Err(ModelQueryError::Incomplete),
+            _ => Err(ModelQueryError::Ambiguous(
+                "standard library contains multiple StateTransitionView definitions".into(),
+            )),
+        }
+    }
+
+    pub fn state_transition_view(
+        &self,
+        handle: &str,
+    ) -> Result<StateTransitionViewProjection, ModelQueryError> {
+        let view_id = self.resolve_handle(handle)?;
+        let view_entry = self
+            .by_identity
+            .get(&view_id)
+            .ok_or_else(|| ModelQueryError::UnknownHandle(handle.to_owned()))?;
+        if view_entry.entry.kind != ElementKind::ViewUsage {
+            return Err(ModelQueryError::Unsupported(
+                "selected element is not a view usage".into(),
+            ));
+        }
+        let machine_id = self.exposed_machine(&view_id)?;
+        let machine_entry = self.by_identity.get(&machine_id).ok_or_else(|| {
+            ModelQueryError::Unresolved("exposed state machine is absent from publication".into())
+        })?;
+        if machine_entry.entry.kind != ElementKind::StateDefinition {
+            return Err(ModelQueryError::Unsupported(
+                "state-transition view must expose one state definition".into(),
+            ));
+        }
+        let view = self.view_summary(&view_id, &machine_id)?;
+        let machine_inspection = self.inspection(&machine_id, "state machine")?;
+        let machine = StateMachineSummary {
+            semantic_id: machine_id.as_str().to_owned(),
+            label: display_label(&machine_entry.entry),
+            source: inspection_source(&machine_inspection),
+        };
+        let children = self
+            .by_identity
+            .values()
+            .filter(|entry| entry.entry.owner.as_ref() == Some(&machine_id))
+            .collect::<Vec<_>>();
+        let mut nodes = Vec::new();
+        let mut transitions = Vec::new();
+        for child in &children {
+            let inspection = self.inspection(&child.entry.identity, "state-machine member")?;
+            match child.entry.kind {
+                ElementKind::StateUsage | ElementKind::FinalState => {
+                    nodes.push(StateTransitionNode {
+                        semantic_id: child.entry.identity.as_str().to_owned(),
+                        label: display_label(&child.entry),
+                        kind: if child.entry.kind == ElementKind::FinalState {
+                            StateTransitionNodeKind::Final
+                        } else {
+                            StateTransitionNodeKind::State
+                        },
+                        source: inspection_source(&inspection),
+                    })
+                }
+                ElementKind::SuccessionAsUsage => {
+                    if let Some(target) = resolved_relationship(&inspection, "initialState")? {
+                        let initial_id = format!("{}#initial", child.entry.identity.as_str());
+                        nodes.push(StateTransitionNode {
+                            semantic_id: initial_id.clone(),
+                            label: String::new(),
+                            kind: StateTransitionNodeKind::Initial,
+                            source: inspection_source(&inspection),
+                        });
+                        transitions.push(StateTransitionEdge {
+                            semantic_id: format!("{}#edge", child.entry.identity.as_str()),
+                            label: None,
+                            source: initial_id,
+                            target: target.as_str().to_owned(),
+                            trigger: TransitionTrigger::None,
+                            guard: ProjectionFeature::Absent,
+                            effect: ProjectionFeature::Absent,
+                            provenance: spec42_generator_protocol::RelationshipProvenance::Authored,
+                            source_reference: inspection_source(&inspection),
+                        });
+                    }
+                }
+                ElementKind::TransitionUsage => {
+                    let source = resolved_relationship(&inspection, "transitionSource")?
+                        .ok_or_else(|| ModelQueryError::Unresolved("transition source".into()))?;
+                    let target = resolved_relationship(&inspection, "transitionTarget")?
+                        .ok_or_else(|| ModelQueryError::Unresolved("transition target".into()))?;
+                    let trigger = match resolved_relationship(&inspection, "transitionTrigger")? {
+                        None => TransitionTrigger::None,
+                        Some(trigger) => {
+                            let target_entry = self.by_identity.get(&trigger).ok_or_else(|| {
+                                ModelQueryError::Unresolved("transition trigger target".into())
+                            })?;
+                            TransitionTrigger::Accept {
+                                label: display_label(&target_entry.entry),
+                                target: Some(ElementIdentity {
+                                    semantic_id: trigger.as_str().to_owned(),
+                                    label: display_label(&target_entry.entry),
+                                }),
+                                source: inspection_source(&inspection),
+                            }
+                        }
+                    };
+                    let has_guard = inspection
+                        .relationships
+                        .iter()
+                        .any(|r| r.kind == "transitionGuard");
+                    let has_effect = inspection
+                        .relationships
+                        .iter()
+                        .any(|r| r.kind == "transitionEffect");
+                    transitions.push(StateTransitionEdge {
+                        semantic_id: child.entry.identity.as_str().to_owned(),
+                        label: child.entry.name.as_deref().map(str::to_owned),
+                        source: source.as_str().to_owned(),
+                        target: target.as_str().to_owned(),
+                        trigger,
+                        guard: if has_guard {
+                            ProjectionFeature::Unsupported {
+                                reason: unsupported(
+                                    "guard",
+                                    "transition guards are outside projection schema v1",
+                                ),
+                            }
+                        } else {
+                            ProjectionFeature::Absent
+                        },
+                        effect: if has_effect {
+                            ProjectionFeature::Unsupported {
+                                reason: unsupported(
+                                    "effect",
+                                    "transition effects are outside projection schema v1",
+                                ),
+                            }
+                        } else {
+                            ProjectionFeature::Absent
+                        },
+                        provenance: spec42_generator_protocol::RelationshipProvenance::Authored,
+                        source_reference: inspection_source(&inspection),
+                    });
+                }
+                _ => {}
+            }
+        }
+        nodes.sort_by(|a, b| a.semantic_id.cmp(&b.semantic_id));
+        transitions.sort_by(|a, b| a.semantic_id.cmp(&b.semantic_id));
+        self.enforce_limit(nodes.len().saturating_add(transitions.len()))?;
+        let mut reasons = Vec::new();
+        for edge in &transitions {
+            if matches!(edge.guard, ProjectionFeature::Unsupported { .. }) {
+                reasons.push(unsupported(
+                    "guard",
+                    "transition guards are outside projection schema v1",
+                ));
+            }
+            if matches!(edge.effect, ProjectionFeature::Unsupported { .. }) {
+                reasons.push(unsupported(
+                    "effect",
+                    "transition effects are outside projection schema v1",
+                ));
+            }
+        }
+        Ok(StateTransitionViewProjection {
+            schema_version: 1,
+            model_digest: self.model_digest.clone(),
+            view,
+            machine,
+            nodes,
+            transitions,
+            completeness: if reasons.is_empty() {
+                ProjectionCompleteness::Complete
+            } else {
+                ProjectionCompleteness::Incomplete { reasons }
+            },
+        })
+    }
+
+    fn inspection(
+        &self,
+        identity: &SymbolIdentity,
+        subject: &str,
+    ) -> Result<sysml_query::resolved_slice::ElementInspection, ModelQueryError> {
+        outcome(self.model.inspection().inspect(identity), subject)
+    }
+
+    fn exposed_machine(&self, view: &SymbolIdentity) -> Result<SymbolIdentity, ModelQueryError> {
+        let mut targets = Vec::new();
+        for child in self
+            .by_identity
+            .values()
+            .filter(|entry| entry.entry.owner.as_ref() == Some(view))
+        {
+            if child.entry.kind != ElementKind::Expose {
+                continue;
+            }
+            let inspection = self.inspection(&child.entry.identity, "view exposure")?;
+            if let Some(target) = resolved_relationship(&inspection, "viewExpose")? {
+                targets.push(target);
+            }
+        }
+        match targets.as_slice() {
+            [one] => Ok(one.clone()),
+            [] => Err(ModelQueryError::Unsupported(
+                "state-transition view exposes no state machine".into(),
+            )),
+            _ => Err(ModelQueryError::Ambiguous(
+                "state-transition view exposes multiple roots".into(),
+            )),
+        }
+    }
+
+    fn view_summary(
+        &self,
+        view: &SymbolIdentity,
+        machine: &SymbolIdentity,
+    ) -> Result<StateTransitionViewSummary, ModelQueryError> {
+        let view_entry = &self.by_identity[view].entry;
+        let machine_entry = self
+            .by_identity
+            .get(machine)
+            .ok_or_else(|| ModelQueryError::Unresolved("exposed machine".into()))?;
+        let inspection = self.inspection(view, "state-transition view")?;
+        let handle = handle_from_semantic_id(view.as_str());
+        self.handles
+            .lock()
+            .expect("generator handle index poisoned")
+            .insert(handle.clone(), view.clone());
+        Ok(StateTransitionViewSummary {
+            handle,
+            semantic_id: view.as_str().to_owned(),
+            name: display_label(view_entry),
+            exposed_machine: StateMachineIdentity {
+                semantic_id: machine.as_str().to_owned(),
+                label: display_label(&machine_entry.entry),
+            },
+            source: inspection_source(&inspection),
+        })
+    }
+
     pub fn is_valid_handle(&self, handle: &str) -> bool {
         self.handles
             .lock()
@@ -696,6 +977,59 @@ impl GeneratorModelView {
         } else {
             Ok(())
         }
+    }
+}
+
+fn display_label(entry: &SymbolEntry) -> String {
+    entry
+        .name
+        .as_deref()
+        .unwrap_or(entry.qualified_name.as_ref())
+        .to_owned()
+}
+
+fn inspection_source(
+    inspection: &sysml_query::resolved_slice::ElementInspection,
+) -> SourceReference {
+    let range = source_range(inspection.declaration_range);
+    SourceReference {
+        uri: inspection.location.document.to_string(),
+        range: spec42_generator_protocol::SourceRange {
+            start_line: range.start_line,
+            start_character: range.start_character,
+            end_line: range.end_line,
+            end_character: range.end_character,
+        },
+    }
+}
+
+fn resolved_relationship(
+    inspection: &sysml_query::resolved_slice::ElementInspection,
+    kind: &str,
+) -> Result<Option<SymbolIdentity>, ModelQueryError> {
+    let values = inspection
+        .relationships
+        .iter()
+        .filter(|relationship| relationship.kind == kind)
+        .collect::<Vec<_>>();
+    if values.len() > 1 {
+        return Err(ModelQueryError::Ambiguous(format!(
+            "multiple `{kind}` relationships"
+        )));
+    }
+    match values.first().map(|value| &value.target) {
+        None => Ok(None),
+        Some(RelationshipTarget::Resolved(target)) => Ok(Some(target.clone())),
+        Some(RelationshipTarget::Ambiguous(_)) => Err(ModelQueryError::Ambiguous(kind.into())),
+        Some(RelationshipTarget::Unresolved) => Err(ModelQueryError::Unresolved(kind.into())),
+        Some(RelationshipTarget::Unsupported) => Err(ModelQueryError::Unsupported(kind.into())),
+    }
+}
+
+fn unsupported(code: &str, message: &str) -> spec42_generator_protocol::UnsupportedReason {
+    spec42_generator_protocol::UnsupportedReason {
+        code: code.to_owned(),
+        message: message.to_owned(),
     }
 }
 
