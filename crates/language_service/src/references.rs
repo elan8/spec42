@@ -1,4 +1,4 @@
-use sysml_model::{TextPosition, TextRange};
+use sysml_query::resolved_slice::{TextPosition, TextRange};
 
 use crate::dto::{DefinitionResult, ReferencesResult, SourceLocation};
 use crate::workspace::WorkspaceSnapshot;
@@ -18,23 +18,6 @@ pub const TYPE_LOOKUP_KINDS: &[&str] = &[
     "use case def",
     "concern def",
     "kermlDecl",
-];
-
-pub const TYPE_LOOKUP_ELEMENT_KINDS: &[sysml_model::ElementKind] = &[
-    sysml_model::ElementKind::PartDef,
-    sysml_model::ElementKind::PortDef,
-    sysml_model::ElementKind::InterfaceDef,
-    sysml_model::ElementKind::ItemDef,
-    sysml_model::ElementKind::AttributeDef,
-    sysml_model::ElementKind::ActionDef,
-    sysml_model::ElementKind::OccurrenceDef,
-    sysml_model::ElementKind::FlowDef,
-    sysml_model::ElementKind::AllocationDef,
-    sysml_model::ElementKind::StateDef,
-    sysml_model::ElementKind::RequirementDef,
-    sysml_model::ElementKind::UseCaseDef,
-    sysml_model::ElementKind::ConcernDef,
-    sysml_model::ElementKind::KermlDecl,
 ];
 
 #[derive(Debug, Clone)]

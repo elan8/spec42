@@ -7,7 +7,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 
 use language_service::{format_document_text, FormatOptions};
-use sysml_model::{build_semantic_graph_from_documents, SysmlDocument, SysmlDocumentSourceKind};
+use sysml_query::resolved_slice::{build, BuildRequest, ConstructionStrategy, SourceDocument, SourceKind};
 
 const CORPUS: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/corpus/sysml");
 const SEED_COUNT: usize = 6;
@@ -45,21 +45,19 @@ fn sysml_seed_corpus_exercises_public_language_apis() {
             );
         }
 
-        let document = SysmlDocument::from_memory_path(
+        let document = SourceDocument::from_memory_path(
             "fuzz-seed",
             seed.file_name()
                 .and_then(|name| name.to_str())
                 .expect("UTF-8 seed file name"),
             source.to_owned(),
-            SysmlDocumentSourceKind::Workspace,
-            None,
-            None,
+            SourceKind::Workspace,
         )
         .expect("fixed memory URI must be valid");
-        let (_graph, parsed) = build_semantic_graph_from_documents(&[document])
-            .expect("recovery-mode semantic graph construction");
-        assert_eq!(parsed.len(), 1, "{}", seed.display());
-        assert_eq!(parsed[0].content, source, "{}", seed.display());
+        let request = BuildRequest::resolved(vec![document], ConstructionStrategy::Sequential)
+            .expect("one source has a unique identity");
+        let model = build(request).expect("recovery-mode immutable publication construction");
+        std::hint::black_box(model.publication().completeness());
 
         for options in OPTIONS {
             let formatted = format_document_text(source, options);

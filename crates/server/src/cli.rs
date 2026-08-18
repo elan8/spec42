@@ -38,7 +38,7 @@ pub enum Command {
     Doctor(DoctorArgs),
     /// Explain a diagnostic code.
     ExplainDiagnostic(ExplainDiagnosticArgs),
-    /// Compact semantic graph summary.
+    /// Validation-only model summary pending a bounded typed structural query.
     ModelSummary(ModelSummaryArgs),
     /// Create a validated local KPAR archive from a model directory.
     Bundle(BundleArgs),
@@ -56,10 +56,6 @@ pub enum Command {
     Libraries {
         #[command(subcommand)]
         command: LibrariesCommand,
-    },
-    Diagrams {
-        #[command(subcommand)]
-        command: DiagramsCommand,
     },
 }
 
@@ -234,10 +230,6 @@ pub enum LibrariesCommand {
     Path(LibrariesIdArgs),
     /// Delete materialized KPAR library files from the data directory (they are re-created from the embedded copy on next use).
     ClearCache(LibrariesIdArgs),
-    /// Delete the on-disk built-library-graph cache, forcing a full rebuild on the
-    /// next server start. Use this after enabling/disabling a library or changing
-    /// a `--kpar-library-path` override so a stale cached graph never lingers.
-    ClearGraphCache,
 }
 
 #[derive(Debug, Clone, Subcommand)]
@@ -252,41 +244,12 @@ pub struct SysandStatusArgs {
     pub format: OutputFormat,
 }
 
-#[derive(Debug, Clone, Subcommand)]
-pub enum DiagramsCommand {
-    /// Export deterministic shared-view payloads for CI documentation workflows.
-    Export(DiagramExportArgs),
-}
-
-#[derive(Debug, Clone, Args)]
-pub struct DiagramExportArgs {
-    pub path: PathBuf,
-    #[arg(long = "workspace-root")]
-    pub workspace_root: Option<PathBuf>,
-    #[arg(long = "view", default_value = "all")]
-    pub view: String,
-    /// Explicit SysML view usage name (for example `gridStructure` or `RegionalGridExpansion::Views::gridStructure`).
-    #[arg(long = "selected-view")]
-    pub selected_view: Option<String>,
-    #[arg(long = "format", value_enum, default_value_t = DiagramExportFormat::Svg)]
-    pub format: DiagramExportFormat,
-    #[arg(long = "output")]
-    pub output: PathBuf,
-}
-
 #[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]
 pub enum OutputFormat {
     Text,
     Json,
     Sarif,
     Junit,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum, serde::Deserialize)]
-#[serde(rename_all = "lowercase")]
-pub enum DiagramExportFormat {
-    Svg,
-    Json,
 }
 
 #[cfg(test)]
@@ -553,47 +516,6 @@ mod tests {
                 command: LibrariesCommand::ClearCache(args),
             }) => assert_eq!(args.id.as_deref(), Some("method")),
             other => panic!("expected libraries clear-cache command, got {other:?}"),
-        }
-    }
-
-    #[test]
-    fn libraries_clear_graph_cache_command_parses() {
-        let cli = Cli::parse_from(["spec42", "libraries", "clear-graph-cache"]);
-        match cli.command {
-            Some(Command::Libraries {
-                command: LibrariesCommand::ClearGraphCache,
-            }) => {}
-            other => panic!("expected libraries clear-graph-cache command, got {other:?}"),
-        }
-    }
-
-    #[test]
-    fn diagrams_export_command_parses() {
-        let cli = Cli::parse_from([
-            "spec42",
-            "diagrams",
-            "export",
-            "models",
-            "--view",
-            "general-view",
-            "--selected-view",
-            "gridStructure",
-            "--format",
-            "json",
-            "--output",
-            "out",
-        ]);
-        match cli.command {
-            Some(Command::Diagrams {
-                command: DiagramsCommand::Export(args),
-            }) => {
-                assert_eq!(args.path, PathBuf::from("models"));
-                assert_eq!(args.view, "general-view");
-                assert_eq!(args.selected_view.as_deref(), Some("gridStructure"));
-                assert_eq!(args.format, DiagramExportFormat::Json);
-                assert_eq!(args.output, PathBuf::from("out"));
-            }
-            other => panic!("expected diagrams export command, got {other:?}"),
         }
     }
 }

@@ -433,14 +433,11 @@ fn lsp_hover_resolves_requirement_subject_in_context_instead_of_showing_ambiguou
         .or_else(|| hover_json["result"]["contents"].as_str())
         .expect("hover should return contents");
     assert!(
-        contents.contains("part") && contents.contains("communication"),
-        "hover should resolve to the in-context subject part usage: {}",
-        contents
-    );
-    assert!(
-        contents.contains("part communication : Communication;")
-            && contents.contains("**Container:** `DronePackage::Drone`"),
-        "hover should still point at the local communication part with container context: {}",
+        contents.contains("reference usage")
+            && contents.contains("communication")
+            && contents.contains("**Role:** `subject`")
+            && contents.contains("**Container:** `DronePackage::Drone::VideoLatencyReq`"),
+        "hover should render the publication-owned subject declaration and role: {}",
         contents
     );
     assert!(
@@ -527,14 +524,11 @@ fn lsp_hover_returns_subject_declaration_hover_for_requirement_subject_name() {
         .as_str()
         .or_else(|| hover_json["result"]["contents"].as_str())
         .expect("hover should return contents");
+    assert!(contents.contains("reference usage") && contents.contains("**Role:** `subject`"));
     assert!(
-        contents.contains("subject drone : SurveillanceQuadrotorDrone;"),
-        "hover should describe the subject declaration itself: {}",
-        contents
-    );
-    assert!(
-        contents.contains("**Container:** `DronePackage::MaxAltitudeAGLReq`"),
-        "hover should include qualified parent context: {}",
+        contents.contains("**Container:** `DronePackage::MaxAltitudeAGLReq`")
+            && contents.contains("**Declared type:** `DronePackage::SurveillanceQuadrotorDrone`"),
+        "hover should include typed parent and declaration context: {}",
         contents
     );
 

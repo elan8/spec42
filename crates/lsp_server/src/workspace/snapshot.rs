@@ -75,10 +75,6 @@ impl WorkspaceSnapshot for ServerStateSnapshot<'_> {
             .map(|entry| entry.content.as_str())
     }
 
-    fn semantic_graph(&self) -> &crate::semantic::SemanticGraph {
-        &self.state.semantic_graph
-    }
-
     fn published_model(&self) -> Option<&sysml_query::resolved_slice::PublishedModel> {
         self.published_model.as_deref()
     }

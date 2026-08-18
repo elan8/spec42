@@ -25,7 +25,7 @@ pub use details::{
 };
 pub use diagnostics::{
     Diagnostic, DiagnosticCode, DiagnosticLocation, DiagnosticOrigin, DiagnosticSeverity,
-    PublishedDiagnostics,
+    PublishedDiagnostics, RelatedLocation,
 };
 pub use element_kind::{
     ElementKind, MembershipRole, RequirementConstraintKind, StateSubactionKind,
@@ -116,16 +116,32 @@ impl SourceInput {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(
+    Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, serde::Serialize, serde::Deserialize,
+)]
 pub struct TextPosition {
     pub line: u32,
     pub character: u32,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+impl TextPosition {
+    pub const fn new(line: u32, character: u32) -> Self {
+        Self { line, character }
+    }
+}
+
+#[derive(
+    Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, serde::Serialize, serde::Deserialize,
+)]
 pub struct TextRange {
     pub start: TextPosition,
     pub end: TextPosition,
+}
+
+impl TextRange {
+    pub const fn new(start: TextPosition, end: TextPosition) -> Self {
+        Self { start, end }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -219,6 +235,9 @@ pub enum ConstructionSchedule {
 pub struct PublicationIdentity {
     source_digest: RootDigest,
     semantic_contract_version: Box<str>,
+    /// The admitted documents the host asked to have reported beyond its workspace, in canonical
+    /// order. Part of the identity because it changes what the publication answers.
+    reported_documents: Box<[Box<str>]>,
 }
 
 impl PublicationIdentity {
@@ -229,6 +248,11 @@ impl PublicationIdentity {
     pub fn semantic_contract_version(&self) -> &str {
         &self.semantic_contract_version
     }
+
+    /// The admitted documents reported beyond the workspace, in canonical order.
+    pub fn reported_documents(&self) -> &[Box<str>] {
+        &self.reported_documents
+    }
 }
 
 #[derive(Debug)]
@@ -237,6 +261,7 @@ pub struct BuildRequest {
     schedule: ConstructionSchedule,
     policy: EvaluationPolicy,
     library: Option<std::sync::Arc<LibraryStratum>>,
+    reported: Vec<Box<str>>,
     identity: PublicationIdentity,
 }
 
@@ -343,9 +368,11 @@ impl BuildRequest {
             schedule,
             policy: EvaluationPolicy::default(),
             library: None,
+            reported: Vec::new(),
             identity: PublicationIdentity {
                 source_digest,
                 semantic_contract_version,
+                reported_documents: Box::default(),
             },
         })
     }
@@ -375,6 +402,29 @@ impl BuildRequest {
         request.identity.source_digest = SourceManifest::new(entries, Vec::new()).root_digest();
         request.library = Some(library);
         Ok(request)
+    }
+
+    /// Also reports diagnostics for these admitted documents, beyond the workspace-authored ones.
+    ///
+    /// A publication reports its workspace by default: a workspace does not inherit its library's
+    /// diagnostics, and deriving every admitted document would make the barrier cost the whole
+    /// library on every rebuild. That default is about *provenance*, which is not the same
+    /// question as which documents are an authoring surface -- an editor with a library file open
+    /// is authoring it, and only the host knows that.
+    ///
+    /// Naming a document here is how the host says so. It is a build input rather than a query
+    /// option because a diagnostic is settled before the publication becomes visible, and it is
+    /// part of the publication's identity because two publications that report different documents
+    /// are observably different answers.
+    ///
+    /// An identity that names no admitted document is ignored: the host asked about something this
+    /// publication does not contain, which the empty answer already says.
+    pub fn reporting(mut self, documents: impl IntoIterator<Item = Box<str>>) -> Self {
+        self.reported = documents.into_iter().collect();
+        self.reported.sort_unstable();
+        self.reported.dedup();
+        self.identity.reported_documents = self.reported.clone().into_boxed_slice();
+        self
     }
 
     /// Sets whether this build evaluates constant expressions.
@@ -460,6 +510,7 @@ pub fn build_measured(
         schedule,
         request.policy,
         request.library.as_deref().map(|library| &library.prepared),
+        &request.reported,
     )
     .map_err(|error| match error {
         CoordinatorError::DuplicateSourceIdentity => BuildFailure::DuplicateSourceIdentity,
@@ -500,12 +551,22 @@ impl PublishedResolution {
     /// over exactly these values, so no consumer recovers a code, severity, or outcome from
     /// presentation output or re-decides a rule.
     ///
-    /// This is **not** the whole diagnostic surface. Parser recovery, unmodelled constructs, and
-    /// authored-reference outcomes are here; the conformance families are still owned by
-    /// `sysml_diagnostics` over the mutable graph. See the [`diagnostics`] module documentation
-    /// before using this to replace a legacy diagnostic consumer.
+    /// This is the complete production validation surface; see [`DiagnosticCode`] for every
+    /// family it decides.
     pub fn diagnostics(&self) -> PublishedDiagnostics {
         self.model.published_diagnostics()
+    }
+
+    /// The diagnostics of one admitted document, read from the publication's own index.
+    ///
+    /// A slice of the settled sequence, so the cost is proportional to what is returned rather
+    /// than to the model. Repeating the query, or asking about documents in any order, returns
+    /// the same values: nothing here computes.
+    ///
+    /// A document this publication did not admit answers with no diagnostics and the same
+    /// completeness, which is why the completeness travels with them.
+    pub fn document_diagnostics(&self, document: &str) -> PublishedDiagnostics {
+        self.model.published_document_diagnostics(document)
     }
 
     pub fn target_at(
@@ -792,6 +853,287 @@ mod tests {
             .write_diagnostics_sexpr(&mut output)
             .unwrap();
         output
+    }
+
+    /// The typed diagnostics of one single-document publication.
+    fn diagnostics_for(source: &str) -> Vec<Diagnostic> {
+        published_for(source).diagnostics().diagnostics.into_vec()
+    }
+
+    fn published_for(source: &str) -> PublishedResolution {
+        let request = BuildRequest::new(
+            vec![SourceInput::new(
+                "memory://test.sysml",
+                source.to_string(),
+                SourceKind::Workspace,
+            )],
+            ConstructionSchedule::Sequential,
+            "contract-v1",
+        )
+        .unwrap();
+        build(request).unwrap()
+    }
+
+    /// The standard-view rule needs a library-admitted definition, and the source role that makes
+    /// a document a library is not expressible in the snapshot corpus, so it is pinned here.
+    #[test]
+    fn a_view_typed_by_a_non_standard_library_definition_is_reported() {
+        let publish = |library: &str| {
+            let request = BuildRequest::new(
+                vec![
+                    SourceInput::new(
+                        "memory://views.sysml",
+                        format!("library package Views {{ view def {library}; }}"),
+                        SourceKind::Library,
+                    ),
+                    SourceInput::new(
+                        "memory://test.sysml",
+                        format!("package P {{ import Views::*; view v : {library}; }}"),
+                        SourceKind::Workspace,
+                    ),
+                ],
+                ConstructionSchedule::Sequential,
+                "contract-v1",
+            )
+            .unwrap();
+            build(request)
+                .unwrap()
+                .document_diagnostics("memory://test.sysml")
+                .diagnostics
+                .iter()
+                .map(|diagnostic| diagnostic.code.as_str().to_string())
+                .collect::<Vec<_>>()
+        };
+        assert!(
+            publish("RequirementView").contains(&"view_type_non_standard".to_string()),
+            "{:?}",
+            publish("RequirementView")
+        );
+        assert!(
+            !publish("GeneralView").contains(&"view_type_non_standard".to_string()),
+            "a standard view definition is not reported: {:?}",
+            publish("GeneralView")
+        );
+    }
+
+    /// A workspace's own `view def` is the author's to define, whatever it is called.
+    #[test]
+    fn a_view_typed_by_a_workspace_definition_is_never_reported_as_non_standard() {
+        let published =
+            published_for("package P { view def RequirementView; view v : RequirementView; }");
+        assert!(!published
+            .diagnostics()
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == DiagnosticCode::ViewTypeNonStandard));
+    }
+
+    /// The library-context hint is a fact about the publication, not about a host's configuration.
+    ///
+    /// Both admission paths answer the same way, which is what makes the hint safe for a host that
+    /// reuses a solved library stratum: a workspace that admitted a library never reports it,
+    /// whether the library came in as a source or as a stratum.
+    #[test]
+    fn the_library_context_hint_reads_what_the_publication_admitted() {
+        let workspace = "package P { import Lib::*; part def D :> Missing; }";
+        let codes = |published: PublishedResolution| {
+            published
+                .document_diagnostics("memory://workspace.sysml")
+                .diagnostics
+                .iter()
+                .map(|diagnostic| diagnostic.code.as_str().to_string())
+                .collect::<Vec<_>>()
+        };
+
+        let alone = build(
+            BuildRequest::new(
+                vec![SourceInput::new(
+                    "memory://workspace.sysml",
+                    workspace.to_string(),
+                    SourceKind::Workspace,
+                )],
+                ConstructionSchedule::Sequential,
+                "contract-v1",
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        assert!(
+            codes(alone).contains(&"missing_library_context".to_string()),
+            "a workspace with unresolved imports and no library admitted reports the hint"
+        );
+
+        let with_stratum = build(
+            BuildRequest::with_library(
+                vec![SourceInput::new(
+                    "memory://workspace.sysml",
+                    workspace.to_string(),
+                    SourceKind::Workspace,
+                )],
+                ConstructionSchedule::Sequential,
+                "contract-v1",
+                library_stratum(),
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        assert!(
+            !codes(with_stratum).contains(&"missing_library_context".to_string()),
+            "a publication that admitted a library stratum has library context"
+        );
+
+        let with_source = build(
+            BuildRequest::new(
+                vec![
+                    SourceInput::new(
+                        "memory://lib.sysml",
+                        LIBRARY_SOURCE.to_string(),
+                        SourceKind::StandardLibrary,
+                    ),
+                    SourceInput::new(
+                        "memory://workspace.sysml",
+                        workspace.to_string(),
+                        SourceKind::Workspace,
+                    ),
+                ],
+                ConstructionSchedule::Sequential,
+                "contract-v1",
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        assert!(
+            !codes(with_source).contains(&"missing_library_context".to_string()),
+            "admitting the library as a source is the same fact as admitting it as a stratum"
+        );
+    }
+
+    /// A library document is reported only when the host names it as an authoring surface.
+    ///
+    /// Provenance and authoring surface are different questions. The default answers the first --
+    /// a workspace does not inherit its library's diagnostics -- and naming the document answers
+    /// the second, which is the only thing an editor with that file open needs.
+    #[test]
+    fn an_admitted_library_document_is_reported_only_when_the_host_names_it() {
+        let sources = || {
+            vec![
+                SourceInput::new(
+                    "memory://lib.sysml",
+                    "library package Lib { part def A; part def A; }".to_string(),
+                    SourceKind::Library,
+                ),
+                SourceInput::new(
+                    "memory://workspace.sysml",
+                    "package W { part w; }".to_string(),
+                    SourceKind::Workspace,
+                ),
+            ]
+        };
+        let codes = |published: &PublishedResolution, document: &str| {
+            published
+                .document_diagnostics(document)
+                .diagnostics
+                .iter()
+                .map(|diagnostic| diagnostic.code.as_str().to_string())
+                .collect::<Vec<_>>()
+        };
+
+        let default = build(
+            BuildRequest::new(sources(), ConstructionSchedule::Sequential, "contract-v1").unwrap(),
+        )
+        .unwrap();
+        assert!(
+            codes(&default, "memory://lib.sysml").is_empty(),
+            "a library is admitted for resolution, not reported: {:?}",
+            codes(&default, "memory://lib.sysml")
+        );
+        assert!(
+            !codes(&default, "memory://workspace.sysml").is_empty(),
+            "the workspace is always reported"
+        );
+
+        let named = build(
+            BuildRequest::new(sources(), ConstructionSchedule::Sequential, "contract-v1")
+                .unwrap()
+                .reporting([Box::from("memory://lib.sysml")]),
+        )
+        .unwrap();
+        assert!(
+            codes(&named, "memory://lib.sysml").contains(&"duplicate_namespace_member".to_string()),
+            "a named library document reports its own diagnostics: {:?}",
+            codes(&named, "memory://lib.sysml")
+        );
+        assert_eq!(
+            codes(&named, "memory://workspace.sysml"),
+            codes(&default, "memory://workspace.sysml"),
+            "naming a library document does not change what the workspace reports"
+        );
+        assert!(
+            named
+                .diagnostics()
+                .diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.location.document.as_ref() == "memory://lib.sysml"),
+            "the aggregate carries the named document too, so the two cannot disagree"
+        );
+    }
+
+    /// Reporting a document changes the answer, so it changes the publication's identity.
+    #[test]
+    fn the_reported_document_set_is_part_of_the_publication_identity() {
+        let request = || {
+            BuildRequest::new(
+                vec![SourceInput::new(
+                    "memory://workspace.sysml",
+                    "package W { part w; }".to_string(),
+                    SourceKind::Workspace,
+                )],
+                ConstructionSchedule::Sequential,
+                "contract-v1",
+            )
+            .unwrap()
+        };
+        let plain = request();
+        let reporting = request().reporting([Box::from("memory://lib.sysml")]);
+        assert_ne!(plain.identity(), reporting.identity());
+        assert_eq!(
+            reporting.identity().reported_documents(),
+            [Box::<str>::from("memory://lib.sysml")]
+        );
+    }
+
+    #[test]
+    fn a_document_query_answers_from_the_publication_index_and_repeats_identically() {
+        let published = published_for("package P { part def A; part def A; part b; }");
+        let first = published.document_diagnostics("memory://test.sysml");
+        let second = published.document_diagnostics("memory://test.sysml");
+        assert_eq!(first, second, "a repeated query returns identical values");
+        assert_eq!(
+            first.diagnostics.as_ref(),
+            published.diagnostics().diagnostics.as_ref(),
+            "the document slice is the publication's own sequence"
+        );
+        let absent = published.document_diagnostics("memory://absent.sysml");
+        assert!(absent.diagnostics.is_empty());
+        assert_eq!(
+            absent.completeness, first.completeness,
+            "completeness travels with the answer even when there is nothing to report"
+        );
+    }
+
+    #[test]
+    fn every_diagnostic_carries_an_owner_produced_message() {
+        let diagnostics = diagnostics_for(
+            "package P { part def A; part def A; part b; port def PD; \
+             part def D { port p : PD; } }",
+        );
+        assert!(!diagnostics.is_empty());
+        for diagnostic in &diagnostics {
+            assert!(
+                !diagnostic.message.trim().is_empty(),
+                "empty message: {diagnostic:#?}"
+            );
+        }
     }
 
     /// A nested `part` usage inside an `attribute def` body (BNF `AttributeBodyElement::PartUsage`,

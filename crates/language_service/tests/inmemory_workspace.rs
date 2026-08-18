@@ -1,8 +1,8 @@
 use language_service::{InMemoryWorkspace, WorkspaceSnapshot};
-use sysml_model::{InMemoryDocumentProvider, SysmlDocument, SysmlDocumentSourceKind};
+use sysml_source::{InMemoryDocumentProvider, SysmlDocument, SysmlDocumentSourceKind};
 
 #[test]
-fn inmemory_workspace_builds_graph_and_symbols() {
+fn inmemory_workspace_builds_publication_and_symbols() {
     let doc = SysmlDocument::from_memory_path(
         "workspace",
         "Demo.sysml",

@@ -1,4 +1,4 @@
-//! `ParseOutcome` cache artifact (`planning/UNIFY_CACHE_PLAN.md` §6.2).
+//! `ParseOutcome` cache artifact.
 //!
 //! Key inputs: the raw [`ContentDigest`] of the source text; the [`ParseMode`]; the parser
 //! package/AST version (`sysml_v2_parser::PARSE_AST_VERSION`); the parse diagnostic schema and
@@ -17,7 +17,7 @@
 //! Construction is deliberately narrow: [`ParseOutcome::from_strict`] and
 //! [`ParseOutcome::from_editor_recovery`] are the only ways to build a value, and both consume a
 //! *completed* parser result. There is no constructor for a partial, cancelled, or panicked
-//! parse — callers must not call `put` for those cases at all (plan §6.2, §7.4).
+//! parse — callers must not call `put` for those cases at all.
 
 use serde::{Deserialize, Serialize};
 

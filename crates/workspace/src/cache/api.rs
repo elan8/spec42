@@ -9,7 +9,7 @@ use serde::Serialize;
 use super::config::CacheMode;
 use source_identity::ArtifactKey;
 
-/// The five artifact kinds defined by the unified cache design (plan §6).
+/// Cacheable source-derived artifacts. Semantic publications are never graph cache entries.
 ///
 /// Each kind is domain-separated into its artifact keys and is also recorded in the verified
 /// object envelope, independent of which directory it lives under.
@@ -19,17 +19,13 @@ pub enum ArtifactKind {
     ParseOutcome = 0,
     LibraryIndex = 1,
     LibraryClosure = 2,
-    LibrarySemanticGraph = 3,
-    WorkspaceSemanticGraph = 4,
 }
 
 impl ArtifactKind {
-    pub const ALL: [ArtifactKind; 5] = [
+    pub const ALL: [ArtifactKind; 3] = [
         ArtifactKind::ParseOutcome,
         ArtifactKind::LibraryIndex,
         ArtifactKind::LibraryClosure,
-        ArtifactKind::LibrarySemanticGraph,
-        ArtifactKind::WorkspaceSemanticGraph,
     ];
 
     pub const fn to_u8(self) -> u8 {
@@ -41,8 +37,6 @@ impl ArtifactKind {
             0 => Some(ArtifactKind::ParseOutcome),
             1 => Some(ArtifactKind::LibraryIndex),
             2 => Some(ArtifactKind::LibraryClosure),
-            3 => Some(ArtifactKind::LibrarySemanticGraph),
-            4 => Some(ArtifactKind::WorkspaceSemanticGraph),
             _ => None,
         }
     }

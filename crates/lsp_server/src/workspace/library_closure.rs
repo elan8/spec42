@@ -1,7 +1,7 @@
 ﻿use std::path::PathBuf;
 
-use sysml_model::{resolve_library_closure, LibraryClosureOptions, WorkspaceSource};
 use tower_lsp::lsp_types::Url;
+use workspace::{resolve_library_closure, LibraryClosureOptions, WorkspaceSource};
 
 use crate::common::util;
 

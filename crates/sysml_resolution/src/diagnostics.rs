@@ -1,13 +1,14 @@
 //! The publication's typed diagnostic contract.
 //!
 //! A diagnostic is a semantic fact about one publication, not a rendering of one. A consumer of
-//! this contract -- the canonical S-expression adapter today, an editor protocol or generator host
-//! later -- reads these values rather than recovering a code, severity, or outcome by parsing
-//! presentation text, and never re-derives a rule the publication already settled.
+//! this contract -- the canonical S-expression adapter, the LSP host, the CLI validation report --
+//! reads these values rather than recovering a code, severity, or outcome by parsing presentation
+//! text, and never re-derives a rule the publication already settled.
 //!
-//! # Scope: this is not yet every diagnostic Spec42 reports
+//! # Scope
 //!
-//! This contract covers exactly the families resolution owns:
+//! This contract is the complete production validation surface. Every family a host reports is
+//! decided here, from facts settled before the publication becomes visible:
 //!
 //! - parser errors, carried through with the parser's own code;
 //! - constructs this publication does not model ([`DiagnosticCode::UnsupportedPackageMember`] and
@@ -17,35 +18,29 @@
 //! - typed feature conformance: metaclass-family compatibility for typing, specialization and the
 //!   subsetting family, specialization cycles, multiplicity and type conformance under
 //!   redefinition and subsetting, KerML type-relationship cardinality, and the structural feature
-//!   rules (connector-end counts, end-feature restrictions, variation members, redefinition
-//!   featuring type, end and direction, and subsetting uniqueness);
+//!   rules;
 //! - expression conformance: the type of an authored value against the feature it is bound or
 //!   assigned to, the resolution and dimension of an authored unit token, constraint bodies and
 //!   view filters that settle to a non-Boolean constant, and calculation invocations that leave
-//!   parameters unbound.
+//!   parameters unbound;
+//! - name-collision, connection, behavior, requirement/case, view and inherited-value
+//!   conformance ([`DiagnosticCode::DuplicateNamespaceMember`] onwards).
 //!
-//! The remaining conformance families are **not** here. View metadata, behavior, connection,
-//! import, and requirement-case conformance are still evaluated by `sysml_diagnostics` over the
-//! mutable semantic graph.
+//! # States stay distinguishable
 //!
-//! A consumer that swaps `sysml_diagnostics` for this contract as it stands would therefore stop
-//! reporting those codes. Do not treat this as a drop-in replacement for the legacy diagnostic
-//! path; each conformance family needs its owner-defined facts published here first.
-//! `crates/sysml_query/PRODUCTION_CUTOVER.md` tracks that work.
+//! "No diagnostic" is the absence of an entry; an unresolved prerequisite, an ambiguous one, a rule
+//! this publication does not support, a non-converged solve, and parser recovery are each their own
+//! [`DiagnosticCode`], which is a closed enum so a consumer matches them exhaustively instead of
+//! parsing a string. Publication completeness is a separate fact on [`PublishedDiagnostics`],
+//! because a publication can be complete and still carry warnings.
 //!
-//! The states below stay distinguishable on purpose. "No diagnostic" is the absence of an entry;
-//! an unresolved prerequisite, an ambiguous one, a rule this publication does not support, a
-//! non-converged solve, and parser recovery are each their own [`DiagnosticCode`], which is a
-//! closed enum so a consumer matches them exhaustively instead of parsing a string. Publication
-//! completeness is a separate fact on [`PublishedDiagnostics`], because a publication can be
-//! complete and still carry warnings.
+//! A rule whose operands are not settled reports nothing rather than reporting a failure: an
+//! indeterminate conformance answer, an unresolved reference a later rule would have judged, and an
+//! evaluation that did not run are each already their own published state.
 
-use crate::{PublicationCompleteness, TextRange};
+use crate::{PublicationCompleteness, SymbolIdentity, TextRange};
 
 /// The resolution-owned diagnostics of one publication, with the phase that produced them.
-///
-/// "Every diagnostic" only within the families listed in the module documentation; the conformance
-/// families are not represented yet.
 ///
 /// `completeness` travels with the diagnostics rather than being a separate lookup because the two
 /// are only meaningful together: an empty slice from a complete publication means the model is
@@ -67,18 +62,28 @@ pub struct PublishedDiagnostics {
 /// `code` is both the stable public identifier consumers key on and the typed outcome: which
 /// failure this is -- unresolved, ambiguous, an unsupported reference, an unsupported construct,
 /// a non-converged solve -- is decided by matching it, never by reading text.
+///
+/// `message` is owner-produced. It exists so a host renders one sentence rather than inventing its
+/// own from the code, and it is never a semantic input: no consumer may recover a fact from it.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Diagnostic {
     pub code: DiagnosticCode,
     pub severity: DiagnosticSeverity,
     pub origin: DiagnosticOrigin,
+    /// A stable owner-produced sentence. Presentation only.
+    pub message: Box<str>,
+    /// The element the diagnostic is about, where one exists.
+    ///
+    /// Absent for a parse error, an unsupported construct, and any other diagnostic whose subject
+    /// is a span rather than a declaration this publication named.
+    pub subject: Option<SymbolIdentity>,
     /// Where the diagnostic is reported. This is the authored site, not a definition it names.
     pub location: DiagnosticLocation,
     /// Further sites that explain the diagnostic, in canonical order.
     ///
     /// Ambiguity reports every candidate here. An empty slice means the diagnostic has no related
     /// site, never that the related sites were unavailable.
-    pub related: Box<[DiagnosticLocation]>,
+    pub related: Box<[RelatedLocation]>,
 }
 
 /// A document identity and range inside it.
@@ -92,10 +97,21 @@ pub struct DiagnosticLocation {
     pub range: TextRange,
 }
 
+/// One explanatory site of a diagnostic, with the owner's own note about why it is related.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RelatedLocation {
+    pub location: DiagnosticLocation,
+    /// A stable owner-produced sentence. Presentation only.
+    pub message: Box<str>,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum DiagnosticSeverity {
     Error,
     Warning,
+    /// A fact worth surfacing that is not a fault: an unconnected port, a state machine with no
+    /// finality indicator, a workspace with no library context.
+    Information,
 }
 
 impl DiagnosticSeverity {
@@ -103,6 +119,7 @@ impl DiagnosticSeverity {
         match self {
             Self::Error => "error",
             Self::Warning => "warning",
+            Self::Information => "information",
         }
     }
 }
@@ -125,187 +142,347 @@ impl DiagnosticOrigin {
     }
 }
 
-/// The stable public identifier of a diagnostic.
+/// Declares every code this publication itself can report, once.
 ///
-/// Codes are public behavior: consumers key suppression, documentation, and tests on them. The
-/// mapping to text below is exhaustive and is the only place a code string is produced.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub enum DiagnosticCode {
-    /// A code owned by the parser contract, mirrored verbatim.
-    ///
-    /// The parser may report an error without a code; the publication substitutes `parse_error`
-    /// rather than omitting the field, so every diagnostic has one.
-    Parser(Box<str>),
+/// The enum, the stable code string, the owner's sentence, and the exhaustive list a consumer
+/// enumerates all come from this one table, so a new code cannot be added to one and forgotten in
+/// another. `Parser` is deliberately outside it: the parser owns those codes and their text.
+macro_rules! semantic_diagnostic_codes {
+    ($( $(#[$meta:meta])* $variant:ident => $code:literal, $describe:expr; )*) => {
+        /// The stable public identifier of a diagnostic.
+        ///
+        /// Codes are public behavior: consumers key suppression, documentation, and tests on them.
+        #[derive(Debug, Clone, PartialEq, Eq)]
+        pub enum DiagnosticCode {
+            /// A code owned by the parser contract, mirrored verbatim.
+            ///
+            /// The parser may report an error without a code; the publication substitutes
+            /// `parse_error` rather than omitting the field, so every diagnostic has one.
+            Parser(Box<str>),
+            $( $(#[$meta])* $variant, )*
+        }
 
-    UnsupportedPackageMember,
-    UnsupportedPartDefinitionMember,
-    UnsupportedPartUsageMember,
-    UnsupportedAttributeMember,
-    UnsupportedRequirementDefinitionMember,
-    UnsupportedPortDefinitionMember,
-    UnsupportedPortUsageMember,
-    UnsupportedActionDefinitionMember,
-    UnsupportedActionUsageMember,
-    UnsupportedStateDefinitionMember,
-    UnsupportedConnectionDefinitionMember,
-    UnsupportedInterfaceDefinitionMember,
-    UnsupportedViewDefinitionMember,
-    UnsupportedConstraintDefinitionMember,
-    UnsupportedCalcDefinitionMember,
-    UnsupportedRenderingDefinitionMember,
-    UnsupportedOccurrenceDefinitionMember,
-    UnsupportedAnalysisCaseDefinitionMember,
-    UnsupportedCaseDefinitionMember,
-    UnsupportedVerificationCaseDefinitionMember,
-    UnsupportedUseCaseDefinitionMember,
-    UnsupportedReferenceUsageMember,
-    UnsupportedRelationshipBodyMember,
-    UnsupportedParserConstruct,
+        impl DiagnosticCode {
+            /// Every code the publication itself can report, in declaration order.
+            ///
+            /// A consumer that documents or classifies codes enumerates this rather than keeping
+            /// its own list, which is what makes drift a compile or test failure instead of a
+            /// silently undocumented diagnostic.
+            pub const SEMANTIC: &'static [DiagnosticCode] = &[ $( DiagnosticCode::$variant, )* ];
 
-    UnresolvedTypeReference,
-    UnresolvedSpecializesReference,
-    UnresolvedImportTarget,
-    UnresolvedReference,
-    UnsupportedFilteredImport,
-    UnsupportedReference,
-    NonConvergedResolution,
-    AmbiguousImportTarget,
-    AmbiguousReference,
+            /// The stable code string. The only place one is produced.
+            pub fn as_str(&self) -> &str {
+                match self {
+                    Self::Parser(code) => code,
+                    $( Self::$variant => $code, )*
+                }
+            }
+
+            /// The owner's sentence for this code.
+            ///
+            /// A host renders this beside [`DiagnosticCode::as_str`] rather than composing its own
+            /// text, and no consumer may read a fact back out of it: everything a rule decided is
+            /// already a typed field. Rules whose subject is not visible at the reported range
+            /// build a message naming it instead of using this default.
+            pub fn describe(&self) -> &str {
+                match self {
+                    Self::Parser(_) => "The parser reported an error here.",
+                    $( Self::$variant => $describe, )*
+                }
+            }
+        }
+    };
+}
+
+semantic_diagnostic_codes! {
+
+    UnsupportedPackageMember => "unsupported_package_member",
+        "This member is parsed but not modelled by the semantic publication.";
+    UnsupportedPartDefinitionMember => "unsupported_part_definition_member",
+        "This member is parsed but not modelled by the semantic publication.";
+    UnsupportedPartUsageMember => "unsupported_part_usage_member",
+        "This member is parsed but not modelled by the semantic publication.";
+    UnsupportedAttributeMember => "unsupported_attribute_member",
+        "This member is parsed but not modelled by the semantic publication.";
+    UnsupportedRequirementDefinitionMember => "unsupported_requirement_definition_member",
+        "This member is parsed but not modelled by the semantic publication.";
+    UnsupportedPortDefinitionMember => "unsupported_port_definition_member",
+        "This member is parsed but not modelled by the semantic publication.";
+    UnsupportedPortUsageMember => "unsupported_port_usage_member",
+        "This member is parsed but not modelled by the semantic publication.";
+    UnsupportedActionDefinitionMember => "unsupported_action_definition_member",
+        "This member is parsed but not modelled by the semantic publication.";
+    UnsupportedActionUsageMember => "unsupported_action_usage_member",
+        "This member is parsed but not modelled by the semantic publication.";
+    UnsupportedStateDefinitionMember => "unsupported_state_definition_member",
+        "This member is parsed but not modelled by the semantic publication.";
+    UnsupportedConnectionDefinitionMember => "unsupported_connection_definition_member",
+        "This member is parsed but not modelled by the semantic publication.";
+    UnsupportedInterfaceDefinitionMember => "unsupported_interface_definition_member",
+        "This member is parsed but not modelled by the semantic publication.";
+    UnsupportedViewDefinitionMember => "unsupported_view_definition_member",
+        "This member is parsed but not modelled by the semantic publication.";
+    UnsupportedConstraintDefinitionMember => "unsupported_constraint_definition_member",
+        "This member is parsed but not modelled by the semantic publication.";
+    UnsupportedCalcDefinitionMember => "unsupported_calc_definition_member",
+        "This member is parsed but not modelled by the semantic publication.";
+    UnsupportedRenderingDefinitionMember => "unsupported_rendering_definition_member",
+        "This member is parsed but not modelled by the semantic publication.";
+    UnsupportedOccurrenceDefinitionMember => "unsupported_occurrence_definition_member",
+        "This member is parsed but not modelled by the semantic publication.";
+    UnsupportedAnalysisCaseDefinitionMember => "unsupported_analysis_case_definition_member",
+        "This member is parsed but not modelled by the semantic publication.";
+    UnsupportedCaseDefinitionMember => "unsupported_case_definition_member",
+        "This member is parsed but not modelled by the semantic publication.";
+    UnsupportedVerificationCaseDefinitionMember => "unsupported_verification_case_definition_member",
+        "This member is parsed but not modelled by the semantic publication.";
+    UnsupportedUseCaseDefinitionMember => "unsupported_use_case_definition_member",
+        "This member is parsed but not modelled by the semantic publication.";
+    UnsupportedReferenceUsageMember => "unsupported_reference_usage_member",
+        "This member is parsed but not modelled by the semantic publication.";
+    UnsupportedRelationshipBodyMember => "unsupported_relationship_body_member",
+        "This member is parsed but not modelled by the semantic publication.";
+    UnsupportedParserConstruct => "unsupported_parser_construct",
+        "This construct is parsed but not modelled by the semantic publication.";
+
+    UnresolvedTypeReference => "unresolved_type_reference",
+        "This type reference does not resolve.";
+    UnresolvedSpecializesReference => "unresolved_specializes_reference",
+        "This specialization target does not resolve.";
+    UnresolvedImportTarget => "unresolved_import_target",
+        "This import target does not resolve.";
+    UnresolvedReference => "unresolved_reference",
+        "This reference does not resolve.";
+    UnsupportedFilteredImport => "unsupported_filtered_import",
+        "Filtered namespace imports are parsed but not semantically supported.";
+    UnsupportedReference => "unsupported_reference",
+        "This reference form is parsed but not semantically supported.";
+    NonConvergedResolution => "non_converged_resolution",
+        "Resolution did not converge, so this reference has no settled outcome.";
+    AmbiguousImportTarget => "ambiguous_import_target",
+        "This import target names several elements, so it identifies none of them.";
+    AmbiguousReference => "ambiguous_reference",
+        "This reference names several elements, so it identifies none of them.";
 
     /// A usage is typed by a definition of an incompatible metaclass family.
-    IncompatibleTypeKind,
+    IncompatibleTypeKind => "incompatible_type_kind",
+        "This usage is typed by a definition of an incompatible kind.";
     /// A definition specializes a definition of an incompatible metaclass family.
-    IncompatibleSpecializationKind,
+    IncompatibleSpecializationKind => "incompatible_specializes_kind",
+        "This definition specializes a definition of an incompatible kind.";
     /// A usage subsets or redefines a feature of an incompatible metaclass family.
-    IncompatibleSubsettingKind,
+    IncompatibleSubsettingKind => "incompatible_subset_redefine_kind",
+        "This usage subsets or redefines a feature of an incompatible kind.";
     /// A declaration reaches itself through specialization.
-    SpecializationCycle,
+    SpecializationCycle => "specialization_cycle",
+        "This declaration reaches itself through specialization.";
     /// A redefining feature admits values its redefined feature's multiplicity excludes.
-    RedefinitionMultiplicityWidened,
+    RedefinitionMultiplicityWidened => "redefinition_multiplicity_widened",
+        "This redefinition admits values the redefined feature's multiplicity excludes.";
     /// A redefining feature's types do not conform to the redefined feature's.
-    RedefinitionTypeIncompatible,
+    RedefinitionTypeIncompatible => "redefinition_type_incompatible",
+        "This redefinition's types do not conform to the redefined feature's.";
     /// A subsetting feature's types do not conform to the subsetted feature's.
-    SubsettingTypeIncompatible,
+    SubsettingTypeIncompatible => "subsetting_type_incompatible",
+        "This feature's types do not conform to the feature it subsets.";
     /// A flow payload is typed by something that is not an occurrence.
-    FlowPayloadTypeNotOccurrence,
+    FlowPayloadTypeNotOccurrence => "flow_payload_type_not_occurrence",
+        "A flow payload must be typed by an occurrence.";
     /// A binary connection-like declaration has one end where it needs two.
-    IncompleteConnectionLikeEndPair,
+    IncompleteConnectionLikeEndPair => "incomplete_connection_like_end_pair",
+        "This connection-like definition declares one end where it needs at least two.";
     /// A binary connection-like declaration has more than two ends.
-    InvalidBinaryConnectionLikeEndCount,
+    InvalidBinaryConnectionLikeEndCount => "invalid_binary_connection_like_end_count",
+        "This binary connection-like definition declares more than two ends.";
     /// An end feature is derived, abstract or composite.
-    EndFeatureInvalidRestrictions,
+    EndFeatureInvalidRestrictions => "end_feature_invalid_restrictions",
+        "An end feature must not be derived, abstract or composite.";
     /// A variant member's metaclass family is not the variation's.
-    InvalidVariationMemberKind,
+    InvalidVariationMemberKind => "invalid_variation_member_kind",
+        "A variant member must use the variation's own kind.";
     /// A redefining feature is featured by a type unrelated to the redefined feature's.
-    RedefinitionFeaturingTypeIncompatible,
+    RedefinitionFeaturingTypeIncompatible => "redefinition_featuring_type_incompatible",
+        "A redefinition must be introduced by the redefined feature's featuring type or a \
+                         specialization of it.";
     /// A feature redefines an end feature without being one.
-    RedefinitionEndMismatch,
+    RedefinitionEndMismatch => "redefinition_end_mismatch",
+        "Redefining an end feature requires an end feature.";
     /// A redefining feature's direction does not conform to the redefined feature's.
-    RedefinitionDirectionMismatch,
+    RedefinitionDirectionMismatch => "redefinition_direction_mismatch",
+        "This redefinition's direction does not conform to the redefined feature's.";
     /// A non-unique feature subsets a unique one.
-    SubsettingUniquenessMismatch,
+    SubsettingUniquenessMismatch => "subsetting_uniqueness_mismatch",
+        "A non-unique feature cannot subset a unique one.";
     /// A type owns exactly one `unions`, `intersects` or `differences` operand.
     ///
     /// KerML requires zero or at least two: a union, intersection or difference of one type is
     /// that type, so a single operand states a generalization the author did not write.
-    SingleTypeRelationshipOperand,
+    SingleTypeRelationshipOperand => "single_type_relationship_operand",
+        "A union, intersection or difference needs zero or at least two operands.";
 
     /// A feature's authored value has a type unrelated to the feature's own.
-    AttributeValueTypeIncompatible,
+    AttributeValueTypeIncompatible => "attribute_value_type_mismatch",
+        "This value's type is unrelated to the feature it is bound to.";
     /// An assignment's value has a type unrelated to the feature it assigns to.
-    AssignmentValueIncompatible,
+    AssignmentValueIncompatible => "assignment_value_incompatible",
+        "This value's type is unrelated to the feature it is assigned to.";
     /// A unit token names no unit in the admitted measurement catalog.
-    UnknownUnitSymbol,
+    UnknownUnitSymbol => "unknown_unit_symbol",
+        "This unit token names no unit in the admitted measurement catalog.";
     /// A unit token names several admitted units, so it identifies none of them.
-    AmbiguousUnitSymbol,
+    AmbiguousUnitSymbol => "ambiguous_unit_symbol",
+        "This unit token names several admitted units, so it identifies none of them.";
     /// A quantity value is measured in a unit whose dimension its feature's type does not admit.
-    IncompatibleUnitDimension,
+    IncompatibleUnitDimension => "incompatible_unit_dimension",
+        "This value's unit has a dimension the feature's type does not admit.";
     /// A constraint's expression evaluates to something other than a Boolean.
-    NonBooleanConstraintExpression,
+    NonBooleanConstraintExpression => "non_boolean_expression",
+        "A constraint expression must evaluate to a Boolean.";
     /// A view filter's condition evaluates to something other than a Boolean.
-    NonBooleanViewFilter,
+    NonBooleanViewFilter => "view_filter_non_boolean",
+        "A view filter condition must evaluate to a Boolean.";
     /// A calculation invocation supplies fewer arguments than the callee has parameters to bind.
-    CalculationArgumentsIncomplete,
-}
+    CalculationArgumentsIncomplete => "calculation_binding_mismatch",
+        "This invocation supplies fewer arguments than the calculation has parameters.";
 
-impl DiagnosticCode {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::Parser(code) => code,
-            Self::UnsupportedPackageMember => "unsupported_package_member",
-            Self::UnsupportedPartDefinitionMember => "unsupported_part_definition_member",
-            Self::UnsupportedPartUsageMember => "unsupported_part_usage_member",
-            Self::UnsupportedAttributeMember => "unsupported_attribute_member",
-            Self::UnsupportedRequirementDefinitionMember => {
-                "unsupported_requirement_definition_member"
-            }
-            Self::UnsupportedPortDefinitionMember => "unsupported_port_definition_member",
-            Self::UnsupportedPortUsageMember => "unsupported_port_usage_member",
-            Self::UnsupportedActionDefinitionMember => "unsupported_action_definition_member",
-            Self::UnsupportedActionUsageMember => "unsupported_action_usage_member",
-            Self::UnsupportedStateDefinitionMember => "unsupported_state_definition_member",
-            Self::UnsupportedConnectionDefinitionMember => {
-                "unsupported_connection_definition_member"
-            }
-            Self::UnsupportedInterfaceDefinitionMember => "unsupported_interface_definition_member",
-            Self::UnsupportedViewDefinitionMember => "unsupported_view_definition_member",
-            Self::UnsupportedConstraintDefinitionMember => {
-                "unsupported_constraint_definition_member"
-            }
-            Self::UnsupportedCalcDefinitionMember => "unsupported_calc_definition_member",
-            Self::UnsupportedRenderingDefinitionMember => "unsupported_rendering_definition_member",
-            Self::UnsupportedOccurrenceDefinitionMember => {
-                "unsupported_occurrence_definition_member"
-            }
-            Self::UnsupportedAnalysisCaseDefinitionMember => {
-                "unsupported_analysis_case_definition_member"
-            }
-            Self::UnsupportedCaseDefinitionMember => "unsupported_case_definition_member",
-            Self::UnsupportedVerificationCaseDefinitionMember => {
-                "unsupported_verification_case_definition_member"
-            }
-            Self::UnsupportedUseCaseDefinitionMember => "unsupported_use_case_definition_member",
-            Self::UnsupportedReferenceUsageMember => "unsupported_reference_usage_member",
-            Self::UnsupportedRelationshipBodyMember => "unsupported_relationship_body_member",
-            Self::UnsupportedParserConstruct => "unsupported_parser_construct",
-            Self::UnresolvedTypeReference => "unresolved_type_reference",
-            Self::UnresolvedSpecializesReference => "unresolved_specializes_reference",
-            Self::UnresolvedImportTarget => "unresolved_import_target",
-            Self::UnresolvedReference => "unresolved_reference",
-            Self::UnsupportedFilteredImport => "unsupported_filtered_import",
-            Self::UnsupportedReference => "unsupported_reference",
-            Self::NonConvergedResolution => "non_converged_resolution",
-            Self::AmbiguousImportTarget => "ambiguous_import_target",
-            Self::AmbiguousReference => "ambiguous_reference",
-            Self::IncompatibleTypeKind => "incompatible_type_kind",
-            Self::IncompatibleSpecializationKind => "incompatible_specializes_kind",
-            Self::IncompatibleSubsettingKind => "incompatible_subset_redefine_kind",
-            Self::SpecializationCycle => "specialization_cycle",
-            Self::RedefinitionMultiplicityWidened => "redefinition_multiplicity_widened",
-            Self::RedefinitionTypeIncompatible => "redefinition_type_incompatible",
-            Self::SubsettingTypeIncompatible => "subsetting_type_incompatible",
-            Self::FlowPayloadTypeNotOccurrence => "flow_payload_type_not_occurrence",
-            Self::IncompleteConnectionLikeEndPair => "incomplete_connection_like_end_pair",
-            Self::InvalidBinaryConnectionLikeEndCount => "invalid_binary_connection_like_end_count",
-            Self::EndFeatureInvalidRestrictions => "end_feature_invalid_restrictions",
-            Self::InvalidVariationMemberKind => "invalid_variation_member_kind",
-            Self::RedefinitionFeaturingTypeIncompatible => {
-                "redefinition_featuring_type_incompatible"
-            }
-            Self::RedefinitionEndMismatch => "redefinition_end_mismatch",
-            Self::RedefinitionDirectionMismatch => "redefinition_direction_mismatch",
-            Self::SubsettingUniquenessMismatch => "subsetting_uniqueness_mismatch",
-            Self::SingleTypeRelationshipOperand => "single_type_relationship_operand",
-            Self::AttributeValueTypeIncompatible => "attribute_value_type_mismatch",
-            Self::AssignmentValueIncompatible => "assignment_value_incompatible",
-            Self::UnknownUnitSymbol => "unknown_unit_symbol",
-            Self::AmbiguousUnitSymbol => "ambiguous_unit_symbol",
-            Self::IncompatibleUnitDimension => "incompatible_unit_dimension",
-            Self::NonBooleanConstraintExpression => "non_boolean_expression",
-            Self::NonBooleanViewFilter => "view_filter_non_boolean",
-            Self::CalculationArgumentsIncomplete => "calculation_binding_mismatch",
-        }
-    }
+    /// A package-level import filter settles to a non-Boolean constant.
+    InvalidImportFilter => "invalid_import_filter",
+        "An import filter condition must evaluate to a Boolean.";
+
+    // --- Namespace identity ------------------------------------------------------------------
+    /// A namespace declares two members whose names resolution cannot tell apart.
+    DuplicateNamespaceMember => "duplicate_namespace_member",
+        "A namespace must not declare two members resolution cannot tell apart.";
+
+    // --- Connection conformance ---------------------------------------------------------------
+    /// A connector end resolves to something that is not a port.
+    ConnectionEndpointNotPort => "connection_endpoint_not_port",
+        "This connector end does not resolve to a port.";
+    /// Two connected ports are typed by unrelated definitions.
+    PortTypeMismatch => "port_type_mismatch",
+        "These connected ports are typed by unrelated definitions.";
+    /// Two connected ports mirror the same direction, so nothing can flow between them.
+    FlowDirectionIncompatible => "flow_direction_incompatible",
+        "These connected ports mirror the same direction, so nothing can flow between them.";
+    /// A declared port takes part in no connection.
+    UnconnectedPort => "unconnected_port",
+        "This port takes part in no connection.";
+    /// Two connectors relate the same pair of ends.
+    DuplicateConnection => "duplicate_connection",
+        "This connector repeats an existing pair of ends.";
+    /// Connected elements are neither ports nor a pair of structural parts.
+    ConnectionContextInvalid => "connection_context_invalid",
+        "Connected elements must be ports, or a pair of structural parts.";
+    /// An interface end declares no port type.
+    InterfaceEndInvalid => "interface_end_invalid",
+        "An interface end must declare a port type.";
+    /// A binding connector binds two features with unrelated types.
+    BindingConnectorIncompatible => "binding_connector_incompatible",
+        "This binding connector binds two features with unrelated types.";
+
+    // --- Behavior conformance -----------------------------------------------------------------
+    /// A `perform` names something that is not an action.
+    PerformTargetInvalidKind => "perform_target_invalid_kind",
+        "A performed behavior must resolve to an action definition or usage.";
+    /// A transition endpoint resolves to something that is not a state.
+    TransitionEndpointInvalidState => "transition_endpoint_invalid_state",
+        "A transition endpoint must resolve to a state.";
+    /// A transition's ends belong to different state definitions.
+    TransitionEndpointInvalidContext => "transition_endpoint_invalid_context",
+        "A transition's source and target must belong to the same state definition.";
+    /// An initial-state marker names something that is not a state.
+    InitialStateInvalidTarget => "initial_state_invalid_target",
+        "An initial-state marker must name a state.";
+    /// A succession relates endpoints that are not actions.
+    SuccessionEndpointInvalid => "succession_endpoint_invalid",
+        "A succession must relate action definitions or usages.";
+    /// A transition guard settles to a non-Boolean constant.
+    TransitionGuardNonBoolean => "transition_guard_non_boolean",
+        "A transition guard must evaluate to a Boolean.";
+    /// A state definition owns states but declares no initial transition.
+    MissingInitialState => "missing_initial_state",
+        "This state definition owns states but declares no initial transition.";
+    /// A state definition owns states but declares no finality indicator.
+    MissingFinalState => "missing_final_state",
+        "This state definition owns states but declares no finality indicator.";
+    /// A state definition declares more than one explicit final state.
+    MultipleFinalStates => "multiple_final_states",
+        "A state definition declares more than one explicit final state.";
+    /// An `accept` payload is typed by something that cannot be an action payload.
+    AcceptPayloadIncompatible => "accept_payload_incompatible",
+        "An accept payload must be typed by an item, part, attribute or occurrence.";
+
+    // --- Requirement and case conformance ------------------------------------------------------
+    /// A declaration owns more than one member of a role that admits one.
+    DuplicateRoleMember => "duplicate_role_member",
+        "This declaration owns more than one member of a role that admits one.";
+    /// A subject member is preceded by another input role member.
+    SubjectMemberNotFirst => "subject_member_not_first",
+        "A subject member must precede the other input role members.";
+    /// A satisfy relationship relates endpoints of incompatible kinds.
+    SatisfyInvalidEndpointKind => "satisfy_invalid_endpoint_kind",
+        "This satisfy relationship relates endpoints of incompatible kinds.";
+    /// A `verify` target does not resolve to a requirement.
+    VerifiedRequirementInvalidTarget => "verified_requirement_invalid_target",
+        "A verify target must resolve to a requirement definition or usage.";
+    /// An `include` target does not resolve to a use case.
+    UseCaseIncludeInvalidTarget => "use_case_include_invalid_target",
+        "An include target must resolve to a use case definition or usage.";
+
+    // --- View conformance ----------------------------------------------------------------------
+    /// A view satisfies something that is not a viewpoint.
+    ViewpointConformanceInvalidTargetKind => "viewpoint_conformance_invalid_target_kind",
+        "A view must satisfy a viewpoint definition or usage.";
+    /// A view usage is typed by a definition outside the SysML standard view catalog.
+    ViewTypeNonStandard => "view_type_non_standard",
+        "This view is typed by a definition outside the SysML standard view catalog.";
+    /// A view exposes a target that resolves to nothing.
+    ViewExposeUnresolved => "view_expose_unresolved",
+        "This expose target does not resolve, so the view shows nothing for it.";
+    /// A view declares members but exposes nothing.
+    ViewExposeEmpty => "view_expose_empty",
+        "This view declares a body but exposes no members.";
+    /// A rendering member is typed by something that is not a rendering definition.
+    ViewRenderingInvalidTarget => "view_rendering_invalid_target",
+        "A rendering member must be typed by a rendering definition or usage.";
+    /// A textual representation declares no language identifier.
+    ViewpointRepLanguageUnresolved => "viewpoint_rep_language_unresolved",
+        "A textual representation must declare a language identifier.";
+
+    // --- Allocation ----------------------------------------------------------------------------
+    /// An `allocate` statement declares only one of its two endpoints.
+    InvalidAllocationEndpoints => "invalid_allocation_endpoints",
+        "An allocate statement must declare both a source and a target.";
+
+    // --- Inherited values ----------------------------------------------------------------------
+    /// A feature overrides an inherited member without writing `:>>`.
+    ImplicitRedefinitionWithoutOperator => "implicit_redefinition_without_operator",
+        "This feature overrides an inherited member without the explicit ':>>' operator.";
+    /// A feature's authored value is a string where the member it inherits is enumerated.
+    InheritedAttributeValueTypeMismatch => "inherited_attribute_value_type_mismatch",
+        "This value is a string literal where the inherited member is enumerated.";
+
+    // --- Multiplicity ---------------------------------------------------------------------------
+    /// A declared multiplicity states bounds that admit nothing.
+    InvalidMultiplicity => "invalid_multiplicity",
+        "This multiplicity states bounds that admit nothing.";
+
+    // --- Analysis ------------------------------------------------------------------------------
+    /// An analysis constraint settled to false.
+    AnalysisConstraintFailed => "analysis_constraint_failed",
+        "This analysis constraint evaluated to false.";
+    /// An analysis constraint could not be evaluated.
+    AnalysisEvaluationUnresolved => "analysis_evaluation_unresolved",
+        "This analysis expression could not be evaluated.";
+
+    // --- Authoring hints -------------------------------------------------------------------------
+    /// A part usage declares no type.
+    UntypedPartUsage => "untyped_part_usage",
+        "This part usage declares no type.";
+    /// A workspace document imports names it cannot resolve and no library source was admitted.
+    MissingLibraryContext => "missing_library_context",
+        "This document imports names that do not resolve and no library source was \
+                         admitted to the publication.";
 }
 
 /// The code a parser error carries when the parser reports none.

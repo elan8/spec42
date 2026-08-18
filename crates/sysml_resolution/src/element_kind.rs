@@ -159,6 +159,8 @@ element_kinds! {
     SatisfyRequirementUsage,
     BindingConnectorAsUsage,
     Import,
+    /// A view body's `expose` member.
+    Expose,
     /// `alias X for Y;`.
     ///
     /// The OMG models an alias as a `Membership` carrying an alternative name rather than as an

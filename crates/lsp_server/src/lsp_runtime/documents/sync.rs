@@ -11,14 +11,17 @@ pub(crate) async fn did_open(
     let uri_norm = util::normalize_file_uri(&uri);
     let text = params.text_document.text;
     let did_open_start = Instant::now();
+    // Recorded before diagnostics are computed: an opened library file is an authoring surface,
+    // and the publication only reports one it was told about.
+    let _ = handle.set_document_open(uri_norm.clone(), true).await;
     let perf_logging_enabled = runtime_config
         .get()
         .expect("initialize precedes all other LSP requests")
         .perf_logging_enabled;
 
     // Check whether the file is already indexed with identical content before
-    // mutating. If so, the startup scan already built the semantic graph for
-    // this URI and no expensive re-evaluation is needed.
+    // mutating. If so, the startup scan already published this URI and no expensive
+    // rebuild is needed.
     let open_status = {
         let snap = handle.snapshot();
         match snap.index.get(&uri_norm) {
@@ -81,7 +84,7 @@ pub(crate) async fn did_open(
         let uri_norm_log = uri_norm.clone();
         tokio::spawn(async move {
             let diag_start = Instant::now();
-            publish_document_diagnostics(&client, &handle, &runtime_config, uri, &text).await;
+            publish_document_diagnostics(&client, &handle, &runtime_config, uri).await;
             if perf_logging_enabled {
                 client
                     .log_message(
@@ -195,10 +198,16 @@ pub(crate) async fn did_change(
     schedule_workspace_diagnostics_republish(client, handle, runtime_config);
 }
 
-pub(crate) async fn did_close(client: &Client, params: DidCloseTextDocumentParams) {
-    client
-        .publish_diagnostics(params.text_document.uri, vec![], None)
+pub(crate) async fn did_close(
+    client: &Client,
+    handle: &WorkspaceHandle,
+    params: DidCloseTextDocumentParams,
+) {
+    let uri = params.text_document.uri;
+    let _ = handle
+        .set_document_open(util::normalize_file_uri(&uri), false)
         .await;
+    client.publish_diagnostics(uri, vec![], None).await;
 }
 
 /// Whether `content` (freshly read from disk for `uri`) already matches what the server has

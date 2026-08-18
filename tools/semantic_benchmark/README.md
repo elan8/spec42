@@ -12,7 +12,7 @@ cargo build --profile profiling -p spec42-semantic-benchmark
 target/profiling/spec42-semantic-benchmark --iterations 5
 ```
 
-Use `--filter sysml.library` (or another substring of a path under `test/snapshots`) for a focused
+Use `--filter sysml.library` (or another substring of a path under `tests/snapshots`) for a focused
 slice. Select `--schedule sequential` when comparing construction schedules.
 
 Add `--libraries standard` to admit the checked-in standard-library corpus alongside the selected

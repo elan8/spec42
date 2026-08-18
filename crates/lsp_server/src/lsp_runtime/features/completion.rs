@@ -140,7 +140,7 @@ mod tests {
     use super::map_completion_item;
     use language_service::dto::CompletionTextEditDto;
     use language_service::{CompletionItemDto, CompletionItemKindDto};
-    use sysml_model::{TextPosition, TextRange};
+    use sysml_query::resolved_slice::{TextPosition, TextRange};
     use tower_lsp::lsp_types::CompletionItemKind;
 
     #[test]

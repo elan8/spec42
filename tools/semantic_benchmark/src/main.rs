@@ -14,7 +14,7 @@ use sysml_query::resolved_slice::{
 #[derive(Debug, Parser)]
 #[command(name = "spec42-semantic-benchmark")]
 struct Cli {
-    /// Repository root containing test/snapshots.
+    /// Repository root containing tests/snapshots.
     #[arg(long, default_value = ".")]
     repo_root: PathBuf,
     /// Include only snapshot paths containing this text.
@@ -117,7 +117,7 @@ fn main() -> Result<(), String> {
     if cli.iterations == 0 {
         return Err("--iterations must be positive".into());
     }
-    let root = cli.repo_root.join("test/snapshots");
+    let root = cli.repo_root.join("tests/snapshots");
     let (snapshot_count, documents) = load_corpus(&root, cli.filter.as_deref())?;
     if documents.is_empty() {
         return Err("snapshot selection contains no SOURCE documents".into());

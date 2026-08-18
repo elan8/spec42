@@ -7,7 +7,7 @@ use crate::library::stdlib::StandardLibraryConfig;
 use crate::snapshot::{HostContext, HostWorkspaceSnapshot, WorkspaceLoadRequest};
 use crate::version::HostSchemaVersions;
 use std::sync::Arc;
-use sysml_model::SysmlDocumentProvider;
+use sysml_source::SysmlDocumentProvider;
 
 /// Engine-level metadata (version identity for built snapshots).
 #[derive(Debug, Clone)]
@@ -21,10 +21,9 @@ pub struct Spec42Engine {
     cache_dir: PathBuf,
     catalog: LibraryCatalog,
     metadata: HostEngineMetadata,
-    experimental_incremental_updates: bool,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct EngineBuilder {
     cache_dir: Option<PathBuf>,
     server_embedding_mode: bool,
@@ -39,28 +38,6 @@ pub struct EngineBuilder {
     use_embedded_kpar_libraries: bool,
     config_stdlib_path: Option<PathBuf>,
     config_no_stdlib: bool,
-    experimental_incremental_updates: bool,
-}
-
-impl Default for EngineBuilder {
-    fn default() -> Self {
-        Self {
-            cache_dir: None,
-            server_embedding_mode: false,
-            no_stdlib: false,
-            stdlib_path_override: None,
-            kpar_library_path_overrides: BTreeMap::new(),
-            disabled_kpar_libraries: BTreeSet::new(),
-            library_paths: Vec::new(),
-            extra_library_paths: Vec::new(),
-            standard_library: StandardLibraryConfig::default(),
-            use_embedded_stdlib: false,
-            use_embedded_kpar_libraries: false,
-            config_stdlib_path: None,
-            config_no_stdlib: false,
-            experimental_incremental_updates: true,
-        }
-    }
 }
 
 impl Spec42Engine {
@@ -86,10 +63,6 @@ impl Spec42Engine {
 
     pub fn schema_versions(&self) -> HostSchemaVersions {
         self.metadata.schema_versions
-    }
-
-    pub fn experimental_incremental_updates(&self) -> bool {
-        self.experimental_incremental_updates
     }
 
     pub fn load_workspace(
@@ -179,11 +152,6 @@ impl EngineBuilder {
         self
     }
 
-    pub fn experimental_incremental_updates(mut self, enabled: bool) -> Self {
-        self.experimental_incremental_updates = enabled;
-        self
-    }
-
     pub fn build(self) -> WorkspaceResult<Spec42Engine> {
         let cache_dir = self.cache_dir.ok_or_else(|| {
             WorkspaceError::unresolved_library_environment(
@@ -214,7 +182,6 @@ impl EngineBuilder {
                 engine_version: env!("CARGO_PKG_VERSION").to_string(),
                 schema_versions: HostSchemaVersions::current(),
             },
-            experimental_incremental_updates: self.experimental_incremental_updates,
         })
     }
 

@@ -18,7 +18,7 @@ These are the workflows the project is actively hardening for `1.0` and treats a
 - Folding ranges
 - Deterministic CLI validation reports for CI (`text`, `json`, `sarif`, `junit`)
 - Optional Sysand package-manager detection and dependency-root ingestion
-- Shared-renderer visualization and deterministic CLI SVG/JSON diagram export; routed views use ELK.js through embedded QuickJS in the Rust exporter
+- Generator plugins over the immutable model query API. Built-in diagram views and CLI SVG/JSON diagram export are disabled while a diagram generator plugin is defined.
 - Generated conformance reporting for language, validation, views, CLI, and Sysand integration
 
 ## Usable With Caveats
@@ -29,24 +29,16 @@ These workflows are available and useful, but still have known limits that shoul
   The extension can truncate discovery per workspace folder and file type based on `spec42.workspace.maxFilesPerPattern` (legacy `sysml-language-server.workspace.maxFilesPerPattern` is still supported).
 - Library path indexing
   Useful for hover, definition, and completion, but dependent on parser coverage and available files.
-- Model Explorer workspace mode
-  Works for practical navigation, but partial indexing and parser recovery can affect completeness.
-- General visualization view
-  Usable for inspection and export, but still downstream of parser/model quality.
-- Interconnection visualization view
-  Release-enabled for structural connection inspection, export, and root-based exploration, with known caveats mainly around very dense routing/layout.
-- Shared vs legacy renderer scope and SysML graphical-notation roadmap: [`SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md`](../architecture/SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md)
-- Action Flow, State Transition, and Sequence views are available by default in the visualizer and are treated as release-gating workflows for `1.0`.
-- Sequence View is stable for SysML v2 `SequenceView` diagrams: lifelines, synchronous/asynchronous/return/self messages, activation boxes, and interaction fragments (loop, alt, opt, par, seq, neg, assert, strict). Advanced UML message kinds (found, lost, gate) are deferred.
+- Diagram semantics and rendering are not currently a built-in supported workflow. Existing renderer design documents are historical input for the generator-plugin replacement, not an active product contract.
 
 ## Experimental Areas
 
 The following areas are intentionally not release-gating for `1.0`:
 
-- Diagram export beyond deterministic SVG/JSON, such as PNG/PDF or browser-identical rendering
+- Diagram generation/export, pending a generator plugin with a typed render-product contract
 - Full visual parity between CLI SVG and the VS Code renderer; the 1.0 CLI target is stable ELK layout/routing parity for routed views
 - Broader SysML v2 language coverage outside the currently well-tested subset
-- Deep semantic validation beyond the existing parser and graph-based support
+- Deep semantic validation beyond the currently published typed rules
 - Editable table/matrix views
 - Python automation APIs and ReqIF/DOORS/Polarion bridges
 

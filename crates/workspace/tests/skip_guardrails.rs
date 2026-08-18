@@ -10,10 +10,7 @@ use syn::spanned::Spanned;
 use syn::visit::Visit;
 use syn::{Attribute, Expr, ExprLit, Lit, Meta};
 
-const FIXTURES: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/../../test/snapshots");
-
-const GENERIC_SEMANTIC_GRAPH_SKIP_REASON: &str =
-    "strictly parsed non-empty source produced no typed semantic graph facts";
+const FIXTURES: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/../../tests/snapshots");
 
 #[test]
 fn every_rust_ignore_attribute_has_a_non_empty_reason() {
@@ -86,28 +83,6 @@ fn ignore_attribute_parser_rejects_bare_and_empty_reasons() {
     assert!(violations[0].message.contains("bare"));
     assert!(violations[1].message.contains("empty"));
     assert!(violations[2].message.contains("empty"));
-}
-
-#[test]
-fn semantic_graph_skip_metadata_rejects_missing_or_stale_reasons() {
-    assert!(validate_semantic_graph_skip_metadata(
-        "# META\n~~~ini\nsemantic_graph=skip\nsemantic_graph_skip_reason=parser recovery has no typed facts\n~~~\n"
-    )
-    .is_ok());
-
-    for invalid in [
-        "# META\n~~~ini\nsemantic_graph=skip\n~~~\n",
-        "# META\n~~~ini\nsemantic_graph=skip\nsemantic_graph_skip_reason=   \n~~~\n",
-        "# META\n~~~ini\nsemantic_graph_skip_reason=known parser gap\n~~~\n",
-        "# META\n~~~ini\nsemantic_graph=assert\nsemantic_graph_skip_reason=known parser gap\n~~~\n",
-        "# META\n~~~ini\nsemantic_graph=unsupported\n~~~\n",
-        "# META\n~~~ini\nsemantic_graph=skip\nsemantic_graph_skip_reason=strictly parsed non-empty source produced no typed semantic graph facts\n~~~\n",
-    ] {
-        assert!(
-            validate_semantic_graph_skip_metadata(invalid).is_err(),
-            "invalid skip metadata was accepted: {invalid}"
-        );
-    }
 }
 
 #[test]
@@ -245,14 +220,8 @@ fn visit_markdown(root: &Path, visit: &mut dyn FnMut(&Path)) {
 
 fn validate_fixture_skip_metadata(fixture: &str) -> Result<(), String> {
     let metadata = fenced_section(fixture, "META").ok_or("fixture is missing a META section")?;
-    validate_skip_metadata(metadata, "semantic_graph", "semantic_graph_skip_reason")?;
     validate_skip_metadata(metadata, "formatter", "formatter_skip_reason")?;
     validate_skip_metadata(metadata, "diagnostics", "diagnostics_skip_reason")
-}
-
-fn validate_semantic_graph_skip_metadata(fixture: &str) -> Result<(), String> {
-    let metadata = fenced_section(fixture, "META").ok_or("fixture is missing a META section")?;
-    validate_skip_metadata(metadata, "semantic_graph", "semantic_graph_skip_reason")
 }
 
 fn validate_skip_metadata(metadata: &str, state_key: &str, reason_key: &str) -> Result<(), String> {
@@ -283,17 +252,7 @@ fn validate_skip_metadata(metadata: &str, state_key: &str, reason_key: &str) -> 
     }
     match (graph_statuses.as_slice(), reasons.as_slice()) {
         ([], []) => Ok(()),
-        (["skip"], [reason]) if !reason.is_empty() => {
-            if reason_key == "semantic_graph_skip_reason"
-                && *reason == GENERIC_SEMANTIC_GRAPH_SKIP_REASON
-            {
-                Err(format!(
-                    "{reason_key} must name the unavailable parser or semantic capability"
-                ))
-            } else {
-                Ok(())
-            }
-        }
+        (["skip"], [reason]) if !reason.is_empty() => Ok(()),
         (["skip"], []) => Err(format!("{state_key}=skip requires {reason_key}")),
         (["skip"], [_]) => Err(format!("{reason_key} must be non-empty")),
         ([], [_]) => Err(format!("{reason_key} requires {state_key}=skip")),

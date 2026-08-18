@@ -5,24 +5,12 @@ use std::process::Command;
 
 use serde_json::Value;
 use syn::visit::{self, Visit};
-use syn::{Fields, ImplItem, Item, ReturnType, Signature, Type, UseTree, Visibility};
+use syn::{Fields, Item, ReturnType, Signature, Type, UseTree, Visibility};
 
 const DESIGNATED_CONSUMERS: &[&str] = &[
     "spec42-resolution-benchmark",
     "spec42-snapshot",
     "workspace_session",
-];
-/// Crates that still reach the legacy mutable semantic graph directly.
-///
-/// `sysml_query` is deliberately absent: the facade now depends only on `sysml_resolution`, which
-/// is what `facade_depends_only_on_the_immutable_resolution_owner` pins. Every crate below is an
-/// unmigrated consumer tracked in `PRODUCTION_CUTOVER.md`, and this list may only shrink.
-const TRANSITIONAL_DIRECT_CONSUMERS: &[&str] = &[
-    "language_service",
-    "lsp_server",
-    "server",
-    "sysml_diagnostics",
-    "workspace",
 ];
 
 const FORBIDDEN_PUBLIC_TYPES: &[&str] = &[
@@ -42,41 +30,8 @@ const FORBIDDEN_PUBLIC_TYPES: &[&str] = &[
     "DeclaredSemanticFacts",
 ];
 
-/// Forbidden names that the immutable publication also, independently, defines.
-///
-/// `sysml_model::semantic::publication::EvaluationState` is a crate-private storage struct;
-/// `sysml_resolution::EvaluationState` is the published evaluation contract. They are two distinct
-/// types that happen to share a spelling, and the identifier-based ban above cannot tell them
-/// apart. The exemption is keyed on the *root* of the use path, so the publication's type reaches
-/// the facade without the storage type's ban losing an identifier.
+/// Published immutable contracts whose names intentionally overlap the generic raw-storage ban.
 const PUBLISHED_RESOLUTION_TYPES: &[&str] = &["EvaluationState"];
-
-/// The exemption must stay pinned to a real collision, not become a general escape hatch: if the
-/// mutable model's type is renamed or removed, the name should go back to being plainly forbidden.
-#[test]
-fn every_publication_exemption_names_a_real_collision() {
-    let storage = fs::read_to_string(
-        repository_root().join("crates/sysml_model/src/semantic/publication.rs"),
-    )
-    .expect("read publication storage");
-    let published =
-        fs::read_to_string(repository_root().join("crates/sysml_resolution/src/evaluation.rs"))
-            .expect("read published evaluation contract");
-    for name in PUBLISHED_RESOLUTION_TYPES {
-        assert!(
-            FORBIDDEN_PUBLIC_TYPES.contains(name),
-            "{name} is exempted from a ban it is not subject to"
-        );
-        assert!(
-            storage.contains(&format!("struct {name}")),
-            "{name} no longer collides with a mutable-model storage type; drop the exemption"
-        );
-        assert!(
-            published.contains(&format!("pub enum {name}")),
-            "{name} is not a published contract type; drop the exemption"
-        );
-    }
-}
 
 #[test]
 fn designated_consumers_use_the_query_facade_and_direct_model_dependencies_do_not_expand() {
@@ -122,14 +77,9 @@ fn designated_consumers_use_the_query_facade_and_direct_model_dependencies_do_no
         }
     }
 
-    let known = TRANSITIONAL_DIRECT_CONSUMERS
-        .iter()
-        .copied()
-        .collect::<BTreeSet<_>>();
-    assert_eq!(
-        direct_model_dependencies, known,
-        "direct sysml_model dependency inventory changed; additions bypass the query boundary, \
-         while removals must shrink TRANSITIONAL_DIRECT_CONSUMERS in the same change"
+    assert!(
+        direct_model_dependencies.is_empty(),
+        "the deleted sysml_model crate must not return as a dependency: {direct_model_dependencies:?}"
     );
 }
 
@@ -210,6 +160,7 @@ fn immutable_snapshot_runner_has_an_exact_graph_free_dependency_boundary() {
         BTreeSet::from([
             "hashbrown".to_owned(),
             "rayon".to_owned(),
+            "serde".to_owned(),
             "source_identity".to_owned(),
             "sysml-v2-parser-next".to_owned(),
         ]),
@@ -238,12 +189,6 @@ fn immutable_snapshot_runner_has_an_exact_graph_free_dependency_boundary() {
         "legacy diagnostics reached snapshot runner:\n{tree}"
     );
 
-    assert!(
-        !root
-            .join("crates/sysml_model/src/semantic/semantic_model_builder.rs")
-            .exists(),
-        "the parser-owned semantic builder must have exactly one owner"
-    );
     assert!(root.join("crates/sysml_resolution/src/model.rs").exists());
 }
 
@@ -301,196 +246,6 @@ fn facade_depends_only_on_the_immutable_resolution_owner() {
     );
 }
 
-/// `PRODUCTION_CUTOVER.md` claims its family table is the complete inventory of what
-/// `sysml_diagnostics` still owns. A claim of completeness has to be checked, not trusted.
-///
-/// The risk this guards is specific: a consumer pointed at `PublishedModel::diagnostics()` before
-/// its families are published stops reporting those codes, and nothing else fails. Keeping the
-/// table exhaustive is what makes that decision reviewable.
-#[test]
-fn the_cutover_inventory_names_every_legacy_diagnostic_check_family() {
-    let root = repository_root();
-    let modules = fs::read_to_string(root.join("crates/sysml_diagnostics/src/checks/mod.rs"))
-        .expect("read diagnostic check modules");
-    let inventory = fs::read_to_string(root.join("crates/sysml_query/PRODUCTION_CUTOVER.md"))
-        .expect("read cutover inventory");
-
-    let mut missing = Vec::new();
-    for line in modules.lines() {
-        let Some(module) = line
-            .trim()
-            .strip_prefix("pub(super) mod ")
-            .and_then(|rest| rest.strip_suffix(';'))
-        else {
-            continue;
-        };
-        // The table names families in prose ("kind compatibility"), not by module path, because it
-        // is read by people deciding whether a slice is safe to migrate.
-        let prose = module.replace('_', " ");
-        if !inventory.contains(module) && !inventory.contains(&prose) {
-            missing.push(module.to_owned());
-        }
-    }
-    assert!(
-        missing.is_empty(),
-        "diagnostic check families absent from PRODUCTION_CUTOVER.md: {missing:?}. \
-         A family that is not in the table can be dropped by a consumer migration without review."
-    );
-}
-
-/// The feature-conformance families are owned by the immutable publication, and this keeps a
-/// graph-based version from coming back.
-///
-/// Deleting the two modules is not self-enforcing: a new check module, or a few functions added to
-/// a surviving one, would report the same codes over `&SemanticGraph` again and nothing would fail.
-/// The guard is therefore two-sided -- the modules must stay gone, and no `sysml_diagnostics`
-/// source may name a code the publication now owns.
-#[test]
-fn the_migrated_feature_conformance_families_cannot_return_to_the_graph() {
-    let root = repository_root();
-    let checks = root.join("crates/sysml_diagnostics/src/checks");
-    for module in ["kind_compatibility.rs", "structural_feature_conformance.rs"] {
-        assert!(
-            !checks.join(module).exists(),
-            "{module} is owned by sysml_resolution; it must not return to sysml_diagnostics"
-        );
-    }
-
-    // Every code the publication settles for these families. A `sysml_diagnostics` source
-    // mentioning one is either reporting it over the mutable graph or suppressing the immutable
-    // one; both are the dual-reporting this migration removed.
-    let migrated = [
-        "incompatible_type_kind",
-        "incompatible_specializes_kind",
-        "incompatible_subset_redefine_kind",
-        "specialization_cycle",
-        "redefinition_multiplicity_widened",
-        "redefinition_type_incompatible",
-        "subsetting_type_incompatible",
-        "single_type_relationship_operand",
-        "flow_payload_type_not_occurrence",
-        "incomplete_connection_like_end_pair",
-        "invalid_binary_connection_like_end_count",
-        "end_feature_invalid_restrictions",
-        "invalid_variation_member_kind",
-        "redefinition_featuring_type_incompatible",
-        "redefinition_end_mismatch",
-        "redefinition_direction_mismatch",
-        "subsetting_uniqueness_mismatch",
-    ];
-    let mut sources = Vec::new();
-    rust_sources(&root.join("crates/sysml_diagnostics/src"), &mut sources);
-    let mut violations = Vec::new();
-    for file in sources {
-        let source = fs::read_to_string(&file).expect("read diagnostic source");
-        for code in migrated {
-            if source.contains(code) {
-                violations.push(format!("{}: reintroduces {code}", file.display()));
-            }
-        }
-    }
-    assert!(
-        violations.is_empty(),
-        "these codes are settled by the immutable publication:\n{}",
-        violations.join("\n")
-    );
-
-    // The tables those checks asked for are gone too. A caller-supplied allowlist is the shape the
-    // migration replaced with an exhaustive metaclass-family relation, so a returning helper would
-    // be the old design even under a new name.
-    let kinds = fs::read_to_string(root.join("crates/sysml_model/src/semantic/kinds.rs"))
-        .expect("read kind tables");
-    for helper in [
-        "allowed_subset_redefine_target_kinds",
-        "allowed_specializes_target_kinds",
-        "is_compatible_specializes_target",
-        "is_compatible_typing_target",
-        "expected_typing_definition_label",
-        "is_flow_payload_occurrence_type",
-    ] {
-        assert!(
-            !kinds.contains(helper),
-            "{helper} served only the deleted kind checks and must not return"
-        );
-    }
-}
-
-/// Expression conformance, its evaluated-value rules and its unit catalog are owned by the
-/// immutable publication, and this keeps a graph-based version from coming back.
-///
-/// Two-sided, like the feature-conformance guard: the check module must stay gone, no
-/// `sysml_diagnostics` source may name a code the publication now settles, and the graph-derived
-/// unit catalog those rules were built on must not reappear. The catalog is the specific risk --
-/// it decided unit-ness from a name ending in `Unit` and compared dimensions as strings, which is
-/// the spelling-driven inference the typed unit facts replaced.
-#[test]
-fn the_migrated_expression_conformance_family_cannot_return_to_the_graph() {
-    let root = repository_root();
-    assert!(
-        !root
-            .join("crates/sysml_diagnostics/src/checks/expression_conformance.rs")
-            .exists(),
-        "expression_conformance.rs is owned by sysml_resolution; it must not return to \
-         sysml_diagnostics"
-    );
-
-    let migrated = [
-        "attribute_value_type_mismatch",
-        "assignment_value_incompatible",
-        "unknown_unit_symbol",
-        "ambiguous_unit_symbol",
-        "incompatible_unit_dimension",
-        "non_boolean_expression",
-        "view_filter_non_boolean",
-        "calculation_binding_mismatch",
-    ];
-    let mut sources = Vec::new();
-    rust_sources(&root.join("crates/sysml_diagnostics/src"), &mut sources);
-    let mut violations = Vec::new();
-    for file in sources {
-        let source = fs::read_to_string(&file).expect("read diagnostic source");
-        for code in migrated {
-            // Matched with its opening quote, so the distinct
-            // `inherited_attribute_value_type_mismatch` rule -- which reports a case the
-            // publication cannot type yet, and is tracked in `PRODUCTION_CUTOVER.md` -- is not
-            // mistaken for a reintroduction of the migrated one.
-            if source.contains(&format!("\"{code}\"")) {
-                violations.push(format!("{}: reintroduces {code}", file.display()));
-            }
-        }
-    }
-    assert!(
-        violations.is_empty(),
-        "these codes are settled by the immutable publication:\n{}",
-        violations.join("\n")
-    );
-
-    // The graph-derived unit catalog is gone with them. `UnitRegistry` survives as the graph
-    // evaluator's own conversion table, populated by its owner; what must not return is the
-    // ingest that recovered units from node names and the queries only the deleted rules used.
-    let units = root.join("crates/sysml_model/src/semantic/units");
-    for module in ["graph_ingest.rs", "type_resolver.rs"] {
-        assert!(
-            !units.join(module).exists(),
-            "{module} recovered unit facts from the graph and must not return"
-        );
-    }
-    let registry =
-        fs::read_to_string(units.join("registry.rs")).expect("read the unit conversion table");
-    for helper in [
-        "from_graph",
-        "from_semantic_graph",
-        "is_recognized_unit_expression",
-        "unit_expression_dimension",
-        "hover_markdown_for_unit_literal",
-    ] {
-        assert!(
-            !registry.contains(helper),
-            "{helper} served only the deleted expression-conformance and hover paths"
-        );
-    }
-}
-
 /// The modules that read element details from the publication must not be able to reach the
 /// mutable graph again.
 ///
@@ -538,6 +293,103 @@ fn the_migrated_inspector_and_symbol_modules_cannot_return_to_the_graph() {
         violations.is_empty(),
         "these modules read the immutable publication and must not reach the graph:\n{}",
         violations.join("\n")
+    );
+}
+
+/// Host validation reads the immutable publication, and nothing on that path may reach the graph.
+///
+/// The three surfaces that report diagnostics -- workspace validation assembly, LSP computation
+/// and publication, and the server's batch validation -- now consume one published result. Nothing
+/// makes that self-enforcing: a helper taking `&SemanticGraph` added to any of them would quietly
+/// reintroduce a second engine deciding the same codes, and every test would still pass.
+///
+/// `sysml_diagnostics` is on the list because it is the reporting layer: it may filter and render
+/// published values, never decide one.
+#[test]
+fn migrated_validation_paths_cannot_return_to_the_graph() {
+    let root = repository_root();
+    let migrated = [
+        "crates/workspace/src/snapshot/validation.rs",
+        "crates/workspace/src/snapshot/publication.rs",
+        "crates/lsp_server/src/analysis/diagnostics_core.rs",
+        "crates/lsp_server/src/analysis/diagnostics_adapter.rs",
+        "crates/lsp_server/src/lsp_runtime/diagnostics.rs",
+        "crates/sysml_diagnostics/src/reporting.rs",
+        "crates/sysml_diagnostics/src/types.rs",
+        "crates/sysml_diagnostics/src/lib.rs",
+    ];
+    // The graph handles, the deleted entry points, and the node-keyed helpers a rule would need to
+    // decide anything for itself.
+    //
+    // `sysml_model` itself is not banned here: `publication.rs` admits the host's own
+    // `SysmlDocument` values, reading their URI, content and source kind and nothing else. That is
+    // the source-admission boundary, and banning the crate would ban carrying a document across
+    // it. Everything the crate owns that *decides* meaning is banned by name below.
+    let forbidden = [
+        "SemanticGraph",
+        "SemanticNode",
+        "collect_diagnostics_from_graph",
+        "compute_semantic_diagnostics",
+        "collect_document_diagnostics_from_model",
+        "evaluation_facts_for",
+        "expression_evaluation_for",
+        "resolve_import_target",
+        "resolve_type_reference_targets",
+        "resolve_inherited_member_via_type",
+        "resolve_expression_endpoint_strict",
+        "outgoing_targets_by_kind",
+        "nodes_for_uri",
+        "node_ids_by_qualified_name",
+    ];
+    let mut violations = Vec::new();
+    for module in migrated {
+        let path = root.join(module);
+        let source = fs::read_to_string(&path)
+            .unwrap_or_else(|error| panic!("read migrated module {module}: {error}"));
+        for name in forbidden {
+            if source.contains(name) {
+                violations.push(format!("{module}: reaches {name}"));
+            }
+        }
+    }
+    assert!(
+        violations.is_empty(),
+        "these modules read the immutable publication and must not reach the graph:\n{}",
+        violations.join("\n")
+    );
+}
+
+/// The graph-backed diagnostic engine stays deleted.
+///
+/// Deleting the modules is not self-enforcing: a new check module, or a few functions added to the
+/// surviving reporting crate, would report the same codes over `&SemanticGraph` again and nothing
+/// would fail. The engine's own files are named so restoring one is a test failure rather than a
+/// review question.
+#[test]
+fn the_graph_backed_diagnostic_engine_stays_deleted() {
+    let root = repository_root();
+    let deleted = [
+        "crates/sysml_diagnostics/src/checks",
+        "crates/sysml_diagnostics/src/engine.rs",
+        "crates/sysml_diagnostics/src/engine_impl.rs",
+        "crates/sysml_diagnostics/src/helpers.rs",
+        "crates/sysml_diagnostics/src/model.rs",
+        "crates/sysml_diagnostics/src/document.rs",
+        "crates/sysml_diagnostics/src/ordering.rs",
+        "crates/sysml_diagnostics/src/shared_rules.rs",
+        "crates/sysml_diagnostics/src/kind_rules.rs",
+        "crates/sysml_diagnostics/src/relationship_endpoint_messages.rs",
+        "crates/sysml_diagnostics/src/pending_relationship_diagnostics.rs",
+        "crates/lsp_server/src/analysis/checks.rs",
+        "crates/lsp_server/src/analysis/checks",
+    ];
+    let restored = deleted
+        .into_iter()
+        .filter(|path| root.join(path).exists())
+        .collect::<Vec<_>>();
+    assert!(
+        restored.is_empty(),
+        "sysml_resolution owns these rules; they must not return: {restored:?}"
     );
 }
 
@@ -634,10 +486,7 @@ fn workspace_publication_owner_contains_no_raw_semantic_storage() {
 #[test]
 fn workspace_cannot_restore_the_retired_semantic_publication_wrapper() {
     let root = repository_root();
-    let files = [
-        root.join("crates/workspace/src/lib.rs"),
-        root.join("crates/workspace/src/semantic/mod.rs"),
-    ];
+    let files = [root.join("crates/workspace/src/lib.rs")];
     let retired_types = BTreeSet::from([
         "AuthoredReferenceId",
         "ConstructionStrategy",
@@ -708,64 +557,6 @@ fn assert_source_tree_has_no_raw_semantic_storage(source_root: &Path) {
         source_root.display(),
         violations.join("\n")
     );
-}
-
-#[test]
-fn model_publication_has_no_raw_model_or_index_escape_hatch() {
-    let file = repository_root().join("crates/sysml_model/src/semantic/publication.rs");
-    let source = fs::read_to_string(&file).expect("read publication source");
-    let syntax = syn::parse_file(&source).expect("parse publication source");
-    let forbidden_methods = BTreeSet::from([
-        "facts",
-        "evaluation_facts",
-        "graph",
-        "indexes",
-        "node",
-        "raw_graph",
-        "resolution",
-        "structural_graph",
-        "view",
-    ]);
-    let mut violations = Vec::new();
-    for item in syntax.items {
-        match item {
-            Item::Struct(item)
-                if matches!(
-                    item.ident.to_string().as_str(),
-                    "ResolutionFact"
-                        | "ResolutionState"
-                        | "ResolutionView"
-                        | "ResolvedRelationship"
-                        | "EvaluationState"
-                        | "SemanticQueryIndexes"
-                ) && is_public(&item.vis) =>
-            {
-                violations.push(format!("raw type {} is public", item.ident));
-            }
-            Item::Impl(item) => {
-                let owner = type_last_identifier(&item.self_ty);
-                if !matches!(owner.as_deref(), Some("SemanticModel" | "ResolutionView")) {
-                    continue;
-                }
-                for member in item.items {
-                    let ImplItem::Fn(function) = member else {
-                        continue;
-                    };
-                    if is_public(&function.vis)
-                        && forbidden_methods.contains(function.sig.ident.to_string().as_str())
-                    {
-                        violations.push(format!(
-                            "public {}::{} is a forbidden storage escape hatch",
-                            owner.as_deref().unwrap_or("unknown"),
-                            function.sig.ident
-                        ));
-                    }
-                }
-            }
-            _ => {}
-        }
-    }
-    assert!(violations.is_empty(), "{}", violations.join("\n"));
 }
 
 struct PublicApiVisitor<'a> {

@@ -1,9 +1,9 @@
-use sysml_model::{SysmlDocument, SysmlDocumentProvider, SysmlDocumentSourceKind};
 use tempfile::tempdir;
 use url::Url;
 use workspace::{
     EngineBuilder, HostContext, HostResourceLimits, InMemoryDocumentProvider, WorkspaceLoadRequest,
 };
+use workspace::{SysmlDocument, SysmlDocumentProvider, SysmlDocumentSourceKind};
 
 struct TwoDocumentProvider;
 

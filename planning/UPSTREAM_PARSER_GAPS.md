@@ -21,12 +21,12 @@ a scratch fixture run through `cargo run -p spec42-snapshot`, or both.
   declared one, and the difference is load-bearing for scope. The declared name puts the feature
   into its own owner's owned name tier under exactly the name it is looking up, and that tier
   shadows the inherited one the author meant, so the feature subsets itself. Two declarations in
-  `test/snapshots/sysml.library/requirement_derivation.md` are reported as `specialization_cycle`
+  `tests/snapshots/sysml.library/requirement_derivation.md` are reported as `specialization_cycle`
   for this reason, and every conformance question about them answers from a self-loop.
 
   `sysml_resolution` cannot correct it locally. Excluding a specialization reference's own source
   from its scope -- which it does for `Redefinition`, per
-  `planning/RESOLUTION_LAYER_DESIGN.md` section 11.1 -- is not enough here, because a metadata
+  the reference's own source from redefinition scope -- is not enough here, because a metadata
   definition commonly authors several of these shorthand members and they all acquire the same
   declared name: excluding only the reference's own source makes two of them resolve to each other,
   turning a self-loop into a two-cycle. Distinguishing a declared name from an effective one needs
@@ -45,7 +45,7 @@ a scratch fixture run through `cargo run -p spec42-snapshot`, or both.
   An abstract connection-like definition is legitimately allowed an incomplete end set, so
   `sysml_resolution`'s end-count rules cannot exempt one. They keep the guard, which becomes
   correct as soon as the field exists; until then
-  `test/snapshots/resolution/structural_feature_conformance.md` shows an abstract declaration being
+  `tests/snapshots/resolution/structural_feature_conformance.md` shows an abstract declaration being
   reported, so the limitation stays visible. One field per node mirroring `PartDef`, filed upstream
   against `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
 
@@ -64,7 +64,7 @@ a scratch fixture run through `cargo run -p spec42-snapshot`, or both.
   `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
 
 - Gap 41. KerML's implicit self-reference identifier `that` (e.g.
-  `test/snapshots/sysml/examples`'s `trig_functions.md`: `inv unitBound { -1.0 <= that & that <=
+  `tests/snapshots/sysml/examples`'s `trig_functions.md`: `inv unitBound { -1.0 <= that & that <=
   1.0 }` inside `datatype UnitBoundedReal :> Real { ... }`, 111 fixtures overall) has no
   lexically-distinguished status in the parser. `src/parser/lex.rs`'s `SYSML_RESERVED_KEYWORDS`
   table -- the parser's own reserved-word list, which tells a genuine language keyword apart from
@@ -93,7 +93,7 @@ a scratch fixture run through `cargo run -p spec42-snapshot`, or both.
   own kind. Re-verified against `7d4fd85`, which closed three of the sub-gaps -- the enum now
   carries `RefDecl`, `ConcernUsage`, and `CalcUsage` variants, all dispatched by
   `lower_requirement_shaped_body`. Still missing: a parameter-member variant for `in
-  ref`/`in calc` members (`test/snapshots/sysml.library/trade_studies.md`), a `Port`/`Allocate`
+  ref`/`in calc` members (`tests/snapshots/sysml.library/trade_studies.md`), a `Port`/`Allocate`
   variant (`sys_ml_v2_spec_annex_a_simple_vehicle_model.md:912,877`), a nested-`requirement def`
   variant (only a `RequirementUsage` variant exists, not a def;
   `requirement_test.md:10`'s `requirement def <'1'> A { ... }` nested inside another `requirement
@@ -163,7 +163,7 @@ a scratch fixture run through `cargo run -p spec42-snapshot`, or both.
   `Doc`/`Comment`/`TextualRep` variants. Confirmed against `cb026cd` while lowering the
   documentation fact family, and still true at `7d4fd85` (the shared `Body<E>` container
   rename from `values` to `elements` did not widen the member type):
-  `test/snapshots/documentation_in_bodies.md`'s `enum def Color`
+  `tests/snapshots/documentation_in_bodies.md`'s `enum def Color`
   authors a doc comment that no fact family can recover, while the `part def`/`attribute def`/
   `item def`/`part` usage/`alias` docs in the same fixture all lower correctly. The same node also
   discards each `EnumeratedValue`'s own optional body and `= expr` initializer (`structure.rs`
@@ -186,7 +186,7 @@ disappearing with the gap entries they closed.
   the parser bump: `subclassifier X specializes Y;` previously reached
   `KermlClassifierDecl` and lowered `X` as a `kerml-classifier` declaration, which named the
   relationship's source as though it were a new classifier
-  (`test/snapshots/sysml.library/occurrences.md`).
+  (`tests/snapshots/sysml.library/occurrences.md`).
 
 - **The anonymous, header-less `allocate <source> to <target> { ... }` package member.** It now
   parses to `PackageBodyElement::AllocationUsage`; `lower_package_element` reports it unsupported.

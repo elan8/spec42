@@ -1,4 +1,4 @@
-use sysml_model::{TextPosition, TextRange};
+use sysml_query::resolved_slice::{TextPosition, TextRange};
 
 use crate::dto::SourceLocation;
 use crate::workspace::WorkspaceSnapshot;

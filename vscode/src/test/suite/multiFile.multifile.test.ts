@@ -8,7 +8,6 @@ import {
   integrationHookTimeoutMs,
   waitFor,
   waitForLanguageServerReady,
-  waitForWorkspaceIndexReady,
 } from "./testUtils";
 
 function findPosition(doc: vscode.TextDocument, needle: string, occurrence = 0): vscode.Position {
@@ -30,7 +29,6 @@ describe("Multi-file VS Code Flows", () => {
     getTestWorkspaceFolder();
     const doc = await vscode.workspace.openTextDocument(getFixturePath("def.sysml"));
     await waitForLanguageServerReady(doc);
-    await waitForWorkspaceIndexReady(2);
   });
 
   after(async () => {

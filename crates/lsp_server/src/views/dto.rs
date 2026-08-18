@@ -1,18 +1,36 @@
-//! DTOs and conversion helpers for sysml/model and related responses.
+//! DTOs for the supported `sysml/*` extension requests.
 
 use serde::{Deserialize, Serialize};
 
-use sysml_model::semantic::extracted_model as model;
-use sysml_model::semantic::ibd;
 /// The neutral position/range wire structs every `sysml/*` DTO in this module shares.
 ///
 /// Re-exported so a protocol adapter can spell them without naming the mutable-model crate: they
 /// are serialization shapes, but a module that must not reach semantic state should not have to
 /// import from the crate that owns it to say where something is.
-pub use sysml_model::{PositionDto, RangeDto};
-use sysml_model::{
-    SysmlGraphDto, SysmlModelStatsDto, SysmlVisualizationGroupDto, WorkspaceModelDto,
-};
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct PositionDto {
+    pub line: u32,
+    pub character: u32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct RangeDto {
+    pub start: PositionDto,
+    pub end: PositionDto,
+}
+
+pub fn range_to_dto(range: sysml_query::resolved_slice::TextRange) -> RangeDto {
+    RangeDto {
+        start: PositionDto {
+            line: range.start.line,
+            character: range.start.character,
+        },
+        end: PositionDto {
+            line: range.end.line,
+            character: range.end.character,
+        },
+    }
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -224,37 +242,6 @@ pub struct SysmlFeatureInspectorResultDto {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub containing_element: Option<SysmlFeatureInspectorElementDto>,
     pub referenced: SysmlFeatureInspectorReferenceDto,
-}
-
-#[derive(Debug, Clone, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct SysmlVisualizationParamsDto {
-    pub workspace_root_uri: String,
-    pub view: String,
-    #[serde(default)]
-    pub selected_view: Option<String>,
-}
-
-#[derive(Debug, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct SysmlModelResultDto {
-    pub version: u32,
-    pub graph: Option<SysmlGraphDto>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub package_groups: Option<Vec<SysmlVisualizationGroupDto>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub general_view_graph: Option<SysmlGraphDto>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub workspace_model: Option<WorkspaceModelDto>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub activity_diagrams: Option<Vec<model::ActivityDiagramDto>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub sequence_diagrams: Option<Vec<model::SequenceDiagramDto>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub state_machines: Option<Vec<model::StateMachineDto>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub ibd: Option<ibd::IbdDataDto>,
-    pub stats: Option<SysmlModelStatsDto>,
 }
 
 #[derive(Debug, Serialize)]

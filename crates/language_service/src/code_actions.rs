@@ -1,20 +1,11 @@
 //! Neutral quick-fix text edit suggesters.
 
-use std::collections::BTreeSet;
-
-use sysml_model::semantic::ast_util::identification_name;
-use sysml_model::semantic::kinds::TYPING_TARGET_KINDS;
-use sysml_model::semantic::model::node_matches_simple_name;
-use sysml_model::{
-    resolve_imported_node_ids_for_simple_name, ElementKind, SemanticGraph, SemanticNode,
-    TextPosition, TextRange,
-};
+use sysml_query::resolved_slice::{PublishedModel, TextPosition, TextRange};
 use sysml_v2_parser::ast::{PackageBody, RootElement};
 use url::Url;
 
 use crate::dto::{TextEditDto, TextEditSuggestion};
-
-const MAX_CANDIDATE_ACTIONS: usize = 8;
+use crate::syntax::identification_name;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct DiagnosticLine {
@@ -267,250 +258,6 @@ fn parse_simple_unresolved_type_usage(raw_line: &str) -> Option<(&'static str, S
         return None;
     }
     Some((definition_keyword, type_part.to_string()))
-}
-
-/// Extract a simple name from a typing (`: Name`) or specializes (`:> Name` / `specializes Name`) line.
-fn extract_simple_reference_name(raw_line: &str) -> Option<String> {
-    if let Some((_, type_name)) = parse_simple_unresolved_type_usage(raw_line) {
-        return Some(type_name);
-    }
-    let code_only = raw_line.split("//").next().unwrap_or("");
-    let trimmed = code_only.trim();
-    if let Some(after) = trimmed.split("specializes ").nth(1) {
-        let name = after
-            .split(|ch: char| ch == ';' || ch == '{' || ch == ',' || ch.is_whitespace())
-            .next()?
-            .trim();
-        if !name.is_empty() && !name.contains("::") {
-            return Some(name.to_string());
-        }
-    }
-    // `:> Name` specializes (but not `:>>`).
-    if let Some(idx) = trimmed.find(":>") {
-        if trimmed[idx..].starts_with(":>>") {
-            return None;
-        }
-        let after = trimmed[idx + 2..].trim_start();
-        let name = after
-            .split(|ch: char| ch == ';' || ch == '{' || ch == ',' || ch.is_whitespace())
-            .next()?
-            .trim();
-        if !name.is_empty() && !name.contains("::") {
-            return Some(name.to_string());
-        }
-    }
-    None
-}
-
-fn display_qualified_name(qn: &str) -> String {
-    match qn.split_once('#') {
-        Some((base, _)) => base.to_string(),
-        None => qn.to_string(),
-    }
-}
-
-fn package_prefix(qn: &str) -> Option<String> {
-    let display = display_qualified_name(qn);
-    display
-        .rsplit_once("::")
-        .map(|(prefix, _)| prefix.to_string())
-}
-
-fn is_typing_definition_kind(kind: &ElementKind) -> bool {
-    TYPING_TARGET_KINDS.iter().any(|allowed| allowed == kind)
-}
-
-fn is_ambiguous_candidate_kind(kind: &ElementKind) -> bool {
-    is_typing_definition_kind(kind) || matches!(kind, ElementKind::Package)
-}
-
-fn context_node_at_line<'a>(
-    graph: &'a SemanticGraph,
-    uri: &Url,
-    line: u32,
-) -> Option<&'a SemanticNode> {
-    let mut best: Option<&SemanticNode> = None;
-    for node in graph.nodes_for_uri(uri) {
-        if node.range.start.line > line || line > node.range.end.line {
-            continue;
-        }
-        let better = match best {
-            None => true,
-            Some(prev) => {
-                let prev_span = prev.range.end.line.saturating_sub(prev.range.start.line);
-                let cur_span = node.range.end.line.saturating_sub(node.range.start.line);
-                cur_span < prev_span
-                    || (cur_span == prev_span
-                        && node.id.qualified_name.len() > prev.id.qualified_name.len())
-            }
-        };
-        if better {
-            best = Some(node);
-        }
-    }
-    best
-}
-
-fn enclosing_package_qn(graph: &SemanticGraph, node: &SemanticNode) -> Option<String> {
-    let mut current = Some(node);
-    while let Some(n) = current {
-        if matches!(n.element_kind, ElementKind::Package) {
-            let qn = display_qualified_name(&n.id.qualified_name);
-            if !qn.is_empty() {
-                return Some(qn);
-            }
-        }
-        current = n.parent_id.as_ref().and_then(|id| graph.get_node(id));
-    }
-    None
-}
-
-fn collect_ambiguous_candidate_qns(
-    graph: &SemanticGraph,
-    context: &SemanticNode,
-    name: &str,
-) -> Vec<String> {
-    let mut qns = BTreeSet::new();
-    for id in resolve_imported_node_ids_for_simple_name(graph, context, name) {
-        if let Some(node) = graph.get_node(&id) {
-            if is_ambiguous_candidate_kind(&node.element_kind) {
-                qns.insert(display_qualified_name(&node.id.qualified_name));
-            }
-        }
-    }
-    for node in graph.nodes_for_uri(&context.id.uri) {
-        if node_matches_simple_name(node, name)
-            && is_ambiguous_candidate_kind(&node.element_kind)
-            && node.id.uri == context.id.uri
-        {
-            qns.insert(display_qualified_name(&node.id.qualified_name));
-        }
-    }
-    qns.into_iter()
-        .filter(|qn| qn.contains("::"))
-        .take(MAX_CANDIDATE_ACTIONS)
-        .collect()
-}
-
-fn collect_import_candidate_qns(
-    graph: &SemanticGraph,
-    document_uri: &Url,
-    name: &str,
-    enclosing_package: Option<&str>,
-) -> Vec<String> {
-    let mut scored: Vec<(bool, String)> = Vec::new();
-    let mut seen = BTreeSet::new();
-    for node in graph.nodes_named(name) {
-        if !is_typing_definition_kind(&node.element_kind) {
-            continue;
-        }
-        let qn = display_qualified_name(&node.id.qualified_name);
-        if !qn.contains("::") || !seen.insert(qn.clone()) {
-            continue;
-        }
-        if let Some(pkg) = enclosing_package {
-            if package_prefix(&qn).as_deref() == Some(pkg) {
-                continue;
-            }
-        }
-        // Prefer definitions from other documents when ranking, but keep all.
-        let other_doc = &node.id.uri != document_uri;
-        scored.push((other_doc, qn));
-    }
-    scored.sort_by(|a, b| b.0.cmp(&a.0).then_with(|| a.1.cmp(&b.1)));
-    scored
-        .into_iter()
-        .map(|(_, qn)| qn)
-        .take(MAX_CANDIDATE_ACTIONS)
-        .collect()
-}
-
-fn find_import_insert_site(lines: &[&str], target_line: usize) -> (usize, String) {
-    let package = find_package_context(lines, target_line);
-    let (pkg_start, pkg_end) = package.unwrap_or((0, lines.len()));
-    let search_start = if package.is_some() { pkg_start + 1 } else { 0 };
-    let indent = if package.is_some() {
-        member_indent_in_range(lines, pkg_start, pkg_end).unwrap_or_else(|| "  ".to_string())
-    } else {
-        String::new()
-    };
-    let mut last_import_line: Option<usize> = None;
-    for (idx, line) in lines.iter().enumerate().take(pkg_end).skip(search_start) {
-        let trimmed = line.trim();
-        if trimmed.is_empty() || trimmed.starts_with("//") {
-            continue;
-        }
-        let is_import = (trimmed.starts_with("import ")
-            || trimmed.starts_with("private import ")
-            || trimmed.starts_with("public import ")
-            || trimmed.starts_with("protected import "))
-            && trimmed.ends_with(';');
-        if is_import {
-            last_import_line = Some(idx);
-            continue;
-        }
-        if last_import_line.is_some() {
-            break;
-        }
-        return (idx, indent);
-    }
-    if let Some(idx) = last_import_line {
-        (idx + 1, indent)
-    } else {
-        (search_start, indent)
-    }
-}
-
-fn source_already_imports(lines: &[&str], qn: &str) -> bool {
-    let needles = [
-        format!("import {qn};"),
-        format!("import {qn}::"),
-        format!("import {qn}::*;"),
-    ];
-    lines.iter().any(|line| {
-        let trimmed = line.trim();
-        needles
-            .iter()
-            .any(|needle| trimmed.contains(needle.as_str()))
-    })
-}
-
-fn rewrite_line_replacing_simple_name(
-    raw_line: &str,
-    simple_name: &str,
-    qualified: &str,
-) -> Option<String> {
-    let code_only = raw_line.split("//").next().unwrap_or("");
-    let comment_part = &raw_line[code_only.len()..];
-    // Replace the type/specializes reference token, preferring the last whole-word match
-    // after `:` / `:>` / `specializes`.
-    let mut replace_at: Option<usize> = None;
-    let mut search_from = 0usize;
-    while let Some(rel) = code_only[search_from..].find(simple_name) {
-        let abs = search_from + rel;
-        let before_ok = abs == 0
-            || !code_only[..abs]
-                .chars()
-                .next_back()
-                .is_some_and(|ch| ch.is_alphanumeric() || ch == '_');
-        let after = abs + simple_name.len();
-        let after_ok = after >= code_only.len()
-            || !code_only[after..]
-                .chars()
-                .next()
-                .is_some_and(|ch| ch.is_alphanumeric() || ch == '_' || ch == ':');
-        if before_ok && after_ok {
-            replace_at = Some(abs);
-        }
-        search_from = abs + simple_name.len();
-    }
-    let abs = replace_at?;
-    let mut rewritten = String::new();
-    rewritten.push_str(&code_only[..abs]);
-    rewritten.push_str(qualified);
-    rewritten.push_str(&code_only[abs + simple_name.len()..]);
-    rewritten.push_str(comment_part);
-    Some(rewritten)
 }
 
 fn suggest_create_definition_impl(
@@ -971,82 +718,26 @@ pub fn suggest_create_usage_from_definition(
 
 /// Qualify an ambiguous simple name with each candidate qualified name.
 pub fn suggest_qualify_ambiguous_name_quick_fixes(
-    source: &str,
-    path: &str,
-    diagnostic: DiagnosticLine,
-    graph: &SemanticGraph,
-    document_uri: &Url,
+    _source: &str,
+    _path: &str,
+    _diagnostic: DiagnosticLine,
+    _model: &PublishedModel,
+    _document_uri: &Url,
 ) -> Vec<TextEditSuggestion> {
-    let target_line = diagnostic.line as usize;
-    let lines: Vec<&str> = source.lines().collect();
-    let Some(raw_line) = lines.get(target_line).copied() else {
-        return Vec::new();
-    };
-    let Some(simple_name) = extract_simple_reference_name(raw_line) else {
-        return Vec::new();
-    };
-    let Some(context) = context_node_at_line(graph, document_uri, diagnostic.line) else {
-        return Vec::new();
-    };
-    let candidates = collect_ambiguous_candidate_qns(graph, context, &simple_name);
-    let preferred = candidates.len() == 1;
-    candidates
-        .into_iter()
-        .filter_map(|qn| {
-            let rewritten = rewrite_line_replacing_simple_name(raw_line, &simple_name, &qn)?;
-            Some(
-                TextEditSuggestion::new(
-                    format!("Qualify as `{qn}`"),
-                    vec![TextEditDto {
-                        path: path.to_string(),
-                        range: line_full_range(diagnostic.line, raw_line),
-                        replacement: rewritten,
-                    }],
-                )
-                .with_preferred(preferred),
-            )
-        })
-        .collect()
+    // TODO(follow-up): restore after a typed query exposes ambiguous candidates and authored
+    // replacement ranges. Returning no actions keeps unsupported semantics explicit.
+    Vec::new()
 }
 
 /// Suggest importing a workspace/library definition for an unresolved type name.
 pub fn suggest_add_import_quick_fixes(
-    source: &str,
-    path: &str,
-    diagnostic: DiagnosticLine,
-    graph: &SemanticGraph,
-    document_uri: &Url,
+    _source: &str,
+    _path: &str,
+    _diagnostic: DiagnosticLine,
+    _model: &PublishedModel,
+    _document_uri: &Url,
 ) -> Vec<TextEditSuggestion> {
-    let target_line = diagnostic.line as usize;
-    let lines: Vec<&str> = source.lines().collect();
-    let Some(raw_line) = lines.get(target_line).copied() else {
-        return Vec::new();
-    };
-    let Some(simple_name) = extract_simple_reference_name(raw_line) else {
-        return Vec::new();
-    };
-    let enclosing = context_node_at_line(graph, document_uri, diagnostic.line)
-        .and_then(|node| enclosing_package_qn(graph, node));
-    let candidates =
-        collect_import_candidate_qns(graph, document_uri, &simple_name, enclosing.as_deref());
-    if candidates.is_empty() {
-        return Vec::new();
-    }
-    let (insert_line, indent) = find_import_insert_site(&lines, target_line);
-    let preferred = candidates.len() == 1;
-    candidates
-        .into_iter()
-        .filter(|qn| !source_already_imports(&lines, qn))
-        .map(|qn| {
-            TextEditSuggestion::new(
-                format!("Import `{qn}`"),
-                vec![TextEditDto {
-                    path: path.to_string(),
-                    range: line_insert_range(insert_line as u32),
-                    replacement: format!("{indent}private import {qn};\n"),
-                }],
-            )
-            .with_preferred(preferred)
-        })
-        .collect()
+    // TODO(follow-up): restore after a typed query exposes importable definitions and the owning
+    // package/import insertion contract. Returning no actions is the intentional disabled state.
+    Vec::new()
 }

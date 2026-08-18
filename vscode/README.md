@@ -13,8 +13,8 @@ This extension is the primary modeling surface. Marketplace builds include the m
 Textual SysML v2 is only as useful as the feedback around it. Spec42 focuses on three things that matter while you work:
 
 - **Confidence while editing** — diagnostics, navigation, and completion that stay with you as the model grows across files.
-- **Understanding beyond the source** — Explorer, diagrams, and Feature Inspector show structure, wiring, behavior, and resolved semantics, not just tokens.
-- **Continuity outside the IDE** — the same engine powers CLI checks, GitHub Actions, diagram export, and assistant tools, so editor results and automation stay aligned.
+- **Understanding beyond the source** — Feature Inspector shows resolved semantics, not just tokens.
+- **Continuity outside the IDE** — the same engine powers CLI checks, GitHub Actions, and assistant tools, so editor results and automation stay aligned.
 
 Everything runs locally. Models stay in your workspace; Spec42 does not require a cloud modeling runtime.
 
@@ -23,8 +23,6 @@ Everything runs locally. Models stay in your workspace; Spec42 does not require 
 - Live diagnostics, semantic highlighting, completion, hover, snippets, and formatting.
 - Definitions, references, rename, document symbols, and hierarchy navigation.
 - Workspace-aware indexing for multi-file models and configured libraries.
-- **Model Explorer** for packages, elements, and source navigation.
-- **Model Visualizer** for SysML v2 views (sidebar or editor tab).
 - **Feature Inspector** for resolved typing, inheritance, relationships, values, and keyword help.
 - Bundled SysML standard library plus searchable Elan8 domain and method libraries.
 - Built-in Copilot Language Model Tools for check, doctor, model summary, and diagnostic explanation.
@@ -46,7 +44,7 @@ Everything runs locally. Models stay in your workspace; Spec42 does not require 
 
 1. Install **SysML v2 Editor** from the Visual Studio Marketplace.
 2. Open a `.sysml` or `.kerml` file — or pick the starred **timer** example from the Spec42 sidebar.
-3. Use **Model Explorer**, the **Visualizer**, and **Feature Inspector** as you explore.
+3. Use navigation, diagnostics, and **Feature Inspector** as you explore.
 
 Full walkthrough: **[Getting Started](https://elan8.github.io/spec42/guide/getting-started)**.
 
@@ -56,8 +54,6 @@ For CLI checks, CI, environment diagnostics, and other AI hosts, see the [main S
 
 - [User documentation](https://elan8.github.io/spec42/)
 - [Feature Inspector guide](https://elan8.github.io/spec42/guide/feature-inspector)
-- [Visualizer guide](https://elan8.github.io/spec42/guide/visualizer)
-- [Model Explorer guide](https://elan8.github.io/spec42/guide/model-explorer)
 - [Libraries](https://elan8.github.io/spec42/guide/libraries)
 - [AI assistants](https://github.com/elan8/spec42/blob/HEAD/docs/user/AI-ASSISTANTS.md)
 - [Troubleshooting](https://github.com/elan8/spec42/blob/HEAD/docs/user/TROUBLESHOOTING.md)

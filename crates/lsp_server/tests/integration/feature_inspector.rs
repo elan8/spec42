@@ -525,9 +525,8 @@ fn lsp_feature_inspector_surfaces_feature_and_classifier_decls_without_resolutio
     let feature_element = &feature["result"]["containingElement"];
     assert_eq!(feature_element["name"].as_str(), Some("myFeature"));
     assert_eq!(feature_element["type"].as_str(), Some("Feature"));
-    // A KerML `feature` declares a typing like any other feature. The graph-backed inspector
-    // reported `notApplicable` here because its declared-fact projection had no entry for this
-    // production; the publication reports what the author wrote, which did not resolve.
+    // A KerML `feature` declares a typing like any other feature. The publication reports what
+    // the author wrote, which did not resolve.
     assert_eq!(
         feature_element["typing"]["status"].as_str(),
         Some("unresolved")

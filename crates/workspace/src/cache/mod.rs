@@ -1,10 +1,10 @@
-//! Unified semantic cache foundation (`planning/UNIFY_CACHE_PLAN.md` §5.1, §6.1, §7, §8, §9).
+//! Content-addressed cache foundation for source-derived, non-semantic artifacts.
 //!
 //! This module provides the storage substrate for the unified cache: typed BLAKE3 identities,
 //! the on-disk object store with its envelope format and lock-free atomic publication, capacity
 //! management, and the public [`CacheStore`] trait. It does not yet define the concrete artifact
-//! payload types (parse outcomes, library indexes/closures, semantic graphs) or wire any call
-//! site to use it — those are later slices of the plan's cutover.
+//! payload types (parse outcomes and library indexes/closures) or wire any call site to use it.
+//! Immutable semantic publications are deliberately not cache payloads.
 
 pub mod api;
 pub mod artifacts;

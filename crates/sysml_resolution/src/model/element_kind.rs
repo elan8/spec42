@@ -134,6 +134,7 @@ pub(crate) fn element_kind(kind: DeclarationKind) -> ElementKind {
         DeclarationKind::Satisfy => ElementKind::SatisfyRequirementUsage,
         DeclarationKind::Bind => ElementKind::BindingConnectorAsUsage,
         DeclarationKind::Import => ElementKind::Import,
+        DeclarationKind::Expose => ElementKind::Expose,
         DeclarationKind::Alias => ElementKind::Alias,
         DeclarationKind::Dependency => ElementKind::Dependency,
 
@@ -275,6 +276,7 @@ pub(crate) fn membership_role(kind: DeclarationKind) -> Option<MembershipRole> {
         | DeclarationKind::Satisfy
         | DeclarationKind::Bind
         | DeclarationKind::Import
+        | DeclarationKind::Expose
         | DeclarationKind::Alias
         | DeclarationKind::Dependency
         | DeclarationKind::KermlClassifier
@@ -370,6 +372,7 @@ mod tests {
         DeclarationKind::CalcUsage,
         DeclarationKind::ClassDefinition,
         DeclarationKind::Import,
+        DeclarationKind::Expose,
         DeclarationKind::Alias,
         DeclarationKind::EntryActionBinding,
         DeclarationKind::DoActionBinding,

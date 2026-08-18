@@ -1,4 +1,4 @@
-//! `LibraryClosure` cache artifact (`planning/UNIFY_CACHE_PLAN.md` §6.4).
+//! `LibraryClosure` cache artifact.
 //!
 //! Key inputs: the complete workspace source root (conservatively committing all workspace
 //! text, via [`source_identity::RootDigest`]); the ordered [`ArtifactKey`]s of the library
@@ -6,36 +6,15 @@
 //! flags, implied package seeds, full-scan mode, source roles, standard-library roots, root
 //! precedence, and the closure algorithm version.
 //!
-//! Per §6.4's explicit trade-off, a closure entry may over-invalidate on unrelated workspace
+//! A closure entry may over-invalidate on unrelated workspace
 //! content (the whole workspace root is committed, not just the parts that actually influenced
 //! selection), but it must never omit an input because a heuristic signature happened to be
 //! unchanged. That is why the key commits the *entire* workspace `RootDigest` rather than a
-//! derived "closure seed signature" the way `crates/workspace/src/library_graph_cache.rs`
-//! currently does.
+//! derived heuristic signature.
 //!
-//! `LibraryClosurePolicy` is the single canonical policy this module defines. Routing every
-//! production surface through it is plan step 5 (`SemanticBuildService`), out of scope here. See
-//! the module docs below for the concrete existing call sites that currently diverge from a
-//! single policy — that divergence is exactly what `planning/UNIFY_CACHE_PLAN.md` §1 and §6.4 describe.
-//!
-//! ## Step 5 work list: existing call sites that must be routed through this policy
-//!
-//! - `crates/workspace/src/provider/filesystem.rs::HostFilesystemProvider::new` (CLI/host):
-//!   injects a fixed 20-name `IMPLIED_SEMANTIC_PACKAGES` list as `seed_packages`, with default
-//!   bootstrap flags and no full-scan concept at all.
-//! - `crates/lsp_server/src/lsp_runtime/documents/startup.rs` (LSP startup): uses
-//!   `LibraryClosureOptions::default()` (no implied seeds) for its closure signature, and
-//!   separately gates on the `SPEC42_LIBRARY_FULL_SCAN` environment variable via
-//!   `crates/lsp_server/src/workspace/library_closure.rs::library_full_scan_enabled`.
-//! - `crates/lsp_server/src/workspace/library_closure.rs::load_library_closure_scan_entries`:
-//!   also uses `LibraryClosureOptions::default()`, independently of the startup signature above.
-//! - `crates/sysml_model/src/semantic/source/providers/filesystem.rs`
-//!   (`FileSystemDocumentProvider`): threads whatever `library_seed_packages` its caller
-//!   happened to set, which is empty unless the CLI/host path populated it.
-//!
-//! None of these are modified by this change (routing them is plan step 5, which depends on
-//! `SemanticBuildService`); they are recorded here as the concrete divergence this policy type
-//! is meant to eventually replace.
+//! `LibraryClosurePolicy` is the single canonical policy represented by this artifact. Production
+//! routing must use the owning immutable publication path; this type must not become a competing
+//! semantic authority.
 
 use serde::{Deserialize, Serialize};
 

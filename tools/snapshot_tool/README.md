@@ -43,7 +43,7 @@ Run it from the repository root:
 
 ```sh
 cargo run -p spec42-snapshot -- update
-git diff -- test/snapshots
+git diff -- tests/snapshots
 cargo run -p spec42-snapshot -- check
 ```
 

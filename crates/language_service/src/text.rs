@@ -70,7 +70,7 @@ pub fn unit_value_suffix_selection_at_position(
     text: &str,
     line: u32,
     character: u32,
-) -> Option<(String, sysml_model::TextRange)> {
+) -> Option<(String, sysml_query::resolved_slice::TextRange)> {
     let line_str = text.lines().nth(line as usize)?;
     let chars: Vec<char> = line_str.chars().collect();
     let pos = character as usize;
@@ -120,12 +120,12 @@ pub fn unit_value_suffix_selection_at_position(
     let end = (inner_end - trailing) as u32;
     Some((
         inner_text.to_string(),
-        sysml_model::TextRange {
-            start: sysml_model::TextPosition {
+        sysml_query::resolved_slice::TextRange {
+            start: sysml_query::resolved_slice::TextPosition {
                 line,
                 character: start,
             },
-            end: sysml_model::TextPosition {
+            end: sysml_query::resolved_slice::TextPosition {
                 line,
                 character: end,
             },

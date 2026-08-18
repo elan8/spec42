@@ -1,4 +1,4 @@
-//! `LibraryIndex` cache artifact (`planning/UNIFY_CACHE_PLAN.md` §6.3).
+//! `LibraryIndex` cache artifact.
 //!
 //! Key inputs: ordered library-root content manifests expressed as root slot, relative path, and
 //! content digest — deliberately without absolute install paths, so the index stays reachable
@@ -8,7 +8,7 @@
 //! Payload: the package/import/type-reference facts closure resolution needs, the relative file
 //! identities and their digests, and an explicit malformed/unsupported status. This module does
 //! not implement a lexer or wire any producer — nothing in production builds a `LibraryIndex`
-//! yet (that is plan step 5's `SemanticBuildService` routing). It defines the artifact's shape
+//! yet. It defines the artifact's shape
 //! and key so that work can build on a stable contract, per `AGENTS.md`'s "one canonical
 //! derivation owner" and "state every prerequisite before caching" rules.
 //!
@@ -31,7 +31,7 @@ pub const LIBRARY_INDEX_SCHEMA_VERSION: u32 = 1;
 /// changes (e.g. which constructs are recognized), independent of the payload schema.
 pub const LIBRARY_INDEX_ALGORITHM_VERSION: u32 = 1;
 
-/// One library file's relative, portable identity (plan §6.3): no absolute install path, only a
+/// One library file's relative, portable identity: no absolute install path, only a
 /// root slot (matching the ordered manifest's position) and a path relative to that root.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct LibraryFileIdentity {

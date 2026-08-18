@@ -12,10 +12,10 @@ pub mod keywords;
 pub mod lookup;
 pub mod navigation;
 mod outline;
-mod presentation_hover;
 pub mod references;
 pub mod rename;
 pub mod symbol;
+mod syntax;
 pub mod text;
 pub mod uri;
 pub mod workspace;
@@ -44,7 +44,6 @@ pub use keywords::{
 };
 pub use navigation::{find_references, goto_definition, hover};
 pub use outline::{document_symbols, folding_ranges};
-pub use presentation_hover::{hover_markdown_for_node, signature_from_node};
 pub use rename::{apply_rename, prepare_rename, rename_target, RenameTarget};
 pub use symbol::{
     find_reference_ranges, symbol_entries_for_uri, symbol_hover_markdown, SymbolEntry,

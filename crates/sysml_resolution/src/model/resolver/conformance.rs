@@ -137,6 +137,7 @@ pub(super) fn classify(kind: DeclarationKind) -> Option<(Family, Role)> {
         | K::Package
         | K::LibraryPackage
         | K::Import
+        | K::Expose
         | K::Alias
         | K::EnumerationLiteral
         | K::ClassDefinition
@@ -309,12 +310,13 @@ impl ResolvedSemanticModel {
     pub(super) fn collect_conformance(
         &self,
         document: DocumentId,
+        declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
         self.collect_reference_kind_conformance(document, diagnostics)?;
         self.collect_implied_conformance(document, diagnostics)?;
-        self.collect_type_relationship_cardinality(document, diagnostics)?;
-        self.collect_specialization_cycles(document, diagnostics)?;
+        self.collect_type_relationship_cardinality(declared, diagnostics)?;
+        self.collect_specialization_cycles(declared, diagnostics)?;
         Ok(())
     }
 
@@ -329,18 +331,10 @@ impl ResolvedSemanticModel {
     /// owner and each target, so one target is meaningful.
     fn collect_type_relationship_cardinality(
         &self,
-        document: DocumentId,
+        declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
-        for index in 0..self.storage.declarations.len() {
-            let id = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
-            let declaration = self
-                .storage
-                .declaration(id)
-                .ok_or(ResolutionError::InvalidStorage)?;
-            if declaration.document != document {
-                continue;
-            }
+        for id in declared.iter().copied() {
             for kind in [
                 ReferenceKind::Unioning,
                 ReferenceKind::Intersecting,
@@ -403,16 +397,20 @@ impl ResolvedSemanticModel {
             {
                 continue;
             }
-            let mut report = |code, severity| -> Result<(), ResolutionError> {
+            let mut report = |code: DiagnosticCode, severity| -> Result<(), ResolutionError> {
                 diagnostics.push(Diagnostic {
+                    message: code.describe().into(),
                     code,
                     severity,
                     origin: DiagnosticOrigin::Semantic,
+                    subject: self.symbol_identity(relationship.source),
                     location: DiagnosticLocation {
                         document: writer::document_identity(self, document).into(),
                         range: document_range(&self.storage, document, &source.span)?,
                     },
-                    related: Box::from([self.declaration_location(relationship.target)?]),
+                    related: Box::from([
+                        self.related_declaration(relationship.target, RELATED_DECLARED)?
+                    ]),
                 });
                 Ok(())
             };
@@ -630,28 +628,18 @@ impl ResolvedSemanticModel {
     /// a depth-first search per node over the whole graph.
     fn collect_specialization_cycles(
         &self,
-        document: DocumentId,
+        declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
-        for index in 0..self.storage.declarations.len() {
-            let id = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
-            let declaration = self
-                .storage
-                .declaration(id)
-                .ok_or(ResolutionError::InvalidStorage)?;
-            if declaration.document != document || !self.types.specialization().is_cyclic(id) {
+        for id in declared.iter().copied() {
+            if !self.types.specialization().is_cyclic(id) {
                 continue;
             }
-            diagnostics.push(Diagnostic {
-                code: DiagnosticCode::SpecializationCycle,
-                severity: DiagnosticSeverity::Error,
-                origin: DiagnosticOrigin::Semantic,
-                location: DiagnosticLocation {
-                    document: writer::document_identity(self, document).into(),
-                    range: document_range(&self.storage, document, &declaration.span)?,
-                },
-                related: Box::default(),
-            });
+            diagnostics.push(self.declaration_diagnostic(
+                id,
+                DiagnosticCode::SpecializationCycle,
+                DiagnosticSeverity::Error,
+            )?);
         }
         Ok(())
     }
@@ -677,10 +665,26 @@ impl ResolvedSemanticModel {
         code: DiagnosticCode,
         severity: DiagnosticSeverity,
     ) -> Result<Diagnostic, ResolutionError> {
+        self.declaration_message_diagnostic(declaration, code, severity, None)
+    }
+
+    /// A declaration diagnostic whose text names something the reported range does not show.
+    pub(super) fn declaration_message_diagnostic(
+        &self,
+        declaration: DeclarationId,
+        code: DiagnosticCode,
+        severity: DiagnosticSeverity,
+        message: Option<String>,
+    ) -> Result<Diagnostic, ResolutionError> {
         Ok(Diagnostic {
+            message: match message {
+                Some(message) => message.into_boxed_str(),
+                None => code.describe().into(),
+            },
             code,
             severity,
             origin: DiagnosticOrigin::Semantic,
+            subject: self.symbol_identity(declaration),
             location: self.declaration_location(declaration)?,
             related: Box::default(),
         })
@@ -700,15 +704,17 @@ impl ResolvedSemanticModel {
             .declaration(reference.source)
             .ok_or(ResolutionError::InvalidStorage)?;
         Ok(Diagnostic {
+            message: code.describe().into(),
             code,
             severity,
             origin: DiagnosticOrigin::Semantic,
+            subject: self.symbol_identity(reference.source),
             location: DiagnosticLocation {
                 document: writer::document_identity(self, source.document).into(),
                 range: document_range(&self.storage, source.document, &reference.span)?,
             },
             related: match related {
-                Some(target) => Box::from([self.declaration_location(target)?]),
+                Some(target) => Box::from([self.related_declaration(target, RELATED_DECLARED)?]),
                 None => Box::default(),
             },
         })
@@ -728,4 +734,19 @@ impl ResolvedSemanticModel {
             range: document_range(&self.storage, declaration.document, &declaration.span)?,
         })
     }
+
+    /// One related site pointing at a declaration, with the owner's note about why it is related.
+    pub(super) fn related_declaration(
+        &self,
+        declaration: DeclarationId,
+        message: &str,
+    ) -> Result<RelatedLocation, ResolutionError> {
+        Ok(RelatedLocation {
+            location: self.declaration_location(declaration)?,
+            message: message.into(),
+        })
+    }
 }
+
+/// The note a diagnostic attaches to the declaration its subject named.
+pub(super) const RELATED_DECLARED: &str = "Declared here.";

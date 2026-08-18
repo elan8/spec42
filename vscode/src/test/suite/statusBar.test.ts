@@ -43,7 +43,7 @@ describe("statusBar", () => {
 
     assert.strictEqual(vm.text, "$(sync~spin) Validating files · 3E 1W");
     assert.ok(vm.baseTooltip.includes("Problems reflect open files"));
-    assert.ok(vm.baseTooltip.includes("Model Explorer and diagrams update"));
+    assert.ok(vm.baseTooltip.includes("Cross-file editor results update"));
   });
 
   it("shows compound status while building workspace model", () => {

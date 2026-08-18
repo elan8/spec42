@@ -4,10 +4,9 @@ mod build;
 mod changes;
 mod context;
 pub mod discovery;
-pub(crate) mod facts;
 mod metadata;
 mod output;
-mod projection;
+pub mod publication;
 mod request;
 mod update;
 mod validation;
@@ -17,15 +16,7 @@ pub use changes::{apply_document_changes, DocumentChanges};
 pub use context::{CancellationToken, HostContext, HostPipelinePhase, HostResourceLimits};
 pub use metadata::HostArtifactMetadata;
 pub use output::Spec42ProjectionOutput;
-pub use projection::{
-    HostAnalysisEvaluation, HostConnectorEnd, HostElementFacts, HostEvaluatedScalar,
-    HostEvaluationQuery, HostExpression, HostExpressionArgument, HostExpressionEvaluation,
-    HostFeatureOwnership, HostFeatureOwnershipProvenance, HostFeatureProperties, HostFeatureValue,
-    HostImpliedRelationshipRule, HostImportOrigin, HostImportShape, HostMembershipFacts,
-    HostMembershipKind, HostMembershipVisibilityProvenance, HostMultiplicity,
-    HostRelationshipMetaclass, HostRelationshipProvenance, HostSemanticModelNode,
-    HostSemanticModelRelationship, HostSemanticProjection, HostVisibilityKind,
-};
+pub use publication::publish_documents;
 pub use request::{ValidationTiming, WorkspaceLoadRequest};
 pub use update::update_workspace_snapshot;
 pub use validation::{HostValidatedDocument, HostValidationReport, HostValidationSummary};

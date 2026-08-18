@@ -114,8 +114,7 @@ jobs:
 
       - name: Requirements slice integration checks
         run: |
-          cargo test -p lsp_server --test lsp_integration integration::model::lsp_sysml_model_graph_resolves_requirement_usage_typing_same_file
-          cargo test -p lsp_server --test lsp_integration integration::model::lsp_sysml_model_graph_resolves_requirement_usage_typing_cross_file
+          cargo test -p lsp_server --test lsp_integration integration::feature_inspector::lsp_feature_inspector_resolves_cross_file_typing
           cargo test -p lsp_server --test lsp_integration integration::diagnostics::unresolved_satisfy_reference_emits_semantic_diagnostic
 
       - name: cargo test (core workspace)
@@ -273,9 +272,6 @@ jobs:
             shared/diagram-renderer/package-lock.json
             vscode/package-lock.json
 
-      - name: Check frontend ELK dependency parity
-        run: node scripts/check-frontend-elk-parity.mjs
-
       - name: npm ci (diagram renderer)
         run: cd shared/diagram-renderer && npm ci
 
@@ -424,23 +420,14 @@ jobs:
       - name: npm ci (vscode)
         run: cd vscode && npm ci
 
-      - name: Build extension and webview
-        run: cd vscode && npm run build:webview-assets && npm run build:webview && npm run compile
+      - name: Build extension
+        run: cd vscode && npm run compile
 
       - name: npm test (extension smoke)
         run: cd vscode && xvfb-run -a npm test
 
       - name: npm test (multi-file smoke)
         run: cd vscode && xvfb-run -a npm run test:multi-file
-
-      - name: npm test (workspace smoke)
-        run: cd vscode && xvfb-run -a npm run test:workspace-smoke
-
-      - name: npm test (state view integration)
-        run: cd vscode && xvfb-run -a npm run test:state-view
-
-      - name: npm test (interconnection integration)
-        run: cd vscode && xvfb-run -a npm run test:interconnection
 
       - name: npm test (server restart smoke)
         run: cd vscode && xvfb-run -a npm run test:server-restart
@@ -550,11 +537,8 @@ jobs:
       - name: npm ci (vscode)
         run: cd vscode && npm ci
 
-      - name: Build extension and webview
-        run: cd vscode && npm run build:webview-assets && npm run build:webview && npm run compile
-
-      - name: Verify package layout
-        run: cd vscode && npm run verify:package-layout
+      - name: Build extension
+        run: cd vscode && npm run compile
 
       - name: Package VSIX
         run: cd vscode && npm run package

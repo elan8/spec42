@@ -20,7 +20,6 @@ embed-kpar-libraries = ["workspace/embed-kpar-libraries"]
 [dependencies]
 workspace = { path = "../workspace", default-features = false }
 lsp_server = { path = "../lsp_server" }
-sysml_model = { path = "../sysml_model" }
 sysml_query = { path = "../sysml_query" }
 generator_api = { path = "../generator_api" }
 generator_host = { path = "../generator_host" }

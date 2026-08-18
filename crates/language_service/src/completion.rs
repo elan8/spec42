@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 
-use sysml_model::{TextPosition, TextRange};
 use sysml_query::resolved_slice::ElementKind;
+use sysml_query::resolved_slice::{TextPosition, TextRange};
 use url::Url;
 
 use crate::dto::{

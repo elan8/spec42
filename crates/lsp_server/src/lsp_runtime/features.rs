@@ -9,7 +9,6 @@ use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
 use tracing::info;
 
-use crate::common::text_span::to_core_position;
 use crate::common::util;
 use crate::language::{is_reserved_keyword, word_at_position};
 use crate::semantic_tokens::{ast_semantic_ranges, semantic_tokens_full, semantic_tokens_range};
@@ -192,22 +191,6 @@ pub(crate) fn linked_editing_range(
     }))
 }
 
-pub(crate) fn moniker(
-    state: &ServerState,
-    uri: Url,
-    pos: Position,
-) -> Result<Option<Vec<Moniker>>> {
-    let uri_norm = util::normalize_file_uri(&uri);
-    let node = match state
-        .semantic_graph
-        .find_node_at_position(&uri_norm, to_core_position(pos))
-    {
-        Some(node) => node,
-        None => return Ok(None),
-    };
-    Ok(Some(vec![hierarchy::moniker_for_node(node)]))
-}
-
 /// The published element whose declaration contains `position`, if the publication settled one.
 fn element_at(
     state: &ServerState,
@@ -235,9 +218,7 @@ fn element_at(
 /// One published specialization step, in either direction.
 ///
 /// `AnySpecialization` is the scope the OMG Pilot's `Type::supertypes` uses, so a feature typing
-/// and a subsetting are steps in this hierarchy exactly as a subclassification is. The graph-backed
-/// version this replaced followed typing and specialization edges only, which silently omitted the
-/// feature-level subkinds.
+/// and a subsetting are steps in this hierarchy exactly as a subclassification is.
 fn hierarchy_step(
     state: &ServerState,
     uri: &Url,
@@ -304,70 +285,4 @@ pub(crate) fn subtypes(
     range: Range,
 ) -> Result<Option<Vec<TypeHierarchyItem>>> {
     Ok(hierarchy_step(state, &uri, range.start, false))
-}
-
-pub(crate) fn prepare_call_hierarchy(
-    state: &ServerState,
-    uri: Url,
-    pos: Position,
-) -> Result<Option<Vec<CallHierarchyItem>>> {
-    let uri_norm = util::normalize_file_uri(&uri);
-    let node = match state
-        .semantic_graph
-        .find_node_at_position(&uri_norm, to_core_position(pos))
-    {
-        Some(node) => node,
-        None => return Ok(None),
-    };
-    Ok(Some(vec![hierarchy::call_hierarchy_item_for_node(node)]))
-}
-
-pub(crate) fn incoming_calls(
-    state: &ServerState,
-    uri: Url,
-    range: Range,
-) -> Result<Option<Vec<CallHierarchyIncomingCall>>> {
-    let node = match state
-        .semantic_graph
-        .find_node_at_position(&uri, to_core_position(range.start))
-    {
-        Some(node) => node,
-        None => return Ok(None),
-    };
-    let from_ranges = vec![range];
-    let calls = state
-        .semantic_graph
-        .incoming_perform_sources(node)
-        .into_iter()
-        .map(|src| CallHierarchyIncomingCall {
-            from: hierarchy::call_hierarchy_item_for_node(src),
-            from_ranges: from_ranges.clone(),
-        })
-        .collect();
-    Ok(Some(calls))
-}
-
-pub(crate) fn outgoing_calls(
-    state: &ServerState,
-    uri: Url,
-    range: Range,
-) -> Result<Option<Vec<CallHierarchyOutgoingCall>>> {
-    let node = match state
-        .semantic_graph
-        .find_node_at_position(&uri, to_core_position(range.start))
-    {
-        Some(node) => node,
-        None => return Ok(None),
-    };
-    let from_ranges = vec![range];
-    let calls = state
-        .semantic_graph
-        .outgoing_perform_targets(node)
-        .into_iter()
-        .map(|target| CallHierarchyOutgoingCall {
-            to: hierarchy::call_hierarchy_item_for_node(target),
-            from_ranges: from_ranges.clone(),
-        })
-        .collect();
-    Ok(Some(calls))
 }

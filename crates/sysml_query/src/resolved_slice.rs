@@ -12,12 +12,12 @@ pub use sysml_resolution::{
     EvaluationState, ExpectedMeasurement, FeatureDirection, InheritedFeature, MembershipFacts,
     MembershipKind, MembershipRole, MultiplicityBound, MultiplicityFacts, NavigationTarget,
     OccurrenceRole, PortionKind, PublicationCompleteness, PublicationIdentity,
-    PublishedDiagnostics, QueryOutcome, ReferenceAt, ReferencedDetails, RelationshipFamily,
-    RelationshipOutcome, RelationshipProvenance, RelationshipTarget, RenameOutcome,
-    RequirementConstraintKind, RequirementUsageTyping, RequirementVerification, ResolvedUnit,
-    SatisfyEndpoint, SatisfyPolarity, SatisfyRelationship, SourceLocation, SpecializationScope,
-    StateSubactionKind, SubsettingConformance, SymbolEntry, SymbolIdentity, TextPosition,
-    TextRange, TypeReference, UnitResolution, ValueKind, VerificationOutcome,
+    PublishedDiagnostics, QueryOutcome, ReferenceAt, ReferencedDetails, RelatedLocation,
+    RelationshipFamily, RelationshipOutcome, RelationshipProvenance, RelationshipTarget,
+    RenameOutcome, RequirementConstraintKind, RequirementUsageTyping, RequirementVerification,
+    ResolvedUnit, SatisfyEndpoint, SatisfyPolarity, SatisfyRelationship, SourceLocation,
+    SpecializationScope, StateSubactionKind, SubsettingConformance, SymbolEntry, SymbolIdentity,
+    TextPosition, TextRange, TypeReference, UnitResolution, ValueKind, VerificationOutcome,
     VerificationRequirement, Visibility, VisibilityProvenance, VisibleMember,
 };
 
@@ -146,6 +146,19 @@ impl BuildRequest {
         .map_err(BuildError)
     }
 
+    /// Also reports diagnostics for these admitted documents, beyond the workspace-authored ones.
+    ///
+    /// A publication reports its workspace by default. That default is about provenance, which is
+    /// not the same question as which documents are an authoring surface: an editor with a library
+    /// file open is authoring it, and only the host knows that. Naming the document here is how it
+    /// says so, and it is part of the publication's identity because it changes what the
+    /// publication answers.
+    pub fn reporting(self, documents: impl IntoIterator<Item = Box<str>>) -> Self {
+        Self {
+            inner: self.inner.reporting(documents),
+        }
+    }
+
     /// The identity the publication built from this request will carry.
     ///
     /// Available before the build so a publication owner can record what it scheduled and reject
@@ -269,11 +282,8 @@ impl PublishedModel {
 /// at the publication barrier, so a host, a generator, and the canonical snapshot projection
 /// cannot disagree about what one publication reported.
 ///
-/// This does not yet cover every conformance family -- view metadata, behavior, connection,
-/// import, and requirement-case conformance are still evaluated by `sysml_diagnostics` over the
-/// mutable graph. Read `sysml_resolution::diagnostics`'s module documentation and
-/// `PRODUCTION_CUTOVER.md` before pointing a legacy diagnostic consumer at this service, or it
-/// will silently stop reporting the codes those families own.
+/// This is the whole validation surface a host reports. `sysml_resolution::diagnostics`'s module
+/// documentation lists the families it decides and the rules it deliberately leaves absent.
 pub struct DiagnosticQueries<'a> {
     model: &'a sysml_resolution::PublishedResolution,
 }
@@ -283,6 +293,16 @@ impl DiagnosticQueries<'_> {
     /// that produced them. Only workspace-authored documents are reported.
     pub fn published(&self) -> PublishedDiagnostics {
         self.model.diagnostics()
+    }
+
+    /// The diagnostics of one admitted document, read from the publication's own index.
+    ///
+    /// The cost is proportional to what is returned rather than to the model, and nothing here
+    /// computes: repeating the query, or asking about documents in any order, answers identically.
+    /// A document this publication did not admit answers with no diagnostics and the same
+    /// completeness, which is why the completeness travels with the answer.
+    pub fn for_document(&self, document: &str) -> PublishedDiagnostics {
+        self.model.document_diagnostics(document)
     }
 }
 

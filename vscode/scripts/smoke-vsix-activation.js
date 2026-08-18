@@ -117,7 +117,7 @@ async function run() {
   await extension.activate();
 
   const commands = await vscode.commands.getCommands(true);
-  const required = ["sysml.restartServer", "sysml.showVisualizer"];
+  const required = ["sysml.restartServer"];
   const missing = required.filter((cmd) => !commands.includes(cmd));
   if (missing.length > 0) {
     throw new Error(\`Extension activated but expected commands are missing: \${missing.join(", ")}\`);

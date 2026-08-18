@@ -1,10 +1,8 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 
-use sysml_model::{
-    build_semantic_graph_from_documents, SemanticGraph, SysmlDocument, TextPosition,
-    WorkspaceParsedDocument,
-};
+use sysml_query::resolved_slice::TextPosition;
+use sysml_source::{SysmlDocument, SysmlDocumentProvider};
 use sysml_v2_parser::RootNamespace;
 use url::Url;
 
@@ -24,7 +22,6 @@ struct DocumentEntry {
 pub struct InMemoryWorkspace {
     documents: HashMap<Url, DocumentEntry>,
     path_to_uri: HashMap<String, Url>,
-    semantic_graph: SemanticGraph,
     published_model: Arc<sysml_query::resolved_slice::PublishedModel>,
     symbol_table: Vec<SymbolEntry>,
 }
@@ -34,7 +31,6 @@ pub trait WorkspaceSnapshot {
     fn resolve_uri_for_path(&self, path: &str) -> Option<Url>;
     fn path_for_uri(&self, uri: &Url) -> String;
     fn document_text(&self, uri: &Url) -> Option<&str>;
-    fn semantic_graph(&self) -> &SemanticGraph;
     fn published_model(&self) -> Option<&sysml_query::resolved_slice::PublishedModel>;
     fn symbol_table(&self) -> &[SymbolEntry];
     fn index_uris(&self) -> Vec<Url>;
@@ -55,16 +51,6 @@ pub trait WorkspaceSnapshot {
 impl InMemoryWorkspace {
     /// Build a workspace from pre-loaded SysML documents (workspace + optional library docs).
     pub fn from_documents(documents: Vec<SysmlDocument>) -> Result<Self, String> {
-        let (semantic_graph, parsed_docs) = build_semantic_graph_from_documents(&documents)?;
-        Self::from_graph_and_documents(semantic_graph, parsed_docs, &documents)
-    }
-
-    /// Build a workspace from an already-built semantic graph and parsed documents.
-    pub fn from_graph_and_documents(
-        semantic_graph: SemanticGraph,
-        parsed_docs: Vec<WorkspaceParsedDocument>,
-        documents: &[SysmlDocument],
-    ) -> Result<Self, String> {
         let sources = documents
             .iter()
             .map(|document| {
@@ -84,12 +70,25 @@ impl InMemoryWorkspace {
         let published_model = Arc::new(
             sysml_query::resolved_slice::build(request).map_err(|error| error.to_string())?,
         );
+        Self::from_documents_and_publication(documents, published_model)
+    }
+
+    /// Index documents against the exact immutable publication owned by the host.
+    pub fn from_documents_and_publication(
+        documents: Vec<SysmlDocument>,
+        published_model: Arc<sysml_query::resolved_slice::PublishedModel>,
+    ) -> Result<Self, String> {
         let mut documents_map = HashMap::new();
         let mut path_to_uri = HashMap::new();
 
-        for parsed in parsed_docs {
-            let path = parsed.uri.path().trim_start_matches('/').replace('\\', "/");
-            let path = parsed
+        for document in &documents {
+            let parsed = sysml_v2_parser::parse_for_editor(&document.content).root;
+            let path = document
+                .uri
+                .path()
+                .trim_start_matches('/')
+                .replace('\\', "/");
+            let path = document
                 .uri
                 .path()
                 .split('/')
@@ -101,39 +100,36 @@ impl InMemoryWorkspace {
             // Prefer path_hint from original documents when available.
             let path = documents
                 .iter()
-                .find(|doc| doc.uri == parsed.uri)
+                .find(|doc| doc.uri == document.uri)
                 .and_then(|doc| doc.path_hint.clone())
                 .unwrap_or(path);
 
-            let uri = normalize_uri(&parsed.uri);
+            let uri = normalize_uri(&document.uri);
             path_to_uri.insert(path.clone(), uri.clone());
             documents_map.insert(
                 uri,
                 DocumentEntry {
                     path,
-                    content: parsed.content,
-                    parsed: parsed.parsed,
+                    content: document.content.clone(),
+                    parsed,
                 },
             );
         }
 
         let mut symbol_table = Vec::new();
         for uri in documents_map.keys() {
-            symbol_table.extend(symbol_entries_for_uri(&semantic_graph, uri));
+            symbol_table.extend(symbol_entries_for_uri(&published_model, uri));
         }
 
         Ok(Self {
             documents: documents_map,
             path_to_uri,
-            semantic_graph,
             published_model,
             symbol_table,
         })
     }
 
-    pub fn from_provider(
-        provider: &impl sysml_model::SysmlDocumentProvider,
-    ) -> Result<Self, String> {
+    pub fn from_provider(provider: &impl SysmlDocumentProvider) -> Result<Self, String> {
         let documents = provider.load_documents()?;
         Self::from_documents(documents)
     }
@@ -172,10 +168,6 @@ impl WorkspaceSnapshot for InMemoryWorkspace {
             .map(|entry| entry.content.as_str())
     }
 
-    fn semantic_graph(&self) -> &SemanticGraph {
-        &self.semantic_graph
-    }
-
     fn published_model(&self) -> Option<&sysml_query::resolved_slice::PublishedModel> {
         Some(&self.published_model)
     }
@@ -200,10 +192,6 @@ impl WorkspaceSnapshot for &InMemoryWorkspace {
 
     fn document_text(&self, uri: &Url) -> Option<&str> {
         (*self).document_text(uri)
-    }
-
-    fn semantic_graph(&self) -> &SemanticGraph {
-        (*self).semantic_graph()
     }
 
     fn published_model(&self) -> Option<&sysml_query::resolved_slice::PublishedModel> {

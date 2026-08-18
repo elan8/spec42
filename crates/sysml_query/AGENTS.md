@@ -1,7 +1,7 @@
 # sysml_query testing rules
 
 - Observable parser, semantic-construction, resolution, navigation, diagnostics, ordering,
-  completeness, and sequential/parallel behavior belongs in `test/snapshots` and must be exercised
+  completeness, and sequential/parallel behavior belongs in `tests/snapshots` and must be exercised
   by the standalone `spec42-snapshot` tool.
 - Do not construct semantic models in `crates/sysml_query/tests` to duplicate pipeline behavior with
   hand-authored cursor positions or expected candidate lists. Facade tests cover only public API
