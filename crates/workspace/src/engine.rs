@@ -23,7 +23,7 @@ pub struct Spec42Engine {
     metadata: HostEngineMetadata,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct EngineBuilder {
     cache_dir: Option<PathBuf>,
     server_embedding_mode: bool,
@@ -38,26 +38,6 @@ pub struct EngineBuilder {
     use_embedded_kpar_libraries: bool,
     config_stdlib_path: Option<PathBuf>,
     config_no_stdlib: bool,
-}
-
-impl Default for EngineBuilder {
-    fn default() -> Self {
-        Self {
-            cache_dir: None,
-            server_embedding_mode: false,
-            no_stdlib: false,
-            stdlib_path_override: None,
-            kpar_library_path_overrides: BTreeMap::new(),
-            disabled_kpar_libraries: BTreeSet::new(),
-            library_paths: Vec::new(),
-            extra_library_paths: Vec::new(),
-            standard_library: StandardLibraryConfig::default(),
-            use_embedded_stdlib: false,
-            use_embedded_kpar_libraries: false,
-            config_stdlib_path: None,
-            config_no_stdlib: false,
-        }
-    }
 }
 
 impl Spec42Engine {
