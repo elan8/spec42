@@ -8,8 +8,6 @@ import * as vscode from "vscode";
 export type ExtensionDebugState = {
   serverHealthState: "starting" | "ready" | "indexing" | "degraded" | "restarting" | "crashed";
   serverHealthDetail: string;
-  workspaceIndexSummary?: { scannedFiles: number; loadedFiles: number; truncated: boolean; cancelled: boolean; failures: number };
-  lastSemanticIndexReadyWorkspaceFileCount?: number;
 };
 export const isCi = Boolean(process.env.CI);
 export const integrationHookTimeoutMs = isCi ? 90000 : 60000;
@@ -166,28 +164,6 @@ export async function waitFor<T>(
   }
   assert.fail(
     `${label} did not become ready within ${timeoutMs}ms. Last value: ${summarizeWaitValue(lastValue)}`
-  );
-}
-
-export async function waitForWorkspaceIndexReady(
-  expectedFileCount: number,
-  timeoutMs = extensionServerReadyTimeoutMs
-): Promise<void> {
-  await waitFor(
-    `workspace index with ${expectedFileCount} file(s)`,
-    () => getExtensionDebugState(),
-    (state) => {
-      if (!state || state.serverHealthState !== "ready") {
-        return false;
-      }
-      const indexedFiles =
-        state.lastSemanticIndexReadyWorkspaceFileCount ??
-        state.workspaceIndexSummary?.loadedFiles ??
-        0;
-      return indexedFiles >= expectedFileCount;
-    },
-    timeoutMs,
-    300
   );
 }
 

@@ -18,19 +18,10 @@ import {
   isSysmlDoc,
 } from "./configBridge";
 
-export type WorkspaceIndexSummary = {
-  scannedFiles: number;
-  loadedFiles: number;
-  truncated: boolean;
-  cancelled: boolean;
-  failures?: number;
-};
-
 let statusItem: vscode.StatusBarItem | undefined;
 let lspModelProviderForStatus: LspModelProvider | undefined;
 let serverHealthState: ServerHealthState = "starting";
 let serverHealthDetail = "";
-let lastWorkspaceIndexSummary: WorkspaceIndexSummary | undefined;
 
 export function getServerHealthState(): ServerHealthState {
   return serverHealthState;
@@ -38,16 +29,6 @@ export function getServerHealthState(): ServerHealthState {
 
 export function getServerHealthDetail(): string {
   return serverHealthDetail;
-}
-
-export function getWorkspaceIndexSummary(): WorkspaceIndexSummary | undefined {
-  return lastWorkspaceIndexSummary;
-}
-
-export function setWorkspaceIndexSummary(
-  summary: WorkspaceIndexSummary | undefined
-): void {
-  lastWorkspaceIndexSummary = summary;
 }
 
 export function setLspModelProviderForStatus(
@@ -131,10 +112,7 @@ export function updateStatusBar(context: vscode.ExtensionContext): void {
   );
   item.text = status.text;
   const baseTooltip = status.baseTooltip;
-  const workspaceTooltip = lastWorkspaceIndexSummary
-    ? `\n\nWorkspace indexing:\nScanned ${lastWorkspaceIndexSummary.scannedFiles} file(s)\nLoaded ${lastWorkspaceIndexSummary.loadedFiles} file(s)${(lastWorkspaceIndexSummary.failures ?? 0) > 0 ? `\nFailures: ${lastWorkspaceIndexSummary.failures}` : ""}${lastWorkspaceIndexSummary.truncated ? "\nResults may be incomplete." : ""}${lastWorkspaceIndexSummary.cancelled ? "\nLast scan was cancelled." : ""}`
-    : "";
-  item.tooltip = `${baseTooltip}${workspaceTooltip}`;
+  item.tooltip = baseTooltip;
   item.show();
 
   const provider = lspModelProviderForStatus;
@@ -148,7 +126,7 @@ export function updateStatusBar(context: vscode.ExtensionContext): void {
             ? `${Math.floor(stats.uptime / 60)}m ${stats.uptime % 60}s`
             : `${stats.uptime}s`;
         const caches = stats.caches;
-        item.tooltip = `${baseTooltip}${workspaceTooltip}\n\n-- LSP Server --\nUptime: ${uptimeStr}\nCaches: ${caches.documents} docs, ${caches.symbolTables} symbols`;
+        item.tooltip = `${baseTooltip}\n\n-- LSP Server --\nUptime: ${uptimeStr}\nCaches: ${caches.documents} docs, ${caches.symbolTables} symbols`;
       })
       .catch(() => {});
   }

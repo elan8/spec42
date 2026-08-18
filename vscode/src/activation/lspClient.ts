@@ -29,7 +29,6 @@ import {
 import {
   getServerHealthDetail,
   getServerHealthState,
-  getWorkspaceIndexSummary,
   setServerHealth,
 } from "./statusBar";
 
@@ -609,13 +608,9 @@ export function registerLanguageClientDebugCommands(
       await waitForClientState(handles.client, new Set([State.Running]), restartWaitMs());
     }),
     vscode.commands.registerCommand("sysml.debug.getExtensionState", () => {
-      const summary = getWorkspaceIndexSummary();
       return {
         serverHealthState: getServerHealthState(),
         serverHealthDetail: getServerHealthDetail(),
-        workspaceIndexSummary: summary
-          ? { ...summary, failures: summary.failures ?? 0 }
-          : undefined,
       };
     })
   );

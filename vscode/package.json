@@ -286,23 +286,6 @@
         "category": "SysML"
       },
       {
-        "command": "sysml.switchToByFile",
-        "title": "Switch to By File",
-        "icon": "$(file)",
-        "category": "SysML"
-      },
-      {
-        "command": "sysml.switchToSemanticModel",
-        "title": "Switch to Semantic Model",
-        "icon": "$(symbol-class)",
-        "category": "SysML"
-      },
-      {
-        "command": "sysml.toggleWorkspaceViewMode",
-        "title": "Toggle Model View Mode",
-        "category": "SysML"
-      },
-      {
         "command": "sysml.showOutput",
         "title": "Show SysML Output (Logs)",
         "category": "SysML"
@@ -629,7 +612,6 @@
     "test:ux-unit": "vscode-test --config .vscode-test.ux-unit.mjs",
     "test:library-unit": "node ./node_modules/mocha/bin/mocha out/test/suite/libraryStatusViewModel.test.js",
     "test:multi-file": "vscode-test --config .vscode-test.multi-file.mjs",
-    "test:workspace-smoke": "vscode-test --config .vscode-test.workspace-smoke.mjs",
     "test:server-restart": "vscode-test --config .vscode-test.server-restart.mjs",
     "package": "vsce package"
   },

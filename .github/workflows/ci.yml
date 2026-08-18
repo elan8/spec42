@@ -429,9 +429,6 @@ jobs:
       - name: npm test (multi-file smoke)
         run: cd vscode && xvfb-run -a npm run test:multi-file
 
-      - name: npm test (workspace smoke)
-        run: cd vscode && xvfb-run -a npm run test:workspace-smoke
-
       - name: npm test (server restart smoke)
         run: cd vscode && xvfb-run -a npm run test:server-restart
 
