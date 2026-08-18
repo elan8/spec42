@@ -63,6 +63,14 @@ pub(crate) struct ServerState {
     pub(crate) session: workspace::WorkspaceSession,
     pub(crate) index: std::collections::HashMap<Url, IndexEntry>,
     pub(crate) symbol_table: Vec<SymbolEntry>,
+    /// Documents the editor currently has open.
+    ///
+    /// A library file is a library by *provenance* -- that is what decides how its names resolve.
+    /// Opening one makes it an authoring surface as well, which is a different fact and one only
+    /// the editor knows. The publication reports diagnostics for the documents named here in
+    /// addition to the workspace's own, so an author editing a library file sees its diagnostics
+    /// without every workspace inheriting the whole library's.
+    pub(crate) open_in_editor: std::collections::BTreeSet<Url>,
     pub(crate) semantic_graph: semantic::SemanticGraph,
     pub(crate) published_model: Option<Arc<sysml_query::resolved_slice::PublishedModel>>,
     /// The configured libraries, parsed and solved once.
@@ -105,6 +113,8 @@ pub(crate) trait DocumentStore {
     /// Configured library roots: generic libraries first, then the standard library.
     fn library_roots(&self) -> (&[Url], &[Url]);
     fn library_stratum_mut(&mut self) -> &mut Option<CachedLibraryStratum>;
+    /// Documents the editor has open, whose diagnostics are reported whatever their provenance.
+    fn open_in_editor(&self) -> &std::collections::BTreeSet<Url>;
 }
 
 impl DocumentStore for ServerState {
@@ -134,6 +144,10 @@ impl DocumentStore for ServerState {
     fn library_stratum_mut(&mut self) -> &mut Option<CachedLibraryStratum> {
         &mut self.library_stratum
     }
+
+    fn open_in_editor(&self) -> &std::collections::BTreeSet<Url> {
+        &self.open_in_editor
+    }
 }
 
 /// Rebuilds the published model for the current index.
@@ -158,9 +172,15 @@ pub(crate) fn refresh_published_model(state: &mut impl DocumentStore) {
     // Sorted so the stratum key is a property of the library's content rather than of hash-map
     // iteration order.
     entries.sort_by(|(left, _), (right, _)| left.as_str().cmp(right.as_str()));
+    let mut reported: Vec<Box<str>> = Vec::new();
     for (uri, entry) in entries {
         let standard = crate::common::util::uri_under_any_library(uri, standard_library_paths);
         let library = standard || crate::common::util::uri_under_any_library(uri, library_paths);
+        // A library file the editor has open is being authored, so its diagnostics are reported
+        // even though its provenance keeps it out of the workspace's own set.
+        if library && state.open_in_editor().contains(uri) {
+            reported.push(uri.as_str().into());
+        }
         let kind = if standard {
             SourceKind::StandardLibrary
         } else if library {
@@ -188,6 +208,7 @@ pub(crate) fn refresh_published_model(state: &mut impl DocumentStore) {
     };
     *state.published_model_mut() = request
         .ok()
+        .map(|request| request.reporting(reported))
         .and_then(|request| build(request).ok())
         .map(Arc::new);
 }

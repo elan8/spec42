@@ -84,9 +84,9 @@ package 'Views Example' {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_view_definition_member")
+        (code "view_expose_unresolved")
         (source "semantic")
-        (range (start 11 2) (end 11 21))
+        (range (start 11 9) (end 11 20))
       )
       (diagnostic
         (severity warning)
@@ -136,6 +136,7 @@ package 'Views Example' {
     (declaration (id (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::asTextualNotationTable"))) (kind rendering) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "asElementTable")))))
     (declaration (id (node (document "memory://snapshot/42_views_example.md") (path (named (kind package) (name "Views Example")) (named (kind rendering) (name "asTextualNotationTable")) (anonymous (kind view) (ordinal 0))))) (kind view) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 1) (upper 1))) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "columnView")))))
     (declaration (id (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::vehicle structure view"))) (kind view) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Part Structure View")))))
+    (declaration (id (node (document "memory://snapshot/42_views_example.md") (path (named (kind package) (name "Views Example")) (named (kind view) (name "vehicle structure view")) (anonymous (kind expose) (ordinal 0))))) (kind expose) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (viewExpose (reference "vehicle")))))
     (declaration (id (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::vehicle tabular views"))) (kind view) (membership (kind feature) (visibility default)))
   )
   (references
@@ -163,6 +164,9 @@ package 'Views Example' {
     (reference (id (source (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::vehicle structure view"))) (kind featureTyping) (ordinal 0))
       (authored-target "Part Structure View")
       (outcome (status resolved) (target (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::Part Structure View")))))
+    (reference (id (source (node (document "memory://snapshot/42_views_example.md") (path (named (kind package) (name "Views Example")) (named (kind view) (name "vehicle structure view")) (anonymous (kind expose) (ordinal 0))))) (kind viewExpose) (ordinal 0))
+      (authored-target "vehicle")
+      (outcome (status unresolved)))
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::vehicle structure view"))) (target (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::Part Structure View"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::vehicle structure view"))) (kind featureTyping) (ordinal 0)))
@@ -188,6 +192,9 @@ package 'Views Example' {
       (type (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::Part Structure View")) (provenance authored))
       (effective-type (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::Part Structure View")) (source direct))
       (supertype (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::Part Structure View")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/42_views_example.md") (path (named (kind package) (name "Views Example")) (named (kind view) (name "vehicle structure view")) (anonymous (kind expose) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::vehicle structure view")))
     )
 )
 ~~~
@@ -232,6 +239,11 @@ package 'Views Example' {
   (query (document "memory://snapshot/42_views_example.md") (range (start 10 33) (end 10 54)) (probe (position 10 33))
     (reference (id (source (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::vehicle structure view"))) (kind featureTyping) (ordinal 0) (authored-target "Part Structure View")
       (outcome (status resolved) (target (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::Part Structure View")))))
+    )
+  )
+  (query (document "memory://snapshot/42_views_example.md") (range (start 11 9) (end 11 20)) (probe (position 11 9))
+    (reference (id (source (node (document "memory://snapshot/42_views_example.md") (path (named (kind package) (name "Views Example")) (named (kind view) (name "vehicle structure view")) (anonymous (kind expose) (ordinal 0))))) (kind viewExpose) (ordinal 0) (authored-target "vehicle")
+      (outcome (status unresolved)))
     )
   )
 )

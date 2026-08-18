@@ -137,6 +137,7 @@ pub(super) fn classify(kind: DeclarationKind) -> Option<(Family, Role)> {
         | K::Package
         | K::LibraryPackage
         | K::Import
+        | K::Expose
         | K::Alias
         | K::EnumerationLiteral
         | K::ClassDefinition
@@ -309,12 +310,13 @@ impl ResolvedSemanticModel {
     pub(super) fn collect_conformance(
         &self,
         document: DocumentId,
+        declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
         self.collect_reference_kind_conformance(document, diagnostics)?;
         self.collect_implied_conformance(document, diagnostics)?;
-        self.collect_type_relationship_cardinality(document, diagnostics)?;
-        self.collect_specialization_cycles(document, diagnostics)?;
+        self.collect_type_relationship_cardinality(declared, diagnostics)?;
+        self.collect_specialization_cycles(declared, diagnostics)?;
         Ok(())
     }
 
@@ -329,18 +331,10 @@ impl ResolvedSemanticModel {
     /// owner and each target, so one target is meaningful.
     fn collect_type_relationship_cardinality(
         &self,
-        document: DocumentId,
+        declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
-        for index in 0..self.storage.declarations.len() {
-            let id = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
-            let declaration = self
-                .storage
-                .declaration(id)
-                .ok_or(ResolutionError::InvalidStorage)?;
-            if declaration.document != document {
-                continue;
-            }
+        for id in declared.iter().copied() {
             for kind in [
                 ReferenceKind::Unioning,
                 ReferenceKind::Intersecting,
@@ -634,16 +628,11 @@ impl ResolvedSemanticModel {
     /// a depth-first search per node over the whole graph.
     fn collect_specialization_cycles(
         &self,
-        document: DocumentId,
+        declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
-        for index in 0..self.storage.declarations.len() {
-            let id = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
-            let declaration = self
-                .storage
-                .declaration(id)
-                .ok_or(ResolutionError::InvalidStorage)?;
-            if declaration.document != document || !self.types.specialization().is_cyclic(id) {
+        for id in declared.iter().copied() {
+            if !self.types.specialization().is_cyclic(id) {
                 continue;
             }
             diagnostics.push(self.declaration_diagnostic(

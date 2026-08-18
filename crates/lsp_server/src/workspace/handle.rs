@@ -182,6 +182,40 @@ impl WorkspaceHandle {
 
     // --- did_open / did_change ---------------------------------------------------------
 
+    /// Records that the editor opened or closed `uri`.
+    ///
+    /// Which documents are open decides which library files the publication reports diagnostics
+    /// for, so this republishes: an opened library file has none until the model is rebuilt with
+    /// it named. Returns whether the set changed.
+    pub(crate) async fn set_document_open(
+        &self,
+        uri: Url,
+        open: bool,
+    ) -> Result<bool, MutatePanicked> {
+        self.actor
+            .mutate_if_changed(move |s| {
+                let changed = if open {
+                    s.open_in_editor.insert(uri.clone())
+                } else {
+                    s.open_in_editor.remove(&uri)
+                };
+                if !changed {
+                    return Mutation::Unchanged(false);
+                }
+                // Only a library file's reporting depends on this; a workspace document is
+                // reported either way, so rebuilding for one would be pure cost.
+                let library = crate::common::util::uri_under_any_library(&uri, &s.library_paths)
+                    || crate::common::util::uri_under_any_library(&uri, &s.standard_library_paths);
+                if library {
+                    crate::workspace::state::refresh_published_model(s);
+                    s.session.bump_version();
+                }
+                Mutation::Changed(library)
+            })
+            .await
+            .map(|outcome| outcome.value)
+    }
+
     pub(crate) async fn store_document_text_fast(
         &self,
         uri: Url,

@@ -1719,10 +1719,18 @@ impl ResolvedSemanticModel {
     /// Only workspace-authored documents contribute. Library sources take part in the same
     /// semantic system, but their own diagnostics are not the authoring surface, and this also
     /// keeps the barrier's cost proportional to the workspace rather than to the library.
-    fn derive_diagnostics(&self) -> Result<DerivedDiagnostics, ResolutionError> {
+    fn derive_diagnostics(
+        &self,
+        reported: &[Box<str>],
+    ) -> Result<DerivedDiagnostics, ResolutionError> {
         let mut diagnostics = Vec::new();
         let mut by_document = vec![(0u32, 0u32); self.storage.documents.len()];
-        for document_index in writer::canonical_document_indices(self) {
+        // Built once, then sliced per document. Every rule below asks "what did this document
+        // declare", and answering that by scanning every declaration each time made the barrier
+        // quadratic in the admitted corpus -- invisible while only workspace documents were
+        // derived, and the reason a library's own documents could not be.
+        let declarations_by_document = self.declarations_by_document()?;
+        for document_index in self.reported_document_indices(reported) {
             let document = &self.storage.documents[document_index];
             let document_id = DocumentId(document_index as u32);
             let first = diagnostics.len();
@@ -1816,10 +1824,14 @@ impl ResolvedSemanticModel {
                 });
             }
 
-            self.collect_conformance(document_id, &mut diagnostics)?;
-            self.collect_structural_conformance(document_id, &mut diagnostics)?;
-            self.collect_expression_conformance(document_id, &mut diagnostics)?;
-            self.collect_host_conformance(document_id, &mut diagnostics)?;
+            let declared = declarations_by_document
+                .get(document_index)
+                .map(Vec::as_slice)
+                .unwrap_or_default();
+            self.collect_conformance(document_id, declared, &mut diagnostics)?;
+            self.collect_structural_conformance(document_id, declared, &mut diagnostics)?;
+            self.collect_expression_conformance(document_id, declared, &mut diagnostics)?;
+            self.collect_host_conformance(document_id, declared, &mut diagnostics)?;
             self.collect_library_context(document_id, first, &mut diagnostics)?;
 
             // Ordering is owned here so no consumer has to sort, and so the order cannot vary with
@@ -1841,6 +1853,55 @@ impl ResolvedSemanticModel {
             diagnostics.into_boxed_slice(),
             by_document.into_boxed_slice(),
         ))
+    }
+
+    /// The documents whose diagnostics this publication derives, in canonical order.
+    ///
+    /// Every workspace-authored document, plus any admitted document the host explicitly named.
+    ///
+    /// The default is provenance: a workspace does not inherit its library's diagnostics, and
+    /// deriving every admitted document would make the barrier cost the whole library on every
+    /// rebuild. But provenance is not the same question as *authoring surface*: an editor with a
+    /// library file open is authoring it, and only the host knows that. Naming the document is how
+    /// it says so, and it is a build input rather than a query option because a diagnostic must be
+    /// settled before the publication is visible.
+    fn reported_document_indices(&self, reported: &[Box<str>]) -> Vec<usize> {
+        let mut indices = (0..self.storage.documents.len())
+            .filter(|index| {
+                let document = &self.storage.documents[*index];
+                document.role == source_identity::SourceRole::Workspace
+                    || reported
+                        .iter()
+                        .any(|identity| identity.as_ref() == document.identity.as_ref())
+            })
+            .collect::<Vec<_>>();
+        indices.sort_by(|left, right| {
+            self.storage.documents[*left]
+                .identity
+                .cmp(&self.storage.documents[*right].identity)
+                .then_with(|| left.cmp(right))
+        });
+        indices
+    }
+
+    /// Every declaration each admitted document authored, indexed by document.
+    ///
+    /// One pass over storage, so the diagnostic barrier costs the corpus once rather than once per
+    /// document per rule.
+    fn declarations_by_document(&self) -> Result<Vec<Vec<DeclarationId>>, ResolutionError> {
+        let mut by_document = vec![Vec::new(); self.storage.documents.len()];
+        for index in 0..self.storage.declarations.len() {
+            let id = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+            let declaration = self
+                .storage
+                .declaration(id)
+                .ok_or(ResolutionError::InvalidStorage)?;
+            by_document
+                .get_mut(declaration.document.index())
+                .ok_or(ResolutionError::InvalidStorage)?
+                .push(id);
+        }
+        Ok(by_document)
     }
 
     /// The diagnostics one document owns, as the settled slice rather than a filtered scan.
@@ -2672,6 +2733,10 @@ fn reference_diagnostic(
                 ReferenceKind::NamespaceImport | ReferenceKind::MembershipImport => {
                     DiagnosticCode::UnresolvedImportTarget
                 }
+                // A view names what it shows; an expose target that resolves to nothing means the
+                // view shows nothing, which is a different thing to a reader than an unresolved
+                // name in a declaration.
+                ReferenceKind::ViewExpose => DiagnosticCode::ViewExposeUnresolved,
                 _ => DiagnosticCode::UnresolvedReference,
             },
         )),
@@ -3002,6 +3067,7 @@ impl SemanticModelStorage {
         self,
         policy: EvaluationPolicy,
         library: Option<&SettledLibrary>,
+        reported: &[Box<str>],
     ) -> Result<ResolvedSemanticModel, ResolutionError> {
         let has_recovery = self
             .documents
@@ -3077,7 +3143,7 @@ impl SemanticModelStorage {
         model.expressions = expression::ExpressionIndex::build(&model, filter_conditions)?;
         // Last barrier product: diagnostics report what every earlier phase settled, so they are
         // derived from the assembled model rather than from any one phase's intermediate state.
-        let (diagnostics, diagnostics_by_document) = model.derive_diagnostics()?;
+        let (diagnostics, diagnostics_by_document) = model.derive_diagnostics(reported)?;
         model.diagnostics = diagnostics;
         model.diagnostics_by_document = diagnostics_by_document;
         Ok(model)
@@ -3321,6 +3387,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     | ReferenceKind::BindTarget
                     | ReferenceKind::Variant
                     | ReferenceKind::IncludeUseCase
+                    | ReferenceKind::ViewExpose
                     | ReferenceKind::InvocationCallee
                     | ReferenceKind::DecisionInput
                     | ReferenceKind::MergeInput
@@ -4218,6 +4285,9 @@ fn owner_chain_is_cyclic(
 
 fn supported_import_domain(reference: &impl ResolutionReferenceFact) -> Option<DeclarationDomain> {
     match reference.kind() {
+        // A view's `expose` names any member, so it resolves through the same lookup an ordinary
+        // reference does rather than the import domains.
+        ReferenceKind::ViewExpose => Some(DeclarationDomain::Any),
         ReferenceKind::NamespaceImport
             if reference.flags().wildcard && !reference.flags().recursive =>
         {
@@ -4488,6 +4558,7 @@ fn build_effective_import_indexes<R: ResolutionReferenceFact>(
             | ReferenceKind::BindTarget
             | ReferenceKind::Variant
             | ReferenceKind::IncludeUseCase
+            | ReferenceKind::ViewExpose
             | ReferenceKind::MemberAccessOperand
             | ReferenceKind::InvocationCallee
             | ReferenceKind::DecisionInput

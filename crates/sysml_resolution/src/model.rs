@@ -31,16 +31,16 @@ use sysml_v2_parser_next::{
         ConstraintDefBodyElement, ConstraintUsage as ParserConstraintUsage, DefaultReferenceUsage,
         DefinitionBody, DefinitionBodyElement, DefinitionPrefix, Dependency, DoAction, DocComment,
         EndDecl, EndIdentity, EntryAction, EnumDef, EnumerationBody, EnumerationBodyElement,
-        EnumerationUsage as ParserEnumerationUsage, ExitAction, Expression, ExtendedDefinition,
-        FeatureValue, FeatureValueKind as ParserFeatureValueKind, FinalState, FirstMergeBody,
-        FirstMergeBodyElement, FirstStmt, FlowDef, FlowUsage, ForLoop, FrameMember, IfStmt, Import,
-        ImportShape, InOut, InOutDecl, IncludeUseCase, InterfaceDef, InterfaceDefBody,
-        InterfaceDefBodyElement, InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement,
-        ItemDef, ItemUsage as ParserItemUsage, KermlBindingMember, KermlClassifierDecl,
-        KermlClassifierKeyword, KermlConnectorEnd, KermlConnectorMember, KermlEndMember,
-        KermlFeatureKind, KermlFeatureMember, KermlInvariantMember, KermlSuccessionMember,
-        KermlTypeRelationship, KermlTypeRelationshipKeyword, LibraryPackage, Membership,
-        MembershipKind as ParserMembershipKind, MetadataAnnotation, MetadataDef,
+        EnumerationUsage as ParserEnumerationUsage, ExitAction, ExposeMember, Expression,
+        ExtendedDefinition, FeatureValue, FeatureValueKind as ParserFeatureValueKind, FinalState,
+        FirstMergeBody, FirstMergeBodyElement, FirstStmt, FlowDef, FlowUsage, ForLoop, FrameMember,
+        IfStmt, Import, ImportShape, InOut, InOutDecl, IncludeUseCase, InterfaceDef,
+        InterfaceDefBody, InterfaceDefBodyElement, InterfaceUsage as ParserInterfaceUsage,
+        InterfaceUsageBodyElement, ItemDef, ItemUsage as ParserItemUsage, KermlBindingMember,
+        KermlClassifierDecl, KermlClassifierKeyword, KermlConnectorEnd, KermlConnectorMember,
+        KermlEndMember, KermlFeatureKind, KermlFeatureMember, KermlInvariantMember,
+        KermlSuccessionMember, KermlTypeRelationship, KermlTypeRelationshipKeyword, LibraryPackage,
+        Membership, MembershipKind as ParserMembershipKind, MetadataAnnotation, MetadataDef,
         MetadataUsage as ParserMetadataUsage, Multiplicity, NamespaceDecl, Node,
         OccurrenceBodyElement, OccurrenceDef, OccurrencePortionKind as ParserOccurrencePortionKind,
         OccurrenceUsage as ParserOccurrenceUsage, OccurrenceUsageBody, Package, PackageBody,
@@ -884,6 +884,17 @@ pub(crate) enum DeclarationKind {
     /// intermediate nesting to see `a`/`b` as siblings of the enclosing package/definition, not
     /// as siblings of itself).
     BareConnect,
+    /// An anonymous declaration synthesized for a view body's `expose <target>;` member (BNF
+    /// `Expose`, `ast::view::ExposeMember`). Structurally the view-scoped sibling of `Import`: the
+    /// production carries the same `ImportTarget`, so the target is lowered as one authored
+    /// reference through the same lexical lookup, and the optional `RelationshipBody` walks the
+    /// shared `lower_relationship_body_elements` helper `Import`/`AliasDef` use.
+    ///
+    /// Kept apart from `Import` because the two mean different things: an import brings names into
+    /// a scope, while an expose selects the elements a view shows. Collapsing them would make a
+    /// view's exposed members indistinguishable from its imports in query output, and would give
+    /// the expose target import-conformance rules that do not apply to it.
+    Expose,
     /// An anonymous feature synthesized for a `perform` usage's `in`/`out <target> = <value>;`
     /// body element (BNF `PerformInOutBinding`, `ast::structure::PerformInOutBinding`, found only
     /// inside `PerformBody` -- the shorthand parameter-argument-binding form used when invoking a
@@ -1110,6 +1121,16 @@ pub(crate) enum ReferenceKind {
     /// `inline_requirement` form -- and left as an explicit unsupported-member diagnostic; so is
     /// any optional nested body on the untyped reference form (`VariantUsage.body`).
     Variant,
+    /// The authored target of a view body's `expose <target>;` member (`ExposeMember.target`),
+    /// resolved through the same `DeclarationDomain::Any` lexical lookup as `SatisfySource`: an
+    /// exposed element can be any member, not just a Type. Sourced at the anonymous
+    /// `DeclarationKind::Expose` declaration the member lowers to, so a view's several `expose`
+    /// members stay distinguishable.
+    ///
+    /// Deliberately not a `NamespaceImport`/`MembershipImport`: those carry
+    /// [`AuthoredImportFacts`] and are judged by import conformance, which says nothing about what
+    /// a view shows.
+    ViewExpose,
     /// The authored `target` of an `include <includedUseCase>;` body element inside a `use case
     /// def`/`use case` usage body (BNF `UseCaseDefBodyElement::IncludeUseCase`/
     /// `ThenIncludeUseCase`, `ast::IncludeUseCase.target`) -- the referenced use case is an
@@ -4105,6 +4126,49 @@ impl SemanticModelBuilder {
             import,
         })?;
         if let Some(elements) = &node.value.body_elements {
+            self.lower_relationship_body_elements(document, Some(declaration), elements)?;
+        }
+        Ok(())
+    }
+
+    /// Lowers a view body's `expose <target>;` member.
+    ///
+    /// Mirrors [`Self::lower_import`]'s shape -- the production carries the same `ImportTarget` --
+    /// minus the import facts: an expose selects what a view shows rather than bringing names into
+    /// a scope, so its target is an ordinary authored reference with no import conformance.
+    fn lower_expose(
+        &mut self,
+        document: DocumentId,
+        owner: DeclarationId,
+        node: &Node<ExposeMember>,
+    ) -> Result<(), ConstructionError> {
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::Expose,
+            None,
+            node.span.clone(),
+            DeclarationFacts::none(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span.clone(),
+        )?;
+        // The target is an ordinary authored reference. What a `::*` or `::**` suffix would
+        // *expand* to is not a fact this publication holds -- there is no published expose
+        // expansion -- so the reference states what the author named and nothing more.
+        self.push_reference(PendingReference {
+            source: declaration,
+            kind: ReferenceKind::ViewExpose,
+            document,
+            local: node.value.target.reference,
+            flags: RelationshipFlags::default(),
+            span: node.value.target.span.clone(),
+            import: None,
+        })?;
+        if let sysml_v2_parser_next::ast::Body::Brace { elements, .. } = &node.value.body {
             self.lower_relationship_body_elements(document, Some(declaration), elements)?;
         }
         Ok(())
@@ -11996,12 +12060,14 @@ impl SemanticModelBuilder {
                             &filter.value.condition,
                         )?;
                     }
-                    ViewBodyElement::ViewRendering(_) | ViewBodyElement::Expose(_) => self
-                        .push_unsupported(
-                            document,
-                            UnsupportedFamily::ViewDefinitionMember,
-                            element.span.clone(),
-                        ),
+                    ViewBodyElement::Expose(node) => {
+                        self.lower_expose(document, declaration, node)?;
+                    }
+                    ViewBodyElement::ViewRendering(_) => self.push_unsupported(
+                        document,
+                        UnsupportedFamily::ViewDefinitionMember,
+                        element.span.clone(),
+                    ),
                 }
             }
         }
@@ -13883,6 +13949,7 @@ impl SemanticModelBuildCoordinator {
         schedule: BuildSchedule,
         policy: EvaluationPolicy,
         library: Option<&PreparedLibrary>,
+        reported: &[Box<str>],
     ) -> Result<(resolver::ResolvedSemanticModel, BuildPhaseDurations), CoordinatorError> {
         // Library sources are ordered ahead of workspace sources so that the dense declaration
         // domain assigns them a contiguous prefix. Rendered output is sorted independently by
@@ -13957,7 +14024,7 @@ impl SemanticModelBuildCoordinator {
         let lowering = lowering_started.elapsed();
         let resolution_started = Instant::now();
         let model = storage
-            .resolve(policy, library.map(|library| &library.settled))
+            .resolve(policy, library.map(|library| &library.settled), reported)
             .map_err(|_| CoordinatorError::ConstructionFailed)?;
         let resolution = resolution_started.elapsed();
         Ok((

@@ -89,7 +89,7 @@ impl LanguageServer for Backend {
     }
 
     async fn did_close(&self, params: DidCloseTextDocumentParams) {
-        documents::did_close(&self.client, params).await;
+        documents::did_close(&self.client, &self.handle, params).await;
     }
 
     async fn did_change_watched_files(&self, params: DidChangeWatchedFilesParams) {

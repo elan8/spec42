@@ -142,9 +142,10 @@ impl ResolvedSemanticModel {
     pub(super) fn collect_structural_conformance(
         &self,
         document: DocumentId,
+        declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
-        self.collect_declaration_structure(document, diagnostics)?;
+        self.collect_declaration_structure(declared, diagnostics)?;
         self.collect_structural_reference_rules(document, diagnostics)?;
         self.collect_implied_structural_rules(document, diagnostics)?;
         Ok(())
@@ -153,18 +154,14 @@ impl ResolvedSemanticModel {
     /// The rules whose whole operand set is one declaration's own facts.
     fn collect_declaration_structure(
         &self,
-        document: DocumentId,
+        declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
-        for index in 0..self.storage.declarations.len() {
-            let id = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        for id in declared.iter().copied() {
             let declaration = self
                 .storage
                 .declaration(id)
                 .ok_or(ResolutionError::InvalidStorage)?;
-            if declaration.document != document {
-                continue;
-            }
             let facts = self
                 .storage
                 .declaration_facts(id)

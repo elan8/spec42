@@ -233,16 +233,17 @@ impl ResolvedSemanticModel {
     pub(super) fn collect_host_conformance(
         &self,
         document: DocumentId,
+        declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
-        self.collect_namespace_identity(document, diagnostics)?;
-        self.collect_connection_structure(document, diagnostics)?;
-        self.collect_behavior_structure(document, diagnostics)?;
-        self.collect_requirement_case_structure(document, diagnostics)?;
-        self.collect_view_structure(document, diagnostics)?;
-        self.collect_declaration_rules(document, diagnostics)?;
+        self.collect_namespace_identity(declared, diagnostics)?;
+        self.collect_connection_structure(declared, diagnostics)?;
+        self.collect_behavior_structure(document, declared, diagnostics)?;
+        self.collect_requirement_case_structure(declared, diagnostics)?;
+        self.collect_view_structure(document, declared, diagnostics)?;
+        self.collect_declaration_rules(document, declared, diagnostics)?;
         self.collect_inherited_value_rules(document, diagnostics)?;
-        self.collect_analysis_status(document, diagnostics)?;
+        self.collect_analysis_status(declared, diagnostics)?;
         Ok(())
     }
 
@@ -307,27 +308,6 @@ impl ResolvedSemanticModel {
             .collect()
     }
 
-    /// Every declaration authored in `document`, in storage order.
-    ///
-    /// Storage order is not an observable order: the caller's diagnostics are canonicalized by
-    /// range and code before publication.
-    fn declarations_in(&self, document: DocumentId) -> Result<Vec<DeclarationId>, ResolutionError> {
-        let mut ids = Vec::new();
-        for index in 0..self.storage.declarations.len() {
-            let id = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
-            if self
-                .storage
-                .declaration(id)
-                .ok_or(ResolutionError::InvalidStorage)?
-                .document
-                == document
-            {
-                ids.push(id);
-            }
-        }
-        Ok(ids)
-    }
-
     /// The nearest enclosing declaration of a given kind, following ownership.
     fn enclosing(
         &self,
@@ -386,10 +366,10 @@ impl ResolvedSemanticModel {
     /// authored short name are identities resolution addresses a member by, so both collide.
     fn collect_namespace_identity(
         &self,
-        document: DocumentId,
+        declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
-        for owner in self.declarations_in(document)? {
+        for owner in declared.iter().copied() {
             let owner_kind = self.kind_of(owner).ok_or(ResolutionError::InvalidStorage)?;
             if !matches!(
                 owner_kind,
@@ -484,13 +464,13 @@ impl ResolvedSemanticModel {
     /// Reports connectors whose ends are not connectable, and ports that connect to nothing.
     fn collect_connection_structure(
         &self,
-        document: DocumentId,
+        declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
         let mut connected_ends: BTreeSet<DeclarationId> = BTreeSet::new();
         let mut seen_pairs: BTreeSet<(Option<DeclarationId>, Vec<SymbolPathId>)> = BTreeSet::new();
 
-        for id in self.declarations_in(document)? {
+        for id in declared.iter().copied() {
             let declaration = self
                 .storage
                 .declaration(id)
@@ -626,9 +606,9 @@ impl ResolvedSemanticModel {
             }
         }
 
-        self.collect_unconnected_ports(document, &connected_ends, diagnostics)?;
-        self.collect_interface_ends(document, diagnostics)?;
-        self.collect_binding_connectors(document, diagnostics)?;
+        self.collect_unconnected_ports(declared, &connected_ends, diagnostics)?;
+        self.collect_interface_ends(declared, diagnostics)?;
+        self.collect_binding_connectors(declared, diagnostics)?;
         Ok(())
     }
 
@@ -639,11 +619,11 @@ impl ResolvedSemanticModel {
     /// connection.
     fn collect_unconnected_ports(
         &self,
-        document: DocumentId,
+        declared: &[DeclarationId],
         connected: &BTreeSet<DeclarationId>,
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
-        for id in self.declarations_in(document)? {
+        for id in declared.iter().copied() {
             if self.kind_of(id) != Some(DeclarationKind::PortUsage) {
                 continue;
             }
@@ -696,10 +676,10 @@ impl ResolvedSemanticModel {
     /// references, so it is not required to declare one.
     fn collect_interface_ends(
         &self,
-        document: DocumentId,
+        declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
-        for id in self.declarations_in(document)? {
+        for id in declared.iter().copied() {
             let Some(owner) = self.storage.declaration(id).and_then(|value| value.owner) else {
                 continue;
             };
@@ -738,10 +718,10 @@ impl ResolvedSemanticModel {
     /// Reports a binding connector whose two ends have unrelated effective types.
     fn collect_binding_connectors(
         &self,
-        document: DocumentId,
+        declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
-        for id in self.declarations_in(document)? {
+        for id in declared.iter().copied() {
             if !matches!(
                 self.kind_of(id),
                 Some(DeclarationKind::Bind) | Some(DeclarationKind::KermlBinding)
@@ -922,12 +902,13 @@ impl ResolvedSemanticModel {
     fn collect_behavior_structure(
         &self,
         document: DocumentId,
+        declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
         let mut initial_by_context: BTreeMap<DeclarationId, Vec<DeclarationId>> = BTreeMap::new();
         let mut final_by_context: BTreeMap<DeclarationId, Vec<DeclarationId>> = BTreeMap::new();
 
-        for id in self.declarations_in(document)? {
+        for id in declared.iter().copied() {
             let kind = self.kind_of(id).ok_or(ResolutionError::InvalidStorage)?;
             match kind {
                 DeclarationKind::PerformActionUsage => {
@@ -1063,6 +1044,7 @@ impl ResolvedSemanticModel {
 
         self.collect_state_machine_shape(
             document,
+            declared,
             &initial_by_context,
             &final_by_context,
             diagnostics,
@@ -1141,6 +1123,7 @@ impl ResolvedSemanticModel {
     fn collect_state_machine_shape(
         &self,
         document: DocumentId,
+        declared: &[DeclarationId],
         initial_by_context: &BTreeMap<DeclarationId, Vec<DeclarationId>>,
         final_by_context: &BTreeMap<DeclarationId, Vec<DeclarationId>>,
         diagnostics: &mut Vec<Diagnostic>,
@@ -1173,7 +1156,7 @@ impl ResolvedSemanticModel {
             )?);
         }
 
-        for id in self.declarations_in(document)? {
+        for id in declared.iter().copied() {
             if self.kind_of(id) != Some(DeclarationKind::StateDefinition) {
                 continue;
             }
@@ -1242,10 +1225,10 @@ impl ResolvedSemanticModel {
 
     fn collect_requirement_case_structure(
         &self,
-        document: DocumentId,
+        declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
-        for id in self.declarations_in(document)? {
+        for id in declared.iter().copied() {
             let kind = self.kind_of(id).ok_or(ResolutionError::InvalidStorage)?;
             if supports_subject_role(kind) {
                 self.collect_subject_roles(id, diagnostics)?;
@@ -1422,11 +1405,30 @@ impl ResolvedSemanticModel {
     fn collect_view_structure(
         &self,
         document: DocumentId,
+        declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
-        for id in self.declarations_in(document)? {
+        for id in declared.iter().copied() {
             match self.kind_of(id) {
                 Some(DeclarationKind::ViewUsage) => {
+                    // A view with members that exposes nothing renders nothing. Reported as
+                    // information: it is legal, and a view under construction passes through it.
+                    let members = self.child_declarations(id);
+                    if !members.is_empty()
+                        && !members
+                            .iter()
+                            .any(|child| self.kind_of(*child) == Some(DeclarationKind::Expose))
+                    {
+                        diagnostics.push(self.declaration_message_diagnostic(
+                            id,
+                            DiagnosticCode::ViewExposeEmpty,
+                            DiagnosticSeverity::Information,
+                            Some(format!(
+                                "View '{}' declares a body but exposes no members.",
+                                self.display_name(id)
+                            )),
+                        )?);
+                    }
                     for (reference_id, reference) in
                         self.authored_references(id, &[ReferenceKind::FeatureTyping])
                     {
@@ -1525,9 +1527,10 @@ impl ResolvedSemanticModel {
     fn collect_declaration_rules(
         &self,
         document: DocumentId,
+        declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
-        for id in self.declarations_in(document)? {
+        for id in declared.iter().copied() {
             let kind = self.kind_of(id).ok_or(ResolutionError::InvalidStorage)?;
 
             // A multiplicity whose literal bounds cross admits nothing at all.
@@ -1751,10 +1754,10 @@ impl ResolvedSemanticModel {
     /// fault in the model.
     fn collect_analysis_status(
         &self,
-        document: DocumentId,
+        declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
-        for id in self.declarations_in(document)? {
+        for id in declared.iter().copied() {
             if !self.authors_an_analysis(id) {
                 continue;
             }

@@ -146,6 +146,19 @@ impl BuildRequest {
         .map_err(BuildError)
     }
 
+    /// Also reports diagnostics for these admitted documents, beyond the workspace-authored ones.
+    ///
+    /// A publication reports its workspace by default. That default is about provenance, which is
+    /// not the same question as which documents are an authoring surface: an editor with a library
+    /// file open is authoring it, and only the host knows that. Naming the document here is how it
+    /// says so, and it is part of the publication's identity because it changes what the
+    /// publication answers.
+    pub fn reporting(self, documents: impl IntoIterator<Item = Box<str>>) -> Self {
+        Self {
+            inner: self.inner.reporting(documents),
+        }
+    }
+
     /// The identity the publication built from this request will carry.
     ///
     /// Available before the build so a publication owner can record what it scheduled and reject

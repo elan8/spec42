@@ -30,6 +30,18 @@ package ViewCoverage {
   (document "memory://snapshot/view_body_satisfy.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "view_expose_empty")
+        (source "semantic")
+        (range (start 8 4) (end 10 5))
+      )
+      (diagnostic
+        (severity information)
+        (code "view_expose_empty")
+        (source "semantic")
+        (range (start 14 4) (end 16 5))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")

@@ -34,6 +34,18 @@ package Views {
   (document "memory://snapshot/view_conformance.md"
     (diagnostics
       (diagnostic
+        (severity information)
+        (code "view_expose_empty")
+        (source "semantic")
+        (range (start 7 4) (end 9 5))
+      )
+      (diagnostic
+        (severity information)
+        (code "view_expose_empty")
+        (source "semantic")
+        (range (start 11 4) (end 13 5))
+      )
+      (diagnostic
         (severity warning)
         (code "viewpoint_conformance_invalid_target_kind")
         (source "semantic")

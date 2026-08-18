@@ -22,16 +22,20 @@ manifests, and are the remaining work.
 | Views and diagrams | Selected renderer/view identity, target/workspace scope, library identities, rendering options | Typed view catalog and immutable render plan/payload for general, interconnection, activity, sequence and state views; cache keys include publication identity and options | `workspace::{build_view_catalog,render_view,view_cache}`, `HostWorkspaceSnapshot::prepare_view`, `lsp_server::views`, `server::diagrams` |
 | Publication metrics | Publication identity and completed phase counters | Document/byte/node/reference/relationship/index counts and phase completeness, with timings supplied by the host rather than semantic snapshots | workspace resource limits, LSP model statistics and performance reporting |
 
-## Diagnostic facts the publication does not yet own
+## Diagnostic families this cutover knowingly dropped
 
 Every diagnostic a host reports is settled by `sysml_resolution` and read through
-`PublishedModel::diagnostics()`. The families below are the rules the legacy engine ran that this
-publication cannot state, so they are absent rather than approximated. Each names the missing
-owning fact.
+`PublishedModel::diagnostics()`. The legacy graph engine is deleted, and the rules below went with
+it **without a replacement**: a model that used to receive these checks no longer does. This is a
+knowing, breaking reduction in validation coverage, not a set of normative corrections, and it is
+the cost of removing the second engine in one step rather than running both.
+
+Each row names the owning fact the publication would need. None of them requires a new rule --
+the rules are small once the fact exists -- so each is a lowering task rather than a design one.
 
 | Rule | Missing owning fact |
 |---|---|
-| View expose targets (`view_expose_unresolved`, `view_expose_empty`, `view_expose_empty_result`) | `ExposeMember` is not lowered, so a view's expose targets and their resolution are not published. It shares `ImportTarget`'s shape, so it lowers like an import once the view row moves. |
+| View expose filtering (`view_expose_empty_result`) | A view's `filter` conditions are lowered and its expose targets now are too, but what a filter *admits* is not published, so "the filters remove everything the view exposes" cannot be decided. `view_expose_unresolved` and `view_expose_empty` are owned and reported. |
 | Metadata `about` targets and body bindings (`metadata_about_unresolved`, `metadata_binding_missing`, `metadata_binding_unknown`, `metadata_annotated_element_incompatible`) | An annotation's `about` clause and its body's feature-value overrides are not lowered; only the annotation's own target reference is. |
 | User-defined keyword resolution (`metadata_keyword_unresolved`, `metadata_keyword_collision`) | The `#keyword` prefix a declaration carries is not published as a fact. |
 | Case objective and verdict shape (`objective_binding_unresolved`, `invalid_verdict_value`, `verification_case_invalid_shape`, `case_subject_missing`, `case_objective_binding_cardinality`, `requirement_constraint_invalid_membership`) | An `objective`'s binding kind, a `verdict`'s authored token, and a case's analysis-result cardinality are not lowered; an objective's body lowers as an ordinary requirement usage. |

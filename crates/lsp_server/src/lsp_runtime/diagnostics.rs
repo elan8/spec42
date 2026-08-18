@@ -8,6 +8,7 @@ use tracing::info;
 use crate::analysis::diagnostics_core;
 use crate::common::util;
 use sysml_query::resolved_slice::PublishedModel;
+use workspace::PublicationToken;
 
 use crate::workspace::state::supports_semantic_queries;
 use crate::workspace::{RuntimeConfig, WorkspaceHandle};
@@ -57,16 +58,62 @@ pub(crate) async fn publish_document_diagnostics(
         }
         return;
     }
+    // Captured before the work starts and rechecked immediately before publishing: holding the
+    // publication by `Arc` keeps this computation internally coherent, but says nothing about
+    // whether it is still *current*. A slower computation for an older edit would otherwise land
+    // after a newer one and leave the editor showing diagnostics for text the author has replaced.
+    let publication = snap.session.publication();
     let diagnostics = collect_diagnostics_for_document(snap.published_model.clone(), &uri).await;
+    if !publish_if_current(client, handle, publication, uri.clone(), diagnostics).await {
+        if perf_logging_enabled(runtime_config) {
+            info!(
+                event = "diagnostics:document:superseded",
+                uri = %uri,
+                elapsed_ms = started_at.elapsed().as_millis() as u64
+            );
+        }
+        return;
+    }
     if perf_logging_enabled(runtime_config) {
         info!(
             event = "diagnostics:document",
             uri = %uri,
-            count = diagnostics.len(),
             elapsed_ms = started_at.elapsed().as_millis() as u64
         );
     }
+}
+
+/// Whether diagnostics computed against `publication` may still be published.
+///
+/// Reads the *live* session rather than the snapshot the computation captured -- that is the whole
+/// point. Holding the publication by `Arc` keeps a computation internally coherent; it says nothing
+/// about whether the model state it describes is still the one the author is looking at.
+///
+/// Separate from the publish itself so the decision is testable without a `Client`: the publish is
+/// a side effect, this is the rule.
+fn may_publish(handle: &WorkspaceHandle, publication: PublicationToken) -> bool {
+    handle
+        .snapshot()
+        .session
+        .is_publication_current(&publication)
+}
+
+/// Publishes `diagnostics` only while `publication` still names the live session's state.
+///
+/// The check happens immediately before the publish, so the window between them carries no
+/// `await`. Returns whether the diagnostics were published.
+async fn publish_if_current(
+    client: &Client,
+    handle: &WorkspaceHandle,
+    publication: PublicationToken,
+    uri: Url,
+    diagnostics: Vec<Diagnostic>,
+) -> bool {
+    if !may_publish(handle, publication) {
+        return false;
+    }
     client.publish_diagnostics(uri, diagnostics, None).await;
+    true
 }
 
 pub(crate) async fn publish_workspace_diagnostics(
@@ -120,20 +167,26 @@ pub(crate) async fn publish_workspace_diagnostics(
     let mut published_count = 0usize;
     let mut diagnostic_count = 0usize;
 
+    // One captured publication for the whole sweep, rechecked inside each task: a relink landing
+    // mid-flight supersedes every task still running, and none of them may publish for the model
+    // state the author has already moved past.
+    let publication = snap.session.publication();
     let mut join_set = tokio::task::JoinSet::new();
     for uri in docs {
         let model = snap.published_model.clone();
         let client = client.clone();
+        let handle = handle.clone();
         join_set.spawn(async move {
             let diagnostics = collect_diagnostics_for_document(model, &uri).await;
             let count = diagnostics.len();
-            client.publish_diagnostics(uri, diagnostics, None).await;
-            count
+            let published =
+                publish_if_current(&client, &handle, publication, uri, diagnostics).await;
+            (published, count)
         });
     }
 
     while let Some(res) = join_set.join_next().await {
-        if let Ok(count) = res {
+        if let Ok((true, count)) = res {
             diagnostic_count += count;
             published_count += 1;
         }
@@ -215,5 +268,49 @@ mod tests {
             "a snapshot captured before a concurrent relink must stay Ready — proving it's \
              immune to a later, independent read observing Reindexing"
         );
+    }
+
+    /// Diagnostics computed for a superseded publication must not reach the editor.
+    ///
+    /// The captured snapshot staying coherent is necessary but not sufficient: a slower
+    /// computation for an older edit is still *publishable* unless something checks whether it is
+    /// current. This exercises that check, so removing it fails here.
+    #[tokio::test]
+    async fn diagnostics_for_a_superseded_publication_are_not_published() {
+        let handle = WorkspaceHandle::spawn(crate::workspace::state::ServerState::default());
+        handle
+            .complete_startup()
+            .await
+            .expect("actor mutate should not panic");
+
+        let captured = handle.snapshot().session.publication();
+        assert!(
+            may_publish(&handle, captured),
+            "work captured against the live publication may publish"
+        );
+
+        // Any invalidating operation supersedes work already in flight.
+        handle
+            .schedule_relink_if_ready()
+            .await
+            .expect("actor mutate should not panic");
+
+        assert!(
+            !may_publish(&handle, captured),
+            "an older computation must not publish over the newer edit that superseded it"
+        );
+    }
+
+    /// A token from another session may never publish, whichever version it happens to carry.
+    ///
+    /// Version numbers are per-session counters, so two sessions produce colliding ones. Without
+    /// the owner in the token, a stale result from one workspace could publish into another.
+    #[tokio::test]
+    async fn diagnostics_from_another_session_are_never_published() {
+        let first = WorkspaceHandle::spawn(crate::workspace::state::ServerState::default());
+        let second = WorkspaceHandle::spawn(crate::workspace::state::ServerState::default());
+        let foreign = first.snapshot().session.publication();
+
+        assert!(!may_publish(&second, foreign));
     }
 }

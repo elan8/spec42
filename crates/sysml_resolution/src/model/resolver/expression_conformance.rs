@@ -53,11 +53,12 @@ impl ResolvedSemanticModel {
     pub(super) fn collect_expression_conformance(
         &self,
         document: DocumentId,
+        declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
         self.collect_value_conformance(document, diagnostics)?;
         self.collect_unit_conformance(document, diagnostics)?;
-        self.collect_boolean_expressions(document, diagnostics)?;
+        self.collect_boolean_expressions(document, declared, diagnostics)?;
         self.collect_invocation_arity(document, diagnostics)?;
         Ok(())
     }
@@ -276,15 +277,15 @@ impl ResolvedSemanticModel {
     fn collect_boolean_expressions(
         &self,
         document: DocumentId,
+        declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
-        for index in 0..self.storage.declarations.len() {
-            let id = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        for id in declared.iter().copied() {
             let declaration = self
                 .storage
                 .declaration(id)
                 .ok_or(ResolutionError::InvalidStorage)?;
-            if declaration.document != document || !states_a_constraint(declaration.kind) {
+            if !states_a_constraint(declaration.kind) {
                 continue;
             }
             if !matches!(

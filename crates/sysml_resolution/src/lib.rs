@@ -219,6 +219,9 @@ pub enum ConstructionSchedule {
 pub struct PublicationIdentity {
     source_digest: RootDigest,
     semantic_contract_version: Box<str>,
+    /// The admitted documents the host asked to have reported beyond its workspace, in canonical
+    /// order. Part of the identity because it changes what the publication answers.
+    reported_documents: Box<[Box<str>]>,
 }
 
 impl PublicationIdentity {
@@ -229,6 +232,11 @@ impl PublicationIdentity {
     pub fn semantic_contract_version(&self) -> &str {
         &self.semantic_contract_version
     }
+
+    /// The admitted documents reported beyond the workspace, in canonical order.
+    pub fn reported_documents(&self) -> &[Box<str>] {
+        &self.reported_documents
+    }
 }
 
 #[derive(Debug)]
@@ -237,6 +245,7 @@ pub struct BuildRequest {
     schedule: ConstructionSchedule,
     policy: EvaluationPolicy,
     library: Option<std::sync::Arc<LibraryStratum>>,
+    reported: Vec<Box<str>>,
     identity: PublicationIdentity,
 }
 
@@ -343,9 +352,11 @@ impl BuildRequest {
             schedule,
             policy: EvaluationPolicy::default(),
             library: None,
+            reported: Vec::new(),
             identity: PublicationIdentity {
                 source_digest,
                 semantic_contract_version,
+                reported_documents: Box::default(),
             },
         })
     }
@@ -375,6 +386,29 @@ impl BuildRequest {
         request.identity.source_digest = SourceManifest::new(entries, Vec::new()).root_digest();
         request.library = Some(library);
         Ok(request)
+    }
+
+    /// Also reports diagnostics for these admitted documents, beyond the workspace-authored ones.
+    ///
+    /// A publication reports its workspace by default: a workspace does not inherit its library's
+    /// diagnostics, and deriving every admitted document would make the barrier cost the whole
+    /// library on every rebuild. That default is about *provenance*, which is not the same
+    /// question as which documents are an authoring surface -- an editor with a library file open
+    /// is authoring it, and only the host knows that.
+    ///
+    /// Naming a document here is how the host says so. It is a build input rather than a query
+    /// option because a diagnostic is settled before the publication becomes visible, and it is
+    /// part of the publication's identity because two publications that report different documents
+    /// are observably different answers.
+    ///
+    /// An identity that names no admitted document is ignored: the host asked about something this
+    /// publication does not contain, which the empty answer already says.
+    pub fn reporting(mut self, documents: impl IntoIterator<Item = Box<str>>) -> Self {
+        self.reported = documents.into_iter().collect();
+        self.reported.sort_unstable();
+        self.reported.dedup();
+        self.identity.reported_documents = self.reported.clone().into_boxed_slice();
+        self
     }
 
     /// Sets whether this build evaluates constant expressions.
@@ -460,6 +494,7 @@ pub fn build_measured(
         schedule,
         request.policy,
         request.library.as_deref().map(|library| &library.prepared),
+        &request.reported,
     )
     .map_err(|error| match error {
         CoordinatorError::DuplicateSourceIdentity => BuildFailure::DuplicateSourceIdentity,
@@ -954,6 +989,100 @@ mod tests {
         assert!(
             !codes(with_source).contains(&"missing_library_context".to_string()),
             "admitting the library as a source is the same fact as admitting it as a stratum"
+        );
+    }
+
+    /// A library document is reported only when the host names it as an authoring surface.
+    ///
+    /// Provenance and authoring surface are different questions. The default answers the first --
+    /// a workspace does not inherit its library's diagnostics -- and naming the document answers
+    /// the second, which is the only thing an editor with that file open needs.
+    #[test]
+    fn an_admitted_library_document_is_reported_only_when_the_host_names_it() {
+        let sources = || {
+            vec![
+                SourceInput::new(
+                    "memory://lib.sysml",
+                    "library package Lib { part def A; part def A; }".to_string(),
+                    SourceKind::Library,
+                ),
+                SourceInput::new(
+                    "memory://workspace.sysml",
+                    "package W { part w; }".to_string(),
+                    SourceKind::Workspace,
+                ),
+            ]
+        };
+        let codes = |published: &PublishedResolution, document: &str| {
+            published
+                .document_diagnostics(document)
+                .diagnostics
+                .iter()
+                .map(|diagnostic| diagnostic.code.as_str().to_string())
+                .collect::<Vec<_>>()
+        };
+
+        let default = build(
+            BuildRequest::new(sources(), ConstructionSchedule::Sequential, "contract-v1").unwrap(),
+        )
+        .unwrap();
+        assert!(
+            codes(&default, "memory://lib.sysml").is_empty(),
+            "a library is admitted for resolution, not reported: {:?}",
+            codes(&default, "memory://lib.sysml")
+        );
+        assert!(
+            !codes(&default, "memory://workspace.sysml").is_empty(),
+            "the workspace is always reported"
+        );
+
+        let named = build(
+            BuildRequest::new(sources(), ConstructionSchedule::Sequential, "contract-v1")
+                .unwrap()
+                .reporting([Box::from("memory://lib.sysml")]),
+        )
+        .unwrap();
+        assert!(
+            codes(&named, "memory://lib.sysml").contains(&"duplicate_namespace_member".to_string()),
+            "a named library document reports its own diagnostics: {:?}",
+            codes(&named, "memory://lib.sysml")
+        );
+        assert_eq!(
+            codes(&named, "memory://workspace.sysml"),
+            codes(&default, "memory://workspace.sysml"),
+            "naming a library document does not change what the workspace reports"
+        );
+        assert!(
+            named
+                .diagnostics()
+                .diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.location.document.as_ref() == "memory://lib.sysml"),
+            "the aggregate carries the named document too, so the two cannot disagree"
+        );
+    }
+
+    /// Reporting a document changes the answer, so it changes the publication's identity.
+    #[test]
+    fn the_reported_document_set_is_part_of_the_publication_identity() {
+        let request = || {
+            BuildRequest::new(
+                vec![SourceInput::new(
+                    "memory://workspace.sysml",
+                    "package W { part w; }".to_string(),
+                    SourceKind::Workspace,
+                )],
+                ConstructionSchedule::Sequential,
+                "contract-v1",
+            )
+            .unwrap()
+        };
+        let plain = request();
+        let reporting = request().reporting([Box::from("memory://lib.sysml")]);
+        assert_ne!(plain.identity(), reporting.identity());
+        assert_eq!(
+            reporting.identity().reported_documents(),
+            [Box::<str>::from("memory://lib.sysml")]
         );
     }
 

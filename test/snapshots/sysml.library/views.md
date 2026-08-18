@@ -260,6 +260,12 @@ standard library package Views {
         (range (start 114 62) (end 114 67))
       )
       (diagnostic
+        (severity information)
+        (code "view_expose_empty")
+        (source "semantic")
+        (range (start 153 2) (end 160 3))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")

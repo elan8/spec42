@@ -130,6 +130,7 @@ fn semantic_role(kind: ElementKind) -> &'static str {
         | ElementKind::SatisfyRequirementUsage
         | ElementKind::BindingConnectorAsUsage
         | ElementKind::Import
+        | ElementKind::Expose
         | ElementKind::Alias
         | ElementKind::Dependency
         | ElementKind::Connector

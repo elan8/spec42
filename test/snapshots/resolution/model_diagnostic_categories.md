@@ -62,6 +62,12 @@ package Demo {
           )
         )
       )
+      (diagnostic
+        (severity information)
+        (code "view_expose_empty")
+        (source "semantic")
+        (range (start 17 4) (end 19 5))
+      )
     )
   )
 )

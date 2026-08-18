@@ -366,3 +366,72 @@ fn rebuild_all_document_links_keeps_unit_evaluation_explicitly_unsupported() {
         matches!(expression(&state, distance), sysml_model::ExpressionEvaluationQuery::Result(result) if result.status == sysml_model::EvaluationStatus::Unsupported && result.value.is_none() && result.unit.is_none())
     );
 }
+
+/// A library file the editor has open reports its own diagnostics; a closed one does not.
+///
+/// The publication admits a library for resolution whatever the editor is doing, so nothing about
+/// its provenance changes here. What changes is whether the host declared it an authoring surface,
+/// which is the only reason its diagnostics are derived at all.
+#[test]
+fn an_open_library_document_reports_diagnostics_and_a_closed_one_does_not() {
+    let library_root = Url::parse("file:///libs/").expect("library root");
+    let library_uri = Url::parse("file:///libs/Lib.sysml").expect("library uri");
+    let workspace_uri = Url::parse("file:///model/Model.sysml").expect("workspace uri");
+
+    let mut state = ServerState::default();
+    state.library_paths = vec![library_root];
+    store_document_text(
+        &mut state,
+        &library_uri,
+        "library package Lib { part def A; part def A; }".to_string(),
+    );
+    store_document_text(
+        &mut state,
+        &workspace_uri,
+        "package M { part m; }".to_string(),
+    );
+
+    let codes = |state: &ServerState, uri: &Url| {
+        diagnostics_core::collect_document_diagnostics(
+            state.published_model.as_deref(),
+            uri,
+            diagnostics_core::lsp_reporting(),
+            diagnostics_core::lsp_postprocess_options(),
+        )
+        .into_iter()
+        .filter_map(|diagnostic| match diagnostic.code {
+            Some(NumberOrString::String(code)) => Some(code),
+            _ => None,
+        })
+        .collect::<Vec<_>>()
+    };
+
+    crate::workspace::state::refresh_published_model(&mut state);
+    assert!(
+        codes(&state, &library_uri).is_empty(),
+        "a library file nobody opened is admitted, not reported: {:?}",
+        codes(&state, &library_uri)
+    );
+    let workspace_before = codes(&state, &workspace_uri);
+    assert!(!workspace_before.is_empty(), "the workspace is reported");
+
+    state.open_in_editor.insert(library_uri.clone());
+    crate::workspace::state::refresh_published_model(&mut state);
+    assert!(
+        codes(&state, &library_uri).contains(&"duplicate_namespace_member".to_string()),
+        "an open library file reports its own diagnostics: {:?}",
+        codes(&state, &library_uri)
+    );
+    assert_eq!(
+        codes(&state, &workspace_uri),
+        workspace_before,
+        "opening a library file does not change what the workspace reports"
+    );
+
+    state.open_in_editor.remove(&library_uri);
+    crate::workspace::state::refresh_published_model(&mut state);
+    assert!(
+        codes(&state, &library_uri).is_empty(),
+        "closing it returns to admitted-but-not-reported"
+    );
+}

@@ -1244,6 +1244,7 @@ pub(crate) fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::AttributeDefinition => "attribute-def",
         DeclarationKind::AttributeUsage => "attribute",
         DeclarationKind::Import => "import",
+        DeclarationKind::Expose => "expose",
         DeclarationKind::Alias => "alias",
         DeclarationKind::EnumerationDefinition => "enum-def",
         DeclarationKind::EnumerationUsage => "enum",
@@ -1411,6 +1412,7 @@ pub(crate) fn reference_kind(kind: ReferenceKind) -> &'static str {
         ReferenceKind::BindTarget => "bindTarget",
         ReferenceKind::Variant => "variant",
         ReferenceKind::IncludeUseCase => "includeUseCase",
+        ReferenceKind::ViewExpose => "viewExpose",
         ReferenceKind::MemberAccessOperand => "memberAccessOperand",
         ReferenceKind::InvocationCallee => "invocationCallee",
         ReferenceKind::DecisionInput => "decisionInput",
@@ -1477,6 +1479,7 @@ pub(crate) fn relationship_kind(kind: ReferenceKind) -> Option<&'static str> {
         ReferenceKind::BindTarget => Some("bindTarget"),
         ReferenceKind::Variant => Some("variant"),
         ReferenceKind::IncludeUseCase => Some("includeUseCase"),
+        ReferenceKind::ViewExpose => Some("viewExpose"),
         ReferenceKind::MemberAccessOperand => Some("memberAccessOperand"),
         ReferenceKind::InvocationCallee => Some("invocationCallee"),
         ReferenceKind::DecisionInput => Some("decisionInput"),
@@ -1579,7 +1582,7 @@ mod tests {
             },
         };
         model.expressions = expression::ExpressionIndex::build(&model, filter_conditions).unwrap();
-        let (diagnostics, diagnostics_by_document) = model.derive_diagnostics().unwrap();
+        let (diagnostics, diagnostics_by_document) = model.derive_diagnostics(&[]).unwrap();
         model.diagnostics = diagnostics;
         model.diagnostics_by_document = diagnostics_by_document;
         let mut output = String::new();

@@ -26,9 +26,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `port_type_mismatch` or `flow_direction_incompatible` from the settled conjugation and feature
   directions rather than from the spelling of a type reference. `unresolved_pending_relationship`
   and its expression sibling described the graph's own pending queues and have no counterpart.
-  Codes whose owning fact the publication does not hold -- view expose targets, metadata `about`
-  and body bindings, user-defined keywords, case objective and verdict shape, initial-transition
-  cardinality -- are listed with the missing fact in `crates/sysml_query/PRODUCTION_CUTOVER.md`.
+  **This is a knowingly partial cutover.** Deleting the graph engine dropped the families whose
+  owning fact the publication does not hold -- metadata `about` and body bindings, user-defined
+  keywords, case objective and verdict shape, initial-transition cardinality, allocation-usage
+  typing, import kind conformance, and view expose filtering. Models that used to receive those
+  checks no longer do. Each is listed with the fact it needs in
+  `crates/sysml_query/PRODUCTION_CUTOVER.md`. View `expose` members are now lowered, so
+  `view_expose_unresolved` and `view_expose_empty` are owned and reported, and a view's expose
+  members are no longer an unsupported construct.
   Three answers improve: a `connect a.fill to b.fill` is checked rather than skipped, two ports are
   compatible when they offer each other the features they expect rather than when one definition
   specializes the other, and a fan-out to distinct usages is no longer one connection repeated.
