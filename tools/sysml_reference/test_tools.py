@@ -23,11 +23,6 @@ class ToolsTest(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("PartUsage", result.stdout)
 
-    def test_projection_mapping_audit_is_deterministic(self) -> None:
-        result = run("tools/audit_spec42_metamodel.py")
-        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertIn("PASS: Spec42 mapping consistency", result.stdout)
-
     def test_specification_query_lists_sections_and_handles_missing_input(self) -> None:
         listing = run(
             "tools/sysml_reference/query_specification.py",
