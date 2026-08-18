@@ -26,7 +26,12 @@ import {
   getKparLibraryPathOverrides,
   isDefaultServerPath,
 } from "./configBridge";
-import { setServerHealth } from "./statusBar";
+import {
+  getServerHealthDetail,
+  getServerHealthState,
+  getWorkspaceIndexSummary,
+  setServerHealth,
+} from "./statusBar";
 
 type RawSysandStatus = {
   installed?: boolean;
@@ -602,6 +607,16 @@ export function registerLanguageClientDebugCommands(
         return;
       }
       await waitForClientState(handles.client, new Set([State.Running]), restartWaitMs());
+    }),
+    vscode.commands.registerCommand("sysml.debug.getExtensionState", () => {
+      const summary = getWorkspaceIndexSummary();
+      return {
+        serverHealthState: getServerHealthState(),
+        serverHealthDetail: getServerHealthDetail(),
+        workspaceIndexSummary: summary
+          ? { ...summary, failures: summary.failures ?? 0 }
+          : undefined,
+      };
     })
   );
 }
