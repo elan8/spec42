@@ -5,6 +5,7 @@ import {
   isPathInsideWorkspace,
   parseGenerationReport,
   parseLspGenerationResult,
+  parseStateTransitionViewCatalog,
   parseSourceNavigation,
   readSvgMetadata,
   selectSingleSvg,
@@ -50,6 +51,24 @@ describe("state transition viewer core", () => {
     };
     assert.deepEqual(parseLspGenerationResult(value), value);
     assert.throws(() => parseLspGenerationResult({ ...value, artifacts: [{ path: "view.svg", content: [256] }] }));
+  });
+
+  it("validates typed state-transition view choices", () => {
+    const value = {
+      modelDigest: "blake3:model",
+      views: [{
+        handle: "view:one",
+        semanticId: "semantic:one",
+        name: "operations",
+        exposedMachine: { semanticId: "machine:one", label: "Operations" },
+        source: { uri: "file:///workspace/model.sysml", range: {} },
+      }],
+    };
+    assert.deepEqual(parseStateTransitionViewCatalog(value), {
+      modelDigest: value.modelDigest,
+      views: [{ ...value.views[0], source: { uri: value.views[0].source.uri } }],
+    });
+    assert.throws(() => parseStateTransitionViewCatalog({ ...value, views: [{ name: "missing identity" }] }));
   });
 
   it("rejects active and external SVG content", () => {
