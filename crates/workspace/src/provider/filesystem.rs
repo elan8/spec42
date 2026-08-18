@@ -4,11 +4,9 @@ use std::path::{Path, PathBuf};
 use ignore::WalkBuilder;
 use url::Url;
 
-use crate::library::{
-    resolve_library_closure, LibraryClosureOptions, WorkspaceSource,
-};
-use sysml_source::{SysmlDocument, SysmlDocumentProvider, SysmlDocumentSourceKind};
+use crate::library::{resolve_library_closure, LibraryClosureOptions, WorkspaceSource};
 use source_identity::ContentDigest;
+use sysml_source::{SysmlDocument, SysmlDocumentProvider, SysmlDocumentSourceKind};
 
 /// Reads `path` as bytes exactly once, computes its BLAKE3 content digest from that single
 /// buffer, and decodes it as UTF-8 from the same buffer (plan §5.1). A read failure or a UTF-8

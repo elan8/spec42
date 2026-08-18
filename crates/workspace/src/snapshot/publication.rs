@@ -5,10 +5,10 @@
 //! the graph rather than derived from it: the two have separate owners, and deriving one from the
 //! other would make the graph an input to validation again.
 
-use sysml_source::{SysmlDocument, SysmlDocumentSourceKind};
 use sysml_query::resolved_slice::{
     build, BuildRequest, ConstructionStrategy, PublishedModel, SourceDocument, SourceKind,
 };
+use sysml_source::{SysmlDocument, SysmlDocumentSourceKind};
 
 use crate::error::{WorkspaceError, WorkspaceResult};
 

@@ -3,11 +3,11 @@ use std::sync::Arc;
 use std::thread;
 use std::time::Duration;
 
-use workspace::{SysmlDocument, SysmlDocumentProvider, SysmlDocumentSourceKind};
 use tempfile::tempdir;
 use workspace::{
     CancellationToken, EngineBuilder, HostContext, Spec42Engine, WorkspaceLoadRequest,
 };
+use workspace::{SysmlDocument, SysmlDocumentProvider, SysmlDocumentSourceKind};
 
 struct SlowDocumentProvider {
     cancellation: CancellationToken,

@@ -129,9 +129,7 @@ impl InMemoryWorkspace {
         })
     }
 
-    pub fn from_provider(
-        provider: &impl SysmlDocumentProvider,
-    ) -> Result<Self, String> {
+    pub fn from_provider(provider: &impl SysmlDocumentProvider) -> Result<Self, String> {
         let documents = provider.load_documents()?;
         Self::from_documents(documents)
     }

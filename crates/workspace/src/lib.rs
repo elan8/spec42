@@ -17,8 +17,8 @@ pub mod version;
 pub use catalog::{HostConfigFile, HostLibraryRequest, LibraryCatalog};
 pub use comparison::{
     compare_snapshots, HostDiagnosticComparison, HostDiagnosticIdentity,
-    HostDiagnosticRelatedInformation, HostDocumentDiagnosticComparison,
-    IdentityPreservationStatus, SemanticComparisonReport,
+    HostDiagnosticRelatedInformation, HostDocumentDiagnosticComparison, IdentityPreservationStatus,
+    SemanticComparisonReport,
 };
 pub use engine::{EngineBuilder, HostEngineMetadata, Spec42Engine};
 pub use error::{WorkspaceError, WorkspaceResult};
@@ -28,14 +28,13 @@ pub use library::{
         kpar_library_paths_from_data_dir, registry_configs, KparLibraryConfig, KparLibraryPaths,
         KparLibraryStatus,
     },
-    resolve_explicit_library_path,
-    resolve_library_closure, LibraryClosureOptions, LoadedLibraryFile, WorkspaceSource,
+    resolve_explicit_library_path, resolve_library_closure,
     stdlib::{
         project_dirs, standard_library_paths_from_data_dir, StandardLibraryConfig,
         StandardLibraryPaths, StandardLibraryStatus,
     },
-    LibraryArchive, LibraryBundle, LibraryInstallRoot, LibraryPackageRoots, LibrarySource,
-    ResolvedExplicitLibrary,
+    LibraryArchive, LibraryBundle, LibraryClosureOptions, LibraryInstallRoot, LibraryPackageRoots,
+    LibrarySource, LoadedLibraryFile, ResolvedExplicitLibrary, WorkspaceSource,
 };
 pub use provider::{
     ChangesetDocumentProvider, FileSystemDocumentProvider, HostFilesystemProvider,

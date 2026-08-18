@@ -1,5 +1,5 @@
-use sysml_query::resolved_slice::{TextPosition, TextRange};
 use sysml_query::resolved_slice::{PublishedModel, QueryOutcome};
+use sysml_query::resolved_slice::{TextPosition, TextRange};
 use url::Url;
 
 /// Neutral symbol table entry for editor lookup (no LSP types).

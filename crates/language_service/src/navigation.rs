@@ -1,8 +1,8 @@
-use sysml_query::resolved_slice::{TextPosition, TextRange};
 use sysml_query::resolved_slice::{
     AuthoredUnit, ElementEvaluation, ElementInspection, PublishedModel, QueryOutcome, ReferenceAt,
     SymbolIdentity, UnitResolution,
 };
+use sysml_query::resolved_slice::{TextPosition, TextRange};
 
 use crate::dto::HoverResult;
 use crate::keywords::keyword_hover_markdown;

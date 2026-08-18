@@ -9,8 +9,8 @@ use std::collections::{BTreeSet, HashMap};
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use sysml_source::SysmlDocument;
 use sysml_query::resolved_slice::PublishedModel;
+use sysml_source::SysmlDocument;
 use tower_lsp::lsp_types::{Diagnostic, Url};
 use workspace::{
     HostContext, HostFilesystemProvider, HostWorkspaceSnapshot, Spec42Engine, ValidationTiming,
