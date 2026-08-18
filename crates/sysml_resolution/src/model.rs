@@ -256,7 +256,7 @@ pub(crate) enum DeclarationKind {
     /// the structurally analogous `OccurrenceUsage`/`StateUsage`/`PortUsage`, so a bare `view v
     /// :> Base { ... }` subsetting clause parses successfully but is silently dropped before it
     /// reaches the typed AST (see planning/UPSTREAM_PARSER_GAPS.md #8; confirmed real usage in
-    /// `test/snapshots/sysml/validation/11b_safety_and_security_feature_views.md`'s
+    /// `tests/snapshots/sysml/validation/11b_safety_and_security_feature_views.md`'s
     /// `view vehicleMandatorySafetyFeatureView :> vehicleSafetyFeatureView { ... }`).
     ViewDefinition,
     /// `case def` (BNF CaseDefinition): a type whose owned members are attribute usages and
@@ -18437,7 +18437,7 @@ mod tests {
         // handled both). `lower_connector_end` (used by `connect`) already matched both variants,
         // so `connect f.a to a.g;` resolved while the very next line, `bind f.a = a.g;`, fell
         // through to an unsupported diagnostic on both operands -- exactly the shape from
-        // `test/snapshots/sysml/examples/feature_path_test.md`. Fixed by adding
+        // `tests/snapshots/sysml/examples/feature_path_test.md`. Fixed by adding
         // `Expression::FeatureChainRef(_)` to `lower_satisfy_operand`'s dotted-chain match arm,
         // mirroring `lower_connector_end`.
         let output = build_semantic_sexpr(
@@ -19082,7 +19082,7 @@ mod tests {
     fn default_reference_usage_meta_cast_value_lowers_and_resolves() {
         // Keyword-less `<name> = <expr>;` binding (`ast::structure::DefaultReferenceUsage`),
         // e.g. `baseType = Atom meta KerML::Classifier;` inside a KerML `metaclass` body
-        // (`test/snapshots/kerml/a_2_atoms.md`). The declaration itself, and its `=` value's
+        // (`tests/snapshots/kerml/a_2_atoms.md`). The declaration itself, and its `=` value's
         // `MetaCast` base/metaclass references, should both resolve, mirroring
         // `value_assignment_meta_cast_resolves_base_and_metaclass_target`.
         let output = build_semantic_sexpr(

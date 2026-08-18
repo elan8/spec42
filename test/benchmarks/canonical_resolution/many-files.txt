@@ -1,2 +1,0 @@
-# Uniquely namespaced documents derived from one checked-in snapshot SOURCE.
-workspace-repeat:2048 test/snapshots/resolution/model_diagnostic_categories.md

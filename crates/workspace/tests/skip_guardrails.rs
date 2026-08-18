@@ -10,7 +10,7 @@ use syn::spanned::Spanned;
 use syn::visit::Visit;
 use syn::{Attribute, Expr, ExprLit, Lit, Meta};
 
-const FIXTURES: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/../../test/snapshots");
+const FIXTURES: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/../../tests/snapshots");
 
 #[test]
 fn every_rust_ignore_attribute_has_a_non_empty_reason() {

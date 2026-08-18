@@ -33,7 +33,7 @@ struct Cli {
     #[command(subcommand)]
     command: Command,
     /// Root directory containing Markdown snapshots.
-    #[arg(long, default_value = "test/snapshots", global = true)]
+    #[arg(long, default_value = "tests/snapshots", global = true)]
     root: PathBuf,
     /// Restrict the operation to one path relative to --root (or an explicit path).
     #[arg(long, global = true)]

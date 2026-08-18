@@ -1,3 +1,0 @@
-# source-kind snapshot
-workspace test/snapshots/multi/cross_file_basic.md
-workspace test/snapshots/resolution/ambiguous_import_candidates.md

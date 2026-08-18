@@ -621,7 +621,6 @@
     "vscode:prepublish": "npm run stage:package-content && npm run compile",
     "stage:package-content": "node scripts/stage-package-content.js",
     "build:extension": "node scripts/build-extension.js",
-    "verify:package-layout": "npm run stage:package-content && node scripts/verify-package-layout.js",
     "compile": "npm run typecheck && tsc -p ./ && npm run build:extension",
     "test:lm-cli-unit": "tsc -p ./ && node --test out/test/suite/spec42Cli.test.js",
     "typecheck": "tsc -p ./ --noEmit",

@@ -256,11 +256,10 @@ Default `npm test` (`.vscode-test.mjs`) runs the extension smoke and editor inte
 
 ```bash
 cd vscode
-npm run verify:package-layout
 npm run package
 ```
 
-Package staging copies the example and domain-library content into the extension package layout before validation.
+The package prepublish hook stages the example and domain-library content before compiling the extension.
 
 ## Performance Checks
 

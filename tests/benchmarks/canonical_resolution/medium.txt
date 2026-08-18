@@ -1,0 +1,4 @@
+# source-kind snapshot
+workspace tests/snapshots/sysml/examples/vehicle_analysis_demo.md
+library tests/snapshots/sysml.library/quantities.md
+library tests/snapshots/sysml.library/measurement_references.md

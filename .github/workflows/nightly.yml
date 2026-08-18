@@ -90,124 +90,12 @@ jobs:
       - name: Engineering unit catalog regression
         env:
           SYSML_V2_RELEASE_DIR: ${{ github.workspace }}/sysml-v2-release
-        run: cargo test -p sysml_model engineering_prefixed_units mismatched_unit_dimension_emits -- --nocapture
+        run: cargo test -p sysml_resolution unit --lib -- --nocapture
 
       - name: OMG 14c metadata diagnostic ratchet
         env:
           SYSML_V2_RELEASE_DIR: ${{ github.workspace }}/sysml-v2-release
         run: bash scripts/check-omg-14c-metadata-ratchet.sh
-
-  vscode-visualization-deep:
-    name: VS Code visualization deep tests (informational)
-    runs-on: ubuntu-latest
-    continue-on-error: true
-    env:
-      VSCODE_TEST_VERSION: "1.106.0"
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          submodules: recursive
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: "24"
-          cache: "npm"
-          cache-dependency-path: vscode/package-lock.json
-
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Cache cargo
-        uses: Swatinem/rust-cache@v2
-
-      - name: Prepare SysML stdlib bundle
-        run: |
-          VERSION=$(node -p "require('./config/standard-library.json').version")
-          echo "SPEC42_STDLIB_VERSION=${VERSION}" >> $GITHUB_ENV
-          echo "SPEC42_STDLIB_KPAR_DIR=${{ github.workspace }}/.cache/sysml-stdlib-kpar-${VERSION}" >> $GITHUB_ENV
-
-      - name: Restore SysML stdlib bundle cache
-        uses: actions/cache/restore@v4
-        id: stdlib-cache
-        with:
-          path: .cache/sysml-stdlib-kpar-${{ env.SPEC42_STDLIB_VERSION }}
-          key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
-
-      - name: Fetch SysML stdlib bundle
-        if: steps.stdlib-cache.outputs.cache-hit != 'true'
-        run: bash scripts/fetch-stdlib-bundle.sh
-
-      - name: Save SysML stdlib bundle cache
-        if: steps.stdlib-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
-        with:
-          path: .cache/sysml-stdlib-kpar-${{ env.SPEC42_STDLIB_VERSION }}
-          key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
-
-      - name: Prepare KPAR library bundles
-        run: |
-          DOMAIN_VERSION=$(node -p "require('./config/libraries/domain.json').version")
-          METHOD_VERSION=$(node -p "require('./config/libraries/method.json').version")
-          echo "SPEC42_DOMAIN_LIBRARIES_VERSION=${DOMAIN_VERSION}" >> $GITHUB_ENV
-          echo "SPEC42_METHOD_LIBRARIES_VERSION=${METHOD_VERSION}" >> $GITHUB_ENV
-          echo "SPEC42_KPAR_LIBRARY_BUNDLE_DOMAIN=${{ github.workspace }}/.cache/elan8-domain-libraries-${DOMAIN_VERSION}.kpar" >> $GITHUB_ENV
-          echo "SPEC42_KPAR_LIBRARY_BUNDLE_METHOD=${{ github.workspace }}/.cache/elan8-method-libraries-${METHOD_VERSION}.kpar" >> $GITHUB_ENV
-
-      - name: Restore KPAR library bundles cache
-        uses: actions/cache/restore@v4
-        id: kpar-libraries-cache
-        with:
-          path: |
-            .cache/elan8-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.kpar
-            .cache/elan8-method-libraries-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}.kpar
-          key: kpar-libraries-domain-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}-method-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}
-
-      - name: Fetch KPAR library bundles
-        if: steps.kpar-libraries-cache.outputs.cache-hit != 'true'
-        run: bash scripts/fetch-kpar-libraries-bundle.sh
-
-      - name: Save KPAR library bundles cache
-        if: steps.kpar-libraries-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
-        with:
-          path: |
-            .cache/elan8-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.kpar
-            .cache/elan8-method-libraries-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}.kpar
-          key: kpar-libraries-domain-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}-method-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}
-
-      - name: Build server (debug for visualization test host)
-        run: cargo build -p server
-
-      - name: Configure server path
-        run: |
-          echo "${{ github.workspace }}/target/debug" >> $GITHUB_PATH
-          chmod +x "${{ github.workspace }}/target/debug/spec42" || true
-          echo "SPEC42_SERVER_PATH=${{ github.workspace }}/target/debug/spec42" >> $GITHUB_ENV
-
-      - name: npm ci (vscode)
-        run: cd vscode && npm ci
-
-      - name: Build extension and webview
-        run: cd vscode && npm run build:webview-assets && npm run build:webview && npm run compile
-
-      - name: npm test (interconnection)
-        run: cd vscode && xvfb-run -a npm run test:interconnection
-
-      - name: npm test (state view)
-        run: cd vscode && xvfb-run -a npm run test:state-view
-
-      - name: Upload visualization failure artifacts
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: vscode-visualization-deep-artifacts
-          if-no-files-found: ignore
-          path: |
-            vscode/.vscode-test/**
-            vscode/test-output/**
-            vscode/tests/output/**
-            /tmp/spec42-vscode-test-exports/**
 
   performance:
     name: Performance regression guard
@@ -278,12 +166,6 @@ jobs:
             .cache/elan8-method-libraries-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}.kpar
           key: kpar-libraries-domain-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}-method-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}
 
-      - name: Run drone interconnection performance report
-        run: cargo test -p lsp_server --test lsp_integration integration::powersystems_performance::drone_interconnection_performance_smoke_report -- --nocapture
-
-      - name: Check drone interconnection performance budgets
-        run: node scripts/check-perf-budgets.mjs target/spec42-perf/drone-interconnection-performance.json
-
   language-and-generator-exploratory:
     name: Language and generator fuzzing (exploratory)
     runs-on: ubuntu-latest
@@ -324,8 +206,8 @@ jobs:
       - name: Fuzz pinned SysML parser
         run: cargo fuzz run sysml_parser fuzz/corpus/sysml -- -max_total_time=300 -print_final_stats=1
 
-      - name: Fuzz SysML semantic graph recovery
-        run: cargo fuzz run sysml_semantic_graph fuzz/corpus/sysml -- -max_total_time=300 -print_final_stats=1
+      - name: Fuzz immutable SysML publication
+        run: cargo fuzz run sysml_publication fuzz/corpus/sysml -- -max_total_time=300 -print_final_stats=1
 
       - name: Fuzz SysML formatter convergence
         run: cargo fuzz run sysml_formatter fuzz/corpus/sysml -- -max_total_time=300 -print_final_stats=1

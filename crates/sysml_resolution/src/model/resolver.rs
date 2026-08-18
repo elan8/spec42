@@ -5810,7 +5810,7 @@ mod tests {
         // `status` is only reachable by first following `need`'s own `FeatureTyping` reference to
         // `Need`, then walking `Need`'s ancestor closure (`Need -> UserRequirement ->
         // ManagedRequirement`) to find `ManagedRequirement::status`. Mirrors
-        // test/snapshots/resolution/enum_status_redefinition.md.
+        // tests/snapshots/resolution/enum_status_redefinition.md.
         let mut symbols = SymbolTableBuilder::default();
         let demo_name = symbols.intern("Demo").unwrap();
         let managed_requirement_name = symbols.intern("ManagedRequirement").unwrap();
@@ -7393,7 +7393,7 @@ mod tests {
     }
 
     /// `package P { part def Device; alias DeviceAlias for Device; part device : DeviceAlias; }`
-    /// — mirrors `test/snapshots/resolution/alias_target_binding.md`.
+    /// — mirrors `tests/snapshots/resolution/alias_target_binding.md`.
     fn alias_binding_fixture() -> ResolverFixture {
         let mut symbols = SymbolTableBuilder::default();
         let package_name = symbols.intern("P").unwrap();
@@ -7559,7 +7559,7 @@ mod tests {
     }
 
     /// `package A { part def T; } package C { import A::*; part T; part p : T; }` — mirrors
-    /// `test/snapshots/resolution/lexical_inner_shadow.md`. `nested` controls whether the
+    /// `tests/snapshots/resolution/lexical_inner_shadow.md`. `nested` controls whether the
     /// FeatureTyping reference lives directly on `C::p` (false) or one namespace level deeper, on
     /// a feature owned by an intermediate `Inner` namespace inside `C` (true), so the same local
     /// binding is reached by walking one extra step of the enclosing-namespace chain.

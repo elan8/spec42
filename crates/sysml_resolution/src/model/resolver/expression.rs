@@ -37,7 +37,7 @@
 //! resolved through the import machinery without the parser first modelling it as one. The catalog
 //! is therefore publication-wide: a token names the units the whole publication declares, and a
 //! symbol two of them answer to is reported as ambiguous rather than decided by proximity. That is
-//! visible behaviour, not an accident -- see `test/snapshots/resolution/ambiguous_unit_symbol.md`.
+//! visible behaviour, not an accident -- see `tests/snapshots/resolution/ambiguous_unit_symbol.md`.
 
 use super::*;
 use crate::evaluation::EvaluatedScalar;

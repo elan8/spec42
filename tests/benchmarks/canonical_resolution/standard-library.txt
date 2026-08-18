@@ -1,0 +1,3 @@
+# source-kind source-directory
+workspace tests/snapshots/resolution/model_diagnostic_categories.md
+standard-library-directory tests/snapshots/sysml.library

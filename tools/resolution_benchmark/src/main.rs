@@ -309,7 +309,7 @@ fn main() -> Result<(), String> {
 
 fn run_workload(cli: &Cli, size: ModelSize) -> Result<WorkloadReport, String> {
     let relative_manifest = PathBuf::from(format!(
-        "test/benchmarks/canonical_resolution/{}.txt",
+        "tests/benchmarks/canonical_resolution/{}.txt",
         size.name()
     ));
     let manifest = cli.repo_root.join(&relative_manifest);
