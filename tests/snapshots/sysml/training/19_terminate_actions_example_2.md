@@ -35,12 +35,6 @@ package 'Terminate Actions Example-2' {
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
-        (range (start 14 12) (end 14 37))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
         (range (start 16 12) (end 16 21))
       )
     )
@@ -66,7 +60,7 @@ package 'Terminate Actions Example-2' {
       (outcome (status resolved) (target (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::WorkflowProcess")))))
     (reference (id (source (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::terminateProcessing"))) (kind memberAccessOperand) (ordinal 0))
       (authored-target "processor::workflowProcess")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::Processor::workflowProcess")))))
     (reference (id (source (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::terminateProcessing"))) (kind terminateTarget) (ordinal 0))
       (authored-target "processor")
       (outcome (status unresolved)))
@@ -76,6 +70,7 @@ package 'Terminate Actions Example-2' {
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::Processor::workflowProcess"))) (target (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::WorkflowProcess"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::Processor::workflowProcess"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::terminateProcessing"))) (target (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::Processor::workflowProcess"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::terminateProcessing"))) (kind memberAccessOperand) (ordinal 0)))
     (relationship (kind typing) (direction in) (source (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::terminateProcessing::processor"))) (target (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::Processor"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::terminateProcessing::processor"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
@@ -118,7 +113,7 @@ package 'Terminate Actions Example-2' {
   )
   (query (document "memory://snapshot/19_terminate_actions_example_2.md") (range (start 14 12) (end 14 37)) (probe (position 14 12))
     (reference (id (source (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::terminateProcessing"))) (kind memberAccessOperand) (ordinal 0) (authored-target "processor::workflowProcess")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/19_terminate_actions_example_2.md") (qualified-name "Terminate Actions Example-2::Processor::workflowProcess")))))
     )
   )
   (query (document "memory://snapshot/19_terminate_actions_example_2.md") (range (start 16 12) (end 16 21)) (probe (position 16 12))

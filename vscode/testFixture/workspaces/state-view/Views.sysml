@@ -1,4 +1,5 @@
 package Views {
+    private import StandardViewDefinitions::*;
     import StateMachineDemo::*;
 
     view timerStateMachine : StateTransitionView {

@@ -79,6 +79,9 @@ pub(crate) fn walk_package_body_element_type_refs(
         PackageBodyElement::MetadataUsage(metadata_usage) => {
             walk_metadata_usage_type_refs(&metadata_usage.value, out);
         }
+        PackageBodyElement::ViewUsage(view) => {
+            push_optional_type_reference(view.value.type_name.as_deref(), out);
+        }
         _ => {}
     }
 }

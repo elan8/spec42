@@ -48,11 +48,11 @@ use sysml_v2_parser_next::{
         PartUsageBodyElement, Perform as ParserPerform, PerformBody, PerformBodyElement,
         PerformInOutBinding, PortBody, PortBodyElement, PortDef, PortDefBody, PortDefBodyElement,
         PortUsage as ParserPortUsage, PurposeMember, QualifiedIdentification, QualifiedReferenceId,
-        RefDecl, RelationshipBodyElement, RenderingDef, RenderingDefBody, RenderingDefBodyElement,
-        RenderingUsage as ParserRenderingUsage, RenderingUsageBody, RenderingUsageBodyElement,
-        RequireConstraint, RequirementActorDecl, RequirementDef, RequirementDefBody,
-        RequirementDefBodyElement, RequirementUsage as ParserRequirementUsage, ReturnDecl,
-        RootElement, SatisfiedRequirement, SatisfyRequirementUsage, SendPayload, Span,
+        RefDecl, ReferenceSeparator, RelationshipBodyElement, RenderingDef, RenderingDefBody,
+        RenderingDefBodyElement, RenderingUsage as ParserRenderingUsage, RenderingUsageBody,
+        RenderingUsageBodyElement, RequireConstraint, RequirementActorDecl, RequirementDef,
+        RequirementDefBody, RequirementDefBodyElement, RequirementUsage as ParserRequirementUsage,
+        ReturnDecl, RootElement, SatisfiedRequirement, SatisfyRequirementUsage, SendPayload, Span,
         StakeholderMember, StateDef, StateDefBody, StateDefBodyElement,
         StateUsage as ParserStateUsage, SubjectDecl, SubsettingKind, SubsettingRelationship,
         TerminateStmt, TextualRepresentation, ThenAction, ThenStmt, ThenTarget, Transition,
@@ -1011,12 +1011,11 @@ pub(crate) enum ReferenceKind {
     /// the constraint/calc expression fact family; see `lower_constraint_expression_operand`),
     /// resolved through the same `DeclarationDomain::Any` lexical lookup fixed point as
     /// `ConnectorEnd`/`Succession`: an expression operand can reference any owned feature, not
-    /// just a Type. Sourced directly at the enclosing `constraint`/`calc` declaration (unlike
-    /// `Succession`, no anonymous nested-declaration scope shift is needed here, since a
-    /// constraint/calc's expression operands are looked up in the constraint/calc's own
-    /// enclosing scope, not in a nested sibling scope). Evaluation of the expression (computing
-    /// an actual truth value) is explicitly out of scope for this slice; only the operand
-    /// references themselves are resolved.
+    /// just a Type. Sourced directly at the enclosing `constraint`/`calc` declaration. Operand
+    /// lookup begins in that declaration's owned scope, so its `in`/`out`/`return` parameters
+    /// participate before the ordinary enclosing lexical scopes. Evaluation of the expression
+    /// (computing an actual truth value) is explicitly out of scope for this slice; only the
+    /// operand references themselves are resolved.
     ExpressionOperand,
     /// The authored `source` operand of a `transition ...;` body element (BNF `Transition.
     /// source`), resolved through the same `DeclarationDomain::Any` lexical lookup as
@@ -9510,8 +9509,10 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
-    /// Pushes one of a satisfy usage's two source-backed operands as an authored reference at its
-    /// anonymous satisfy declaration.
+    /// Pushes one of a satisfy usage's two source-backed operands at its anonymous satisfy
+    /// declaration. The parser preserves each segment separator: a dotted feature path is routed
+    /// through the canonical type-directed member-access resolver, while a `::` qualified name
+    /// keeps ordinary namespace lookup.
     fn push_satisfy_reference(
         &mut self,
         document: DocumentId,
@@ -9519,13 +9520,19 @@ impl SemanticModelBuilder {
         kind: ReferenceKind,
         reference: QualifiedReferenceId,
     ) -> Result<(), ConstructionError> {
-        let span = self.documents[document.index()]
-            .parsed
+        let parsed = Arc::clone(&self.documents[document.index()].parsed);
+        let parsed_reference = parsed
             .qualified_reference(reference)
-            .ok_or(ConstructionError::InvalidParserReference)?
-            .metadata
-            .span
-            .clone();
+            .ok_or(ConstructionError::InvalidParserReference)?;
+        let span = parsed_reference.metadata.span.clone();
+        if parsed_reference
+            .segments
+            .iter()
+            .any(|segment| segment.separator_before == Some(ReferenceSeparator::Dot))
+        {
+            self.push_member_access_reference(declaration, document, &[reference], span)?;
+            return Ok(());
+        }
         self.push_reference(PendingReference {
             source: declaration,
             kind,

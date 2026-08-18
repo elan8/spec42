@@ -368,6 +368,30 @@ mod tests {
     }
 
     #[test]
+    fn closure_loads_qualified_type_reference_from_view_usage() {
+        let temp = tempfile::tempdir().expect("tempdir");
+        let lib = temp.path().join("lib");
+        fs::create_dir_all(&lib).expect("lib dir");
+        fs::write(
+            lib.join("StandardViewDefinitions.sysml"),
+            "standard library package StandardViewDefinitions { view def StateTransitionView; }",
+        )
+        .expect("standard views");
+        let workspace = [WorkspaceSource {
+            path: "Views.sysml",
+            content:
+                "package Views { view lifecycle : StandardViewDefinitions::StateTransitionView; }",
+        }];
+        let roots = vec![lib.to_string_lossy().replace('\\', "/")];
+
+        let loaded = resolve_library_closure(&workspace, &roots, &LibraryClosureOptions::default())
+            .expect("closure");
+
+        assert_eq!(loaded.len(), 1, "loaded paths: {loaded:?}");
+        assert!(loaded[0].path.ends_with("StandardViewDefinitions.sysml"));
+    }
+
+    #[test]
     fn closure_indexes_standard_library_package_declarations() {
         let temp = tempfile::tempdir().expect("tempdir");
         let lib = temp.path().join("lib");

@@ -4676,10 +4676,15 @@ fn resolve_reference<R: ResolutionReferenceFact>(
         } else {
             DeclarationDomain::Any
         };
+        let lexical_scope = if reference.kind() == ReferenceKind::ExpressionOperand {
+            Some(reference.source())
+        } else {
+            source.owner
+        };
         lookup_lexical_into(
             declarations,
             &indexes,
-            source.owner,
+            lexical_scope,
             segments[0],
             LookupTarget {
                 domain: first_segment_domain,
@@ -4849,9 +4854,10 @@ fn lookup_lexical_into(
 /// `SemanticModelBuilder::push_member_access_reference` -- the root segment(s) followed by each
 /// subsequent dotted member segment, all in one `SymbolPathId`.
 ///
-/// The root segment resolves through the ordinary `DeclarationDomain::Any` lexical lookup every
-/// other operand kind's single-segment path uses (`lookup_lexical_into`, walking `owner`'s
-/// enclosing-namespace chain). Each subsequent segment is then looked up as a member OWNED
+/// The root segment resolves through `DeclarationDomain::Any` lexical lookup, beginning in the
+/// source declaration's owned scope and then walking its enclosing-namespace chain. This lets a
+/// constraint/calc expression reach its own parameters without changing the enclosing-scope result
+/// for sources that own no declarations. Each subsequent segment is then looked up as a member OWNED
 /// (directly or through inheritance) by the *type* of the previously resolved segment, never as a
 /// member of the previous segment's own declaration -- reusing `inherited_names`, which by the
 /// time this runs has already been extended with usage-typing entries
@@ -4879,7 +4885,7 @@ fn resolve_member_access_reference<R: ResolutionReferenceFact>(
         // lowering side today.
         return Ok(ResolutionStatus::Unsupported);
     }
-    let source = declarations
+    let _source = declarations
         .get(reference.source().index())
         .ok_or(ResolutionError::InvalidStorage)?;
     scratch.candidates.clear();
@@ -4887,7 +4893,7 @@ fn resolve_member_access_reference<R: ResolutionReferenceFact>(
     lookup_lexical_into(
         declarations,
         &indexes,
-        source.owner,
+        Some(reference.source()),
         segments[0],
         // A member-access chain is never a Redefinition reference.
         LookupTarget {

@@ -220,12 +220,6 @@ package '10a-Analysis' {
         (range (start 40 18) (end 40 27))
       )
       (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 51 3) (end 51 15))
-      )
-      (diagnostic
         (severity information)
         (code "untyped_part_usage")
         (source "semantic")
@@ -295,7 +289,7 @@ package '10a-Analysis' {
       (outcome (status resolved) (target (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleDesignModel::Vehicle")))))
     (reference (id (source (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisCase"))) (kind memberAccessOperand) (ordinal 0))
       (authored-target "vehicle::mass")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleDesignModel::Vehicle::mass")))))
     (reference (id (source (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisCase::objective"))) (kind featureTyping) (ordinal 0))
       (authored-target "MassAnalysisObjective")
       (outcome (status resolved) (target (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisObjective")))))
@@ -348,6 +342,7 @@ package '10a-Analysis' {
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleAnalysisModel::AnalysisPlan::massAnalysisCase"))) (target (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisCase"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleAnalysisModel::AnalysisPlan::massAnalysisCase"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleAnalysisModel::AnalysisPlan::vehicle"))) (target (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleDesignModel::Vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleAnalysisModel::AnalysisPlan::vehicle"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisCase"))) (target (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleDesignModel::Vehicle::mass"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisCase"))) (kind memberAccessOperand) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisCase::objective"))) (target (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisObjective"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisCase::objective"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisCase::vehicle"))) (target (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleDesignModel::Vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisCase::vehicle"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleAnalysisModel::massAnalysisContext::analysisPlan"))) (target (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleAnalysisModel::AnalysisPlan"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleAnalysisModel::massAnalysisContext::analysisPlan"))) (kind featureTyping) (ordinal 0)))
@@ -486,7 +481,7 @@ package '10a-Analysis' {
   )
   (query (document "memory://snapshot/10a_analysis.md") (range (start 51 3) (end 51 15)) (probe (position 51 3))
     (reference (id (source (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisCase"))) (kind memberAccessOperand) (ordinal 0) (authored-target "vehicle::mass")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleDesignModel::Vehicle::mass")))))
     )
   )
   (query (document "memory://snapshot/10a_analysis.md") (range (start 46 15) (end 46 36)) (probe (position 46 15))

@@ -69,12 +69,6 @@ package VerificationTest {
         (range (start 20 2) (end 20 27))
       )
       (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 20 28) (end 20 31))
-      )
-      (diagnostic
         (severity information)
         (code "untyped_part_usage")
         (source "semantic")
@@ -113,7 +107,7 @@ package VerificationTest {
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase"))) (kind memberAccessOperand) (ordinal 0))
       (authored-target "v::m")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::V::m")))))
     (reference (id (source (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase"))) (kind invocationCallee) (ordinal 0))
       (authored-target "VerificationCases::PassIf")
       (outcome (status unresolved)))
@@ -140,6 +134,7 @@ package VerificationTest {
       (outcome (status resolved) (target (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::V")))))
   )
   (relationships
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase"))) (target (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::V::m"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase"))) (kind memberAccessOperand) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase::v"))) (target (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::V"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase::v"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind verifyRequirementTarget) (source (node (document "memory://snapshot/verification_test.md") (path (named (kind package) (name "VerificationTest")) (named (kind verification-def) (name "VerificationPlan")) (named (kind requirement) (name "objective")) (anonymous (kind verify-requirement) (ordinal 0))))) (target (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::r"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/verification_test.md") (path (named (kind package) (name "VerificationTest")) (named (kind verification-def) (name "VerificationPlan")) (named (kind requirement) (name "objective")) (anonymous (kind verify-requirement) (ordinal 0))))) (kind verifyRequirementTarget) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationPlan::v"))) (target (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::V"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationPlan::v"))) (kind featureTyping) (ordinal 0)))
@@ -231,7 +226,7 @@ package VerificationTest {
   )
   (query (document "memory://snapshot/verification_test.md") (range (start 20 28) (end 20 31)) (probe (position 20 28))
     (reference (id (source (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase"))) (kind memberAccessOperand) (ordinal 0) (authored-target "v::m")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::V::m")))))
     )
   )
   (query (document "memory://snapshot/verification_test.md") (range (start 20 2) (end 20 27)) (probe (position 20 2))
