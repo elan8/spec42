@@ -52,18 +52,20 @@ export function parseStateTransitionViewCatalog(value: unknown): StateTransition
   const views = candidate.views.map((entry) => {
     if (!entry || typeof entry !== "object") throw new Error("Spec42 returned an invalid state-transition view.");
     const view = entry as Record<string, unknown>;
-    const machine = view.exposedMachine as Record<string, unknown> | undefined;
+    const semanticId = view.semanticId ?? view.semantic_id;
+    const machine = (view.exposedMachine ?? view.exposed_machine) as Record<string, unknown> | undefined;
     const source = view.source as Record<string, unknown> | undefined;
-    if (typeof view.handle !== "string" || typeof view.semanticId !== "string" || typeof view.name !== "string" ||
-        !machine || typeof machine.semanticId !== "string" || typeof machine.label !== "string" ||
+    const machineSemanticId = machine?.semanticId ?? machine?.semantic_id;
+    if (typeof view.handle !== "string" || typeof semanticId !== "string" || typeof view.name !== "string" ||
+        !machine || typeof machineSemanticId !== "string" || typeof machine.label !== "string" ||
         !source || typeof source.uri !== "string") {
       throw new Error("Spec42 returned malformed state-transition view identity.");
     }
     return {
       handle: view.handle,
-      semanticId: view.semanticId,
+      semanticId,
       name: view.name,
-      exposedMachine: { semanticId: machine.semanticId, label: machine.label },
+      exposedMachine: { semanticId: machineSemanticId, label: machine.label },
       source: { uri: source.uri },
     };
   });

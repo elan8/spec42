@@ -68,6 +68,16 @@ describe("state transition viewer core", () => {
       modelDigest: value.modelDigest,
       views: [{ ...value.views[0], source: { uri: value.views[0].source.uri } }],
     });
+    assert.equal(parseStateTransitionViewCatalog({
+      modelDigest: value.modelDigest,
+      views: [{
+        handle: "view:legacy",
+        semantic_id: "semantic:legacy",
+        name: "legacy",
+        exposed_machine: { semantic_id: "machine:legacy", label: "Legacy" },
+        source: { uri: "file:///workspace/model.sysml" },
+      }],
+    }).views[0].exposedMachine.label, "Legacy");
     assert.throws(() => parseStateTransitionViewCatalog({ ...value, views: [{ name: "missing identity" }] }));
   });
 
