@@ -102,7 +102,7 @@ package GeneralExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 2,
+  "schemaVersion": 4,
   "modelDigest": "blake3:25aa361629a136c7bb2c0a6c3b6f21da0f91ff8f1b33bd68ae74f81ed59b59cf",
   "documents": [
     {
@@ -194,6 +194,15 @@ package GeneralExample {
     },
     "nodes": [
       {
+        "compartments": [
+          {
+            "kind": "parts",
+            "members": [
+              1
+            ],
+            "provenance": "direct"
+          }
+        ],
         "metaclass": "PartDefinition",
         "name": "System",
         "notationRole": "definition",
@@ -202,6 +211,7 @@ package GeneralExample {
         "source": 0
       },
       {
+        "compartments": [],
         "metaclass": "PartUsage",
         "name": "child",
         "notationRole": "usage",
@@ -210,7 +220,10 @@ package GeneralExample {
         "source": 1
       }
     ],
-    "relationships": []
+    "relationships": [],
+    "scene": {
+      "kind": "general"
+    }
   }
 }
 

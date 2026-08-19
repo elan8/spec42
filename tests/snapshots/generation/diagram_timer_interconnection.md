@@ -2585,7 +2585,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 2,
+  "schemaVersion": 4,
   "modelDigest": "blake3:df7b95a901c31d2d48b56baa1b344cb09aeaf72db4ec82abc11849846aa4782e",
   "documents": [
     {
@@ -6399,6 +6399,28 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     "nodes": [
       {
+        "compartments": [
+          {
+            "kind": "parts",
+            "members": [
+              34,
+              35,
+              36
+            ],
+            "provenance": "inherited"
+          },
+          {
+            "kind": "connections",
+            "members": [
+              29,
+              30,
+              31,
+              32,
+              33
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "PartUsage",
         "name": "timerInstance",
         "notationRole": "usage",
@@ -6407,6 +6429,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 0
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": "maxCurrent",
         "notationRole": "usage",
@@ -6415,6 +6438,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 47
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": "voltage",
         "notationRole": "usage",
@@ -6423,6 +6447,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 46
       },
       {
+        "compartments": [],
         "metaclass": "ReferenceUsage",
         "name": "power",
         "notationRole": "reference-usage",
@@ -6431,6 +6456,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 44
       },
       {
+        "compartments": [],
         "metaclass": "ReferenceUsage",
         "name": "stopPressed",
         "notationRole": "reference-usage",
@@ -6439,6 +6465,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 50
       },
       {
+        "compartments": [],
         "metaclass": "ReferenceUsage",
         "name": "resetPressed",
         "notationRole": "reference-usage",
@@ -6447,6 +6474,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 52
       },
       {
+        "compartments": [],
         "metaclass": "ReferenceUsage",
         "name": "startPressed",
         "notationRole": "reference-usage",
@@ -6455,6 +6483,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 48
       },
       {
+        "compartments": [],
         "metaclass": "ReferenceUsage",
         "name": "decrementPressed",
         "notationRole": "reference-usage",
@@ -6463,6 +6492,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 56
       },
       {
+        "compartments": [],
         "metaclass": "ReferenceUsage",
         "name": "incrementPressed",
         "notationRole": "reference-usage",
@@ -6471,6 +6501,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 54
       },
       {
+        "compartments": [],
         "metaclass": "ReferenceUsage",
         "name": "buzzerOn",
         "notationRole": "reference-usage",
@@ -6479,6 +6510,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 62
       },
       {
+        "compartments": [],
         "metaclass": "ReferenceUsage",
         "name": "displayValue",
         "notationRole": "reference-usage",
@@ -6487,6 +6519,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 58
       },
       {
+        "compartments": [],
         "metaclass": "ReferenceUsage",
         "name": "comSegDrive",
         "notationRole": "reference-usage",
@@ -6495,6 +6528,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 60
       },
       {
+        "compartments": [],
         "metaclass": "TransitionUsage",
         "name": "to_expired",
         "notationRole": "usage",
@@ -6503,6 +6537,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 28
       },
       {
+        "compartments": [],
         "metaclass": "TransitionUsage",
         "name": "to_running",
         "notationRole": "usage",
@@ -6511,6 +6546,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 12
       },
       {
+        "compartments": [],
         "metaclass": "TransitionUsage",
         "name": "decrement_idle",
         "notationRole": "usage",
@@ -6519,6 +6555,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 20
       },
       {
+        "compartments": [],
         "metaclass": "TransitionUsage",
         "name": "increment_idle",
         "notationRole": "usage",
@@ -6527,6 +6564,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 16
       },
       {
+        "compartments": [],
         "metaclass": "TransitionUsage",
         "name": "to_running_resume",
         "notationRole": "usage",
@@ -6535,6 +6573,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 32
       },
       {
+        "compartments": [],
         "metaclass": "TransitionUsage",
         "name": "to_idle_from_paused",
         "notationRole": "usage",
@@ -6543,6 +6582,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 36
       },
       {
+        "compartments": [],
         "metaclass": "TransitionUsage",
         "name": "to_idle_from_expired",
         "notationRole": "usage",
@@ -6551,6 +6591,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 40
       },
       {
+        "compartments": [],
         "metaclass": "TransitionUsage",
         "name": "to_paused",
         "notationRole": "usage",
@@ -6559,6 +6600,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 24
       },
       {
+        "compartments": [],
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -6567,6 +6609,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 2
       },
       {
+        "compartments": [],
         "metaclass": "StateUsage",
         "name": "idle",
         "notationRole": "usage",
@@ -6575,6 +6618,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 4
       },
       {
+        "compartments": [],
         "metaclass": "StateUsage",
         "name": "paused",
         "notationRole": "usage",
@@ -6583,6 +6627,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 8
       },
       {
+        "compartments": [],
         "metaclass": "StateUsage",
         "name": "expired",
         "notationRole": "usage",
@@ -6591,6 +6636,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 10
       },
       {
+        "compartments": [],
         "metaclass": "StateUsage",
         "name": "running",
         "notationRole": "usage",
@@ -6599,6 +6645,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 6
       },
       {
+        "compartments": [],
         "metaclass": "PortUsage",
         "name": "buzzerPwrOut",
         "notationRole": "usage",
@@ -6607,6 +6654,15 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 90
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              27
+            ],
+            "provenance": "direct"
+          }
+        ],
         "metaclass": "PortUsage",
         "name": "pwrIn",
         "notationRole": "usage",
@@ -6615,6 +6671,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 86
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": null,
         "notationRole": "usage",
@@ -6623,6 +6680,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 88
       },
       {
+        "compartments": [],
         "metaclass": "PortUsage",
         "name": "ctrlIn",
         "notationRole": "usage",
@@ -6631,6 +6689,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 84
       },
       {
+        "compartments": [],
         "metaclass": "ConnectionUsage",
         "name": null,
         "notationRole": "usage",
@@ -6639,6 +6698,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 148
       },
       {
+        "compartments": [],
         "metaclass": "ConnectionUsage",
         "name": null,
         "notationRole": "usage",
@@ -6647,6 +6707,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 151
       },
       {
+        "compartments": [],
         "metaclass": "ConnectionUsage",
         "name": null,
         "notationRole": "usage",
@@ -6655,6 +6716,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 154
       },
       {
+        "compartments": [],
         "metaclass": "ConnectionUsage",
         "name": null,
         "notationRole": "usage",
@@ -6663,6 +6725,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 157
       },
       {
+        "compartments": [],
         "metaclass": "ConnectionUsage",
         "name": null,
         "notationRole": "usage",
@@ -6671,6 +6734,28 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 160
       },
       {
+        "compartments": [
+          {
+            "kind": "parts",
+            "members": [
+              66,
+              67,
+              68,
+              69
+            ],
+            "provenance": "inherited"
+          },
+          {
+            "kind": "connections",
+            "members": [
+              62,
+              63,
+              64,
+              65
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "PartUsage",
         "name": "pcb",
         "notationRole": "usage",
@@ -6679,6 +6764,22 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 142
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              52
+            ],
+            "provenance": "inherited"
+          },
+          {
+            "kind": "ports",
+            "members": [
+              50
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "PartUsage",
         "name": "buzzer",
         "notationRole": "usage",
@@ -6687,6 +6788,24 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 146
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              54,
+              55,
+              56
+            ],
+            "provenance": "inherited"
+          },
+          {
+            "kind": "ports",
+            "members": [
+              53
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "PartUsage",
         "name": "battery",
         "notationRole": "usage",
@@ -6695,6 +6814,15 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 144
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              38
+            ],
+            "provenance": "direct"
+          }
+        ],
         "metaclass": "PortUsage",
         "name": "pwr",
         "notationRole": "usage",
@@ -6703,6 +6831,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 104
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": null,
         "notationRole": "usage",
@@ -6711,6 +6840,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 106
       },
       {
+        "compartments": [],
         "metaclass": "PortUsage",
         "name": "output",
         "notationRole": "usage",
@@ -6719,6 +6849,15 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 102
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              10
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "PortUsage",
         "name": "displayOut",
         "notationRole": "usage",
@@ -6727,6 +6866,15 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 72
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              42
+            ],
+            "provenance": "direct"
+          }
+        ],
         "metaclass": "PortUsage",
         "name": "pwr",
         "notationRole": "usage",
@@ -6735,6 +6883,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 78
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": null,
         "notationRole": "usage",
@@ -6743,6 +6892,19 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 80
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              4,
+              5,
+              6,
+              7,
+              8
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "PortUsage",
         "name": "buttonIn",
         "notationRole": "usage",
@@ -6751,6 +6913,15 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 70
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              11
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "PortUsage",
         "name": "lcdDrive",
         "notationRole": "usage",
@@ -6759,6 +6930,15 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 74
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              9
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "PortUsage",
         "name": "buzzerOut",
         "notationRole": "usage",
@@ -6767,6 +6947,18 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 76
       },
       {
+        "compartments": [
+          {
+            "kind": "states",
+            "members": [
+              21,
+              22,
+              23,
+              24
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "StateUsage",
         "name": "timerMode",
         "notationRole": "usage",
@@ -6775,6 +6967,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 82
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": "clockFrequency",
         "notationRole": "usage",
@@ -6783,6 +6976,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 64
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": "ramSize",
         "notationRole": "usage",
@@ -6791,6 +6985,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 68
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": "flashSize",
         "notationRole": "usage",
@@ -6799,6 +6994,15 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 66
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              51
+            ],
+            "provenance": "direct"
+          }
+        ],
         "metaclass": "PortUsage",
         "name": "pwr",
         "notationRole": "usage",
@@ -6807,6 +7011,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 110
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": null,
         "notationRole": "usage",
@@ -6815,6 +7020,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 112
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": "duration",
         "notationRole": "usage",
@@ -6823,6 +7029,17 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 108
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              1,
+              2,
+              3
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "PortUsage",
         "name": "powerOut",
         "notationRole": "usage",
@@ -6831,6 +7048,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 140
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": "nominalVoltage",
         "notationRole": "usage",
@@ -6839,6 +7057,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 136
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": "runtimeEstimate",
         "notationRole": "usage",
@@ -6847,6 +7066,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 138
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": "capacity",
         "notationRole": "usage",
@@ -6855,6 +7075,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 134
       },
       {
+        "compartments": [],
         "metaclass": "PortUsage",
         "name": "cmd",
         "notationRole": "usage",
@@ -6863,6 +7084,15 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 94
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              59
+            ],
+            "provenance": "direct"
+          }
+        ],
         "metaclass": "PortUsage",
         "name": "pwr",
         "notationRole": "usage",
@@ -6871,6 +7101,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 98
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": null,
         "notationRole": "usage",
@@ -6879,6 +7110,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 100
       },
       {
+        "compartments": [],
         "metaclass": "PortUsage",
         "name": "lcdIn",
         "notationRole": "usage",
@@ -6887,6 +7119,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 96
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": "format",
         "notationRole": "usage",
@@ -6895,6 +7128,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 92
       },
       {
+        "compartments": [],
         "metaclass": "ConnectionUsage",
         "name": null,
         "notationRole": "usage",
@@ -6903,6 +7137,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 122
       },
       {
+        "compartments": [],
         "metaclass": "ConnectionUsage",
         "name": null,
         "notationRole": "usage",
@@ -6911,6 +7146,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 125
       },
       {
+        "compartments": [],
         "metaclass": "ConnectionUsage",
         "name": null,
         "notationRole": "usage",
@@ -6919,6 +7155,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 128
       },
       {
+        "compartments": [],
         "metaclass": "ConnectionUsage",
         "name": null,
         "notationRole": "usage",
@@ -6927,6 +7164,17 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 131
       },
       {
+        "compartments": [
+          {
+            "kind": "ports",
+            "members": [
+              25,
+              26,
+              28
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "PartUsage",
         "name": "buzzerDriver",
         "notationRole": "usage",
@@ -6935,6 +7183,35 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 120
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              47,
+              48,
+              49
+            ],
+            "provenance": "inherited"
+          },
+          {
+            "kind": "ports",
+            "members": [
+              40,
+              41,
+              43,
+              44,
+              45
+            ],
+            "provenance": "inherited"
+          },
+          {
+            "kind": "states",
+            "members": [
+              46
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "PartUsage",
         "name": "mcu",
         "notationRole": "usage",
@@ -6943,6 +7220,16 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 114
       },
       {
+        "compartments": [
+          {
+            "kind": "ports",
+            "members": [
+              37,
+              39
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "PartUsage",
         "name": "buttons",
         "notationRole": "usage",
@@ -6951,6 +7238,24 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 118
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              61
+            ],
+            "provenance": "inherited"
+          },
+          {
+            "kind": "ports",
+            "members": [
+              57,
+              58,
+              60
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "PartUsage",
         "name": "display",
         "notationRole": "usage",
@@ -7983,7 +8288,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "status": "resolved"
         }
       }
-    ]
+    ],
+    "scene": {
+      "kind": "interconnection"
+    }
   }
 }
 

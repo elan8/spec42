@@ -92,7 +92,7 @@ package GeometryExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 2,
+  "schemaVersion": 4,
   "modelDigest": "blake3:5ba9cb4acdc82558712fdacc22f63d00668fc75dc6bb62101bb995bf17c26bde",
   "documents": [
     {
@@ -160,6 +160,7 @@ package GeometryExample {
     },
     "nodes": [
       {
+        "compartments": [],
         "metaclass": "PartDefinition",
         "name": "Shape",
         "notationRole": "definition",
@@ -168,7 +169,10 @@ package GeometryExample {
         "source": 0
       }
     ],
-    "relationships": []
+    "relationships": [],
+    "scene": {
+      "kind": "geometry"
+    }
   }
 }
 

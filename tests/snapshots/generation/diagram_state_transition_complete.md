@@ -152,7 +152,7 @@ package StateExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 2,
+  "schemaVersion": 4,
   "modelDigest": "blake3:a4f484005023617686514807b29c4c7620cbdb76bb3db5383c36203c01f871b9",
   "documents": [
     {
@@ -435,6 +435,16 @@ package StateExample {
     },
     "nodes": [
       {
+        "compartments": [
+          {
+            "kind": "states",
+            "members": [
+              2,
+              4
+            ],
+            "provenance": "direct"
+          }
+        ],
         "metaclass": "StateDefinition",
         "name": "Machine",
         "notationRole": "definition",
@@ -443,6 +453,7 @@ package StateExample {
         "source": 0
       },
       {
+        "compartments": [],
         "metaclass": "TransitionUsage",
         "name": "finish",
         "notationRole": "usage",
@@ -451,6 +462,7 @@ package StateExample {
         "source": 5
       },
       {
+        "compartments": [],
         "metaclass": "FinalState",
         "name": "done",
         "notationRole": "usage",
@@ -459,6 +471,7 @@ package StateExample {
         "source": 4
       },
       {
+        "compartments": [],
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -467,6 +480,7 @@ package StateExample {
         "source": 1
       },
       {
+        "compartments": [],
         "metaclass": "StateUsage",
         "name": "idle",
         "notationRole": "usage",
@@ -520,7 +534,77 @@ package StateExample {
           "status": "resolved"
         }
       }
-    ]
+    ],
+    "scene": {
+      "frame": {
+        "id": "element/v154:memory://snapshot/diagram_state_transition_complete.md7:packagen12:StateExample1:09:state-defn7:Machine1:0",
+        "label": "Machine",
+        "navigation": 0
+      },
+      "kind": "state-transition",
+      "transitions": [
+        {
+          "effect": {
+            "status": "absent"
+          },
+          "guard": {
+            "status": "absent"
+          },
+          "id": "element/v154:memory://snapshot/diagram_state_transition_complete.md7:packagen12:StateExample1:09:state-defn7:Machine1:010:transitionn6:finish1:0#edge",
+          "label": "finish",
+          "navigation": 6,
+          "provenance": "authored",
+          "source": 2,
+          "target": 0,
+          "trigger": {
+            "label": "Start",
+            "navigation": 7,
+            "status": "accept",
+            "target": {
+              "id": "element/v154:memory://snapshot/diagram_state_transition_complete.md7:packagen12:StateExample1:08:item-defn5:Start1:0",
+              "label": "Start"
+            }
+          }
+        },
+        {
+          "effect": {
+            "status": "absent"
+          },
+          "guard": {
+            "status": "absent"
+          },
+          "id": "element/v154:memory://snapshot/diagram_state_transition_complete.md7:packagen12:StateExample1:09:state-defn7:Machine1:013:initial-statea1:0#initial",
+          "label": null,
+          "navigation": 2,
+          "provenance": "authored",
+          "source": 1,
+          "target": 2,
+          "trigger": {
+            "status": "absent"
+          }
+        }
+      ],
+      "vertices": [
+        {
+          "id": "element/v154:memory://snapshot/diagram_state_transition_complete.md7:packagen12:StateExample1:09:state-defn7:Machine1:011:final-staten4:done1:0",
+          "kind": "final",
+          "label": "done",
+          "navigation": 4
+        },
+        {
+          "id": "element/v154:memory://snapshot/diagram_state_transition_complete.md7:packagen12:StateExample1:09:state-defn7:Machine1:013:initial-statea1:0",
+          "kind": "initial",
+          "label": "",
+          "navigation": 1
+        },
+        {
+          "id": "element/v154:memory://snapshot/diagram_state_transition_complete.md7:packagen12:StateExample1:09:state-defn7:Machine1:05:staten4:idle1:0",
+          "kind": "state",
+          "label": "idle",
+          "navigation": 3
+        }
+      ]
+    }
   }
 }
 

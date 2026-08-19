@@ -112,7 +112,7 @@ package BrowserExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 2,
+  "schemaVersion": 4,
   "modelDigest": "blake3:da3b01538454be5bdb18db4056b8af8b78e50376b730804d30a832a52cadddbc",
   "documents": [
     {
@@ -232,6 +232,15 @@ package BrowserExample {
     },
     "nodes": [
       {
+        "compartments": [
+          {
+            "kind": "parts",
+            "members": [
+              1
+            ],
+            "provenance": "direct"
+          }
+        ],
         "metaclass": "PartDefinition",
         "name": "Root",
         "notationRole": "definition",
@@ -240,6 +249,15 @@ package BrowserExample {
         "source": 0
       },
       {
+        "compartments": [
+          {
+            "kind": "parts",
+            "members": [
+              2
+            ],
+            "provenance": "direct"
+          }
+        ],
         "metaclass": "PartUsage",
         "name": "branch",
         "notationRole": "usage",
@@ -248,6 +266,7 @@ package BrowserExample {
         "source": 1
       },
       {
+        "compartments": [],
         "metaclass": "PartUsage",
         "name": "leaf",
         "notationRole": "usage",
@@ -256,7 +275,10 @@ package BrowserExample {
         "source": 2
       }
     ],
-    "relationships": []
+    "relationships": [],
+    "scene": {
+      "kind": "browser"
+    }
   }
 }
 

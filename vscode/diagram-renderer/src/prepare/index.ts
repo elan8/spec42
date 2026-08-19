@@ -78,7 +78,7 @@ export function prepareViewData(visualizationInput: unknown): PreparedView {
 
 function prepareTypedDiagramProduct(input: unknown): PreparedView | null {
   const product = asRecord(input);
-  if (product.schemaVersion !== 2) return null;
+  if (product.schemaVersion !== 4) return null;
   const selected = asRecord(product.selectedView);
   const projection = asRecord(product.projection);
   const documents = Array.isArray(product.documents) ? product.documents.map(asRecord) : [];
@@ -99,6 +99,66 @@ function prepareTypedDiagramProduct(input: unknown): PreparedView | null {
       } : {},
     };
   };
+  if (selected.kind === "state-transition-view") {
+    const scene = asRecord(projection.scene);
+    if (scene.kind !== "state-transition" || !Array.isArray(scene.vertices) || !Array.isArray(scene.transitions)) return null;
+    const frame = asRecord(scene.frame);
+    const nodes = scene.vertices.map((raw, index): PreparedNode => {
+      const vertex = asRecord(raw);
+      const source = navigation(vertex.navigation);
+      return {
+        id: `state:${index}`,
+        label: typeof vertex.label === "string" ? vertex.label : "",
+        kind: String(vertex.kind ?? "state"),
+        uri: source.uri,
+        range: source.range as PreparedNode["range"],
+        attributes: { semanticSceneId: vertex.id },
+      };
+    });
+    const featureLabel = (value: unknown): string => {
+      const feature = asRecord(value);
+      return feature.status === "supported" && typeof feature.label === "string" ? feature.label : "";
+    };
+    const triggerLabel = (value: unknown): string => {
+      const trigger = asRecord(value);
+      return trigger.status === "accept" && typeof trigger.label === "string" ? trigger.label : "";
+    };
+    const edges = scene.transitions.map((raw, index): PreparedEdge => {
+      const transition = asRecord(raw);
+      const trigger = triggerLabel(transition.trigger);
+      const guard = featureLabel(transition.guard);
+      const effect = featureLabel(transition.effect);
+      const sourceNavigation = navigation(transition.navigation);
+      return {
+        id: `transition:${index}`,
+        source: `state:${String(transition.source)}`,
+        target: `state:${String(transition.target)}`,
+        label: [trigger, guard ? `[${guard}]` : "", effect].filter(Boolean).join(" / ") || String(transition.label ?? ""),
+        edgeKind: "transition",
+        attributes: {
+          semanticSceneId: transition.id,
+          relationType: "transition",
+          selfLoop: transition.source === transition.target,
+          trigger,
+          guard,
+          effect,
+          provenance: transition.provenance,
+          sourceNavigation,
+        },
+      };
+    });
+    return {
+      title: typeof frame.label === "string" ? frame.label : selected.name,
+      view: selected.kind,
+      nodes,
+      edges,
+      meta: {
+        sceneKind: scene.kind,
+        frame,
+        layoutDirection: "horizontal",
+      },
+    };
+  }
   const nodes = projection.nodes.map((raw, index): PreparedNode => {
     const element = asRecord(raw);
     const source = navigation(element.source);
@@ -115,6 +175,20 @@ function prepareTypedDiagramProduct(input: unknown): PreparedView | null {
       },
     };
   });
+  for (const [ownerIndex, raw] of projection.nodes.entries()) {
+    const element = asRecord(raw);
+    const compartments = Array.isArray(element.compartments) ? element.compartments.map(asRecord) : [];
+    nodes[ownerIndex].attributes = {
+      ...nodes[ownerIndex].attributes,
+      typedCompartments: compartments.map((compartment) => ({
+        kind: String(compartment.kind ?? "members"),
+        provenance: String(compartment.provenance ?? "direct"),
+        members: (Array.isArray(compartment.members) ? compartment.members : [])
+          .filter((member): member is number => typeof member === "number" && nodes[member] !== undefined)
+          .map((member) => ({ id: nodes[member].id, name: nodes[member].label, kind: nodes[member].kind })),
+      })),
+    };
+  }
   const edges = projection.edges.map((raw, index): PreparedEdge => {
     const edge = asRecord(raw);
     return {
@@ -155,7 +229,9 @@ function prepareTypedDiagramProduct(input: unknown): PreparedView | null {
     edges,
     meta: {
       selectedDiagramReference: typeof selected.reference === "number" ? references[selected.reference] : undefined,
-      exposedRoots: projection.exposedRoots,
+      exposedRoots: Array.isArray(projection.exposedRoots)
+        ? projection.exposedRoots.map((index) => `n:${String(index)}`)
+        : [],
       viewMetadata: projection.metadata,
       ...(selected.kind === "grid-view" ? {
         cells: gridCells,

@@ -103,7 +103,7 @@ package GeometryNegative {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 2,
+  "schemaVersion": 4,
   "modelDigest": "blake3:ca6d99c687da756fe0dbbcc181be7abc79863f8ca9aa081bc156b60f745007c9",
   "documents": [
     {
@@ -169,7 +169,10 @@ package GeometryNegative {
       "primitives": []
     },
     "nodes": [],
-    "relationships": []
+    "relationships": [],
+    "scene": {
+      "kind": "geometry"
+    }
   }
 }
 

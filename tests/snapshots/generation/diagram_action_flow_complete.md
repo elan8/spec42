@@ -123,7 +123,7 @@ package ActionFlowExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 2,
+  "schemaVersion": 4,
   "modelDigest": "blake3:ae89f0c0e7c17cba708db9becb3ff301a7c7e0d9818ecb4a9b1ff2ebb0e7faea",
   "documents": [
     {
@@ -325,6 +325,16 @@ package ActionFlowExample {
     },
     "nodes": [
       {
+        "compartments": [
+          {
+            "kind": "actions",
+            "members": [
+              2,
+              3
+            ],
+            "provenance": "direct"
+          }
+        ],
         "metaclass": "ActionDefinition",
         "name": "Process",
         "notationRole": "definition",
@@ -333,6 +343,7 @@ package ActionFlowExample {
         "source": 0
       },
       {
+        "compartments": [],
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -341,6 +352,7 @@ package ActionFlowExample {
         "source": 3
       },
       {
+        "compartments": [],
         "metaclass": "ActionUsage",
         "name": "execute",
         "notationRole": "usage",
@@ -349,6 +361,7 @@ package ActionFlowExample {
         "source": 2
       },
       {
+        "compartments": [],
         "metaclass": "ActionUsage",
         "name": "prepare",
         "notationRole": "usage",
@@ -380,7 +393,10 @@ package ActionFlowExample {
           "status": "resolved"
         }
       }
-    ]
+    ],
+    "scene": {
+      "kind": "action-flow"
+    }
   }
 }
 

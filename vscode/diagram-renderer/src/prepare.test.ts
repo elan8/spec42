@@ -17,7 +17,7 @@ describe("shared graph normalization", () => {
 describe("shared prepareViewData", () => {
   it("expands normalized diagram indexes without deriving semantics", () => {
     const prepared = prepareViewData({
-      schemaVersion: 2,
+      schemaVersion: 4,
       modelDigest: "blake3:model",
       documents: [{ uri: "file:///model.sysml", sourceDomain: "workspace" }],
       sources: [{ document: 0, range: [1, 2, 1, 6] }],
@@ -33,12 +33,21 @@ describe("shared prepareViewData", () => {
         kind: "general-view",
         exposedRoots: [0],
         nodes: [
-          { reference: 1, metaclass: "PartUsage", notationRole: "usage", name: "a", owner: null, source: 0 },
-          { reference: 2, metaclass: "PartUsage", notationRole: "usage", name: "b", owner: null, source: 0 },
+          {
+            reference: 1,
+            metaclass: "PartUsage",
+            notationRole: "usage",
+            name: "a",
+            owner: null,
+            source: 0,
+            compartments: [{ kind: "parts", provenance: "direct", members: [1] }],
+          },
+          { reference: 2, metaclass: "PartUsage", notationRole: "usage", name: "b", owner: 0, source: 0, compartments: [] },
         ],
         relationships: [],
         edges: [{ reference: 3, source: 0, target: 1, kind: "flow", provenance: "authored", navigation: 0 }],
         metadata: { roots: [0] },
+        scene: { kind: "general" },
       },
     });
     expect(prepared.nodes.map((node) => node.id)).toEqual(["n:0", "n:1"]);
@@ -46,11 +55,15 @@ describe("shared prepareViewData", () => {
     expect(prepared.nodes[0]).toMatchObject({ uri: "file:///model.sysml", range: { start: { line: 1, character: 2 } } });
     expect(prepared.nodes[0]?.attributes?.semanticReference).toEqual({ kind: "qualified-name", document: 0, qualifiedName: "P::a" });
     expect(prepared.nodes[0]?.attributes?.notationRole).toBe("usage");
+    expect(prepared.nodes[0]?.attributes?.typedCompartments).toEqual([
+      { kind: "parts", provenance: "direct", members: [{ id: "n:1", name: "b", kind: "PartUsage" }] },
+    ]);
+    expect(prepared.meta?.exposedRoots).toEqual(["n:0"]);
   });
 
   it("uses typed grid metadata for relationship-valued columns", () => {
     const prepared = prepareViewData({
-      schemaVersion: 2,
+      schemaVersion: 4,
       documents: [{ uri: "file:///model.sysml" }],
       sources: [{ document: 0, range: [0, 0, 0, 1] }],
       references: [{ kind: "qualified-name" }, { kind: "qualified-name" }, { kind: "relationship" }],
@@ -59,11 +72,12 @@ describe("shared prepareViewData", () => {
         kind: "grid-view",
         exposedRoots: [0],
         nodes: [
-          { reference: 1, metaclass: "PartUsage", notationRole: "usage", name: "a", owner: null, source: 0 },
+          { reference: 1, metaclass: "PartUsage", notationRole: "usage", name: "a", owner: null, source: 0, compartments: [] },
         ],
         relationships: [],
         edges: [],
         metadata: { rows: [0], columns: ["dependency"], cells: [{ row: 0, column: "dependency", relationship: 2 }] },
+        scene: { kind: "grid" },
       },
     });
     expect(prepared.meta?.cells).toEqual([{ id: "n:0", name: "a", kind: "PartUsage", "relationship:dependency": "✓" }]);
@@ -71,6 +85,64 @@ describe("shared prepareViewData", () => {
       { key: "name", label: "Element", notationStatus: "normative" },
       { key: "relationship:dependency", label: "dependency", notationStatus: "normative" },
     ]);
+  });
+
+  it("prepares a typed state scene without rendering containment or transition declarations as nodes", () => {
+    const prepared = prepareViewData({
+      schemaVersion: 4,
+      modelDigest: "blake3:model",
+      documents: [{ uri: "file:///timer.sysml", sourceDomain: "workspace" }],
+      sources: [
+        { document: 0, range: [0, 0, 0, 10] },
+        { document: 0, range: [1, 0, 1, 4] },
+        { document: 0, range: [2, 0, 2, 7] },
+        { document: 0, range: [3, 0, 3, 12] },
+      ],
+      references: [{ kind: "qualified-name" }],
+      selectedView: { reference: 0, kind: "state-transition-view", name: "Timer", source: 0 },
+      completeness: { status: "complete", reasons: [] },
+      projection: {
+        kind: "state-transition-view",
+        exposedRoots: [],
+        nodes: [],
+        relationships: [],
+        edges: [],
+        metadata: { states: [], initialNodes: [], finalNodes: [] },
+        scene: {
+          kind: "state-transition",
+          frame: { id: "Timer", label: "Timer", navigation: 0 },
+          vertices: [
+            { id: "initial", label: "", kind: "initial", navigation: 0 },
+            { id: "idle", label: "idle", kind: "state", navigation: 1 },
+            { id: "running", label: "running", kind: "state", navigation: 2 },
+          ],
+          transitions: [
+            {
+              id: "start",
+              label: "to_running",
+              source: 1,
+              target: 2,
+              trigger: { status: "accept", label: "StartPressed", navigation: 3 },
+              guard: { status: "absent" },
+              effect: { status: "absent" },
+              provenance: "authored",
+              navigation: 3,
+            },
+          ],
+        },
+      },
+    });
+    expect(prepared.nodes.map((node) => [node.label, node.kind])).toEqual([
+      ["", "initial"],
+      ["idle", "state"],
+      ["running", "state"],
+    ]);
+    expect(prepared.edges).toEqual([expect.objectContaining({
+      source: "state:1",
+      target: "state:2",
+      label: "StartPressed",
+      edgeKind: "transition",
+    })]);
   });
 
   it("maps general graph payload and omits package namespace nodes", () => {

@@ -147,7 +147,7 @@ package ProvenanceExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 2,
+  "schemaVersion": 4,
   "modelDigest": "blake3:f7608aaf74326f8d204133420bc63c009067e789a1a4627374ff9498681e4c8f",
   "documents": [
     {
@@ -270,6 +270,15 @@ package ProvenanceExample {
     },
     "nodes": [
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              1
+            ],
+            "provenance": "direct"
+          }
+        ],
         "metaclass": "PartDefinition",
         "name": "Child",
         "notationRole": "definition",
@@ -278,6 +287,7 @@ package ProvenanceExample {
         "source": 0
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": "mass",
         "notationRole": "usage",
@@ -309,7 +319,10 @@ package ProvenanceExample {
           "status": "resolved"
         }
       }
-    ]
+    ],
+    "scene": {
+      "kind": "general"
+    }
   }
 }
 

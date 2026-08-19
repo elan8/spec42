@@ -2585,7 +2585,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 2,
+  "schemaVersion": 4,
   "modelDigest": "blake3:df7b95a901c31d2d48b56baa1b344cb09aeaf72db4ec82abc11849846aa4782e",
   "documents": [
     {
@@ -3643,6 +3643,18 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     "nodes": [
       {
+        "compartments": [
+          {
+            "kind": "states",
+            "members": [
+              10,
+              11,
+              12,
+              13
+            ],
+            "provenance": "direct"
+          }
+        ],
         "metaclass": "StateDefinition",
         "name": "TimerStateMachine",
         "notationRole": "definition",
@@ -3651,6 +3663,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 0
       },
       {
+        "compartments": [],
         "metaclass": "TransitionUsage",
         "name": "to_expired",
         "notationRole": "usage",
@@ -3659,6 +3672,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 27
       },
       {
+        "compartments": [],
         "metaclass": "TransitionUsage",
         "name": "to_running",
         "notationRole": "usage",
@@ -3667,6 +3681,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 11
       },
       {
+        "compartments": [],
         "metaclass": "TransitionUsage",
         "name": "decrement_idle",
         "notationRole": "usage",
@@ -3675,6 +3690,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 19
       },
       {
+        "compartments": [],
         "metaclass": "TransitionUsage",
         "name": "increment_idle",
         "notationRole": "usage",
@@ -3683,6 +3699,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 15
       },
       {
+        "compartments": [],
         "metaclass": "TransitionUsage",
         "name": "to_running_resume",
         "notationRole": "usage",
@@ -3691,6 +3708,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 31
       },
       {
+        "compartments": [],
         "metaclass": "TransitionUsage",
         "name": "to_idle_from_paused",
         "notationRole": "usage",
@@ -3699,6 +3717,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 35
       },
       {
+        "compartments": [],
         "metaclass": "TransitionUsage",
         "name": "to_idle_from_expired",
         "notationRole": "usage",
@@ -3707,6 +3726,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 39
       },
       {
+        "compartments": [],
         "metaclass": "TransitionUsage",
         "name": "to_paused",
         "notationRole": "usage",
@@ -3715,6 +3735,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 23
       },
       {
+        "compartments": [],
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -3723,6 +3744,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 1
       },
       {
+        "compartments": [],
         "metaclass": "StateUsage",
         "name": "idle",
         "notationRole": "usage",
@@ -3731,6 +3753,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 3
       },
       {
+        "compartments": [],
         "metaclass": "StateUsage",
         "name": "paused",
         "notationRole": "usage",
@@ -3739,6 +3762,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 7
       },
       {
+        "compartments": [],
         "metaclass": "StateUsage",
         "name": "expired",
         "notationRole": "usage",
@@ -3747,6 +3771,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 9
       },
       {
+        "compartments": [],
         "metaclass": "StateUsage",
         "name": "running",
         "notationRole": "usage",
@@ -4075,7 +4100,250 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "status": "resolved"
         }
       }
-    ]
+    ],
+    "scene": {
+      "frame": {
+        "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:0",
+        "label": "TimerStateMachine",
+        "navigation": 0
+      },
+      "kind": "state-transition",
+      "transitions": [
+        {
+          "effect": {
+            "status": "absent"
+          },
+          "guard": {
+            "status": "absent"
+          },
+          "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:010:transitionn10:to_expired1:0#edge",
+          "label": "to_expired",
+          "navigation": 28,
+          "provenance": "authored",
+          "source": 4,
+          "target": 3,
+          "trigger": {
+            "label": "CountdownComplete",
+            "navigation": 29,
+            "status": "accept",
+            "target": {
+              "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:08:item-defn17:CountdownComplete1:0",
+              "label": "CountdownComplete"
+            }
+          }
+        },
+        {
+          "effect": {
+            "status": "absent"
+          },
+          "guard": {
+            "status": "absent"
+          },
+          "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:010:transitionn10:to_running1:0#edge",
+          "label": "to_running",
+          "navigation": 12,
+          "provenance": "authored",
+          "source": 1,
+          "target": 4,
+          "trigger": {
+            "label": "StartPressed",
+            "navigation": 13,
+            "status": "accept",
+            "target": {
+              "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:08:item-defn12:StartPressed1:0",
+              "label": "StartPressed"
+            }
+          }
+        },
+        {
+          "effect": {
+            "status": "absent"
+          },
+          "guard": {
+            "status": "absent"
+          },
+          "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:010:transitionn14:decrement_idle1:0#edge",
+          "label": "decrement_idle",
+          "navigation": 20,
+          "provenance": "authored",
+          "source": 1,
+          "target": 1,
+          "trigger": {
+            "label": "DecrementPressed",
+            "navigation": 21,
+            "status": "accept",
+            "target": {
+              "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:08:item-defn16:DecrementPressed1:0",
+              "label": "DecrementPressed"
+            }
+          }
+        },
+        {
+          "effect": {
+            "status": "absent"
+          },
+          "guard": {
+            "status": "absent"
+          },
+          "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:010:transitionn14:increment_idle1:0#edge",
+          "label": "increment_idle",
+          "navigation": 16,
+          "provenance": "authored",
+          "source": 1,
+          "target": 1,
+          "trigger": {
+            "label": "IncrementPressed",
+            "navigation": 17,
+            "status": "accept",
+            "target": {
+              "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:08:item-defn16:IncrementPressed1:0",
+              "label": "IncrementPressed"
+            }
+          }
+        },
+        {
+          "effect": {
+            "status": "absent"
+          },
+          "guard": {
+            "status": "absent"
+          },
+          "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:010:transitionn17:to_running_resume1:0#edge",
+          "label": "to_running_resume",
+          "navigation": 32,
+          "provenance": "authored",
+          "source": 2,
+          "target": 4,
+          "trigger": {
+            "label": "StartPressed",
+            "navigation": 33,
+            "status": "accept",
+            "target": {
+              "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:08:item-defn12:StartPressed1:0",
+              "label": "StartPressed"
+            }
+          }
+        },
+        {
+          "effect": {
+            "status": "absent"
+          },
+          "guard": {
+            "status": "absent"
+          },
+          "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:010:transitionn19:to_idle_from_paused1:0#edge",
+          "label": "to_idle_from_paused",
+          "navigation": 36,
+          "provenance": "authored",
+          "source": 2,
+          "target": 1,
+          "trigger": {
+            "label": "ResetPressed",
+            "navigation": 37,
+            "status": "accept",
+            "target": {
+              "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:08:item-defn12:ResetPressed1:0",
+              "label": "ResetPressed"
+            }
+          }
+        },
+        {
+          "effect": {
+            "status": "absent"
+          },
+          "guard": {
+            "status": "absent"
+          },
+          "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:010:transitionn20:to_idle_from_expired1:0#edge",
+          "label": "to_idle_from_expired",
+          "navigation": 40,
+          "provenance": "authored",
+          "source": 3,
+          "target": 1,
+          "trigger": {
+            "label": "ResetPressed",
+            "navigation": 41,
+            "status": "accept",
+            "target": {
+              "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:08:item-defn12:ResetPressed1:0",
+              "label": "ResetPressed"
+            }
+          }
+        },
+        {
+          "effect": {
+            "status": "absent"
+          },
+          "guard": {
+            "status": "absent"
+          },
+          "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:010:transitionn9:to_paused1:0#edge",
+          "label": "to_paused",
+          "navigation": 24,
+          "provenance": "authored",
+          "source": 4,
+          "target": 2,
+          "trigger": {
+            "label": "StopPressed",
+            "navigation": 25,
+            "status": "accept",
+            "target": {
+              "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:08:item-defn11:StopPressed1:0",
+              "label": "StopPressed"
+            }
+          }
+        },
+        {
+          "effect": {
+            "status": "absent"
+          },
+          "guard": {
+            "status": "absent"
+          },
+          "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:013:initial-statea1:0#initial",
+          "label": null,
+          "navigation": 2,
+          "provenance": "authored",
+          "source": 0,
+          "target": 1,
+          "trigger": {
+            "status": "absent"
+          }
+        }
+      ],
+      "vertices": [
+        {
+          "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:013:initial-statea1:0",
+          "kind": "initial",
+          "label": "",
+          "navigation": 1
+        },
+        {
+          "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:05:staten4:idle1:0",
+          "kind": "state",
+          "label": "idle",
+          "navigation": 3
+        },
+        {
+          "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:05:staten6:paused1:0",
+          "kind": "state",
+          "label": "paused",
+          "navigation": 7
+        },
+        {
+          "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:05:staten7:expired1:0",
+          "kind": "state",
+          "label": "expired",
+          "navigation": 9
+        },
+        {
+          "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:05:staten7:running1:0",
+          "kind": "state",
+          "label": "running",
+          "navigation": 5
+        }
+      ]
+    }
   }
 }
 

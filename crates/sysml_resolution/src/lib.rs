@@ -30,9 +30,11 @@ pub use diagnostics::{
     PublishedDiagnostics, RelatedLocation,
 };
 pub use diagram_query::{
-    DiagramEdge, DiagramEdgeKind, DiagramElement, DiagramIncompleteReason, DiagramRelationship,
-    DiagramRelationshipTarget, DiagramSemanticReference, DiagramViewCatalogEntry, DiagramViewKind,
-    DiagramViewProjection,
+    DiagramCompartment, DiagramCompartmentKind, DiagramCompartmentProvenance, DiagramEdge,
+    DiagramEdgeKind, DiagramElement, DiagramIncompleteReason, DiagramRelationship,
+    DiagramRelationshipTarget, DiagramScene, DiagramSemanticReference, DiagramStateTransition,
+    DiagramStateTransitionScene, DiagramStateVertex, DiagramStateVertexKind,
+    DiagramTransitionFeature, DiagramViewCatalogEntry, DiagramViewKind, DiagramViewProjection,
 };
 pub use element_kind::{
     ElementKind, MembershipRole, RequirementConstraintKind, StateSubactionKind,
@@ -907,6 +909,72 @@ mod tests {
         )
         .unwrap();
         build(request).unwrap()
+    }
+
+    #[test]
+    fn state_transition_scene_owns_vertices_and_composed_transitions() {
+        let request = BuildRequest::new(
+            vec![
+                SourceInput::new(
+                    "memory://standard-views.sysml",
+                    "standard library package StandardViewDefinitions { view def StateTransitionView; }".to_owned(),
+                    SourceKind::StandardLibrary,
+                ),
+                SourceInput::new(
+                    "memory://timer.sysml",
+                    concat!(
+                        "package Timer { import StandardViewDefinitions::*; item def StartPressed; ",
+                        "state def Machine { entry; then idle; state idle; state running; ",
+                        "transition start first idle accept StartPressed then running; } ",
+                        "view stateView : StateTransitionView { expose Machine; } }",
+                    ).to_owned(),
+                    SourceKind::Workspace,
+                ),
+            ],
+            ConstructionSchedule::Sequential,
+            "contract-v1",
+        ).unwrap();
+        let published = build(request).unwrap();
+        let catalog = match published.diagram_view_catalog() {
+            QueryOutcome::Resolved(catalog) => catalog,
+            other => panic!("expected diagram catalog, got {other:?}"),
+        };
+        let view = catalog
+            .iter()
+            .find(|view| view.kind == DiagramViewKind::StateTransition)
+            .unwrap();
+        let projection = match published.diagram_view(&view.semantic_id) {
+            QueryOutcome::Resolved(projection) => projection,
+            other => panic!("expected state scene, got {other:?}"),
+        };
+        let DiagramScene::StateTransition(scene) = projection.scene else {
+            panic!("expected typed State Transition scene");
+        };
+        assert_eq!(
+            scene
+                .vertices
+                .iter()
+                .filter(|vertex| vertex.kind == DiagramStateVertexKind::Initial)
+                .count(),
+            1
+        );
+        assert_eq!(
+            scene
+                .vertices
+                .iter()
+                .filter(|vertex| vertex.kind == DiagramStateVertexKind::State)
+                .count(),
+            2
+        );
+        assert_eq!(scene.transitions.len(), 2);
+        assert!(scene.transitions.iter().any(|transition| matches!(
+            &transition.trigger,
+            DiagramTransitionFeature::Resolved { label, .. } if label.as_ref() == "StartPressed"
+        )));
+        assert!(!scene
+            .vertices
+            .iter()
+            .any(|vertex| vertex.label.as_ref() == "start"));
     }
 
     /// The standard-view rule needs a library-admitted definition, and the source role that makes

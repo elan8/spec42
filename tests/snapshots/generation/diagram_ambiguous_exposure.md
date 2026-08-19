@@ -121,7 +121,7 @@ package AmbiguousExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 2,
+  "schemaVersion": 4,
   "modelDigest": "blake3:69161a1c0edef641427791c2a34555596ba3751f703af358730fd92ddb9a3177",
   "documents": [
     {
@@ -186,7 +186,10 @@ package AmbiguousExample {
       "roots": []
     },
     "nodes": [],
-    "relationships": []
+    "relationships": [],
+    "scene": {
+      "kind": "general"
+    }
   }
 }
 

@@ -1,192 +1,100 @@
 #!/usr/bin/env node
-/**
- * Generates docs/reference/SYSML-NOTATION-INVENTORY.md from SysML v2 BNF SVG filenames.
- * Set SYSML_V2_RELEASE_DIR to the SysML-v2-Release repo root (optional).
- */
+/** Deterministic SysML graphical-BNF coverage inventory. */
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const repoRoot = path.resolve(__dirname, "..");
-const releaseDir = process.env.SYSML_V2_RELEASE_DIR || "";
-const imagesDir = releaseDir
-  ? path.join(releaseDir, "bnf", "images")
-  : path.join(repoRoot, "third_party", "sysml-v2-release", "bnf", "images");
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const releaseDir = process.env.SYSML_V2_RELEASE_DIR;
+if (!releaseDir) throw new Error("SYSML_V2_RELEASE_DIR must name an explicit pinned SysML-v2-Release checkout");
+const configured = JSON.parse(fs.readFileSync(path.join(root, "config", "standard-library.json"), "utf8"));
+const htmlPath = path.join(releaseDir, "bnf", "SysML-graphical-bnf.html");
+if (!fs.existsSync(htmlPath)) throw new Error(`missing graphical BNF: ${htmlPath}`);
+const html = fs.readFileSync(htmlPath, "utf8");
 
-/** Explicit code pointers for sign-off (general + interconnection focus). */
-const CODE_POINTERS = {
-  "part-def.svg": "`node-notation.ts` `resolveNodeChrome`",
-  "part.svg": "`node-notation.ts`, `sysml-node-builder.ts` (general); `renderer.ts` `renderIbdNode` (IBD)",
-  "part-ref.svg": "`node-notation.ts` `isReferenceKind`",
-  "port-def.svg": "`sysml-node-builder.ts` compartments (general)",
-  "port.svg": "`sysml-node-builder.ts` (general); `renderer.ts` `drawIbdPorts` (IBD)",
-  "port-usage.svg": "`renderer.ts` `drawIbdPorts`",
-  "connection.svg": "`renderer.ts` `applyEdgeMarker` (IBD)",
-  "binding-connection.svg": "`renderer.ts` `applyEdgeMarker` bind branch",
-  "flow.svg": "`renderer.ts` `applyEdgeMarker` flow branch",
-  "interface.svg": "`renderer.ts` `applyEdgeMarker` interface branch",
-  "interface-connection.svg": "`renderer.ts` `applyEdgeMarker` interface branch",
-  "binary-dependency.svg": "`renderer.ts` `applyEdgeMarker` dependency",
-  "definition.svg": "`node-notation.ts` definition chrome",
-  "extended-usage.svg": "`node-notation.ts` usage chrome",
-  "package-with-name-inside.svg": "`renderer.ts` `drawGeneralPackageContainers`",
-  "package-with-name-in-tab.svg": "WONTFIX (tab variant; inside-name only)",
-  "n-ary-connection-dot.svg": "WONTFIX (hub-and-spoke binary edges)",
-  "n-ary-dependency-client-link.svg": "WONTFIX (hub-and-spoke binary edges)",
-  "n-ary-dependency-supplier-link.svg": "WONTFIX (hub-and-spoke binary edges)",
-};
-
-const SHIPPED_ELEMENT_KEYS = {
-  "part-def": "general-view",
-  part: "general-view, interconnection-view",
-  "part-ref": "general-view, interconnection-view",
-  "port-def": "general-view",
-  port: "general-view, interconnection-view",
-  "port-usage": "interconnection-view",
-  "port-l-1": "interconnection-view",
-  "port-r-1": "interconnection-view",
-  "action-def": "general-view",
-  action: "general-view, action-flow-view",
-  "state-def": "general-view",
-  state: "general-view, state-transition-view",
-  "requirement-def": "general-view",
-  requirement: "general-view",
-  connection: "interconnection-view",
-  "binding-connection": "interconnection-view",
-  flow: "interconnection-view",
-  interface: "interconnection-view",
-  "interface-connection": "interconnection-view",
-  "binary-dependency": "general-view",
-  definition: "general-view",
-  "extended-usage": "general-view",
-  specializes: "general-view",
-  typing: "general-view",
-  hierarchy: "general-view",
-  composition: "general-view",
-  allocate: "general-view",
-  satisfy: "general-view",
-  verify: "general-view",
-  bind: "general-view",
-  dependency: "general-view",
-  usage: "general-view",
-  redefinition: "general-view",
-  "package-with-name-inside": "general-view",
-};
-
-const IBD_CONNECTOR_SVGS = new Set([
-  "connection.svg",
-  "binding-connection.svg",
-  "flow.svg",
-  "interface.svg",
-  "interface-connection.svg",
-  "flow-on-connection.svg",
+const implemented = new Set([
+  "definition", "usage", "extended-def", "extended-usage", "part-def", "part", "part-ref",
+  "port-def", "port-usage", "attribute-def", "attribute", "item-def", "item", "item-ref",
+  "occurrence-def", "occurrence", "action-def", "action", "state-def", "state",
+  "requirement-def", "requirement", "connection", "binding-connection", "flow", "interface",
+  "interface-connection", "binary-dependency", "specializes", "typing", "hierarchy",
+  "composition", "allocate", "satisfy", "verify", "bind", "dependency", "redefinition",
+  "package-with-name-inside", "general-view", "interconnection-view",
 ]);
+const partialPrefixes = ["sequence", "sq-", "control", "succession", "initial", "final", "compartment"];
 
-const GENERAL_RELATIONSHIP_SVGS = new Set([
-  "binary-dependency.svg",
-  "n-ary-dependency-client-link.svg",
-  "n-ary-dependency-supplier-link.svg",
-  "portion-relationship.svg",
-  "redefinition.svg",
-]);
-
-function baseName(file) {
-  return file.replace(/\.svg$/i, "");
+const clauses = [];
+for (const match of html.matchAll(/<h4><a id="([^"]+)"><\/a>\/\/ Clause ([^<]+)<\/h4>/g)) {
+  clauses.push({ offset: match.index ?? 0, id: match[1], title: match[2].trim() });
 }
-
-function inferViews(name) {
-  const base = baseName(name);
-  if (CODE_POINTERS[name]) {
-    const explicit = SHIPPED_ELEMENT_KEYS[base];
-    if (explicit) return explicit;
-  }
-  for (const [key, views] of Object.entries(SHIPPED_ELEMENT_KEYS)) {
-    if (base === key) return views;
-  }
-  if (IBD_CONNECTOR_SVGS.has(name) || base.includes("interconnection")) return "interconnection-view";
-  if (GENERAL_RELATIONSHIP_SVGS.has(name) || base.includes("dependency")) return "general-view";
-  if (base.startsWith("port-") && !base.includes("def")) return "interconnection-view";
-  if (base.includes("compartment")) return "general-view, interconnection-view (compartment text)";
-  if (base.includes("general")) return "general-view";
-  return "—";
+const clauseAt = (offset) => [...clauses].reverse().find((clause) => clause.offset <= offset);
+const strip = (value) => value.replace(/<[^>]+>/g, " ").replace(/&[^;]+;/g, " ").replace(/\s+/g, " ").trim();
+const occurrences = [];
+for (const match of html.matchAll(/<a id="([^"]+)"><\/a>\s*<pre>([\s\S]*?)<\/pre>/g)) {
+  const id = match[1];
+  const body = match[2];
+  const images = [...body.matchAll(/images\/([^"']+\.svg)/g)].map((image) => image[1]);
+  const clause = clauseAt(match.index ?? 0);
+  const status = implemented.has(id)
+    ? "supported"
+    : partialPrefixes.some((prefix) => id.startsWith(prefix) || id.includes(`-${prefix}`))
+      ? "partial"
+      : "unsupported";
+  occurrences.push({
+    production: id,
+    clause: clause?.id ?? "c8.2.3",
+    clauseTitle: clause?.title ?? "Graphical Notation",
+    images: [...new Set(images)].sort(),
+    status,
+    syntax: strip(body),
+  });
 }
-
-function inferStatus(name, views) {
-  const base = baseName(name);
-  if (name in CODE_POINTERS && CODE_POINTERS[name].startsWith("WONTFIX")) {
-    return CODE_POINTERS[name];
+const byProduction = new Map();
+for (const occurrence of occurrences) {
+  const existing = byProduction.get(occurrence.production);
+  if (!existing) {
+    byProduction.set(occurrence.production, { ...occurrence, occurrences: 1 });
+  } else {
+    existing.occurrences += 1;
+    existing.images = [...new Set([...existing.images, ...occurrence.images])].sort();
+    existing.syntax = `${existing.syntax} | ${occurrence.syntax}`;
   }
-  if (base.includes("sequence") || base.startsWith("sq-")) return "legacy|shared (sequence-view)";
-  if (base.includes("action-flow") || base === "aflow-succession" || base.includes("control-flow")) {
-    return "shared (action-flow-view)";
-  }
-  if (base.includes("state-transition") || base === "initial" || base === "final") {
-    return "VS Code diagram renderer (state-transition-view)";
-  }
-  if (views.includes("general-view") || views.includes("interconnection-view")) {
-    if (views === "—") return "WONTFIX (not in shipped UI)";
-    if (base.includes("compartment")) return "shared (compartment text only)";
-    return "shared";
-  }
-  return "WONTFIX (not in shipped UI)";
 }
+const productions = [...byProduction.values()];
+productions.sort((left, right) => left.production.localeCompare(right.production));
+if (productions.length < 100) throw new Error(`graphical BNF parse found only ${productions.length} productions`);
 
-function codePointer(name, views, status) {
-  if (CODE_POINTERS[name]) return CODE_POINTERS[name];
-  if (status.startsWith("WONTFIX")) return "—";
-  if (!status.includes("shared")) return "—";
-  if (views.includes("interconnection-view") && IBD_CONNECTOR_SVGS.has(name)) {
-    return "`renderer.ts` `applyEdgeMarker` (IBD)";
-  }
-  if (views.includes("interconnection-view")) {
-    return "`renderer.ts` (IBD)";
-  }
-  if (GENERAL_RELATIONSHIP_SVGS.has(name)) {
-    return "`renderer.ts` `applyEdgeMarker` (general)";
-  }
-  if (views.includes("action-flow")) return "`views/action-flow.ts`";
-  if (views.includes("state-transition")) return "`views/state-transition.ts`";
-  if (views.includes("sequence")) return "`views/sequence.ts`";
-  return "`node-notation.ts` / `sysml-node-builder.ts`";
-}
-
-let files = [];
-if (fs.existsSync(imagesDir)) {
-  files = fs.readdirSync(imagesDir).filter((f) => f.endsWith(".svg")).sort();
-} else {
-  files = Object.keys(SHIPPED_ELEMENT_KEYS).map((k) => `${k}.svg`);
-}
-
-const lines = [
-  "# SysML notation inventory (generated)",
+const coverage = {
+  source: { repository: configured.repo, version: configured.version, document: "bnf/SysML-graphical-bnf.html" },
+  productions,
+};
+const json = `${JSON.stringify(coverage, null, 2)}\n`;
+const counts = Object.fromEntries(["supported", "partial", "unsupported"].map((status) => [status, productions.filter((item) => item.status === status).length]));
+const markdown = [
+  "# SysML graphical notation coverage (generated)", "",
+  `Source: \`${configured.repo}\` release \`${configured.version}\`, \`bnf/SysML-graphical-bnf.html\`.`, "",
+  `Productions: **${productions.length}**; supported: **${counts.supported}**; partial: **${counts.partial}**; unsupported: **${counts.unsupported}**.`, "",
+  "| Production | Clause | SVG examples | Status |", "| --- | --- | --- | --- |",
+  ...productions.map((item) => `| \`${item.production}\` | \`${item.clause}\` | ${item.images.map((image) => `\`${image}\``).join(", ") || "—"} | ${item.status} |`),
   "",
-  `Generated: ${new Date().toISOString().slice(0, 10)}`,
-  "",
-  `Source: \`${imagesDir}\` (${files.length} entries)`,
-  "",
-  "Shipped product views: **general-view**, **interconnection-view** (+ behavior views).",
-  "",
-  "| SVG | Inferred views | Status | Code pointer |",
-  "|-----|----------------|--------|--------------|",
+  "Regenerate with an explicit checkout of the configured release:", "",
+  "```sh", "SYSML_V2_RELEASE_DIR=/path/to/SysML-v2-Release node scripts/generate-notation-inventory.mjs", "```", "",
+].join("\n");
+const outputs = [
+  [path.join(root, "docs", "reference", "sysml-graphical-notation-coverage.json"), json],
+  [path.join(root, "docs", "reference", "SYSML-NOTATION-INVENTORY.md"), markdown],
 ];
-
-for (const file of files) {
-  const views = inferViews(file);
-  const status = inferStatus(file, views);
-  const pointer = codePointer(file, views, status);
-  lines.push(`| ${file} | ${views} | ${status} | ${pointer} |`);
+const check = process.argv.includes("--check");
+let stale = false;
+for (const [output, contents] of outputs) {
+  if (check) {
+    if (!fs.existsSync(output) || fs.readFileSync(output, "utf8") !== contents) stale = true;
+  } else {
+    fs.writeFileSync(output, contents, "utf8");
+  }
 }
-
-lines.push("");
-lines.push("Regenerate:");
-lines.push("");
-lines.push("```powershell");
-lines.push("$env:SYSML_V2_RELEASE_DIR = 'C:\\path\\to\\SysML-v2-Release'");
-lines.push("node scripts/generate-notation-inventory.mjs");
-lines.push("```");
-lines.push("");
-
-const outPath = path.join(repoRoot, "docs", "reference", "SYSML-NOTATION-INVENTORY.md");
-fs.writeFileSync(outPath, lines.join("\n"), "utf8");
-console.log(`Wrote ${outPath} (${files.length} rows)`);
+if (stale) {
+  console.error("SysML graphical notation coverage is stale");
+  process.exit(1);
+}
+console.log(`${check ? "Checked" : "Wrote"} ${productions.length} graphical productions for SysML ${configured.version}`);

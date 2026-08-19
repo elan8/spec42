@@ -133,7 +133,7 @@ describe("diagram viewer core", () => {
 
   it("validates the versioned render product and explicit incompleteness", () => {
     const value = {
-      schemaVersion: 2,
+      schemaVersion: 4,
       modelDigest: "blake3:model",
       documents: [{ uri: "file:///workspace/model.sysml", sourceDomain: "workspace" }],
       sources: [{ document: 0, range: [0, 0, 0, 1] }],
@@ -155,6 +155,7 @@ describe("diagram viewer core", () => {
         relationships: [],
         edges: [],
         metadata: { roots: [] },
+        scene: { kind: "general" },
       },
     };
     const product = parseDiagramProduct(JSON.stringify(value));
@@ -167,6 +168,23 @@ describe("diagram viewer core", () => {
         nodes: [{ reference: 0, metaclass: "PartUsage", name: "visible", owner: null, source: 0 }],
       },
     }), false);
+    const node = {
+      reference: 0,
+      metaclass: "PartUsage",
+      notationRole: "usage",
+      name: "visible",
+      owner: null,
+      source: 0,
+      compartments: [{ kind: "parts", provenance: "direct", members: [0] }],
+    };
+    assert.equal(parseDiagramProduct(JSON.stringify({
+      ...value,
+      projection: { ...value.projection, exposedRoots: [0], nodes: [node] },
+    })).projection.nodes.length, 1);
+    assert.throws(() => parseDiagramProduct(JSON.stringify({
+      ...value,
+      projection: { ...value.projection, nodes: [{ ...node, compartments: undefined }] },
+    })));
     assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, schemaVersion: 1 })));
     assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, projection: { ...value.projection, kind: "grid-view" } })));
     assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, selectedView: { ...value.selectedView, reference: 1 } })));

@@ -98,7 +98,7 @@ package ActionNegative {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 2,
+  "schemaVersion": 4,
   "modelDigest": "blake3:91a8306189ef21b112e92744a462282f9d7403e9319b8172c097892f2d4c2593",
   "documents": [
     {
@@ -164,7 +164,10 @@ package ActionNegative {
       "controlNodes": []
     },
     "nodes": [],
-    "relationships": []
+    "relationships": [],
+    "scene": {
+      "kind": "action-flow"
+    }
   }
 }
 

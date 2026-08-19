@@ -112,7 +112,7 @@ package SequenceExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 2,
+  "schemaVersion": 4,
   "modelDigest": "blake3:5275e8bc3437a500f18e59ec95363069309c2bc3542a6c057d6a49376bcb767a",
   "documents": [
     {
@@ -234,6 +234,16 @@ package SequenceExample {
     },
     "nodes": [
       {
+        "compartments": [
+          {
+            "kind": "parts",
+            "members": [
+              1,
+              2
+            ],
+            "provenance": "direct"
+          }
+        ],
         "metaclass": "PartDefinition",
         "name": "Interaction",
         "notationRole": "definition",
@@ -242,6 +252,7 @@ package SequenceExample {
         "source": 0
       },
       {
+        "compartments": [],
         "metaclass": "PartUsage",
         "name": "sender",
         "notationRole": "usage",
@@ -250,6 +261,7 @@ package SequenceExample {
         "source": 1
       },
       {
+        "compartments": [],
         "metaclass": "PartUsage",
         "name": "receiver",
         "notationRole": "usage",
@@ -258,7 +270,10 @@ package SequenceExample {
         "source": 2
       }
     ],
-    "relationships": []
+    "relationships": [],
+    "scene": {
+      "kind": "sequence"
+    }
   }
 }
 

@@ -103,7 +103,7 @@ package GridNegative {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 2,
+  "schemaVersion": 4,
   "modelDigest": "blake3:4f012486ea530417303b08e4ea406ddd2acd10a721e098b9f6330876e58a2e35",
   "documents": [
     {
@@ -170,7 +170,10 @@ package GridNegative {
       "rows": []
     },
     "nodes": [],
-    "relationships": []
+    "relationships": [],
+    "scene": {
+      "kind": "grid"
+    }
   }
 }
 

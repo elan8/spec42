@@ -1,0 +1,5145 @@
+{
+  "source": {
+    "repository": "Systems-Modeling/SysML-v2-Release",
+    "version": "2026-04",
+    "document": "bnf/SysML-graphical-bnf.html"
+  },
+  "productions": [
+    {
+      "production": "a-direction",
+      "clause": "c8.2.3.13",
+      "clauseTitle": "8.2.3.13 Connections Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "a-direction = 'in' | 'out' | 'inout'",
+      "occurrences": 1
+    },
+    {
+      "production": "a-property",
+      "clause": "c8.2.3.13",
+      "clauseTitle": "8.2.3.13 Connections Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "a-property = 'ordered' | 'nonunique' | 'abstract' | 'derived' | 'readonly'",
+      "occurrences": 1
+    },
+    {
+      "production": "a-redefinition",
+      "clause": "c8.2.3.13",
+      "clauseTitle": "8.2.3.13 Connections Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "a-redefinition = 'redefines' OwnedRedefinition (',' OwnedRedefinition )*",
+      "occurrences": 1
+    },
+    {
+      "production": "a-subsetting",
+      "clause": "c8.2.3.13",
+      "clauseTitle": "8.2.3.13 Connections Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "a-subsetting = 'subsets' OwnedSubsetting (',' OwnedSubsetting )*",
+      "occurrences": 1
+    },
+    {
+      "production": "accept-action-expression",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "accept-action-expression = AcceptParameterPart",
+      "occurrences": 1
+    },
+    {
+      "production": "accept-action-name-compartment",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "accept-action-name-compartment = '«' OccurrenceUsagePrefix 'accept' 'action' '»' usage-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "accept-action-node",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [
+        "accept-action-node.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "accept-action-node =",
+      "occurrences": 1
+    },
+    {
+      "production": "action",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [
+        "action.svg"
+      ],
+      "status": "supported",
+      "syntax": "action =",
+      "occurrences": 1
+    },
+    {
+      "production": "action-body",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "action-body = action-body-textual | action-flow-view",
+      "occurrences": 1
+    },
+    {
+      "production": "action-body-textual",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "action-body-textual = ActionBodyParameterMember",
+      "occurrences": 1
+    },
+    {
+      "production": "action-def",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [
+        "action-def.svg"
+      ],
+      "status": "supported",
+      "syntax": "action-def =",
+      "occurrences": 1
+    },
+    {
+      "production": "action-def-name-compartment",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "action-def-name-compartment = '«' DefinitionPrefix 'action' 'def' '»' definition-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "action-flow-compartment",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [
+        "action-flow-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "action-flow-compartment = action-flow-view",
+      "occurrences": 1
+    },
+    {
+      "production": "action-flow-node",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "action-flow-node = start-node | done-node | terminate-node | fork-node | join-node | decision-node | merge-node | send-action-node | accept-action-node | while-loop-action-node | for-loop-action-node | if-else-action-node | assign-action-node",
+      "occurrences": 1
+    },
+    {
+      "production": "action-flow-relationship",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "action-flow-relationship = flow | aflow-succession | binding-connection | else-branch",
+      "occurrences": 1
+    },
+    {
+      "production": "action-flow-view",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "action-flow-view = ( dependencies-and-annotations-element )* ( action-flow-element )* (perform-action-swimlanes)?",
+      "occurrences": 1
+    },
+    {
+      "production": "action-name-compartment",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "action-name-compartment = '«' OccurrenceUsagePrefix 'action' '»' usage-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "action-ref",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [
+        "action-ref.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "action-ref =",
+      "occurrences": 1
+    },
+    {
+      "production": "actions-compartment",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [
+        "actions-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "actions-compartment = actions-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "actions-compartment-contents",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "actions-compartment-contents = ( actions-compartment-element )* '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "actions-compartment-element",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "actions-compartment-element = el-prefix ? OccurrenceUsagePrefix ActionUsageDeclaration",
+      "occurrences": 1
+    },
+    {
+      "production": "actor",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [
+        "actor-1.svg",
+        "actor-2.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "actor = |",
+      "occurrences": 1
+    },
+    {
+      "production": "actor-name",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "actor-name = UsageDeclaration",
+      "occurrences": 1
+    },
+    {
+      "production": "actors-compartment",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [
+        "actors-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "actors-compartment = actors-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "actors-compartment-contents",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "actors-compartment-contents = ( actors-compartment-element )* '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "actors-compartment-element",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "actors-compartment-element = el-prefix ? MemberPrefix usage-cp",
+      "occurrences": 1
+    },
+    {
+      "production": "aflow-succession",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [
+        "aflow-succession.svg"
+      ],
+      "status": "partial",
+      "syntax": "aflow-succession =",
+      "occurrences": 1
+    },
+    {
+      "production": "allocate-relationship",
+      "clause": "c8.2.3.15",
+      "clauseTitle": "8.2.3.15 Allocations Graphical Notation",
+      "images": [
+        "allocate-relationship.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "allocate-relationship =",
+      "occurrences": 1
+    },
+    {
+      "production": "allocation",
+      "clause": "c8.2.3.15",
+      "clauseTitle": "8.2.3.15 Allocations Graphical Notation",
+      "images": [
+        "allocation.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "allocation =",
+      "occurrences": 1
+    },
+    {
+      "production": "allocation-def",
+      "clause": "c8.2.3.15",
+      "clauseTitle": "8.2.3.15 Allocations Graphical Notation",
+      "images": [
+        "allocation-def.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "allocation-def =",
+      "occurrences": 1
+    },
+    {
+      "production": "allocation-def-name-compartment",
+      "clause": "c8.2.3.15",
+      "clauseTitle": "8.2.3.15 Allocations Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "allocation-def-name-compartment = '«' DefinitionPrefix 'allocation' 'def' '»' definition-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "allocation-name-compartment",
+      "clause": "c8.2.3.15",
+      "clauseTitle": "8.2.3.15 Allocations Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "allocation-name-compartment = '«' OccurrenceUsagePrefix 'allocation' '»' usage-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "allocation-node",
+      "clause": "c8.2.3.15",
+      "clauseTitle": "8.2.3.15 Allocations Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "allocation-node = general-node | element-in-textual-compartment",
+      "occurrences": 1
+    },
+    {
+      "production": "allocations-compartment",
+      "clause": "c8.2.3.15",
+      "clauseTitle": "8.2.3.15 Allocations Graphical Notation",
+      "images": [
+        "allocations-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "allocations-compartment = allocations-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "allocations-compartment-contents",
+      "clause": "c8.2.3.15",
+      "clauseTitle": "8.2.3.15 Allocations Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "allocations-compartment-contents = ( allocations-compartment-element )* '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "allocations-compartment-element",
+      "clause": "c8.2.3.15",
+      "clauseTitle": "8.2.3.15 Allocations Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "allocations-compartment-element = el-prefix ? OccurrenceUsagePrefix AllocationUsageDeclaration UsageBody *",
+      "occurrences": 1
+    },
+    {
+      "production": "analyses-compartment",
+      "clause": "c8.2.3.23",
+      "clauseTitle": "8.2.3.23 Analysis Cases Graphical Notation",
+      "images": [
+        "analyses-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "analyses-compartment = analyses-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "analyses-compartment-contents",
+      "clause": "c8.2.3.23",
+      "clauseTitle": "8.2.3.23 Analysis Cases Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "analyses-compartment-contents = analyses-compartment-element * '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "analyses-compartment-element",
+      "clause": "c8.2.3.23",
+      "clauseTitle": "8.2.3.23 Analysis Cases Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "analyses-compartment-element = el-prefix ? OccurrenceUsagePrefix ConstraintUsageDeclaration CaseBody",
+      "occurrences": 1
+    },
+    {
+      "production": "analysis",
+      "clause": "c8.2.3.23",
+      "clauseTitle": "8.2.3.23 Analysis Cases Graphical Notation",
+      "images": [
+        "analysis.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "analysis =",
+      "occurrences": 1
+    },
+    {
+      "production": "analysis-def",
+      "clause": "c8.2.3.23",
+      "clauseTitle": "8.2.3.23 Analysis Cases Graphical Notation",
+      "images": [
+        "analysis-def.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "analysis-def =",
+      "occurrences": 1
+    },
+    {
+      "production": "analysis-def-name-compartment",
+      "clause": "c8.2.3.23",
+      "clauseTitle": "8.2.3.23 Analysis Cases Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "analysis-def-name-compartment = '«' DefinitionPrefix 'analysis' 'def' '»' definition-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "analysis-name-compartment",
+      "clause": "c8.2.3.23",
+      "clauseTitle": "8.2.3.23 Analysis Cases Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "analysis-name-compartment = '«' OccurrenceUsagePrefix 'analysis' '»' usage-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "annotated-element",
+      "clause": "c8.2.3.4",
+      "clauseTitle": "8.2.3.4 Annotations Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "annotated-element = element | element-inside-textual-compartment",
+      "occurrences": 1
+    },
+    {
+      "production": "annotation-link",
+      "clause": "c8.2.3.4",
+      "clauseTitle": "8.2.3.4 Annotations Graphical Notation",
+      "images": [
+        "annotation-link.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "annotation-link =",
+      "occurrences": 1
+    },
+    {
+      "production": "annotation-node",
+      "clause": "c8.2.3.4",
+      "clauseTitle": "8.2.3.4 Annotations Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "annotation-node = comment-node | documentation-node | textual-representation-node",
+      "occurrences": 1
+    },
+    {
+      "production": "assert-constraint-name-compartment",
+      "clause": "c8.2.3.20",
+      "clauseTitle": "8.2.3.20 Constraints Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "assert-constraint-name-compartment = '«assert constraint»' constraint-name-compartment",
+      "occurrences": 1
+    },
+    {
+      "production": "assert-constraint-node",
+      "clause": "c8.2.3.20",
+      "clauseTitle": "8.2.3.20 Constraints Graphical Notation",
+      "images": [
+        "assert-constraint-node.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "assert-constraint-node =",
+      "occurrences": 1
+    },
+    {
+      "production": "assert-constraints-compartment",
+      "clause": "c8.2.3.20",
+      "clauseTitle": "8.2.3.20 Constraints Graphical Notation",
+      "images": [
+        "assert-constraints-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "assert-constraints-compartment = assert-constraints-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "assert-constraints-compartment-contents",
+      "clause": "c8.2.3.20",
+      "clauseTitle": "8.2.3.20 Constraints Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "assert-constraints-compartment-contents = ( assert-constraints-compartment-element )* '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "assert-constraints-compartment-element",
+      "clause": "c8.2.3.20",
+      "clauseTitle": "8.2.3.20 Constraints Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "assert-constraints-compartment-element = el-prefix ? OccurrenceUsagePrefix ( 'not' )? ( OwnedSubsetting FeatureSpecializationPart ? | UsageDeclaration ) CalculationUsageParameterPart CalculationBody",
+      "occurrences": 1
+    },
+    {
+      "production": "assert-edge",
+      "clause": "c8.2.3.20",
+      "clauseTitle": "8.2.3.20 Constraints Graphical Notation",
+      "images": [
+        "assert-edge.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "assert-edge =",
+      "occurrences": 1
+    },
+    {
+      "production": "assertor",
+      "clause": "c8.2.3.20",
+      "clauseTitle": "8.2.3.20 Constraints Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "assertor = usage-node | definition-node",
+      "occurrences": 1
+    },
+    {
+      "production": "assign-action-name-compartment",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "assign-action-name-compartment = '«' OccurrenceUsagePrefix 'assign' '»' usage-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "assign-action-node",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [
+        "assign-action-node.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "assign-action-node =",
+      "occurrences": 1
+    },
+    {
+      "production": "assume-constraint-name-compartment",
+      "clause": "c8.2.3.20",
+      "clauseTitle": "8.2.3.20 Constraints Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "assume-constraint-name-compartment = '«' OccurrenceUsagePrefix 'assume' 'constraint' '»' usage-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "assume-constraint-node",
+      "clause": "c8.2.3.20",
+      "clauseTitle": "8.2.3.20 Constraints Graphical Notation",
+      "images": [
+        "assume-constraint-node.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "assume-constraint-node =",
+      "occurrences": 1
+    },
+    {
+      "production": "assume-constraints-compartment",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [
+        "assume-constraints-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "assume-constraints-compartment = assume-constraints-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "assume-constraints-compartment-contents",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "assume-constraints-compartment-contents = require-constraint-element * '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "assume-edge",
+      "clause": "c8.2.3.20",
+      "clauseTitle": "8.2.3.20 Constraints Graphical Notation",
+      "images": [
+        "assume-edge.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "assume-edge =",
+      "occurrences": 1
+    },
+    {
+      "production": "assumer",
+      "clause": "c8.2.3.20",
+      "clauseTitle": "8.2.3.20 Constraints Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "assumer = requirement | requirement-def",
+      "occurrences": 1
+    },
+    {
+      "production": "attribute",
+      "clause": "c8.2.3.7",
+      "clauseTitle": "8.2.3.7 Attributes Graphical Notation",
+      "images": [
+        "attribute.svg"
+      ],
+      "status": "supported",
+      "syntax": "attribute =",
+      "occurrences": 1
+    },
+    {
+      "production": "attribute-def",
+      "clause": "c8.2.3.7",
+      "clauseTitle": "8.2.3.7 Attributes Graphical Notation",
+      "images": [
+        "attribute-def.svg"
+      ],
+      "status": "supported",
+      "syntax": "attribute-def =",
+      "occurrences": 1
+    },
+    {
+      "production": "attribute-def-name-compartment",
+      "clause": "c8.2.3.7",
+      "clauseTitle": "8.2.3.7 Attributes Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "attribute-def-name-compartment = '«' DefinitionPrefix 'attribute' 'def' '»' definition-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "attribute-name-compartment",
+      "clause": "c8.2.3.7",
+      "clauseTitle": "8.2.3.7 Attributes Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "attribute-name-compartment = '«' UsagePrefix 'attribute' '»' usage-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "attributes-compartment",
+      "clause": "c8.2.3.7",
+      "clauseTitle": "8.2.3.7 Attributes Graphical Notation",
+      "images": [
+        "attributes-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "attributes-compartment = attributes-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "attributes-compartment-contents",
+      "clause": "c8.2.3.7",
+      "clauseTitle": "8.2.3.7 Attributes Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "attributes-compartment-contents = ( attributes-compartment-element )* '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "attributes-compartment-element",
+      "clause": "c8.2.3.7",
+      "clauseTitle": "8.2.3.7 Attributes Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "attributes-compartment-element = el-prefix ? UsagePrefix usage-cp",
+      "occurrences": 1
+    },
+    {
+      "production": "binary-dependency",
+      "clause": "c8.2.3.3",
+      "clauseTitle": "8.2.3.3 Dependencies Graphical Notation",
+      "images": [
+        "binary-dependency.svg"
+      ],
+      "status": "supported",
+      "syntax": "binary-dependency =",
+      "occurrences": 1
+    },
+    {
+      "production": "binding-connection",
+      "clause": "c8.2.3.13",
+      "clauseTitle": "8.2.3.13 Connections Graphical Notation",
+      "images": [
+        "binding-connection.svg"
+      ],
+      "status": "supported",
+      "syntax": "binding-connection =",
+      "occurrences": 1
+    },
+    {
+      "production": "c-adornment",
+      "clause": "c8.2.3.13",
+      "clauseTitle": "8.2.3.13 Connections Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "c-adornment = ( a-property | a-direction | a-subsetting | a-redefinition )*",
+      "occurrences": 1
+    },
+    {
+      "production": "calc",
+      "clause": "c8.2.3.19",
+      "clauseTitle": "8.2.3.19 Calculations Graphical Notation",
+      "images": [
+        "calc.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "calc =",
+      "occurrences": 1
+    },
+    {
+      "production": "calc-def",
+      "clause": "c8.2.3.19",
+      "clauseTitle": "8.2.3.19 Calculations Graphical Notation",
+      "images": [
+        "calc-def.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "calc-def =",
+      "occurrences": 1
+    },
+    {
+      "production": "calc-def-name-compartment",
+      "clause": "c8.2.3.19",
+      "clauseTitle": "8.2.3.19 Calculations Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "calc-def-name-compartment = '«' DefinitionPrefix 'calc' 'def' '»' definition-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "calc-name-compartment",
+      "clause": "c8.2.3.19",
+      "clauseTitle": "8.2.3.19 Calculations Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "calc-name-compartment = '«' OccurrenceUsagePrefix 'calc' '»' usage-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "calcs-compartment",
+      "clause": "c8.2.3.19",
+      "clauseTitle": "8.2.3.19 Calculations Graphical Notation",
+      "images": [
+        "calcs-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "calcs-compartment = calcs-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "calcs-compartment-contents",
+      "clause": "c8.2.3.19",
+      "clauseTitle": "8.2.3.19 Calculations Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "calcs-compartment-contents = calcs-compartment-element * '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "calcs-compartment-element",
+      "clause": "c8.2.3.19",
+      "clauseTitle": "8.2.3.19 Calculations Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "calcs-compartment-element = el-prefix ? OccurrenceUsagePrefix ActionUsageDeclaration",
+      "occurrences": 1
+    },
+    {
+      "production": "cdef-label",
+      "clause": "c8.2.3.13",
+      "clauseTitle": "8.2.3.13 Connections Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "cdef-label = Identification",
+      "occurrences": 1
+    },
+    {
+      "production": "cdot-label",
+      "clause": "c8.2.3.13",
+      "clauseTitle": "8.2.3.13 Connections Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "cdot-label = UsageDeclaration",
+      "occurrences": 1
+    },
+    {
+      "production": "comment-node",
+      "clause": "c8.2.3.4",
+      "clauseTitle": "8.2.3.4 Annotations Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "comment-node = comment-without-keyword | comment-with-keyword",
+      "occurrences": 1
+    },
+    {
+      "production": "comment-with-keyword",
+      "clause": "c8.2.3.4",
+      "clauseTitle": "8.2.3.4 Annotations Graphical Notation",
+      "images": [
+        "comment-with-keyword.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "comment-with-keyword =",
+      "occurrences": 1
+    },
+    {
+      "production": "comment-without-keyword",
+      "clause": "c8.2.3.4",
+      "clauseTitle": "8.2.3.4 Annotations Graphical Notation",
+      "images": [
+        "comment-without-keyword.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "comment-without-keyword =",
+      "occurrences": 1
+    },
+    {
+      "production": "compartment-stack",
+      "clause": "c8.2.3.6",
+      "clauseTitle": "8.2.3.6 Definition and Usage Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "compartment-stack = ( compartment )*",
+      "occurrences": 1
+    },
+    {
+      "production": "composite-feature-membership",
+      "clause": "c8.2.3.6",
+      "clauseTitle": "8.2.3.6 Definition and Usage Graphical Notation",
+      "images": [
+        "composite-feature-membership.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "composite-feature-membership =",
+      "occurrences": 1
+    },
+    {
+      "production": "concern",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [
+        "concern.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "concern =",
+      "occurrences": 1
+    },
+    {
+      "production": "concern-def",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [
+        "concern-def.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "concern-def =",
+      "occurrences": 1
+    },
+    {
+      "production": "concern-def-name-compartment",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "concern-def-name-compartment = '«' DefinitionPrefix 'concern' 'def' '»' definition-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "concern-name-compartment",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "concern-name-compartment = '«' OccurrenceUsagePrefix 'concern' '»' usage-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "concern-stakeholder-link",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [
+        "concern-stakeholder-link.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "concern-stakeholder-link =",
+      "occurrences": 1
+    },
+    {
+      "production": "concerns-compartment",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [
+        "concerns-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "concerns-compartment = concerns-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "condition-expression",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "condition-expression = ExpressionParameterMember",
+      "occurrences": 1
+    },
+    {
+      "production": "connection",
+      "clause": "c8.2.3.13",
+      "clauseTitle": "8.2.3.13 Connections Graphical Notation",
+      "images": [
+        "connection.svg"
+      ],
+      "status": "supported",
+      "syntax": "connection =",
+      "occurrences": 1
+    },
+    {
+      "production": "connection-def",
+      "clause": "c8.2.3.13",
+      "clauseTitle": "8.2.3.13 Connections Graphical Notation",
+      "images": [
+        "connection-def.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "connection-def =",
+      "occurrences": 1
+    },
+    {
+      "production": "connection-def-graphical",
+      "clause": "c8.2.3.13",
+      "clauseTitle": "8.2.3.13 Connections Graphical Notation",
+      "images": [
+        "connection-def-graphical-1.svg",
+        "connection-def-graphical-2.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "connection-def-graphical = |",
+      "occurrences": 1
+    },
+    {
+      "production": "connection-def-name-compartment",
+      "clause": "c8.2.3.13",
+      "clauseTitle": "8.2.3.13 Connections Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "connection-def-name-compartment = '«' DefinitionPrefix 'connection' 'def' '»' definition-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "connection-definition-elaboration",
+      "clause": "c8.2.3.13",
+      "clauseTitle": "8.2.3.13 Connections Graphical Notation",
+      "images": [
+        "connection-definition-elaboration.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "connection-definition-elaboration =",
+      "occurrences": 1
+    },
+    {
+      "production": "connection-end",
+      "clause": "c8.2.3.13",
+      "clauseTitle": "8.2.3.13 Connections Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "connection-end = usage-node | usage-edge",
+      "occurrences": 1
+    },
+    {
+      "production": "connection-graphical",
+      "clause": "c8.2.3.13",
+      "clauseTitle": "8.2.3.13 Connections Graphical Notation",
+      "images": [
+        "connection-graphical-1.svg",
+        "connection-graphical-2.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "connection-graphical = |",
+      "occurrences": 1
+    },
+    {
+      "production": "connection-label",
+      "clause": "c8.2.3.13",
+      "clauseTitle": "8.2.3.13 Connections Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "connection-label = UsageDeclaration",
+      "occurrences": 1
+    },
+    {
+      "production": "connection-name-compartment",
+      "clause": "c8.2.3.13",
+      "clauseTitle": "8.2.3.13 Connections Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "connection-name-compartment = '«' OccurrenceUsagePrefix 'connection' '»' usage-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "connection-relationship",
+      "clause": "c8.2.3.13",
+      "clauseTitle": "8.2.3.13 Connections Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "connection-relationship = binding-connection | connection-graphical | n-ary-connection | n-ary-connection-def | connection-definition-elaboration | connection-usage-elaboration | connection-def-graphical",
+      "occurrences": 1
+    },
+    {
+      "production": "connection-usage-elaboration",
+      "clause": "c8.2.3.13",
+      "clauseTitle": "8.2.3.13 Connections Graphical Notation",
+      "images": [
+        "connection-usage-elaboration.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "connection-usage-elaboration =",
+      "occurrences": 1
+    },
+    {
+      "production": "connections-compartment",
+      "clause": "c8.2.3.13",
+      "clauseTitle": "8.2.3.13 Connections Graphical Notation",
+      "images": [
+        "connections-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "connections-compartment = connections-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "connections-compartment-contents",
+      "clause": "c8.2.3.13",
+      "clauseTitle": "8.2.3.13 Connections Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "connections-compartment-contents = ( connections-compartment-element )* '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "connections-compartment-element",
+      "clause": "c8.2.3.13",
+      "clauseTitle": "8.2.3.13 Connections Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "connections-compartment-element = el-prefix ? OccurrenceUsagePrefix UsageDeclaration",
+      "occurrences": 1
+    },
+    {
+      "production": "constraint",
+      "clause": "c8.2.3.20",
+      "clauseTitle": "8.2.3.20 Constraints Graphical Notation",
+      "images": [
+        "constraint.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "constraint =",
+      "occurrences": 1
+    },
+    {
+      "production": "constraint-def",
+      "clause": "c8.2.3.20",
+      "clauseTitle": "8.2.3.20 Constraints Graphical Notation",
+      "images": [
+        "constraint-def.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "constraint-def =",
+      "occurrences": 1
+    },
+    {
+      "production": "constraint-def-name-compartment",
+      "clause": "c8.2.3.20",
+      "clauseTitle": "8.2.3.20 Constraints Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "constraint-def-name-compartment = '«' DefinitionPrefix 'constraint' 'def' '»' definition-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "constraint-name-compartment",
+      "clause": "c8.2.3.20",
+      "clauseTitle": "8.2.3.20 Constraints Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "constraint-name-compartment = '«' OccurrenceUsagePrefix 'constraint' '»' usage-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "constraint-ref",
+      "clause": "c8.2.3.20",
+      "clauseTitle": "8.2.3.20 Constraints Graphical Notation",
+      "images": [
+        "constraint-ref.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "constraint-ref =",
+      "occurrences": 1
+    },
+    {
+      "production": "constraints-compartment",
+      "clause": "c8.2.3.20",
+      "clauseTitle": "8.2.3.20 Constraints Graphical Notation",
+      "images": [
+        "constraints-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "constraints-compartment = constraints-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "constraints-compartment-contents",
+      "clause": "c8.2.3.20",
+      "clauseTitle": "8.2.3.20 Constraints Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "constraints-compartment-contents = ( constraints-usage-compartment-element )* '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "constraints-usage-compartment-element",
+      "clause": "c8.2.3.20",
+      "clauseTitle": "8.2.3.20 Constraints Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "constraints-usage-compartment-element = el-prefix ? OccurrenceUsagePrefix ConstraintUsageDeclaration CalculationBody *",
+      "occurrences": 1
+    },
+    {
+      "production": "decision-node",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [
+        "decision-node.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "decision-node =",
+      "occurrences": 1
+    },
+    {
+      "production": "definition",
+      "clause": "c8.2.3.6",
+      "clauseTitle": "8.2.3.6 Definition and Usage Graphical Notation",
+      "images": [
+        "definition.svg"
+      ],
+      "status": "supported",
+      "syntax": "definition =",
+      "occurrences": 1
+    },
+    {
+      "production": "definition-name-with-alias",
+      "clause": "c8.2.3.6",
+      "clauseTitle": "8.2.3.6 Definition and Usage Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "definition-name-with-alias = DefinitionDeclaration ( '«alias»' ( QualifiedName (',' QualifiedName )* ) )?",
+      "occurrences": 1
+    },
+    {
+      "production": "directed-features-compartment",
+      "clause": "c8.2.3.11",
+      "clauseTitle": "8.2.3.11 Parts Graphical Notation",
+      "images": [
+        "directed-features-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "directed-features-compartment = directed-features-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "directed-features-compartment-contents",
+      "clause": "c8.2.3.11",
+      "clauseTitle": "8.2.3.11 Parts Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "directed-features-compartment-contents = ( directed-features-compartment-element )* '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "directed-features-compartment-element",
+      "clause": "c8.2.3.11",
+      "clauseTitle": "8.2.3.11 Parts Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "directed-features-compartment-element = el-prefix FeatureDirection DefinitionBodyItem *",
+      "occurrences": 1
+    },
+    {
+      "production": "distinguished-parameter",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "distinguished-parameter = subject | actor | stakeholder",
+      "occurrences": 1
+    },
+    {
+      "production": "distinguished-parameter-link",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [
+        "distinguished-parameter-link.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "distinguished-parameter-link =",
+      "occurrences": 1
+    },
+    {
+      "production": "do-action",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [
+        "do-action.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "do-action =",
+      "occurrences": 1
+    },
+    {
+      "production": "do-action-name-comp",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "do-action-name-comp = '«' 'do' OccurrenceUsagePrefix 'action' '»' usage-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "documentation-compartment",
+      "clause": "c8.2.3.4",
+      "clauseTitle": "8.2.3.4 Annotations Graphical Notation",
+      "images": [
+        "documentation-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "documentation-compartment = Identification text-block",
+      "occurrences": 1
+    },
+    {
+      "production": "documentation-node",
+      "clause": "c8.2.3.4",
+      "clauseTitle": "8.2.3.4 Annotations Graphical Notation",
+      "images": [
+        "documentation-node.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "documentation-node =",
+      "occurrences": 1
+    },
+    {
+      "production": "done-node",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [
+        "done-node.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "done-node =",
+      "occurrences": 1
+    },
+    {
+      "production": "el-prefix",
+      "clause": "c8.2.3.6",
+      "clauseTitle": "8.2.3.6 Definition and Usage Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "el-prefix = '^' | '/'",
+      "occurrences": 1
+    },
+    {
+      "production": "element",
+      "clause": "c8.2.3.2",
+      "clauseTitle": "8.2.3.2 Elements and Relationships Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "element = dependencies-and-annotations-element | general-element | element-inside-textual-compartment",
+      "occurrences": 1
+    },
+    {
+      "production": "element-inside-textual-compartment",
+      "clause": "c8.2.3.2",
+      "clauseTitle": "8.2.3.2 Elements and Relationships Graphical Notation",
+      "images": [
+        "element-inside-textual-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "element-inside-textual-compartment =",
+      "occurrences": 1
+    },
+    {
+      "production": "element-node",
+      "clause": "c8.2.3.2",
+      "clauseTitle": "8.2.3.2 Elements and Relationships Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "element-node = usage-node | definition-node | annotation-node | namespace-node",
+      "occurrences": 1
+    },
+    {
+      "production": "ellipsis-at-lower-left-corner",
+      "clause": "c8.2.3.2",
+      "clauseTitle": "8.2.3.2 Elements and Relationships Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "ellipsis-at-lower-left-corner = '...'",
+      "occurrences": 1
+    },
+    {
+      "production": "else-body",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [
+        "else-body.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "else-body = action-body",
+      "occurrences": 1
+    },
+    {
+      "production": "else-branch",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [
+        "else-branch.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "else-branch =",
+      "occurrences": 1
+    },
+    {
+      "production": "ends-compartment",
+      "clause": "c8.2.3.14",
+      "clauseTitle": "8.2.3.14 Interfaces Graphical Notation",
+      "images": [
+        "ends-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "ends-compartment = ends-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "ends-compartment-contents",
+      "clause": "c8.2.3.14",
+      "clauseTitle": "8.2.3.14 Interfaces Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "ends-compartment-contents = ( ends-compartment-element )* '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "ends-compartment-element",
+      "clause": "c8.2.3.14",
+      "clauseTitle": "8.2.3.14 Interfaces Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "ends-compartment-element = QualifiedName (':' QualifiedName )?",
+      "occurrences": 1
+    },
+    {
+      "production": "entry-action",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [
+        "entry-action-1.svg",
+        "entry-action-2.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "entry-action = |",
+      "occurrences": 1
+    },
+    {
+      "production": "entry-action-name-comp",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "entry-action-name-comp = '«' 'entry' OccurrenceUsagePrefix 'action' '»' usage-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "enumeration",
+      "clause": "c8.2.3.8",
+      "clauseTitle": "8.2.3.8 Enumerations Graphical Notation",
+      "images": [
+        "enumeration.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "enumeration =",
+      "occurrences": 1
+    },
+    {
+      "production": "enumeration-def",
+      "clause": "c8.2.3.8",
+      "clauseTitle": "8.2.3.8 Enumerations Graphical Notation",
+      "images": [
+        "enumeration-def.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "enumeration-def =",
+      "occurrences": 1
+    },
+    {
+      "production": "enumeration-def-name-compartment",
+      "clause": "c8.2.3.8",
+      "clauseTitle": "8.2.3.8 Enumerations Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "enumeration-def-name-compartment = '«' DefinitionPrefix 'enum' 'def' '»' definition-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "enumeration-name-compartment",
+      "clause": "c8.2.3.8",
+      "clauseTitle": "8.2.3.8 Enumerations Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "enumeration-name-compartment = '«' UsagePrefix 'enum' '»' usage-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "enums-compartment",
+      "clause": "c8.2.3.8",
+      "clauseTitle": "8.2.3.8 Enumerations Graphical Notation",
+      "images": [
+        "enums-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "enums-compartment = enums-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "enums-compartment-contents",
+      "clause": "c8.2.3.8",
+      "clauseTitle": "8.2.3.8 Enumerations Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "enums-compartment-contents = ( enums-compartment-element )* '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "enums-compartment-element",
+      "clause": "c8.2.3.8",
+      "clauseTitle": "8.2.3.8 Enumerations Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "enums-compartment-element = el-prefix ? UsagePrefix usage-cp",
+      "occurrences": 1
+    },
+    {
+      "production": "event-edge",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [
+        "event-edge.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "event-edge =",
+      "occurrences": 1
+    },
+    {
+      "production": "event-occurrence",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [
+        "event-occurrence.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "event-occurrence =",
+      "occurrences": 1
+    },
+    {
+      "production": "event-occurrence-def",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [
+        "event-occurrence-def.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "event-occurrence-def =",
+      "occurrences": 1
+    },
+    {
+      "production": "event-occurrence-def-name-compartment",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "event-occurrence-def-name-compartment = '«' DefinitionPrefix 'event' 'occurrence' 'def' '»' definition-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "event-occurrence-name-compartment",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "event-occurrence-name-compartment = '«' OccurrenceUsagePrefix 'event' 'occurrence' '»' usage-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "eventer",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "eventer = usage-node | definition-node",
+      "occurrences": 1
+    },
+    {
+      "production": "exhibit-edge",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [
+        "exhibit-edge.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "exhibit-edge =",
+      "occurrences": 1
+    },
+    {
+      "production": "exhibit-state-name-compartment",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "exhibit-state-name-compartment = '«exhibit-state»' state-name-compartment",
+      "occurrences": 1
+    },
+    {
+      "production": "exhibit-state-usage",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [
+        "exhibit-state-usage.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "exhibit-state-usage =",
+      "occurrences": 1
+    },
+    {
+      "production": "exhibit-states-compartment",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [
+        "exhibit-states-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "exhibit-states-compartment = exhibit-states-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "exhibit-states-compartment-contents",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "exhibit-states-compartment-contents = exhibit-state-scompartment-element* '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "exhibit-states-compartment-element-compartment",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "exhibit-states-compartment-element-compartment = UsageDeclaration",
+      "occurrences": 1
+    },
+    {
+      "production": "exhibitor",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "exhibitor = part | part-def",
+      "occurrences": 1
+    },
+    {
+      "production": "exit-action",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [
+        "exit-action.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "exit-action =",
+      "occurrences": 1
+    },
+    {
+      "production": "exit-action-name-comp",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "exit-action-name-comp = '«' 'exit' OccurrenceUsagePrefix 'action' '»' usage-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "expose-r",
+      "clause": "c8.2.3.26",
+      "clauseTitle": "8.2.3.26 Views and Viewpoints Graphical Notation",
+      "images": [
+        "expose-r.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "expose-r =",
+      "occurrences": 1
+    },
+    {
+      "production": "expose-relationship",
+      "clause": "c8.2.3.26",
+      "clauseTitle": "8.2.3.26 Views and Viewpoints Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "expose-relationship = expose-r | toplevel-expose-r | recursive-expose-r",
+      "occurrences": 1
+    },
+    {
+      "production": "exposes-compartment",
+      "clause": "c8.2.3.26",
+      "clauseTitle": "8.2.3.26 Views and Viewpoints Graphical Notation",
+      "images": [
+        "exposes-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "exposes-compartment = exposes-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "exposes-compartment-contents",
+      "clause": "c8.2.3.26",
+      "clauseTitle": "8.2.3.26 Views and Viewpoints Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "exposes-compartment-contents = exposes-compartment-element * '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "exposes-compartment-element",
+      "clause": "c8.2.3.26",
+      "clauseTitle": "8.2.3.26 Views and Viewpoints Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "exposes-compartment-element = MembershipExpose | NamespaceExpose",
+      "occurrences": 1
+    },
+    {
+      "production": "expression-text",
+      "clause": "c8.2.3.27",
+      "clauseTitle": "8.2.3.27 Metadata Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "expression-text = text-block",
+      "occurrences": 1
+    },
+    {
+      "production": "extended-def",
+      "clause": "c8.2.3.6",
+      "clauseTitle": "8.2.3.6 Definition and Usage Graphical Notation",
+      "images": [
+        "extended-def.svg"
+      ],
+      "status": "supported",
+      "syntax": "extended-def =",
+      "occurrences": 1
+    },
+    {
+      "production": "extended-def-name-compartment",
+      "clause": "c8.2.3.6",
+      "clauseTitle": "8.2.3.6 Definition and Usage Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "extended-def-name-compartment = '«' BasicDefinitionPrefix ? DefinitionExtensionKeyword + 'def' '»' definition-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "extended-usage",
+      "clause": "c8.2.3.6",
+      "clauseTitle": "8.2.3.6 Definition and Usage Graphical Notation",
+      "images": [
+        "extended-usage.svg"
+      ],
+      "status": "supported",
+      "syntax": "extended-usage =",
+      "occurrences": 1
+    },
+    {
+      "production": "extended-usage-name-compartment",
+      "clause": "c8.2.3.6",
+      "clauseTitle": "8.2.3.6 Definition and Usage Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "extended-usage-name-compartment = '«' BasicUsagePrefix ? UsageExtensionKeyword + '»' usage-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "features-compartment",
+      "clause": "c8.2.3.6",
+      "clauseTitle": "8.2.3.6 Definition and Usage Graphical Notation",
+      "images": [
+        "features-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "features-compartment = features-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "features-compartment-contents",
+      "clause": "c8.2.3.6",
+      "clauseTitle": "8.2.3.6 Definition and Usage Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "features-compartment-contents = ( features-compartment-element )* '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "features-compartment-element",
+      "clause": "c8.2.3.6",
+      "clauseTitle": "8.2.3.6 Definition and Usage Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "features-compartment-element = el-prefix ? UsagePrefix usage-cp",
+      "occurrences": 1
+    },
+    {
+      "production": "filters-compartment",
+      "clause": "c8.2.3.26",
+      "clauseTitle": "8.2.3.26 Views and Viewpoints Graphical Notation",
+      "images": [
+        "filters-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "filters-compartment = filters-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "filters-compartment-contents",
+      "clause": "c8.2.3.26",
+      "clauseTitle": "8.2.3.26 Views and Viewpoints Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "filters-compartment-contents = ( filters-compartment-element )* '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "filters-compartment-element",
+      "clause": "c8.2.3.26",
+      "clauseTitle": "8.2.3.26 Views and Viewpoints Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "filters-compartment-element = el-prefix ? MemberPrefix OwnedExpression",
+      "occurrences": 1
+    },
+    {
+      "production": "flow",
+      "clause": "c8.2.3.16",
+      "clauseTitle": "8.2.3.16 Flows Graphical Notation",
+      "images": [
+        "flow.svg"
+      ],
+      "status": "supported",
+      "syntax": "flow =",
+      "occurrences": 1
+    },
+    {
+      "production": "flow-def",
+      "clause": "c8.2.3.16",
+      "clauseTitle": "8.2.3.16 Flows Graphical Notation",
+      "images": [
+        "flow-def.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "flow-def =",
+      "occurrences": 1
+    },
+    {
+      "production": "flow-def-name-compartment",
+      "clause": "c8.2.3.16",
+      "clauseTitle": "8.2.3.16 Flows Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "flow-def-name-compartment = '«' DefinitionPrefix 'succession'? 'flow' 'def' '»' definition-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "flow-end-node",
+      "clause": "c8.2.3.16",
+      "clauseTitle": "8.2.3.16 Flows Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "flow-end-node = parameter | proxy",
+      "occurrences": 1
+    },
+    {
+      "production": "flow-label",
+      "clause": "c8.2.3.16",
+      "clauseTitle": "8.2.3.16 Flows Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "flow-label = UsageDeclaration ? ('of' FlowPayloadFeatureMember )? | FlowPayloadFeatureMember | flow-label = Identification | FlowPayloadFeatureMember",
+      "occurrences": 2
+    },
+    {
+      "production": "flow-name-compartment",
+      "clause": "c8.2.3.16",
+      "clauseTitle": "8.2.3.16 Flows Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "flow-name-compartment = '«' OccurrenceUsagePrefix ( 'message' | 'succession'? 'flow' ) '»' usage-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "flow-node",
+      "clause": "c8.2.3.16",
+      "clauseTitle": "8.2.3.16 Flows Graphical Notation",
+      "images": [
+        "flow-node.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "flow-node = | flow-node = flow-node-r | flow-node-l | sflow-node-r | sflow-node-l | message-node-r | message-node-l",
+      "occurrences": 2
+    },
+    {
+      "production": "flow-node-l",
+      "clause": "c8.2.3.16",
+      "clauseTitle": "8.2.3.16 Flows Graphical Notation",
+      "images": [
+        "flow-node-l.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "flow-node-l =",
+      "occurrences": 1
+    },
+    {
+      "production": "flow-node-r",
+      "clause": "c8.2.3.16",
+      "clauseTitle": "8.2.3.16 Flows Graphical Notation",
+      "images": [
+        "flow-node-r.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "flow-node-r =",
+      "occurrences": 1
+    },
+    {
+      "production": "flow-on-connection",
+      "clause": "c8.2.3.16",
+      "clauseTitle": "8.2.3.16 Flows Graphical Notation",
+      "images": [
+        "flow-on-connection.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "flow-on-connection =",
+      "occurrences": 1
+    },
+    {
+      "production": "flows-compartment",
+      "clause": "c8.2.3.16",
+      "clauseTitle": "8.2.3.16 Flows Graphical Notation",
+      "images": [
+        "flows-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "flows-compartment = flows-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "flows-compartment-contents",
+      "clause": "c8.2.3.16",
+      "clauseTitle": "8.2.3.16 Flows Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "flows-compartment-contents = ( flows-compartment-element )* '...'?",
+      "occurrences": 1
+    },
+    {
+      "production": "flows-compartment-element",
+      "clause": "c8.2.3.16",
+      "clauseTitle": "8.2.3.16 Flows Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "flows-compartment-element = el-prefix ? OccurrenceUsagePrefix ( 'message' MessageDeclaration | 'succession'? FlowDeclaration )",
+      "occurrences": 1
+    },
+    {
+      "production": "for-loop-action-name-compartment",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "for-loop-action-name-compartment = '«' OccurrenceUsagePrefix 'loop' '»' usage-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "for-loop-action-node",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [
+        "for-loop-action-node.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "for-loop-action-node =",
+      "occurrences": 1
+    },
+    {
+      "production": "fork-node",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [
+        "fork-node.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "fork-node =",
+      "occurrences": 1
+    },
+    {
+      "production": "frame-concern-name-compartment",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "frame-concern-name-compartment = '«' OccurrenceUsagePrefix 'frame' 'concern' '»' usage-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "frame-concern-node",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [
+        "frame-concern-node.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "frame-concern-node =",
+      "occurrences": 1
+    },
+    {
+      "production": "frame-edge",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [
+        "frame-edge.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "frame-edge =",
+      "occurrences": 1
+    },
+    {
+      "production": "frame-relationship",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [
+        "frame-relationship.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "frame-relationship =",
+      "occurrences": 1
+    },
+    {
+      "production": "framed-view",
+      "clause": "c8.2.3.26",
+      "clauseTitle": "8.2.3.26 Views and Viewpoints Graphical Notation",
+      "images": [
+        "framed-view.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "framed-view =",
+      "occurrences": 1
+    },
+    {
+      "production": "frameless-view",
+      "clause": "c8.2.3.26",
+      "clauseTitle": "8.2.3.26 Views and Viewpoints Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "frameless-view = general-view | interconnection-view | action-flow-view | state-transition-view | sequence-view",
+      "occurrences": 1
+    },
+    {
+      "production": "framer",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "framer = requirement | requirement-def | viewpoint | viewpoint-def",
+      "occurrences": 1
+    },
+    {
+      "production": "frames-compartment",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [
+        "frames-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "frames-compartment = frames-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "frames-compartment-contents",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "frames-compartment-contents = ( frames-compartment-element )* '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "frames-compartment-element",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "frames-compartment-element = el-prefix * MemberPrefix ? FramedConcernUsage",
+      "occurrences": 1
+    },
+    {
+      "production": "general-compartment",
+      "clause": "c8.2.3.2",
+      "clauseTitle": "8.2.3.2 Elements and Relationships Graphical Notation",
+      "images": [
+        "general-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "general-compartment = general-view",
+      "occurrences": 1
+    },
+    {
+      "production": "general-element",
+      "clause": "c8.2.3.2",
+      "clauseTitle": "8.2.3.2 Elements and Relationships Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "general-element = general-node | general-relationship",
+      "occurrences": 1
+    },
+    {
+      "production": "general-view",
+      "clause": "c8.2.3.2",
+      "clauseTitle": "8.2.3.2 Elements and Relationships Graphical Notation",
+      "images": [],
+      "status": "supported",
+      "syntax": "general-view = ( general-element )* ( dependencies-and-annotations-element )* ( ellipsis-at-lower-left-corner )?",
+      "occurrences": 1
+    },
+    {
+      "production": "guard-expression",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "guard-expression = '[' OwnedExpression ']'",
+      "occurrences": 1
+    },
+    {
+      "production": "if-condition",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [
+        "if-condition.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "if-condition = condition-expression",
+      "occurrences": 1
+    },
+    {
+      "production": "if-else-action-node",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [
+        "if-else-action-node.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "if-else-action-node =",
+      "occurrences": 1
+    },
+    {
+      "production": "ifelse-action-name-compartment",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "ifelse-action-name-compartment = '«' OccurrenceUsagePrefix 'if' '»' usage-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "import",
+      "clause": "c8.2.3.5",
+      "clauseTitle": "8.2.3.5 Namespaces and Packages Graphical Notation",
+      "images": [
+        "import.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "import =",
+      "occurrences": 1
+    },
+    {
+      "production": "imported-package-with-name-in-tab",
+      "clause": "c8.2.3.5",
+      "clauseTitle": "8.2.3.5 Namespaces and Packages Graphical Notation",
+      "images": [
+        "imported-package-with-name-in-tab.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "imported-package-with-name-in-tab =",
+      "occurrences": 1
+    },
+    {
+      "production": "imported-package-with-name-inside",
+      "clause": "c8.2.3.5",
+      "clauseTitle": "8.2.3.5 Namespaces and Packages Graphical Notation",
+      "images": [
+        "imported-package-with-name-inside.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "imported-package-with-name-inside =",
+      "occurrences": 1
+    },
+    {
+      "production": "include-use-case-name-compartment",
+      "clause": "c8.2.3.25",
+      "clauseTitle": "8.2.3.25 Use Cases Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "include-use-case-name-compartment = '«include use case»' requirement-name-compartment",
+      "occurrences": 1
+    },
+    {
+      "production": "include-use-case-relationship",
+      "clause": "c8.2.3.25",
+      "clauseTitle": "8.2.3.25 Use Cases Graphical Notation",
+      "images": [
+        "include-use-case-relationship.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "include-use-case-relationship =",
+      "occurrences": 1
+    },
+    {
+      "production": "include-use-case-usage",
+      "clause": "c8.2.3.25",
+      "clauseTitle": "8.2.3.25 Use Cases Graphical Notation",
+      "images": [
+        "include-use-case-usage.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "include-use-case-usage =",
+      "occurrences": 1
+    },
+    {
+      "production": "include-use-cases-compartment",
+      "clause": "c8.2.3.25",
+      "clauseTitle": "8.2.3.25 Use Cases Graphical Notation",
+      "images": [
+        "include-use-cases-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "include-use-cases-compartment = include-use-cases-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "include-use-cases-compartment-contents",
+      "clause": "c8.2.3.25",
+      "clauseTitle": "8.2.3.25 Use Cases Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "include-use-cases-compartment-contents = ( include-use-cases-compartment-element )* '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "include-use-cases-compartment-element",
+      "clause": "c8.2.3.25",
+      "clauseTitle": "8.2.3.25 Use Cases Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "include-use-cases-compartment-element = el-prefix ? OccurrenceUsagePrefix ( OwnedSubsetting FeatureSpecializationPart ? | UsageDeclaration ) ( ValuePart | ActionUsageParameterList )? CaseBody",
+      "occurrences": 1
+    },
+    {
+      "production": "includes-compartment",
+      "clause": "c8.2.3.25",
+      "clauseTitle": "8.2.3.25 Use Cases Graphical Notation",
+      "images": [
+        "includes-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "includes-compartment = includes-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "includes-compartment-contents",
+      "clause": "c8.2.3.25",
+      "clauseTitle": "8.2.3.25 Use Cases Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "includes-compartment-contents = ( includes-compartment-element )* '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "includes-compartment-element",
+      "clause": "c8.2.3.25",
+      "clauseTitle": "8.2.3.25 Use Cases Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "includes-compartment-element = el-prefix ? OccurrenceUsagePrefix ( OwnedSubsetting FeatureSpecializationPart ? | UsageDeclaration )",
+      "occurrences": 1
+    },
+    {
+      "production": "individuals-compartment",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [
+        "individuals-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "individuals-compartment = individuals-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "individuals-compartment-contents",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "individuals-compartment-contents = ( individuals-compartment-element )* '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "individuals-compartment-element",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "individuals-compartment-element = occurrences-compartment-element",
+      "occurrences": 1
+    },
+    {
+      "production": "interconnection-compartment",
+      "clause": "c8.2.3.11",
+      "clauseTitle": "8.2.3.11 Parts Graphical Notation",
+      "images": [
+        "interconnection-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "interconnection-compartment = interconnection-view",
+      "occurrences": 1
+    },
+    {
+      "production": "interface",
+      "clause": "c8.2.3.14",
+      "clauseTitle": "8.2.3.14 Interfaces Graphical Notation",
+      "images": [
+        "interface.svg"
+      ],
+      "status": "supported",
+      "syntax": "interface =",
+      "occurrences": 1
+    },
+    {
+      "production": "interface-connection",
+      "clause": "c8.2.3.14",
+      "clauseTitle": "8.2.3.14 Interfaces Graphical Notation",
+      "images": [
+        "interface-connection.svg"
+      ],
+      "status": "supported",
+      "syntax": "interface-connection =",
+      "occurrences": 1
+    },
+    {
+      "production": "interface-def",
+      "clause": "c8.2.3.14",
+      "clauseTitle": "8.2.3.14 Interfaces Graphical Notation",
+      "images": [
+        "interface-def.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "interface-def =",
+      "occurrences": 1
+    },
+    {
+      "production": "interface-def-name-compartment",
+      "clause": "c8.2.3.14",
+      "clauseTitle": "8.2.3.14 Interfaces Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "interface-def-name-compartment = '«' DefinitionPrefix 'interface' 'def' '»' definition-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "interface-label",
+      "clause": "c8.2.3.14",
+      "clauseTitle": "8.2.3.14 Interfaces Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "interface-label = UsageDeclaration ?",
+      "occurrences": 1
+    },
+    {
+      "production": "interface-name-compartment",
+      "clause": "c8.2.3.14",
+      "clauseTitle": "8.2.3.14 Interfaces Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "interface-name-compartment = '«' OccurrenceUsagePrefix 'interface' '»' usage-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "interfaces-compartment",
+      "clause": "c8.2.3.14",
+      "clauseTitle": "8.2.3.14 Interfaces Graphical Notation",
+      "images": [
+        "interfaces-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "interfaces-compartment = interfaces-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "interfaces-compartment-contents",
+      "clause": "c8.2.3.14",
+      "clauseTitle": "8.2.3.14 Interfaces Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "interfaces-compartment-contents = ( interfaces-compartment-element )* '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "interfaces-compartment-element",
+      "clause": "c8.2.3.14",
+      "clauseTitle": "8.2.3.14 Interfaces Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "interfaces-compartment-element = el-prefix ? OccurrenceUsagePrefix InterfaceUsageDeclaration",
+      "occurrences": 1
+    },
+    {
+      "production": "item",
+      "clause": "c8.2.3.10",
+      "clauseTitle": "8.2.3.10 Items Graphical Notation",
+      "images": [
+        "item.svg"
+      ],
+      "status": "supported",
+      "syntax": "item =",
+      "occurrences": 1
+    },
+    {
+      "production": "item-def",
+      "clause": "c8.2.3.10",
+      "clauseTitle": "8.2.3.10 Items Graphical Notation",
+      "images": [
+        "item-def.svg"
+      ],
+      "status": "supported",
+      "syntax": "item-def =",
+      "occurrences": 1
+    },
+    {
+      "production": "item-def-name-compartment",
+      "clause": "c8.2.3.10",
+      "clauseTitle": "8.2.3.10 Items Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "item-def-name-compartment = '«' DefinitionPrefix 'item' 'def' '»' definition-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "item-name-compartment",
+      "clause": "c8.2.3.10",
+      "clauseTitle": "8.2.3.10 Items Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "item-name-compartment = '«' OccurrenceUsagePrefix 'item' '»' usage-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "item-ref",
+      "clause": "c8.2.3.10",
+      "clauseTitle": "8.2.3.10 Items Graphical Notation",
+      "images": [
+        "item-ref.svg"
+      ],
+      "status": "supported",
+      "syntax": "item-ref =",
+      "occurrences": 1
+    },
+    {
+      "production": "items-compartment",
+      "clause": "c8.2.3.10",
+      "clauseTitle": "8.2.3.10 Items Graphical Notation",
+      "images": [
+        "items-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "items-compartment = items-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "items-compartment-contents",
+      "clause": "c8.2.3.10",
+      "clauseTitle": "8.2.3.10 Items Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "items-compartment-contents = ( items-compartment-element )* '…'",
+      "occurrences": 1
+    },
+    {
+      "production": "items-compartment-element",
+      "clause": "c8.2.3.10",
+      "clauseTitle": "8.2.3.10 Items Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "items-compartment-element = el-prefix ? OccurrenceUsagePrefix usage-cp",
+      "occurrences": 1
+    },
+    {
+      "production": "iteration",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [
+        "iteration.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "iteration = iteration-expression",
+      "occurrences": 1
+    },
+    {
+      "production": "iteration-expression",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "iteration-expression = ForVariableDeclarationMember 'in' NodeParameterMember",
+      "occurrences": 1
+    },
+    {
+      "production": "join-node",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [
+        "join-node.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "join-node =",
+      "occurrences": 1
+    },
+    {
+      "production": "language-string",
+      "clause": "c8.2.3.4",
+      "clauseTitle": "8.2.3.4 Annotations Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "language-string = 'language' '=' STRING_VALUE",
+      "occurrences": 1
+    },
+    {
+      "production": "lifeline",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [
+        "lifeline.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "lifeline =",
+      "occurrences": 1
+    },
+    {
+      "production": "loop-body",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [
+        "loop-body.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "loop-body = action-body",
+      "occurrences": 1
+    },
+    {
+      "production": "members-compartment",
+      "clause": "c8.2.3.5",
+      "clauseTitle": "8.2.3.5 Namespaces and Packages Graphical Notation",
+      "images": [
+        "members-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "members-compartment = members-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "members-compartment-contents",
+      "clause": "c8.2.3.5",
+      "clauseTitle": "8.2.3.5 Namespaces and Packages Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "members-compartment-contents = members-compartment-element * '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "members-compartment-element",
+      "clause": "c8.2.3.5",
+      "clauseTitle": "8.2.3.5 Namespaces and Packages Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "members-compartment-element = el-prefix ? ( DefinitionElement | UsageElement )",
+      "occurrences": 1
+    },
+    {
+      "production": "merge-node",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [
+        "merge-node.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "merge-node =",
+      "occurrences": 1
+    },
+    {
+      "production": "message",
+      "clause": "c8.2.3.16",
+      "clauseTitle": "8.2.3.16 Flows Graphical Notation",
+      "images": [
+        "message.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "message =",
+      "occurrences": 1
+    },
+    {
+      "production": "message-label",
+      "clause": "c8.2.3.16",
+      "clauseTitle": "8.2.3.16 Flows Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "message-label = UsageDeclaration ? ('of' FlowPayloadFeatureMember )? | FlowPayloadFeatureMember",
+      "occurrences": 1
+    },
+    {
+      "production": "message-node-l",
+      "clause": "c8.2.3.16",
+      "clauseTitle": "8.2.3.16 Flows Graphical Notation",
+      "images": [
+        "message-node-l.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "message-node-l =",
+      "occurrences": 1
+    },
+    {
+      "production": "message-node-r",
+      "clause": "c8.2.3.16",
+      "clauseTitle": "8.2.3.16 Flows Graphical Notation",
+      "images": [
+        "message-node-r.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "message-node-r =",
+      "occurrences": 1
+    },
+    {
+      "production": "metadata-def",
+      "clause": "c8.2.3.27",
+      "clauseTitle": "8.2.3.27 Metadata Graphical Notation",
+      "images": [
+        "metadata-def.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "metadata-def =",
+      "occurrences": 1
+    },
+    {
+      "production": "metadata-def-name-compartment",
+      "clause": "c8.2.3.27",
+      "clauseTitle": "8.2.3.27 Metadata Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "metadata-def-name-compartment = '«' BasicUsagePrefix ? keyword* 'metadata' 'def' '»' definition-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "metadata-feature-annotation-node",
+      "clause": "c8.2.3.27",
+      "clauseTitle": "8.2.3.27 Metadata Graphical Notation",
+      "images": [
+        "metadata-feature-annotation-node.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "metadata-feature-annotation-node =",
+      "occurrences": 1
+    },
+    {
+      "production": "metadata-feature-decl",
+      "clause": "c8.2.3.27",
+      "clauseTitle": "8.2.3.27 Metadata Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "metadata-feature-decl = Identification",
+      "occurrences": 1
+    },
+    {
+      "production": "metadata-feature-name",
+      "clause": "c8.2.3.27",
+      "clauseTitle": "8.2.3.27 Metadata Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "metadata-feature-name = Identification",
+      "occurrences": 1
+    },
+    {
+      "production": "metadata-feature-name-value-list",
+      "clause": "c8.2.3.27",
+      "clauseTitle": "8.2.3.27 Metadata Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "metadata-feature-name-value-list = ( metadata-feature-name '=' expression-text )*",
+      "occurrences": 1
+    },
+    {
+      "production": "msg-end-node",
+      "clause": "c8.2.3.16",
+      "clauseTitle": "8.2.3.16 Flows Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "msg-end-node = occurrence | sq-l-node | item | part | port | action | state | use-case | verification-case | analysis-case | proxy",
+      "occurrences": 1
+    },
+    {
+      "production": "multiplicity",
+      "clause": "c8.2.3.13",
+      "clauseTitle": "8.2.3.13 Connections Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "multiplicity = MultiplicityRange ?",
+      "occurrences": 1
+    },
+    {
+      "production": "n-ary-association-dot",
+      "clause": "c8.2.3.3",
+      "clauseTitle": "8.2.3.3 Dependencies Graphical Notation",
+      "images": [
+        "n-ary-association-dot.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "n-ary-association-dot =",
+      "occurrences": 1
+    },
+    {
+      "production": "n-ary-connection",
+      "clause": "c8.2.3.13",
+      "clauseTitle": "8.2.3.13 Connections Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "n-ary-connection = n-ary-connection-dot n-ary-segment +",
+      "occurrences": 1
+    },
+    {
+      "production": "n-ary-connection-def",
+      "clause": "c8.2.3.13",
+      "clauseTitle": "8.2.3.13 Connections Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "n-ary-connection-def = n-ary-def-connection-dot n-ary-def-segment +",
+      "occurrences": 1
+    },
+    {
+      "production": "n-ary-connection-dot",
+      "clause": "c8.2.3.13",
+      "clauseTitle": "8.2.3.13 Connections Graphical Notation",
+      "images": [
+        "n-ary-connection-dot.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "n-ary-connection-dot =",
+      "occurrences": 1
+    },
+    {
+      "production": "n-ary-def-connection-dot",
+      "clause": "c8.2.3.13",
+      "clauseTitle": "8.2.3.13 Connections Graphical Notation",
+      "images": [
+        "n-ary-def-connection-dot.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "n-ary-def-connection-dot =",
+      "occurrences": 1
+    },
+    {
+      "production": "n-ary-def-segment",
+      "clause": "c8.2.3.13",
+      "clauseTitle": "8.2.3.13 Connections Graphical Notation",
+      "images": [
+        "n-ary-def-segment.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "n-ary-def-segment =",
+      "occurrences": 1
+    },
+    {
+      "production": "n-ary-dependency",
+      "clause": "c8.2.3.3",
+      "clauseTitle": "8.2.3.3 Dependencies Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "n-ary-dependency = & n-ary-association-dot ( n-ary-dependency-client-or-supplier-link & element-node )+",
+      "occurrences": 1
+    },
+    {
+      "production": "n-ary-dependency-client-link",
+      "clause": "c8.2.3.3",
+      "clauseTitle": "8.2.3.3 Dependencies Graphical Notation",
+      "images": [
+        "n-ary-dependency-client-link.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "n-ary-dependency-client-link =",
+      "occurrences": 1
+    },
+    {
+      "production": "n-ary-dependency-client-or-supplier-link",
+      "clause": "c8.2.3.3",
+      "clauseTitle": "8.2.3.3 Dependencies Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "n-ary-dependency-client-or-supplier-link = n-ary-dependency-client-link | n-ary-dependency-supplier-link",
+      "occurrences": 1
+    },
+    {
+      "production": "n-ary-dependency-supplier-link",
+      "clause": "c8.2.3.3",
+      "clauseTitle": "8.2.3.3 Dependencies Graphical Notation",
+      "images": [
+        "n-ary-dependency-supplier-link.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "n-ary-dependency-supplier-link =",
+      "occurrences": 1
+    },
+    {
+      "production": "n-ary-segment",
+      "clause": "c8.2.3.13",
+      "clauseTitle": "8.2.3.13 Connections Graphical Notation",
+      "images": [
+        "n-ary-segment.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "n-ary-segment =",
+      "occurrences": 1
+    },
+    {
+      "production": "noncomposite-feature-membership",
+      "clause": "c8.2.3.6",
+      "clauseTitle": "8.2.3.6 Definition and Usage Graphical Notation",
+      "images": [
+        "noncomposite-feature-membership.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "noncomposite-feature-membership =",
+      "occurrences": 1
+    },
+    {
+      "production": "objective-compartment",
+      "clause": "c8.2.3.22",
+      "clauseTitle": "8.2.3.22 Cases Graphical Notation",
+      "images": [
+        "objective-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "objective-compartment = objective-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "objective-compartment-contents",
+      "clause": "c8.2.3.22",
+      "clauseTitle": "8.2.3.22 Cases Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "objective-compartment-contents = ( objective-compartment-element )* '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "objective-compartment-element",
+      "clause": "c8.2.3.22",
+      "clauseTitle": "8.2.3.22 Cases Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "objective-compartment-element = comp-prefix? MemberPrefix ConstraintUsageDeclaration RequirementBody",
+      "occurrences": 1
+    },
+    {
+      "production": "occurrence",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [
+        "occurrence.svg"
+      ],
+      "status": "supported",
+      "syntax": "occurrence =",
+      "occurrences": 1
+    },
+    {
+      "production": "occurrence-def",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [
+        "occurrence-def.svg"
+      ],
+      "status": "supported",
+      "syntax": "occurrence-def =",
+      "occurrences": 1
+    },
+    {
+      "production": "occurrence-def-name-compartment",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "occurrence-def-name-compartment = '«' DefinitionPrefix 'occurrence' 'def' '»' definition-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "occurrence-name-compartment",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "occurrence-name-compartment = '«' OccurrenceUsagePrefix 'occurrence' '»' usage-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "occurrence-ref",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [
+        "occurrence-ref.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "occurrence-ref =",
+      "occurrences": 1
+    },
+    {
+      "production": "occurrences-compartment",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [
+        "occurrences-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "occurrences-compartment = occurrences-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "occurrences-compartment-contents",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "occurrences-compartment-contents = ( occurrences-compartment-element )* '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "occurrences-compartment-element",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "occurrences-compartment-element = el-prefix ? OccurrenceUsagePrefix usage-cp",
+      "occurrences": 1
+    },
+    {
+      "production": "owned-membership",
+      "clause": "c8.2.3.5",
+      "clauseTitle": "8.2.3.5 Namespaces and Packages Graphical Notation",
+      "images": [
+        "owned-membership.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "owned-membership =",
+      "occurrences": 1
+    },
+    {
+      "production": "package-compartment",
+      "clause": "c8.2.3.5",
+      "clauseTitle": "8.2.3.5 Namespaces and Packages Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "package-compartment = general-compartment | documentation-compartment | packages-compartment | members-compartment | relationships-compartment",
+      "occurrences": 1
+    },
+    {
+      "production": "package-node",
+      "clause": "c8.2.3.5",
+      "clauseTitle": "8.2.3.5 Namespaces and Packages Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "package-node = package-with-name-inside | package-with-name-in-tab | imported-package-with-name-inside | imported-package-with-name-in-tab",
+      "occurrences": 1
+    },
+    {
+      "production": "package-with-name-in-tab",
+      "clause": "c8.2.3.5",
+      "clauseTitle": "8.2.3.5 Namespaces and Packages Graphical Notation",
+      "images": [
+        "package-with-name-in-tab.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "package-with-name-in-tab =",
+      "occurrences": 1
+    },
+    {
+      "production": "package-with-name-inside",
+      "clause": "c8.2.3.5",
+      "clauseTitle": "8.2.3.5 Namespaces and Packages Graphical Notation",
+      "images": [
+        "package-with-name-inside.svg"
+      ],
+      "status": "supported",
+      "syntax": "package-with-name-inside =",
+      "occurrences": 1
+    },
+    {
+      "production": "packages-compartment",
+      "clause": "c8.2.3.5",
+      "clauseTitle": "8.2.3.5 Namespaces and Packages Graphical Notation",
+      "images": [
+        "packages-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "packages-compartment = packages-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "packages-compartment-contents",
+      "clause": "c8.2.3.5",
+      "clauseTitle": "8.2.3.5 Namespaces and Packages Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "packages-compartment-contents = packages-compartment-element * '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "packages-compartment-element",
+      "clause": "c8.2.3.5",
+      "clauseTitle": "8.2.3.5 Namespaces and Packages Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "packages-compartment-element = el-prefix ? Identification",
+      "occurrences": 1
+    },
+    {
+      "production": "param-b",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [
+        "param-b-1.svg",
+        "param-b-2.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "param-b = | | proxy-h",
+      "occurrences": 1
+    },
+    {
+      "production": "param-l",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [
+        "param-l-1.svg",
+        "param-l-2.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "param-l = | | proxy-v",
+      "occurrences": 1
+    },
+    {
+      "production": "param-label",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "param-label = QualifiedName (':' QualifiedName )*",
+      "occurrences": 1
+    },
+    {
+      "production": "param-r",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [
+        "param-r-1.svg",
+        "param-r-2.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "param-r = | | proxy-v",
+      "occurrences": 1
+    },
+    {
+      "production": "param-t",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [
+        "param-t-1.svg",
+        "param-t-2.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "param-t = | | proxy-h",
+      "occurrences": 1
+    },
+    {
+      "production": "parameter",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "parameter = param-l | param-r | param-t | param-b",
+      "occurrences": 1
+    },
+    {
+      "production": "parameters-compartment",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [
+        "parameters-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "parameters-compartment = parameters-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "parameters-compartment-contents",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "parameters-compartment-contents = ( parameters-compartment-element )* '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "parameters-compartment-element",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "parameters-compartment-element = el-prefix ? FeatureDirection UsageDeclaration ValueOrFlowPart? DefinitionBodyItem *",
+      "occurrences": 1
+    },
+    {
+      "production": "part",
+      "clause": "c8.2.3.11",
+      "clauseTitle": "8.2.3.11 Parts Graphical Notation",
+      "images": [
+        "part.svg"
+      ],
+      "status": "supported",
+      "syntax": "part =",
+      "occurrences": 1
+    },
+    {
+      "production": "part-def",
+      "clause": "c8.2.3.11",
+      "clauseTitle": "8.2.3.11 Parts Graphical Notation",
+      "images": [
+        "part-def.svg"
+      ],
+      "status": "supported",
+      "syntax": "part-def =",
+      "occurrences": 1
+    },
+    {
+      "production": "part-def-name-compartment",
+      "clause": "c8.2.3.11",
+      "clauseTitle": "8.2.3.11 Parts Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "part-def-name-compartment = '«' DefinitionPrefix 'part' 'def' '»' definition-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "part-name-compartment",
+      "clause": "c8.2.3.11",
+      "clauseTitle": "8.2.3.11 Parts Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "part-name-compartment = '«' OccurrenceUsagePrefix 'part' '»' usage-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "part-ref",
+      "clause": "c8.2.3.11",
+      "clauseTitle": "8.2.3.11 Parts Graphical Notation",
+      "images": [
+        "part-ref.svg"
+      ],
+      "status": "supported",
+      "syntax": "part-ref =",
+      "occurrences": 1
+    },
+    {
+      "production": "parts-compartment",
+      "clause": "c8.2.3.11",
+      "clauseTitle": "8.2.3.11 Parts Graphical Notation",
+      "images": [
+        "parts-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "parts-compartment = parts-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "parts-compartment-contents",
+      "clause": "c8.2.3.11",
+      "clauseTitle": "8.2.3.11 Parts Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "parts-compartment-contents = ( parts-compartment-element )* '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "parts-compartment-element",
+      "clause": "c8.2.3.11",
+      "clauseTitle": "8.2.3.11 Parts Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "parts-compartment-element = el-prefix ? OccurrenceUsagePrefix usage-cp",
+      "occurrences": 1
+    },
+    {
+      "production": "pdh",
+      "clause": "c8.2.3.12",
+      "clauseTitle": "8.2.3.12 Ports Graphical Notation",
+      "images": [
+        "pdh-1.svg",
+        "pdh-2.svg",
+        "pdh-3.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "pdh = | |",
+      "occurrences": 1
+    },
+    {
+      "production": "pdv",
+      "clause": "c8.2.3.12",
+      "clauseTitle": "8.2.3.12 Ports Graphical Notation",
+      "images": [
+        "pdv-1.svg",
+        "pdv-2.svg",
+        "pdv-3.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "pdv = | |",
+      "occurrences": 1
+    },
+    {
+      "production": "perform-action-name-compartment",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "perform-action-name-compartment = '«' OccurrenceUsagePrefix 'perform' 'action' '»' usage-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "perform-action-usage",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [
+        "perform-action-usage.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "perform-action-usage =",
+      "occurrences": 1
+    },
+    {
+      "production": "perform-actions-compartment",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [
+        "perform-actions-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "perform-actions-compartment = perform-actions-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "perform-actions-compartment-contents",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "perform-actions-compartment-contents = ( perform-actions-compartment-element )* '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "perform-actions-compartment-element",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "perform-actions-compartment-element = el-prefix ? OccurrenceUsagePrefix PerformActionUsageDeclaration",
+      "occurrences": 1
+    },
+    {
+      "production": "perform-actions-swimlanes",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "perform-actions-swimlanes = ( swimlane )*",
+      "occurrences": 1
+    },
+    {
+      "production": "perform-edge",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [
+        "perform-edge.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "perform-edge =",
+      "occurrences": 1
+    },
+    {
+      "production": "performed-by-compartment",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [
+        "performed-by-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "performed-by-compartment = performed-by-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "performed-by-compartment-contents",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "performed-by-compartment-contents = QualifiedName * '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "performer-node",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "performer-node = part | action | part-def | action-def | distinguished-parameter",
+      "occurrences": 1
+    },
+    {
+      "production": "port-b",
+      "clause": "c8.2.3.12",
+      "clauseTitle": "8.2.3.12 Ports Graphical Notation",
+      "images": [
+        "port-b-1.svg",
+        "port-b-2.svg",
+        "port-b-3.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "port-b = | | | proxy-h",
+      "occurrences": 1
+    },
+    {
+      "production": "port-def",
+      "clause": "c8.2.3.12",
+      "clauseTitle": "8.2.3.12 Ports Graphical Notation",
+      "images": [
+        "port-def.svg"
+      ],
+      "status": "supported",
+      "syntax": "port-def =",
+      "occurrences": 1
+    },
+    {
+      "production": "port-def-name-compartment",
+      "clause": "c8.2.3.12",
+      "clauseTitle": "8.2.3.12 Ports Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "port-def-name-compartment = '«' DefinitionPrefix 'port' 'def' '»' definition-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "port-l",
+      "clause": "c8.2.3.12",
+      "clauseTitle": "8.2.3.12 Ports Graphical Notation",
+      "images": [
+        "port-l-1.svg",
+        "port-l-2.svg",
+        "port-l-3.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "port-l = | | | proxy-v",
+      "occurrences": 1
+    },
+    {
+      "production": "port-label",
+      "clause": "c8.2.3.12",
+      "clauseTitle": "8.2.3.12 Ports Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "port-label = QualifiedName (':' QualifiedName )?",
+      "occurrences": 1
+    },
+    {
+      "production": "port-name-compartment",
+      "clause": "c8.2.3.12",
+      "clauseTitle": "8.2.3.12 Ports Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "port-name-compartment = '«' OccurrenceUsagePrefix 'port' '»' usage-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "port-r",
+      "clause": "c8.2.3.12",
+      "clauseTitle": "8.2.3.12 Ports Graphical Notation",
+      "images": [
+        "port-r-1.svg",
+        "port-r-2.svg",
+        "port-r-3.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "port-r = | | | proxy-v",
+      "occurrences": 1
+    },
+    {
+      "production": "port-t",
+      "clause": "c8.2.3.12",
+      "clauseTitle": "8.2.3.12 Ports Graphical Notation",
+      "images": [
+        "port-t-1.svg",
+        "port-t-2.svg",
+        "port-t-3.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "port-t = | | | proxy-h",
+      "occurrences": 1
+    },
+    {
+      "production": "port-usage",
+      "clause": "c8.2.3.12",
+      "clauseTitle": "8.2.3.12 Ports Graphical Notation",
+      "images": [
+        "port-usage.svg"
+      ],
+      "status": "supported",
+      "syntax": "port-usage =",
+      "occurrences": 1
+    },
+    {
+      "production": "portion-relationship",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [
+        "portion-relationship.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "portion-relationship =",
+      "occurrences": 1
+    },
+    {
+      "production": "ports-compartment",
+      "clause": "c8.2.3.12",
+      "clauseTitle": "8.2.3.12 Ports Graphical Notation",
+      "images": [
+        "ports-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "ports-compartment = ports-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "ports-compartment-contents",
+      "clause": "c8.2.3.12",
+      "clauseTitle": "8.2.3.12 Ports Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "ports-compartment-contents = ( ports-compartment-element )* '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "ports-compartment-element",
+      "clause": "c8.2.3.12",
+      "clauseTitle": "8.2.3.12 Ports Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "ports-compartment-element = el-prefix ? OccurrenceUsagePrefix usage-cp",
+      "occurrences": 1
+    },
+    {
+      "production": "proxy-h",
+      "clause": "c8.2.3.12",
+      "clauseTitle": "8.2.3.12 Ports Graphical Notation",
+      "images": [
+        "proxy-h-1.svg",
+        "proxy-h-2.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "proxy-h = |",
+      "occurrences": 1
+    },
+    {
+      "production": "proxy-label",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "proxy-label = '.'? FeatureChainMember",
+      "occurrences": 1
+    },
+    {
+      "production": "proxy-v",
+      "clause": "c8.2.3.12",
+      "clauseTitle": "8.2.3.12 Ports Graphical Notation",
+      "images": [
+        "proxy-v-1.svg",
+        "proxy-v-2.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "proxy-v = |",
+      "occurrences": 1
+    },
+    {
+      "production": "recursive-expose-r",
+      "clause": "c8.2.3.26",
+      "clauseTitle": "8.2.3.26 Views and Viewpoints Graphical Notation",
+      "images": [
+        "recursive-expose-r.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "recursive-expose-r =",
+      "occurrences": 1
+    },
+    {
+      "production": "recursive-import",
+      "clause": "c8.2.3.5",
+      "clauseTitle": "8.2.3.5 Namespaces and Packages Graphical Notation",
+      "images": [
+        "recursive-import.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "recursive-import =",
+      "occurrences": 1
+    },
+    {
+      "production": "redefinition",
+      "clause": "c8.2.3.6",
+      "clauseTitle": "8.2.3.6 Definition and Usage Graphical Notation",
+      "images": [
+        "redefinition.svg"
+      ],
+      "status": "supported",
+      "syntax": "redefinition =",
+      "occurrences": 1
+    },
+    {
+      "production": "reference-subsetting",
+      "clause": "c8.2.3.6",
+      "clauseTitle": "8.2.3.6 Definition and Usage Graphical Notation",
+      "images": [
+        "reference-subsetting.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "reference-subsetting =",
+      "occurrences": 1
+    },
+    {
+      "production": "rel-name",
+      "clause": "c8.2.3.2",
+      "clauseTitle": "8.2.3.2 Elements and Relationships Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "rel-name = Identification | QualifiedName",
+      "occurrences": 1
+    },
+    {
+      "production": "relationship-name",
+      "clause": "c8.2.3.5",
+      "clauseTitle": "8.2.3.5 Namespaces and Packages Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "relationship-name = 'defines' | 'defined by' | 'specializes' | 'specialized by' | 'connect to' | 'subsets' | 'subsetted by' | 'performs' | 'performed by' | 'allocated' | 'allocated to' | 'satisfy' | 'satisfied by'",
+      "occurrences": 1
+    },
+    {
+      "production": "relationships-compartment",
+      "clause": "c8.2.3.5",
+      "clauseTitle": "8.2.3.5 Namespaces and Packages Graphical Notation",
+      "images": [
+        "relationships-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "relationships-compartment = relationships-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "relationships-compartment-contents",
+      "clause": "c8.2.3.5",
+      "clauseTitle": "8.2.3.5 Namespaces and Packages Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "relationships-compartment-contents = ( relationships-compartment-element )* '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "relationships-compartment-element",
+      "clause": "c8.2.3.5",
+      "clauseTitle": "8.2.3.5 Namespaces and Packages Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "relationships-compartment-element = el-prefix ? relationship-name QualifiedName",
+      "occurrences": 1
+    },
+    {
+      "production": "rendering-compartment",
+      "clause": "c8.2.3.26",
+      "clauseTitle": "8.2.3.26 Views and Viewpoints Graphical Notation",
+      "images": [
+        "rendering-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "rendering-compartment = rendering-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "rendering-compartment-contents",
+      "clause": "c8.2.3.26",
+      "clauseTitle": "8.2.3.26 Views and Viewpoints Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "rendering-compartment-contents = usage-cp * '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "require-constraint-element",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "require-constraint-element = el-prefix ? requireMemberPrefix? RequirementConstraintUsage",
+      "occurrences": 1
+    },
+    {
+      "production": "require-constraint-name-compartment",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "require-constraint-name-compartment = '«' OccurrenceUsagePrefix 'require' 'constraint' '»' usage-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "require-constraint-node",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [
+        "require-constraint-node.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "require-constraint-node =",
+      "occurrences": 1
+    },
+    {
+      "production": "require-constraints-compartment",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [
+        "require-constraints-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "require-constraints-compartment = require-constraints-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "require-constraints-compartment-contents",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "require-constraints-compartment-contents = require-constraint-element * '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "require-edge",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [
+        "require-edge.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "require-edge =",
+      "occurrences": 1
+    },
+    {
+      "production": "requirement",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [
+        "requirement.svg"
+      ],
+      "status": "supported",
+      "syntax": "requirement =",
+      "occurrences": 1
+    },
+    {
+      "production": "requirement-def",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [
+        "requirement-def.svg"
+      ],
+      "status": "supported",
+      "syntax": "requirement-def =",
+      "occurrences": 1
+    },
+    {
+      "production": "requirement-def-name-compartment",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "requirement-def-name-compartment = '«' DefinitionPrefix 'requirement' 'def' '»' definition-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "requirement-name-compartment",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "requirement-name-compartment = '«' OccurrenceUsagePrefix 'requirement' '»' usage-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "requirement-ref",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [
+        "requirement-ref.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "requirement-ref =",
+      "occurrences": 1
+    },
+    {
+      "production": "requirements-compartment",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [
+        "requirements-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "requirements-compartment = requirements-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "requirements-compartment-contents",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "requirements-compartment-contents = ( requirements-compartment-element )* '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "requirements-compartment-element",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "requirements-compartment-element = OccurrenceUsagePrefix ConstraintUsageDeclaration",
+      "occurrences": 1
+    },
+    {
+      "production": "requirer",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "requirer = usage-node | definition-node",
+      "occurrences": 1
+    },
+    {
+      "production": "result-compartment",
+      "clause": "c8.2.3.19",
+      "clauseTitle": "8.2.3.19 Calculations Graphical Notation",
+      "images": [
+        "result-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "result-compartment = result-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "result-compartment-contents",
+      "clause": "c8.2.3.19",
+      "clauseTitle": "8.2.3.19 Calculations Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "result-compartment-contents = OwnedExpression",
+      "occurrences": 1
+    },
+    {
+      "production": "rolename",
+      "clause": "c8.2.3.13",
+      "clauseTitle": "8.2.3.13 Connections Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "rolename = Identification ?",
+      "occurrences": 1
+    },
+    {
+      "production": "root-view",
+      "clause": "c8.2.3.26",
+      "clauseTitle": "8.2.3.26 Views and Viewpoints Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "root-view = framed-view",
+      "occurrences": 1
+    },
+    {
+      "production": "satisfier",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "satisfier = usage-node | definition-node",
+      "occurrences": 1
+    },
+    {
+      "production": "satisfies-compartment",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [
+        "satisfies-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "satisfies-compartment = satisfies-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "satisfies-compartment-contents",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "satisfies-compartment-contents = UsageDeclaration * '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "satisfy-edge",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [
+        "satisfy-edge.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "satisfy-edge =",
+      "occurrences": 1
+    },
+    {
+      "production": "satisfy-requirement-name-compartment",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "satisfy-requirement-name-compartment = '«satisfy requirement»' requirement-name-compartment",
+      "occurrences": 1
+    },
+    {
+      "production": "satisfy-requirement-usage",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [
+        "satisfy-requirement-usage.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "satisfy-requirement-usage =",
+      "occurrences": 1
+    },
+    {
+      "production": "satisfy-requirements-compartment",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [
+        "satisfy-requirements-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "satisfy-requirements-compartment = satisfy-requirements-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "satisfy-requirements-compartment-contents",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "satisfy-requirements-compartment-contents = text-block",
+      "occurrences": 1
+    },
+    {
+      "production": "send-action-expression",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "send-action-expression = NodeParameterMember 'to' NodeParameterMember",
+      "occurrences": 1
+    },
+    {
+      "production": "send-action-name-compartment",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "send-action-name-compartment = '«' OccurrenceUsagePrefix 'send' 'action' '»' usage-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "send-action-node",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [
+        "send-action-node.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "send-action-node =",
+      "occurrences": 1
+    },
+    {
+      "production": "sequence-compartment",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [
+        "sequence-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "sequence-compartment = sequence-view",
+      "occurrences": 1
+    },
+    {
+      "production": "sequence-view",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "sequence-view = ( sq-graphical-element )*",
+      "occurrences": 1
+    },
+    {
+      "production": "sflow-node-l",
+      "clause": "c8.2.3.16",
+      "clauseTitle": "8.2.3.16 Flows Graphical Notation",
+      "images": [
+        "sflow-node-l.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "sflow-node-l =",
+      "occurrences": 1
+    },
+    {
+      "production": "sflow-node-r",
+      "clause": "c8.2.3.16",
+      "clauseTitle": "8.2.3.16 Flows Graphical Notation",
+      "images": [
+        "sflow-node-r.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "sflow-node-r =",
+      "occurrences": 1
+    },
+    {
+      "production": "snapshot",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [
+        "snapshot.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "snapshot =",
+      "occurrences": 1
+    },
+    {
+      "production": "snapshots-compartment",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [
+        "snapshots-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "snapshots-compartment = snapshots-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "snapshots-compartment-contents",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "snapshots-compartment-contents = ( snapshots-compartment-element )* '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "snapshots-compartment-element",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "snapshots-compartment-element = occurrences-compartment-element",
+      "occurrences": 1
+    },
+    {
+      "production": "snapshots-name-compartment",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "snapshots-name-compartment = '«snapshot»' usage-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "sq-graphical-element",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "sq-graphical-element = sq-graphical-node | sq-graphical-relationship | dependencies-and-annotations-element",
+      "occurrences": 1
+    },
+    {
+      "production": "sq-graphical-node",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "sq-graphical-node = sq-head-node | lifeline",
+      "occurrences": 1
+    },
+    {
+      "production": "sq-graphical-relationship",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "sq-graphical-relationship = message | sq-succession",
+      "occurrences": 1
+    },
+    {
+      "production": "sq-head-node",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "sq-head-node = sq-part | sq-port",
+      "occurrences": 1
+    },
+    {
+      "production": "sq-l-node",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "sq-l-node = lifeline | sq-proxy",
+      "occurrences": 1
+    },
+    {
+      "production": "sq-part",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [
+        "sq-part.svg"
+      ],
+      "status": "partial",
+      "syntax": "sq-part =",
+      "occurrences": 1
+    },
+    {
+      "production": "sq-port",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [
+        "sq-port.svg"
+      ],
+      "status": "partial",
+      "syntax": "sq-port =",
+      "occurrences": 1
+    },
+    {
+      "production": "sq-port-label",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "sq-port-label = UsageDeclaration",
+      "occurrences": 1
+    },
+    {
+      "production": "sq-proxy",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [
+        "sq-proxy-1.svg",
+        "sq-proxy-2.svg"
+      ],
+      "status": "partial",
+      "syntax": "sq-proxy = |",
+      "occurrences": 1
+    },
+    {
+      "production": "sq-succession",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [
+        "sq-succession.svg"
+      ],
+      "status": "partial",
+      "syntax": "sq-succession =",
+      "occurrences": 1
+    },
+    {
+      "production": "st-succession",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [
+        "st-succession-1.svg",
+        "st-succession-2.svg"
+      ],
+      "status": "partial",
+      "syntax": "st-succession = |",
+      "occurrences": 1
+    },
+    {
+      "production": "stakeholder",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [
+        "stakeholder.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "stakeholder =",
+      "occurrences": 1
+    },
+    {
+      "production": "stakeholder-name",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "stakeholder-name = UsageDeclaration",
+      "occurrences": 1
+    },
+    {
+      "production": "stakeholders-compartment",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [
+        "stakeholders-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "stakeholders-compartment = stakeholders-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "stakeholders-compartment-contents",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "stakeholders-compartment-contents = ( stakeholders-compartment-element )* '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "stakeholders-compartment-element",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "stakeholders-compartment-element = el-prefix ? MemberPrefix usage-cp",
+      "occurrences": 1
+    },
+    {
+      "production": "start-node",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [
+        "start-node.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "start-node =",
+      "occurrences": 1
+    },
+    {
+      "production": "state",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [
+        "state.svg"
+      ],
+      "status": "supported",
+      "syntax": "state =",
+      "occurrences": 1
+    },
+    {
+      "production": "state-actions-compartment",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [
+        "state-actions-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "state-actions-compartment = state-actions-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "state-actions-compartment-contents",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "state-actions-compartment-contents = ( state-actions-compartment-element )* '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "state-actions-compartment-element",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "state-actions-compartment-element = el-prefix ? EntryActionMember | DoActionMember | ExitActionMember",
+      "occurrences": 1
+    },
+    {
+      "production": "state-def",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [
+        "state-def.svg"
+      ],
+      "status": "supported",
+      "syntax": "state-def =",
+      "occurrences": 1
+    },
+    {
+      "production": "state-def-name-compartment",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "state-def-name-compartment = '«' DefinitionPrefix 'state' 'def' '»' definition-name-with-alias ('«' 'parallel' '»')?",
+      "occurrences": 1
+    },
+    {
+      "production": "state-do-action",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [
+        "state-do-action.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "state-do-action = state-subaction-body",
+      "occurrences": 1
+    },
+    {
+      "production": "state-entry-action",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [
+        "state-entry-action.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "state-entry-action = state-subaction-body",
+      "occurrences": 1
+    },
+    {
+      "production": "state-exit-action",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [
+        "state-exit-action.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "state-exit-action = state-subaction-body",
+      "occurrences": 1
+    },
+    {
+      "production": "state-name-compartment",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "state-name-compartment = '«' OccurrenceUsagePrefix 'state' '»' usage-name-with-alias ('«' 'parallel' '»')?",
+      "occurrences": 1
+    },
+    {
+      "production": "state-ref",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [
+        "state-ref.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "state-ref =",
+      "occurrences": 1
+    },
+    {
+      "production": "state-source",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "state-source = state | state-ref",
+      "occurrences": 1
+    },
+    {
+      "production": "state-subaction-body",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "state-subaction-body = state-subaction-body-textual | action-flow-view",
+      "occurrences": 1
+    },
+    {
+      "production": "state-subaction-body-textual",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "state-subaction-body-textual = state-subaction-declaration ? ( '{' ActionBodyItem * '}' )?",
+      "occurrences": 1
+    },
+    {
+      "production": "state-subaction-declaration",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "state-subaction-declaration = PerformActionUsageDeclaration | AcceptNodeDeclaration | SendNodeDeclaration | AssignmentNodeDeclaration",
+      "occurrences": 1
+    },
+    {
+      "production": "state-transition-compartment",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [
+        "state-transition-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "state-transition-compartment = state-transition-view",
+      "occurrences": 1
+    },
+    {
+      "production": "state-transition-element",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "state-transition-element = state-transition-node | transition | st-succession",
+      "occurrences": 1
+    },
+    {
+      "production": "state-transition-node",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "state-transition-node = state | state-ref | start-node | entry-action | do-action | exit-action | done-node | fork-node | join-node | decision-node | merge-node | terminate-node | action | perform-action-usage | action-ref",
+      "occurrences": 1
+    },
+    {
+      "production": "state-transition-view",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "state-transition-view = ( state-transition-element )* ( dependencies-and-annotations-element )*",
+      "occurrences": 1
+    },
+    {
+      "production": "states-compartment",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [
+        "states-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "states-compartment = states-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "states-compartment-contents",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "states-compartment-contents = ( states-compartment-element )* '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "states-compartment-element",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "states-compartment-element = el-prefix ? OccurrenceUsagePrefix ActionUsageDeclaration",
+      "occurrences": 1
+    },
+    {
+      "production": "subclassification",
+      "clause": "c8.2.3.6",
+      "clauseTitle": "8.2.3.6 Definition and Usage Graphical Notation",
+      "images": [
+        "subclassification.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "subclassification =",
+      "occurrences": 1
+    },
+    {
+      "production": "subject",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [
+        "subject.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "subject =",
+      "occurrences": 1
+    },
+    {
+      "production": "subject-compartment",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [
+        "subject-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "subject-compartment = subject-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "subject-compartment-contents",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "subject-compartment-contents = ( subject-compartment-element )* '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "subject-compartment-element",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "subject-compartment-element = el-prefix ? MemberPrefix usage-cp",
+      "occurrences": 1
+    },
+    {
+      "production": "subject-name",
+      "clause": "c8.2.3.21",
+      "clauseTitle": "8.2.3.21 Requirements Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "subject-name = UsageDeclaration",
+      "occurrences": 1
+    },
+    {
+      "production": "subsetting",
+      "clause": "c8.2.3.6",
+      "clauseTitle": "8.2.3.6 Definition and Usage Graphical Notation",
+      "images": [
+        "subsetting.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "subsetting =",
+      "occurrences": 1
+    },
+    {
+      "production": "succession-flow",
+      "clause": "c8.2.3.16",
+      "clauseTitle": "8.2.3.16 Flows Graphical Notation",
+      "images": [
+        "succession-flow.svg"
+      ],
+      "status": "partial",
+      "syntax": "succession-flow =",
+      "occurrences": 1
+    },
+    {
+      "production": "succession-flow-label",
+      "clause": "c8.2.3.16",
+      "clauseTitle": "8.2.3.16 Flows Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "succession-flow-label = flow-label",
+      "occurrences": 1
+    },
+    {
+      "production": "succession-label",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "succession-label = UsageDeclaration ? | succession-label = Identification",
+      "occurrences": 2
+    },
+    {
+      "production": "successions-compartment",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [
+        "successions-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "successions-compartment = successions-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "successions-compartment-contents",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "successions-compartment-contents = QualifiedName * '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "swimlane",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [
+        "swimlane.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "swimlane =",
+      "occurrences": 1
+    },
+    {
+      "production": "terminate-node",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [
+        "terminate-node.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "terminate-node =",
+      "occurrences": 1
+    },
+    {
+      "production": "text-block",
+      "clause": "c8.2.3.4",
+      "clauseTitle": "8.2.3.4 Annotations Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "text-block = ( LINE_TEXT )*",
+      "occurrences": 1
+    },
+    {
+      "production": "textual-representation-node",
+      "clause": "c8.2.3.4",
+      "clauseTitle": "8.2.3.4 Annotations Graphical Notation",
+      "images": [
+        "textual-representation-node.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "textual-representation-node =",
+      "occurrences": 1
+    },
+    {
+      "production": "then-body",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [
+        "then-body.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "then-body = action-body",
+      "occurrences": 1
+    },
+    {
+      "production": "timeslice",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [
+        "timeslice.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "timeslice =",
+      "occurrences": 1
+    },
+    {
+      "production": "timeslice-name-compartment",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "timeslice-name-compartment = '«timeslice»' usage-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "timeslice-or-snapshot-node",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "timeslice-or-snapshot-node = timeslice | snapshot",
+      "occurrences": 1
+    },
+    {
+      "production": "timeslices-compartment",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [
+        "timeslices-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "timeslices-compartment = timeslices-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "timeslices-compartment-contents",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "timeslices-compartment-contents = ( timeslices-compartment-element )* '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "timeslices-compartment-element",
+      "clause": "c8.2.3.9",
+      "clauseTitle": "8.2.3.9 Occurrences Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "timeslices-compartment-element = occurrences-compartment-element",
+      "occurrences": 1
+    },
+    {
+      "production": "top-level-import",
+      "clause": "c8.2.3.5",
+      "clauseTitle": "8.2.3.5 Namespaces and Packages Graphical Notation",
+      "images": [
+        "top-level-import.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "top-level-import =",
+      "occurrences": 1
+    },
+    {
+      "production": "toplevel-expose-r",
+      "clause": "c8.2.3.26",
+      "clauseTitle": "8.2.3.26 Views and Viewpoints Graphical Notation",
+      "images": [
+        "toplevel-expose-r.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "toplevel-expose-r =",
+      "occurrences": 1
+    },
+    {
+      "production": "transition",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [
+        "transition-1.svg",
+        "transition-2.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "transition = |",
+      "occurrences": 1
+    },
+    {
+      "production": "transition-label",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "transition-label = trigger-expression '/' ActionUsage",
+      "occurrences": 1
+    },
+    {
+      "production": "trigger-expression",
+      "clause": "c8.2.3.18",
+      "clauseTitle": "8.2.3.18 States Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "trigger-expression = AcceptParameterPart ( guard-expression )?",
+      "occurrences": 1
+    },
+    {
+      "production": "type-node",
+      "clause": "c8.2.3.6",
+      "clauseTitle": "8.2.3.6 Definition and Usage Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "type-node = definition-node | usage-node",
+      "occurrences": 1
+    },
+    {
+      "production": "type-relationship",
+      "clause": "c8.2.3.6",
+      "clauseTitle": "8.2.3.6 Definition and Usage Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "type-relationship = subclassification | subsetting | definition | redefinition | composite-feature-membership | noncomposite-feature-membership",
+      "occurrences": 1
+    },
+    {
+      "production": "unowned-membership",
+      "clause": "c8.2.3.5",
+      "clauseTitle": "8.2.3.5 Namespaces and Packages Graphical Notation",
+      "images": [
+        "unowned-membership.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "unowned-membership =",
+      "occurrences": 1
+    },
+    {
+      "production": "until-condition",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [
+        "until-condition.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "until-condition = condition-expression",
+      "occurrences": 1
+    },
+    {
+      "production": "usage-cp",
+      "clause": "c8.2.3.6",
+      "clauseTitle": "8.2.3.6 Definition and Usage Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "usage-cp = usageDeclaration ValuePart ?",
+      "occurrences": 1
+    },
+    {
+      "production": "usage-name-with-alias",
+      "clause": "c8.2.3.6",
+      "clauseTitle": "8.2.3.6 Definition and Usage Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "usage-name-with-alias = '^'? UsageDeclaration ( '«alias»' ( QualifiedName (',' QualifiedName )* ) )?",
+      "occurrences": 1
+    },
+    {
+      "production": "usage-node",
+      "clause": "c8.2.3.20",
+      "clauseTitle": "8.2.3.20 Constraints Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "usage-node = constraint | assert-constraint-node | usage-node = requirement | satisfy-requirement-usage | concern",
+      "occurrences": 2
+    },
+    {
+      "production": "use-case",
+      "clause": "c8.2.3.25",
+      "clauseTitle": "8.2.3.25 Use Cases Graphical Notation",
+      "images": [
+        "use-case.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "use-case =",
+      "occurrences": 1
+    },
+    {
+      "production": "use-case-def",
+      "clause": "c8.2.3.25",
+      "clauseTitle": "8.2.3.25 Use Cases Graphical Notation",
+      "images": [
+        "use-case-def.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "use-case-def =",
+      "occurrences": 1
+    },
+    {
+      "production": "use-case-def-name-compartment",
+      "clause": "c8.2.3.25",
+      "clauseTitle": "8.2.3.25 Use Cases Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "use-case-def-name-compartment = '«' DefinitionPrefix 'use' 'case' 'def' '»' definition-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "use-case-name-compartment",
+      "clause": "c8.2.3.25",
+      "clauseTitle": "8.2.3.25 Use Cases Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "use-case-name-compartment = '«' OccurrenceUsagePrefix 'use' 'case' '»' usage-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "use-cases-compartment",
+      "clause": "c8.2.3.25",
+      "clauseTitle": "8.2.3.25 Use Cases Graphical Notation",
+      "images": [
+        "use-cases-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "use-cases-compartment = use-cases-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "use-cases-compartment-contents",
+      "clause": "c8.2.3.25",
+      "clauseTitle": "8.2.3.25 Use Cases Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "use-cases-compartment-contents = use-cases-compartment-element * '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "use-cases-compartment-element",
+      "clause": "c8.2.3.25",
+      "clauseTitle": "8.2.3.25 Use Cases Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "use-cases-compartment-element = el-prefix ? OccurrenceUsagePrefix ConstraintUsageDeclaration",
+      "occurrences": 1
+    },
+    {
+      "production": "variant-elementusages-compartment",
+      "clause": "c8.2.3.6",
+      "clauseTitle": "8.2.3.6 Definition and Usage Graphical Notation",
+      "images": [
+        "variant-elementusages-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "variant-elementusages-compartment = variants-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "variants-compartment",
+      "clause": "c8.2.3.6",
+      "clauseTitle": "8.2.3.6 Definition and Usage Graphical Notation",
+      "images": [
+        "variants-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "variants-compartment = variants-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "variants-compartment-contents",
+      "clause": "c8.2.3.6",
+      "clauseTitle": "8.2.3.6 Definition and Usage Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "variants-compartment-contents = members-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "verification",
+      "clause": "c8.2.3.24",
+      "clauseTitle": "8.2.3.24 Verification Cases Graphical Notation",
+      "images": [
+        "verification.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "verification =",
+      "occurrences": 1
+    },
+    {
+      "production": "verification-def",
+      "clause": "c8.2.3.24",
+      "clauseTitle": "8.2.3.24 Verification Cases Graphical Notation",
+      "images": [
+        "verification-def.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "verification-def =",
+      "occurrences": 1
+    },
+    {
+      "production": "verification-def-name-compartment",
+      "clause": "c8.2.3.24",
+      "clauseTitle": "8.2.3.24 Verification Cases Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "verification-def-name-compartment = '«' DefinitionPrefix 'verification' 'def' '»' definition-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "verification-methods-compartment",
+      "clause": "c8.2.3.24",
+      "clauseTitle": "8.2.3.24 Verification Cases Graphical Notation",
+      "images": [
+        "verification-methods-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "verification-methods-compartment = verification-methods-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "verification-methods-compartment-contents",
+      "clause": "c8.2.3.24",
+      "clauseTitle": "8.2.3.24 Verification Cases Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "verification-methods-compartment-contents = ( verification-methods-compartment-element )* '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "verification-methods-compartment-element",
+      "clause": "c8.2.3.24",
+      "clauseTitle": "8.2.3.24 Verification Cases Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "verification-methods-compartment-element = MetadataBody",
+      "occurrences": 1
+    },
+    {
+      "production": "verification-name-compartment",
+      "clause": "c8.2.3.24",
+      "clauseTitle": "8.2.3.24 Verification Cases Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "verification-name-compartment = '«' OccurrenceUsagePrefix 'verification' '»' usage-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "verifications-compartment",
+      "clause": "c8.2.3.24",
+      "clauseTitle": "8.2.3.24 Verification Cases Graphical Notation",
+      "images": [
+        "verifications-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "verifications-compartment = verifications-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "verifications-compartment-contents",
+      "clause": "c8.2.3.24",
+      "clauseTitle": "8.2.3.24 Verification Cases Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "verifications-compartment-contents = ( verifications-compartment-element )* '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "verifications-compartment-element",
+      "clause": "c8.2.3.24",
+      "clauseTitle": "8.2.3.24 Verification Cases Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "verifications-compartment-element = el-prefix ? OccurrenceUsagePrefix ConstraintUsageDeclaration CaseBody '…'",
+      "occurrences": 1
+    },
+    {
+      "production": "verifies-compartment",
+      "clause": "c8.2.3.24",
+      "clauseTitle": "8.2.3.24 Verification Cases Graphical Notation",
+      "images": [
+        "verifies-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "verifies-compartment = verifies-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "verifies-compartment-contents",
+      "clause": "c8.2.3.24",
+      "clauseTitle": "8.2.3.24 Verification Cases Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "verifies-compartment-contents = ( verifies-compartment-element )* '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "verifies-compartment-element",
+      "clause": "c8.2.3.24",
+      "clauseTitle": "8.2.3.24 Verification Cases Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "verifies-compartment-element = el-prefix ? MemberPrefix RequirementVerificationUsage '…'",
+      "occurrences": 1
+    },
+    {
+      "production": "verify-relationship",
+      "clause": "c8.2.3.24",
+      "clauseTitle": "8.2.3.24 Verification Cases Graphical Notation",
+      "images": [
+        "verify-relationship.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "verify-relationship =",
+      "occurrences": 1
+    },
+    {
+      "production": "verify-requirement-name-compartment",
+      "clause": "c8.2.3.24",
+      "clauseTitle": "8.2.3.24 Verification Cases Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "verify-requirement-name-compartment = '«' OccurrenceUsagePrefix 'verify' 'requirement' '»' usage-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "verify-requirement-node",
+      "clause": "c8.2.3.24",
+      "clauseTitle": "8.2.3.24 Verification Cases Graphical Notation",
+      "images": [
+        "verify-requirement-node.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "verify-requirement-node =",
+      "occurrences": 1
+    },
+    {
+      "production": "view",
+      "clause": "c8.2.3.26",
+      "clauseTitle": "8.2.3.26 Views and Viewpoints Graphical Notation",
+      "images": [
+        "view.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "view =",
+      "occurrences": 1
+    },
+    {
+      "production": "view-def",
+      "clause": "c8.2.3.26",
+      "clauseTitle": "8.2.3.26 Views and Viewpoints Graphical Notation",
+      "images": [
+        "view-def.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "view-def =",
+      "occurrences": 1
+    },
+    {
+      "production": "view-def-name-compartment",
+      "clause": "c8.2.3.26",
+      "clauseTitle": "8.2.3.26 Views and Viewpoints Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "view-def-name-compartment = '«' DefinitionPrefix 'view' 'def' '»' definition-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "view-frame-info-compartment-bl",
+      "clause": "c8.2.3.26",
+      "clauseTitle": "8.2.3.26 Views and Viewpoints Graphical Notation",
+      "images": [
+        "view-frame-info-compartment-bl.svg"
+      ],
+      "status": "partial",
+      "syntax": "view-frame-info-compartment-bl =",
+      "occurrences": 1
+    },
+    {
+      "production": "view-frame-info-compartment-br",
+      "clause": "c8.2.3.26",
+      "clauseTitle": "8.2.3.26 Views and Viewpoints Graphical Notation",
+      "images": [
+        "view-frame-info-compartment-br.svg"
+      ],
+      "status": "partial",
+      "syntax": "view-frame-info-compartment-br =",
+      "occurrences": 1
+    },
+    {
+      "production": "view-frame-info-compartment-tr",
+      "clause": "c8.2.3.26",
+      "clauseTitle": "8.2.3.26 Views and Viewpoints Graphical Notation",
+      "images": [
+        "view-frame-info-compartment-tr.svg"
+      ],
+      "status": "partial",
+      "syntax": "view-frame-info-compartment-tr =",
+      "occurrences": 1
+    },
+    {
+      "production": "view-frame-info-contents",
+      "clause": "c8.2.3.26",
+      "clauseTitle": "8.2.3.26 Views and Viewpoints Graphical Notation",
+      "images": [],
+      "status": "unsupported",
+      "syntax": "view-frame-info-contents = Expose ? ElementFilterMember ? AnnotatingElement *",
+      "occurrences": 1
+    },
+    {
+      "production": "view-frame-name-compartment",
+      "clause": "c8.2.3.26",
+      "clauseTitle": "8.2.3.26 Views and Viewpoints Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "view-frame-name-compartment = '«view»' QualifiedName (':' QualifiedName )?",
+      "occurrences": 1
+    },
+    {
+      "production": "view-name-compartment",
+      "clause": "c8.2.3.26",
+      "clauseTitle": "8.2.3.26 Views and Viewpoints Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "view-name-compartment = '«' OccurrenceUsagePrefix 'view' '»' usage-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "viewpoint",
+      "clause": "c8.2.3.26",
+      "clauseTitle": "8.2.3.26 Views and Viewpoints Graphical Notation",
+      "images": [
+        "viewpoint.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "viewpoint =",
+      "occurrences": 1
+    },
+    {
+      "production": "viewpoint-def",
+      "clause": "c8.2.3.26",
+      "clauseTitle": "8.2.3.26 Views and Viewpoints Graphical Notation",
+      "images": [
+        "viewpoint-def.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "viewpoint-def =",
+      "occurrences": 1
+    },
+    {
+      "production": "viewpoint-def-name-compartment",
+      "clause": "c8.2.3.26",
+      "clauseTitle": "8.2.3.26 Views and Viewpoints Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "viewpoint-def-name-compartment = '«' DefinitionPrefix 'viewpoint' 'def' '»' definition-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "viewpoint-name-compartment",
+      "clause": "c8.2.3.26",
+      "clauseTitle": "8.2.3.26 Views and Viewpoints Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "viewpoint-name-compartment = '«' OccurrenceUsagePrefix 'viewpoint' '»' usage-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "viewpoints-compartment",
+      "clause": "c8.2.3.26",
+      "clauseTitle": "8.2.3.26 Views and Viewpoints Graphical Notation",
+      "images": [
+        "viewpoints-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "viewpoints-compartment = viewpoints-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "viewpoints-compartment-contents",
+      "clause": "c8.2.3.26",
+      "clauseTitle": "8.2.3.26 Views and Viewpoints Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "viewpoints-compartment-contents = ( viewpoints-compartment-element )* '…'?",
+      "occurrences": 1
+    },
+    {
+      "production": "viewpoints-compartment-element",
+      "clause": "c8.2.3.26",
+      "clauseTitle": "8.2.3.26 Views and Viewpoints Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "viewpoints-compartment-element = el-prefix ? OccurrenceUsagePrefix ConstraintUsageDeclaration RequirementBody",
+      "occurrences": 1
+    },
+    {
+      "production": "views-compartment",
+      "clause": "c8.2.3.26",
+      "clauseTitle": "8.2.3.26 Views and Viewpoints Graphical Notation",
+      "images": [
+        "views-compartment.svg"
+      ],
+      "status": "partial",
+      "syntax": "views-compartment = views-compartment-contents",
+      "occurrences": 1
+    },
+    {
+      "production": "views-compartment-contents",
+      "clause": "c8.2.3.26",
+      "clauseTitle": "8.2.3.26 Views and Viewpoints Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "views-compartment-contents = ( views-compartment-element )* '…'",
+      "occurrences": 1
+    },
+    {
+      "production": "views-compartment-element",
+      "clause": "c8.2.3.26",
+      "clauseTitle": "8.2.3.26 Views and Viewpoints Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "views-compartment-element = el-prefix ? OccurrenceUsagePrefix UsageDeclaration ? ValueOrFlowPart? ViewBody",
+      "occurrences": 1
+    },
+    {
+      "production": "while-condition",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [
+        "while-condition.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "while-condition = condition-expression",
+      "occurrences": 1
+    },
+    {
+      "production": "while-loop-action-name-compartment",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [],
+      "status": "partial",
+      "syntax": "while-loop-action-name-compartment = '«' OccurrenceUsagePrefix 'loop' '»' usage-name-with-alias",
+      "occurrences": 1
+    },
+    {
+      "production": "while-loop-action-node",
+      "clause": "c8.2.3.17",
+      "clauseTitle": "8.2.3.17 Actions Graphical Notation",
+      "images": [
+        "while-loop-action-node.svg"
+      ],
+      "status": "unsupported",
+      "syntax": "while-loop-action-node =",
+      "occurrences": 1
+    }
+  ]
+}

@@ -5,7 +5,7 @@ specification; `crates/generator_sdk` is one implementation of it, not its defin
 guest written in any language that can emit the imports and exports below is equally valid.
 
 <!-- generated:abi-header -->
-Current version: **ABI 4**. Compatibility token: `0x95bf4e0bbbc86820`.
+Current version: **ABI 4**. Compatibility token: `0x24a2415965eeea64`.
 <!-- /generated:abi-header -->
 
 The tables below and `generator-abi.json` are generated from the contract declaration in

@@ -5025,7 +5025,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 2,
+  "schemaVersion": 4,
   "modelDigest": "blake3:d8dc237e10b754859db9a2a7c2491a288769ebdd76c7c18a5ae8c37ba9d10fbe",
   "documents": [
     {
@@ -5855,6 +5855,27 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     "nodes": [
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              15,
+              16
+            ],
+            "provenance": "direct"
+          },
+          {
+            "kind": "actions",
+            "members": [
+              5,
+              7,
+              9,
+              11,
+              13
+            ],
+            "provenance": "direct"
+          }
+        ],
         "metaclass": "ActionDefinition",
         "name": "CheckoutPipeline",
         "notationRole": "definition",
@@ -5863,6 +5884,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 1
       },
       {
+        "compartments": [],
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -5871,6 +5893,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 21
       },
       {
+        "compartments": [],
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -5879,6 +5902,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 24
       },
       {
+        "compartments": [],
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -5887,6 +5911,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 27
       },
       {
+        "compartments": [],
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -5895,6 +5920,15 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 30
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              6
+            ],
+            "provenance": "direct"
+          }
+        ],
         "metaclass": "ActionUsage",
         "name": "validateCart",
         "notationRole": "usage",
@@ -5903,6 +5937,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 6
       },
       {
+        "compartments": [],
         "metaclass": "ReferenceUsage",
         "name": "cartValid",
         "notationRole": "reference-usage",
@@ -5911,6 +5946,15 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 7
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              8
+            ],
+            "provenance": "direct"
+          }
+        ],
         "metaclass": "ActionUsage",
         "name": "authorizePayment",
         "notationRole": "usage",
@@ -5919,6 +5963,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 9
       },
       {
+        "compartments": [],
         "metaclass": "ReferenceUsage",
         "name": "paymentOk",
         "notationRole": "reference-usage",
@@ -5927,6 +5972,15 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 10
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              10
+            ],
+            "provenance": "direct"
+          }
+        ],
         "metaclass": "ActionUsage",
         "name": "completeCheckout",
         "notationRole": "usage",
@@ -5935,6 +5989,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 18
       },
       {
+        "compartments": [],
         "metaclass": "ReferenceUsage",
         "name": "done",
         "notationRole": "reference-usage",
@@ -5943,6 +5998,15 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 19
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              12
+            ],
+            "provenance": "direct"
+          }
+        ],
         "metaclass": "ActionUsage",
         "name": "reserveInventory",
         "notationRole": "usage",
@@ -5951,6 +6015,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 12
       },
       {
+        "compartments": [],
         "metaclass": "ReferenceUsage",
         "name": "stockReserved",
         "notationRole": "reference-usage",
@@ -5959,6 +6024,15 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 13
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              14
+            ],
+            "provenance": "direct"
+          }
+        ],
         "metaclass": "ActionUsage",
         "name": "publishOrderCreated",
         "notationRole": "usage",
@@ -5967,6 +6041,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 15
       },
       {
+        "compartments": [],
         "metaclass": "ReferenceUsage",
         "name": "orderEventPublished",
         "notationRole": "reference-usage",
@@ -5975,6 +6050,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 16
       },
       {
+        "compartments": [],
         "metaclass": "ReferenceUsage",
         "name": "checkoutStatus",
         "notationRole": "reference-usage",
@@ -5983,6 +6059,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "source": 4
       },
       {
+        "compartments": [],
         "metaclass": "ReferenceUsage",
         "name": "cartId",
         "notationRole": "reference-usage",
@@ -6157,7 +6234,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "status": "resolved"
         }
       }
-    ]
+    ],
+    "scene": {
+      "kind": "action-flow"
+    }
   }
 }
 

@@ -39,8 +39,33 @@ export type DiagramSemanticReference =
   | { kind: "source-anchor"; document: string; ownerQualifiedName: string | null; metaclass: string; sourceDomain: string; range: unknown }
   | { kind: "relationship"; document: string; sourceQualifiedName: string; relationshipKind: string; ordinal: number; sourceDomain: string };
 
+export type DiagramScene =
+  | { kind: "general" }
+  | { kind: "interconnection" }
+  | { kind: "action-flow" }
+  | { kind: "sequence" }
+  | { kind: "browser" }
+  | { kind: "grid" }
+  | { kind: "geometry" }
+  | {
+      kind: "state-transition";
+      frame: { id: string; label: string; navigation: number } | null;
+      vertices: Array<{ id: string; label: string; kind: "initial" | "state" | "final"; navigation: number }>;
+      transitions: Array<{
+        id: string;
+        label: string | null;
+        source: number;
+        target: number;
+        trigger: Record<string, unknown>;
+        guard: Record<string, unknown>;
+        effect: Record<string, unknown>;
+        provenance: "authored" | "implied";
+        navigation: number;
+      }>;
+    };
+
 export type DiagramProduct = {
-  schemaVersion: 2;
+  schemaVersion: 4;
   modelDigest: string;
   documents: Array<{ uri: string; sourceDomain: string }>;
   sources: Array<{ document: number; range: [number, number, number, number] }>;
@@ -57,6 +82,7 @@ export type DiagramProduct = {
     relationships: unknown[];
     edges: unknown[];
     metadata: Record<string, unknown>;
+    scene: DiagramScene;
   };
 };
 
@@ -256,7 +282,7 @@ export function parseDiagramProduct(text: string): DiagramProduct {
   const documents = product.documents;
   const sources = product.sources;
   const references = product.references;
-  if (product.schemaVersion !== 2 || typeof product.modelDigest !== "string" ||
+  if (product.schemaVersion !== 4 || typeof product.modelDigest !== "string" ||
       !Array.isArray(documents) || !documents.every(isDiagramDocument) ||
       !Array.isArray(sources) || !sources.every((source) => isDiagramSource(source, documents.length)) ||
       !Array.isArray(references) || !references.every((reference) => isProductReference(reference, documents.length, sources.length, references.length)) ||
@@ -267,8 +293,9 @@ export function parseDiagramProduct(text: string): DiagramProduct {
       !Array.isArray(projection.nodes) || !projection.exposedRoots.every((index) => indexIn(index, (projection.nodes as unknown[]).length)) ||
       !projection.nodes.every((node) => isDiagramNode(node, references.length, sources.length, (projection.nodes as unknown[]).length)) ||
       !Array.isArray(projection.relationships) ||
-      !Array.isArray(projection.edges) || !projection.metadata || typeof projection.metadata !== "object") {
-    throw new Error("Generated diagram product does not match schema version 2.");
+      !Array.isArray(projection.edges) || !projection.metadata || typeof projection.metadata !== "object" ||
+      !isDiagramScene(projection.scene, String(view.kind), sources.length)) {
+    throw new Error("Generated diagram product does not match schema version 4.");
   }
   for (const reason of completeness.reasons) {
     if (!reason || typeof reason !== "object") throw new Error("Generated diagram product has a malformed completeness reason.");
@@ -285,6 +312,51 @@ export function parseDiagramProduct(text: string): DiagramProduct {
     throw new Error("Generated diagram product contains an invalid graph index.");
   }
   return value as DiagramProduct;
+}
+
+function isDiagramScene(value: unknown, viewKind: string, sourceCount: number): boolean {
+  if (!value || typeof value !== "object") return false;
+  const scene = value as Record<string, unknown>;
+  const expected = viewKind.replace(/-view$/, "");
+  if (scene.kind !== expected) return false;
+  if (scene.kind !== "state-transition") return true;
+  const frame = scene.frame as Record<string, unknown> | null | undefined;
+  const vertices = scene.vertices;
+  const transitions = scene.transitions;
+  if (frame !== null && (!frame || typeof frame.id !== "string" || typeof frame.label !== "string" ||
+      !indexIn(frame.navigation, sourceCount))) return false;
+  if (!Array.isArray(vertices) || !Array.isArray(transitions)) return false;
+  if (!vertices.every((raw) => {
+    if (!raw || typeof raw !== "object") return false;
+    const vertex = raw as Record<string, unknown>;
+    return typeof vertex.id === "string" && typeof vertex.label === "string" &&
+      ["initial", "state", "final"].includes(String(vertex.kind)) && indexIn(vertex.navigation, sourceCount);
+  })) return false;
+  return transitions.every((raw) => {
+    if (!raw || typeof raw !== "object") return false;
+    const transition = raw as Record<string, unknown>;
+    const trigger = transition.trigger as Record<string, unknown> | undefined;
+    const guard = transition.guard as Record<string, unknown> | undefined;
+    const effect = transition.effect as Record<string, unknown> | undefined;
+    return typeof transition.id === "string" && (transition.label === null || typeof transition.label === "string") &&
+      indexIn(transition.source, vertices.length) && indexIn(transition.target, vertices.length) &&
+      indexIn(transition.navigation, sourceCount) && ["authored", "implied"].includes(String(transition.provenance)) &&
+      isSceneTrigger(trigger, sourceCount) && isSceneFeature(guard, sourceCount) && isSceneFeature(effect, sourceCount);
+  });
+}
+
+function isSceneTrigger(value: Record<string, unknown> | undefined, sourceCount: number): boolean {
+  if (!value) return false;
+  if (["absent", "unresolved", "ambiguous"].includes(String(value.status))) return true;
+  if (value.status === "unsupported") return typeof value.code === "string" && typeof value.message === "string";
+  return value.status === "accept" && typeof value.label === "string" && indexIn(value.navigation, sourceCount);
+}
+
+function isSceneFeature(value: Record<string, unknown> | undefined, sourceCount: number): boolean {
+  if (!value) return false;
+  if (["absent", "unresolved", "ambiguous", "recovery"].includes(String(value.status))) return true;
+  if (value.status === "unsupported") return typeof value.code === "string" && typeof value.message === "string";
+  return value.status === "supported" && typeof value.label === "string" && indexIn(value.navigation, sourceCount);
 }
 
 function indexIn(value: unknown, length: number): value is number {
@@ -319,9 +391,16 @@ function isProductReference(value: unknown, documentCount: number, sourceCount: 
 function isDiagramNode(value: unknown, referenceCount: number, sourceCount: number, nodeCount: number): boolean {
   if (!value || typeof value !== "object") return false;
   const node = value as Record<string, unknown>;
+  const compartments = node.compartments;
   return indexIn(node.reference, referenceCount) && indexIn(node.source, sourceCount) && typeof node.metaclass === "string" &&
     typeof node.notationRole === "string" && NOTATION_ROLES.has(node.notationRole) &&
-    (node.name === null || typeof node.name === "string") && (node.owner === null || indexIn(node.owner, nodeCount));
+    (node.name === null || typeof node.name === "string") && (node.owner === null || indexIn(node.owner, nodeCount)) &&
+    Array.isArray(compartments) && compartments.every((raw) => {
+      if (!raw || typeof raw !== "object") return false;
+      const compartment = raw as Record<string, unknown>;
+      return typeof compartment.kind === "string" && ["direct", "inherited"].includes(String(compartment.provenance)) &&
+        Array.isArray(compartment.members) && compartment.members.every((member) => indexIn(member, nodeCount));
+    });
 }
 
 function isDiagramEdge(value: unknown, referenceCount: number, sourceCount: number, nodeCount: number): boolean {

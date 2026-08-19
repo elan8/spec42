@@ -4,7 +4,7 @@ use serde::Serialize;
 use serde_json::{json, Value};
 use spec42_generator_sdk::{export, model, Artifact, Guest};
 
-const SCHEMA_VERSION: u32 = 2;
+const SCHEMA_VERSION: u32 = 4;
 const ARTIFACT_PATH: &str = "diagram.json";
 
 type DocumentIndex = usize;
@@ -147,6 +147,11 @@ impl NormalizedProduct {
                 collect_reference(&mut references, owner);
             }
             collect_source(&mut sources, &element.source);
+            for compartment in &element.compartments {
+                for member in &compartment.members {
+                    collect_reference(&mut references, member);
+                }
+            }
         }
         for relationship in &typed.relationships {
             collect_reference(&mut references, &relationship.reference);
@@ -174,6 +179,7 @@ impl NormalizedProduct {
             }
         }
         collect_metadata_references(&mut references, &typed.metadata);
+        collect_scene_sources(&mut sources, &typed.scene);
         for reason in &typed.incomplete_reasons {
             collect_reason_reference(&mut references, reason);
         }
@@ -281,7 +287,58 @@ impl NormalizedProduct {
             "relationships": typed.relationships.iter().map(|value| self.relationship(value)).collect::<Result<Vec<_>, _>>()?,
             "edges": typed.edges.iter().map(|value| self.edge(value)).collect::<Result<Vec<_>, _>>()?,
             "metadata": self.metadata(&typed.metadata)?,
+            "scene": self.scene(&typed.scene)?,
         }))
+    }
+
+    fn scene(&self, value: &model::DiagramScene) -> Result<Value, String> {
+        let marker = |kind: &'static str| json!({ "kind": kind });
+        Ok(match value {
+            model::DiagramScene::General => marker("general"),
+            model::DiagramScene::Interconnection => marker("interconnection"),
+            model::DiagramScene::ActionFlow => marker("action-flow"),
+            model::DiagramScene::Sequence => marker("sequence"),
+            model::DiagramScene::Browser => marker("browser"),
+            model::DiagramScene::Grid => marker("grid"),
+            model::DiagramScene::Geometry => marker("geometry"),
+            model::DiagramScene::StateTransition(scene) => {
+                let vertex_indexes = scene.vertices.iter().enumerate()
+                    .map(|(index, vertex)| (vertex.semantic_id.as_str(), index))
+                    .collect::<BTreeMap<_, _>>();
+                let transitions = scene.transitions.iter().map(|transition| {
+                    let source = vertex_indexes.get(transition.source.as_str())
+                        .ok_or_else(|| format!("state transition source `{}` is not a scene vertex", transition.source))?;
+                    let target = vertex_indexes.get(transition.target.as_str())
+                        .ok_or_else(|| format!("state transition target `{}` is not a scene vertex", transition.target))?;
+                    Ok(json!({
+                        "id": transition.semantic_id,
+                        "label": transition.label,
+                        "source": source,
+                        "target": target,
+                        "trigger": scene_trigger(&transition.trigger, self)?,
+                        "guard": scene_feature(&transition.guard, self)?,
+                        "effect": scene_feature(&transition.effect, self)?,
+                        "provenance": provenance(&transition.provenance),
+                        "navigation": self.source(&transition.source_reference)?,
+                    }))
+                }).collect::<Result<Vec<Value>, String>>()?;
+                json!({
+                    "kind": "state-transition",
+                    "frame": scene.machine.as_ref().map(|machine| Ok::<Value, String>(json!({
+                        "id": machine.semantic_id,
+                        "label": machine.label,
+                        "navigation": self.source(&machine.source)?,
+                    }))).transpose()?,
+                    "vertices": scene.vertices.iter().map(|vertex| Ok(json!({
+                        "id": vertex.semantic_id,
+                        "label": vertex.label,
+                        "kind": state_vertex_kind(&vertex.kind),
+                        "navigation": self.source(&vertex.source)?,
+                    }))).collect::<Result<Vec<Value>, String>>()?,
+                    "transitions": transitions,
+                })
+            }
+        })
     }
 
     fn element(&self, value: &model::DiagramElement) -> Result<Value, String> {
@@ -292,6 +349,11 @@ impl NormalizedProduct {
             "name": value.name,
             "owner": value.owner.as_ref().map(|owner| self.node(owner)).transpose()?,
             "source": self.source(&value.source)?,
+            "compartments": value.compartments.iter().map(|compartment| Ok(json!({
+                "kind": compartment_kind(compartment.kind),
+                "provenance": compartment_provenance(compartment.provenance),
+                "members": compartment.members.iter().map(|member| self.node(member)).collect::<Result<Vec<_>, _>>()?,
+            }))).collect::<Result<Vec<Value>, String>>()?,
         }))
     }
 
@@ -537,6 +599,78 @@ fn collect_source(
         .or_insert_with(|| value.clone());
 }
 
+fn collect_scene_sources(
+    values: &mut BTreeMap<SourceKey, model::SourceReference>,
+    scene: &model::DiagramScene,
+) {
+    let model::DiagramScene::StateTransition(scene) = scene else {
+        return;
+    };
+    if let Some(machine) = &scene.machine {
+        collect_source(values, &machine.source);
+    }
+    for vertex in &scene.vertices {
+        collect_source(values, &vertex.source);
+    }
+    for transition in &scene.transitions {
+        collect_source(values, &transition.source_reference);
+        if let model::TransitionTrigger::Accept { source, .. } = &transition.trigger {
+            collect_source(values, source);
+        }
+        for feature in [&transition.guard, &transition.effect] {
+            if let model::ProjectionFeature::Supported { source, .. } = feature {
+                collect_source(values, source);
+            }
+        }
+    }
+}
+
+fn state_vertex_kind(value: &model::StateTransitionNodeKind) -> &'static str {
+    match value {
+        model::StateTransitionNodeKind::Initial => "initial",
+        model::StateTransitionNodeKind::State => "state",
+        model::StateTransitionNodeKind::Final => "final",
+    }
+}
+
+fn scene_trigger(value: &model::TransitionTrigger, normalized: &NormalizedProduct) -> Result<Value, String> {
+    Ok(match value {
+        model::TransitionTrigger::None => json!({ "status": "absent" }),
+        model::TransitionTrigger::Accept { label, target, source } => json!({
+            "status": "accept",
+            "label": label,
+            "target": target.as_ref().map(|target| json!({ "id": target.semantic_id, "label": target.label })),
+            "navigation": normalized.source(source)?,
+        }),
+        model::TransitionTrigger::Unsupported { reason } => json!({
+            "status": "unsupported",
+            "code": reason.code,
+            "message": reason.message,
+        }),
+        model::TransitionTrigger::Unresolved => json!({ "status": "unresolved" }),
+        model::TransitionTrigger::Ambiguous => json!({ "status": "ambiguous" }),
+    })
+}
+
+fn scene_feature(value: &model::ProjectionFeature, normalized: &NormalizedProduct) -> Result<Value, String> {
+    Ok(match value {
+        model::ProjectionFeature::Absent => json!({ "status": "absent" }),
+        model::ProjectionFeature::Supported { label, source } => json!({
+            "status": "supported",
+            "label": label,
+            "navigation": normalized.source(source)?,
+        }),
+        model::ProjectionFeature::Unsupported { reason } => json!({
+            "status": "unsupported",
+            "code": reason.code,
+            "message": reason.message,
+        }),
+        model::ProjectionFeature::Unresolved => json!({ "status": "unresolved" }),
+        model::ProjectionFeature::Ambiguous => json!({ "status": "ambiguous" }),
+        model::ProjectionFeature::Recovery => json!({ "status": "recovery" }),
+    })
+}
+
 fn collect_reason_reference(
     values: &mut BTreeMap<ReferenceKey, model::DiagramSemanticReference>,
     reason: &model::DiagramIncompleteReason,
@@ -748,6 +882,30 @@ fn notation_role(value: model::DiagramNotationRole) -> &'static str {
     }
 }
 
+fn compartment_kind(value: model::DiagramCompartmentKind) -> &'static str {
+    match value {
+        model::DiagramCompartmentKind::Attributes => "attributes",
+        model::DiagramCompartmentKind::Parts => "parts",
+        model::DiagramCompartmentKind::Ports => "ports",
+        model::DiagramCompartmentKind::Items => "items",
+        model::DiagramCompartmentKind::Constraints => "constraints",
+        model::DiagramCompartmentKind::Requirements => "requirements",
+        model::DiagramCompartmentKind::Actions => "actions",
+        model::DiagramCompartmentKind::States => "states",
+        model::DiagramCompartmentKind::Calculations => "calculations",
+        model::DiagramCompartmentKind::Connections => "connections",
+        model::DiagramCompartmentKind::Interfaces => "interfaces",
+        model::DiagramCompartmentKind::Occurrences => "occurrences",
+    }
+}
+
+fn compartment_provenance(value: model::DiagramCompartmentProvenance) -> &'static str {
+    match value {
+        model::DiagramCompartmentProvenance::Direct => "direct",
+        model::DiagramCompartmentProvenance::Inherited => "inherited",
+    }
+}
+
 fn kind_id(kind: model::DiagramViewKind) -> &'static str {
     match kind {
         model::DiagramViewKind::GeneralView => "general-view",
@@ -807,6 +965,7 @@ mod tests {
             metadata: model::DiagramViewMetadata::General {
                 roots: vec![qualified("P::root")],
             },
+            scene: model::DiagramScene::General,
         }
     }
 
@@ -819,6 +978,7 @@ mod tests {
             name: Some("root".to_owned()),
             owner: None,
             source: source(1),
+            compartments: Vec::new(),
         }]);
         let normalized = NormalizedProduct::new(&product).expect("normalized product");
         assert_eq!(normalized.documents.len(), 1);
@@ -841,6 +1001,7 @@ mod tests {
             name: Some(name.to_owned()),
             owner: None,
             source: source(line),
+            compartments: Vec::new(),
         };
         let forward =
             NormalizedProduct::new(&projection(vec![element("P::a", 1), element("P::b", 2)]))
@@ -854,6 +1015,56 @@ mod tests {
     }
 
     #[test]
+    fn state_scene_serializes_vertices_and_transitions_independently_of_the_generic_graph() {
+        let mut product = projection(Vec::new());
+        product.view.kind = model::DiagramViewKind::StateTransitionView;
+        product.exposed_roots.clear();
+        product.metadata = model::DiagramViewMetadata::StateTransition {
+            states: Vec::new(),
+            initial_nodes: Vec::new(),
+            final_nodes: Vec::new(),
+        };
+        product.scene = model::DiagramScene::StateTransition(model::StateTransitionScene {
+            machine: Some(model::StateMachineSummary {
+                semantic_id: "P::Machine".to_owned(),
+                label: "Machine".to_owned(),
+                source: source(1),
+            }),
+            vertices: vec![
+                model::StateTransitionNode {
+                    semantic_id: "P::Machine#initial".to_owned(),
+                    label: String::new(),
+                    kind: model::StateTransitionNodeKind::Initial,
+                    source: source(2),
+                },
+                model::StateTransitionNode {
+                    semantic_id: "P::Machine::idle".to_owned(),
+                    label: "idle".to_owned(),
+                    kind: model::StateTransitionNodeKind::State,
+                    source: source(3),
+                },
+            ],
+            transitions: vec![model::StateTransitionEdge {
+                semantic_id: "P::Machine#entry".to_owned(),
+                label: None,
+                source: "P::Machine#initial".to_owned(),
+                target: "P::Machine::idle".to_owned(),
+                trigger: model::TransitionTrigger::None,
+                guard: model::ProjectionFeature::Absent,
+                effect: model::ProjectionFeature::Absent,
+                provenance: model::RelationshipProvenance::Authored,
+                source_reference: source(2),
+            }],
+        });
+        let normalized = NormalizedProduct::new(&product).unwrap();
+        let scene = normalized.projection(&product).unwrap()["scene"].clone();
+        assert_eq!(scene["kind"], "state-transition");
+        assert_eq!(scene["vertices"].as_array().unwrap().len(), 2);
+        assert_eq!(scene["transitions"][0]["source"], 0);
+        assert_eq!(scene["transitions"][0]["target"], 1);
+    }
+
+    #[test]
     fn normalized_product_scales_to_thousands_of_graph_records() {
         let elements = (0..1_000)
             .map(|index| model::DiagramElement {
@@ -863,6 +1074,7 @@ mod tests {
                 name: Some(format!("n{index}")),
                 owner: None,
                 source: source(index),
+                compartments: Vec::new(),
             })
             .collect::<Vec<_>>();
         let mut product = projection(elements);

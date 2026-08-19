@@ -159,7 +159,7 @@ package BehaviorModel {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 2,
+  "schemaVersion": 4,
   "modelDigest": "blake3:60d6bb52f861c8517b7fc77f9acae7cbb27843f00869f431fa6d7e9044abcff8",
   "documents": [
     {
@@ -251,6 +251,15 @@ package BehaviorModel {
     },
     "nodes": [
       {
+        "compartments": [
+          {
+            "kind": "parts",
+            "members": [
+              1
+            ],
+            "provenance": "direct"
+          }
+        ],
         "metaclass": "PartDefinition",
         "name": "SelectedRoot",
         "notationRole": "definition",
@@ -259,6 +268,7 @@ package BehaviorModel {
         "source": 0
       },
       {
+        "compartments": [],
         "metaclass": "PartUsage",
         "name": "included",
         "notationRole": "usage",
@@ -267,7 +277,10 @@ package BehaviorModel {
         "source": 1
       }
     ],
-    "relationships": []
+    "relationships": [],
+    "scene": {
+      "kind": "general"
+    }
   }
 }
 

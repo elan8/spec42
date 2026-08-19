@@ -2488,7 +2488,7 @@ package TimerGeometry {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 2,
+  "schemaVersion": 4,
   "modelDigest": "blake3:053e0d48cf420d56d4e4fa3d30c992fe6f093f648f6d3dea5d74091fba48200d",
   "documents": [
     {
@@ -6341,6 +6341,28 @@ package TimerGeometry {
     },
     "nodes": [
       {
+        "compartments": [
+          {
+            "kind": "parts",
+            "members": [
+              34,
+              35,
+              36
+            ],
+            "provenance": "inherited"
+          },
+          {
+            "kind": "connections",
+            "members": [
+              29,
+              30,
+              31,
+              32,
+              33
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "PartUsage",
         "name": "timerInstance",
         "notationRole": "usage",
@@ -6349,6 +6371,7 @@ package TimerGeometry {
         "source": 1
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": "maxCurrent",
         "notationRole": "usage",
@@ -6357,6 +6380,7 @@ package TimerGeometry {
         "source": 48
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": "voltage",
         "notationRole": "usage",
@@ -6365,6 +6389,7 @@ package TimerGeometry {
         "source": 47
       },
       {
+        "compartments": [],
         "metaclass": "ReferenceUsage",
         "name": "power",
         "notationRole": "reference-usage",
@@ -6373,6 +6398,7 @@ package TimerGeometry {
         "source": 45
       },
       {
+        "compartments": [],
         "metaclass": "ReferenceUsage",
         "name": "stopPressed",
         "notationRole": "reference-usage",
@@ -6381,6 +6407,7 @@ package TimerGeometry {
         "source": 51
       },
       {
+        "compartments": [],
         "metaclass": "ReferenceUsage",
         "name": "resetPressed",
         "notationRole": "reference-usage",
@@ -6389,6 +6416,7 @@ package TimerGeometry {
         "source": 53
       },
       {
+        "compartments": [],
         "metaclass": "ReferenceUsage",
         "name": "startPressed",
         "notationRole": "reference-usage",
@@ -6397,6 +6425,7 @@ package TimerGeometry {
         "source": 49
       },
       {
+        "compartments": [],
         "metaclass": "ReferenceUsage",
         "name": "decrementPressed",
         "notationRole": "reference-usage",
@@ -6405,6 +6434,7 @@ package TimerGeometry {
         "source": 57
       },
       {
+        "compartments": [],
         "metaclass": "ReferenceUsage",
         "name": "incrementPressed",
         "notationRole": "reference-usage",
@@ -6413,6 +6443,7 @@ package TimerGeometry {
         "source": 55
       },
       {
+        "compartments": [],
         "metaclass": "ReferenceUsage",
         "name": "buzzerOn",
         "notationRole": "reference-usage",
@@ -6421,6 +6452,7 @@ package TimerGeometry {
         "source": 63
       },
       {
+        "compartments": [],
         "metaclass": "ReferenceUsage",
         "name": "displayValue",
         "notationRole": "reference-usage",
@@ -6429,6 +6461,7 @@ package TimerGeometry {
         "source": 59
       },
       {
+        "compartments": [],
         "metaclass": "ReferenceUsage",
         "name": "comSegDrive",
         "notationRole": "reference-usage",
@@ -6437,6 +6470,7 @@ package TimerGeometry {
         "source": 61
       },
       {
+        "compartments": [],
         "metaclass": "TransitionUsage",
         "name": "to_expired",
         "notationRole": "usage",
@@ -6445,6 +6479,7 @@ package TimerGeometry {
         "source": 29
       },
       {
+        "compartments": [],
         "metaclass": "TransitionUsage",
         "name": "to_running",
         "notationRole": "usage",
@@ -6453,6 +6488,7 @@ package TimerGeometry {
         "source": 13
       },
       {
+        "compartments": [],
         "metaclass": "TransitionUsage",
         "name": "decrement_idle",
         "notationRole": "usage",
@@ -6461,6 +6497,7 @@ package TimerGeometry {
         "source": 21
       },
       {
+        "compartments": [],
         "metaclass": "TransitionUsage",
         "name": "increment_idle",
         "notationRole": "usage",
@@ -6469,6 +6506,7 @@ package TimerGeometry {
         "source": 17
       },
       {
+        "compartments": [],
         "metaclass": "TransitionUsage",
         "name": "to_running_resume",
         "notationRole": "usage",
@@ -6477,6 +6515,7 @@ package TimerGeometry {
         "source": 33
       },
       {
+        "compartments": [],
         "metaclass": "TransitionUsage",
         "name": "to_idle_from_paused",
         "notationRole": "usage",
@@ -6485,6 +6524,7 @@ package TimerGeometry {
         "source": 37
       },
       {
+        "compartments": [],
         "metaclass": "TransitionUsage",
         "name": "to_idle_from_expired",
         "notationRole": "usage",
@@ -6493,6 +6533,7 @@ package TimerGeometry {
         "source": 41
       },
       {
+        "compartments": [],
         "metaclass": "TransitionUsage",
         "name": "to_paused",
         "notationRole": "usage",
@@ -6501,6 +6542,7 @@ package TimerGeometry {
         "source": 25
       },
       {
+        "compartments": [],
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -6509,6 +6551,7 @@ package TimerGeometry {
         "source": 3
       },
       {
+        "compartments": [],
         "metaclass": "StateUsage",
         "name": "idle",
         "notationRole": "usage",
@@ -6517,6 +6560,7 @@ package TimerGeometry {
         "source": 5
       },
       {
+        "compartments": [],
         "metaclass": "StateUsage",
         "name": "paused",
         "notationRole": "usage",
@@ -6525,6 +6569,7 @@ package TimerGeometry {
         "source": 9
       },
       {
+        "compartments": [],
         "metaclass": "StateUsage",
         "name": "expired",
         "notationRole": "usage",
@@ -6533,6 +6578,7 @@ package TimerGeometry {
         "source": 11
       },
       {
+        "compartments": [],
         "metaclass": "StateUsage",
         "name": "running",
         "notationRole": "usage",
@@ -6541,6 +6587,7 @@ package TimerGeometry {
         "source": 7
       },
       {
+        "compartments": [],
         "metaclass": "PortUsage",
         "name": "buzzerPwrOut",
         "notationRole": "usage",
@@ -6549,6 +6596,15 @@ package TimerGeometry {
         "source": 91
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              27
+            ],
+            "provenance": "direct"
+          }
+        ],
         "metaclass": "PortUsage",
         "name": "pwrIn",
         "notationRole": "usage",
@@ -6557,6 +6613,7 @@ package TimerGeometry {
         "source": 87
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": null,
         "notationRole": "usage",
@@ -6565,6 +6622,7 @@ package TimerGeometry {
         "source": 89
       },
       {
+        "compartments": [],
         "metaclass": "PortUsage",
         "name": "ctrlIn",
         "notationRole": "usage",
@@ -6573,6 +6631,7 @@ package TimerGeometry {
         "source": 85
       },
       {
+        "compartments": [],
         "metaclass": "ConnectionUsage",
         "name": null,
         "notationRole": "usage",
@@ -6581,6 +6640,7 @@ package TimerGeometry {
         "source": 149
       },
       {
+        "compartments": [],
         "metaclass": "ConnectionUsage",
         "name": null,
         "notationRole": "usage",
@@ -6589,6 +6649,7 @@ package TimerGeometry {
         "source": 152
       },
       {
+        "compartments": [],
         "metaclass": "ConnectionUsage",
         "name": null,
         "notationRole": "usage",
@@ -6597,6 +6658,7 @@ package TimerGeometry {
         "source": 155
       },
       {
+        "compartments": [],
         "metaclass": "ConnectionUsage",
         "name": null,
         "notationRole": "usage",
@@ -6605,6 +6667,7 @@ package TimerGeometry {
         "source": 158
       },
       {
+        "compartments": [],
         "metaclass": "ConnectionUsage",
         "name": null,
         "notationRole": "usage",
@@ -6613,6 +6676,28 @@ package TimerGeometry {
         "source": 161
       },
       {
+        "compartments": [
+          {
+            "kind": "parts",
+            "members": [
+              66,
+              67,
+              68,
+              69
+            ],
+            "provenance": "inherited"
+          },
+          {
+            "kind": "connections",
+            "members": [
+              62,
+              63,
+              64,
+              65
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "PartUsage",
         "name": "pcb",
         "notationRole": "usage",
@@ -6621,6 +6706,22 @@ package TimerGeometry {
         "source": 143
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              52
+            ],
+            "provenance": "inherited"
+          },
+          {
+            "kind": "ports",
+            "members": [
+              50
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "PartUsage",
         "name": "buzzer",
         "notationRole": "usage",
@@ -6629,6 +6730,24 @@ package TimerGeometry {
         "source": 147
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              54,
+              55,
+              56
+            ],
+            "provenance": "inherited"
+          },
+          {
+            "kind": "ports",
+            "members": [
+              53
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "PartUsage",
         "name": "battery",
         "notationRole": "usage",
@@ -6637,6 +6756,15 @@ package TimerGeometry {
         "source": 145
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              38
+            ],
+            "provenance": "direct"
+          }
+        ],
         "metaclass": "PortUsage",
         "name": "pwr",
         "notationRole": "usage",
@@ -6645,6 +6773,7 @@ package TimerGeometry {
         "source": 105
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": null,
         "notationRole": "usage",
@@ -6653,6 +6782,7 @@ package TimerGeometry {
         "source": 107
       },
       {
+        "compartments": [],
         "metaclass": "PortUsage",
         "name": "output",
         "notationRole": "usage",
@@ -6661,6 +6791,15 @@ package TimerGeometry {
         "source": 103
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              10
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "PortUsage",
         "name": "displayOut",
         "notationRole": "usage",
@@ -6669,6 +6808,15 @@ package TimerGeometry {
         "source": 73
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              42
+            ],
+            "provenance": "direct"
+          }
+        ],
         "metaclass": "PortUsage",
         "name": "pwr",
         "notationRole": "usage",
@@ -6677,6 +6825,7 @@ package TimerGeometry {
         "source": 79
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": null,
         "notationRole": "usage",
@@ -6685,6 +6834,19 @@ package TimerGeometry {
         "source": 81
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              4,
+              5,
+              6,
+              7,
+              8
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "PortUsage",
         "name": "buttonIn",
         "notationRole": "usage",
@@ -6693,6 +6855,15 @@ package TimerGeometry {
         "source": 71
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              11
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "PortUsage",
         "name": "lcdDrive",
         "notationRole": "usage",
@@ -6701,6 +6872,15 @@ package TimerGeometry {
         "source": 75
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              9
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "PortUsage",
         "name": "buzzerOut",
         "notationRole": "usage",
@@ -6709,6 +6889,18 @@ package TimerGeometry {
         "source": 77
       },
       {
+        "compartments": [
+          {
+            "kind": "states",
+            "members": [
+              21,
+              22,
+              23,
+              24
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "StateUsage",
         "name": "timerMode",
         "notationRole": "usage",
@@ -6717,6 +6909,7 @@ package TimerGeometry {
         "source": 83
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": "clockFrequency",
         "notationRole": "usage",
@@ -6725,6 +6918,7 @@ package TimerGeometry {
         "source": 65
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": "ramSize",
         "notationRole": "usage",
@@ -6733,6 +6927,7 @@ package TimerGeometry {
         "source": 69
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": "flashSize",
         "notationRole": "usage",
@@ -6741,6 +6936,15 @@ package TimerGeometry {
         "source": 67
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              51
+            ],
+            "provenance": "direct"
+          }
+        ],
         "metaclass": "PortUsage",
         "name": "pwr",
         "notationRole": "usage",
@@ -6749,6 +6953,7 @@ package TimerGeometry {
         "source": 111
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": null,
         "notationRole": "usage",
@@ -6757,6 +6962,7 @@ package TimerGeometry {
         "source": 113
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": "duration",
         "notationRole": "usage",
@@ -6765,6 +6971,17 @@ package TimerGeometry {
         "source": 109
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              1,
+              2,
+              3
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "PortUsage",
         "name": "powerOut",
         "notationRole": "usage",
@@ -6773,6 +6990,7 @@ package TimerGeometry {
         "source": 141
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": "nominalVoltage",
         "notationRole": "usage",
@@ -6781,6 +6999,7 @@ package TimerGeometry {
         "source": 137
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": "runtimeEstimate",
         "notationRole": "usage",
@@ -6789,6 +7008,7 @@ package TimerGeometry {
         "source": 139
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": "capacity",
         "notationRole": "usage",
@@ -6797,6 +7017,7 @@ package TimerGeometry {
         "source": 135
       },
       {
+        "compartments": [],
         "metaclass": "PortUsage",
         "name": "cmd",
         "notationRole": "usage",
@@ -6805,6 +7026,15 @@ package TimerGeometry {
         "source": 95
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              59
+            ],
+            "provenance": "direct"
+          }
+        ],
         "metaclass": "PortUsage",
         "name": "pwr",
         "notationRole": "usage",
@@ -6813,6 +7043,7 @@ package TimerGeometry {
         "source": 99
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": null,
         "notationRole": "usage",
@@ -6821,6 +7052,7 @@ package TimerGeometry {
         "source": 101
       },
       {
+        "compartments": [],
         "metaclass": "PortUsage",
         "name": "lcdIn",
         "notationRole": "usage",
@@ -6829,6 +7061,7 @@ package TimerGeometry {
         "source": 97
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": "format",
         "notationRole": "usage",
@@ -6837,6 +7070,7 @@ package TimerGeometry {
         "source": 93
       },
       {
+        "compartments": [],
         "metaclass": "ConnectionUsage",
         "name": null,
         "notationRole": "usage",
@@ -6845,6 +7079,7 @@ package TimerGeometry {
         "source": 123
       },
       {
+        "compartments": [],
         "metaclass": "ConnectionUsage",
         "name": null,
         "notationRole": "usage",
@@ -6853,6 +7088,7 @@ package TimerGeometry {
         "source": 126
       },
       {
+        "compartments": [],
         "metaclass": "ConnectionUsage",
         "name": null,
         "notationRole": "usage",
@@ -6861,6 +7097,7 @@ package TimerGeometry {
         "source": 129
       },
       {
+        "compartments": [],
         "metaclass": "ConnectionUsage",
         "name": null,
         "notationRole": "usage",
@@ -6869,6 +7106,17 @@ package TimerGeometry {
         "source": 132
       },
       {
+        "compartments": [
+          {
+            "kind": "ports",
+            "members": [
+              25,
+              26,
+              28
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "PartUsage",
         "name": "buzzerDriver",
         "notationRole": "usage",
@@ -6877,6 +7125,35 @@ package TimerGeometry {
         "source": 121
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              47,
+              48,
+              49
+            ],
+            "provenance": "inherited"
+          },
+          {
+            "kind": "ports",
+            "members": [
+              40,
+              41,
+              43,
+              44,
+              45
+            ],
+            "provenance": "inherited"
+          },
+          {
+            "kind": "states",
+            "members": [
+              46
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "PartUsage",
         "name": "mcu",
         "notationRole": "usage",
@@ -6885,6 +7162,16 @@ package TimerGeometry {
         "source": 115
       },
       {
+        "compartments": [
+          {
+            "kind": "ports",
+            "members": [
+              37,
+              39
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "PartUsage",
         "name": "buttons",
         "notationRole": "usage",
@@ -6893,6 +7180,24 @@ package TimerGeometry {
         "source": 119
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              61
+            ],
+            "provenance": "inherited"
+          },
+          {
+            "kind": "ports",
+            "members": [
+              57,
+              58,
+              60
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "PartUsage",
         "name": "display",
         "notationRole": "usage",
@@ -7925,7 +8230,10 @@ package TimerGeometry {
           "status": "resolved"
         }
       }
-    ]
+    ],
+    "scene": {
+      "kind": "geometry"
+    }
   }
 }
 

@@ -112,7 +112,7 @@ package GridExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 2,
+  "schemaVersion": 4,
   "modelDigest": "blake3:b780a516c8bc22ae0f1c0c53d80bdaeb6383ddad5136e3b52617f60c1a3023ca",
   "documents": [
     {
@@ -236,6 +236,16 @@ package GridExample {
     },
     "nodes": [
       {
+        "compartments": [
+          {
+            "kind": "parts",
+            "members": [
+              1,
+              2
+            ],
+            "provenance": "direct"
+          }
+        ],
         "metaclass": "PartDefinition",
         "name": "TableRoot",
         "notationRole": "definition",
@@ -244,6 +254,7 @@ package GridExample {
         "source": 0
       },
       {
+        "compartments": [],
         "metaclass": "PartUsage",
         "name": "first",
         "notationRole": "usage",
@@ -252,6 +263,7 @@ package GridExample {
         "source": 1
       },
       {
+        "compartments": [],
         "metaclass": "PartUsage",
         "name": "second",
         "notationRole": "usage",
@@ -260,7 +272,10 @@ package GridExample {
         "source": 2
       }
     ],
-    "relationships": []
+    "relationships": [],
+    "scene": {
+      "kind": "grid"
+    }
   }
 }
 

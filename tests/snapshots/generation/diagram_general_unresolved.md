@@ -103,7 +103,7 @@ package GeneralNegative {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 2,
+  "schemaVersion": 4,
   "modelDigest": "blake3:dc6b3823f9ceeca18cffe9de1b9f6b2777507e2cfe0425a23160da3984c7b3ec",
   "documents": [
     {
@@ -168,7 +168,10 @@ package GeneralNegative {
       "roots": []
     },
     "nodes": [],
-    "relationships": []
+    "relationships": [],
+    "scene": {
+      "kind": "general"
+    }
   }
 }
 

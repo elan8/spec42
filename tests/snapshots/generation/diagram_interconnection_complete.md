@@ -122,7 +122,7 @@ package InterconnectionExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 2,
+  "schemaVersion": 4,
   "modelDigest": "blake3:91ff570140dc74818f2827d481a44fdae91d6321a5aab0cc423846a9c3ad610b",
   "documents": [
     {
@@ -276,6 +276,23 @@ package InterconnectionExample {
     },
     "nodes": [
       {
+        "compartments": [
+          {
+            "kind": "parts",
+            "members": [
+              1
+            ],
+            "provenance": "direct"
+          },
+          {
+            "kind": "ports",
+            "members": [
+              2,
+              3
+            ],
+            "provenance": "direct"
+          }
+        ],
         "metaclass": "PartDefinition",
         "name": "Assembly",
         "notationRole": "definition",
@@ -284,6 +301,7 @@ package InterconnectionExample {
         "source": 0
       },
       {
+        "compartments": [],
         "metaclass": "PartUsage",
         "name": "nested",
         "notationRole": "usage",
@@ -292,6 +310,7 @@ package InterconnectionExample {
         "source": 3
       },
       {
+        "compartments": [],
         "metaclass": "PortUsage",
         "name": "input",
         "notationRole": "usage",
@@ -300,6 +319,7 @@ package InterconnectionExample {
         "source": 1
       },
       {
+        "compartments": [],
         "metaclass": "PortUsage",
         "name": "output",
         "notationRole": "usage",
@@ -308,7 +328,10 @@ package InterconnectionExample {
         "source": 2
       }
     ],
-    "relationships": []
+    "relationships": [],
+    "scene": {
+      "kind": "interconnection"
+    }
   }
 }
 

@@ -103,7 +103,7 @@ package SequenceNegative {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 2,
+  "schemaVersion": 4,
   "modelDigest": "blake3:ca82f2f96ab43423439b76a645f6645990cb3d0d836bfbdacc7344a40ddf4b89",
   "documents": [
     {
@@ -169,7 +169,10 @@ package SequenceNegative {
       "participants": []
     },
     "nodes": [],
-    "relationships": []
+    "relationships": [],
+    "scene": {
+      "kind": "sequence"
+    }
   }
 }
 

@@ -48,7 +48,7 @@ export const interconnectionViewGoldenPayload: UnknownRecord = {
   view: "interconnection-view",
   selectedViewName: "Connections",
   interconnectionScene: {
-    schemaVersion: 2,
+    schemaVersion: 3,
     view: { id: "v", name: "Connections", type: "InterconnectionView", rootIds: ["a", "b"] },
     nodes: [
       { id: "a", name: "a", kind: "part", qualifiedName: "a", semanticId: "a", definitionId: "A", typeName: "A" },

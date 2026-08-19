@@ -2488,7 +2488,7 @@ package TimerBrowser {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 2,
+  "schemaVersion": 4,
   "modelDigest": "blake3:a53f57b3554f713a4b24497fa032456b350dfa460602755a0ce1b4a4780b459c",
   "documents": [
     {
@@ -6267,6 +6267,28 @@ package TimerBrowser {
     },
     "nodes": [
       {
+        "compartments": [
+          {
+            "kind": "parts",
+            "members": [
+              34,
+              35,
+              36
+            ],
+            "provenance": "inherited"
+          },
+          {
+            "kind": "connections",
+            "members": [
+              29,
+              30,
+              31,
+              32,
+              33
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "PartUsage",
         "name": "timerInstance",
         "notationRole": "usage",
@@ -6275,6 +6297,7 @@ package TimerBrowser {
         "source": 1
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": "maxCurrent",
         "notationRole": "usage",
@@ -6283,6 +6306,7 @@ package TimerBrowser {
         "source": 48
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": "voltage",
         "notationRole": "usage",
@@ -6291,6 +6315,7 @@ package TimerBrowser {
         "source": 47
       },
       {
+        "compartments": [],
         "metaclass": "ReferenceUsage",
         "name": "power",
         "notationRole": "reference-usage",
@@ -6299,6 +6324,7 @@ package TimerBrowser {
         "source": 45
       },
       {
+        "compartments": [],
         "metaclass": "ReferenceUsage",
         "name": "stopPressed",
         "notationRole": "reference-usage",
@@ -6307,6 +6333,7 @@ package TimerBrowser {
         "source": 51
       },
       {
+        "compartments": [],
         "metaclass": "ReferenceUsage",
         "name": "resetPressed",
         "notationRole": "reference-usage",
@@ -6315,6 +6342,7 @@ package TimerBrowser {
         "source": 53
       },
       {
+        "compartments": [],
         "metaclass": "ReferenceUsage",
         "name": "startPressed",
         "notationRole": "reference-usage",
@@ -6323,6 +6351,7 @@ package TimerBrowser {
         "source": 49
       },
       {
+        "compartments": [],
         "metaclass": "ReferenceUsage",
         "name": "decrementPressed",
         "notationRole": "reference-usage",
@@ -6331,6 +6360,7 @@ package TimerBrowser {
         "source": 57
       },
       {
+        "compartments": [],
         "metaclass": "ReferenceUsage",
         "name": "incrementPressed",
         "notationRole": "reference-usage",
@@ -6339,6 +6369,7 @@ package TimerBrowser {
         "source": 55
       },
       {
+        "compartments": [],
         "metaclass": "ReferenceUsage",
         "name": "buzzerOn",
         "notationRole": "reference-usage",
@@ -6347,6 +6378,7 @@ package TimerBrowser {
         "source": 63
       },
       {
+        "compartments": [],
         "metaclass": "ReferenceUsage",
         "name": "displayValue",
         "notationRole": "reference-usage",
@@ -6355,6 +6387,7 @@ package TimerBrowser {
         "source": 59
       },
       {
+        "compartments": [],
         "metaclass": "ReferenceUsage",
         "name": "comSegDrive",
         "notationRole": "reference-usage",
@@ -6363,6 +6396,7 @@ package TimerBrowser {
         "source": 61
       },
       {
+        "compartments": [],
         "metaclass": "TransitionUsage",
         "name": "to_expired",
         "notationRole": "usage",
@@ -6371,6 +6405,7 @@ package TimerBrowser {
         "source": 29
       },
       {
+        "compartments": [],
         "metaclass": "TransitionUsage",
         "name": "to_running",
         "notationRole": "usage",
@@ -6379,6 +6414,7 @@ package TimerBrowser {
         "source": 13
       },
       {
+        "compartments": [],
         "metaclass": "TransitionUsage",
         "name": "decrement_idle",
         "notationRole": "usage",
@@ -6387,6 +6423,7 @@ package TimerBrowser {
         "source": 21
       },
       {
+        "compartments": [],
         "metaclass": "TransitionUsage",
         "name": "increment_idle",
         "notationRole": "usage",
@@ -6395,6 +6432,7 @@ package TimerBrowser {
         "source": 17
       },
       {
+        "compartments": [],
         "metaclass": "TransitionUsage",
         "name": "to_running_resume",
         "notationRole": "usage",
@@ -6403,6 +6441,7 @@ package TimerBrowser {
         "source": 33
       },
       {
+        "compartments": [],
         "metaclass": "TransitionUsage",
         "name": "to_idle_from_paused",
         "notationRole": "usage",
@@ -6411,6 +6450,7 @@ package TimerBrowser {
         "source": 37
       },
       {
+        "compartments": [],
         "metaclass": "TransitionUsage",
         "name": "to_idle_from_expired",
         "notationRole": "usage",
@@ -6419,6 +6459,7 @@ package TimerBrowser {
         "source": 41
       },
       {
+        "compartments": [],
         "metaclass": "TransitionUsage",
         "name": "to_paused",
         "notationRole": "usage",
@@ -6427,6 +6468,7 @@ package TimerBrowser {
         "source": 25
       },
       {
+        "compartments": [],
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -6435,6 +6477,7 @@ package TimerBrowser {
         "source": 3
       },
       {
+        "compartments": [],
         "metaclass": "StateUsage",
         "name": "idle",
         "notationRole": "usage",
@@ -6443,6 +6486,7 @@ package TimerBrowser {
         "source": 5
       },
       {
+        "compartments": [],
         "metaclass": "StateUsage",
         "name": "paused",
         "notationRole": "usage",
@@ -6451,6 +6495,7 @@ package TimerBrowser {
         "source": 9
       },
       {
+        "compartments": [],
         "metaclass": "StateUsage",
         "name": "expired",
         "notationRole": "usage",
@@ -6459,6 +6504,7 @@ package TimerBrowser {
         "source": 11
       },
       {
+        "compartments": [],
         "metaclass": "StateUsage",
         "name": "running",
         "notationRole": "usage",
@@ -6467,6 +6513,7 @@ package TimerBrowser {
         "source": 7
       },
       {
+        "compartments": [],
         "metaclass": "PortUsage",
         "name": "buzzerPwrOut",
         "notationRole": "usage",
@@ -6475,6 +6522,15 @@ package TimerBrowser {
         "source": 91
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              27
+            ],
+            "provenance": "direct"
+          }
+        ],
         "metaclass": "PortUsage",
         "name": "pwrIn",
         "notationRole": "usage",
@@ -6483,6 +6539,7 @@ package TimerBrowser {
         "source": 87
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": null,
         "notationRole": "usage",
@@ -6491,6 +6548,7 @@ package TimerBrowser {
         "source": 89
       },
       {
+        "compartments": [],
         "metaclass": "PortUsage",
         "name": "ctrlIn",
         "notationRole": "usage",
@@ -6499,6 +6557,7 @@ package TimerBrowser {
         "source": 85
       },
       {
+        "compartments": [],
         "metaclass": "ConnectionUsage",
         "name": null,
         "notationRole": "usage",
@@ -6507,6 +6566,7 @@ package TimerBrowser {
         "source": 149
       },
       {
+        "compartments": [],
         "metaclass": "ConnectionUsage",
         "name": null,
         "notationRole": "usage",
@@ -6515,6 +6575,7 @@ package TimerBrowser {
         "source": 152
       },
       {
+        "compartments": [],
         "metaclass": "ConnectionUsage",
         "name": null,
         "notationRole": "usage",
@@ -6523,6 +6584,7 @@ package TimerBrowser {
         "source": 155
       },
       {
+        "compartments": [],
         "metaclass": "ConnectionUsage",
         "name": null,
         "notationRole": "usage",
@@ -6531,6 +6593,7 @@ package TimerBrowser {
         "source": 158
       },
       {
+        "compartments": [],
         "metaclass": "ConnectionUsage",
         "name": null,
         "notationRole": "usage",
@@ -6539,6 +6602,28 @@ package TimerBrowser {
         "source": 161
       },
       {
+        "compartments": [
+          {
+            "kind": "parts",
+            "members": [
+              66,
+              67,
+              68,
+              69
+            ],
+            "provenance": "inherited"
+          },
+          {
+            "kind": "connections",
+            "members": [
+              62,
+              63,
+              64,
+              65
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "PartUsage",
         "name": "pcb",
         "notationRole": "usage",
@@ -6547,6 +6632,22 @@ package TimerBrowser {
         "source": 143
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              52
+            ],
+            "provenance": "inherited"
+          },
+          {
+            "kind": "ports",
+            "members": [
+              50
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "PartUsage",
         "name": "buzzer",
         "notationRole": "usage",
@@ -6555,6 +6656,24 @@ package TimerBrowser {
         "source": 147
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              54,
+              55,
+              56
+            ],
+            "provenance": "inherited"
+          },
+          {
+            "kind": "ports",
+            "members": [
+              53
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "PartUsage",
         "name": "battery",
         "notationRole": "usage",
@@ -6563,6 +6682,15 @@ package TimerBrowser {
         "source": 145
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              38
+            ],
+            "provenance": "direct"
+          }
+        ],
         "metaclass": "PortUsage",
         "name": "pwr",
         "notationRole": "usage",
@@ -6571,6 +6699,7 @@ package TimerBrowser {
         "source": 105
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": null,
         "notationRole": "usage",
@@ -6579,6 +6708,7 @@ package TimerBrowser {
         "source": 107
       },
       {
+        "compartments": [],
         "metaclass": "PortUsage",
         "name": "output",
         "notationRole": "usage",
@@ -6587,6 +6717,15 @@ package TimerBrowser {
         "source": 103
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              10
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "PortUsage",
         "name": "displayOut",
         "notationRole": "usage",
@@ -6595,6 +6734,15 @@ package TimerBrowser {
         "source": 73
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              42
+            ],
+            "provenance": "direct"
+          }
+        ],
         "metaclass": "PortUsage",
         "name": "pwr",
         "notationRole": "usage",
@@ -6603,6 +6751,7 @@ package TimerBrowser {
         "source": 79
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": null,
         "notationRole": "usage",
@@ -6611,6 +6760,19 @@ package TimerBrowser {
         "source": 81
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              4,
+              5,
+              6,
+              7,
+              8
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "PortUsage",
         "name": "buttonIn",
         "notationRole": "usage",
@@ -6619,6 +6781,15 @@ package TimerBrowser {
         "source": 71
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              11
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "PortUsage",
         "name": "lcdDrive",
         "notationRole": "usage",
@@ -6627,6 +6798,15 @@ package TimerBrowser {
         "source": 75
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              9
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "PortUsage",
         "name": "buzzerOut",
         "notationRole": "usage",
@@ -6635,6 +6815,18 @@ package TimerBrowser {
         "source": 77
       },
       {
+        "compartments": [
+          {
+            "kind": "states",
+            "members": [
+              21,
+              22,
+              23,
+              24
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "StateUsage",
         "name": "timerMode",
         "notationRole": "usage",
@@ -6643,6 +6835,7 @@ package TimerBrowser {
         "source": 83
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": "clockFrequency",
         "notationRole": "usage",
@@ -6651,6 +6844,7 @@ package TimerBrowser {
         "source": 65
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": "ramSize",
         "notationRole": "usage",
@@ -6659,6 +6853,7 @@ package TimerBrowser {
         "source": 69
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": "flashSize",
         "notationRole": "usage",
@@ -6667,6 +6862,15 @@ package TimerBrowser {
         "source": 67
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              51
+            ],
+            "provenance": "direct"
+          }
+        ],
         "metaclass": "PortUsage",
         "name": "pwr",
         "notationRole": "usage",
@@ -6675,6 +6879,7 @@ package TimerBrowser {
         "source": 111
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": null,
         "notationRole": "usage",
@@ -6683,6 +6888,7 @@ package TimerBrowser {
         "source": 113
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": "duration",
         "notationRole": "usage",
@@ -6691,6 +6897,17 @@ package TimerBrowser {
         "source": 109
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              1,
+              2,
+              3
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "PortUsage",
         "name": "powerOut",
         "notationRole": "usage",
@@ -6699,6 +6916,7 @@ package TimerBrowser {
         "source": 141
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": "nominalVoltage",
         "notationRole": "usage",
@@ -6707,6 +6925,7 @@ package TimerBrowser {
         "source": 137
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": "runtimeEstimate",
         "notationRole": "usage",
@@ -6715,6 +6934,7 @@ package TimerBrowser {
         "source": 139
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": "capacity",
         "notationRole": "usage",
@@ -6723,6 +6943,7 @@ package TimerBrowser {
         "source": 135
       },
       {
+        "compartments": [],
         "metaclass": "PortUsage",
         "name": "cmd",
         "notationRole": "usage",
@@ -6731,6 +6952,15 @@ package TimerBrowser {
         "source": 95
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              59
+            ],
+            "provenance": "direct"
+          }
+        ],
         "metaclass": "PortUsage",
         "name": "pwr",
         "notationRole": "usage",
@@ -6739,6 +6969,7 @@ package TimerBrowser {
         "source": 99
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": null,
         "notationRole": "usage",
@@ -6747,6 +6978,7 @@ package TimerBrowser {
         "source": 101
       },
       {
+        "compartments": [],
         "metaclass": "PortUsage",
         "name": "lcdIn",
         "notationRole": "usage",
@@ -6755,6 +6987,7 @@ package TimerBrowser {
         "source": 97
       },
       {
+        "compartments": [],
         "metaclass": "AttributeUsage",
         "name": "format",
         "notationRole": "usage",
@@ -6763,6 +6996,7 @@ package TimerBrowser {
         "source": 93
       },
       {
+        "compartments": [],
         "metaclass": "ConnectionUsage",
         "name": null,
         "notationRole": "usage",
@@ -6771,6 +7005,7 @@ package TimerBrowser {
         "source": 123
       },
       {
+        "compartments": [],
         "metaclass": "ConnectionUsage",
         "name": null,
         "notationRole": "usage",
@@ -6779,6 +7014,7 @@ package TimerBrowser {
         "source": 126
       },
       {
+        "compartments": [],
         "metaclass": "ConnectionUsage",
         "name": null,
         "notationRole": "usage",
@@ -6787,6 +7023,7 @@ package TimerBrowser {
         "source": 129
       },
       {
+        "compartments": [],
         "metaclass": "ConnectionUsage",
         "name": null,
         "notationRole": "usage",
@@ -6795,6 +7032,17 @@ package TimerBrowser {
         "source": 132
       },
       {
+        "compartments": [
+          {
+            "kind": "ports",
+            "members": [
+              25,
+              26,
+              28
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "PartUsage",
         "name": "buzzerDriver",
         "notationRole": "usage",
@@ -6803,6 +7051,35 @@ package TimerBrowser {
         "source": 121
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              47,
+              48,
+              49
+            ],
+            "provenance": "inherited"
+          },
+          {
+            "kind": "ports",
+            "members": [
+              40,
+              41,
+              43,
+              44,
+              45
+            ],
+            "provenance": "inherited"
+          },
+          {
+            "kind": "states",
+            "members": [
+              46
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "PartUsage",
         "name": "mcu",
         "notationRole": "usage",
@@ -6811,6 +7088,16 @@ package TimerBrowser {
         "source": 115
       },
       {
+        "compartments": [
+          {
+            "kind": "ports",
+            "members": [
+              37,
+              39
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "PartUsage",
         "name": "buttons",
         "notationRole": "usage",
@@ -6819,6 +7106,24 @@ package TimerBrowser {
         "source": 119
       },
       {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              61
+            ],
+            "provenance": "inherited"
+          },
+          {
+            "kind": "ports",
+            "members": [
+              57,
+              58,
+              60
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "metaclass": "PartUsage",
         "name": "display",
         "notationRole": "usage",
@@ -7851,7 +8156,10 @@ package TimerBrowser {
           "status": "resolved"
         }
       }
-    ]
+    ],
+    "scene": {
+      "kind": "browser"
+    }
   }
 }
 

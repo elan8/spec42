@@ -775,6 +775,36 @@ pub struct DiagramElement {
     pub name: Option<String>,
     pub owner: Option<DiagramSemanticReference>,
     pub source: SourceReference,
+    pub compartments: Vec<DiagramCompartment>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum DiagramCompartmentKind {
+    Attributes,
+    Parts,
+    Ports,
+    Items,
+    Constraints,
+    Requirements,
+    Actions,
+    States,
+    Calculations,
+    Connections,
+    Interfaces,
+    Occurrences,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum DiagramCompartmentProvenance {
+    Direct,
+    Inherited,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct DiagramCompartment {
+    pub kind: DiagramCompartmentKind,
+    pub provenance: DiagramCompartmentProvenance,
+    pub members: Vec<DiagramSemanticReference>,
 }
 
 /// Structural notation role owned by the diagram projection.
@@ -874,6 +904,30 @@ pub enum DiagramViewMetadata {
     },
 }
 
+/// Normative graphical scene selected by the semantic diagram projection.
+///
+/// The discriminator is exhaustive even while individual scene families are migrated. This keeps
+/// renderers from treating a specialized view as an undifferentiated node-edge graph. A scene
+/// variant gains its typed payload when that notation family becomes supported.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum DiagramScene {
+    General,
+    Interconnection,
+    ActionFlow,
+    StateTransition(StateTransitionScene),
+    Sequence,
+    Browser,
+    Grid,
+    Geometry,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct StateTransitionScene {
+    pub machine: Option<StateMachineSummary>,
+    pub vertices: Vec<StateTransitionNode>,
+    pub transitions: Vec<StateTransitionEdge>,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
 pub struct DiagramViewProjection {
     pub schema_version: u32,
@@ -886,6 +940,7 @@ pub struct DiagramViewProjection {
     pub relationships: Vec<DiagramRelationship>,
     pub edges: Vec<DiagramEdge>,
     pub metadata: DiagramViewMetadata,
+    pub scene: DiagramScene,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
@@ -963,6 +1018,8 @@ pub enum TransitionTrigger {
     Unsupported {
         reason: UnsupportedReason,
     },
+    Unresolved,
+    Ambiguous,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
@@ -1078,7 +1135,7 @@ mod tests {
     #[test]
     fn the_wire_schema_fingerprint_is_pinned() {
         assert_eq!(
-            SCHEMA_FINGERPRINT, 0x9929_c60e_52ba_1eac,
+            SCHEMA_FINGERPRINT, 0xfcfb_3c03_4245_57b2,
             "the generator wire schema changed; every guest must be rebuilt"
         );
     }
@@ -1086,7 +1143,7 @@ mod tests {
     #[test]
     fn the_compatibility_token_is_pinned() {
         assert_eq!(
-            COMPATIBILITY_TOKEN, 0xb5b9_30b4_c338_39f8,
+            COMPATIBILITY_TOKEN, 0x24a2_4159_65ee_ea64,
             "the generator ABI contract changed; every guest must be rebuilt"
         );
     }

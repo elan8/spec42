@@ -4,13 +4,14 @@ use std::sync::{Arc, Mutex};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use spec42_generator_protocol::{
-    DiagramEdge, DiagramEdgeKind, DiagramElement, DiagramIncompleteReason, DiagramNotationRole,
-    DiagramRelationship, DiagramRelationshipTarget, DiagramSemanticReference, DiagramSourceDomain,
-    DiagramViewKind, DiagramViewMetadata, DiagramViewProjection, DiagramViewSummary,
-    ElementIdentity, ProjectionCompleteness, ProjectionFeature, SourceReference,
-    StateMachineIdentity, StateMachineSummary, StateTransitionEdge, StateTransitionNode,
-    StateTransitionNodeKind, StateTransitionViewProjection, StateTransitionViewSummary,
-    TransitionTrigger,
+    DiagramCompartment, DiagramCompartmentKind, DiagramCompartmentProvenance, DiagramEdge,
+    DiagramEdgeKind, DiagramElement, DiagramIncompleteReason, DiagramNotationRole,
+    DiagramRelationship, DiagramRelationshipTarget, DiagramScene, DiagramSemanticReference,
+    DiagramSourceDomain, DiagramViewKind, DiagramViewMetadata, DiagramViewProjection,
+    DiagramViewSummary, ElementIdentity, ProjectionCompleteness, ProjectionFeature,
+    SourceReference, StateMachineIdentity, StateMachineSummary, StateTransitionEdge,
+    StateTransitionNode, StateTransitionNodeKind, StateTransitionScene,
+    StateTransitionViewProjection, StateTransitionViewSummary, TransitionTrigger,
 };
 use spec42_generator_protocol::{Metaclass, RelationshipKind as ApiRelationshipKind};
 use sysml_query::resolved_slice::{
@@ -691,7 +692,7 @@ impl GeneratorModelView {
         let elements = projection
             .elements
             .iter()
-            .map(|element| DiagramElement {
+            .map(|element| Ok(DiagramElement {
                 reference: self
                     .diagram_reference(&element.semantic_id)
                     .expect("published diagram element"),
@@ -703,8 +704,31 @@ impl GeneratorModelView {
                         .expect("published diagram owner")
                 }),
                 source: source_reference(&element.source),
-            })
-            .collect::<Vec<_>>();
+                compartments: element.compartments.iter().map(|compartment| {
+                    Ok(DiagramCompartment {
+                        kind: match compartment.kind {
+                            sysml_query::resolved_slice::DiagramCompartmentKind::Attributes => DiagramCompartmentKind::Attributes,
+                            sysml_query::resolved_slice::DiagramCompartmentKind::Parts => DiagramCompartmentKind::Parts,
+                            sysml_query::resolved_slice::DiagramCompartmentKind::Ports => DiagramCompartmentKind::Ports,
+                            sysml_query::resolved_slice::DiagramCompartmentKind::Items => DiagramCompartmentKind::Items,
+                            sysml_query::resolved_slice::DiagramCompartmentKind::Constraints => DiagramCompartmentKind::Constraints,
+                            sysml_query::resolved_slice::DiagramCompartmentKind::Requirements => DiagramCompartmentKind::Requirements,
+                            sysml_query::resolved_slice::DiagramCompartmentKind::Actions => DiagramCompartmentKind::Actions,
+                            sysml_query::resolved_slice::DiagramCompartmentKind::States => DiagramCompartmentKind::States,
+                            sysml_query::resolved_slice::DiagramCompartmentKind::Calculations => DiagramCompartmentKind::Calculations,
+                            sysml_query::resolved_slice::DiagramCompartmentKind::Connections => DiagramCompartmentKind::Connections,
+                            sysml_query::resolved_slice::DiagramCompartmentKind::Interfaces => DiagramCompartmentKind::Interfaces,
+                            sysml_query::resolved_slice::DiagramCompartmentKind::Occurrences => DiagramCompartmentKind::Occurrences,
+                        },
+                        provenance: match compartment.provenance {
+                            sysml_query::resolved_slice::DiagramCompartmentProvenance::Direct => DiagramCompartmentProvenance::Direct,
+                            sysml_query::resolved_slice::DiagramCompartmentProvenance::Inherited => DiagramCompartmentProvenance::Inherited,
+                        },
+                        members: compartment.members.iter().map(|member| self.diagram_reference(member)).collect::<Result<Vec<_>, _>>()?,
+                    })
+                }).collect::<Result<Vec<_>, ModelQueryError>>()?,
+            }))
+            .collect::<Result<Vec<_>, ModelQueryError>>()?;
         let relationships = projection
             .relationships
             .iter()
@@ -818,6 +842,130 @@ impl GeneratorModelView {
             .map(|reason| self.diagram_incomplete_reason(reason))
             .collect::<Result<Vec<_>, _>>()?;
         let metadata = diagram_metadata(view.kind, &roots, &elements, &relationships);
+        let scene_feature =
+            |feature: &sysml_query::resolved_slice::DiagramTransitionFeature| match feature {
+                sysml_query::resolved_slice::DiagramTransitionFeature::Absent => {
+                    ProjectionFeature::Absent
+                }
+                sysml_query::resolved_slice::DiagramTransitionFeature::Resolved {
+                    label,
+                    source,
+                    ..
+                } => ProjectionFeature::Supported {
+                    label: label.to_string(),
+                    source: source_reference(source),
+                },
+                sysml_query::resolved_slice::DiagramTransitionFeature::Unresolved => {
+                    ProjectionFeature::Unresolved
+                }
+                sysml_query::resolved_slice::DiagramTransitionFeature::Ambiguous => {
+                    ProjectionFeature::Ambiguous
+                }
+                sysml_query::resolved_slice::DiagramTransitionFeature::Unsupported => {
+                    ProjectionFeature::Unsupported {
+                        reason: unsupported("scene-feature", "the semantic feature is unsupported"),
+                    }
+                }
+            };
+        let scene = match &projection.scene {
+            sysml_query::resolved_slice::DiagramScene::General => DiagramScene::General,
+            sysml_query::resolved_slice::DiagramScene::Interconnection => {
+                DiagramScene::Interconnection
+            }
+            sysml_query::resolved_slice::DiagramScene::ActionFlow => DiagramScene::ActionFlow,
+            sysml_query::resolved_slice::DiagramScene::Sequence => DiagramScene::Sequence,
+            sysml_query::resolved_slice::DiagramScene::Browser => DiagramScene::Browser,
+            sysml_query::resolved_slice::DiagramScene::Grid => DiagramScene::Grid,
+            sysml_query::resolved_slice::DiagramScene::Geometry => DiagramScene::Geometry,
+            sysml_query::resolved_slice::DiagramScene::StateTransition(state) => {
+                let machine = state
+                    .machine
+                    .as_ref()
+                    .map(|identity| {
+                        let entry = self.by_identity.get(identity).ok_or_else(|| {
+                            ModelQueryError::Unresolved(
+                                "state-machine scene frame is absent from publication".into(),
+                            )
+                        })?;
+                        Ok(StateMachineSummary {
+                            semantic_id: identity.as_str().to_owned(),
+                            label: display_label(&entry.entry),
+                            source: source_reference(&entry.entry.location),
+                        })
+                    })
+                    .transpose()?;
+                let vertices = state
+                    .vertices
+                    .iter()
+                    .map(|vertex| StateTransitionNode {
+                        semantic_id: vertex.semantic_id.as_str().to_owned(),
+                        label: vertex.label.to_string(),
+                        kind: match vertex.kind {
+                            sysml_query::resolved_slice::DiagramStateVertexKind::Initial => {
+                                StateTransitionNodeKind::Initial
+                            }
+                            sysml_query::resolved_slice::DiagramStateVertexKind::State => {
+                                StateTransitionNodeKind::State
+                            }
+                            sysml_query::resolved_slice::DiagramStateVertexKind::Final => {
+                                StateTransitionNodeKind::Final
+                            }
+                        },
+                        source: source_reference(&vertex.source),
+                    })
+                    .collect();
+                let transitions = state
+                    .transitions
+                    .iter()
+                    .map(|transition| StateTransitionEdge {
+                        semantic_id: transition.semantic_id.to_string(),
+                        label: transition.label.as_deref().map(str::to_owned),
+                        source: transition.source.as_str().to_owned(),
+                        target: transition.target.as_str().to_owned(),
+                        trigger: match &transition.trigger {
+                            sysml_query::resolved_slice::DiagramTransitionFeature::Absent => {
+                                TransitionTrigger::None
+                            }
+                            sysml_query::resolved_slice::DiagramTransitionFeature::Resolved {
+                                label,
+                                target,
+                                source,
+                            } => TransitionTrigger::Accept {
+                                label: label.to_string(),
+                                target: Some(ElementIdentity {
+                                    semantic_id: target.as_str().to_owned(),
+                                    label: label.to_string(),
+                                }),
+                                source: source_reference(source),
+                            },
+                            sysml_query::resolved_slice::DiagramTransitionFeature::Unresolved => {
+                                TransitionTrigger::Unresolved
+                            }
+                            sysml_query::resolved_slice::DiagramTransitionFeature::Ambiguous => {
+                                TransitionTrigger::Ambiguous
+                            }
+                            sysml_query::resolved_slice::DiagramTransitionFeature::Unsupported => {
+                                TransitionTrigger::Unsupported {
+                                    reason: unsupported(
+                                        "trigger",
+                                        "the transition trigger is unsupported",
+                                    ),
+                                }
+                            }
+                        },
+                        guard: scene_feature(&transition.guard),
+                        effect: scene_feature(&transition.effect),
+                        provenance: relationship_provenance(transition.provenance),
+                        source_reference: source_reference(&transition.source_location),
+                    })
+                    .collect();
+                DiagramScene::StateTransition(StateTransitionScene {
+                    machine,
+                    vertices,
+                    transitions,
+                })
+            }
+        };
         Ok(DiagramViewProjection {
             schema_version: 1,
             model_digest: self.model_digest.clone(),
@@ -838,6 +986,7 @@ impl GeneratorModelView {
             relationships,
             edges,
             metadata,
+            scene,
         })
     }
 

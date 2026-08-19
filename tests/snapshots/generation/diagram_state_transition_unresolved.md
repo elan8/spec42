@@ -98,7 +98,7 @@ package StateNegative {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 2,
+  "schemaVersion": 4,
   "modelDigest": "blake3:f2bff039d27b91c59ab68dc83babae22ff99cc8f47aa33c3ee4166c34eea6659",
   "documents": [
     {
@@ -165,7 +165,13 @@ package StateNegative {
       "states": []
     },
     "nodes": [],
-    "relationships": []
+    "relationships": [],
+    "scene": {
+      "frame": null,
+      "kind": "state-transition",
+      "transitions": [],
+      "vertices": []
+    }
   }
 }
 
