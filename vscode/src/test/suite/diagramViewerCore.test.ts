@@ -13,6 +13,7 @@ import {
   parseSourceNavigation,
   selectSingleDiagramJson,
 } from "../../diagram/diagramViewerCore";
+import { isEmptyIncompleteDiagramProduct } from "../../diagram/diagramProductState";
 
 describe("diagram viewer core", () => {
   it("builds a bounded saved-file generation invocation", () => {
@@ -146,7 +147,16 @@ describe("diagram viewer core", () => {
         metadata: { roots: [] },
       },
     };
-    assert.deepEqual(parseDiagramProduct(JSON.stringify(value)), value);
+    const product = parseDiagramProduct(JSON.stringify(value));
+    assert.deepEqual(product, value);
+    assert.equal(isEmptyIncompleteDiagramProduct(product), true);
+    assert.equal(isEmptyIncompleteDiagramProduct({
+      ...product,
+      projection: {
+        ...product.projection,
+        nodes: [{ reference: 0, metaclass: "PartUsage", name: "visible", owner: null, source: 0 }],
+      },
+    }), false);
     assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, schemaVersion: 1 })));
     assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, projection: { ...value.projection, kind: "grid-view" } })));
     assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, selectedView: { ...value.selectedView, reference: 1 } })));

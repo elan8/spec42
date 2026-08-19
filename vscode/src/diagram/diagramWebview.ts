@@ -1,19 +1,16 @@
 import { prepareViewData } from "../../diagram-renderer/src/prepare";
 import { renderVisualization } from "../../diagram-renderer/src/renderer";
+import type { DiagramProduct } from "./diagramViewerCore";
+import { isEmptyIncompleteDiagramProduct } from "./diagramProductState";
 
 declare function acquireVsCodeApi(): { postMessage(message: unknown): void };
-
-type Product = {
-  completeness: { status: string; reasons: Array<{ code: string }> };
-  projection: { elements: unknown[] };
-};
 
 async function main(): Promise<void> {
   const target = document.getElementById("diagram");
   const source = document.getElementById("diagram-product");
   if (!(target instanceof HTMLElement) || !source?.textContent) return;
-  const product = JSON.parse(source.textContent) as Product;
-  if (product.projection.elements.length === 0 && product.completeness.status !== "complete") {
+  const product = JSON.parse(source.textContent) as DiagramProduct;
+  if (isEmptyIncompleteDiagramProduct(product)) {
     const empty = document.createElement("div");
     empty.className = "empty";
     empty.textContent = product.completeness.reasons.map((reason) => reason.code).join(" ");
