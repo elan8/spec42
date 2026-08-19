@@ -27,6 +27,11 @@ describe("timer repository product through the bundled webview path", () => {
     expect(prepared.edges.every((edge) =>
       prepared.nodes.some((node) => node.id === edge.source)
       && prepared.nodes.some((node) => node.id === edge.target))).toBe(true);
+    const timer = prepared.nodes.find((node) => node.label === "timerInstance");
+    expect(timer?.attributes?.typedByName).toBe("KitchenTimer");
+    const partMembers = (timer?.attributes?.typedCompartments as Array<Record<string, unknown>>)
+      .find((compartment) => compartment.kind === "parts")?.members as Array<Record<string, unknown>>;
+    expect(partMembers.find((member) => member.name === "pcb")?.typeName).toBe("TimerPCB");
 
     const layout = await layoutPrepared(prepared);
     expect(layout.nodes.length).toBeGreaterThan(0);
@@ -40,6 +45,7 @@ describe("timer repository product through the bundled webview path", () => {
     const svg = controller.exportSvg();
     expect(svg).toContain("<svg");
     expect(svg).toContain("general-node");
+    expect(svg).toContain("KitchenTimer");
     expect(target.querySelectorAll("[data-node-id]").length).toBeGreaterThan(0);
     controller.destroy();
   });

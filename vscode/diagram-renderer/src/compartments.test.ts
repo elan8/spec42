@@ -28,7 +28,7 @@ describe("General View node details", () => {
     expect(compartments.attributes.map((item) => item.displayText)).toEqual(["mass : Kilogram"]);
     expect(compartments.parts.map((item) => item.displayText)).toEqual(["wheels : WheelSet"]);
     expect(compartments.ports.map((item) => item.displayText)).toEqual(["powerIn : PowerPort"]);
-    expect(compartments.collapsibleSections?.map((section) => section.title)).toEqual(["Inherited Attributes"]);
+    expect(compartments.collapsibleSections?.map((section) => section.title)).toEqual(["Attributes"]);
   });
 
   it("prefers structured backend detail groups and keeps inherited sections collapsed", () => {
@@ -64,8 +64,8 @@ describe("General View node details", () => {
         items: section.items.map((item) => item.displayText),
       })),
     ).toEqual([
-      { title: "Inherited Attributes", collapsed: true, items: ["range : Kilometer"] },
-      { title: "Inherited Parts", collapsed: true, items: ["engine : Engine"] },
+      { title: "Attributes", collapsed: true, items: ["range : Kilometer"] },
+      { title: "Parts", collapsed: true, items: ["engine : Engine"] },
     ]);
   });
 

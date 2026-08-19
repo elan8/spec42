@@ -335,10 +335,12 @@ scripts/setup-macos-vscode-qa.sh
 ```
 
 The script builds the repository generator plugins and embedded-stdlib server, installs locked npm
-dependencies, packages and installs the VSIX beneath `/tmp/spec42-vscode-qa`, creates a compact
-state-transition QA workspace, and opens it with isolated extension and user-data directories. Pass `--no-open` to
-prepare the environment without launching VS Code. Set `SPEC42_VSCODE_QA_DIR` to use another state
-directory.
+dependencies, packages and installs the VSIX beneath the repository-local, gitignored
+`.cache/vscode-qa-<ABI token>` directory, creates a compact state-transition QA workspace, and opens
+it with isolated extension and user-data directories. The durable profile retains workspace trust
+and QA-specific settings across rebuilds. Pass `--no-open` to prepare the environment without
+launching VS Code. Set `SPEC42_VSCODE_QA_DIR` to use a different state directory, including a
+throwaway directory when testing profile initialization.
 
 For the lighter Extension Development Host workflow:
 

@@ -215,7 +215,7 @@ export function collectCompartmentsFromElement(element: unknown): SysMLNodeCompa
   if (inheritedAttributes.length > 0) {
     result.collapsibleSections!.push({
       key: "inherited-attributes",
-      title: "Inherited Attributes",
+      title: "Attributes",
       items: inheritedAttributes,
       collapsed: true,
       showAll: false,
@@ -225,7 +225,7 @@ export function collectCompartmentsFromElement(element: unknown): SysMLNodeCompa
   if (inheritedParts.length > 0) {
     result.collapsibleSections!.push({
       key: "inherited-parts",
-      title: "Inherited Parts",
+      title: "Parts",
       items: inheritedParts,
       collapsed: true,
       showAll: false,
@@ -338,6 +338,7 @@ export function collectCompartments(node: {
 }): SysMLNodeCompartments {
   const attributes = node.attributes ?? {};
   const typedByName =
+    asString(attributes.typedByName) ||
     asString(attributes.partType) ||
     asString(attributes.type) ||
     asString(attributes.typedBy) ||
@@ -367,12 +368,14 @@ export function collectCompartments(node: {
     const inherited = asString(compartment.provenance) === "inherited";
     const items = asArray(compartment.members).map((member) => {
       const record = member && typeof member === "object" ? member as Record<string, unknown> : {};
-      return normalizeDetailItem({ name: asString(record.name, "Unnamed"), displayText: asString(record.name, "Unnamed") });
+      const name = asString(record.name, "Unnamed");
+      const typeName = asString(record.typeName);
+      return normalizeDetailItem({ name, typeName, displayText: typeName ? `${name} : ${typeName}` : name });
     }).filter((item): item is SysMLNodeDetailItem => Boolean(item));
     if (items.length > 0) {
       collapsibleSections.push({
         key: `${inherited ? "inherited" : "direct"}-${kind}`,
-        title: `${inherited ? "Inherited " : ""}${titleFor(kind)}`,
+        title: titleFor(kind),
         items,
         collapsed: inherited,
       });
@@ -381,7 +384,7 @@ export function collectCompartments(node: {
   if (inheritedAttributes.length > 0) {
     collapsibleSections.push({
       key: "inherited-attributes",
-      title: "Inherited Attributes",
+      title: "Attributes",
       items: inheritedAttributes,
       collapsed: true,
     });
@@ -389,7 +392,7 @@ export function collectCompartments(node: {
   if (inheritedParts.length > 0) {
     collapsibleSections.push({
       key: "inherited-parts",
-      title: "Inherited Parts",
+      title: "Parts",
       items: inheritedParts,
       collapsed: true,
     });

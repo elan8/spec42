@@ -35,7 +35,9 @@ describe("timer typed State Transition scene", () => {
     Object.defineProperty(target, "clientHeight", { value: 900, configurable: true });
     const controller = await renderVisualization(target, prepared, { theme: { colorScheme: "light" } });
     expect(target.querySelectorAll(".state-transition-node")).toHaveLength(5);
-    expect(target.querySelectorAll(".state-transition-edge")).toHaveLength(9);
+    const renderedRoutes = Array.from(target.querySelectorAll(".state-transition-edge"));
+    expect(renderedRoutes).toHaveLength(9);
+    expect(renderedRoutes.every((route) => (route.getAttribute("d") ?? "").trim().length > 0)).toBe(true);
     expect(target.textContent).toContain("StartPressed");
     expect(target.textContent).not.toContain("to_paused");
     controller.destroy();

@@ -1878,6 +1878,37 @@ fn classify_constraint_node(node: &Expression, ordinal: &mut u32) -> Option<Eval
     }
 }
 
+fn classify_filter_predicate(node: &Expression, metadata_ordinal: &mut u32) -> FilterPredicate {
+    match node {
+        Expression::LiteralBoolean(value) => FilterPredicate::Boolean(*value),
+        Expression::Classification { .. } => {
+            let ordinal = *metadata_ordinal;
+            *metadata_ordinal = metadata_ordinal.saturating_add(1);
+            FilterPredicate::Metadata(ordinal)
+        }
+        Expression::Parenthesized(inner) => {
+            classify_filter_predicate(&inner.value, metadata_ordinal)
+        }
+        Expression::BinaryOp { op, left, right }
+            if matches!(op, BinaryOperator::And | BinaryOperator::BitAnd) =>
+        {
+            FilterPredicate::And(
+                Box::new(classify_filter_predicate(&left.value, metadata_ordinal)),
+                Box::new(classify_filter_predicate(&right.value, metadata_ordinal)),
+            )
+        }
+        Expression::BinaryOp { op, left, right }
+            if matches!(op, BinaryOperator::Or | BinaryOperator::BitOr) =>
+        {
+            FilterPredicate::Or(
+                Box::new(classify_filter_predicate(&left.value, metadata_ordinal)),
+                Box::new(classify_filter_predicate(&right.value, metadata_ordinal)),
+            )
+        }
+        _ => FilterPredicate::Unsupported,
+    }
+}
+
 /// Recursively builds the `EvalNode` mirror for a calc-body expression, mirroring
 /// `lower_calc_expression`'s supported shapes: no comparison-operator support (calc bodies stay
 /// comparison-free, per slice 1), plus slice 4's arithmetic `BinaryOp` (`Add`/`Sub`/`Mul`/`Div`/
@@ -2755,6 +2786,18 @@ struct AuthoredFilterCondition {
     /// The condition expression's own range.
     span: Span,
     shape: ExpressionEvalShape,
+    predicate: FilterPredicate,
+}
+
+/// Candidate-dependent portion of a view condition. Unlike ordinary constant evaluation, an
+/// `@Metadata` test has no truth value until an exposed element is supplied.
+#[derive(Debug, Clone)]
+enum FilterPredicate {
+    Boolean(bool),
+    Metadata(u32),
+    And(Box<FilterPredicate>, Box<FilterPredicate>),
+    Or(Box<FilterPredicate>, Box<FilterPredicate>),
+    Unsupported,
 }
 
 /// One authored invocation, paired with the callee reference that names what it invokes.
@@ -3552,6 +3595,7 @@ impl SemanticModelBuilder {
         form: FilterForm,
         span: Span,
         shape: ExpressionEvalShape,
+        predicate: FilterPredicate,
     ) -> Result<(), ConstructionError> {
         self.filter_conditions.push(AuthoredFilterCondition {
             owner,
@@ -3559,6 +3603,7 @@ impl SemanticModelBuilder {
             form,
             span,
             shape,
+            predicate,
         });
         Ok(())
     }
@@ -8775,7 +8820,20 @@ impl SemanticModelBuilder {
             &condition.value,
             self.expression_operand_offset(owner),
         );
-        self.push_filter_condition(owner, document, form, condition.span.clone(), shape)?;
+        let mut metadata_ordinal = self
+            .next_reference_ordinals
+            .get(&(owner, ReferenceKind::FilterMetadataTest))
+            .copied()
+            .unwrap_or(0);
+        let predicate = classify_filter_predicate(&condition.value, &mut metadata_ordinal);
+        self.push_filter_condition(
+            owner,
+            document,
+            form,
+            condition.span.clone(),
+            shape,
+            predicate,
+        )?;
         self.lower_filter_expression(document, owner, condition)
     }
 
@@ -14453,9 +14511,8 @@ mod tests {
             "expected an enum-def declaration, got:\n{output}"
         );
         assert!(
-            output.contains(
-                "(qualified-name \"Demo::StatusKind::approved\"))) (kind enum-literal)"
-            ),
+            output
+                .contains("(qualified-name \"Demo::StatusKind::approved\"))) (kind enum-literal)"),
             "expected an owned enum-literal declaration with its own qualified name, got:\n{output}"
         );
     }

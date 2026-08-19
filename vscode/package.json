@@ -179,6 +179,11 @@
         "category": "Spec42"
       },
       {
+        "command": "spec42.diagram.copyJson",
+        "title": "Copy Diagram JSON",
+        "category": "Spec42"
+      },
+      {
         "command": "spec42.examples.refresh",
         "title": "Refresh Examples View",
         "icon": "$(refresh)",

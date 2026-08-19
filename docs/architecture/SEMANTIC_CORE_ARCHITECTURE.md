@@ -62,6 +62,16 @@ qualified name, a source URI, or a generator handle. Standard/external library d
 retain their admitted source identity and provenance; a matching qualified name does not merge
 them with a workspace declaration.
 
+## View selection
+
+Candidate-dependent view conditions are semantic facts owned by `sysml_resolution`. The typed
+`view_selection` query applies every owned and inherited view condition to one exposed candidate.
+Supported metadata-classification predicates retain their resolved metadata identities, Boolean
+`and`/`or` uses three-valued evaluation, and separate conditions are conjunctive. The result is
+included, excluded, or explicitly indeterminate with unresolved, ambiguous, or unsupported
+predicate evidence. Diagram generators and hosts consume that answer; they do not inspect filter
+syntax or metadata display names.
+
 ## Deliberately disabled products
 
 - Diagram layout and render caches remain outside the semantic core. The resolution-owned typed

@@ -10,7 +10,11 @@ with open(sys.argv[1], encoding="utf-8") as stream:
 	print(json.load(stream)["compatibilityToken"].removeprefix("0x"))
 PY
 )
-qa_dir=${SPEC42_VSCODE_QA_DIR:-"/tmp/spec42-vscode-qa-$abi_token"}
+if [[ -n "${SPEC42_VSCODE_QA_DIR:-}" ]]; then
+	qa_dir=$SPEC42_VSCODE_QA_DIR
+else
+	qa_dir="$root_dir/.cache/vscode-qa-$abi_token"
+fi
 target_dir="$qa_dir/cargo-target"
 vsix_path="$qa_dir/spec42-local-qa.vsix"
 workspace_path="$qa_dir/spec42-diagram-qa.code-workspace"
@@ -31,7 +35,7 @@ Spec42 server, Rust diagram generator, and D3/ELK diagram webview. It does not
 change global VS Code settings or the normal extension directory.
 
 Environment override:
-  SPEC42_VSCODE_QA_DIR   generated QA state (default: /tmp/spec42-vscode-qa-<ABI token>)
+  SPEC42_VSCODE_QA_DIR   use a different QA state directory
 EOF
 }
 

@@ -152,7 +152,7 @@ package StateExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 4,
+  "schemaVersion": 5,
   "modelDigest": "blake3:a4f484005023617686514807b29c4c7620cbdb76bb3db5383c36203c01f871b9",
   "documents": [
     {
@@ -303,7 +303,7 @@ package StateExample {
     },
     {
       "kind": "relationship",
-      "ordinal": 2,
+      "ordinal": 1,
       "relationshipKind": "containment",
       "source": 0
     },
@@ -312,46 +312,46 @@ package StateExample {
       "ordinal": 3,
       "relationshipKind": "containment",
       "source": 0
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 5,
-      "relationshipKind": "containment",
-      "source": 0
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 3,
-      "relationshipKind": "initialState",
-      "source": 1
     },
     {
       "kind": "relationship",
       "ordinal": 4,
+      "relationshipKind": "containment",
+      "source": 0
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 0,
       "relationshipKind": "initialState",
       "source": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 0,
+      "ordinal": 2,
+      "relationshipKind": "initialState",
+      "source": 1
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 1,
       "relationshipKind": "transitionSource",
       "source": 3
     },
     {
       "kind": "relationship",
-      "ordinal": 1,
+      "ordinal": 2,
       "relationshipKind": "transitionTarget",
       "source": 3
     },
     {
       "kind": "relationship",
-      "ordinal": 2,
+      "ordinal": 3,
       "relationshipKind": "transitionTrigger",
       "source": 3
     },
     {
       "kind": "relationship",
-      "ordinal": 1,
+      "ordinal": 5,
       "relationshipKind": "transition",
       "source": 4
     }
@@ -370,33 +370,17 @@ package StateExample {
     "edges": [
       {
         "kind": "containment",
-        "navigation": 5,
+        "navigation": 3,
         "provenance": "authored",
         "reference": 8,
         "source": 0,
-        "target": 1
-      },
-      {
-        "kind": "transition",
-        "navigation": 6,
-        "provenance": "authored",
-        "reference": 17,
-        "source": 4,
-        "target": 2
-      },
-      {
-        "kind": "containment",
-        "navigation": 4,
-        "provenance": "authored",
-        "reference": 9,
-        "source": 0,
-        "target": 2
+        "target": 4
       },
       {
         "kind": "containment",
         "navigation": 1,
         "provenance": "authored",
-        "reference": 10,
+        "reference": 9,
         "source": 0,
         "target": 3
       },
@@ -410,11 +394,27 @@ package StateExample {
       },
       {
         "kind": "containment",
-        "navigation": 3,
+        "navigation": 4,
+        "provenance": "authored",
+        "reference": 10,
+        "source": 0,
+        "target": 2
+      },
+      {
+        "kind": "containment",
+        "navigation": 5,
         "provenance": "authored",
         "reference": 11,
         "source": 0,
-        "target": 4
+        "target": 1
+      },
+      {
+        "kind": "transition",
+        "navigation": 6,
+        "provenance": "authored",
+        "reference": 17,
+        "source": 4,
+        "target": 2
       }
     ],
     "exposedRoots": [
@@ -450,7 +450,10 @@ package StateExample {
         "notationRole": "definition",
         "owner": null,
         "reference": 0,
-        "source": 0
+        "source": 0,
+        "typing": {
+          "status": "absent"
+        }
       },
       {
         "compartments": [],
@@ -459,7 +462,10 @@ package StateExample {
         "notationRole": "usage",
         "owner": 0,
         "reference": 3,
-        "source": 5
+        "source": 5,
+        "typing": {
+          "status": "absent"
+        }
       },
       {
         "compartments": [],
@@ -468,7 +474,10 @@ package StateExample {
         "notationRole": "usage",
         "owner": 0,
         "reference": 2,
-        "source": 4
+        "source": 4,
+        "typing": {
+          "status": "absent"
+        }
       },
       {
         "compartments": [],
@@ -477,7 +486,10 @@ package StateExample {
         "notationRole": "unsupported",
         "owner": 0,
         "reference": 7,
-        "source": 1
+        "source": 1,
+        "typing": {
+          "status": "absent"
+        }
       },
       {
         "compartments": [],
@@ -486,10 +498,24 @@ package StateExample {
         "notationRole": "usage",
         "owner": 0,
         "reference": 4,
-        "source": 3
+        "source": 3,
+        "typing": {
+          "status": "absent"
+        }
       }
     ],
     "relationships": [
+      {
+        "kind": "initialState",
+        "navigation": 2,
+        "provenance": "authored",
+        "reference": 12,
+        "source": 3,
+        "target": {
+          "node": 4,
+          "status": "resolved"
+        }
+      },
       {
         "kind": "transitionSource",
         "navigation": 6,
@@ -522,17 +548,6 @@ package StateExample {
           "reference": 5,
           "status": "resolved"
         }
-      },
-      {
-        "kind": "initialState",
-        "navigation": 2,
-        "provenance": "authored",
-        "reference": 12,
-        "source": 3,
-        "target": {
-          "node": 4,
-          "status": "resolved"
-        }
       }
     ],
     "scene": {
@@ -550,7 +565,24 @@ package StateExample {
           "guard": {
             "status": "absent"
           },
-          "id": "element/v154:memory://snapshot/diagram_state_transition_complete.md7:packagen12:StateExample1:09:state-defn7:Machine1:010:transitionn6:finish1:0#edge",
+          "id": "119:element/v154:memory://snapshot/diagram_state_transition_complete.md7:packagen12:StateExample1:09:state-defn7:Machine1:0139:element/v154:memory://snapshot/diagram_state_transition_complete.md7:packagen12:StateExample1:09:state-defn7:Machine1:013:initial-statea1:0#initial",
+          "label": null,
+          "navigation": 2,
+          "provenance": "authored",
+          "source": 1,
+          "target": 2,
+          "trigger": {
+            "status": "absent"
+          }
+        },
+        {
+          "effect": {
+            "status": "absent"
+          },
+          "guard": {
+            "status": "absent"
+          },
+          "id": "119:element/v154:memory://snapshot/diagram_state_transition_complete.md7:packagen12:StateExample1:09:state-defn7:Machine1:0144:element/v154:memory://snapshot/diagram_state_transition_complete.md7:packagen12:StateExample1:09:state-defn7:Machine1:010:transitionn6:finish1:0#edge",
           "label": "finish",
           "navigation": 6,
           "provenance": "authored",
@@ -564,23 +596,6 @@ package StateExample {
               "id": "element/v154:memory://snapshot/diagram_state_transition_complete.md7:packagen12:StateExample1:08:item-defn5:Start1:0",
               "label": "Start"
             }
-          }
-        },
-        {
-          "effect": {
-            "status": "absent"
-          },
-          "guard": {
-            "status": "absent"
-          },
-          "id": "element/v154:memory://snapshot/diagram_state_transition_complete.md7:packagen12:StateExample1:09:state-defn7:Machine1:013:initial-statea1:0#initial",
-          "label": null,
-          "navigation": 2,
-          "provenance": "authored",
-          "source": 1,
-          "target": 2,
-          "trigger": {
-            "status": "absent"
           }
         }
       ],

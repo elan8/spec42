@@ -70,9 +70,9 @@ describe("shared renderer", () => {
     expect(target.querySelector('[data-node-id="n:0"]')).toBeTruthy();
     expect(target.querySelector('[data-node-id="n:1"]')).toBeNull();
     expect(target.textContent).toContain("engine");
-    expect(target.querySelector(".general-hidden-relationships")?.textContent).toContain("1");
-    expect(target.querySelector(".general-hidden-relationships title")?.textContent).toContain("hidden");
-    expect(target.querySelector(".general-hidden-relationships")?.getAttribute("aria-label")).toContain("1 relationship");
+    expect(target.querySelector(".general-hidden-relationships")).toBeNull();
+    await new Promise((resolve) => setTimeout(resolve, 220));
+    const transformBefore = target.querySelector(".viz-root")?.getAttribute("transform");
 
     target.querySelector<SVGTextElement>('[data-node-id="n:0"] .general-node-toggle')?.dispatchEvent(
       new MouseEvent("click", { bubbles: true }),
@@ -82,6 +82,7 @@ describe("shared renderer", () => {
     }
     expect(target.querySelector('[data-node-id="n:1"]')).toBeTruthy();
     expect(target.querySelector(".general-hidden-relationships")).toBeNull();
+    expect(target.querySelector(".viz-root")?.getAttribute("transform")).toBe(transformBefore);
   });
 
   it("uses notation-neutral ink for all kinds", () => {
@@ -190,7 +191,7 @@ describe("shared renderer", () => {
     expect(target.textContent).toContain("Attributes");
     expect(target.textContent).toContain("Parts");
     expect(target.textContent).toContain("Ports");
-    expect(target.textContent).toContain("Inherited Attributes");
+    expect(target.textContent).toContain("Attributes");
     expect(
       target.querySelector('[data-node-id="vehicle-def"] [data-compartment-key="inherited-attributes"]')
         ?.getAttribute("aria-expanded"),

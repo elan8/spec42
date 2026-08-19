@@ -115,7 +115,6 @@ export async function renderVisualization(
 
   let bounds: ContentBounds;
   let generalRenderGeneration = 0;
-  let refitAfterGeneralRedraw: (() => void) | undefined;
   if (view === "action-flow-view") {
     addActionFlowMarkers(svg.select("defs").empty() ? svg.append("defs") : svg.select("defs"), theme);
     const drawStartedAt = Date.now();
@@ -168,22 +167,9 @@ export async function renderVisualization(
         const owner = node.attributes?.owner;
         return typeof owner === "number" ? `n:${owner}` : undefined;
       };
-      const nodeById = new Map(prepared.nodes.map((node) => [node.id, node]));
       const owners = new Set(
         prepared.nodes.map(ownerOf).filter((value): value is string => Boolean(value)),
       );
-      const isDescendantOf = (nodeId: string, ancestorId: string): boolean => {
-        const visited = new Set<string>();
-        let current = nodeById.get(nodeId);
-        while (current) {
-          const owner = ownerOf(current);
-          if (!owner || visited.has(owner)) return false;
-          if (owner === ancestorId) return true;
-          visited.add(owner);
-          current = nodeById.get(owner);
-        }
-        return false;
-      };
       const compartmentSectionStateFor = (nodeId: string): Record<string, boolean> | undefined => {
         const prefix = `${nodeId}\u0000`;
         let state: Record<string, boolean> | undefined;
@@ -238,14 +224,6 @@ export async function renderVisualization(
                   };
                 })
                 .filter((compartment) => (compartment.members as unknown[]).length > 0);
-            } else {
-              const hiddenRelationshipCount = prepared.edges.filter((edge) =>
-                (isDescendantOf(edge.source, node.id) && !visible.has(edge.source))
-                || (isDescendantOf(edge.target, node.id) && !visible.has(edge.target))
-              ).length;
-              if (hiddenRelationshipCount > 0) {
-                attributes.hiddenRelationshipCount = hiddenRelationshipCount;
-              }
             }
             const sections = compartmentSectionStateFor(node.id);
             if (sections) attributes.compartmentSectionState = sections;
@@ -284,7 +262,6 @@ export async function renderVisualization(
         drawEdges(root, nextLayout.edges, false, theme);
         drawNodes(root, nextLayout.nodes, generalOptions, false, theme);
         bounds = contentBounds(nextLayout);
-        refitAfterGeneralRedraw?.();
         if (focus?.refocusNodeControl) {
           restoreFocus(`[data-node-id="${focus.refocusNodeControl}"] .general-node-toggle`);
         } else if (focus?.refocusSection) {
@@ -324,7 +301,6 @@ export async function renderVisualization(
     );
   };
   fitView();
-  refitAfterGeneralRedraw = fitView;
   const destroyTooltips = installDiagramTooltips(target, prepared, theme);
   options.onPerformance?.("sharedRenderer:render", {
     view,

@@ -5,8 +5,9 @@ use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use spec42_generator_protocol::{
     DiagramCompartment, DiagramCompartmentKind, DiagramCompartmentProvenance, DiagramEdge,
-    DiagramEdgeKind, DiagramElement, DiagramIncompleteReason, DiagramNotationRole,
-    DiagramRelationship, DiagramRelationshipTarget, DiagramScene, DiagramSemanticReference,
+    DiagramEdgeKind, DiagramElement, DiagramEndpointOccurrence, DiagramIncompleteReason,
+    DiagramNotationRole, DiagramOccurrenceIdentity, DiagramRelationship,
+    DiagramRelationshipEndpoint, DiagramRelationshipTarget, DiagramScene, DiagramSemanticReference,
     DiagramSourceDomain, DiagramViewKind, DiagramViewMetadata, DiagramViewProjection,
     DiagramViewSummary, ElementIdentity, ProjectionCompleteness, ProjectionFeature,
     SourceReference, StateMachineIdentity, StateMachineSummary, StateTransitionEdge,
@@ -693,16 +694,34 @@ impl GeneratorModelView {
             .elements
             .iter()
             .map(|element| Ok(DiagramElement {
+                occurrence: self.diagram_occurrence(&element.occurrence_id)?,
                 reference: self
                     .diagram_reference(&element.semantic_id)
                     .expect("published diagram element"),
                 metaclass: api_metaclass(element.kind),
                 notation_role: diagram_notation_role(element.kind),
                 name: element.name.as_deref().map(str::to_owned),
-                owner: element.owner.as_ref().map(|owner| {
-                    self.diagram_reference(owner)
-                        .expect("published diagram owner")
-                }),
+                typing: match &element.typing {
+                    sysml_query::resolved_slice::DiagramElementTyping::Absent => spec42_generator_protocol::DiagramElementTyping::Absent,
+                    sysml_query::resolved_slice::DiagramElementTyping::Resolved(targets) => spec42_generator_protocol::DiagramElementTyping::Resolved(targets.iter().map(|target| {
+                        let target_entry = self.by_identity.get(target).ok_or_else(|| ModelQueryError::Unresolved("diagram typing target is absent from the publication".into()))?;
+                        Ok(spec42_generator_protocol::DiagramElementType { reference: self.diagram_reference(target)?, label: display_label(&target_entry.entry) })
+                    }).collect::<Result<Vec<_>, ModelQueryError>>()?),
+                    sysml_query::resolved_slice::DiagramElementTyping::Partial(targets) => spec42_generator_protocol::DiagramElementTyping::Partial(targets.iter().map(|target| {
+                        let target_entry = self.by_identity.get(target).ok_or_else(|| ModelQueryError::Unresolved("diagram typing target is absent from the publication".into()))?;
+                        Ok(spec42_generator_protocol::DiagramElementType { reference: self.diagram_reference(target)?, label: display_label(&target_entry.entry) })
+                    }).collect::<Result<Vec<_>, ModelQueryError>>()?),
+                    sysml_query::resolved_slice::DiagramElementTyping::Ambiguous(targets) => spec42_generator_protocol::DiagramElementTyping::Ambiguous(targets.iter().map(|target| self.diagram_reference(target)).collect::<Result<Vec<_>, _>>()?),
+                    sysml_query::resolved_slice::DiagramElementTyping::Unresolved => spec42_generator_protocol::DiagramElementTyping::Unresolved,
+                    sysml_query::resolved_slice::DiagramElementTyping::Unsupported => spec42_generator_protocol::DiagramElementTyping::Unsupported,
+                    sysml_query::resolved_slice::DiagramElementTyping::Recovery => spec42_generator_protocol::DiagramElementTyping::Recovery,
+                    sysml_query::resolved_slice::DiagramElementTyping::Incomplete => spec42_generator_protocol::DiagramElementTyping::Incomplete,
+                },
+                owner: element
+                    .owner
+                    .as_ref()
+                    .map(|owner| self.diagram_occurrence(owner))
+                    .transpose()?,
                 source: source_reference(&element.source),
                 compartments: element.compartments.iter().map(|compartment| {
                     Ok(DiagramCompartment {
@@ -724,7 +743,7 @@ impl GeneratorModelView {
                             sysml_query::resolved_slice::DiagramCompartmentProvenance::Direct => DiagramCompartmentProvenance::Direct,
                             sysml_query::resolved_slice::DiagramCompartmentProvenance::Inherited => DiagramCompartmentProvenance::Inherited,
                         },
-                        members: compartment.members.iter().map(|member| self.diagram_reference(member)).collect::<Result<Vec<_>, _>>()?,
+                        members: compartment.members.iter().map(|member| self.diagram_occurrence(member)).collect::<Result<Vec<_>, _>>()?,
                     })
                 }).collect::<Result<Vec<_>, ModelQueryError>>()?,
             }))
@@ -739,22 +758,25 @@ impl GeneratorModelView {
                 );
                 Ok(DiagramRelationship {
                     reference: self.diagram_relationship_reference(
-                        &relationship.source,
+                        &relationship.source_semantic_id,
                         kind.clone(),
                         ordinal,
                     )?,
-                    source_element: self.diagram_reference(&relationship.source)?,
+                    source_element: self.diagram_reference(&relationship.source_semantic_id)?,
+                    source_occurrence: self.diagram_occurrence(&relationship.source)?,
                     kind,
                     target: match &relationship.target {
                         sysml_query::resolved_slice::DiagramRelationshipTarget::Resolved(
                             target,
-                        ) => DiagramRelationshipTarget::Resolved(self.diagram_reference(target)?),
+                        ) => DiagramRelationshipTarget::Resolved(
+                            self.diagram_relationship_endpoint(target)?,
+                        ),
                         sysml_query::resolved_slice::DiagramRelationshipTarget::Ambiguous(
                             values,
                         ) => DiagramRelationshipTarget::Ambiguous(
                             values
                                 .iter()
-                                .map(|value| self.diagram_reference(value))
+                                .map(|value| self.diagram_relationship_endpoint(value))
                                 .collect::<Result<Vec<_>, _>>()?,
                         ),
                         sysml_query::resolved_slice::DiagramRelationshipTarget::Unresolved => {
@@ -818,12 +840,14 @@ impl GeneratorModelView {
                 };
                 Ok(DiagramEdge {
                     reference: self.diagram_relationship_reference(
-                        &edge.source,
+                        &edge.source_semantic_id,
                         reference_kind,
                         ordinal,
                     )?,
-                    source_element: self.diagram_reference(&edge.source)?,
-                    target_element: self.diagram_reference(&edge.target)?,
+                    source_element: self.diagram_reference(&edge.source_semantic_id)?,
+                    target_element: self.diagram_reference(&edge.target_semantic_id)?,
+                    source_occurrence: self.diagram_occurrence(&edge.source)?,
+                    target_occurrence: self.diagram_occurrence(&edge.target)?,
                     kind,
                     provenance: relationship_provenance(edge.provenance),
                     source: edge.source_location.as_ref().map(source_reference),
@@ -833,7 +857,12 @@ impl GeneratorModelView {
         let roots = projection
             .exposed_roots
             .iter()
-            .map(|root| self.diagram_reference(root))
+            .cloned()
+            .map(|root| {
+                self.diagram_occurrence(&sysml_query::resolved_slice::DiagramOccurrenceIdentity {
+                    semantic_path: vec![root].into_boxed_slice(),
+                })
+            })
             .collect::<Result<Vec<_>, _>>()?;
         let reasons = projection
             .incomplete_reasons
@@ -1298,6 +1327,44 @@ impl GeneratorModelView {
         }
     }
 
+    fn diagram_occurrence(
+        &self,
+        occurrence: &sysml_query::resolved_slice::DiagramOccurrenceIdentity,
+    ) -> Result<DiagramOccurrenceIdentity, ModelQueryError> {
+        Ok(DiagramOccurrenceIdentity {
+            semantic_path: occurrence
+                .semantic_path
+                .iter()
+                .map(|identity| self.diagram_reference(identity))
+                .collect::<Result<Vec<_>, _>>()?,
+        })
+    }
+
+    fn diagram_relationship_endpoint(
+        &self,
+        endpoint: &sysml_query::resolved_slice::DiagramRelationshipEndpoint,
+    ) -> Result<DiagramRelationshipEndpoint, ModelQueryError> {
+        Ok(DiagramRelationshipEndpoint {
+            reference: self.diagram_reference(&endpoint.semantic_id)?,
+            occurrence: match &endpoint.occurrence {
+                sysml_query::resolved_slice::DiagramEndpointOccurrence::Resolved(value) => {
+                    DiagramEndpointOccurrence::Resolved(self.diagram_occurrence(value)?)
+                }
+                sysml_query::resolved_slice::DiagramEndpointOccurrence::Ambiguous(values) => {
+                    DiagramEndpointOccurrence::Ambiguous(
+                        values
+                            .iter()
+                            .map(|value| self.diagram_occurrence(value))
+                            .collect::<Result<Vec<_>, _>>()?,
+                    )
+                }
+                sysml_query::resolved_slice::DiagramEndpointOccurrence::OutsideProjection => {
+                    DiagramEndpointOccurrence::OutsideProjection
+                }
+            },
+        })
+    }
+
     fn diagram_relationship_reference(
         &self,
         source: &SymbolIdentity,
@@ -1354,9 +1421,9 @@ impl GeneratorModelView {
                     relationship_kind: relationship.to_string(),
                 }
             }
-            Owned::ViewFilterApplicationUnavailable => {
-                DiagramIncompleteReason::ViewFilterApplicationUnavailable
-            }
+            Owned::ViewFilterUnresolved => DiagramIncompleteReason::ViewFilterUnresolved,
+            Owned::ViewFilterAmbiguous => DiagramIncompleteReason::ViewFilterAmbiguous,
+            Owned::ViewFilterUnsupported => DiagramIncompleteReason::ViewFilterUnsupported,
             Owned::GeometryFactsUnavailable => DiagramIncompleteReason::GeometryFactsUnavailable,
         })
     }
@@ -1506,7 +1573,7 @@ fn relationship_provenance(
 
 fn diagram_metadata(
     kind: DiagramViewKind,
-    roots: &[DiagramSemanticReference],
+    roots: &[DiagramOccurrenceIdentity],
     elements: &[DiagramElement],
     relationships: &[DiagramRelationship],
 ) -> DiagramViewMetadata {
@@ -1514,7 +1581,7 @@ fn diagram_metadata(
         elements
             .iter()
             .filter(|element| classes.contains(&element.metaclass))
-            .map(|element| element.reference.clone())
+            .map(|element| element.occurrence.clone())
             .collect::<Vec<_>>()
     };
     match kind {
@@ -1550,7 +1617,7 @@ fn diagram_metadata(
                 .filter(|relationship| {
                     relationship.kind == spec42_generator_protocol::RelationshipKind::InitialState
                 })
-                .map(|relationship| relationship.source_element.clone())
+                .map(|relationship| relationship.source_occurrence.clone())
                 .collect(),
             final_nodes: ids(&[Metaclass::FinalState]),
         },
@@ -1568,7 +1635,7 @@ fn diagram_metadata(
         DiagramViewKind::GridView => DiagramViewMetadata::Grid {
             rows: elements
                 .iter()
-                .map(|element| element.reference.clone())
+                .map(|element| element.occurrence.clone())
                 .collect(),
             columns: relationships
                 .iter()
@@ -1581,7 +1648,7 @@ fn diagram_metadata(
         DiagramViewKind::GeometryView => DiagramViewMetadata::Geometry {
             elements: elements
                 .iter()
-                .map(|element| element.reference.clone())
+                .map(|element| element.occurrence.clone())
                 .collect(),
             primitives: Vec::new(),
         },

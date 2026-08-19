@@ -2488,7 +2488,7 @@ package TimerGeometry {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 4,
+  "schemaVersion": 5,
   "modelDigest": "blake3:053e0d48cf420d56d4e4fa3d30c992fe6f093f648f6d3dea5d74091fba48200d",
   "documents": [
     {
@@ -4594,49 +4594,49 @@ package TimerGeometry {
     },
     {
       "kind": "relationship",
-      "ordinal": 37,
+      "ordinal": 0,
       "relationshipKind": "containment",
       "source": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 38,
+      "ordinal": 84,
       "relationshipKind": "containment",
       "source": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 39,
+      "ordinal": 91,
       "relationshipKind": "containment",
       "source": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 40,
+      "ordinal": 92,
       "relationshipKind": "containment",
       "source": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 41,
+      "ordinal": 93,
       "relationshipKind": "containment",
       "source": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 42,
+      "ordinal": 94,
       "relationshipKind": "containment",
       "source": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 43,
+      "ordinal": 95,
       "relationshipKind": "containment",
       "source": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 44,
+      "ordinal": 96,
       "relationshipKind": "containment",
       "source": 1
     },
@@ -4648,423 +4648,639 @@ package TimerGeometry {
     },
     {
       "kind": "relationship",
-      "ordinal": 28,
-      "relationshipKind": "initialState",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 34,
-      "relationshipKind": "initialState",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 16,
-      "relationshipKind": "transitionSource",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 17,
-      "relationshipKind": "transitionTarget",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 18,
-      "relationshipKind": "transitionTrigger",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 24,
-      "relationshipKind": "transition",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 37,
-      "relationshipKind": "typing",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 14,
-      "relationshipKind": "transition",
-      "source": 16
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 16,
-      "relationshipKind": "transition",
-      "source": 16
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 18,
-      "relationshipKind": "transition",
-      "source": 16
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 35,
-      "relationshipKind": "typing",
-      "source": 16
-    },
-    {
-      "kind": "relationship",
       "ordinal": 19,
-      "relationshipKind": "transitionSource",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 20,
-      "relationshipKind": "transitionTarget",
-      "source": 17
+      "relationshipKind": "initialState",
+      "source": 13
     },
     {
       "kind": "relationship",
       "ordinal": 21,
-      "relationshipKind": "transitionTrigger",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 20,
-      "relationshipKind": "transition",
-      "source": 18
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 22,
-      "relationshipKind": "transition",
-      "source": 18
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 36,
-      "relationshipKind": "typing",
-      "source": 18
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 12,
-      "relationshipKind": "transition",
-      "source": 19
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 26,
-      "relationshipKind": "transition",
-      "source": 19
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 38,
-      "relationshipKind": "typing",
-      "source": 19
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 10,
-      "relationshipKind": "transitionSource",
-      "source": 20
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 11,
-      "relationshipKind": "transitionTarget",
-      "source": 20
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 12,
-      "relationshipKind": "transitionTrigger",
-      "source": 20
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 28,
-      "relationshipKind": "transitionSource",
-      "source": 21
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 29,
-      "relationshipKind": "transitionTarget",
-      "source": 21
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 30,
-      "relationshipKind": "transitionTrigger",
-      "source": 21
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 25,
-      "relationshipKind": "transitionSource",
-      "source": 22
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 26,
-      "relationshipKind": "transitionTarget",
-      "source": 22
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 27,
-      "relationshipKind": "transitionTrigger",
-      "source": 22
+      "relationshipKind": "initialState",
+      "source": 13
     },
     {
       "kind": "relationship",
       "ordinal": 31,
       "relationshipKind": "transitionSource",
-      "source": 23
+      "source": 14
     },
     {
       "kind": "relationship",
       "ordinal": 32,
       "relationshipKind": "transitionTarget",
-      "source": 23
+      "source": 14
     },
     {
       "kind": "relationship",
       "ordinal": 33,
       "relationshipKind": "transitionTrigger",
-      "source": 23
+      "source": 14
     },
     {
       "kind": "relationship",
-      "ordinal": 13,
+      "ordinal": 39,
+      "relationshipKind": "transition",
+      "source": 15
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 20,
+      "relationshipKind": "typing",
+      "source": 15
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 29,
+      "relationshipKind": "transition",
+      "source": 16
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 31,
+      "relationshipKind": "transition",
+      "source": 16
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 33,
+      "relationshipKind": "transition",
+      "source": 16
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 17,
+      "relationshipKind": "typing",
+      "source": 16
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 34,
       "relationshipKind": "transitionSource",
-      "source": 24
+      "source": 17
     },
     {
       "kind": "relationship",
-      "ordinal": 14,
+      "ordinal": 35,
       "relationshipKind": "transitionTarget",
-      "source": 24
+      "source": 17
     },
     {
       "kind": "relationship",
-      "ordinal": 15,
+      "ordinal": 36,
       "relationshipKind": "transitionTrigger",
-      "source": 24
+      "source": 17
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 35,
+      "relationshipKind": "transition",
+      "source": 18
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 37,
+      "relationshipKind": "transition",
+      "source": 18
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 18,
+      "relationshipKind": "typing",
+      "source": 18
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 25,
+      "relationshipKind": "transition",
+      "source": 19
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 27,
+      "relationshipKind": "transition",
+      "source": 19
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 21,
+      "relationshipKind": "typing",
+      "source": 19
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 25,
+      "relationshipKind": "transitionSource",
+      "source": 20
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 26,
+      "relationshipKind": "transitionTarget",
+      "source": 20
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 27,
+      "relationshipKind": "transitionTrigger",
+      "source": 20
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 43,
+      "relationshipKind": "transitionSource",
+      "source": 21
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 44,
+      "relationshipKind": "transitionTarget",
+      "source": 21
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 45,
+      "relationshipKind": "transitionTrigger",
+      "source": 21
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 40,
+      "relationshipKind": "transitionSource",
+      "source": 22
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 41,
+      "relationshipKind": "transitionTarget",
+      "source": 22
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 42,
+      "relationshipKind": "transitionTrigger",
+      "source": 22
     },
     {
       "kind": "relationship",
       "ordinal": 22,
       "relationshipKind": "transitionSource",
-      "source": 25
+      "source": 23
     },
     {
       "kind": "relationship",
       "ordinal": 23,
       "relationshipKind": "transitionTarget",
-      "source": 25
+      "source": 23
     },
     {
       "kind": "relationship",
       "ordinal": 24,
       "relationshipKind": "transitionTrigger",
+      "source": 23
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 28,
+      "relationshipKind": "transitionSource",
+      "source": 24
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 29,
+      "relationshipKind": "transitionTarget",
+      "source": 24
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 30,
+      "relationshipKind": "transitionTrigger",
+      "source": 24
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 37,
+      "relationshipKind": "transitionSource",
       "source": 25
     },
     {
       "kind": "relationship",
-      "ordinal": 1,
+      "ordinal": 38,
+      "relationshipKind": "transitionTarget",
+      "source": 25
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 39,
+      "relationshipKind": "transitionTrigger",
+      "source": 25
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 4,
       "relationshipKind": "typing",
       "source": 28
     },
     {
       "kind": "relationship",
-      "ordinal": 5,
+      "ordinal": 61,
       "relationshipKind": "typing",
-      "source": 31
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 6,
-      "relationshipKind": "typing",
-      "source": 32
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 3,
-      "relationshipKind": "typing",
-      "source": 33
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 4,
-      "relationshipKind": "typing",
-      "source": 34
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 2,
-      "relationshipKind": "typing",
-      "source": 35
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 7,
-      "relationshipKind": "typing",
-      "source": 37
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 8,
-      "relationshipKind": "typing",
-      "source": 39
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 9,
-      "relationshipKind": "typing",
-      "source": 41
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 75,
-      "relationshipKind": "typing",
-      "source": 43
+      "source": 28
     },
     {
       "kind": "relationship",
       "ordinal": 73,
       "relationshipKind": "typing",
-      "source": 44
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 0,
-      "relationshipKind": "containment",
-      "source": 45
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 1,
-      "relationshipKind": "containment",
-      "source": 45
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 2,
-      "relationshipKind": "containment",
-      "source": 45
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 72,
-      "relationshipKind": "typing",
-      "source": 45
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 74,
-      "relationshipKind": "typing",
-      "source": 46
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 58,
-      "relationshipKind": "typing",
-      "source": 48
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 46,
-      "relationshipKind": "containment",
-      "source": 49
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 56,
-      "relationshipKind": "typing",
-      "source": 49
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 57,
-      "relationshipKind": "redefinition",
-      "source": 50
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 71,
-      "relationshipKind": "typing",
-      "source": 52
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 59,
-      "relationshipKind": "containment",
-      "source": 53
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 69,
-      "relationshipKind": "typing",
-      "source": 53
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 70,
-      "relationshipKind": "redefinition",
-      "source": 54
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 39,
-      "relationshipKind": "typing",
-      "source": 56
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 42,
-      "relationshipKind": "typing",
-      "source": 57
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 35,
-      "relationshipKind": "containment",
-      "source": 58
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 40,
-      "relationshipKind": "typing",
-      "source": 58
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 41,
-      "relationshipKind": "redefinition",
-      "source": 59
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 76,
-      "relationshipKind": "typing",
-      "source": 61
+      "source": 28
     },
     {
       "kind": "relationship",
       "ordinal": 80,
       "relationshipKind": "typing",
-      "source": 62
+      "source": 28
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 85,
+      "relationshipKind": "typing",
+      "source": 28
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 88,
+      "relationshipKind": "typing",
+      "source": 28
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 103,
+      "relationshipKind": "typing",
+      "source": 28
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 10,
+      "relationshipKind": "typing",
+      "source": 31
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 67,
+      "relationshipKind": "typing",
+      "source": 31
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 11,
+      "relationshipKind": "typing",
+      "source": 32
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 68,
+      "relationshipKind": "typing",
+      "source": 32
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 8,
+      "relationshipKind": "typing",
+      "source": 33
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 65,
+      "relationshipKind": "typing",
+      "source": 33
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 9,
+      "relationshipKind": "typing",
+      "source": 34
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 66,
+      "relationshipKind": "typing",
+      "source": 34
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 7,
+      "relationshipKind": "typing",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 64,
+      "relationshipKind": "typing",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 15,
+      "relationshipKind": "typing",
+      "source": 37
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 83,
+      "relationshipKind": "typing",
+      "source": 37
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 47,
+      "relationshipKind": "typing",
+      "source": 39
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 71,
+      "relationshipKind": "typing",
+      "source": 39
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 13,
+      "relationshipKind": "typing",
+      "source": 41
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 76,
+      "relationshipKind": "typing",
+      "source": 41
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 104,
+      "relationshipKind": "typing",
+      "source": 43
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 105,
+      "relationshipKind": "typing",
+      "source": 44
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 98,
+      "relationshipKind": "containment",
+      "source": 45
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 99,
+      "relationshipKind": "containment",
+      "source": 45
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 100,
+      "relationshipKind": "containment",
+      "source": 45
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 102,
+      "relationshipKind": "typing",
+      "source": 45
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 106,
+      "relationshipKind": "typing",
+      "source": 46
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 56,
+      "relationshipKind": "containment",
+      "source": 48
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 57,
+      "relationshipKind": "containment",
+      "source": 48
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 58,
+      "relationshipKind": "containment",
+      "source": 48
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 59,
+      "relationshipKind": "containment",
+      "source": 48
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 60,
+      "relationshipKind": "containment",
+      "source": 48
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 63,
+      "relationshipKind": "typing",
+      "source": 48
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 51,
+      "relationshipKind": "containment",
+      "source": 49
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 52,
+      "relationshipKind": "containment",
+      "source": 49
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 53,
+      "relationshipKind": "containment",
+      "source": 49
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 54,
+      "relationshipKind": "containment",
+      "source": 49
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 60,
+      "relationshipKind": "typing",
+      "source": 49
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 62,
+      "relationshipKind": "redefinition",
+      "source": 50
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 90,
+      "relationshipKind": "typing",
+      "source": 52
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 86,
+      "relationshipKind": "containment",
+      "source": 53
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 87,
+      "relationshipKind": "containment",
+      "source": 53
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 88,
+      "relationshipKind": "containment",
+      "source": 53
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 89,
+      "relationshipKind": "containment",
+      "source": 53
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 87,
+      "relationshipKind": "typing",
+      "source": 53
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 89,
+      "relationshipKind": "redefinition",
+      "source": 54
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 81,
+      "relationshipKind": "containment",
+      "source": 56
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 82,
+      "relationshipKind": "containment",
+      "source": 56
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 83,
+      "relationshipKind": "containment",
+      "source": 56
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 84,
+      "relationshipKind": "typing",
+      "source": 56
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 79,
+      "relationshipKind": "containment",
+      "source": 57
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 82,
+      "relationshipKind": "typing",
+      "source": 57
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 74,
+      "relationshipKind": "containment",
+      "source": 58
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 75,
+      "relationshipKind": "containment",
+      "source": 58
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 76,
+      "relationshipKind": "containment",
+      "source": 58
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 77,
+      "relationshipKind": "containment",
+      "source": 58
     },
     {
       "kind": "relationship",
       "ordinal": 79,
       "relationshipKind": "typing",
+      "source": 58
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 81,
+      "relationshipKind": "redefinition",
+      "source": 59
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 63,
+      "relationshipKind": "containment",
+      "source": 61
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 70,
+      "relationshipKind": "typing",
+      "source": 61
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 77,
+      "relationshipKind": "typing",
+      "source": 62
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 70,
+      "relationshipKind": "containment",
       "source": 63
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 75,
+      "relationshipKind": "typing",
+      "source": 63
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 65,
+      "relationshipKind": "containment",
+      "source": 64
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 66,
+      "relationshipKind": "containment",
+      "source": 64
     },
     {
       "kind": "relationship",
@@ -5074,133 +5290,169 @@ package TimerGeometry {
     },
     {
       "kind": "relationship",
-      "ordinal": 77,
+      "ordinal": 68,
+      "relationshipKind": "containment",
+      "source": 64
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 72,
       "relationshipKind": "typing",
       "source": 64
     },
     {
       "kind": "relationship",
-      "ordinal": 78,
+      "ordinal": 74,
       "relationshipKind": "redefinition",
       "source": 65
     },
     {
       "kind": "relationship",
-      "ordinal": 43,
+      "ordinal": 91,
       "relationshipKind": "memberAccessOperand",
       "source": 67
     },
     {
       "kind": "relationship",
-      "ordinal": 44,
+      "ordinal": 92,
       "relationshipKind": "memberAccessOperand",
       "source": 67
     },
     {
       "kind": "relationship",
-      "ordinal": 45,
+      "ordinal": 93,
       "relationshipKind": "memberAccessOperand",
       "source": 67
     },
     {
       "kind": "relationship",
-      "ordinal": 46,
+      "ordinal": 94,
       "relationshipKind": "memberAccessOperand",
       "source": 67
     },
     {
       "kind": "relationship",
-      "ordinal": 47,
+      "ordinal": 95,
       "relationshipKind": "memberAccessOperand",
       "source": 67
     },
     {
       "kind": "relationship",
-      "ordinal": 48,
+      "ordinal": 96,
       "relationshipKind": "memberAccessOperand",
       "source": 67
     },
     {
       "kind": "relationship",
-      "ordinal": 49,
+      "ordinal": 97,
       "relationshipKind": "memberAccessOperand",
       "source": 67
     },
     {
       "kind": "relationship",
-      "ordinal": 50,
+      "ordinal": 98,
       "relationshipKind": "memberAccessOperand",
       "source": 67
     },
     {
       "kind": "relationship",
-      "ordinal": 51,
+      "ordinal": 99,
       "relationshipKind": "memberAccessOperand",
       "source": 67
     },
     {
       "kind": "relationship",
-      "ordinal": 52,
+      "ordinal": 100,
       "relationshipKind": "memberAccessOperand",
       "source": 67
     },
     {
       "kind": "relationship",
-      "ordinal": 61,
+      "ordinal": 97,
       "relationshipKind": "containment",
       "source": 68
     },
     {
       "kind": "relationship",
-      "ordinal": 62,
+      "ordinal": 101,
       "relationshipKind": "containment",
       "source": 68
     },
     {
       "kind": "relationship",
-      "ordinal": 63,
+      "ordinal": 102,
       "relationshipKind": "containment",
       "source": 68
     },
     {
       "kind": "relationship",
-      "ordinal": 64,
+      "ordinal": 103,
       "relationshipKind": "containment",
       "source": 68
     },
     {
       "kind": "relationship",
-      "ordinal": 55,
+      "ordinal": 101,
       "relationshipKind": "typing",
       "source": 68
     },
     {
       "kind": "relationship",
-      "ordinal": 58,
+      "ordinal": 85,
       "relationshipKind": "containment",
       "source": 69
     },
     {
       "kind": "relationship",
-      "ordinal": 60,
+      "ordinal": 90,
       "relationshipKind": "containment",
       "source": 69
     },
     {
       "kind": "relationship",
-      "ordinal": 54,
+      "ordinal": 86,
       "relationshipKind": "typing",
       "source": 69
     },
     {
       "kind": "relationship",
-      "ordinal": 70,
+      "ordinal": 1,
       "relationshipKind": "containment",
       "source": 70
     },
     {
       "kind": "relationship",
-      "ordinal": 71,
+      "ordinal": 45,
+      "relationshipKind": "containment",
+      "source": 70
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 46,
+      "relationshipKind": "containment",
+      "source": 70
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 47,
+      "relationshipKind": "containment",
+      "source": 70
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 48,
+      "relationshipKind": "containment",
+      "source": 70
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 49,
+      "relationshipKind": "containment",
+      "source": 70
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 61,
       "relationshipKind": "containment",
       "source": 70
     },
@@ -5212,169 +5464,139 @@ package TimerGeometry {
     },
     {
       "kind": "relationship",
-      "ordinal": 73,
-      "relationshipKind": "containment",
-      "source": 70
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 74,
-      "relationshipKind": "containment",
-      "source": 70
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 75,
-      "relationshipKind": "containment",
-      "source": 70
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 76,
-      "relationshipKind": "containment",
-      "source": 70
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 77,
-      "relationshipKind": "containment",
-      "source": 70
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 53,
+      "ordinal": 1,
       "relationshipKind": "typing",
       "source": 70
     },
     {
       "kind": "relationship",
-      "ordinal": 3,
+      "ordinal": 8,
       "relationshipKind": "containment",
       "source": 72
     },
     {
       "kind": "relationship",
-      "ordinal": 4,
+      "ordinal": 9,
       "relationshipKind": "containment",
       "source": 72
     },
     {
       "kind": "relationship",
-      "ordinal": 5,
+      "ordinal": 10,
+      "relationshipKind": "containment",
+      "source": 72
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 11,
+      "relationshipKind": "containment",
+      "source": 72
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 12,
       "relationshipKind": "containment",
       "source": 72
     },
     {
       "kind": "relationship",
       "ordinal": 6,
-      "relationshipKind": "containment",
-      "source": 72
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 7,
-      "relationshipKind": "containment",
-      "source": 72
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 62,
       "relationshipKind": "typing",
       "source": 72
     },
     {
       "kind": "relationship",
-      "ordinal": 8,
+      "ordinal": 16,
       "relationshipKind": "containment",
       "source": 73
     },
     {
       "kind": "relationship",
-      "ordinal": 64,
+      "ordinal": 14,
       "relationshipKind": "typing",
       "source": 73
     },
     {
       "kind": "relationship",
-      "ordinal": 66,
+      "ordinal": 50,
       "relationshipKind": "typing",
       "source": 74
     },
     {
       "kind": "relationship",
-      "ordinal": 9,
+      "ordinal": 41,
       "relationshipKind": "containment",
       "source": 75
     },
     {
       "kind": "relationship",
-      "ordinal": 59,
+      "ordinal": 46,
       "relationshipKind": "typing",
       "source": 75
     },
     {
       "kind": "relationship",
-      "ordinal": 68,
+      "ordinal": 49,
       "relationshipKind": "typing",
       "source": 76
     },
     {
       "kind": "relationship",
-      "ordinal": 10,
+      "ordinal": 14,
       "relationshipKind": "containment",
       "source": 77
     },
     {
       "kind": "relationship",
-      "ordinal": 63,
+      "ordinal": 12,
       "relationshipKind": "typing",
       "source": 77
     },
     {
       "kind": "relationship",
-      "ordinal": 50,
+      "ordinal": 3,
       "relationshipKind": "containment",
       "source": 78
     },
     {
       "kind": "relationship",
-      "ordinal": 60,
+      "ordinal": 4,
+      "relationshipKind": "containment",
+      "source": 78
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 5,
+      "relationshipKind": "containment",
+      "source": 78
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 6,
+      "relationshipKind": "containment",
+      "source": 78
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 3,
       "relationshipKind": "typing",
       "source": 78
     },
     {
       "kind": "relationship",
-      "ordinal": 61,
+      "ordinal": 5,
       "relationshipKind": "redefinition",
       "source": 79
     },
     {
       "kind": "relationship",
-      "ordinal": 67,
+      "ordinal": 48,
       "relationshipKind": "typing",
       "source": 80
     },
     {
       "kind": "relationship",
-      "ordinal": 11,
-      "relationshipKind": "containment",
-      "source": 81
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 13,
-      "relationshipKind": "containment",
-      "source": 81
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 15,
-      "relationshipKind": "containment",
-      "source": 81
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 17,
+      "ordinal": 18,
       "relationshipKind": "containment",
       "source": 81
     },
@@ -5386,7 +5608,13 @@ package TimerGeometry {
     },
     {
       "kind": "relationship",
-      "ordinal": 21,
+      "ordinal": 20,
+      "relationshipKind": "containment",
+      "source": 81
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 22,
       "relationshipKind": "containment",
       "source": 81
     },
@@ -5398,19 +5626,19 @@ package TimerGeometry {
     },
     {
       "kind": "relationship",
-      "ordinal": 25,
+      "ordinal": 24,
       "relationshipKind": "containment",
       "source": 81
     },
     {
       "kind": "relationship",
-      "ordinal": 27,
+      "ordinal": 26,
       "relationshipKind": "containment",
       "source": 81
     },
     {
       "kind": "relationship",
-      "ordinal": 29,
+      "ordinal": 28,
       "relationshipKind": "containment",
       "source": 81
     },
@@ -5422,127 +5650,133 @@ package TimerGeometry {
     },
     {
       "kind": "relationship",
-      "ordinal": 31,
-      "relationshipKind": "containment",
-      "source": 81
-    },
-    {
-      "kind": "relationship",
       "ordinal": 32,
       "relationshipKind": "containment",
       "source": 81
     },
     {
       "kind": "relationship",
-      "ordinal": 65,
-      "relationshipKind": "typing",
-      "source": 81
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 81,
-      "relationshipKind": "memberAccessOperand",
-      "source": 83
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 82,
-      "relationshipKind": "memberAccessOperand",
-      "source": 83
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 83,
-      "relationshipKind": "memberAccessOperand",
-      "source": 83
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 84,
-      "relationshipKind": "memberAccessOperand",
-      "source": 83
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 85,
-      "relationshipKind": "memberAccessOperand",
-      "source": 83
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 86,
-      "relationshipKind": "memberAccessOperand",
-      "source": 83
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 87,
-      "relationshipKind": "memberAccessOperand",
-      "source": 83
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 88,
-      "relationshipKind": "memberAccessOperand",
-      "source": 83
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 45,
-      "relationshipKind": "containment",
-      "source": 84
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 47,
-      "relationshipKind": "containment",
-      "source": 84
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 91,
-      "relationshipKind": "typing",
-      "source": 84
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 33,
-      "relationshipKind": "containment",
-      "source": 85
-    },
-    {
-      "kind": "relationship",
       "ordinal": 34,
       "relationshipKind": "containment",
-      "source": 85
+      "source": 81
     },
     {
       "kind": "relationship",
       "ordinal": 36,
       "relationshipKind": "containment",
+      "source": 81
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 38,
+      "relationshipKind": "containment",
+      "source": 81
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 16,
+      "relationshipKind": "typing",
+      "source": 81
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 51,
+      "relationshipKind": "memberAccessOperand",
+      "source": 83
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 52,
+      "relationshipKind": "memberAccessOperand",
+      "source": 83
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 53,
+      "relationshipKind": "memberAccessOperand",
+      "source": 83
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 54,
+      "relationshipKind": "memberAccessOperand",
+      "source": 83
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 55,
+      "relationshipKind": "memberAccessOperand",
+      "source": 83
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 56,
+      "relationshipKind": "memberAccessOperand",
+      "source": 83
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 57,
+      "relationshipKind": "memberAccessOperand",
+      "source": 83
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 58,
+      "relationshipKind": "memberAccessOperand",
+      "source": 83
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 50,
+      "relationshipKind": "containment",
+      "source": 84
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 55,
+      "relationshipKind": "containment",
+      "source": 84
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 59,
+      "relationshipKind": "typing",
+      "source": 84
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 73,
+      "relationshipKind": "containment",
       "source": 85
     },
     {
       "kind": "relationship",
-      "ordinal": 89,
+      "ordinal": 78,
+      "relationshipKind": "containment",
+      "source": 85
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 80,
+      "relationshipKind": "containment",
+      "source": 85
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 78,
       "relationshipKind": "typing",
       "source": 85
     },
     {
       "kind": "relationship",
-      "ordinal": 65,
+      "ordinal": 62,
       "relationshipKind": "containment",
       "source": 86
     },
     {
       "kind": "relationship",
-      "ordinal": 66,
-      "relationshipKind": "containment",
-      "source": 86
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 68,
+      "ordinal": 64,
       "relationshipKind": "containment",
       "source": 86
     },
@@ -5554,67 +5788,73 @@ package TimerGeometry {
     },
     {
       "kind": "relationship",
-      "ordinal": 92,
+      "ordinal": 71,
+      "relationshipKind": "containment",
+      "source": 86
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 69,
       "relationshipKind": "typing",
       "source": 86
     },
     {
       "kind": "relationship",
-      "ordinal": 48,
+      "ordinal": 2,
       "relationshipKind": "containment",
       "source": 87
     },
     {
       "kind": "relationship",
-      "ordinal": 49,
+      "ordinal": 7,
       "relationshipKind": "containment",
       "source": 87
     },
     {
       "kind": "relationship",
-      "ordinal": 51,
+      "ordinal": 13,
       "relationshipKind": "containment",
       "source": 87
     },
     {
       "kind": "relationship",
-      "ordinal": 52,
+      "ordinal": 15,
       "relationshipKind": "containment",
       "source": 87
     },
     {
       "kind": "relationship",
-      "ordinal": 53,
+      "ordinal": 17,
       "relationshipKind": "containment",
       "source": 87
     },
     {
       "kind": "relationship",
-      "ordinal": 54,
+      "ordinal": 40,
       "relationshipKind": "containment",
       "source": 87
     },
     {
       "kind": "relationship",
-      "ordinal": 55,
+      "ordinal": 42,
       "relationshipKind": "containment",
       "source": 87
     },
     {
       "kind": "relationship",
-      "ordinal": 56,
+      "ordinal": 43,
       "relationshipKind": "containment",
       "source": 87
     },
     {
       "kind": "relationship",
-      "ordinal": 57,
+      "ordinal": 44,
       "relationshipKind": "containment",
       "source": 87
     },
     {
       "kind": "relationship",
-      "ordinal": 90,
+      "ordinal": 2,
       "relationshipKind": "typing",
       "source": 87
     }
@@ -5637,355 +5877,771 @@ package TimerGeometry {
     "edges": [
       {
         "kind": "containment",
-        "navigation": 48,
+        "navigation": 143,
         "provenance": "implied",
-        "reference": 169,
-        "source": 53,
-        "target": 1
+        "reference": 111,
+        "source": 0,
+        "target": 6
       },
       {
         "kind": "containment",
-        "navigation": 47,
+        "navigation": 115,
         "provenance": "implied",
-        "reference": 170,
-        "source": 53,
-        "target": 2
+        "reference": 248,
+        "source": 6,
+        "target": 23
+      },
+      {
+        "kind": "containment",
+        "navigation": 79,
+        "provenance": "implied",
+        "reference": 312,
+        "source": 23,
+        "target": 26
       },
       {
         "kind": "containment",
         "navigation": 45,
         "provenance": "implied",
-        "reference": 171,
-        "source": 53,
-        "target": 3
+        "reference": 271,
+        "source": 26,
+        "target": 29
+      },
+      {
+        "kind": "containment",
+        "navigation": 47,
+        "provenance": "implied",
+        "reference": 272,
+        "source": 26,
+        "target": 28
+      },
+      {
+        "kind": "containment",
+        "navigation": 48,
+        "provenance": "implied",
+        "reference": 273,
+        "source": 26,
+        "target": 27
+      },
+      {
+        "kind": "containment",
+        "navigation": 81,
+        "provenance": "authored",
+        "reference": 274,
+        "source": 26,
+        "target": 30
+      },
+      {
+        "kind": "containment",
+        "navigation": 71,
+        "provenance": "implied",
+        "reference": 313,
+        "source": 23,
+        "target": 31
       },
       {
         "kind": "containment",
         "navigation": 51,
         "provenance": "implied",
-        "reference": 220,
-        "source": 43,
-        "target": 4
+        "reference": 257,
+        "source": 31,
+        "target": 32
       },
       {
         "kind": "containment",
         "navigation": 53,
         "provenance": "implied",
-        "reference": 221,
-        "source": 43,
-        "target": 5
+        "reference": 258,
+        "source": 31,
+        "target": 33
       },
       {
         "kind": "containment",
         "navigation": 49,
         "provenance": "implied",
-        "reference": 222,
-        "source": 43,
-        "target": 6
+        "reference": 259,
+        "source": 31,
+        "target": 34
       },
       {
         "kind": "containment",
         "navigation": 57,
         "provenance": "implied",
-        "reference": 223,
-        "source": 43,
-        "target": 7
+        "reference": 260,
+        "source": 31,
+        "target": 35
       },
       {
         "kind": "containment",
         "navigation": 55,
         "provenance": "implied",
-        "reference": 224,
-        "source": 43,
-        "target": 8
+        "reference": 261,
+        "source": 31,
+        "target": 36
       },
       {
         "kind": "containment",
-        "navigation": 63,
+        "navigation": 75,
         "provenance": "implied",
-        "reference": 226,
-        "source": 45,
-        "target": 9
-      },
-      {
-        "kind": "containment",
-        "navigation": 59,
-        "provenance": "implied",
-        "reference": 229,
-        "source": 40,
-        "target": 10
+        "reference": 314,
+        "source": 23,
+        "target": 37
       },
       {
         "kind": "containment",
         "navigation": 61,
         "provenance": "implied",
-        "reference": 232,
-        "source": 44,
-        "target": 11
+        "reference": 269,
+        "source": 37,
+        "target": 38
+      },
+      {
+        "kind": "containment",
+        "navigation": 77,
+        "provenance": "implied",
+        "reference": 315,
+        "source": 23,
+        "target": 39
+      },
+      {
+        "kind": "containment",
+        "navigation": 63,
+        "provenance": "implied",
+        "reference": 263,
+        "source": 39,
+        "target": 40
+      },
+      {
+        "kind": "containment",
+        "navigation": 83,
+        "provenance": "implied",
+        "reference": 316,
+        "source": 23,
+        "target": 41
+      },
+      {
+        "kind": "containment",
+        "navigation": 5,
+        "provenance": "implied",
+        "reference": 278,
+        "source": 41,
+        "target": 51
+      },
+      {
+        "kind": "containment",
+        "navigation": 9,
+        "provenance": "implied",
+        "reference": 279,
+        "source": 41,
+        "target": 52
+      },
+      {
+        "kind": "containment",
+        "navigation": 3,
+        "provenance": "implied",
+        "reference": 280,
+        "source": 41,
+        "target": 50
+      },
+      {
+        "kind": "initial-state",
+        "navigation": 4,
+        "provenance": "authored",
+        "reference": 121,
+        "source": 50,
+        "target": 51
+      },
+      {
+        "kind": "containment",
+        "navigation": 11,
+        "provenance": "implied",
+        "reference": 281,
+        "source": 41,
+        "target": 53
+      },
+      {
+        "kind": "containment",
+        "navigation": 7,
+        "provenance": "implied",
+        "reference": 282,
+        "source": 41,
+        "target": 54
+      },
+      {
+        "kind": "containment",
+        "navigation": 25,
+        "provenance": "implied",
+        "reference": 283,
+        "source": 41,
+        "target": 49
+      },
+      {
+        "kind": "transition",
+        "navigation": 26,
+        "provenance": "authored",
+        "reference": 137,
+        "source": 54,
+        "target": 52
       },
       {
         "kind": "containment",
         "navigation": 29,
         "provenance": "implied",
-        "reference": 238,
-        "source": 46,
-        "target": 12
+        "reference": 284,
+        "source": 41,
+        "target": 42
       },
       {
         "kind": "transition",
         "navigation": 30,
         "provenance": "authored",
-        "reference": 137,
-        "source": 24,
-        "target": 23
+        "reference": 138,
+        "source": 54,
+        "target": 53
       },
       {
         "kind": "containment",
         "navigation": 13,
         "provenance": "implied",
-        "reference": 239,
-        "source": 46,
-        "target": 13
+        "reference": 285,
+        "source": 41,
+        "target": 43
       },
       {
         "kind": "transition",
         "navigation": 14,
         "provenance": "authored",
         "reference": 127,
-        "source": 21,
-        "target": 24
+        "source": 51,
+        "target": 54
       },
       {
         "kind": "containment",
         "navigation": 21,
         "provenance": "implied",
-        "reference": 240,
-        "source": 46,
-        "target": 14
+        "reference": 286,
+        "source": 41,
+        "target": 44
       },
       {
         "kind": "transition",
         "navigation": 22,
         "provenance": "authored",
         "reference": 128,
-        "source": 21,
-        "target": 21
+        "source": 51,
+        "target": 51
       },
       {
         "kind": "containment",
         "navigation": 17,
         "provenance": "implied",
-        "reference": 241,
-        "source": 46,
-        "target": 15
+        "reference": 287,
+        "source": 41,
+        "target": 45
       },
       {
         "kind": "transition",
         "navigation": 18,
         "provenance": "authored",
         "reference": 129,
-        "source": 21,
-        "target": 21
+        "source": 51,
+        "target": 51
       },
       {
         "kind": "containment",
         "navigation": 33,
         "provenance": "implied",
-        "reference": 242,
-        "source": 46,
-        "target": 16
+        "reference": 288,
+        "source": 41,
+        "target": 46
       },
       {
         "kind": "transition",
         "navigation": 34,
         "provenance": "authored",
         "reference": 134,
-        "source": 22,
-        "target": 24
+        "source": 52,
+        "target": 54
       },
       {
         "kind": "containment",
         "navigation": 37,
         "provenance": "implied",
-        "reference": 243,
-        "source": 46,
-        "target": 17
+        "reference": 289,
+        "source": 41,
+        "target": 47
       },
       {
         "kind": "transition",
         "navigation": 38,
         "provenance": "authored",
         "reference": 135,
-        "source": 22,
-        "target": 21
+        "source": 52,
+        "target": 51
       },
       {
         "kind": "containment",
         "navigation": 41,
         "provenance": "implied",
-        "reference": 244,
-        "source": 46,
-        "target": 18
+        "reference": 290,
+        "source": 41,
+        "target": 48
       },
       {
         "kind": "transition",
         "navigation": 42,
         "provenance": "authored",
         "reference": 125,
+        "source": 53,
+        "target": 51
+      },
+      {
+        "kind": "containment",
+        "navigation": 73,
+        "provenance": "implied",
+        "reference": 317,
         "source": 23,
-        "target": 21
-      },
-      {
-        "kind": "containment",
-        "navigation": 25,
-        "provenance": "implied",
-        "reference": 245,
-        "source": 46,
-        "target": 19
-      },
-      {
-        "kind": "transition",
-        "navigation": 26,
-        "provenance": "authored",
-        "reference": 138,
-        "source": 24,
-        "target": 22
-      },
-      {
-        "kind": "containment",
-        "navigation": 3,
-        "provenance": "implied",
-        "reference": 246,
-        "source": 46,
-        "target": 20
-      },
-      {
-        "kind": "initial-state",
-        "navigation": 4,
-        "provenance": "authored",
-        "reference": 120,
-        "source": 20,
-        "target": 21
-      },
-      {
-        "kind": "containment",
-        "navigation": 5,
-        "provenance": "implied",
-        "reference": 247,
-        "source": 46,
-        "target": 21
-      },
-      {
-        "kind": "containment",
-        "navigation": 9,
-        "provenance": "implied",
-        "reference": 248,
-        "source": 46,
-        "target": 22
-      },
-      {
-        "kind": "containment",
-        "navigation": 11,
-        "provenance": "implied",
-        "reference": 249,
-        "source": 46,
-        "target": 23
-      },
-      {
-        "kind": "containment",
-        "navigation": 7,
-        "provenance": "implied",
-        "reference": 250,
-        "source": 46,
         "target": 24
       },
       {
         "kind": "containment",
-        "navigation": 91,
+        "navigation": 59,
         "provenance": "implied",
-        "reference": 263,
-        "source": 66,
+        "reference": 266,
+        "source": 24,
         "target": 25
+      },
+      {
+        "kind": "containment",
+        "navigation": 69,
+        "provenance": "implied",
+        "reference": 318,
+        "source": 23,
+        "target": 56
+      },
+      {
+        "kind": "containment",
+        "navigation": 67,
+        "provenance": "implied",
+        "reference": 319,
+        "source": 23,
+        "target": 57
+      },
+      {
+        "kind": "containment",
+        "navigation": 65,
+        "provenance": "implied",
+        "reference": 320,
+        "source": 23,
+        "target": 55
+      },
+      {
+        "kind": "containment",
+        "navigation": 123,
+        "provenance": "implied",
+        "reference": 249,
+        "source": 6,
+        "target": 7
+      },
+      {
+        "kind": "containment",
+        "navigation": 126,
+        "provenance": "implied",
+        "reference": 250,
+        "source": 6,
+        "target": 8
+      },
+      {
+        "kind": "containment",
+        "navigation": 129,
+        "provenance": "implied",
+        "reference": 251,
+        "source": 6,
+        "target": 9
+      },
+      {
+        "kind": "containment",
+        "navigation": 132,
+        "provenance": "implied",
+        "reference": 252,
+        "source": 6,
+        "target": 10
+      },
+      {
+        "kind": "containment",
+        "navigation": 119,
+        "provenance": "implied",
+        "reference": 253,
+        "source": 6,
+        "target": 58
+      },
+      {
+        "kind": "containment",
+        "navigation": 105,
+        "provenance": "implied",
+        "reference": 300,
+        "source": 58,
+        "target": 59
+      },
+      {
+        "kind": "containment",
+        "navigation": 45,
+        "provenance": "implied",
+        "reference": 194,
+        "source": 59,
+        "target": 62
+      },
+      {
+        "kind": "containment",
+        "navigation": 47,
+        "provenance": "implied",
+        "reference": 195,
+        "source": 59,
+        "target": 61
+      },
+      {
+        "kind": "containment",
+        "navigation": 48,
+        "provenance": "implied",
+        "reference": 196,
+        "source": 59,
+        "target": 60
+      },
+      {
+        "kind": "containment",
+        "navigation": 107,
+        "provenance": "authored",
+        "reference": 197,
+        "source": 59,
+        "target": 63
+      },
+      {
+        "kind": "containment",
+        "navigation": 103,
+        "provenance": "implied",
+        "reference": 301,
+        "source": 58,
+        "target": 64
+      },
+      {
+        "kind": "containment",
+        "navigation": 51,
+        "provenance": "implied",
+        "reference": 188,
+        "source": 64,
+        "target": 65
+      },
+      {
+        "kind": "containment",
+        "navigation": 53,
+        "provenance": "implied",
+        "reference": 189,
+        "source": 64,
+        "target": 66
+      },
+      {
+        "kind": "containment",
+        "navigation": 49,
+        "provenance": "implied",
+        "reference": 190,
+        "source": 64,
+        "target": 67
+      },
+      {
+        "kind": "containment",
+        "navigation": 57,
+        "provenance": "implied",
+        "reference": 191,
+        "source": 64,
+        "target": 68
+      },
+      {
+        "kind": "containment",
+        "navigation": 55,
+        "provenance": "implied",
+        "reference": 192,
+        "source": 64,
+        "target": 69
+      },
+      {
+        "kind": "containment",
+        "navigation": 117,
+        "provenance": "implied",
+        "reference": 254,
+        "source": 6,
+        "target": 70
+      },
+      {
+        "kind": "containment",
+        "navigation": 95,
+        "provenance": "implied",
+        "reference": 307,
+        "source": 70,
+        "target": 71
+      },
+      {
+        "kind": "containment",
+        "navigation": 59,
+        "provenance": "implied",
+        "reference": 219,
+        "source": 71,
+        "target": 72
+      },
+      {
+        "kind": "containment",
+        "navigation": 99,
+        "provenance": "implied",
+        "reference": 308,
+        "source": 70,
+        "target": 73
+      },
+      {
+        "kind": "containment",
+        "navigation": 45,
+        "provenance": "implied",
+        "reference": 224,
+        "source": 73,
+        "target": 76
+      },
+      {
+        "kind": "containment",
+        "navigation": 47,
+        "provenance": "implied",
+        "reference": 225,
+        "source": 73,
+        "target": 75
+      },
+      {
+        "kind": "containment",
+        "navigation": 48,
+        "provenance": "implied",
+        "reference": 226,
+        "source": 73,
+        "target": 74
+      },
+      {
+        "kind": "containment",
+        "navigation": 101,
+        "provenance": "authored",
+        "reference": 227,
+        "source": 73,
+        "target": 77
+      },
+      {
+        "kind": "containment",
+        "navigation": 97,
+        "provenance": "implied",
+        "reference": 309,
+        "source": 70,
+        "target": 78
+      },
+      {
+        "kind": "containment",
+        "navigation": 61,
+        "provenance": "implied",
+        "reference": 222,
+        "source": 78,
+        "target": 79
+      },
+      {
+        "kind": "containment",
+        "navigation": 93,
+        "provenance": "implied",
+        "reference": 310,
+        "source": 70,
+        "target": 80
+      },
+      {
+        "kind": "containment",
+        "navigation": 121,
+        "provenance": "implied",
+        "reference": 255,
+        "source": 6,
+        "target": 11
       },
       {
         "kind": "containment",
         "navigation": 87,
         "provenance": "implied",
-        "reference": 264,
-        "source": 66,
-        "target": 26
+        "reference": 303,
+        "source": 11,
+        "target": 16
+      },
+      {
+        "kind": "containment",
+        "navigation": 45,
+        "provenance": "implied",
+        "reference": 213,
+        "source": 16,
+        "target": 19
+      },
+      {
+        "kind": "containment",
+        "navigation": 47,
+        "provenance": "implied",
+        "reference": 214,
+        "source": 16,
+        "target": 18
+      },
+      {
+        "kind": "containment",
+        "navigation": 48,
+        "provenance": "implied",
+        "reference": 215,
+        "source": 16,
+        "target": 17
       },
       {
         "kind": "containment",
         "navigation": 89,
         "provenance": "authored",
-        "reference": 184,
-        "source": 26,
-        "target": 27
+        "reference": 216,
+        "source": 16,
+        "target": 20
       },
       {
         "kind": "containment",
         "navigation": 85,
         "provenance": "implied",
-        "reference": 265,
-        "source": 66,
-        "target": 28
+        "reference": 304,
+        "source": 11,
+        "target": 21
       },
       {
         "kind": "containment",
-        "navigation": 149,
+        "navigation": 63,
         "provenance": "implied",
-        "reference": 111,
-        "source": 0,
-        "target": 29
+        "reference": 211,
+        "source": 21,
+        "target": 22
       },
       {
         "kind": "containment",
-        "navigation": 152,
+        "navigation": 91,
         "provenance": "implied",
-        "reference": 112,
-        "source": 0,
-        "target": 30
+        "reference": 305,
+        "source": 11,
+        "target": 12
       },
       {
         "kind": "containment",
-        "navigation": 155,
+        "navigation": 45,
         "provenance": "implied",
-        "reference": 113,
-        "source": 0,
-        "target": 31
+        "reference": 207,
+        "source": 12,
+        "target": 15
       },
       {
         "kind": "containment",
-        "navigation": 158,
+        "navigation": 47,
         "provenance": "implied",
-        "reference": 114,
-        "source": 0,
-        "target": 32
+        "reference": 208,
+        "source": 12,
+        "target": 14
       },
       {
         "kind": "containment",
-        "navigation": 161,
+        "navigation": 48,
         "provenance": "implied",
-        "reference": 115,
-        "source": 0,
-        "target": 33
-      },
-      {
-        "kind": "containment",
-        "navigation": 143,
-        "provenance": "implied",
-        "reference": 116,
-        "source": 0,
-        "target": 34
+        "reference": 209,
+        "source": 12,
+        "target": 13
       },
       {
         "kind": "containment",
         "navigation": 147,
         "provenance": "implied",
+        "reference": 112,
+        "source": 0,
+        "target": 81
+      },
+      {
+        "kind": "containment",
+        "navigation": 111,
+        "provenance": "implied",
+        "reference": 245,
+        "source": 81,
+        "target": 82
+      },
+      {
+        "kind": "containment",
+        "navigation": 45,
+        "provenance": "implied",
+        "reference": 201,
+        "source": 82,
+        "target": 85
+      },
+      {
+        "kind": "containment",
+        "navigation": 47,
+        "provenance": "implied",
+        "reference": 202,
+        "source": 82,
+        "target": 84
+      },
+      {
+        "kind": "containment",
+        "navigation": 48,
+        "provenance": "implied",
+        "reference": 203,
+        "source": 82,
+        "target": 83
+      },
+      {
+        "kind": "containment",
+        "navigation": 113,
+        "provenance": "authored",
+        "reference": 204,
+        "source": 82,
+        "target": 86
+      },
+      {
+        "kind": "containment",
+        "navigation": 109,
+        "provenance": "implied",
+        "reference": 246,
+        "source": 81,
+        "target": 87
+      },
+      {
+        "kind": "containment",
+        "navigation": 149,
+        "provenance": "implied",
+        "reference": 113,
+        "source": 0,
+        "target": 1
+      },
+      {
+        "kind": "containment",
+        "navigation": 152,
+        "provenance": "implied",
+        "reference": 114,
+        "source": 0,
+        "target": 2
+      },
+      {
+        "kind": "containment",
+        "navigation": 155,
+        "provenance": "implied",
+        "reference": 115,
+        "source": 0,
+        "target": 3
+      },
+      {
+        "kind": "containment",
+        "navigation": 158,
+        "provenance": "implied",
+        "reference": 116,
+        "source": 0,
+        "target": 4
+      },
+      {
+        "kind": "containment",
+        "navigation": 161,
+        "provenance": "implied",
         "reference": 117,
         "source": 0,
-        "target": 35
+        "target": 5
       },
       {
         "kind": "containment",
@@ -5993,271 +6649,63 @@ package TimerGeometry {
         "provenance": "implied",
         "reference": 118,
         "source": 0,
-        "target": 36
-      },
-      {
-        "kind": "containment",
-        "navigation": 105,
-        "provenance": "implied",
-        "reference": 260,
-        "source": 68,
-        "target": 37
-      },
-      {
-        "kind": "containment",
-        "navigation": 107,
-        "provenance": "authored",
-        "reference": 175,
-        "source": 37,
-        "target": 38
-      },
-      {
-        "kind": "containment",
-        "navigation": 103,
-        "provenance": "implied",
-        "reference": 261,
-        "source": 68,
-        "target": 39
-      },
-      {
-        "kind": "containment",
-        "navigation": 73,
-        "provenance": "implied",
-        "reference": 272,
-        "source": 67,
-        "target": 40
-      },
-      {
-        "kind": "containment",
-        "navigation": 79,
-        "provenance": "implied",
-        "reference": 273,
-        "source": 67,
-        "target": 41
-      },
-      {
-        "kind": "containment",
-        "navigation": 81,
-        "provenance": "authored",
-        "reference": 234,
-        "source": 41,
-        "target": 42
-      },
-      {
-        "kind": "containment",
-        "navigation": 71,
-        "provenance": "implied",
-        "reference": 274,
-        "source": 67,
-        "target": 43
-      },
-      {
-        "kind": "containment",
-        "navigation": 75,
-        "provenance": "implied",
-        "reference": 275,
-        "source": 67,
-        "target": 44
-      },
-      {
-        "kind": "containment",
-        "navigation": 77,
-        "provenance": "implied",
-        "reference": 276,
-        "source": 67,
-        "target": 45
-      },
-      {
-        "kind": "containment",
-        "navigation": 83,
-        "provenance": "implied",
-        "reference": 277,
-        "source": 67,
-        "target": 46
-      },
-      {
-        "kind": "containment",
-        "navigation": 65,
-        "provenance": "implied",
-        "reference": 278,
-        "source": 67,
-        "target": 47
-      },
-      {
-        "kind": "containment",
-        "navigation": 69,
-        "provenance": "implied",
-        "reference": 279,
-        "source": 67,
-        "target": 48
-      },
-      {
-        "kind": "containment",
-        "navigation": 67,
-        "provenance": "implied",
-        "reference": 280,
-        "source": 67,
-        "target": 49
-      },
-      {
-        "kind": "containment",
-        "navigation": 111,
-        "provenance": "implied",
-        "reference": 208,
-        "source": 35,
-        "target": 50
-      },
-      {
-        "kind": "containment",
-        "navigation": 113,
-        "provenance": "authored",
-        "reference": 179,
-        "source": 50,
-        "target": 51
-      },
-      {
-        "kind": "containment",
-        "navigation": 109,
-        "provenance": "implied",
-        "reference": 209,
-        "source": 35,
-        "target": 52
+        "target": 88
       },
       {
         "kind": "containment",
         "navigation": 141,
         "provenance": "implied",
-        "reference": 203,
-        "source": 36,
-        "target": 53
+        "reference": 240,
+        "source": 88,
+        "target": 89
       },
       {
         "kind": "containment",
-        "navigation": 137,
+        "navigation": 45,
         "provenance": "implied",
-        "reference": 204,
-        "source": 36,
-        "target": 54
+        "reference": 183,
+        "source": 89,
+        "target": 92
       },
       {
         "kind": "containment",
-        "navigation": 139,
+        "navigation": 47,
         "provenance": "implied",
-        "reference": 205,
-        "source": 36,
-        "target": 55
+        "reference": 184,
+        "source": 89,
+        "target": 91
+      },
+      {
+        "kind": "containment",
+        "navigation": 48,
+        "provenance": "implied",
+        "reference": 185,
+        "source": 89,
+        "target": 90
       },
       {
         "kind": "containment",
         "navigation": 135,
         "provenance": "implied",
-        "reference": 206,
-        "source": 36,
-        "target": 56
+        "reference": 241,
+        "source": 88,
+        "target": 95
       },
       {
         "kind": "containment",
-        "navigation": 95,
+        "navigation": 137,
         "provenance": "implied",
-        "reference": 267,
-        "source": 69,
-        "target": 57
+        "reference": 242,
+        "source": 88,
+        "target": 93
       },
       {
         "kind": "containment",
-        "navigation": 99,
+        "navigation": 139,
         "provenance": "implied",
-        "reference": 268,
-        "source": 69,
-        "target": 58
-      },
-      {
-        "kind": "containment",
-        "navigation": 101,
-        "provenance": "authored",
-        "reference": 190,
-        "source": 58,
-        "target": 59
-      },
-      {
-        "kind": "containment",
-        "navigation": 97,
-        "provenance": "implied",
-        "reference": 269,
-        "source": 69,
-        "target": 60
-      },
-      {
-        "kind": "containment",
-        "navigation": 93,
-        "provenance": "implied",
-        "reference": 270,
-        "source": 69,
-        "target": 61
-      },
-      {
-        "kind": "containment",
-        "navigation": 123,
-        "provenance": "implied",
-        "reference": 211,
-        "source": 34,
-        "target": 62
-      },
-      {
-        "kind": "containment",
-        "navigation": 126,
-        "provenance": "implied",
-        "reference": 212,
-        "source": 34,
-        "target": 63
-      },
-      {
-        "kind": "containment",
-        "navigation": 129,
-        "provenance": "implied",
-        "reference": 213,
-        "source": 34,
-        "target": 64
-      },
-      {
-        "kind": "containment",
-        "navigation": 132,
-        "provenance": "implied",
-        "reference": 214,
-        "source": 34,
-        "target": 65
-      },
-      {
-        "kind": "containment",
-        "navigation": 121,
-        "provenance": "implied",
-        "reference": 215,
-        "source": 34,
-        "target": 66
-      },
-      {
-        "kind": "containment",
-        "navigation": 115,
-        "provenance": "implied",
-        "reference": 216,
-        "source": 34,
-        "target": 67
-      },
-      {
-        "kind": "containment",
-        "navigation": 119,
-        "provenance": "implied",
-        "reference": 217,
-        "source": 34,
-        "target": 68
-      },
-      {
-        "kind": "containment",
-        "navigation": 117,
-        "provenance": "implied",
-        "reference": 218,
-        "source": 34,
-        "target": 69
+        "reference": 243,
+        "source": 88,
+        "target": 94
       }
     ],
     "exposedRoots": [
@@ -6335,7 +6783,33 @@ package TimerGeometry {
         66,
         67,
         68,
-        69
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95
       ],
       "primitives": []
     },
@@ -6345,20 +6819,20 @@ package TimerGeometry {
           {
             "kind": "parts",
             "members": [
-              34,
-              35,
-              36
+              6,
+              81,
+              88
             ],
             "provenance": "inherited"
           },
           {
             "kind": "connections",
             "members": [
-              29,
-              30,
-              31,
-              32,
-              33
+              1,
+              2,
+              3,
+              4,
+              5
             ],
             "provenance": "inherited"
           }
@@ -6368,267 +6842,16 @@ package TimerGeometry {
         "notationRole": "usage",
         "owner": null,
         "reference": 1,
-        "source": 1
-      },
-      {
-        "compartments": [],
-        "metaclass": "AttributeUsage",
-        "name": "maxCurrent",
-        "notationRole": "usage",
-        "owner": 53,
-        "reference": 27,
-        "source": 48
-      },
-      {
-        "compartments": [],
-        "metaclass": "AttributeUsage",
-        "name": "voltage",
-        "notationRole": "usage",
-        "owner": 53,
-        "reference": 29,
-        "source": 47
-      },
-      {
-        "compartments": [],
-        "metaclass": "ReferenceUsage",
-        "name": "power",
-        "notationRole": "reference-usage",
-        "owner": 53,
-        "reference": 28,
-        "source": 45
-      },
-      {
-        "compartments": [],
-        "metaclass": "ReferenceUsage",
-        "name": "stopPressed",
-        "notationRole": "reference-usage",
-        "owner": 43,
-        "reference": 35,
-        "source": 51
-      },
-      {
-        "compartments": [],
-        "metaclass": "ReferenceUsage",
-        "name": "resetPressed",
-        "notationRole": "reference-usage",
-        "owner": 43,
-        "reference": 33,
-        "source": 53
-      },
-      {
-        "compartments": [],
-        "metaclass": "ReferenceUsage",
-        "name": "startPressed",
-        "notationRole": "reference-usage",
-        "owner": 43,
-        "reference": 34,
-        "source": 49
-      },
-      {
-        "compartments": [],
-        "metaclass": "ReferenceUsage",
-        "name": "decrementPressed",
-        "notationRole": "reference-usage",
-        "owner": 43,
-        "reference": 31,
-        "source": 57
-      },
-      {
-        "compartments": [],
-        "metaclass": "ReferenceUsage",
-        "name": "incrementPressed",
-        "notationRole": "reference-usage",
-        "owner": 43,
-        "reference": 32,
-        "source": 55
-      },
-      {
-        "compartments": [],
-        "metaclass": "ReferenceUsage",
-        "name": "buzzerOn",
-        "notationRole": "reference-usage",
-        "owner": 45,
-        "reference": 37,
-        "source": 63
-      },
-      {
-        "compartments": [],
-        "metaclass": "ReferenceUsage",
-        "name": "displayValue",
-        "notationRole": "reference-usage",
-        "owner": 40,
-        "reference": 39,
-        "source": 59
-      },
-      {
-        "compartments": [],
-        "metaclass": "ReferenceUsage",
-        "name": "comSegDrive",
-        "notationRole": "reference-usage",
-        "owner": 44,
-        "reference": 41,
-        "source": 61
-      },
-      {
-        "compartments": [],
-        "metaclass": "TransitionUsage",
-        "name": "to_expired",
-        "notationRole": "usage",
-        "owner": 46,
-        "reference": 20,
-        "source": 29
-      },
-      {
-        "compartments": [],
-        "metaclass": "TransitionUsage",
-        "name": "to_running",
-        "notationRole": "usage",
-        "owner": 46,
-        "reference": 24,
-        "source": 13
-      },
-      {
-        "compartments": [],
-        "metaclass": "TransitionUsage",
-        "name": "decrement_idle",
-        "notationRole": "usage",
-        "owner": 46,
-        "reference": 14,
-        "source": 21
-      },
-      {
-        "compartments": [],
-        "metaclass": "TransitionUsage",
-        "name": "increment_idle",
-        "notationRole": "usage",
-        "owner": 46,
-        "reference": 17,
-        "source": 17
-      },
-      {
-        "compartments": [],
-        "metaclass": "TransitionUsage",
-        "name": "to_running_resume",
-        "notationRole": "usage",
-        "owner": 46,
-        "reference": 25,
-        "source": 33
-      },
-      {
-        "compartments": [],
-        "metaclass": "TransitionUsage",
-        "name": "to_idle_from_paused",
-        "notationRole": "usage",
-        "owner": 46,
-        "reference": 22,
-        "source": 37
-      },
-      {
-        "compartments": [],
-        "metaclass": "TransitionUsage",
-        "name": "to_idle_from_expired",
-        "notationRole": "usage",
-        "owner": 46,
-        "reference": 21,
-        "source": 41
-      },
-      {
-        "compartments": [],
-        "metaclass": "TransitionUsage",
-        "name": "to_paused",
-        "notationRole": "usage",
-        "owner": 46,
-        "reference": 23,
-        "source": 25
-      },
-      {
-        "compartments": [],
-        "metaclass": "SuccessionAsUsage",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 46,
-        "reference": 96,
-        "source": 3
-      },
-      {
-        "compartments": [],
-        "metaclass": "StateUsage",
-        "name": "idle",
-        "notationRole": "usage",
-        "owner": 46,
-        "reference": 16,
-        "source": 5
-      },
-      {
-        "compartments": [],
-        "metaclass": "StateUsage",
-        "name": "paused",
-        "notationRole": "usage",
-        "owner": 46,
-        "reference": 18,
-        "source": 9
-      },
-      {
-        "compartments": [],
-        "metaclass": "StateUsage",
-        "name": "expired",
-        "notationRole": "usage",
-        "owner": 46,
-        "reference": 15,
-        "source": 11
-      },
-      {
-        "compartments": [],
-        "metaclass": "StateUsage",
-        "name": "running",
-        "notationRole": "usage",
-        "owner": 46,
-        "reference": 19,
-        "source": 7
-      },
-      {
-        "compartments": [],
-        "metaclass": "PortUsage",
-        "name": "buzzerPwrOut",
-        "notationRole": "usage",
-        "owner": 66,
-        "reference": 56,
-        "source": 91
-      },
-      {
-        "compartments": [
-          {
-            "kind": "attributes",
-            "members": [
-              27
-            ],
-            "provenance": "direct"
-          }
-        ],
-        "metaclass": "PortUsage",
-        "name": "pwrIn",
-        "notationRole": "usage",
-        "owner": 66,
-        "reference": 58,
-        "source": 87
-      },
-      {
-        "compartments": [],
-        "metaclass": "AttributeUsage",
-        "name": null,
-        "notationRole": "usage",
-        "owner": 26,
-        "reference": 99,
-        "source": 89
-      },
-      {
-        "compartments": [],
-        "metaclass": "PortUsage",
-        "name": "ctrlIn",
-        "notationRole": "usage",
-        "owner": 66,
-        "reference": 57,
-        "source": 85
+        "source": 1,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "KitchenTimer",
+              "reference": 66
+            }
+          ]
+        }
       },
       {
         "compartments": [],
@@ -6637,7 +6860,10 @@ package TimerGeometry {
         "notationRole": "usage",
         "owner": 0,
         "reference": 101,
-        "source": 149
+        "source": 149,
+        "typing": {
+          "status": "absent"
+        }
       },
       {
         "compartments": [],
@@ -6646,7 +6872,10 @@ package TimerGeometry {
         "notationRole": "usage",
         "owner": 0,
         "reference": 102,
-        "source": 152
+        "source": 152,
+        "typing": {
+          "status": "absent"
+        }
       },
       {
         "compartments": [],
@@ -6655,7 +6884,10 @@ package TimerGeometry {
         "notationRole": "usage",
         "owner": 0,
         "reference": 103,
-        "source": 155
+        "source": 155,
+        "typing": {
+          "status": "absent"
+        }
       },
       {
         "compartments": [],
@@ -6664,7 +6896,10 @@ package TimerGeometry {
         "notationRole": "usage",
         "owner": 0,
         "reference": 104,
-        "source": 158
+        "source": 158,
+        "typing": {
+          "status": "absent"
+        }
       },
       {
         "compartments": [],
@@ -6673,27 +6908,30 @@ package TimerGeometry {
         "notationRole": "usage",
         "owner": 0,
         "reference": 105,
-        "source": 161
+        "source": 161,
+        "typing": {
+          "status": "absent"
+        }
       },
       {
         "compartments": [
           {
             "kind": "parts",
             "members": [
-              66,
-              67,
-              68,
-              69
+              11,
+              23,
+              58,
+              70
             ],
             "provenance": "inherited"
           },
           {
             "kind": "connections",
             "members": [
-              62,
-              63,
-              64,
-              65
+              7,
+              8,
+              9,
+              10
             ],
             "provenance": "inherited"
           }
@@ -6703,21 +6941,1429 @@ package TimerGeometry {
         "notationRole": "usage",
         "owner": 0,
         "reference": 70,
-        "source": 143
+        "source": 143,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "TimerPCB",
+              "reference": 82
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "ConnectionUsage",
+        "name": null,
+        "notationRole": "usage",
+        "owner": 6,
+        "reference": 107,
+        "source": 123,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "ConnectionUsage",
+        "name": null,
+        "notationRole": "usage",
+        "owner": 6,
+        "reference": 108,
+        "source": 126,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "ConnectionUsage",
+        "name": null,
+        "notationRole": "usage",
+        "owner": 6,
+        "reference": 109,
+        "source": 129,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "ConnectionUsage",
+        "name": null,
+        "notationRole": "usage",
+        "owner": 6,
+        "reference": 110,
+        "source": 132,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "ports",
+            "members": [
+              12,
+              16,
+              21
+            ],
+            "provenance": "inherited"
+          }
+        ],
+        "metaclass": "PartUsage",
+        "name": "buzzerDriver",
+        "notationRole": "usage",
+        "owner": 6,
+        "reference": 85,
+        "source": 121,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "BuzzerDriver",
+              "reference": 55
+            }
+          ]
+        }
       },
       {
         "compartments": [
           {
             "kind": "attributes",
             "members": [
-              52
+              13,
+              14,
+              15
+            ],
+            "provenance": "inherited"
+          }
+        ],
+        "metaclass": "PortUsage",
+        "name": "buzzerPwrOut",
+        "notationRole": "usage",
+        "owner": 11,
+        "reference": 56,
+        "source": 91,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "BatteryOutlet",
+              "reference": 26
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "AttributeUsage",
+        "name": "maxCurrent",
+        "notationRole": "usage",
+        "owner": 12,
+        "reference": 27,
+        "source": 48,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "AttributeUsage",
+        "name": "voltage",
+        "notationRole": "usage",
+        "owner": 12,
+        "reference": 29,
+        "source": 47,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "ReferenceUsage",
+        "name": "power",
+        "notationRole": "reference-usage",
+        "owner": 12,
+        "reference": 28,
+        "source": 45,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "electricPower",
+              "reference": 91
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              20
+            ],
+            "provenance": "direct"
+          },
+          {
+            "kind": "attributes",
+            "members": [
+              17,
+              18,
+              19
+            ],
+            "provenance": "inherited"
+          }
+        ],
+        "metaclass": "PortUsage",
+        "name": "pwrIn",
+        "notationRole": "usage",
+        "owner": 11,
+        "reference": 58,
+        "source": 87,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "BatteryOutlet",
+              "reference": 26
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "AttributeUsage",
+        "name": "maxCurrent",
+        "notationRole": "usage",
+        "owner": 16,
+        "reference": 27,
+        "source": 48,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "AttributeUsage",
+        "name": "voltage",
+        "notationRole": "usage",
+        "owner": 16,
+        "reference": 29,
+        "source": 47,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "ReferenceUsage",
+        "name": "power",
+        "notationRole": "reference-usage",
+        "owner": 16,
+        "reference": 28,
+        "source": 45,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "electricPower",
+              "reference": 91
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "AttributeUsage",
+        "name": null,
+        "notationRole": "usage",
+        "owner": 16,
+        "reference": 99,
+        "source": 89,
+        "typing": {
+          "status": "partial",
+          "types": []
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              22
+            ],
+            "provenance": "inherited"
+          }
+        ],
+        "metaclass": "PortUsage",
+        "name": "ctrlIn",
+        "notationRole": "usage",
+        "owner": 11,
+        "reference": 57,
+        "source": 85,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "BuzzerCommandPort",
+              "reference": 36
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "ReferenceUsage",
+        "name": "buzzerOn",
+        "notationRole": "reference-usage",
+        "owner": 21,
+        "reference": 37,
+        "source": 63,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Boolean",
+              "reference": 93
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              55,
+              56,
+              57
             ],
             "provenance": "inherited"
           },
           {
             "kind": "ports",
             "members": [
-              50
+              24,
+              26,
+              31,
+              37,
+              39
+            ],
+            "provenance": "inherited"
+          },
+          {
+            "kind": "states",
+            "members": [
+              41
+            ],
+            "provenance": "inherited"
+          }
+        ],
+        "metaclass": "PartUsage",
+        "name": "mcu",
+        "notationRole": "usage",
+        "owner": 6,
+        "reference": 87,
+        "source": 115,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Microcontroller",
+              "reference": 71
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              25
+            ],
+            "provenance": "inherited"
+          }
+        ],
+        "metaclass": "PortUsage",
+        "name": "displayOut",
+        "notationRole": "usage",
+        "owner": 23,
+        "reference": 75,
+        "source": 73,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "DisplayCommandPort",
+              "reference": 38
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "ReferenceUsage",
+        "name": "displayValue",
+        "notationRole": "reference-usage",
+        "owner": 24,
+        "reference": 39,
+        "source": 59,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "String",
+              "reference": 95
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              30
+            ],
+            "provenance": "direct"
+          },
+          {
+            "kind": "attributes",
+            "members": [
+              27,
+              28,
+              29
+            ],
+            "provenance": "inherited"
+          }
+        ],
+        "metaclass": "PortUsage",
+        "name": "pwr",
+        "notationRole": "usage",
+        "owner": 23,
+        "reference": 78,
+        "source": 79,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "BatteryOutlet",
+              "reference": 26
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "AttributeUsage",
+        "name": "maxCurrent",
+        "notationRole": "usage",
+        "owner": 26,
+        "reference": 27,
+        "source": 48,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "AttributeUsage",
+        "name": "voltage",
+        "notationRole": "usage",
+        "owner": 26,
+        "reference": 29,
+        "source": 47,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "ReferenceUsage",
+        "name": "power",
+        "notationRole": "reference-usage",
+        "owner": 26,
+        "reference": 28,
+        "source": 45,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "electricPower",
+              "reference": 91
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "AttributeUsage",
+        "name": null,
+        "notationRole": "usage",
+        "owner": 26,
+        "reference": 106,
+        "source": 81,
+        "typing": {
+          "status": "partial",
+          "types": []
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              32,
+              33,
+              34,
+              35,
+              36
+            ],
+            "provenance": "inherited"
+          }
+        ],
+        "metaclass": "PortUsage",
+        "name": "buttonIn",
+        "notationRole": "usage",
+        "owner": 23,
+        "reference": 72,
+        "source": 71,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "ButtonInputPort",
+              "reference": 30
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "ReferenceUsage",
+        "name": "stopPressed",
+        "notationRole": "reference-usage",
+        "owner": 31,
+        "reference": 35,
+        "source": 51,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Boolean",
+              "reference": 93
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "ReferenceUsage",
+        "name": "resetPressed",
+        "notationRole": "reference-usage",
+        "owner": 31,
+        "reference": 33,
+        "source": 53,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Boolean",
+              "reference": 93
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "ReferenceUsage",
+        "name": "startPressed",
+        "notationRole": "reference-usage",
+        "owner": 31,
+        "reference": 34,
+        "source": 49,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Boolean",
+              "reference": 93
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "ReferenceUsage",
+        "name": "decrementPressed",
+        "notationRole": "reference-usage",
+        "owner": 31,
+        "reference": 31,
+        "source": 57,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Boolean",
+              "reference": 93
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "ReferenceUsage",
+        "name": "incrementPressed",
+        "notationRole": "reference-usage",
+        "owner": 31,
+        "reference": 32,
+        "source": 55,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Boolean",
+              "reference": 93
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              38
+            ],
+            "provenance": "inherited"
+          }
+        ],
+        "metaclass": "PortUsage",
+        "name": "lcdDrive",
+        "notationRole": "usage",
+        "owner": 23,
+        "reference": 77,
+        "source": 75,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "LcdSegmentDrivePort",
+              "reference": 40
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "ReferenceUsage",
+        "name": "comSegDrive",
+        "notationRole": "reference-usage",
+        "owner": 37,
+        "reference": 41,
+        "source": 61,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "String",
+              "reference": 95
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              40
+            ],
+            "provenance": "inherited"
+          }
+        ],
+        "metaclass": "PortUsage",
+        "name": "buzzerOut",
+        "notationRole": "usage",
+        "owner": 23,
+        "reference": 73,
+        "source": 77,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "BuzzerCommandPort",
+              "reference": 36
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "ReferenceUsage",
+        "name": "buzzerOn",
+        "notationRole": "reference-usage",
+        "owner": 39,
+        "reference": 37,
+        "source": 63,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Boolean",
+              "reference": 93
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "states",
+            "members": [
+              51,
+              52,
+              53,
+              54
+            ],
+            "provenance": "inherited"
+          }
+        ],
+        "metaclass": "StateUsage",
+        "name": "timerMode",
+        "notationRole": "usage",
+        "owner": 23,
+        "reference": 81,
+        "source": 83,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "TimerStateMachine",
+              "reference": 12
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "TransitionUsage",
+        "name": "to_expired",
+        "notationRole": "usage",
+        "owner": 41,
+        "reference": 20,
+        "source": 29,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "TransitionUsage",
+        "name": "to_running",
+        "notationRole": "usage",
+        "owner": 41,
+        "reference": 24,
+        "source": 13,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "TransitionUsage",
+        "name": "decrement_idle",
+        "notationRole": "usage",
+        "owner": 41,
+        "reference": 14,
+        "source": 21,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "TransitionUsage",
+        "name": "increment_idle",
+        "notationRole": "usage",
+        "owner": 41,
+        "reference": 17,
+        "source": 17,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "TransitionUsage",
+        "name": "to_running_resume",
+        "notationRole": "usage",
+        "owner": 41,
+        "reference": 25,
+        "source": 33,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "TransitionUsage",
+        "name": "to_idle_from_paused",
+        "notationRole": "usage",
+        "owner": 41,
+        "reference": 22,
+        "source": 37,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "TransitionUsage",
+        "name": "to_idle_from_expired",
+        "notationRole": "usage",
+        "owner": 41,
+        "reference": 21,
+        "source": 41,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "TransitionUsage",
+        "name": "to_paused",
+        "notationRole": "usage",
+        "owner": 41,
+        "reference": 23,
+        "source": 25,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "SuccessionAsUsage",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 41,
+        "reference": 96,
+        "source": 3,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "StateUsage",
+        "name": "idle",
+        "notationRole": "usage",
+        "owner": 41,
+        "reference": 16,
+        "source": 5,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Idle",
+              "reference": 5
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "StateUsage",
+        "name": "paused",
+        "notationRole": "usage",
+        "owner": 41,
+        "reference": 18,
+        "source": 9,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Paused",
+              "reference": 7
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "StateUsage",
+        "name": "expired",
+        "notationRole": "usage",
+        "owner": 41,
+        "reference": 15,
+        "source": 11,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Expired",
+              "reference": 4
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "StateUsage",
+        "name": "running",
+        "notationRole": "usage",
+        "owner": 41,
+        "reference": 19,
+        "source": 7,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Running",
+              "reference": 9
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "AttributeUsage",
+        "name": "clockFrequency",
+        "notationRole": "usage",
+        "owner": 23,
+        "reference": 74,
+        "source": 65,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "FrequencyValue",
+              "reference": 92
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "AttributeUsage",
+        "name": "ramSize",
+        "notationRole": "usage",
+        "owner": 23,
+        "reference": 80,
+        "source": 69,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Real",
+              "reference": 94
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "AttributeUsage",
+        "name": "flashSize",
+        "notationRole": "usage",
+        "owner": 23,
+        "reference": 76,
+        "source": 67,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Real",
+              "reference": 94
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "ports",
+            "members": [
+              59,
+              64
+            ],
+            "provenance": "inherited"
+          }
+        ],
+        "metaclass": "PartUsage",
+        "name": "buttons",
+        "notationRole": "usage",
+        "owner": 6,
+        "reference": 84,
+        "source": 119,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "ButtonInterface",
+              "reference": 47
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              63
+            ],
+            "provenance": "direct"
+          },
+          {
+            "kind": "attributes",
+            "members": [
+              60,
+              61,
+              62
+            ],
+            "provenance": "inherited"
+          }
+        ],
+        "metaclass": "PortUsage",
+        "name": "pwr",
+        "notationRole": "usage",
+        "owner": 58,
+        "reference": 49,
+        "source": 105,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "BatteryOutlet",
+              "reference": 26
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "AttributeUsage",
+        "name": "maxCurrent",
+        "notationRole": "usage",
+        "owner": 59,
+        "reference": 27,
+        "source": 48,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "AttributeUsage",
+        "name": "voltage",
+        "notationRole": "usage",
+        "owner": 59,
+        "reference": 29,
+        "source": 47,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "ReferenceUsage",
+        "name": "power",
+        "notationRole": "reference-usage",
+        "owner": 59,
+        "reference": 28,
+        "source": 45,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "electricPower",
+              "reference": 91
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "AttributeUsage",
+        "name": null,
+        "notationRole": "usage",
+        "owner": 59,
+        "reference": 97,
+        "source": 107,
+        "typing": {
+          "status": "partial",
+          "types": []
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              65,
+              66,
+              67,
+              68,
+              69
+            ],
+            "provenance": "inherited"
+          }
+        ],
+        "metaclass": "PortUsage",
+        "name": "output",
+        "notationRole": "usage",
+        "owner": 58,
+        "reference": 48,
+        "source": 103,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "ButtonInputPort",
+              "reference": 30
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "ReferenceUsage",
+        "name": "stopPressed",
+        "notationRole": "reference-usage",
+        "owner": 64,
+        "reference": 35,
+        "source": 51,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Boolean",
+              "reference": 93
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "ReferenceUsage",
+        "name": "resetPressed",
+        "notationRole": "reference-usage",
+        "owner": 64,
+        "reference": 33,
+        "source": 53,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Boolean",
+              "reference": 93
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "ReferenceUsage",
+        "name": "startPressed",
+        "notationRole": "reference-usage",
+        "owner": 64,
+        "reference": 34,
+        "source": 49,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Boolean",
+              "reference": 93
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "ReferenceUsage",
+        "name": "decrementPressed",
+        "notationRole": "reference-usage",
+        "owner": 64,
+        "reference": 31,
+        "source": 57,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Boolean",
+              "reference": 93
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "ReferenceUsage",
+        "name": "incrementPressed",
+        "notationRole": "reference-usage",
+        "owner": 64,
+        "reference": 32,
+        "source": 55,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Boolean",
+              "reference": 93
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              80
+            ],
+            "provenance": "inherited"
+          },
+          {
+            "kind": "ports",
+            "members": [
+              71,
+              73,
+              78
+            ],
+            "provenance": "inherited"
+          }
+        ],
+        "metaclass": "PartUsage",
+        "name": "display",
+        "notationRole": "usage",
+        "owner": 6,
+        "reference": 86,
+        "source": 117,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Display",
+              "reference": 60
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              72
+            ],
+            "provenance": "inherited"
+          }
+        ],
+        "metaclass": "PortUsage",
+        "name": "cmd",
+        "notationRole": "usage",
+        "owner": 70,
+        "reference": 61,
+        "source": 95,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "DisplayCommandPort",
+              "reference": 38
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "ReferenceUsage",
+        "name": "displayValue",
+        "notationRole": "reference-usage",
+        "owner": 71,
+        "reference": 39,
+        "source": 59,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "String",
+              "reference": 95
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              77
+            ],
+            "provenance": "direct"
+          },
+          {
+            "kind": "attributes",
+            "members": [
+              74,
+              75,
+              76
+            ],
+            "provenance": "inherited"
+          }
+        ],
+        "metaclass": "PortUsage",
+        "name": "pwr",
+        "notationRole": "usage",
+        "owner": 70,
+        "reference": 64,
+        "source": 99,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "BatteryOutlet",
+              "reference": 26
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "AttributeUsage",
+        "name": "maxCurrent",
+        "notationRole": "usage",
+        "owner": 73,
+        "reference": 27,
+        "source": 48,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "AttributeUsage",
+        "name": "voltage",
+        "notationRole": "usage",
+        "owner": 73,
+        "reference": 29,
+        "source": 47,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "ReferenceUsage",
+        "name": "power",
+        "notationRole": "reference-usage",
+        "owner": 73,
+        "reference": 28,
+        "source": 45,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "electricPower",
+              "reference": 91
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "AttributeUsage",
+        "name": null,
+        "notationRole": "usage",
+        "owner": 73,
+        "reference": 100,
+        "source": 101,
+        "typing": {
+          "status": "partial",
+          "types": []
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              79
+            ],
+            "provenance": "inherited"
+          }
+        ],
+        "metaclass": "PortUsage",
+        "name": "lcdIn",
+        "notationRole": "usage",
+        "owner": 70,
+        "reference": 63,
+        "source": 97,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "LcdSegmentDrivePort",
+              "reference": 40
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "ReferenceUsage",
+        "name": "comSegDrive",
+        "notationRole": "reference-usage",
+        "owner": 78,
+        "reference": 41,
+        "source": 61,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "String",
+              "reference": 95
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "AttributeUsage",
+        "name": "format",
+        "notationRole": "usage",
+        "owner": 70,
+        "reference": 62,
+        "source": 93,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "String",
+              "reference": 95
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              87
+            ],
+            "provenance": "inherited"
+          },
+          {
+            "kind": "ports",
+            "members": [
+              82
             ],
             "provenance": "inherited"
           }
@@ -6727,23 +8373,140 @@ package TimerGeometry {
         "notationRole": "usage",
         "owner": 0,
         "reference": 69,
-        "source": 147
+        "source": 147,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Buzzer",
+              "reference": 51
+            }
+          ]
+        }
       },
       {
         "compartments": [
           {
             "kind": "attributes",
             "members": [
-              54,
-              55,
-              56
+              86
+            ],
+            "provenance": "direct"
+          },
+          {
+            "kind": "attributes",
+            "members": [
+              83,
+              84,
+              85
+            ],
+            "provenance": "inherited"
+          }
+        ],
+        "metaclass": "PortUsage",
+        "name": "pwr",
+        "notationRole": "usage",
+        "owner": 81,
+        "reference": 53,
+        "source": 111,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "BatteryOutlet",
+              "reference": 26
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "AttributeUsage",
+        "name": "maxCurrent",
+        "notationRole": "usage",
+        "owner": 82,
+        "reference": 27,
+        "source": 48,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "AttributeUsage",
+        "name": "voltage",
+        "notationRole": "usage",
+        "owner": 82,
+        "reference": 29,
+        "source": 47,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "ReferenceUsage",
+        "name": "power",
+        "notationRole": "reference-usage",
+        "owner": 82,
+        "reference": 28,
+        "source": 45,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "electricPower",
+              "reference": 91
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "AttributeUsage",
+        "name": null,
+        "notationRole": "usage",
+        "owner": 82,
+        "reference": 98,
+        "source": 113,
+        "typing": {
+          "status": "partial",
+          "types": []
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "AttributeUsage",
+        "name": "duration",
+        "notationRole": "usage",
+        "owner": 81,
+        "reference": 52,
+        "source": 109,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "DurationValue",
+              "reference": 88
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              93,
+              94,
+              95
             ],
             "provenance": "inherited"
           },
           {
             "kind": "ports",
             "members": [
-              53
+              89
             ],
             "provenance": "inherited"
           }
@@ -6753,231 +8516,25 @@ package TimerGeometry {
         "notationRole": "usage",
         "owner": 0,
         "reference": 68,
-        "source": 145
+        "source": 145,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Battery",
+              "reference": 42
+            }
+          ]
+        }
       },
       {
         "compartments": [
           {
             "kind": "attributes",
             "members": [
-              38
-            ],
-            "provenance": "direct"
-          }
-        ],
-        "metaclass": "PortUsage",
-        "name": "pwr",
-        "notationRole": "usage",
-        "owner": 68,
-        "reference": 49,
-        "source": 105
-      },
-      {
-        "compartments": [],
-        "metaclass": "AttributeUsage",
-        "name": null,
-        "notationRole": "usage",
-        "owner": 37,
-        "reference": 97,
-        "source": 107
-      },
-      {
-        "compartments": [],
-        "metaclass": "PortUsage",
-        "name": "output",
-        "notationRole": "usage",
-        "owner": 68,
-        "reference": 48,
-        "source": 103
-      },
-      {
-        "compartments": [
-          {
-            "kind": "attributes",
-            "members": [
-              10
-            ],
-            "provenance": "inherited"
-          }
-        ],
-        "metaclass": "PortUsage",
-        "name": "displayOut",
-        "notationRole": "usage",
-        "owner": 67,
-        "reference": 75,
-        "source": 73
-      },
-      {
-        "compartments": [
-          {
-            "kind": "attributes",
-            "members": [
-              42
-            ],
-            "provenance": "direct"
-          }
-        ],
-        "metaclass": "PortUsage",
-        "name": "pwr",
-        "notationRole": "usage",
-        "owner": 67,
-        "reference": 78,
-        "source": 79
-      },
-      {
-        "compartments": [],
-        "metaclass": "AttributeUsage",
-        "name": null,
-        "notationRole": "usage",
-        "owner": 41,
-        "reference": 106,
-        "source": 81
-      },
-      {
-        "compartments": [
-          {
-            "kind": "attributes",
-            "members": [
-              4,
-              5,
-              6,
-              7,
-              8
-            ],
-            "provenance": "inherited"
-          }
-        ],
-        "metaclass": "PortUsage",
-        "name": "buttonIn",
-        "notationRole": "usage",
-        "owner": 67,
-        "reference": 72,
-        "source": 71
-      },
-      {
-        "compartments": [
-          {
-            "kind": "attributes",
-            "members": [
-              11
-            ],
-            "provenance": "inherited"
-          }
-        ],
-        "metaclass": "PortUsage",
-        "name": "lcdDrive",
-        "notationRole": "usage",
-        "owner": 67,
-        "reference": 77,
-        "source": 75
-      },
-      {
-        "compartments": [
-          {
-            "kind": "attributes",
-            "members": [
-              9
-            ],
-            "provenance": "inherited"
-          }
-        ],
-        "metaclass": "PortUsage",
-        "name": "buzzerOut",
-        "notationRole": "usage",
-        "owner": 67,
-        "reference": 73,
-        "source": 77
-      },
-      {
-        "compartments": [
-          {
-            "kind": "states",
-            "members": [
-              21,
-              22,
-              23,
-              24
-            ],
-            "provenance": "inherited"
-          }
-        ],
-        "metaclass": "StateUsage",
-        "name": "timerMode",
-        "notationRole": "usage",
-        "owner": 67,
-        "reference": 81,
-        "source": 83
-      },
-      {
-        "compartments": [],
-        "metaclass": "AttributeUsage",
-        "name": "clockFrequency",
-        "notationRole": "usage",
-        "owner": 67,
-        "reference": 74,
-        "source": 65
-      },
-      {
-        "compartments": [],
-        "metaclass": "AttributeUsage",
-        "name": "ramSize",
-        "notationRole": "usage",
-        "owner": 67,
-        "reference": 80,
-        "source": 69
-      },
-      {
-        "compartments": [],
-        "metaclass": "AttributeUsage",
-        "name": "flashSize",
-        "notationRole": "usage",
-        "owner": 67,
-        "reference": 76,
-        "source": 67
-      },
-      {
-        "compartments": [
-          {
-            "kind": "attributes",
-            "members": [
-              51
-            ],
-            "provenance": "direct"
-          }
-        ],
-        "metaclass": "PortUsage",
-        "name": "pwr",
-        "notationRole": "usage",
-        "owner": 35,
-        "reference": 53,
-        "source": 111
-      },
-      {
-        "compartments": [],
-        "metaclass": "AttributeUsage",
-        "name": null,
-        "notationRole": "usage",
-        "owner": 50,
-        "reference": 98,
-        "source": 113
-      },
-      {
-        "compartments": [],
-        "metaclass": "AttributeUsage",
-        "name": "duration",
-        "notationRole": "usage",
-        "owner": 35,
-        "reference": 52,
-        "source": 109
-      },
-      {
-        "compartments": [
-          {
-            "kind": "attributes",
-            "members": [
-              1,
-              2,
-              3
+              90,
+              91,
+              92
             ],
             "provenance": "inherited"
           }
@@ -6985,225 +8542,114 @@ package TimerGeometry {
         "metaclass": "PortUsage",
         "name": "powerOut",
         "notationRole": "usage",
-        "owner": 36,
+        "owner": 88,
         "reference": 45,
-        "source": 141
+        "source": 141,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "BatteryOutlet",
+              "reference": 26
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "AttributeUsage",
+        "name": "maxCurrent",
+        "notationRole": "usage",
+        "owner": 89,
+        "reference": 27,
+        "source": 48,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "AttributeUsage",
+        "name": "voltage",
+        "notationRole": "usage",
+        "owner": 89,
+        "reference": 29,
+        "source": 47,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "metaclass": "ReferenceUsage",
+        "name": "power",
+        "notationRole": "reference-usage",
+        "owner": 89,
+        "reference": 28,
+        "source": 45,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "electricPower",
+              "reference": 91
+            }
+          ]
+        }
       },
       {
         "compartments": [],
         "metaclass": "AttributeUsage",
         "name": "nominalVoltage",
         "notationRole": "usage",
-        "owner": 36,
+        "owner": 88,
         "reference": 44,
-        "source": 137
+        "source": 137,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "ElectricPotentialDifferenceValue",
+              "reference": 90
+            }
+          ]
+        }
       },
       {
         "compartments": [],
         "metaclass": "AttributeUsage",
         "name": "runtimeEstimate",
         "notationRole": "usage",
-        "owner": 36,
+        "owner": 88,
         "reference": 46,
-        "source": 139
+        "source": 139,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "DurationValue",
+              "reference": 88
+            }
+          ]
+        }
       },
       {
         "compartments": [],
         "metaclass": "AttributeUsage",
         "name": "capacity",
         "notationRole": "usage",
-        "owner": 36,
+        "owner": 88,
         "reference": 43,
-        "source": 135
-      },
-      {
-        "compartments": [],
-        "metaclass": "PortUsage",
-        "name": "cmd",
-        "notationRole": "usage",
-        "owner": 69,
-        "reference": 61,
-        "source": 95
-      },
-      {
-        "compartments": [
-          {
-            "kind": "attributes",
-            "members": [
-              59
-            ],
-            "provenance": "direct"
-          }
-        ],
-        "metaclass": "PortUsage",
-        "name": "pwr",
-        "notationRole": "usage",
-        "owner": 69,
-        "reference": 64,
-        "source": 99
-      },
-      {
-        "compartments": [],
-        "metaclass": "AttributeUsage",
-        "name": null,
-        "notationRole": "usage",
-        "owner": 58,
-        "reference": 100,
-        "source": 101
-      },
-      {
-        "compartments": [],
-        "metaclass": "PortUsage",
-        "name": "lcdIn",
-        "notationRole": "usage",
-        "owner": 69,
-        "reference": 63,
-        "source": 97
-      },
-      {
-        "compartments": [],
-        "metaclass": "AttributeUsage",
-        "name": "format",
-        "notationRole": "usage",
-        "owner": 69,
-        "reference": 62,
-        "source": 93
-      },
-      {
-        "compartments": [],
-        "metaclass": "ConnectionUsage",
-        "name": null,
-        "notationRole": "usage",
-        "owner": 34,
-        "reference": 107,
-        "source": 123
-      },
-      {
-        "compartments": [],
-        "metaclass": "ConnectionUsage",
-        "name": null,
-        "notationRole": "usage",
-        "owner": 34,
-        "reference": 108,
-        "source": 126
-      },
-      {
-        "compartments": [],
-        "metaclass": "ConnectionUsage",
-        "name": null,
-        "notationRole": "usage",
-        "owner": 34,
-        "reference": 109,
-        "source": 129
-      },
-      {
-        "compartments": [],
-        "metaclass": "ConnectionUsage",
-        "name": null,
-        "notationRole": "usage",
-        "owner": 34,
-        "reference": 110,
-        "source": 132
-      },
-      {
-        "compartments": [
-          {
-            "kind": "ports",
-            "members": [
-              25,
-              26,
-              28
-            ],
-            "provenance": "inherited"
-          }
-        ],
-        "metaclass": "PartUsage",
-        "name": "buzzerDriver",
-        "notationRole": "usage",
-        "owner": 34,
-        "reference": 85,
-        "source": 121
-      },
-      {
-        "compartments": [
-          {
-            "kind": "attributes",
-            "members": [
-              47,
-              48,
-              49
-            ],
-            "provenance": "inherited"
-          },
-          {
-            "kind": "ports",
-            "members": [
-              40,
-              41,
-              43,
-              44,
-              45
-            ],
-            "provenance": "inherited"
-          },
-          {
-            "kind": "states",
-            "members": [
-              46
-            ],
-            "provenance": "inherited"
-          }
-        ],
-        "metaclass": "PartUsage",
-        "name": "mcu",
-        "notationRole": "usage",
-        "owner": 34,
-        "reference": 87,
-        "source": 115
-      },
-      {
-        "compartments": [
-          {
-            "kind": "ports",
-            "members": [
-              37,
-              39
-            ],
-            "provenance": "inherited"
-          }
-        ],
-        "metaclass": "PartUsage",
-        "name": "buttons",
-        "notationRole": "usage",
-        "owner": 34,
-        "reference": 84,
-        "source": 119
-      },
-      {
-        "compartments": [
-          {
-            "kind": "attributes",
-            "members": [
-              61
-            ],
-            "provenance": "inherited"
-          },
-          {
-            "kind": "ports",
-            "members": [
-              57,
-              58,
-              60
-            ],
-            "provenance": "inherited"
-          }
-        ],
-        "metaclass": "PartUsage",
-        "name": "display",
-        "notationRole": "usage",
-        "owner": 34,
-        "reference": 86,
-        "source": 117
+        "source": 135,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "ElectricChargeValue",
+              "reference": 89
+            }
+          ]
+        }
       }
     ],
     "relationships": [
@@ -7220,12 +8666,67 @@ package TimerGeometry {
       },
       {
         "kind": "typing",
+        "navigation": 144,
+        "provenance": "authored",
+        "reference": 256,
+        "source": 6,
+        "target": {
+          "reference": 82,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 116,
+        "provenance": "authored",
+        "reference": 321,
+        "source": 23,
+        "target": {
+          "reference": 71,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 80,
+        "provenance": "authored",
+        "reference": 275,
+        "source": 26,
+        "target": {
+          "reference": 26,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
         "navigation": 46,
         "provenance": "authored",
         "reference": 158,
-        "source": 3,
+        "source": 29,
         "target": {
           "reference": 91,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": 82,
+        "provenance": "authored",
+        "reference": 276,
+        "source": 30,
+        "target": {
+          "node": 27,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 72,
+        "provenance": "authored",
+        "reference": 262,
+        "source": 31,
+        "target": {
+          "reference": 30,
           "status": "resolved"
         }
       },
@@ -7233,8 +8734,8 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 52,
         "provenance": "authored",
-        "reference": 163,
-        "source": 4,
+        "reference": 173,
+        "source": 32,
         "target": {
           "reference": 93,
           "status": "resolved"
@@ -7244,8 +8745,8 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 54,
         "provenance": "authored",
-        "reference": 161,
-        "source": 5,
+        "reference": 169,
+        "source": 33,
         "target": {
           "reference": 93,
           "status": "resolved"
@@ -7255,8 +8756,8 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 50,
         "provenance": "authored",
-        "reference": 162,
-        "source": 6,
+        "reference": 171,
+        "source": 34,
         "target": {
           "reference": 93,
           "status": "resolved"
@@ -7266,8 +8767,8 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 58,
         "provenance": "authored",
-        "reference": 159,
-        "source": 7,
+        "reference": 165,
+        "source": 35,
         "target": {
           "reference": 93,
           "status": "resolved"
@@ -7277,8 +8778,8 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 56,
         "provenance": "authored",
-        "reference": 160,
-        "source": 8,
+        "reference": 167,
+        "source": 36,
         "target": {
           "reference": 93,
           "status": "resolved"
@@ -7286,23 +8787,12 @@ package TimerGeometry {
       },
       {
         "kind": "typing",
-        "navigation": 64,
+        "navigation": 76,
         "provenance": "authored",
-        "reference": 164,
-        "source": 9,
+        "reference": 270,
+        "source": 37,
         "target": {
-          "reference": 93,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 60,
-        "provenance": "authored",
-        "reference": 165,
-        "source": 10,
-        "target": {
-          "reference": 95,
+          "reference": 40,
           "status": "resolved"
         }
       },
@@ -7310,285 +8800,43 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 62,
         "provenance": "authored",
-        "reference": 166,
-        "source": 11,
+        "reference": 179,
+        "source": 38,
         "target": {
           "reference": 95,
           "status": "resolved"
         }
       },
       {
-        "kind": "transitionSource",
-        "navigation": 30,
+        "kind": "typing",
+        "navigation": 78,
         "provenance": "authored",
-        "reference": 140,
-        "source": 12,
+        "reference": 264,
+        "source": 39,
         "target": {
-          "node": 24,
+          "reference": 36,
           "status": "resolved"
         }
       },
       {
-        "kind": "transitionTarget",
-        "navigation": 32,
+        "kind": "typing",
+        "navigation": 64,
         "provenance": "authored",
-        "reference": 141,
-        "source": 12,
+        "reference": 175,
+        "source": 40,
         "target": {
-          "node": 23,
+          "reference": 93,
           "status": "resolved"
         }
       },
       {
-        "kind": "transitionTrigger",
-        "navigation": 31,
+        "kind": "typing",
+        "navigation": 84,
         "provenance": "authored",
-        "reference": 142,
-        "source": 12,
+        "reference": 291,
+        "source": 41,
         "target": {
-          "reference": 2,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionSource",
-        "navigation": 14,
-        "provenance": "authored",
-        "reference": 152,
-        "source": 13,
-        "target": {
-          "node": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTarget",
-        "navigation": 16,
-        "provenance": "authored",
-        "reference": 153,
-        "source": 13,
-        "target": {
-          "node": 24,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTrigger",
-        "navigation": 15,
-        "provenance": "authored",
-        "reference": 154,
-        "source": 13,
-        "target": {
-          "reference": 10,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionSource",
-        "navigation": 22,
-        "provenance": "authored",
-        "reference": 122,
-        "source": 14,
-        "target": {
-          "node": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTarget",
-        "navigation": 24,
-        "provenance": "authored",
-        "reference": 123,
-        "source": 14,
-        "target": {
-          "node": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTrigger",
-        "navigation": 23,
-        "provenance": "authored",
-        "reference": 124,
-        "source": 14,
-        "target": {
-          "reference": 3,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionSource",
-        "navigation": 18,
-        "provenance": "authored",
-        "reference": 131,
-        "source": 15,
-        "target": {
-          "node": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTarget",
-        "navigation": 20,
-        "provenance": "authored",
-        "reference": 132,
-        "source": 15,
-        "target": {
-          "node": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTrigger",
-        "navigation": 19,
-        "provenance": "authored",
-        "reference": 133,
-        "source": 15,
-        "target": {
-          "reference": 6,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionSource",
-        "navigation": 34,
-        "provenance": "authored",
-        "reference": 155,
-        "source": 16,
-        "target": {
-          "node": 22,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTarget",
-        "navigation": 36,
-        "provenance": "authored",
-        "reference": 156,
-        "source": 16,
-        "target": {
-          "node": 24,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTrigger",
-        "navigation": 35,
-        "provenance": "authored",
-        "reference": 157,
-        "source": 16,
-        "target": {
-          "reference": 10,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionSource",
-        "navigation": 38,
-        "provenance": "authored",
-        "reference": 146,
-        "source": 17,
-        "target": {
-          "node": 22,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTarget",
-        "navigation": 40,
-        "provenance": "authored",
-        "reference": 147,
-        "source": 17,
-        "target": {
-          "node": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTrigger",
-        "navigation": 39,
-        "provenance": "authored",
-        "reference": 148,
-        "source": 17,
-        "target": {
-          "reference": 8,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionSource",
-        "navigation": 42,
-        "provenance": "authored",
-        "reference": 143,
-        "source": 18,
-        "target": {
-          "node": 23,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTarget",
-        "navigation": 44,
-        "provenance": "authored",
-        "reference": 144,
-        "source": 18,
-        "target": {
-          "node": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTrigger",
-        "navigation": 43,
-        "provenance": "authored",
-        "reference": 145,
-        "source": 18,
-        "target": {
-          "reference": 8,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionSource",
-        "navigation": 26,
-        "provenance": "authored",
-        "reference": 149,
-        "source": 19,
-        "target": {
-          "node": 24,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTarget",
-        "navigation": 28,
-        "provenance": "authored",
-        "reference": 150,
-        "source": 19,
-        "target": {
-          "node": 22,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTrigger",
-        "navigation": 27,
-        "provenance": "authored",
-        "reference": 151,
-        "source": 19,
-        "target": {
-          "reference": 11,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "initialState",
-        "navigation": 4,
-        "provenance": "authored",
-        "reference": 121,
-        "source": 20,
-        "target": {
-          "node": 21,
+          "reference": 12,
           "status": "resolved"
         }
       },
@@ -7597,7 +8845,7 @@ package TimerGeometry {
         "navigation": 6,
         "provenance": "authored",
         "reference": 130,
-        "source": 21,
+        "source": 51,
         "target": {
           "reference": 5,
           "status": "resolved"
@@ -7608,9 +8856,20 @@ package TimerGeometry {
         "navigation": 10,
         "provenance": "authored",
         "reference": 136,
-        "source": 22,
+        "source": 52,
         "target": {
           "reference": 7,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "initialState",
+        "navigation": 4,
+        "provenance": "authored",
+        "reference": 120,
+        "source": 50,
+        "target": {
+          "node": 51,
           "status": "resolved"
         }
       },
@@ -7619,7 +8878,7 @@ package TimerGeometry {
         "navigation": 12,
         "provenance": "authored",
         "reference": 126,
-        "source": 23,
+        "source": 53,
         "target": {
           "reference": 4,
           "status": "resolved"
@@ -7630,229 +8889,273 @@ package TimerGeometry {
         "navigation": 8,
         "provenance": "authored",
         "reference": 139,
-        "source": 24,
+        "source": 54,
         "target": {
           "reference": 9,
           "status": "resolved"
         }
       },
       {
-        "kind": "typing",
-        "navigation": 92,
+        "kind": "transitionSource",
+        "navigation": 26,
         "provenance": "authored",
-        "reference": 182,
-        "source": 25,
+        "reference": 149,
+        "source": 49,
         "target": {
-          "reference": 26,
+          "node": 54,
           "status": "resolved"
         }
       },
       {
-        "kind": "typing",
-        "navigation": 88,
+        "kind": "transitionTarget",
+        "navigation": 28,
         "provenance": "authored",
-        "reference": 185,
-        "source": 26,
+        "reference": 150,
+        "source": 49,
         "target": {
-          "reference": 26,
+          "node": 52,
           "status": "resolved"
         }
       },
       {
-        "kind": "redefinition",
-        "navigation": 90,
+        "kind": "transitionTrigger",
+        "navigation": 27,
         "provenance": "authored",
-        "reference": 186,
-        "source": 27,
+        "reference": 151,
+        "source": 49,
         "target": {
-          "node": 1,
+          "reference": 11,
           "status": "resolved"
         }
       },
       {
-        "kind": "typing",
-        "navigation": 86,
+        "kind": "transitionSource",
+        "navigation": 30,
         "provenance": "authored",
-        "reference": 183,
-        "source": 28,
+        "reference": 140,
+        "source": 42,
         "target": {
-          "reference": 36,
+          "node": 54,
           "status": "resolved"
         }
       },
       {
-        "kind": "memberAccessOperand",
-        "navigation": 150,
+        "kind": "transitionTarget",
+        "navigation": 32,
         "provenance": "authored",
-        "reference": 193,
-        "source": 29,
+        "reference": 141,
+        "source": 42,
         "target": {
           "node": 53,
           "status": "resolved"
         }
       },
       {
-        "kind": "memberAccessOperand",
-        "navigation": 151,
+        "kind": "transitionTrigger",
+        "navigation": 31,
         "provenance": "authored",
-        "reference": 194,
-        "source": 29,
+        "reference": 142,
+        "source": 42,
         "target": {
-          "node": 41,
+          "reference": 2,
           "status": "resolved"
         }
       },
       {
-        "kind": "memberAccessOperand",
-        "navigation": 153,
+        "kind": "transitionSource",
+        "navigation": 14,
         "provenance": "authored",
-        "reference": 195,
-        "source": 30,
+        "reference": 152,
+        "source": 43,
+        "target": {
+          "node": 51,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTarget",
+        "navigation": 16,
+        "provenance": "authored",
+        "reference": 153,
+        "source": 43,
+        "target": {
+          "node": 54,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTrigger",
+        "navigation": 15,
+        "provenance": "authored",
+        "reference": 154,
+        "source": 43,
+        "target": {
+          "reference": 10,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionSource",
+        "navigation": 22,
+        "provenance": "authored",
+        "reference": 122,
+        "source": 44,
+        "target": {
+          "node": 51,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTarget",
+        "navigation": 24,
+        "provenance": "authored",
+        "reference": 123,
+        "source": 44,
+        "target": {
+          "node": 51,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTrigger",
+        "navigation": 23,
+        "provenance": "authored",
+        "reference": 124,
+        "source": 44,
+        "target": {
+          "reference": 3,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionSource",
+        "navigation": 18,
+        "provenance": "authored",
+        "reference": 131,
+        "source": 45,
+        "target": {
+          "node": 51,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTarget",
+        "navigation": 20,
+        "provenance": "authored",
+        "reference": 132,
+        "source": 45,
+        "target": {
+          "node": 51,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTrigger",
+        "navigation": 19,
+        "provenance": "authored",
+        "reference": 133,
+        "source": 45,
+        "target": {
+          "reference": 6,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionSource",
+        "navigation": 34,
+        "provenance": "authored",
+        "reference": 155,
+        "source": 46,
+        "target": {
+          "node": 52,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTarget",
+        "navigation": 36,
+        "provenance": "authored",
+        "reference": 156,
+        "source": 46,
+        "target": {
+          "node": 54,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTrigger",
+        "navigation": 35,
+        "provenance": "authored",
+        "reference": 157,
+        "source": 46,
+        "target": {
+          "reference": 10,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionSource",
+        "navigation": 38,
+        "provenance": "authored",
+        "reference": 146,
+        "source": 47,
+        "target": {
+          "node": 52,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTarget",
+        "navigation": 40,
+        "provenance": "authored",
+        "reference": 147,
+        "source": 47,
+        "target": {
+          "node": 51,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTrigger",
+        "navigation": 39,
+        "provenance": "authored",
+        "reference": 148,
+        "source": 47,
+        "target": {
+          "reference": 8,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionSource",
+        "navigation": 42,
+        "provenance": "authored",
+        "reference": 143,
+        "source": 48,
         "target": {
           "node": 53,
           "status": "resolved"
         }
       },
       {
-        "kind": "memberAccessOperand",
-        "navigation": 154,
+        "kind": "transitionTarget",
+        "navigation": 44,
         "provenance": "authored",
-        "reference": 196,
-        "source": 30,
+        "reference": 144,
+        "source": 48,
         "target": {
-          "node": 58,
+          "node": 51,
           "status": "resolved"
         }
       },
       {
-        "kind": "memberAccessOperand",
-        "navigation": 156,
+        "kind": "transitionTrigger",
+        "navigation": 43,
         "provenance": "authored",
-        "reference": 197,
-        "source": 31,
+        "reference": 145,
+        "source": 48,
         "target": {
-          "node": 53,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 157,
-        "provenance": "authored",
-        "reference": 198,
-        "source": 31,
-        "target": {
-          "node": 37,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 159,
-        "provenance": "authored",
-        "reference": 199,
-        "source": 32,
-        "target": {
-          "node": 53,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 160,
-        "provenance": "authored",
-        "reference": 200,
-        "source": 32,
-        "target": {
-          "node": 26,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 162,
-        "provenance": "authored",
-        "reference": 201,
-        "source": 33,
-        "target": {
-          "node": 25,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 163,
-        "provenance": "authored",
-        "reference": 202,
-        "source": 33,
-        "target": {
-          "node": 50,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 144,
-        "provenance": "authored",
-        "reference": 219,
-        "source": 34,
-        "target": {
-          "reference": 82,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 148,
-        "provenance": "authored",
-        "reference": 210,
-        "source": 35,
-        "target": {
-          "reference": 51,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 146,
-        "provenance": "authored",
-        "reference": 207,
-        "source": 36,
-        "target": {
-          "reference": 42,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 106,
-        "provenance": "authored",
-        "reference": 176,
-        "source": 37,
-        "target": {
-          "reference": 26,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": 108,
-        "provenance": "authored",
-        "reference": 177,
-        "source": 38,
-        "target": {
-          "node": 1,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 104,
-        "provenance": "authored",
-        "reference": 174,
-        "source": 39,
-        "target": {
-          "reference": 30,
+          "reference": 8,
           "status": "resolved"
         }
       },
@@ -7860,8 +9163,8 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 74,
         "provenance": "authored",
-        "reference": 230,
-        "source": 40,
+        "reference": 267,
+        "source": 24,
         "target": {
           "reference": 38,
           "status": "resolved"
@@ -7869,78 +9172,12 @@ package TimerGeometry {
       },
       {
         "kind": "typing",
-        "navigation": 80,
+        "navigation": 60,
         "provenance": "authored",
-        "reference": 235,
-        "source": 41,
+        "reference": 177,
+        "source": 25,
         "target": {
-          "reference": 26,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": 82,
-        "provenance": "authored",
-        "reference": 236,
-        "source": 42,
-        "target": {
-          "node": 1,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 72,
-        "provenance": "authored",
-        "reference": 225,
-        "source": 43,
-        "target": {
-          "reference": 30,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 76,
-        "provenance": "authored",
-        "reference": 233,
-        "source": 44,
-        "target": {
-          "reference": 40,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 78,
-        "provenance": "authored",
-        "reference": 227,
-        "source": 45,
-        "target": {
-          "reference": 36,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 84,
-        "provenance": "authored",
-        "reference": 251,
-        "source": 46,
-        "target": {
-          "reference": 12,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 66,
-        "provenance": "authored",
-        "reference": 228,
-        "source": 47,
-        "target": {
-          "reference": 92,
+          "reference": 95,
           "status": "resolved"
         }
       },
@@ -7948,8 +9185,8 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 70,
         "provenance": "authored",
-        "reference": 237,
-        "source": 48,
+        "reference": 277,
+        "source": 56,
         "target": {
           "reference": 94,
           "status": "resolved"
@@ -7959,8 +9196,8 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 68,
         "provenance": "authored",
-        "reference": 231,
-        "source": 49,
+        "reference": 268,
+        "source": 57,
         "target": {
           "reference": 94,
           "status": "resolved"
@@ -7968,12 +9205,430 @@ package TimerGeometry {
       },
       {
         "kind": "typing",
-        "navigation": 112,
+        "navigation": 66,
         "provenance": "authored",
-        "reference": 180,
-        "source": 50,
+        "reference": 265,
+        "source": 55,
+        "target": {
+          "reference": 92,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 124,
+        "provenance": "authored",
+        "reference": 292,
+        "source": 7,
+        "target": {
+          "node": 64,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 125,
+        "provenance": "authored",
+        "reference": 293,
+        "source": 7,
+        "target": {
+          "node": 31,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 127,
+        "provenance": "authored",
+        "reference": 294,
+        "source": 8,
+        "target": {
+          "node": 24,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 128,
+        "provenance": "authored",
+        "reference": 295,
+        "source": 8,
+        "target": {
+          "node": 71,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 130,
+        "provenance": "authored",
+        "reference": 296,
+        "source": 9,
+        "target": {
+          "node": 37,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 131,
+        "provenance": "authored",
+        "reference": 297,
+        "source": 9,
+        "target": {
+          "node": 78,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 133,
+        "provenance": "authored",
+        "reference": 298,
+        "source": 10,
+        "target": {
+          "node": 39,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 134,
+        "provenance": "authored",
+        "reference": 299,
+        "source": 10,
+        "target": {
+          "node": 21,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 120,
+        "provenance": "authored",
+        "reference": 302,
+        "source": 58,
+        "target": {
+          "reference": 47,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 106,
+        "provenance": "authored",
+        "reference": 198,
+        "source": 59,
         "target": {
           "reference": 26,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 46,
+        "provenance": "authored",
+        "reference": 159,
+        "source": 62,
+        "target": {
+          "reference": 91,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": 108,
+        "provenance": "authored",
+        "reference": 199,
+        "source": 63,
+        "target": {
+          "node": 60,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 104,
+        "provenance": "authored",
+        "reference": 193,
+        "source": 64,
+        "target": {
+          "reference": 30,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 52,
+        "provenance": "authored",
+        "reference": 174,
+        "source": 65,
+        "target": {
+          "reference": 93,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 54,
+        "provenance": "authored",
+        "reference": 170,
+        "source": 66,
+        "target": {
+          "reference": 93,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 50,
+        "provenance": "authored",
+        "reference": 172,
+        "source": 67,
+        "target": {
+          "reference": 93,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 58,
+        "provenance": "authored",
+        "reference": 166,
+        "source": 68,
+        "target": {
+          "reference": 93,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 56,
+        "provenance": "authored",
+        "reference": 168,
+        "source": 69,
+        "target": {
+          "reference": 93,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 118,
+        "provenance": "authored",
+        "reference": 311,
+        "source": 70,
+        "target": {
+          "reference": 60,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 96,
+        "provenance": "authored",
+        "reference": 220,
+        "source": 71,
+        "target": {
+          "reference": 38,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 60,
+        "provenance": "authored",
+        "reference": 178,
+        "source": 72,
+        "target": {
+          "reference": 95,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 100,
+        "provenance": "authored",
+        "reference": 228,
+        "source": 73,
+        "target": {
+          "reference": 26,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 46,
+        "provenance": "authored",
+        "reference": 160,
+        "source": 76,
+        "target": {
+          "reference": 91,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": 102,
+        "provenance": "authored",
+        "reference": 229,
+        "source": 77,
+        "target": {
+          "node": 74,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 98,
+        "provenance": "authored",
+        "reference": 223,
+        "source": 78,
+        "target": {
+          "reference": 40,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 62,
+        "provenance": "authored",
+        "reference": 180,
+        "source": 79,
+        "target": {
+          "reference": 95,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 94,
+        "provenance": "authored",
+        "reference": 221,
+        "source": 80,
+        "target": {
+          "reference": 95,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 122,
+        "provenance": "authored",
+        "reference": 306,
+        "source": 11,
+        "target": {
+          "reference": 55,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 88,
+        "provenance": "authored",
+        "reference": 217,
+        "source": 16,
+        "target": {
+          "reference": 26,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 46,
+        "provenance": "authored",
+        "reference": 161,
+        "source": 19,
+        "target": {
+          "reference": 91,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": 90,
+        "provenance": "authored",
+        "reference": 218,
+        "source": 20,
+        "target": {
+          "node": 17,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 86,
+        "provenance": "authored",
+        "reference": 212,
+        "source": 21,
+        "target": {
+          "reference": 36,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 64,
+        "provenance": "authored",
+        "reference": 176,
+        "source": 22,
+        "target": {
+          "reference": 93,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 92,
+        "provenance": "authored",
+        "reference": 210,
+        "source": 12,
+        "target": {
+          "reference": 26,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 46,
+        "provenance": "authored",
+        "reference": 162,
+        "source": 15,
+        "target": {
+          "reference": 91,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 148,
+        "provenance": "authored",
+        "reference": 247,
+        "source": 81,
+        "target": {
+          "reference": 51,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 112,
+        "provenance": "authored",
+        "reference": 205,
+        "source": 82,
+        "target": {
+          "reference": 26,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 46,
+        "provenance": "authored",
+        "reference": 163,
+        "source": 85,
+        "target": {
+          "reference": 91,
           "status": "resolved"
         }
       },
@@ -7981,10 +9636,10 @@ package TimerGeometry {
         "kind": "redefinition",
         "navigation": 114,
         "provenance": "authored",
-        "reference": 181,
-        "source": 51,
+        "reference": 206,
+        "source": 86,
         "target": {
-          "node": 1,
+          "node": 83,
           "status": "resolved"
         }
       },
@@ -7992,10 +9647,131 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 110,
         "provenance": "authored",
-        "reference": 178,
-        "source": 52,
+        "reference": 200,
+        "source": 87,
         "target": {
           "reference": 88,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 150,
+        "provenance": "authored",
+        "reference": 230,
+        "source": 1,
+        "target": {
+          "node": 89,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 151,
+        "provenance": "authored",
+        "reference": 231,
+        "source": 1,
+        "target": {
+          "node": 26,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 153,
+        "provenance": "authored",
+        "reference": 232,
+        "source": 2,
+        "target": {
+          "node": 89,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 154,
+        "provenance": "authored",
+        "reference": 233,
+        "source": 2,
+        "target": {
+          "node": 73,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 156,
+        "provenance": "authored",
+        "reference": 234,
+        "source": 3,
+        "target": {
+          "node": 89,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 157,
+        "provenance": "authored",
+        "reference": 235,
+        "source": 3,
+        "target": {
+          "node": 59,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 159,
+        "provenance": "authored",
+        "reference": 236,
+        "source": 4,
+        "target": {
+          "node": 89,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 160,
+        "provenance": "authored",
+        "reference": 237,
+        "source": 4,
+        "target": {
+          "node": 16,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 162,
+        "provenance": "authored",
+        "reference": 238,
+        "source": 5,
+        "target": {
+          "node": 12,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 163,
+        "provenance": "authored",
+        "reference": 239,
+        "source": 5,
+        "target": {
+          "node": 82,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 146,
+        "provenance": "authored",
+        "reference": 244,
+        "source": 88,
+        "target": {
+          "reference": 42,
           "status": "resolved"
         }
       },
@@ -8003,8 +9779,8 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 142,
         "provenance": "authored",
-        "reference": 172,
-        "source": 53,
+        "reference": 186,
+        "source": 89,
         "target": {
           "reference": 26,
           "status": "resolved"
@@ -8012,10 +9788,32 @@ package TimerGeometry {
       },
       {
         "kind": "typing",
+        "navigation": 46,
+        "provenance": "authored",
+        "reference": 164,
+        "source": 92,
+        "target": {
+          "reference": 91,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 136,
+        "provenance": "authored",
+        "reference": 181,
+        "source": 95,
+        "target": {
+          "reference": 89,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
         "navigation": 138,
         "provenance": "authored",
-        "reference": 168,
-        "source": 54,
+        "reference": 182,
+        "source": 93,
         "target": {
           "reference": 90,
           "status": "resolved"
@@ -8025,208 +9823,10 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 140,
         "provenance": "authored",
-        "reference": 173,
-        "source": 55,
+        "reference": 187,
+        "source": 94,
         "target": {
           "reference": 88,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 136,
-        "provenance": "authored",
-        "reference": 167,
-        "source": 56,
-        "target": {
-          "reference": 89,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 96,
-        "provenance": "authored",
-        "reference": 187,
-        "source": 57,
-        "target": {
-          "reference": 38,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 100,
-        "provenance": "authored",
-        "reference": 191,
-        "source": 58,
-        "target": {
-          "reference": 26,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": 102,
-        "provenance": "authored",
-        "reference": 192,
-        "source": 59,
-        "target": {
-          "node": 1,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 98,
-        "provenance": "authored",
-        "reference": 189,
-        "source": 60,
-        "target": {
-          "reference": 40,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 94,
-        "provenance": "authored",
-        "reference": 188,
-        "source": 61,
-        "target": {
-          "reference": 95,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 124,
-        "provenance": "authored",
-        "reference": 252,
-        "source": 62,
-        "target": {
-          "node": 39,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 125,
-        "provenance": "authored",
-        "reference": 253,
-        "source": 62,
-        "target": {
-          "node": 43,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 127,
-        "provenance": "authored",
-        "reference": 254,
-        "source": 63,
-        "target": {
-          "node": 40,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 128,
-        "provenance": "authored",
-        "reference": 255,
-        "source": 63,
-        "target": {
-          "node": 57,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 130,
-        "provenance": "authored",
-        "reference": 256,
-        "source": 64,
-        "target": {
-          "node": 44,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 131,
-        "provenance": "authored",
-        "reference": 257,
-        "source": 64,
-        "target": {
-          "node": 60,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 133,
-        "provenance": "authored",
-        "reference": 258,
-        "source": 65,
-        "target": {
-          "node": 45,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 134,
-        "provenance": "authored",
-        "reference": 259,
-        "source": 65,
-        "target": {
-          "node": 28,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 122,
-        "provenance": "authored",
-        "reference": 266,
-        "source": 66,
-        "target": {
-          "reference": 55,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 116,
-        "provenance": "authored",
-        "reference": 281,
-        "source": 67,
-        "target": {
-          "reference": 71,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 120,
-        "provenance": "authored",
-        "reference": 262,
-        "source": 68,
-        "target": {
-          "reference": 47,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 118,
-        "provenance": "authored",
-        "reference": 271,
-        "source": 69,
-        "target": {
-          "reference": 60,
           "status": "resolved"
         }
       }

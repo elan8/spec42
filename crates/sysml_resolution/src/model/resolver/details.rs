@@ -9,7 +9,8 @@
 use super::*;
 use crate::details::{
     ConnectedElement, EffectiveTypeEntry, EffectiveTyping, ElementDetails, ElementDetailsAt,
-    InheritedFeature, ReferencedDetails, RelationshipFamily, RelationshipOutcome,
+    InheritedFeature, ReferencedDetails, RelationshipFamily, RelationshipOutcome, ViewSelection,
+    ViewSelectionObstacle, ViewSelectionOutcome,
 };
 use crate::evaluation::{AnalysisEvaluation, EvaluatedScalar, EvaluationState};
 use crate::inspection::SymbolEntry;
@@ -27,6 +28,52 @@ enum Family {
     Specialization,
     Subsetting,
     Redefinition,
+}
+
+enum PredicateTruth {
+    True,
+    False,
+    Indeterminate(Vec<ViewSelectionObstacle>),
+}
+
+impl From<bool> for PredicateTruth {
+    fn from(value: bool) -> Self {
+        if value {
+            Self::True
+        } else {
+            Self::False
+        }
+    }
+}
+
+impl PredicateTruth {
+    fn and(left: Self, right: Self) -> Self {
+        match (left, right) {
+            (Self::False, _) | (_, Self::False) => Self::False,
+            (Self::True, Self::True) => Self::True,
+            (Self::Indeterminate(mut left), Self::Indeterminate(right)) => {
+                left.extend(right);
+                Self::Indeterminate(left)
+            }
+            (Self::Indeterminate(obstacles), _) | (_, Self::Indeterminate(obstacles)) => {
+                Self::Indeterminate(obstacles)
+            }
+        }
+    }
+
+    fn or(left: Self, right: Self) -> Self {
+        match (left, right) {
+            (Self::True, _) | (_, Self::True) => Self::True,
+            (Self::False, Self::False) => Self::False,
+            (Self::Indeterminate(mut left), Self::Indeterminate(right)) => {
+                left.extend(right);
+                Self::Indeterminate(left)
+            }
+            (Self::Indeterminate(obstacles), _) | (_, Self::Indeterminate(obstacles)) => {
+                Self::Indeterminate(obstacles)
+            }
+        }
+    }
 }
 
 impl Family {
@@ -71,6 +118,177 @@ fn is_verdict_bearing(kind: ElementKind) -> bool {
 }
 
 impl ResolvedSemanticModel {
+    pub(crate) fn view_selection(
+        &self,
+        view: &SymbolIdentity,
+        candidate: &SymbolIdentity,
+    ) -> QueryOutcome<ViewSelection> {
+        let view_id = match self.single_declaration(view) {
+            Ok(id) => id,
+            Err(outcome) => return outcome,
+        };
+        let candidate_id = match self.single_declaration(candidate) {
+            Ok(id) => id,
+            Err(outcome) => return outcome,
+        };
+
+        let metadata = self
+            .outgoing_reference_ids(candidate_id)
+            .iter()
+            .filter_map(|reference_id| {
+                let reference = self.storage.references.get(reference_id.index())?;
+                if reference.kind != ReferenceKind::MetadataAnnotation {
+                    return None;
+                }
+                match self.resolution.outcome(*reference_id) {
+                    Some(ResolutionStatus::Resolved(target)) => Some(target),
+                    _ => None,
+                }
+            })
+            .collect::<std::collections::BTreeSet<_>>();
+        let candidate_kind = self
+            .storage
+            .declaration(candidate_id)
+            .map(|declaration| crate::model::element_kind::element_kind(declaration.kind));
+
+        let mut owners = std::collections::VecDeque::from([view_id]);
+        owners.extend(
+            self.types
+                .direct_types(view_id)
+                .iter()
+                .map(|(target, _)| *target),
+        );
+        let mut visited = std::collections::BTreeSet::new();
+        let mut conditions = Vec::new();
+        while let Some(owner) = owners.pop_front() {
+            if !visited.insert(owner) {
+                continue;
+            }
+            conditions.extend(
+                self.expressions
+                    .filters_for(owner)
+                    .iter()
+                    .filter(|filter| filter.form == FilterForm::View),
+            );
+            owners.extend(
+                self.types
+                    .supertypes(owner)
+                    .iter()
+                    .map(|(target, _)| *target),
+            );
+        }
+
+        let mut obstacles = Vec::new();
+        for condition in conditions {
+            match self.evaluate_view_predicate(
+                condition.owner,
+                &condition.predicate,
+                &metadata,
+                candidate_kind,
+            ) {
+                PredicateTruth::True => {}
+                PredicateTruth::False => {
+                    return self.resolved_outcome(ViewSelection {
+                        view: view.clone(),
+                        candidate: candidate.clone(),
+                        outcome: ViewSelectionOutcome::Excluded,
+                    });
+                }
+                PredicateTruth::Indeterminate(mut condition_obstacles) => {
+                    obstacles.append(&mut condition_obstacles);
+                }
+            }
+        }
+        obstacles.sort();
+        obstacles.dedup();
+        self.resolved_outcome(ViewSelection {
+            view: view.clone(),
+            candidate: candidate.clone(),
+            outcome: if obstacles.is_empty() {
+                ViewSelectionOutcome::Included
+            } else {
+                ViewSelectionOutcome::Indeterminate(obstacles.into_boxed_slice())
+            },
+        })
+    }
+
+    fn evaluate_view_predicate(
+        &self,
+        owner: DeclarationId,
+        predicate: &FilterPredicate,
+        metadata: &std::collections::BTreeSet<DeclarationId>,
+        candidate_kind: Option<ElementKind>,
+    ) -> PredicateTruth {
+        match predicate {
+            FilterPredicate::Boolean(value) => PredicateTruth::from(*value),
+            FilterPredicate::Metadata(ordinal) => {
+                let reference_id = self.outgoing_reference_ids(owner).iter().find(|id| {
+                    self.storage.references[id.index()].kind == ReferenceKind::FilterMetadataTest
+                        && self.storage.references[id.index()].ordinal == *ordinal
+                });
+                match reference_id.and_then(|id| self.resolution.outcome(*id)) {
+                    Some(ResolutionStatus::Resolved(target)) => PredicateTruth::from(
+                        metadata.contains(&target)
+                            || candidate_kind == self.standard_element_classification(target),
+                    ),
+                    Some(ResolutionStatus::Ambiguous(range)) => {
+                        let mut candidates = self
+                            .resolution
+                            .ambiguous_candidates(range)
+                            .iter()
+                            .filter_map(|id| self.symbol_identity(*id))
+                            .collect::<Vec<_>>();
+                        candidates.sort();
+                        candidates.dedup();
+                        PredicateTruth::Indeterminate(vec![
+                            ViewSelectionObstacle::AmbiguousPredicate(
+                                candidates.into_boxed_slice(),
+                            ),
+                        ])
+                    }
+                    Some(ResolutionStatus::Unsupported) => PredicateTruth::Indeterminate(vec![
+                        ViewSelectionObstacle::UnsupportedPredicate,
+                    ]),
+                    _ => PredicateTruth::Indeterminate(vec![
+                        ViewSelectionObstacle::UnresolvedPredicate,
+                    ]),
+                }
+            }
+            FilterPredicate::And(left, right) => PredicateTruth::and(
+                self.evaluate_view_predicate(owner, left, metadata, candidate_kind),
+                self.evaluate_view_predicate(owner, right, metadata, candidate_kind),
+            ),
+            FilterPredicate::Or(left, right) => PredicateTruth::or(
+                self.evaluate_view_predicate(owner, left, metadata, candidate_kind),
+                self.evaluate_view_predicate(owner, right, metadata, candidate_kind),
+            ),
+            FilterPredicate::Unsupported => {
+                PredicateTruth::Indeterminate(vec![ViewSelectionObstacle::UnsupportedPredicate])
+            }
+        }
+    }
+
+    /// Maps the standard SysML classification metadata to the element-kind vocabulary owned by
+    /// this semantic model. The library declares these classifiers as metadata definitions (rather
+    /// than KerML `metaclass` declarations), so ordinary metadata-annotation lookup alone cannot
+    /// answer `@SysML::PartUsage`. Restricting the mapping to admitted standard-library sources
+    /// prevents a workspace declaration with the same short name from impersonating the contract.
+    fn standard_element_classification(&self, target: DeclarationId) -> Option<ElementKind> {
+        let declaration = self.storage.declaration(target)?;
+        if self.storage.documents[declaration.document.index()].role
+            != source_identity::SourceRole::StandardLibrary
+        {
+            return None;
+        }
+        let entry = self.symbol_entry(target)?;
+        let standard_sysml_metadata = entry.kind == ElementKind::MetadataDefinition
+            && entry.qualified_name.starts_with("SysML::Systems::");
+        if !standard_sysml_metadata && entry.kind != ElementKind::Metaclass {
+            return None;
+        }
+        entry.name.as_deref().and_then(ElementKind::parse)
+    }
+
     pub(crate) fn element_details(&self, symbol: &SymbolIdentity) -> QueryOutcome<ElementDetails> {
         if matches!(
             self.metadata.completeness,
@@ -252,18 +470,72 @@ impl ResolvedSemanticModel {
         types.sort_by(|left, right| left.element.identity.cmp(&right.element.identity));
         types.dedup_by(|left, right| left.element.identity == right.element.identity);
 
-        let outcome = if !types.is_empty() {
+        let mut candidates = typing
+            .candidates
+            .iter()
+            .cloned()
+            .map(|element| EffectiveTypeEntry {
+                element,
+                origin: EffectiveTypeOrigin::Direct,
+            })
+            .collect::<Vec<_>>();
+        // An ambiguous subsetting or redefinition names candidate *features*, not candidate
+        // types. Translate each candidate through the already-published effective-type index and
+        // retain the feature that supplied that possible inherited path as provenance.
+        for feature in subsetting
+            .candidates
+            .iter()
+            .chain(redefinition.candidates.iter())
+        {
+            let Ok(feature_id) = self.single_declaration::<()>(&feature.identity) else {
+                continue;
+            };
+            for (target, _) in self.types.effective_types(feature_id) {
+                let Some(element) = self.symbol_entry(*target) else {
+                    continue;
+                };
+                candidates.push(EffectiveTypeEntry {
+                    element,
+                    origin: EffectiveTypeOrigin::Inherited(feature.identity.clone()),
+                });
+            }
+        }
+        candidates.sort_by(|left, right| left.element.identity.cmp(&right.element.identity));
+        candidates.dedup_by(|left, right| left.element.identity == right.element.identity);
+
+        let contributors = [typing.outcome, subsetting.outcome, redefinition.outcome];
+        let applicable = contributors
+            .into_iter()
+            .filter(|outcome| *outcome != RelationshipOutcome::NotApplicable)
+            .collect::<Vec<_>>();
+        let outcome = if applicable.is_empty() {
+            RelationshipOutcome::NotApplicable
+        } else if applicable.contains(&RelationshipOutcome::Ambiguous) {
+            RelationshipOutcome::Ambiguous
+        } else if applicable.contains(&RelationshipOutcome::Unsupported) {
+            RelationshipOutcome::Unsupported
+        } else if !types.is_empty()
+            && applicable
+                .iter()
+                .all(|outcome| *outcome == RelationshipOutcome::Resolved)
+        {
             RelationshipOutcome::Resolved
+        } else if !types.is_empty() {
+            RelationshipOutcome::Partial
+        } else if applicable
+            .iter()
+            .all(|outcome| *outcome == RelationshipOutcome::Unresolved)
+        {
+            RelationshipOutcome::Unresolved
         } else {
-            [typing.outcome, subsetting.outcome, redefinition.outcome]
-                .into_iter()
-                .filter(|outcome| *outcome != RelationshipOutcome::NotApplicable)
-                .max()
-                .unwrap_or(RelationshipOutcome::NotApplicable)
+            // At least one path settled, but it did not publish a type. This is an incomplete
+            // effective result, never evidence that the element is untyped.
+            RelationshipOutcome::Partial
         };
         EffectiveTyping {
             outcome,
             types: types.into_boxed_slice(),
+            candidates: candidates.into_boxed_slice(),
         }
     }
 

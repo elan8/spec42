@@ -112,7 +112,7 @@ package BrowserExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 4,
+  "schemaVersion": 5,
   "modelDigest": "blake3:da3b01538454be5bdb18db4056b8af8b78e50376b730804d30a832a52cadddbc",
   "documents": [
     {
@@ -246,7 +246,10 @@ package BrowserExample {
         "notationRole": "definition",
         "owner": null,
         "reference": 0,
-        "source": 0
+        "source": 0,
+        "typing": {
+          "status": "absent"
+        }
       },
       {
         "compartments": [
@@ -263,7 +266,10 @@ package BrowserExample {
         "notationRole": "usage",
         "owner": 0,
         "reference": 1,
-        "source": 1
+        "source": 1,
+        "typing": {
+          "status": "absent"
+        }
       },
       {
         "compartments": [],
@@ -272,7 +278,10 @@ package BrowserExample {
         "notationRole": "usage",
         "owner": 1,
         "reference": 2,
-        "source": 2
+        "source": 2,
+        "typing": {
+          "status": "absent"
+        }
       }
     ],
     "relationships": [],

@@ -1,8 +1,9 @@
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
 use crate::{
-    ElementKind, ElementSearch, ElementSource, PublishedResolution, QueryOutcome,
-    RelationshipProvenance, RelationshipTarget, SourceLocation, SymbolEntry, SymbolIdentity,
+    ElementDetails, ElementKind, ElementSearch, ElementSource, PublishedResolution, QueryOutcome,
+    RelationshipOutcome, RelationshipProvenance, RelationshipTarget, SourceLocation, SymbolEntry,
+    SymbolIdentity, ViewSelectionObstacle, ViewSelectionOutcome,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -90,19 +91,87 @@ pub enum DiagramIncompleteReason {
     RelationshipUnresolved { relationship: Box<str> },
     RelationshipAmbiguous { relationship: Box<str> },
     RelationshipUnsupported { relationship: Box<str> },
-    ViewFilterApplicationUnavailable,
+    ViewFilterUnresolved,
+    ViewFilterAmbiguous,
+    ViewFilterUnsupported,
     GeometryFactsUnavailable,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct DiagramElement {
+    /// Identity of this element occurrence in the projected containment context.
+    ///
+    /// This is deliberately distinct from `semantic_id`: one inherited feature declaration may
+    /// occur below several typed usages in the same diagram. Consumers use this identity for
+    /// layout, expansion and containment, and use `semantic_id` for navigation and model queries.
+    pub occurrence_id: DiagramOccurrenceIdentity,
     pub semantic_id: SymbolIdentity,
     pub reference: DiagramSemanticReference,
     pub kind: ElementKind,
     pub name: Option<Box<str>>,
-    pub owner: Option<SymbolIdentity>,
+    pub typing: DiagramElementTyping,
+    pub owner: Option<DiagramOccurrenceIdentity>,
     pub source: SourceLocation,
     pub compartments: Box<[DiagramCompartment]>,
+}
+
+/// A stable, contextual identity for one occurrence in a diagram projection.
+///
+/// The path starts at an exposed semantic root and ends at the declaration presented at this
+/// occurrence. Keeping the canonical semantic identities in the path makes the identity
+/// deterministic without deriving semantics from names or rendered labels.
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct DiagramOccurrenceIdentity {
+    pub semantic_path: Box<[SymbolIdentity]>,
+}
+
+impl DiagramOccurrenceIdentity {
+    fn root(semantic_id: SymbolIdentity) -> Self {
+        Self {
+            semantic_path: vec![semantic_id].into_boxed_slice(),
+        }
+    }
+
+    fn child(&self, semantic_id: SymbolIdentity) -> Self {
+        let mut path = self.semantic_path.to_vec();
+        path.push(semantic_id);
+        Self {
+            semantic_path: path.into_boxed_slice(),
+        }
+    }
+
+    fn contains(&self, semantic_id: &SymbolIdentity) -> bool {
+        self.semantic_path.contains(semantic_id)
+    }
+
+    fn semantic_id(&self) -> &SymbolIdentity {
+        self.semantic_path
+            .last()
+            .expect("a diagram occurrence path is never empty")
+    }
+
+    fn stable_key(&self) -> String {
+        let mut key = String::new();
+        for identity in &self.semantic_path {
+            let value = identity.as_str();
+            key.push_str(&value.len().to_string());
+            key.push(':');
+            key.push_str(value);
+        }
+        key
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum DiagramElementTyping {
+    Absent,
+    Resolved(Box<[SymbolIdentity]>),
+    Partial(Box<[SymbolIdentity]>),
+    Ambiguous(Box<[SymbolIdentity]>),
+    Unresolved,
+    Unsupported,
+    Recovery,
+    Incomplete,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -131,21 +200,35 @@ pub enum DiagramCompartmentProvenance {
 pub struct DiagramCompartment {
     pub kind: DiagramCompartmentKind,
     pub provenance: DiagramCompartmentProvenance,
-    pub members: Box<[SymbolIdentity]>,
+    pub members: Box<[DiagramOccurrenceIdentity]>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum DiagramRelationshipTarget {
-    Resolved(SymbolIdentity),
-    Ambiguous(Box<[SymbolIdentity]>),
+    Resolved(DiagramRelationshipEndpoint),
+    Ambiguous(Box<[DiagramRelationshipEndpoint]>),
     Unresolved,
     Unsupported,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DiagramRelationshipEndpoint {
+    pub semantic_id: SymbolIdentity,
+    pub occurrence: DiagramEndpointOccurrence,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum DiagramEndpointOccurrence {
+    Resolved(DiagramOccurrenceIdentity),
+    Ambiguous(Box<[DiagramOccurrenceIdentity]>),
+    OutsideProjection,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct DiagramRelationship {
     pub semantic_id: Box<str>,
-    pub source: SymbolIdentity,
+    pub source: DiagramOccurrenceIdentity,
+    pub source_semantic_id: SymbolIdentity,
     pub kind: Box<str>,
     pub target: DiagramRelationshipTarget,
     pub provenance: RelationshipProvenance,
@@ -166,8 +249,10 @@ pub enum DiagramEdgeKind {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct DiagramEdge {
     pub semantic_id: Box<str>,
-    pub source: SymbolIdentity,
-    pub target: SymbolIdentity,
+    pub source: DiagramOccurrenceIdentity,
+    pub source_semantic_id: SymbolIdentity,
+    pub target: DiagramOccurrenceIdentity,
+    pub target_semantic_id: SymbolIdentity,
     pub kind: DiagramEdgeKind,
     pub provenance: RelationshipProvenance,
     pub source_location: Option<SourceLocation>,
@@ -295,7 +380,7 @@ impl PublishedResolution {
             QueryOutcome::Resolved(value) | QueryOutcome::Recovered(value) => value,
             QueryOutcome::Ambiguous(_) => return QueryOutcome::Ambiguous(Box::new([])),
             QueryOutcome::UnsupportedWith(_) | QueryOutcome::Unsupported => {
-                return QueryOutcome::Unsupported
+                return QueryOutcome::Unsupported;
             }
             QueryOutcome::Unresolved => return QueryOutcome::Unresolved,
             QueryOutcome::Recovery => return QueryOutcome::Recovery,
@@ -316,18 +401,6 @@ impl PublishedResolution {
             .collect::<BTreeSet<_>>();
         let mut roots = BTreeSet::new();
         let mut reasons = BTreeSet::new();
-        if let QueryOutcome::Resolved(inspection)
-        | QueryOutcome::Recovered(inspection)
-        | QueryOutcome::UnsupportedWith(inspection) = self.inspect(view)
-        {
-            if inspection
-                .relationships
-                .iter()
-                .any(|relationship| relationship.kind == "filterMetadataTest")
-            {
-                reasons.insert(DiagramIncompleteReason::ViewFilterApplicationUnavailable);
-            }
-        }
         for expose in all
             .values()
             .filter(|entry| entry.owner.as_ref() == Some(view) && entry.kind == ElementKind::Expose)
@@ -381,31 +454,86 @@ impl PublishedResolution {
             }
         }
 
-        let mut scope = roots.clone();
-        let mut projected_owners = BTreeMap::new();
-        let mut queue = roots.iter().cloned().collect::<VecDeque<_>>();
-        while let Some(owner) = queue.pop_front() {
-            for child in resolved_values(self.effective_features(&owner)).iter() {
+        let mut direct_children = BTreeMap::<SymbolIdentity, Vec<SymbolIdentity>>::new();
+        for entry in all.values() {
+            if let Some(owner) = &entry.owner {
+                direct_children
+                    .entry(owner.clone())
+                    .or_default()
+                    .push(entry.identity.clone());
+            }
+        }
+        for children in direct_children.values_mut() {
+            children.sort();
+            children.dedup();
+        }
+        let mut occurrences = BTreeMap::<
+            DiagramOccurrenceIdentity,
+            (SymbolIdentity, Option<DiagramOccurrenceIdentity>),
+        >::new();
+        let mut queue = VecDeque::new();
+        for root in &roots {
+            if !self.diagram_candidate_selected(view, root, &mut reasons) {
+                continue;
+            }
+            let occurrence = DiagramOccurrenceIdentity::root(root.clone());
+            occurrences.insert(occurrence.clone(), (root.clone(), None));
+            queue.push_back(occurrence);
+        }
+        while let Some(owner_occurrence) = queue.pop_front() {
+            let owner = occurrences
+                .get(&owner_occurrence)
+                .expect("queued diagram occurrence must exist")
+                .0
+                .clone();
+            let mut children = resolved_values(self.effective_features(&owner)).to_vec();
+            children.extend(
+                direct_children
+                    .get(&owner)
+                    .into_iter()
+                    .flatten()
+                    .filter_map(|identity| all.get(identity).cloned()),
+            );
+            children.sort_by(|left, right| left.identity.cmp(&right.identity));
+            children.dedup_by(|left, right| left.identity == right.identity);
+            for child in children {
                 if !workspace.contains(&child.identity) {
                     continue;
                 }
-                projected_owners
-                    .entry(child.identity.clone())
-                    .or_insert_with(|| owner.clone());
-                if scope.insert(child.identity.clone()) {
-                    queue.push_back(child.identity.clone());
+                if !self.diagram_candidate_selected(view, &child.identity, &mut reasons) {
+                    continue;
+                }
+                let occurrence = owner_occurrence.child(child.identity.clone());
+                let inserted = occurrences
+                    .insert(
+                        occurrence.clone(),
+                        (child.identity.clone(), Some(owner_occurrence.clone())),
+                    )
+                    .is_none();
+                // Recursive types have an unbounded semantic instance tree. Present the cycle-closing
+                // occurrence, but do not invent an arbitrary depth beyond the first repeated declaration.
+                if inserted && !owner_occurrence.contains(&child.identity) {
+                    queue.push_back(occurrence);
                 }
             }
         }
-        let mut elements = scope
+        let projected_roots = occurrences
             .iter()
-            .filter_map(|identity| all.get(identity))
-            .map(|entry| DiagramElement {
+            .filter_map(|(_, (identity, owner))| owner.is_none().then_some(identity.clone()))
+            .collect::<BTreeSet<_>>();
+        let mut elements = occurrences
+            .iter()
+            .filter_map(|(occurrence_id, (identity, owner))| {
+                all.get(identity).map(|entry| (occurrence_id, owner, entry))
+            })
+            .map(|(occurrence_id, owner, entry)| DiagramElement {
+                occurrence_id: occurrence_id.clone(),
                 semantic_id: entry.identity.clone(),
                 reference: semantic_reference(entry, &all),
                 kind: entry.kind,
                 name: entry.name.clone(),
-                owner: projected_owners.get(&entry.identity).cloned(),
+                typing: diagram_element_typing(self.element_details(&entry.identity)),
+                owner: owner.clone(),
                 source: entry.location.clone(),
                 compartments: Box::default(),
             })
@@ -417,10 +545,10 @@ impl PublishedResolution {
         for owner in &mut elements {
             let mut grouped = BTreeMap::<
                 (DiagramCompartmentKind, DiagramCompartmentProvenance),
-                Vec<SymbolIdentity>,
+                Vec<DiagramOccurrenceIdentity>,
             >::new();
-            for (child, projected_owner) in &projected_owners {
-                if projected_owner != &owner.semantic_id {
+            for (child_occurrence, (child, projected_owner)) in &occurrences {
+                if projected_owner.as_ref() != Some(&owner.occurrence_id) {
                     continue;
                 }
                 let Some(kind) = element_kinds
@@ -439,7 +567,7 @@ impl PublishedResolution {
                 grouped
                     .entry((kind, provenance))
                     .or_default()
-                    .push(child.clone());
+                    .push(child_occurrence.clone());
             }
             owner.compartments = grouped
                 .into_iter()
@@ -453,13 +581,15 @@ impl PublishedResolution {
         }
         let mut relationships = Vec::new();
         for element in &elements {
-            if let QueryOutcome::Resolved(inspection) | QueryOutcome::Recovered(inspection) =
-                self.inspect(&element.semantic_id)
-            {
+            if let Some(inspection) = usable_value(self.inspect(&element.semantic_id)) {
                 for (index, relationship) in inspection.relationships.iter().enumerate() {
                     let target = match &relationship.target {
                         RelationshipTarget::Resolved(target) => {
-                            DiagramRelationshipTarget::Resolved(target.clone())
+                            DiagramRelationshipTarget::Resolved(contextual_endpoint(
+                                &element.occurrence_id,
+                                target,
+                                &elements,
+                            ))
                         }
                         RelationshipTarget::Ambiguous(candidates) => {
                             if relationship_is_required(view_entry.kind, relationship.kind) {
@@ -467,7 +597,19 @@ impl PublishedResolution {
                                     relationship: relationship.kind.into(),
                                 });
                             }
-                            DiagramRelationshipTarget::Ambiguous(candidates.clone())
+                            DiagramRelationshipTarget::Ambiguous(
+                                candidates
+                                    .iter()
+                                    .map(|candidate| {
+                                        contextual_endpoint(
+                                            &element.occurrence_id,
+                                            candidate,
+                                            &elements,
+                                        )
+                                    })
+                                    .collect::<Vec<_>>()
+                                    .into_boxed_slice(),
+                            )
                         }
                         RelationshipTarget::Unresolved => {
                             if relationship_is_required(view_entry.kind, relationship.kind) {
@@ -489,11 +631,12 @@ impl PublishedResolution {
                     relationships.push(DiagramRelationship {
                         semantic_id: format!(
                             "{}#{}:{index}",
-                            element.semantic_id.as_str(),
+                            element.occurrence_id.stable_key(),
                             relationship.kind
                         )
                         .into(),
-                        source: element.semantic_id.clone(),
+                        source: element.occurrence_id.clone(),
+                        source_semantic_id: element.semantic_id.clone(),
                         kind: relationship.kind.into(),
                         target,
                         provenance: relationship.provenance,
@@ -507,14 +650,17 @@ impl PublishedResolution {
             .iter()
             .filter_map(|element| {
                 element.owner.as_ref().map(|owner| DiagramEdge {
-                    semantic_id: format!("{}#containment", element.semantic_id.as_str()).into(),
+                    semantic_id: format!("{}#containment", element.occurrence_id.stable_key(),)
+                        .into(),
                     source: owner.clone(),
-                    target: element.semantic_id.clone(),
+                    source_semantic_id: owner.semantic_id().clone(),
+                    target: element.occurrence_id.clone(),
+                    target_semantic_id: element.semantic_id.clone(),
                     kind: DiagramEdgeKind::Containment,
                     provenance: if all
                         .get(&element.semantic_id)
                         .and_then(|entry| entry.owner.as_ref())
-                        == Some(owner)
+                        == Some(owner.semantic_id())
                     {
                         RelationshipProvenance::Authored
                     } else {
@@ -527,7 +673,7 @@ impl PublishedResolution {
         for element in &elements {
             let outgoing = relationships
                 .iter()
-                .filter(|relationship| relationship.source == element.semantic_id)
+                .filter(|relationship| relationship.source == element.occurrence_id)
                 .collect::<Vec<_>>();
             if let Some(edge) = composed_edge(
                 element,
@@ -570,9 +716,12 @@ impl PublishedResolution {
             {
                 if let Some(target) = resolved_target(&initial.target) {
                     edges.push(DiagramEdge {
-                        semantic_id: format!("{}#initial", element.semantic_id.as_str()).into(),
-                        source: element.semantic_id.clone(),
+                        semantic_id: format!("{}#initial", element.occurrence_id.stable_key())
+                            .into(),
+                        source: element.occurrence_id.clone(),
+                        source_semantic_id: element.semantic_id.clone(),
                         target: target.clone(),
+                        target_semantic_id: target.semantic_id().clone(),
                         kind: DiagramEdgeKind::InitialState,
                         provenance: initial.provenance,
                         source_location: initial.source_location.clone(),
@@ -583,7 +732,7 @@ impl PublishedResolution {
         edges.sort_by(|a, b| a.semantic_id.cmp(&b.semantic_id));
         let scene = diagram_scene(
             view_entry.kind,
-            &roots,
+            &projected_roots,
             &elements,
             &relationships,
             &edges,
@@ -594,13 +743,60 @@ impl PublishedResolution {
         }
         QueryOutcome::Resolved(DiagramViewProjection {
             view: view_entry,
-            exposed_roots: roots.into_iter().collect::<Vec<_>>().into_boxed_slice(),
+            exposed_roots: projected_roots
+                .into_iter()
+                .collect::<Vec<_>>()
+                .into_boxed_slice(),
             elements: elements.into_boxed_slice(),
             relationships: relationships.into_boxed_slice(),
             edges: edges.into_boxed_slice(),
             scene,
             incomplete_reasons: reasons.into_iter().collect::<Vec<_>>().into_boxed_slice(),
         })
+    }
+
+    fn diagram_candidate_selected(
+        &self,
+        view: &SymbolIdentity,
+        candidate: &SymbolIdentity,
+        reasons: &mut BTreeSet<DiagramIncompleteReason>,
+    ) -> bool {
+        match self.view_selection(view, candidate) {
+            QueryOutcome::Resolved(selection)
+            | QueryOutcome::Recovered(selection)
+            | QueryOutcome::UnsupportedWith(selection) => match selection.outcome {
+                ViewSelectionOutcome::Included => true,
+                ViewSelectionOutcome::Excluded => false,
+                ViewSelectionOutcome::Indeterminate(obstacles) => {
+                    for obstacle in obstacles.iter() {
+                        reasons.insert(match obstacle {
+                            ViewSelectionObstacle::UnresolvedPredicate => {
+                                DiagramIncompleteReason::ViewFilterUnresolved
+                            }
+                            ViewSelectionObstacle::AmbiguousPredicate(_) => {
+                                DiagramIncompleteReason::ViewFilterAmbiguous
+                            }
+                            ViewSelectionObstacle::UnsupportedPredicate => {
+                                DiagramIncompleteReason::ViewFilterUnsupported
+                            }
+                        });
+                    }
+                    false
+                }
+            },
+            QueryOutcome::Ambiguous(_) => {
+                reasons.insert(DiagramIncompleteReason::ViewFilterAmbiguous);
+                false
+            }
+            QueryOutcome::Unresolved => {
+                reasons.insert(DiagramIncompleteReason::ViewFilterUnresolved);
+                false
+            }
+            QueryOutcome::Unsupported | QueryOutcome::Recovery | QueryOutcome::Incomplete => {
+                reasons.insert(DiagramIncompleteReason::ViewFilterUnsupported);
+                false
+            }
+        }
     }
 
     fn diagram_entries(&self) -> BTreeMap<SymbolIdentity, SymbolEntry> {
@@ -671,9 +867,51 @@ fn semantic_reference(
     }
 }
 
-fn resolved_target(target: &DiagramRelationshipTarget) -> Option<&SymbolIdentity> {
+fn contextual_endpoint(
+    source: &DiagramOccurrenceIdentity,
+    semantic_id: &SymbolIdentity,
+    elements: &[DiagramElement],
+) -> DiagramRelationshipEndpoint {
+    let mut candidates = elements
+        .iter()
+        .filter(|element| &element.semantic_id == semantic_id)
+        .map(|element| {
+            let shared = source
+                .semantic_path
+                .iter()
+                .zip(element.occurrence_id.semantic_path.iter())
+                .take_while(|(left, right)| left == right)
+                .count();
+            (shared, element.occurrence_id.clone())
+        })
+        .collect::<Vec<_>>();
+    candidates.sort();
+    let occurrence = match candidates.last().map(|candidate| candidate.0) {
+        None => DiagramEndpointOccurrence::OutsideProjection,
+        Some(best) => {
+            let best = candidates
+                .into_iter()
+                .filter_map(|(shared, occurrence)| (shared == best).then_some(occurrence))
+                .collect::<Vec<_>>();
+            if let [occurrence] = best.as_slice() {
+                DiagramEndpointOccurrence::Resolved(occurrence.clone())
+            } else {
+                DiagramEndpointOccurrence::Ambiguous(best.into_boxed_slice())
+            }
+        }
+    };
+    DiagramRelationshipEndpoint {
+        semantic_id: semantic_id.clone(),
+        occurrence,
+    }
+}
+
+fn resolved_target(target: &DiagramRelationshipTarget) -> Option<&DiagramOccurrenceIdentity> {
     match target {
-        DiagramRelationshipTarget::Resolved(target) => Some(target),
+        DiagramRelationshipTarget::Resolved(DiagramRelationshipEndpoint {
+            occurrence: DiagramEndpointOccurrence::Resolved(target),
+            ..
+        }) => Some(target),
         _ => None,
     }
 }
@@ -733,7 +971,7 @@ fn diagram_scene(
             let initial_sources = edges
                 .iter()
                 .filter(|edge| edge.kind == DiagramEdgeKind::InitialState)
-                .map(|edge| edge.source.clone())
+                .map(|edge| edge.source_semantic_id.clone())
                 .collect::<BTreeSet<_>>();
             let vertices = elements
                 .iter()
@@ -766,9 +1004,9 @@ fn diagram_scene(
                 .filter_map(|edge| {
                     let origin = elements.iter().find(|element| {
                         edge.semantic_id.as_ref()
-                            == format!("{}#edge", element.semantic_id.as_str())
+                            == format!("{}#edge", element.occurrence_id.stable_key())
                             || edge.semantic_id.as_ref()
-                                == format!("{}#initial", element.semantic_id.as_str())
+                                == format!("{}#initial", element.occurrence_id.stable_key())
                     })?;
                     let feature = |relationship_kind: &str| {
                         transition_feature(origin, relationship_kind, relationships, entries)
@@ -776,8 +1014,8 @@ fn diagram_scene(
                     Some(DiagramStateTransition {
                         semantic_id: edge.semantic_id.clone(),
                         label: origin.name.clone(),
-                        source: edge.source.clone(),
-                        target: edge.target.clone(),
+                        source: edge.source_semantic_id.clone(),
+                        target: edge.target_semantic_id.clone(),
                         trigger: if edge.kind == DiagramEdgeKind::InitialState {
                             DiagramTransitionFeature::Absent
                         } else {
@@ -809,17 +1047,17 @@ fn transition_feature(
     entries: &BTreeMap<SymbolIdentity, SymbolEntry>,
 ) -> DiagramTransitionFeature {
     let Some(relationship) = relationships.iter().find(|relationship| {
-        relationship.source == origin.semantic_id && relationship.kind.as_ref() == kind
+        relationship.source == origin.occurrence_id && relationship.kind.as_ref() == kind
     }) else {
         return DiagramTransitionFeature::Absent;
     };
     match &relationship.target {
         DiagramRelationshipTarget::Resolved(target) => DiagramTransitionFeature::Resolved {
             label: entries
-                .get(target)
+                .get(&target.semantic_id)
                 .and_then(|entry| entry.name.clone())
                 .unwrap_or_default(),
-            target: target.clone(),
+            target: target.semantic_id.clone(),
             source: relationship
                 .source_location
                 .clone()
@@ -857,15 +1095,17 @@ fn composed_edge(
 
 fn edge_from_relationships(
     element: &DiagramElement,
-    source: &SymbolIdentity,
-    target: &SymbolIdentity,
+    source: &DiagramOccurrenceIdentity,
+    target: &DiagramOccurrenceIdentity,
     kind: DiagramEdgeKind,
     relationships: &[&DiagramRelationship],
 ) -> DiagramEdge {
     DiagramEdge {
-        semantic_id: format!("{}#edge", element.semantic_id.as_str()).into(),
+        semantic_id: format!("{}#edge", element.occurrence_id.stable_key()).into(),
         source: source.clone(),
+        source_semantic_id: source.semantic_id().clone(),
         target: target.clone(),
+        target_semantic_id: target.semantic_id().clone(),
         kind,
         provenance: if relationships
             .iter()
@@ -890,10 +1130,66 @@ fn resolved_values<T>(outcome: QueryOutcome<Box<[T]>>) -> Box<[T]> {
     }
 }
 
+fn diagram_element_typing(outcome: QueryOutcome<ElementDetails>) -> DiagramElementTyping {
+    match outcome {
+        QueryOutcome::Resolved(details)
+        | QueryOutcome::Recovered(details)
+        | QueryOutcome::UnsupportedWith(details) => {
+            let types = details
+                .effective_typing
+                .types
+                .iter()
+                .map(|entry| entry.element.identity.clone())
+                .collect::<Vec<_>>()
+                .into_boxed_slice();
+            match details.effective_typing.outcome {
+                RelationshipOutcome::NotApplicable => DiagramElementTyping::Absent,
+                RelationshipOutcome::Resolved => DiagramElementTyping::Resolved(types),
+                RelationshipOutcome::Partial => DiagramElementTyping::Partial(types),
+                RelationshipOutcome::Unresolved => DiagramElementTyping::Unresolved,
+                RelationshipOutcome::Ambiguous => DiagramElementTyping::Ambiguous(
+                    details
+                        .effective_typing
+                        .candidates
+                        .iter()
+                        .map(|entry| entry.element.identity.clone())
+                        .collect::<Vec<_>>()
+                        .into_boxed_slice(),
+                ),
+                RelationshipOutcome::Unsupported => DiagramElementTyping::Unsupported,
+            }
+        }
+        QueryOutcome::Unresolved => DiagramElementTyping::Unresolved,
+        QueryOutcome::Ambiguous(_) => DiagramElementTyping::Ambiguous(Box::default()),
+        QueryOutcome::Unsupported => DiagramElementTyping::Unsupported,
+        QueryOutcome::Recovery => DiagramElementTyping::Recovery,
+        QueryOutcome::Incomplete => DiagramElementTyping::Incomplete,
+    }
+}
+
+fn usable_value<T>(outcome: QueryOutcome<T>) -> Option<T> {
+    match outcome {
+        QueryOutcome::Resolved(value)
+        | QueryOutcome::Recovered(value)
+        | QueryOutcome::UnsupportedWith(value) => Some(value),
+        QueryOutcome::Unresolved
+        | QueryOutcome::Ambiguous(_)
+        | QueryOutcome::Unsupported
+        | QueryOutcome::Recovery
+        | QueryOutcome::Incomplete => None,
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use super::{compartment_kind, DiagramCompartmentKind};
-    use crate::ElementKind;
+    use super::{compartment_kind, usable_value, DiagramCompartmentKind};
+    use crate::{ElementKind, QueryOutcome};
+
+    #[test]
+    fn unsupported_outcomes_retain_their_usable_payload() {
+        assert_eq!(usable_value(QueryOutcome::UnsupportedWith(42)), Some(42));
+        assert_eq!(usable_value::<u8>(QueryOutcome::Unsupported), None);
+    }
 
     #[test]
     fn compartment_families_are_owned_by_the_semantic_projection() {

@@ -112,7 +112,7 @@ package SequenceExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 4,
+  "schemaVersion": 5,
   "modelDigest": "blake3:5275e8bc3437a500f18e59ec95363069309c2bc3542a6c057d6a49376bcb767a",
   "documents": [
     {
@@ -249,7 +249,10 @@ package SequenceExample {
         "notationRole": "definition",
         "owner": null,
         "reference": 0,
-        "source": 0
+        "source": 0,
+        "typing": {
+          "status": "absent"
+        }
       },
       {
         "compartments": [],
@@ -258,7 +261,10 @@ package SequenceExample {
         "notationRole": "usage",
         "owner": 0,
         "reference": 2,
-        "source": 1
+        "source": 1,
+        "typing": {
+          "status": "absent"
+        }
       },
       {
         "compartments": [],
@@ -267,7 +273,10 @@ package SequenceExample {
         "notationRole": "usage",
         "owner": 0,
         "reference": 1,
-        "source": 2
+        "source": 2,
+        "typing": {
+          "status": "absent"
+        }
       }
     ],
     "relationships": [],

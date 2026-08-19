@@ -65,7 +65,7 @@ export type DiagramScene =
     };
 
 export type DiagramProduct = {
-  schemaVersion: 4;
+  schemaVersion: 5;
   modelDigest: string;
   documents: Array<{ uri: string; sourceDomain: string }>;
   sources: Array<{ document: number; range: [number, number, number, number] }>;
@@ -282,7 +282,7 @@ export function parseDiagramProduct(text: string): DiagramProduct {
   const documents = product.documents;
   const sources = product.sources;
   const references = product.references;
-  if (product.schemaVersion !== 4 || typeof product.modelDigest !== "string" ||
+  if (product.schemaVersion !== 5 || typeof product.modelDigest !== "string" ||
       !Array.isArray(documents) || !documents.every(isDiagramDocument) ||
       !Array.isArray(sources) || !sources.every((source) => isDiagramSource(source, documents.length)) ||
       !Array.isArray(references) || !references.every((reference) => isProductReference(reference, documents.length, sources.length, references.length)) ||
@@ -295,7 +295,7 @@ export function parseDiagramProduct(text: string): DiagramProduct {
       !Array.isArray(projection.relationships) ||
       !Array.isArray(projection.edges) || !projection.metadata || typeof projection.metadata !== "object" ||
       !isDiagramScene(projection.scene, String(view.kind), sources.length)) {
-    throw new Error("Generated diagram product does not match schema version 4.");
+    throw new Error("Generated diagram product does not match schema version 5.");
   }
   for (const reason of completeness.reasons) {
     if (!reason || typeof reason !== "object") throw new Error("Generated diagram product has a malformed completeness reason.");
@@ -388,6 +388,22 @@ function isProductReference(value: unknown, documentCount: number, sourceCount: 
     typeof reference.relationshipKind === "string" && nonNegativeInteger(reference.ordinal);
 }
 
+function isDiagramTyping(value: unknown, referenceCount: number): boolean {
+  if (!value || typeof value !== "object") return false;
+  const typing = value as Record<string, unknown>;
+  if (["absent", "unresolved", "unsupported", "recovery", "incomplete"].includes(String(typing.status))) return true;
+  if (typing.status === "ambiguous") {
+    return Array.isArray(typing.candidates) && typing.candidates.every((candidate) => indexIn(candidate, referenceCount));
+  }
+  if (typing.status !== "resolved" && typing.status !== "partial") return false;
+  return Array.isArray(typing.types) &&
+    (typing.status === "partial" || typing.types.length > 0) && typing.types.every((raw) => {
+    if (!raw || typeof raw !== "object") return false;
+    const type = raw as Record<string, unknown>;
+    return indexIn(type.reference, referenceCount) && typeof type.label === "string";
+  });
+}
+
 function isDiagramNode(value: unknown, referenceCount: number, sourceCount: number, nodeCount: number): boolean {
   if (!value || typeof value !== "object") return false;
   const node = value as Record<string, unknown>;
@@ -395,6 +411,7 @@ function isDiagramNode(value: unknown, referenceCount: number, sourceCount: numb
   return indexIn(node.reference, referenceCount) && indexIn(node.source, sourceCount) && typeof node.metaclass === "string" &&
     typeof node.notationRole === "string" && NOTATION_ROLES.has(node.notationRole) &&
     (node.name === null || typeof node.name === "string") && (node.owner === null || indexIn(node.owner, nodeCount)) &&
+    isDiagramTyping(node.typing, referenceCount) &&
     Array.isArray(compartments) && compartments.every((raw) => {
       if (!raw || typeof raw !== "object") return false;
       const compartment = raw as Record<string, unknown>;

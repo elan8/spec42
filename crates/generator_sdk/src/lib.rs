@@ -135,11 +135,13 @@ fn call_query<T: DeserializeOwned>(operation: i32, request: &impl Serialize) -> 
 pub mod model {
     pub use spec42_generator_protocol::{
         DiagramCompartment, DiagramCompartmentKind, DiagramCompartmentProvenance, DiagramEdge,
-        DiagramEdgeKind, DiagramElement, DiagramIncompleteReason, DiagramNotationRole,
-        DiagramRelationship, DiagramRelationshipTarget, DiagramScene, DiagramSemanticReference,
-        DiagramSourceDomain, DiagramViewKind, DiagramViewMetadata, DiagramViewProjection,
-        DiagramViewSummary, ElementDetail, ElementIdentity, ElementSummary, Metaclass, ModelInfo,
-        Multiplicity, ProjectionCompleteness, ProjectionFeature, Relationship, RelationshipKind,
+        DiagramEdgeKind, DiagramElement, DiagramElementType, DiagramElementTyping,
+        DiagramEndpointOccurrence, DiagramIncompleteReason, DiagramNotationRole,
+        DiagramOccurrenceIdentity, DiagramRelationship, DiagramRelationshipEndpoint,
+        DiagramRelationshipTarget, DiagramScene, DiagramSemanticReference, DiagramSourceDomain,
+        DiagramViewKind, DiagramViewMetadata, DiagramViewProjection, DiagramViewSummary,
+        ElementDetail, ElementIdentity, ElementSummary, Metaclass, ModelInfo, Multiplicity,
+        ProjectionCompleteness, ProjectionFeature, Relationship, RelationshipKind,
         RelationshipProvenance, RequirementUsageTyping, RequirementVerification, SatisfyEndpoint,
         SatisfyPolarity, SatisfyRelationship, SourceRange, SourceReference, StateMachineIdentity,
         StateMachineSummary, StateTransitionEdge, StateTransitionNode, StateTransitionNodeKind,

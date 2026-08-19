@@ -133,7 +133,7 @@ describe("diagram viewer core", () => {
 
   it("validates the versioned render product and explicit incompleteness", () => {
     const value = {
-      schemaVersion: 4,
+      schemaVersion: 5,
       modelDigest: "blake3:model",
       documents: [{ uri: "file:///workspace/model.sysml", sourceDomain: "workspace" }],
       sources: [{ document: 0, range: [0, 0, 0, 1] }],
@@ -175,17 +175,38 @@ describe("diagram viewer core", () => {
       name: "visible",
       owner: null,
       source: 0,
+      typing: { status: "absent" },
       compartments: [{ kind: "parts", provenance: "direct", members: [0] }],
     };
     assert.equal(parseDiagramProduct(JSON.stringify({
       ...value,
       projection: { ...value.projection, exposedRoots: [0], nodes: [node] },
     })).projection.nodes.length, 1);
+    const versionFive = {
+      ...value,
+      projection: {
+        ...value.projection,
+        exposedRoots: [0],
+        nodes: [{ ...node, typing: { status: "resolved", types: [{ reference: 0, label: "P" }] } }],
+      },
+    };
+    assert.equal(parseDiagramProduct(JSON.stringify(versionFive)).projection.nodes.length, 1);
+    assert.throws(() => parseDiagramProduct(JSON.stringify({
+      ...versionFive,
+      projection: { ...versionFive.projection, nodes: [{ ...node, typing: undefined }] },
+    })));
+    assert.throws(() => parseDiagramProduct(JSON.stringify({
+      ...versionFive,
+      projection: {
+        ...versionFive.projection,
+        nodes: [{ ...node, typing: { status: "resolved", types: [] } }],
+      },
+    })));
     assert.throws(() => parseDiagramProduct(JSON.stringify({
       ...value,
       projection: { ...value.projection, nodes: [{ ...node, compartments: undefined }] },
     })));
-    assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, schemaVersion: 1 })));
+    assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, schemaVersion: 4 })));
     assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, projection: { ...value.projection, kind: "grid-view" } })));
     assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, selectedView: { ...value.selectedView, reference: 1 } })));
     assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, sources: [{ document: 1, range: [0, 0, 0, 1] }] })));

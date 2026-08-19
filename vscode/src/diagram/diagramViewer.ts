@@ -18,6 +18,7 @@ import {
 
 type RenderedArtifact = {
   product: DiagramProduct;
+  productJson: string;
   modulePrepareMs: number;
   guestExecutionUs: number;
   preparedReused: boolean;
@@ -171,12 +172,22 @@ export class DiagramViewer {
     const artifactName = selectSingleDiagramJson(result.artifacts.map((artifact) => artifact.path));
     const selected = result.artifacts.find((artifact) => artifact.path === artifactName);
     if (!selected) throw new Error("Spec42 omitted the selected diagram artifact.");
-    const product = parseDiagramProduct(Buffer.from(selected.content).toString("utf8"));
+    const productJson = Buffer.from(selected.content).toString("utf8");
+    const product = parseDiagramProduct(productJson);
     if (product.modelDigest !== result.modelDigest) {
       throw new Error("Generated diagram model digest does not match the current LSP publication.");
     }
     if (product.selectedView.kind !== view) throw new Error("Generated diagram view does not match the requested view.");
-    return { product, ...result.timings };
+    return { product, productJson, ...result.timings };
+  }
+
+  async copyJson(): Promise<void> {
+    if (!this.lastArtifact) {
+      await vscode.window.showInformationMessage("Open a Spec42 diagram before copying its JSON.");
+      return;
+    }
+    await vscode.env.clipboard.writeText(this.lastArtifact.productJson);
+    await vscode.window.showInformationMessage("Copied the generated diagram JSON.");
   }
 
   private show(artifact: RenderedArtifact, error?: string): void {
@@ -227,7 +238,7 @@ export class DiagramViewer {
   private html(webview: vscode.Webview, artifact: RenderedArtifact, error?: string): string {
     const nonce = `${Date.now()}${Math.random().toString(36).slice(2)}`;
     const escaped = (value: string) => value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-    const productJson = JSON.stringify(artifact.product).replace(/</g, "\\u003c");
+    const productJson = artifact.productJson.replace(/</g, "\\u003c");
     const script = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, "media", "diagram-viewer.js"));
     const status = artifact.product.completeness.status === "complete"
       ? "complete projection"
@@ -243,5 +254,8 @@ export class DiagramViewer {
 
 export function registerDiagramViewer(context: vscode.ExtensionContext, handles: LspClientHandles): void {
   const viewer = new DiagramViewer(context, handles);
-  context.subscriptions.push(vscode.commands.registerCommand("spec42.diagram.open", () => viewer.open()));
+  context.subscriptions.push(
+    vscode.commands.registerCommand("spec42.diagram.open", () => viewer.open()),
+    vscode.commands.registerCommand("spec42.diagram.copyJson", () => viewer.copyJson()),
+  );
 }

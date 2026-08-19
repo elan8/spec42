@@ -159,7 +159,7 @@ package BehaviorModel {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 4,
+  "schemaVersion": 5,
   "modelDigest": "blake3:60d6bb52f861c8517b7fc77f9acae7cbb27843f00869f431fa6d7e9044abcff8",
   "documents": [
     {
@@ -265,7 +265,10 @@ package BehaviorModel {
         "notationRole": "definition",
         "owner": null,
         "reference": 0,
-        "source": 0
+        "source": 0,
+        "typing": {
+          "status": "absent"
+        }
       },
       {
         "compartments": [],
@@ -274,7 +277,10 @@ package BehaviorModel {
         "notationRole": "usage",
         "owner": 0,
         "reference": 1,
-        "source": 1
+        "source": 1,
+        "typing": {
+          "status": "absent"
+        }
       }
     ],
     "relationships": [],

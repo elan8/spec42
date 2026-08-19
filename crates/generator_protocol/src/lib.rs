@@ -763,19 +763,49 @@ pub enum DiagramIncompleteReason {
     RelationshipUnresolved { relationship_kind: String },
     RelationshipAmbiguous { relationship_kind: String },
     RelationshipUnsupported { relationship_kind: String },
-    ViewFilterApplicationUnavailable,
+    ViewFilterUnresolved,
+    ViewFilterAmbiguous,
+    ViewFilterUnsupported,
     GeometryFactsUnavailable,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
 pub struct DiagramElement {
+    pub occurrence: DiagramOccurrenceIdentity,
     pub reference: DiagramSemanticReference,
     pub metaclass: Metaclass,
     pub notation_role: DiagramNotationRole,
     pub name: Option<String>,
-    pub owner: Option<DiagramSemanticReference>,
+    pub typing: DiagramElementTyping,
+    pub owner: Option<DiagramOccurrenceIdentity>,
     pub source: SourceReference,
     pub compartments: Vec<DiagramCompartment>,
+}
+
+/// Contextual identity of one projected occurrence. The semantic references remain canonical
+/// model identities; the path distinguishes the same inherited declaration below different
+/// exposed usages without inventing a model element.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct DiagramOccurrenceIdentity {
+    pub semantic_path: Vec<DiagramSemanticReference>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum DiagramElementTyping {
+    Absent,
+    Resolved(Vec<DiagramElementType>),
+    Partial(Vec<DiagramElementType>),
+    Ambiguous(Vec<DiagramSemanticReference>),
+    Unresolved,
+    Unsupported,
+    Recovery,
+    Incomplete,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct DiagramElementType {
+    pub reference: DiagramSemanticReference,
+    pub label: String,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Schema)]
@@ -804,7 +834,7 @@ pub enum DiagramCompartmentProvenance {
 pub struct DiagramCompartment {
     pub kind: DiagramCompartmentKind,
     pub provenance: DiagramCompartmentProvenance,
-    pub members: Vec<DiagramSemanticReference>,
+    pub members: Vec<DiagramOccurrenceIdentity>,
 }
 
 /// Structural notation role owned by the diagram projection.
@@ -823,16 +853,30 @@ pub enum DiagramNotationRole {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
 pub enum DiagramRelationshipTarget {
-    Resolved(DiagramSemanticReference),
-    Ambiguous(Vec<DiagramSemanticReference>),
+    Resolved(DiagramRelationshipEndpoint),
+    Ambiguous(Vec<DiagramRelationshipEndpoint>),
     Unresolved,
     Unsupported,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct DiagramRelationshipEndpoint {
+    pub reference: DiagramSemanticReference,
+    pub occurrence: DiagramEndpointOccurrence,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum DiagramEndpointOccurrence {
+    Resolved(DiagramOccurrenceIdentity),
+    Ambiguous(Vec<DiagramOccurrenceIdentity>),
+    OutsideProjection,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
 pub struct DiagramRelationship {
     pub reference: DiagramSemanticReference,
     pub source_element: DiagramSemanticReference,
+    pub source_occurrence: DiagramOccurrenceIdentity,
     pub kind: RelationshipKind,
     pub target: DiagramRelationshipTarget,
     pub provenance: RelationshipProvenance,
@@ -855,6 +899,8 @@ pub struct DiagramEdge {
     pub reference: DiagramSemanticReference,
     pub source_element: DiagramSemanticReference,
     pub target_element: DiagramSemanticReference,
+    pub source_occurrence: DiagramOccurrenceIdentity,
+    pub target_occurrence: DiagramOccurrenceIdentity,
     pub kind: DiagramEdgeKind,
     pub provenance: RelationshipProvenance,
     pub source: Option<SourceReference>,
@@ -862,7 +908,7 @@ pub struct DiagramEdge {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
 pub struct DiagramGridCell {
-    pub row: DiagramSemanticReference,
+    pub row: DiagramOccurrenceIdentity,
     pub column: RelationshipKind,
     pub relationship: DiagramSemanticReference,
 }
@@ -870,37 +916,37 @@ pub struct DiagramGridCell {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
 pub enum DiagramViewMetadata {
     General {
-        roots: Vec<DiagramSemanticReference>,
+        roots: Vec<DiagramOccurrenceIdentity>,
     },
     Interconnection {
-        parts: Vec<DiagramSemanticReference>,
-        ports: Vec<DiagramSemanticReference>,
-        connectors: Vec<DiagramSemanticReference>,
+        parts: Vec<DiagramOccurrenceIdentity>,
+        ports: Vec<DiagramOccurrenceIdentity>,
+        connectors: Vec<DiagramOccurrenceIdentity>,
     },
     ActionFlow {
-        actions: Vec<DiagramSemanticReference>,
-        control_nodes: Vec<DiagramSemanticReference>,
+        actions: Vec<DiagramOccurrenceIdentity>,
+        control_nodes: Vec<DiagramOccurrenceIdentity>,
     },
     StateTransition {
-        states: Vec<DiagramSemanticReference>,
-        initial_nodes: Vec<DiagramSemanticReference>,
-        final_nodes: Vec<DiagramSemanticReference>,
+        states: Vec<DiagramOccurrenceIdentity>,
+        initial_nodes: Vec<DiagramOccurrenceIdentity>,
+        final_nodes: Vec<DiagramOccurrenceIdentity>,
     },
     Sequence {
-        participants: Vec<DiagramSemanticReference>,
-        messages: Vec<DiagramSemanticReference>,
+        participants: Vec<DiagramOccurrenceIdentity>,
+        messages: Vec<DiagramOccurrenceIdentity>,
     },
     Browser {
-        roots: Vec<DiagramSemanticReference>,
+        roots: Vec<DiagramOccurrenceIdentity>,
     },
     Grid {
-        rows: Vec<DiagramSemanticReference>,
+        rows: Vec<DiagramOccurrenceIdentity>,
         columns: Vec<RelationshipKind>,
         cells: Vec<DiagramGridCell>,
     },
     Geometry {
-        elements: Vec<DiagramSemanticReference>,
-        primitives: Vec<DiagramSemanticReference>,
+        elements: Vec<DiagramOccurrenceIdentity>,
+        primitives: Vec<DiagramOccurrenceIdentity>,
     },
 }
 
@@ -935,7 +981,7 @@ pub struct DiagramViewProjection {
     pub view: DiagramViewSummary,
     pub completeness: ProjectionCompleteness,
     pub incomplete_reasons: Vec<DiagramIncompleteReason>,
-    pub exposed_roots: Vec<DiagramSemanticReference>,
+    pub exposed_roots: Vec<DiagramOccurrenceIdentity>,
     pub elements: Vec<DiagramElement>,
     pub relationships: Vec<DiagramRelationship>,
     pub edges: Vec<DiagramEdge>,
@@ -1135,7 +1181,7 @@ mod tests {
     #[test]
     fn the_wire_schema_fingerprint_is_pinned() {
         assert_eq!(
-            SCHEMA_FINGERPRINT, 0xfcfb_3c03_4245_57b2,
+            SCHEMA_FINGERPRINT, 0xc866_694d_05d9_4950,
             "the generator wire schema changed; every guest must be rebuilt"
         );
     }
@@ -1143,7 +1189,7 @@ mod tests {
     #[test]
     fn the_compatibility_token_is_pinned() {
         assert_eq!(
-            COMPATIBILITY_TOKEN, 0x24a2_4159_65ee_ea64,
+            COMPATIBILITY_TOKEN, 0x24da_ed65_34b4_630d,
             "the generator ABI contract changed; every guest must be rebuilt"
         );
     }

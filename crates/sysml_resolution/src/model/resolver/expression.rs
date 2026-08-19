@@ -215,6 +215,7 @@ pub(super) struct SettledFilter {
     pub(super) form: FilterForm,
     pub(super) span: Span,
     pub(super) state: EvaluationState,
+    pub(super) predicate: super::super::FilterPredicate,
 }
 
 /// One authored invocation whose callee settled, with both argument counts.
@@ -242,6 +243,7 @@ pub(crate) struct ExpressionIndex {
     /// Each declaration's required measurement reference, indexed by declaration ordinal.
     required: Box<[RequiredMeasurement]>,
     filters: Box<[SettledFilter]>,
+    filter_ranges: Box<[(u32, u32)]>,
     invocations: Box<[SettledInvocation]>,
 }
 
@@ -317,12 +319,17 @@ impl ExpressionIndex {
             });
         }
 
+        let mut filters = filters.unwrap_or_default().into_vec();
+        filters.sort_by_key(|filter| (filter.owner, filter.span.offset));
+        let filter_ranges =
+            ranges_for_sorted_owners(count, filters.iter().map(|filter| filter.owner))?;
         Ok(Self {
             anchors,
             units: units.into_boxed_slice(),
             unit_ranges: unit_ranges.into_boxed_slice(),
             required: required.into_boxed_slice(),
-            filters: filters.unwrap_or_default(),
+            filters: filters.into_boxed_slice(),
+            filter_ranges,
             invocations: invocations.into_boxed_slice(),
         })
     }
@@ -373,9 +380,39 @@ impl ExpressionIndex {
         &self.filters
     }
 
+    pub(super) fn filters_for(&self, owner: DeclarationId) -> &[SettledFilter] {
+        let Some(&(start, end)) = self.filter_ranges.get(owner.index()) else {
+            return &[];
+        };
+        self.filters
+            .get(start as usize..end as usize)
+            .unwrap_or_default()
+    }
+
     pub(super) fn invocations(&self) -> &[SettledInvocation] {
         &self.invocations
     }
+}
+
+fn ranges_for_sorted_owners(
+    count: usize,
+    owners: impl Iterator<Item = DeclarationId>,
+) -> Result<Box<[(u32, u32)]>, ResolutionError> {
+    let mut counts = vec![0u32; count];
+    for owner in owners {
+        let Some(slot) = counts.get_mut(owner.index()) else {
+            return Err(ResolutionError::InvalidStorage);
+        };
+        *slot = slot.checked_add(1).ok_or(ResolutionError::Capacity)?;
+    }
+    let mut start = 0u32;
+    let mut ranges = Vec::with_capacity(count);
+    for count in counts {
+        let end = start.checked_add(count).ok_or(ResolutionError::Capacity)?;
+        ranges.push((start, end));
+        start = end;
+    }
+    Ok(ranges.into_boxed_slice())
 }
 
 /// How many of each declaration's parameters an invocation is expected to bind positionally.

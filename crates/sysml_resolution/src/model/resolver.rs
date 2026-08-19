@@ -1176,6 +1176,7 @@ fn settled_filters(
             form: condition.form,
             span: condition.span.clone(),
             state: state_of(condition),
+            predicate: condition.predicate.clone(),
         })
         .collect()
 }
@@ -5026,6 +5027,7 @@ mod tests {
                 form: FilterForm::View,
                 span: Span::dummy(),
                 shape: ExpressionEvalShape::Literal(EvaluatedValue::Integer(5)),
+                predicate: FilterPredicate::Unsupported,
             }]),
             invocations: Box::new([]),
         }

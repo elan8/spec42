@@ -147,7 +147,7 @@ package ProvenanceExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 4,
+  "schemaVersion": 5,
   "modelDigest": "blake3:f7608aaf74326f8d204133420bc63c009067e789a1a4627374ff9498681e4c8f",
   "documents": [
     {
@@ -284,7 +284,10 @@ package ProvenanceExample {
         "notationRole": "definition",
         "owner": null,
         "reference": 2,
-        "source": 0
+        "source": 0,
+        "typing": {
+          "status": "absent"
+        }
       },
       {
         "compartments": [],
@@ -293,7 +296,10 @@ package ProvenanceExample {
         "notationRole": "usage",
         "owner": 0,
         "reference": 3,
-        "source": 2
+        "source": 2,
+        "typing": {
+          "status": "absent"
+        }
       }
     ],
     "relationships": [

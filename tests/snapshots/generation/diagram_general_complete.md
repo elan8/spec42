@@ -102,7 +102,7 @@ package GeneralExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 4,
+  "schemaVersion": 5,
   "modelDigest": "blake3:25aa361629a136c7bb2c0a6c3b6f21da0f91ff8f1b33bd68ae74f81ed59b59cf",
   "documents": [
     {
@@ -208,7 +208,10 @@ package GeneralExample {
         "notationRole": "definition",
         "owner": null,
         "reference": 0,
-        "source": 0
+        "source": 0,
+        "typing": {
+          "status": "absent"
+        }
       },
       {
         "compartments": [],
@@ -217,7 +220,10 @@ package GeneralExample {
         "notationRole": "usage",
         "owner": 0,
         "reference": 1,
-        "source": 1
+        "source": 1,
+        "typing": {
+          "status": "absent"
+        }
       }
     ],
     "relationships": [],

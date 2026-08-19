@@ -2585,7 +2585,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 4,
+  "schemaVersion": 5,
   "modelDigest": "blake3:df7b95a901c31d2d48b56baa1b344cb09aeaf72db4ec82abc11849846aa4782e",
   "documents": [
     {
@@ -3136,6 +3136,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
+      "ordinal": 1,
+      "relationshipKind": "containment",
+      "source": 10
+    },
+    {
+      "kind": "relationship",
       "ordinal": 2,
       "relationshipKind": "containment",
       "source": 10
@@ -3143,6 +3149,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "kind": "relationship",
       "ordinal": 4,
+      "relationshipKind": "containment",
+      "source": 10
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 5,
       "relationshipKind": "containment",
       "source": 10
     },
@@ -3190,247 +3202,235 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 19,
-      "relationshipKind": "containment",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
       "ordinal": 20,
       "relationshipKind": "containment",
       "source": 10
     },
     {
       "kind": "relationship",
-      "ordinal": 21,
-      "relationshipKind": "containment",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 17,
+      "ordinal": 2,
       "relationshipKind": "initialState",
       "source": 11
     },
     {
       "kind": "relationship",
-      "ordinal": 24,
+      "ordinal": 3,
       "relationshipKind": "initialState",
       "source": 11
     },
     {
       "kind": "relationship",
-      "ordinal": 6,
+      "ordinal": 14,
       "relationshipKind": "transitionSource",
       "source": 12
     },
     {
       "kind": "relationship",
-      "ordinal": 7,
+      "ordinal": 15,
       "relationshipKind": "transitionTarget",
       "source": 12
     },
     {
       "kind": "relationship",
-      "ordinal": 8,
+      "ordinal": 16,
       "relationshipKind": "transitionTrigger",
       "source": 12
     },
     {
       "kind": "relationship",
-      "ordinal": 13,
+      "ordinal": 21,
       "relationshipKind": "transition",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 27,
-      "relationshipKind": "typing",
       "source": 13
     },
     {
       "kind": "relationship",
       "ordinal": 3,
-      "relationshipKind": "transition",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 5,
-      "relationshipKind": "transition",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 7,
-      "relationshipKind": "transition",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 25,
       "relationshipKind": "typing",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 9,
-      "relationshipKind": "transitionSource",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 10,
-      "relationshipKind": "transitionTarget",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 11,
-      "relationshipKind": "transitionTrigger",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 9,
-      "relationshipKind": "transition",
-      "source": 16
+      "source": 13
     },
     {
       "kind": "relationship",
       "ordinal": 11,
       "relationshipKind": "transition",
-      "source": 16
+      "source": 14
     },
     {
       "kind": "relationship",
-      "ordinal": 26,
-      "relationshipKind": "typing",
-      "source": 16
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 1,
+      "ordinal": 13,
       "relationshipKind": "transition",
-      "source": 17
+      "source": 14
     },
     {
       "kind": "relationship",
       "ordinal": 15,
       "relationshipKind": "transition",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 28,
-      "relationshipKind": "typing",
-      "source": 17
+      "source": 14
     },
     {
       "kind": "relationship",
       "ordinal": 0,
-      "relationshipKind": "transitionSource",
-      "source": 18
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 1,
-      "relationshipKind": "transitionTarget",
-      "source": 18
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 2,
-      "relationshipKind": "transitionTrigger",
-      "source": 18
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 18,
-      "relationshipKind": "transitionSource",
-      "source": 19
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 19,
-      "relationshipKind": "transitionTarget",
-      "source": 19
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 20,
-      "relationshipKind": "transitionTrigger",
-      "source": 19
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 15,
-      "relationshipKind": "transitionSource",
-      "source": 20
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 16,
-      "relationshipKind": "transitionTarget",
-      "source": 20
+      "relationshipKind": "typing",
+      "source": 14
     },
     {
       "kind": "relationship",
       "ordinal": 17,
+      "relationshipKind": "transitionSource",
+      "source": 15
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 18,
+      "relationshipKind": "transitionTarget",
+      "source": 15
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 19,
+      "relationshipKind": "transitionTrigger",
+      "source": 15
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 17,
+      "relationshipKind": "transition",
+      "source": 16
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 19,
+      "relationshipKind": "transition",
+      "source": 16
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 1,
+      "relationshipKind": "typing",
+      "source": 16
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 7,
+      "relationshipKind": "transition",
+      "source": 17
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 9,
+      "relationshipKind": "transition",
+      "source": 17
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 4,
+      "relationshipKind": "typing",
+      "source": 17
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 8,
+      "relationshipKind": "transitionSource",
+      "source": 18
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 9,
+      "relationshipKind": "transitionTarget",
+      "source": 18
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 10,
+      "relationshipKind": "transitionTrigger",
+      "source": 18
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 26,
+      "relationshipKind": "transitionSource",
+      "source": 19
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 27,
+      "relationshipKind": "transitionTarget",
+      "source": 19
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 28,
+      "relationshipKind": "transitionTrigger",
+      "source": 19
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 23,
+      "relationshipKind": "transitionSource",
+      "source": 20
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 24,
+      "relationshipKind": "transitionTarget",
+      "source": 20
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 25,
       "relationshipKind": "transitionTrigger",
       "source": 20
     },
     {
       "kind": "relationship",
-      "ordinal": 21,
-      "relationshipKind": "transitionSource",
-      "source": 21
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 22,
-      "relationshipKind": "transitionTarget",
-      "source": 21
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 23,
-      "relationshipKind": "transitionTrigger",
-      "source": 21
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 3,
-      "relationshipKind": "transitionSource",
-      "source": 22
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 4,
-      "relationshipKind": "transitionTarget",
-      "source": 22
-    },
-    {
-      "kind": "relationship",
       "ordinal": 5,
+      "relationshipKind": "transitionSource",
+      "source": 21
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 6,
+      "relationshipKind": "transitionTarget",
+      "source": 21
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 7,
       "relationshipKind": "transitionTrigger",
+      "source": 21
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 11,
+      "relationshipKind": "transitionSource",
       "source": 22
     },
     {
       "kind": "relationship",
       "ordinal": 12,
+      "relationshipKind": "transitionTarget",
+      "source": 22
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 13,
+      "relationshipKind": "transitionTrigger",
+      "source": 22
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 20,
       "relationshipKind": "transitionSource",
       "source": 23
     },
     {
       "kind": "relationship",
-      "ordinal": 13,
+      "ordinal": 21,
       "relationshipKind": "transitionTarget",
       "source": 23
     },
     {
       "kind": "relationship",
-      "ordinal": 14,
+      "ordinal": 22,
       "relationshipKind": "transitionTrigger",
       "source": 23
     }
@@ -3449,9 +3449,73 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     "edges": [
       {
         "kind": "containment",
-        "navigation": 27,
+        "navigation": 3,
         "provenance": "authored",
         "reference": 26,
+        "source": 0,
+        "target": 10
+      },
+      {
+        "kind": "containment",
+        "navigation": 7,
+        "provenance": "authored",
+        "reference": 27,
+        "source": 0,
+        "target": 11
+      },
+      {
+        "kind": "containment",
+        "navigation": 1,
+        "provenance": "authored",
+        "reference": 28,
+        "source": 0,
+        "target": 9
+      },
+      {
+        "kind": "initial-state",
+        "navigation": 2,
+        "provenance": "authored",
+        "reference": 40,
+        "source": 9,
+        "target": 10
+      },
+      {
+        "kind": "containment",
+        "navigation": 9,
+        "provenance": "authored",
+        "reference": 29,
+        "source": 0,
+        "target": 12
+      },
+      {
+        "kind": "containment",
+        "navigation": 5,
+        "provenance": "authored",
+        "reference": 30,
+        "source": 0,
+        "target": 13
+      },
+      {
+        "kind": "containment",
+        "navigation": 23,
+        "provenance": "authored",
+        "reference": 31,
+        "source": 0,
+        "target": 8
+      },
+      {
+        "kind": "transition",
+        "navigation": 24,
+        "provenance": "authored",
+        "reference": 56,
+        "source": 13,
+        "target": 11
+      },
+      {
+        "kind": "containment",
+        "navigation": 27,
+        "provenance": "authored",
+        "reference": 32,
         "source": 0,
         "target": 1
       },
@@ -3459,7 +3523,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transition",
         "navigation": 28,
         "provenance": "authored",
-        "reference": 56,
+        "reference": 57,
         "source": 13,
         "target": 12
       },
@@ -3467,7 +3531,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 11,
         "provenance": "authored",
-        "reference": 27,
+        "reference": 33,
         "source": 0,
         "target": 2
       },
@@ -3483,7 +3547,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 19,
         "provenance": "authored",
-        "reference": 28,
+        "reference": 34,
         "source": 0,
         "target": 3
       },
@@ -3499,7 +3563,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 15,
         "provenance": "authored",
-        "reference": 29,
+        "reference": 35,
         "source": 0,
         "target": 4
       },
@@ -3515,7 +3579,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 31,
         "provenance": "authored",
-        "reference": 30,
+        "reference": 36,
         "source": 0,
         "target": 5
       },
@@ -3531,7 +3595,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 35,
         "provenance": "authored",
-        "reference": 31,
+        "reference": 37,
         "source": 0,
         "target": 6
       },
@@ -3547,7 +3611,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "containment",
         "navigation": 39,
         "provenance": "authored",
-        "reference": 32,
+        "reference": 38,
         "source": 0,
         "target": 7
       },
@@ -3558,70 +3622,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "reference": 44,
         "source": 12,
         "target": 10
-      },
-      {
-        "kind": "containment",
-        "navigation": 23,
-        "provenance": "authored",
-        "reference": 33,
-        "source": 0,
-        "target": 8
-      },
-      {
-        "kind": "transition",
-        "navigation": 24,
-        "provenance": "authored",
-        "reference": 57,
-        "source": 13,
-        "target": 11
-      },
-      {
-        "kind": "containment",
-        "navigation": 1,
-        "provenance": "authored",
-        "reference": 34,
-        "source": 0,
-        "target": 9
-      },
-      {
-        "kind": "initial-state",
-        "navigation": 2,
-        "provenance": "authored",
-        "reference": 39,
-        "source": 9,
-        "target": 10
-      },
-      {
-        "kind": "containment",
-        "navigation": 3,
-        "provenance": "authored",
-        "reference": 35,
-        "source": 0,
-        "target": 10
-      },
-      {
-        "kind": "containment",
-        "navigation": 7,
-        "provenance": "authored",
-        "reference": 36,
-        "source": 0,
-        "target": 11
-      },
-      {
-        "kind": "containment",
-        "navigation": 9,
-        "provenance": "authored",
-        "reference": 37,
-        "source": 0,
-        "target": 12
-      },
-      {
-        "kind": "containment",
-        "navigation": 5,
-        "provenance": "authored",
-        "reference": 38,
-        "source": 0,
-        "target": 13
       }
     ],
     "exposedRoots": [
@@ -3660,7 +3660,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "notationRole": "definition",
         "owner": null,
         "reference": 10,
-        "source": 0
+        "source": 0,
+        "typing": {
+          "status": "absent"
+        }
       },
       {
         "compartments": [],
@@ -3669,7 +3672,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "notationRole": "usage",
         "owner": 0,
         "reference": 18,
-        "source": 27
+        "source": 27,
+        "typing": {
+          "status": "absent"
+        }
       },
       {
         "compartments": [],
@@ -3678,7 +3684,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "notationRole": "usage",
         "owner": 0,
         "reference": 22,
-        "source": 11
+        "source": 11,
+        "typing": {
+          "status": "absent"
+        }
       },
       {
         "compartments": [],
@@ -3687,7 +3696,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "notationRole": "usage",
         "owner": 0,
         "reference": 12,
-        "source": 19
+        "source": 19,
+        "typing": {
+          "status": "absent"
+        }
       },
       {
         "compartments": [],
@@ -3696,7 +3708,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "notationRole": "usage",
         "owner": 0,
         "reference": 15,
-        "source": 15
+        "source": 15,
+        "typing": {
+          "status": "absent"
+        }
       },
       {
         "compartments": [],
@@ -3705,7 +3720,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "notationRole": "usage",
         "owner": 0,
         "reference": 23,
-        "source": 31
+        "source": 31,
+        "typing": {
+          "status": "absent"
+        }
       },
       {
         "compartments": [],
@@ -3714,7 +3732,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "notationRole": "usage",
         "owner": 0,
         "reference": 20,
-        "source": 35
+        "source": 35,
+        "typing": {
+          "status": "absent"
+        }
       },
       {
         "compartments": [],
@@ -3723,7 +3744,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "notationRole": "usage",
         "owner": 0,
         "reference": 19,
-        "source": 39
+        "source": 39,
+        "typing": {
+          "status": "absent"
+        }
       },
       {
         "compartments": [],
@@ -3732,7 +3756,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "notationRole": "usage",
         "owner": 0,
         "reference": 21,
-        "source": 23
+        "source": 23,
+        "typing": {
+          "status": "absent"
+        }
       },
       {
         "compartments": [],
@@ -3741,7 +3768,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "notationRole": "unsupported",
         "owner": 0,
         "reference": 25,
-        "source": 1
+        "source": 1,
+        "typing": {
+          "status": "absent"
+        }
       },
       {
         "compartments": [],
@@ -3750,7 +3780,16 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "notationRole": "usage",
         "owner": 0,
         "reference": 14,
-        "source": 3
+        "source": 3,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Idle",
+              "reference": 3
+            }
+          ]
+        }
       },
       {
         "compartments": [],
@@ -3759,7 +3798,16 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "notationRole": "usage",
         "owner": 0,
         "reference": 16,
-        "source": 7
+        "source": 7,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Paused",
+              "reference": 5
+            }
+          ]
+        }
       },
       {
         "compartments": [],
@@ -3768,7 +3816,16 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "notationRole": "usage",
         "owner": 0,
         "reference": 13,
-        "source": 9
+        "source": 9,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Expired",
+              "reference": 2
+            }
+          ]
+        }
       },
       {
         "compartments": [],
@@ -3777,10 +3834,107 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "notationRole": "usage",
         "owner": 0,
         "reference": 17,
-        "source": 5
+        "source": 5,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Running",
+              "reference": 7
+            }
+          ]
+        }
       }
     ],
     "relationships": [
+      {
+        "kind": "typing",
+        "navigation": 4,
+        "provenance": "authored",
+        "reference": 49,
+        "source": 10,
+        "target": {
+          "reference": 3,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 8,
+        "provenance": "authored",
+        "reference": 55,
+        "source": 11,
+        "target": {
+          "reference": 5,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "initialState",
+        "navigation": 2,
+        "provenance": "authored",
+        "reference": 39,
+        "source": 9,
+        "target": {
+          "node": 10,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 10,
+        "provenance": "authored",
+        "reference": 45,
+        "source": 12,
+        "target": {
+          "reference": 2,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 6,
+        "provenance": "authored",
+        "reference": 58,
+        "source": 13,
+        "target": {
+          "reference": 7,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionSource",
+        "navigation": 24,
+        "provenance": "authored",
+        "reference": 68,
+        "source": 8,
+        "target": {
+          "node": 13,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTarget",
+        "navigation": 26,
+        "provenance": "authored",
+        "reference": 69,
+        "source": 8,
+        "target": {
+          "node": 11,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTrigger",
+        "navigation": 25,
+        "provenance": "authored",
+        "reference": 70,
+        "source": 8,
+        "target": {
+          "reference": 9,
+          "status": "resolved"
+        }
+      },
       {
         "kind": "transitionSource",
         "navigation": 28,
@@ -4011,94 +4165,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "reference": 6,
           "status": "resolved"
         }
-      },
-      {
-        "kind": "transitionSource",
-        "navigation": 24,
-        "provenance": "authored",
-        "reference": 68,
-        "source": 8,
-        "target": {
-          "node": 13,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTarget",
-        "navigation": 26,
-        "provenance": "authored",
-        "reference": 69,
-        "source": 8,
-        "target": {
-          "node": 11,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTrigger",
-        "navigation": 25,
-        "provenance": "authored",
-        "reference": 70,
-        "source": 8,
-        "target": {
-          "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "initialState",
-        "navigation": 2,
-        "provenance": "authored",
-        "reference": 40,
-        "source": 9,
-        "target": {
-          "node": 10,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 4,
-        "provenance": "authored",
-        "reference": 49,
-        "source": 10,
-        "target": {
-          "reference": 3,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 8,
-        "provenance": "authored",
-        "reference": 55,
-        "source": 11,
-        "target": {
-          "reference": 5,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 10,
-        "provenance": "authored",
-        "reference": 45,
-        "source": 12,
-        "target": {
-          "reference": 2,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 6,
-        "provenance": "authored",
-        "reference": 58,
-        "source": 13,
-        "target": {
-          "reference": 7,
-          "status": "resolved"
-        }
       }
     ],
     "scene": {
@@ -4116,66 +4182,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "guard": {
             "status": "absent"
           },
-          "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:010:transitionn10:to_expired1:0#edge",
-          "label": "to_expired",
-          "navigation": 28,
+          "id": "143:element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:0163:element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:013:initial-statea1:0#initial",
+          "label": null,
+          "navigation": 2,
           "provenance": "authored",
-          "source": 4,
-          "target": 3,
-          "trigger": {
-            "label": "CountdownComplete",
-            "navigation": 29,
-            "status": "accept",
-            "target": {
-              "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:08:item-defn17:CountdownComplete1:0",
-              "label": "CountdownComplete"
-            }
-          }
-        },
-        {
-          "effect": {
-            "status": "absent"
-          },
-          "guard": {
-            "status": "absent"
-          },
-          "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:010:transitionn10:to_running1:0#edge",
-          "label": "to_running",
-          "navigation": 12,
-          "provenance": "authored",
-          "source": 1,
-          "target": 4,
-          "trigger": {
-            "label": "StartPressed",
-            "navigation": 13,
-            "status": "accept",
-            "target": {
-              "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:08:item-defn12:StartPressed1:0",
-              "label": "StartPressed"
-            }
-          }
-        },
-        {
-          "effect": {
-            "status": "absent"
-          },
-          "guard": {
-            "status": "absent"
-          },
-          "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:010:transitionn14:decrement_idle1:0#edge",
-          "label": "decrement_idle",
-          "navigation": 20,
-          "provenance": "authored",
-          "source": 1,
+          "source": 0,
           "target": 1,
           "trigger": {
-            "label": "DecrementPressed",
-            "navigation": 21,
-            "status": "accept",
-            "target": {
-              "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:08:item-defn16:DecrementPressed1:0",
-              "label": "DecrementPressed"
-            }
+            "status": "absent"
           }
         },
         {
@@ -4185,99 +4199,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "guard": {
             "status": "absent"
           },
-          "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:010:transitionn14:increment_idle1:0#edge",
-          "label": "increment_idle",
-          "navigation": 16,
-          "provenance": "authored",
-          "source": 1,
-          "target": 1,
-          "trigger": {
-            "label": "IncrementPressed",
-            "navigation": 17,
-            "status": "accept",
-            "target": {
-              "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:08:item-defn16:IncrementPressed1:0",
-              "label": "IncrementPressed"
-            }
-          }
-        },
-        {
-          "effect": {
-            "status": "absent"
-          },
-          "guard": {
-            "status": "absent"
-          },
-          "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:010:transitionn17:to_running_resume1:0#edge",
-          "label": "to_running_resume",
-          "navigation": 32,
-          "provenance": "authored",
-          "source": 2,
-          "target": 4,
-          "trigger": {
-            "label": "StartPressed",
-            "navigation": 33,
-            "status": "accept",
-            "target": {
-              "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:08:item-defn12:StartPressed1:0",
-              "label": "StartPressed"
-            }
-          }
-        },
-        {
-          "effect": {
-            "status": "absent"
-          },
-          "guard": {
-            "status": "absent"
-          },
-          "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:010:transitionn19:to_idle_from_paused1:0#edge",
-          "label": "to_idle_from_paused",
-          "navigation": 36,
-          "provenance": "authored",
-          "source": 2,
-          "target": 1,
-          "trigger": {
-            "label": "ResetPressed",
-            "navigation": 37,
-            "status": "accept",
-            "target": {
-              "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:08:item-defn12:ResetPressed1:0",
-              "label": "ResetPressed"
-            }
-          }
-        },
-        {
-          "effect": {
-            "status": "absent"
-          },
-          "guard": {
-            "status": "absent"
-          },
-          "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:010:transitionn20:to_idle_from_expired1:0#edge",
-          "label": "to_idle_from_expired",
-          "navigation": 40,
-          "provenance": "authored",
-          "source": 3,
-          "target": 1,
-          "trigger": {
-            "label": "ResetPressed",
-            "navigation": 41,
-            "status": "accept",
-            "target": {
-              "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:08:item-defn12:ResetPressed1:0",
-              "label": "ResetPressed"
-            }
-          }
-        },
-        {
-          "effect": {
-            "status": "absent"
-          },
-          "guard": {
-            "status": "absent"
-          },
-          "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:010:transitionn9:to_paused1:0#edge",
+          "id": "143:element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:0171:element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:010:transitionn9:to_paused1:0#edge",
           "label": "to_paused",
           "navigation": 24,
           "provenance": "authored",
@@ -4300,14 +4222,158 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "guard": {
             "status": "absent"
           },
-          "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:013:initial-statea1:0#initial",
-          "label": null,
-          "navigation": 2,
+          "id": "143:element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:0173:element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:010:transitionn10:to_expired1:0#edge",
+          "label": "to_expired",
+          "navigation": 28,
           "provenance": "authored",
-          "source": 0,
+          "source": 4,
+          "target": 3,
+          "trigger": {
+            "label": "CountdownComplete",
+            "navigation": 29,
+            "status": "accept",
+            "target": {
+              "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:08:item-defn17:CountdownComplete1:0",
+              "label": "CountdownComplete"
+            }
+          }
+        },
+        {
+          "effect": {
+            "status": "absent"
+          },
+          "guard": {
+            "status": "absent"
+          },
+          "id": "143:element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:0173:element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:010:transitionn10:to_running1:0#edge",
+          "label": "to_running",
+          "navigation": 12,
+          "provenance": "authored",
+          "source": 1,
+          "target": 4,
+          "trigger": {
+            "label": "StartPressed",
+            "navigation": 13,
+            "status": "accept",
+            "target": {
+              "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:08:item-defn12:StartPressed1:0",
+              "label": "StartPressed"
+            }
+          }
+        },
+        {
+          "effect": {
+            "status": "absent"
+          },
+          "guard": {
+            "status": "absent"
+          },
+          "id": "143:element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:0177:element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:010:transitionn14:decrement_idle1:0#edge",
+          "label": "decrement_idle",
+          "navigation": 20,
+          "provenance": "authored",
+          "source": 1,
           "target": 1,
           "trigger": {
+            "label": "DecrementPressed",
+            "navigation": 21,
+            "status": "accept",
+            "target": {
+              "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:08:item-defn16:DecrementPressed1:0",
+              "label": "DecrementPressed"
+            }
+          }
+        },
+        {
+          "effect": {
             "status": "absent"
+          },
+          "guard": {
+            "status": "absent"
+          },
+          "id": "143:element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:0177:element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:010:transitionn14:increment_idle1:0#edge",
+          "label": "increment_idle",
+          "navigation": 16,
+          "provenance": "authored",
+          "source": 1,
+          "target": 1,
+          "trigger": {
+            "label": "IncrementPressed",
+            "navigation": 17,
+            "status": "accept",
+            "target": {
+              "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:08:item-defn16:IncrementPressed1:0",
+              "label": "IncrementPressed"
+            }
+          }
+        },
+        {
+          "effect": {
+            "status": "absent"
+          },
+          "guard": {
+            "status": "absent"
+          },
+          "id": "143:element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:0180:element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:010:transitionn17:to_running_resume1:0#edge",
+          "label": "to_running_resume",
+          "navigation": 32,
+          "provenance": "authored",
+          "source": 2,
+          "target": 4,
+          "trigger": {
+            "label": "StartPressed",
+            "navigation": 33,
+            "status": "accept",
+            "target": {
+              "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:08:item-defn12:StartPressed1:0",
+              "label": "StartPressed"
+            }
+          }
+        },
+        {
+          "effect": {
+            "status": "absent"
+          },
+          "guard": {
+            "status": "absent"
+          },
+          "id": "143:element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:0182:element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:010:transitionn19:to_idle_from_paused1:0#edge",
+          "label": "to_idle_from_paused",
+          "navigation": 36,
+          "provenance": "authored",
+          "source": 2,
+          "target": 1,
+          "trigger": {
+            "label": "ResetPressed",
+            "navigation": 37,
+            "status": "accept",
+            "target": {
+              "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:08:item-defn12:ResetPressed1:0",
+              "label": "ResetPressed"
+            }
+          }
+        },
+        {
+          "effect": {
+            "status": "absent"
+          },
+          "guard": {
+            "status": "absent"
+          },
+          "id": "143:element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:0183:element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:09:state-defn17:TimerStateMachine1:010:transitionn20:to_idle_from_expired1:0#edge",
+          "label": "to_idle_from_expired",
+          "navigation": 40,
+          "provenance": "authored",
+          "source": 3,
+          "target": 1,
+          "trigger": {
+            "label": "ResetPressed",
+            "navigation": 41,
+            "status": "accept",
+            "target": {
+              "id": "element/v159:memory://snapshot/examples/timer/KitchenTimerBehavior.sysml7:packagen20:KitchenTimerBehavior1:08:item-defn12:ResetPressed1:0",
+              "label": "ResetPressed"
+            }
           }
         }
       ],

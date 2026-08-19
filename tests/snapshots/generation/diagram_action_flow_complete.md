@@ -123,7 +123,7 @@ package ActionFlowExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 4,
+  "schemaVersion": 5,
   "modelDigest": "blake3:ae89f0c0e7c17cba708db9becb3ff301a7c7e0d9818ecb4a9b1ff2ebb0e7faea",
   "documents": [
     {
@@ -340,7 +340,10 @@ package ActionFlowExample {
         "notationRole": "definition",
         "owner": null,
         "reference": 0,
-        "source": 0
+        "source": 0,
+        "typing": {
+          "status": "absent"
+        }
       },
       {
         "compartments": [],
@@ -349,7 +352,10 @@ package ActionFlowExample {
         "notationRole": "unsupported",
         "owner": 0,
         "reference": 5,
-        "source": 3
+        "source": 3,
+        "typing": {
+          "status": "absent"
+        }
       },
       {
         "compartments": [],
@@ -358,7 +364,10 @@ package ActionFlowExample {
         "notationRole": "usage",
         "owner": 0,
         "reference": 2,
-        "source": 2
+        "source": 2,
+        "typing": {
+          "status": "absent"
+        }
       },
       {
         "compartments": [],
@@ -367,7 +376,10 @@ package ActionFlowExample {
         "notationRole": "usage",
         "owner": 0,
         "reference": 3,
-        "source": 1
+        "source": 1,
+        "typing": {
+          "status": "absent"
+        }
       }
     ],
     "relationships": [

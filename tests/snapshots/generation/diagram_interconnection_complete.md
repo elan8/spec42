@@ -122,7 +122,7 @@ package InterconnectionExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 4,
+  "schemaVersion": 5,
   "modelDigest": "blake3:91ff570140dc74818f2827d481a44fdae91d6321a5aab0cc423846a9c3ad610b",
   "documents": [
     {
@@ -236,19 +236,19 @@ package InterconnectionExample {
     "edges": [
       {
         "kind": "containment",
-        "navigation": 3,
+        "navigation": 1,
         "provenance": "authored",
         "reference": 5,
         "source": 0,
-        "target": 1
+        "target": 2
       },
       {
         "kind": "containment",
-        "navigation": 1,
+        "navigation": 3,
         "provenance": "authored",
         "reference": 6,
         "source": 0,
-        "target": 2
+        "target": 1
       },
       {
         "kind": "containment",
@@ -298,7 +298,10 @@ package InterconnectionExample {
         "notationRole": "definition",
         "owner": null,
         "reference": 0,
-        "source": 0
+        "source": 0,
+        "typing": {
+          "status": "absent"
+        }
       },
       {
         "compartments": [],
@@ -307,7 +310,10 @@ package InterconnectionExample {
         "notationRole": "usage",
         "owner": 0,
         "reference": 2,
-        "source": 3
+        "source": 3,
+        "typing": {
+          "status": "absent"
+        }
       },
       {
         "compartments": [],
@@ -316,7 +322,10 @@ package InterconnectionExample {
         "notationRole": "usage",
         "owner": 0,
         "reference": 1,
-        "source": 1
+        "source": 1,
+        "typing": {
+          "status": "absent"
+        }
       },
       {
         "compartments": [],
@@ -325,7 +334,10 @@ package InterconnectionExample {
         "notationRole": "usage",
         "owner": 0,
         "reference": 3,
-        "source": 2
+        "source": 2,
+        "typing": {
+          "status": "absent"
+        }
       }
     ],
     "relationships": [],

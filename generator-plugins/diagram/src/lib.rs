@@ -4,7 +4,7 @@ use serde::Serialize;
 use serde_json::{json, Value};
 use spec42_generator_sdk::{export, model, Artifact, Guest};
 
-const SCHEMA_VERSION: u32 = 4;
+const SCHEMA_VERSION: u32 = 5;
 const ARTIFACT_PATH: &str = "diagram.json";
 
 type DocumentIndex = usize;
@@ -64,6 +64,9 @@ enum ReferenceKey {
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 struct SourceKey(String, [u32; 4]);
 
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+struct OccurrenceKey(Vec<ReferenceKey>);
+
 struct NormalizedProduct {
     documents: Vec<DocumentRecord>,
     document_indexes: BTreeMap<(String, u8), DocumentIndex>,
@@ -71,7 +74,7 @@ struct NormalizedProduct {
     source_indexes: BTreeMap<SourceKey, SourceIndex>,
     references: Vec<model::DiagramSemanticReference>,
     reference_indexes: BTreeMap<ReferenceKey, ReferenceIndex>,
-    node_indexes: BTreeMap<ReferenceKey, NodeIndex>,
+    node_indexes: BTreeMap<OccurrenceKey, NodeIndex>,
 }
 
 struct DiagramGenerator;
@@ -139,17 +142,27 @@ impl NormalizedProduct {
         collect_reference(&mut references, &typed.view.reference);
         collect_source(&mut sources, &typed.view.source);
         for reference in &typed.exposed_roots {
-            collect_reference(&mut references, reference);
+            collect_occurrence_references(&mut references, reference);
         }
         for element in &typed.elements {
             collect_reference(&mut references, &element.reference);
+            match &element.typing {
+                model::DiagramElementTyping::Resolved(values)
+                | model::DiagramElementTyping::Partial(values) => values
+                    .iter()
+                    .for_each(|value| collect_reference(&mut references, &value.reference)),
+                model::DiagramElementTyping::Ambiguous(values) => values
+                    .iter()
+                    .for_each(|value| collect_reference(&mut references, value)),
+                _ => {}
+            }
             if let Some(owner) = &element.owner {
-                collect_reference(&mut references, owner);
+                collect_occurrence_references(&mut references, owner);
             }
             collect_source(&mut sources, &element.source);
             for compartment in &element.compartments {
                 for member in &compartment.members {
-                    collect_reference(&mut references, member);
+                    collect_occurrence_references(&mut references, member);
                 }
             }
         }
@@ -158,11 +171,15 @@ impl NormalizedProduct {
             collect_reference(&mut references, &relationship.source_element);
             match &relationship.target {
                 model::DiagramRelationshipTarget::Resolved(value) => {
-                    collect_reference(&mut references, value)
+                    collect_reference(&mut references, &value.reference);
+                    collect_endpoint_occurrences(&mut references, &value.occurrence)
                 }
                 model::DiagramRelationshipTarget::Ambiguous(values) => values
                     .iter()
-                    .for_each(|value| collect_reference(&mut references, value)),
+                    .for_each(|value| {
+                        collect_reference(&mut references, &value.reference);
+                        collect_endpoint_occurrences(&mut references, &value.occurrence);
+                    }),
                 model::DiagramRelationshipTarget::Unresolved
                 | model::DiagramRelationshipTarget::Unsupported => {}
             }
@@ -266,7 +283,7 @@ impl NormalizedProduct {
             .elements
             .iter()
             .enumerate()
-            .map(|(index, element)| (reference_key(&element.reference), index))
+            .map(|(index, element)| (occurrence_key(&element.occurrence), index))
             .collect();
         Ok(Self {
             documents: document_records,
@@ -302,26 +319,46 @@ impl NormalizedProduct {
             model::DiagramScene::Grid => marker("grid"),
             model::DiagramScene::Geometry => marker("geometry"),
             model::DiagramScene::StateTransition(scene) => {
-                let vertex_indexes = scene.vertices.iter().enumerate()
+                let vertex_indexes = scene
+                    .vertices
+                    .iter()
+                    .enumerate()
                     .map(|(index, vertex)| (vertex.semantic_id.as_str(), index))
                     .collect::<BTreeMap<_, _>>();
-                let transitions = scene.transitions.iter().map(|transition| {
-                    let source = vertex_indexes.get(transition.source.as_str())
-                        .ok_or_else(|| format!("state transition source `{}` is not a scene vertex", transition.source))?;
-                    let target = vertex_indexes.get(transition.target.as_str())
-                        .ok_or_else(|| format!("state transition target `{}` is not a scene vertex", transition.target))?;
-                    Ok(json!({
-                        "id": transition.semantic_id,
-                        "label": transition.label,
-                        "source": source,
-                        "target": target,
-                        "trigger": scene_trigger(&transition.trigger, self)?,
-                        "guard": scene_feature(&transition.guard, self)?,
-                        "effect": scene_feature(&transition.effect, self)?,
-                        "provenance": provenance(&transition.provenance),
-                        "navigation": self.source(&transition.source_reference)?,
-                    }))
-                }).collect::<Result<Vec<Value>, String>>()?;
+                let transitions =
+                    scene
+                        .transitions
+                        .iter()
+                        .map(|transition| {
+                            let source = vertex_indexes
+                                .get(transition.source.as_str())
+                                .ok_or_else(|| {
+                                    format!(
+                                        "state transition source `{}` is not a scene vertex",
+                                        transition.source
+                                    )
+                                })?;
+                            let target = vertex_indexes
+                                .get(transition.target.as_str())
+                                .ok_or_else(|| {
+                                    format!(
+                                        "state transition target `{}` is not a scene vertex",
+                                        transition.target
+                                    )
+                                })?;
+                            Ok(json!({
+                                "id": transition.semantic_id,
+                                "label": transition.label,
+                                "source": source,
+                                "target": target,
+                                "trigger": scene_trigger(&transition.trigger, self)?,
+                                "guard": scene_feature(&transition.guard, self)?,
+                                "effect": scene_feature(&transition.effect, self)?,
+                                "provenance": provenance(&transition.provenance),
+                                "navigation": self.source(&transition.source_reference)?,
+                            }))
+                        })
+                        .collect::<Result<Vec<Value>, String>>()?;
                 json!({
                     "kind": "state-transition",
                     "frame": scene.machine.as_ref().map(|machine| Ok::<Value, String>(json!({
@@ -342,11 +379,28 @@ impl NormalizedProduct {
     }
 
     fn element(&self, value: &model::DiagramElement) -> Result<Value, String> {
+        let typing = match &value.typing {
+            model::DiagramElementTyping::Absent => json!({ "status": "absent" }),
+            model::DiagramElementTyping::Resolved(values) => {
+                json!({ "status": "resolved", "types": values.iter().map(|value| Ok(json!({ "reference": self.reference(&value.reference)?, "label": value.label }))).collect::<Result<Vec<Value>, String>>()? })
+            }
+            model::DiagramElementTyping::Partial(values) => {
+                json!({ "status": "partial", "types": values.iter().map(|value| Ok(json!({ "reference": self.reference(&value.reference)?, "label": value.label }))).collect::<Result<Vec<Value>, String>>()? })
+            }
+            model::DiagramElementTyping::Ambiguous(targets) => {
+                json!({ "status": "ambiguous", "candidates": targets.iter().map(|target| self.reference(target)).collect::<Result<Vec<_>, _>>()? })
+            }
+            model::DiagramElementTyping::Unresolved => json!({ "status": "unresolved" }),
+            model::DiagramElementTyping::Unsupported => json!({ "status": "unsupported" }),
+            model::DiagramElementTyping::Recovery => json!({ "status": "recovery" }),
+            model::DiagramElementTyping::Incomplete => json!({ "status": "incomplete" }),
+        };
         Ok(json!({
             "reference": self.reference(&value.reference)?,
             "metaclass": value.metaclass.as_str(),
             "notationRole": notation_role(value.notation_role),
             "name": value.name,
+            "typing": typing,
             "owner": value.owner.as_ref().map(|owner| self.node(owner)).transpose()?,
             "source": self.source(&value.source)?,
             "compartments": value.compartments.iter().map(|compartment| Ok(json!({
@@ -359,20 +413,28 @@ impl NormalizedProduct {
 
     fn relationship(&self, value: &model::DiagramRelationship) -> Result<Value, String> {
         let target = match &value.target {
-            model::DiagramRelationshipTarget::Resolved(reference) => match self.node(reference) {
-                Ok(node) => json!({ "status": "resolved", "node": node }),
-                Err(_) => json!({ "status": "resolved", "reference": self.reference(reference)? }),
+            model::DiagramRelationshipTarget::Resolved(endpoint) => match &endpoint.occurrence {
+                model::DiagramEndpointOccurrence::Resolved(occurrence) => {
+                    json!({ "status": "resolved", "node": self.node(occurrence)? })
+                }
+                model::DiagramEndpointOccurrence::Ambiguous(occurrences) => json!({
+                    "status": "ambiguous",
+                    "candidates": occurrences.iter().map(|value| self.node(value)).collect::<Result<Vec<_>, _>>()?
+                }),
+                model::DiagramEndpointOccurrence::OutsideProjection => {
+                    json!({ "status": "resolved", "reference": self.reference(&endpoint.reference)? })
+                }
             },
             model::DiagramRelationshipTarget::Ambiguous(values) => json!({
                 "status": "ambiguous",
-                "candidates": values.iter().map(|value| self.reference(value)).collect::<Result<Vec<_>, _>>()?
+                "candidates": values.iter().map(|value| self.reference(&value.reference)).collect::<Result<Vec<_>, _>>()?
             }),
             model::DiagramRelationshipTarget::Unresolved => json!({ "status": "unresolved" }),
             model::DiagramRelationshipTarget::Unsupported => json!({ "status": "unsupported" }),
         };
         Ok(json!({
             "reference": self.reference(&value.reference)?,
-            "source": self.node(&value.source_element)?,
+            "source": self.node(&value.source_occurrence)?,
             "kind": value.kind.as_str(),
             "target": target,
             "provenance": provenance(&value.provenance),
@@ -383,8 +445,8 @@ impl NormalizedProduct {
     fn edge(&self, value: &model::DiagramEdge) -> Result<Value, String> {
         Ok(json!({
             "reference": self.reference(&value.reference)?,
-            "source": self.node(&value.source_element)?,
-            "target": self.node(&value.target_element)?,
+            "source": self.node(&value.source_occurrence)?,
+            "target": self.node(&value.target_occurrence)?,
             "kind": edge_kind(&value.kind),
             "provenance": provenance(&value.provenance),
             "navigation": value.source.as_ref().map(|source| self.source(source)).transpose()?,
@@ -392,7 +454,7 @@ impl NormalizedProduct {
     }
 
     fn metadata(&self, value: &model::DiagramViewMetadata) -> Result<Value, String> {
-        let nodes = |values: &[model::DiagramSemanticReference]| {
+        let nodes = |values: &[model::DiagramOccurrenceIdentity]| {
             values
                 .iter()
                 .map(|value| self.node(value))
@@ -468,8 +530,14 @@ impl NormalizedProduct {
             model::DiagramIncompleteReason::RelationshipUnsupported { relationship_kind } => {
                 json!({ "code": "relationship-unsupported", "relationshipKind": relationship_kind })
             }
-            model::DiagramIncompleteReason::ViewFilterApplicationUnavailable => {
-                json!({ "code": "view-filter-application-unavailable" })
+            model::DiagramIncompleteReason::ViewFilterUnresolved => {
+                json!({ "code": "view-filter-unresolved" })
+            }
+            model::DiagramIncompleteReason::ViewFilterAmbiguous => {
+                json!({ "code": "view-filter-ambiguous" })
+            }
+            model::DiagramIncompleteReason::ViewFilterUnsupported => {
+                json!({ "code": "view-filter-unsupported" })
             }
             model::DiagramIncompleteReason::GeometryFactsUnavailable => {
                 json!({ "code": "geometry-facts-unavailable" })
@@ -557,13 +625,43 @@ impl NormalizedProduct {
             .ok_or_else(|| "diagram semantic reference was not interned".to_owned())
     }
 
-    fn node(&self, value: &model::DiagramSemanticReference) -> Result<NodeIndex, String> {
+    fn node(&self, value: &model::DiagramOccurrenceIdentity) -> Result<NodeIndex, String> {
         self.node_indexes
-            .get(&reference_key(value))
+            .get(&occurrence_key(value))
             .copied()
             .ok_or_else(|| {
-                "diagram semantic reference is outside the projected node set".to_owned()
+                "diagram occurrence is outside the projected node set".to_owned()
             })
+    }
+}
+
+fn occurrence_key(value: &model::DiagramOccurrenceIdentity) -> OccurrenceKey {
+    OccurrenceKey(value.semantic_path.iter().map(reference_key).collect())
+}
+
+fn collect_occurrence_references(
+    values: &mut BTreeMap<ReferenceKey, model::DiagramSemanticReference>,
+    occurrence: &model::DiagramOccurrenceIdentity,
+) {
+    for reference in &occurrence.semantic_path {
+        collect_reference(values, reference);
+    }
+}
+
+fn collect_endpoint_occurrences(
+    values: &mut BTreeMap<ReferenceKey, model::DiagramSemanticReference>,
+    occurrence: &model::DiagramEndpointOccurrence,
+) {
+    match occurrence {
+        model::DiagramEndpointOccurrence::Resolved(value) => {
+            collect_occurrence_references(values, value)
+        }
+        model::DiagramEndpointOccurrence::Ambiguous(values_to_collect) => {
+            for value in values_to_collect {
+                collect_occurrence_references(values, value);
+            }
+        }
+        model::DiagramEndpointOccurrence::OutsideProjection => {}
     }
 }
 
@@ -633,10 +731,17 @@ fn state_vertex_kind(value: &model::StateTransitionNodeKind) -> &'static str {
     }
 }
 
-fn scene_trigger(value: &model::TransitionTrigger, normalized: &NormalizedProduct) -> Result<Value, String> {
+fn scene_trigger(
+    value: &model::TransitionTrigger,
+    normalized: &NormalizedProduct,
+) -> Result<Value, String> {
     Ok(match value {
         model::TransitionTrigger::None => json!({ "status": "absent" }),
-        model::TransitionTrigger::Accept { label, target, source } => json!({
+        model::TransitionTrigger::Accept {
+            label,
+            target,
+            source,
+        } => json!({
             "status": "accept",
             "label": label,
             "target": target.as_ref().map(|target| json!({ "id": target.semantic_id, "label": target.label })),
@@ -652,7 +757,10 @@ fn scene_trigger(value: &model::TransitionTrigger, normalized: &NormalizedProduc
     })
 }
 
-fn scene_feature(value: &model::ProjectionFeature, normalized: &NormalizedProduct) -> Result<Value, String> {
+fn scene_feature(
+    value: &model::ProjectionFeature,
+    normalized: &NormalizedProduct,
+) -> Result<Value, String> {
     Ok(match value {
         model::ProjectionFeature::Absent => json!({ "status": "absent" }),
         model::ProjectionFeature::Supported { label, source } => json!({
@@ -689,9 +797,10 @@ fn collect_metadata_references(
     values: &mut BTreeMap<ReferenceKey, model::DiagramSemanticReference>,
     metadata: &model::DiagramViewMetadata,
 ) {
-    let mut add = |refs: &[model::DiagramSemanticReference]| {
-        refs.iter()
-            .for_each(|value| collect_reference(values, value))
+    let mut add = |occurrences: &[model::DiagramOccurrenceIdentity]| {
+        occurrences
+            .iter()
+            .for_each(|value| collect_occurrence_references(values, value))
     };
     match metadata {
         model::DiagramViewMetadata::General { roots }
@@ -731,7 +840,7 @@ fn collect_metadata_references(
         model::DiagramViewMetadata::Grid { rows, cells, .. } => {
             add(rows);
             cells.iter().for_each(|cell| {
-                collect_reference(values, &cell.row);
+                collect_occurrence_references(values, &cell.row);
                 collect_reference(values, &cell.relationship);
             });
         }
@@ -933,6 +1042,12 @@ mod tests {
         }
     }
 
+    fn occurrence(name: &str) -> model::DiagramOccurrenceIdentity {
+        model::DiagramOccurrenceIdentity {
+            semantic_path: vec![qualified(name)],
+        }
+    }
+
     fn source(line: u32) -> model::SourceReference {
         model::SourceReference {
             uri: "file:///workspace/model.sysml".to_owned(),
@@ -958,12 +1073,12 @@ mod tests {
             },
             completeness: model::ProjectionCompleteness::Complete,
             incomplete_reasons: Vec::new(),
-            exposed_roots: vec![qualified("P::root")],
+            exposed_roots: vec![occurrence("P::root")],
             elements,
             relationships: Vec::new(),
             edges: Vec::new(),
             metadata: model::DiagramViewMetadata::General {
-                roots: vec![qualified("P::root")],
+                roots: vec![occurrence("P::root")],
             },
             scene: model::DiagramScene::General,
         }
@@ -972,10 +1087,12 @@ mod tests {
     #[test]
     fn normalization_interns_references_and_sources_once() {
         let product = projection(vec![model::DiagramElement {
+            occurrence: occurrence("P::root"),
             reference: qualified("P::root"),
             metaclass: model::Metaclass::PartDefinition,
             notation_role: model::DiagramNotationRole::Definition,
             name: Some("root".to_owned()),
+            typing: model::DiagramElementTyping::Absent,
             owner: None,
             source: source(1),
             compartments: Vec::new(),
@@ -985,7 +1102,7 @@ mod tests {
         assert_eq!(normalized.sources.len(), 2);
         assert_eq!(normalized.references.len(), 2);
         assert_eq!(normalized.reference(&qualified("P::root")).unwrap(), 0);
-        assert_eq!(normalized.node(&qualified("P::root")).unwrap(), 0);
+        assert_eq!(normalized.node(&occurrence("P::root")).unwrap(), 0);
         assert_eq!(
             normalized.element(&product.elements[0]).unwrap()["notationRole"],
             "definition"
@@ -995,10 +1112,12 @@ mod tests {
     #[test]
     fn reference_table_order_does_not_depend_on_node_insertion_order() {
         let element = |name: &str, line| model::DiagramElement {
+            occurrence: occurrence(name),
             reference: qualified(name),
             metaclass: model::Metaclass::PartDefinition,
             notation_role: model::DiagramNotationRole::Definition,
             name: Some(name.to_owned()),
+            typing: model::DiagramElementTyping::Absent,
             owner: None,
             source: source(line),
             compartments: Vec::new(),
@@ -1068,17 +1187,19 @@ mod tests {
     fn normalized_product_scales_to_thousands_of_graph_records() {
         let elements = (0..1_000)
             .map(|index| model::DiagramElement {
+                occurrence: occurrence(&format!("P::n{index:04}")),
                 reference: qualified(&format!("P::n{index:04}")),
                 metaclass: model::Metaclass::PartUsage,
                 notation_role: model::DiagramNotationRole::Usage,
                 name: Some(format!("n{index}")),
+                typing: model::DiagramElementTyping::Absent,
                 owner: None,
                 source: source(index),
                 compartments: Vec::new(),
             })
             .collect::<Vec<_>>();
         let mut product = projection(elements);
-        product.exposed_roots = vec![qualified("P::n0000")];
+        product.exposed_roots = vec![occurrence("P::n0000")];
         product.metadata = model::DiagramViewMetadata::General {
             roots: product.exposed_roots.clone(),
         };
@@ -1096,6 +1217,8 @@ mod tests {
                     },
                     source_element: qualified(&format!("P::n{source_index:04}")),
                     target_element: qualified(&format!("P::n{target_index:04}")),
+                    source_occurrence: occurrence(&format!("P::n{source_index:04}")),
+                    target_occurrence: occurrence(&format!("P::n{target_index:04}")),
                     kind: model::DiagramEdgeKind::Flow,
                     provenance: model::RelationshipProvenance::Authored,
                     source: None,

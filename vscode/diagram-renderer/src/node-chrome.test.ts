@@ -243,15 +243,12 @@ describe("node chrome rendering", () => {
     }
   });
 
-  it("keeps the drawn disclosure control, name and badge from overlapping", async () => {
+  it("keeps the drawn disclosure control clear of the node name", async () => {
     const target = hostElement();
     await renderVisualization(target, generalView(), { theme: { colorScheme: "light" } });
     const node = target.querySelector('[data-node-id="n:0"]')!;
     const controlTarget = node.querySelector(".general-node-toggle .sysml-disclosure-target")!;
-    const badgeRect = node.querySelector(".general-hidden-relationships rect")!;
     const controlRight = Number(controlTarget.getAttribute("x")) + Number(controlTarget.getAttribute("width"));
-    const badgeLeft = Number(badgeRect.getAttribute("x"));
-    expect(controlRight).toBeLessThan(badgeLeft);
 
     const width = Number(node.getAttribute("data-bounds")!.split(",")[2]);
     const compartments = collectCompartments({
@@ -262,10 +259,10 @@ describe("node chrome rendering", () => {
     const header = layoutNodeHeader(compartments, {
       width,
       strokeWidthPx: 2,
-      state: { disclosure: "collapsed", hiddenRelationshipCount: 2 },
+      state: { disclosure: "collapsed" },
     });
     expect(controlRight).toBeLessThanOrEqual(header.textLeft);
-    expect(header.textRight).toBeLessThanOrEqual(badgeLeft);
+    expect(header.badge).toBeNull();
   });
 
   it("gives the disclosure control at least a 24x24 pointer target", async () => {
@@ -341,21 +338,9 @@ describe("node chrome rendering", () => {
     expect(target.querySelector('[data-node-id="n:1"]')).toBeNull();
   });
 
-  it("shows hidden relationships as a badge with an explanatory tooltip", async () => {
+  it("does not show an opaque count badge for collapsed descendants", async () => {
     const target = hostElement();
     await renderVisualization(target, generalView(), { theme: { colorScheme: "light" } });
-    const badge = target.querySelector('[data-node-id="n:0"] .general-hidden-relationships')!;
-    expect(badge.querySelector("text")?.textContent).toBe("2");
-    expect(badge.getAttribute("aria-label")).toContain("2 relationships");
-    const tooltip = badge.querySelector("title")?.textContent ?? "";
-    expect(tooltip).toContain("hidden");
-    expect(tooltip).toContain("Expand");
-    // Compact badge, not a sentence painted across the header.
-    expect(Number(badge.querySelector("rect")!.getAttribute("width"))).toBeLessThanOrEqual(40);
-
-    target.querySelector('[data-node-id="n:0"] .general-node-toggle')!
-      .dispatchEvent(new MouseEvent("click", { bubbles: true }));
-    await settle(() => Boolean(target.querySelector('[data-node-id="n:1"]')));
     expect(target.querySelector(".general-hidden-relationships")).toBeNull();
   });
 

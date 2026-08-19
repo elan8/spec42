@@ -17,7 +17,7 @@ describe("shared graph normalization", () => {
 describe("shared prepareViewData", () => {
   it("expands normalized diagram indexes without deriving semantics", () => {
     const prepared = prepareViewData({
-      schemaVersion: 4,
+      schemaVersion: 5,
       modelDigest: "blake3:model",
       documents: [{ uri: "file:///model.sysml", sourceDomain: "workspace" }],
       sources: [{ document: 0, range: [1, 2, 1, 6] }],
@@ -38,11 +38,12 @@ describe("shared prepareViewData", () => {
             metaclass: "PartUsage",
             notationRole: "usage",
             name: "a",
+            typing: { status: "resolved", types: [{ reference: 2, label: "TimerPCB" }] },
             owner: null,
             source: 0,
             compartments: [{ kind: "parts", provenance: "direct", members: [1] }],
           },
-          { reference: 2, metaclass: "PartUsage", notationRole: "usage", name: "b", owner: 0, source: 0, compartments: [] },
+          { reference: 2, metaclass: "PartUsage", notationRole: "usage", name: "b", typing: { status: "resolved", types: [{ reference: 2, label: "Battery" }] }, owner: 0, source: 0, compartments: [] },
         ],
         relationships: [],
         edges: [{ reference: 3, source: 0, target: 1, kind: "flow", provenance: "authored", navigation: 0 }],
@@ -55,15 +56,18 @@ describe("shared prepareViewData", () => {
     expect(prepared.nodes[0]).toMatchObject({ uri: "file:///model.sysml", range: { start: { line: 1, character: 2 } } });
     expect(prepared.nodes[0]?.attributes?.semanticReference).toEqual({ kind: "qualified-name", document: 0, qualifiedName: "P::a" });
     expect(prepared.nodes[0]?.attributes?.notationRole).toBe("usage");
+    expect(prepared.nodes[0]?.attributes?.typedByName).toBe("TimerPCB");
+    expect(prepared.nodes[0]?.attributes?.typingStatus).toBe("resolved");
+    expect(prepared.nodes[0]?.attributes?.typedBy).toBeUndefined();
     expect(prepared.nodes[0]?.attributes?.typedCompartments).toEqual([
-      { kind: "parts", provenance: "direct", members: [{ id: "n:1", name: "b", kind: "PartUsage" }] },
+      { kind: "parts", provenance: "direct", members: [{ id: "n:1", name: "b", kind: "PartUsage", typeName: "Battery" }] },
     ]);
     expect(prepared.meta?.exposedRoots).toEqual(["n:0"]);
   });
 
   it("uses typed grid metadata for relationship-valued columns", () => {
     const prepared = prepareViewData({
-      schemaVersion: 4,
+      schemaVersion: 5,
       documents: [{ uri: "file:///model.sysml" }],
       sources: [{ document: 0, range: [0, 0, 0, 1] }],
       references: [{ kind: "qualified-name" }, { kind: "qualified-name" }, { kind: "relationship" }],
@@ -72,7 +76,7 @@ describe("shared prepareViewData", () => {
         kind: "grid-view",
         exposedRoots: [0],
         nodes: [
-          { reference: 1, metaclass: "PartUsage", notationRole: "usage", name: "a", owner: null, source: 0, compartments: [] },
+          { reference: 1, metaclass: "PartUsage", notationRole: "usage", name: "a", typing: { status: "absent" }, owner: null, source: 0, compartments: [] },
         ],
         relationships: [],
         edges: [],
@@ -89,7 +93,7 @@ describe("shared prepareViewData", () => {
 
   it("prepares a typed state scene without rendering containment or transition declarations as nodes", () => {
     const prepared = prepareViewData({
-      schemaVersion: 4,
+      schemaVersion: 5,
       modelDigest: "blake3:model",
       documents: [{ uri: "file:///timer.sysml", sourceDomain: "workspace" }],
       sources: [
@@ -138,8 +142,8 @@ describe("shared prepareViewData", () => {
       ["running", "state"],
     ]);
     expect(prepared.edges).toEqual([expect.objectContaining({
-      source: "state:1",
-      target: "state:2",
+      source: "state:idle",
+      target: "state:running",
       label: "StartPressed",
       edgeKind: "transition",
     })]);

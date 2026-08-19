@@ -12,7 +12,7 @@ authoritative tooling/library IDs may be used when published; unnamed elements u
 source/ownership anchor. Internal `SymbolIdentity` encodings never cross into diagram JSON. Every
 projection repeats its public reference and carries ordered
 elements, relationships, typed view metadata, provenance, and typed incomplete reasons. Ordering
-is semantic-ID order unless a view owns a stronger authored order. Diagram JSON schema version 2
+is semantic-ID order unless a view owns a stronger authored order. Diagram JSON schema version 5
 is the sole renderer product for this contract.
 
 ## View inputs and projections
@@ -40,9 +40,12 @@ recovery or unsupported syntax is not itself a diagram reason: a selected exposu
 relationship, filter, or geometry fact must carry the affected outcome. A resolved exposure of a
 typed usage traverses the publication's canonical effective-feature query, preserving authored
 versus implied containment provenance. Until the semantic evaluation layer publishes an
-applicable element-filter result, an authored view filter leaves the non-filtered authoritative
-projection visible with `view-filter-application-unavailable`; no consumer guesses the filter from
-metadata names or element labels.
+The semantic evaluation layer applies all effective view conditions before projection. Conditions
+from separate filter memberships are conjunctive, while Boolean composition within a condition
+retains its authored meaning. Candidate classification uses canonical semantic kinds and resolved
+metadata relationships, never display names. An unresolved, ambiguous, or unsupported predicate
+excludes that candidate and publishes the corresponding typed filter-incompleteness reason; no
+consumer guesses or independently reevaluates a filter.
 
 The JSON product contains `schemaVersion`, dependency-complete `modelDigest`, `selectedView`,
 `documents`, `sources`, `references`, `completeness`, and `projection`. Documents, source ranges,

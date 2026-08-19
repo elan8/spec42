@@ -112,7 +112,7 @@ package GridExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 4,
+  "schemaVersion": 5,
   "modelDigest": "blake3:b780a516c8bc22ae0f1c0c53d80bdaeb6383ddad5136e3b52617f60c1a3023ca",
   "documents": [
     {
@@ -251,7 +251,10 @@ package GridExample {
         "notationRole": "definition",
         "owner": null,
         "reference": 0,
-        "source": 0
+        "source": 0,
+        "typing": {
+          "status": "absent"
+        }
       },
       {
         "compartments": [],
@@ -260,7 +263,10 @@ package GridExample {
         "notationRole": "usage",
         "owner": 0,
         "reference": 1,
-        "source": 1
+        "source": 1,
+        "typing": {
+          "status": "absent"
+        }
       },
       {
         "compartments": [],
@@ -269,7 +275,10 @@ package GridExample {
         "notationRole": "usage",
         "owner": 0,
         "reference": 2,
-        "source": 2
+        "source": 2,
+        "typing": {
+          "status": "absent"
+        }
       }
     ],
     "relationships": [],
