@@ -763,6 +763,7 @@ pub enum DiagramIncompleteReason {
     RelationshipUnresolved { relationship_kind: String },
     RelationshipAmbiguous { relationship_kind: String },
     RelationshipUnsupported { relationship_kind: String },
+    ViewFilterApplicationUnavailable,
     GeometryFactsUnavailable,
 }
 
@@ -1062,7 +1063,7 @@ mod tests {
     #[test]
     fn the_wire_schema_fingerprint_is_pinned() {
         assert_eq!(
-            SCHEMA_FINGERPRINT, 0x0a09_25d9_f042_416f,
+            SCHEMA_FINGERPRINT, 0x029d_a1b1_0889_5b49,
             "the generator wire schema changed; every guest must be rebuilt"
         );
     }
@@ -1070,7 +1071,7 @@ mod tests {
     #[test]
     fn the_compatibility_token_is_pinned() {
         assert_eq!(
-            COMPATIBILITY_TOKEN, 0x9b47_6a22_7279_4447,
+            COMPATIBILITY_TOKEN, 0x95bf_4e0b_bbc8_6820,
             "the generator ABI contract changed; every guest must be rebuilt"
         );
     }

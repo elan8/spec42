@@ -155,9 +155,6 @@ package GridNegative {
     "status": "incomplete",
     "reasons": [
       {
-        "code": "parse-recovery"
-      },
-      {
         "code": "exposure-unresolved",
         "exposure": 1
       }

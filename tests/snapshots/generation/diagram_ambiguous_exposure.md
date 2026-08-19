@@ -173,9 +173,6 @@ package AmbiguousExample {
     "status": "incomplete",
     "reasons": [
       {
-        "code": "parse-recovery"
-      },
-      {
         "code": "exposure-ambiguous",
         "exposure": 1
       }

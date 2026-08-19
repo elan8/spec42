@@ -1,9 +1,8 @@
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
 use crate::{
-    ElementKind, ElementSearch, ElementSource, PublicationCompleteness, PublishedResolution,
-    QueryOutcome, RelationshipProvenance, RelationshipTarget, SourceLocation, SymbolEntry,
-    SymbolIdentity,
+    ElementKind, ElementSearch, ElementSource, PublishedResolution, QueryOutcome,
+    RelationshipProvenance, RelationshipTarget, SourceLocation, SymbolEntry, SymbolIdentity,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -91,6 +90,7 @@ pub enum DiagramIncompleteReason {
     RelationshipUnresolved { relationship: Box<str> },
     RelationshipAmbiguous { relationship: Box<str> },
     RelationshipUnsupported { relationship: Box<str> },
+    ViewFilterApplicationUnavailable,
     GeometryFactsUnavailable,
 }
 
@@ -219,14 +219,32 @@ impl PublishedResolution {
         };
 
         let all = self.diagram_entries();
+        let workspace = self
+            .diagram_entries_for(ElementSource::Workspace)
+            .into_keys()
+            .collect::<BTreeSet<_>>();
         let mut roots = BTreeSet::new();
-        let mut reasons = publication_reasons(self.completeness());
+        let mut reasons = BTreeSet::new();
+        if let QueryOutcome::Resolved(inspection)
+        | QueryOutcome::Recovered(inspection)
+        | QueryOutcome::UnsupportedWith(inspection) = self.inspect(view)
+        {
+            if inspection
+                .relationships
+                .iter()
+                .any(|relationship| relationship.kind == "filterMetadataTest")
+            {
+                reasons.insert(DiagramIncompleteReason::ViewFilterApplicationUnavailable);
+            }
+        }
         for expose in all
             .values()
             .filter(|entry| entry.owner.as_ref() == Some(view) && entry.kind == ElementKind::Expose)
         {
             match self.inspect(&expose.identity) {
-                QueryOutcome::Resolved(inspection) | QueryOutcome::Recovered(inspection) => {
+                QueryOutcome::Resolved(inspection)
+                | QueryOutcome::Recovered(inspection)
+                | QueryOutcome::UnsupportedWith(inspection) => {
                     for relationship in inspection
                         .relationships
                         .iter()
@@ -273,12 +291,16 @@ impl PublishedResolution {
         }
 
         let mut scope = roots.clone();
+        let mut projected_owners = BTreeMap::new();
         let mut queue = roots.iter().cloned().collect::<VecDeque<_>>();
         while let Some(owner) = queue.pop_front() {
-            for child in all
-                .values()
-                .filter(|entry| entry.owner.as_ref() == Some(&owner))
-            {
+            for child in resolved_values(self.effective_features(&owner)).iter() {
+                if !workspace.contains(&child.identity) {
+                    continue;
+                }
+                projected_owners
+                    .entry(child.identity.clone())
+                    .or_insert_with(|| owner.clone());
                 if scope.insert(child.identity.clone()) {
                     queue.push_back(child.identity.clone());
                 }
@@ -292,7 +314,7 @@ impl PublishedResolution {
                 reference: semantic_reference(entry, &all),
                 kind: entry.kind,
                 name: entry.name.clone(),
-                owner: entry.owner.clone().filter(|owner| scope.contains(owner)),
+                owner: projected_owners.get(&entry.identity).cloned(),
                 source: entry.location.clone(),
             })
             .collect::<Vec<_>>();
@@ -307,21 +329,27 @@ impl PublishedResolution {
                             DiagramRelationshipTarget::Resolved(target.clone())
                         }
                         RelationshipTarget::Ambiguous(candidates) => {
-                            reasons.insert(DiagramIncompleteReason::RelationshipAmbiguous {
-                                relationship: relationship.kind.into(),
-                            });
+                            if relationship_is_required(view_entry.kind, relationship.kind) {
+                                reasons.insert(DiagramIncompleteReason::RelationshipAmbiguous {
+                                    relationship: relationship.kind.into(),
+                                });
+                            }
                             DiagramRelationshipTarget::Ambiguous(candidates.clone())
                         }
                         RelationshipTarget::Unresolved => {
-                            reasons.insert(DiagramIncompleteReason::RelationshipUnresolved {
-                                relationship: relationship.kind.into(),
-                            });
+                            if relationship_is_required(view_entry.kind, relationship.kind) {
+                                reasons.insert(DiagramIncompleteReason::RelationshipUnresolved {
+                                    relationship: relationship.kind.into(),
+                                });
+                            }
                             DiagramRelationshipTarget::Unresolved
                         }
                         RelationshipTarget::Unsupported => {
-                            reasons.insert(DiagramIncompleteReason::RelationshipUnsupported {
-                                relationship: relationship.kind.into(),
-                            });
+                            if relationship_is_required(view_entry.kind, relationship.kind) {
+                                reasons.insert(DiagramIncompleteReason::RelationshipUnsupported {
+                                    relationship: relationship.kind.into(),
+                                });
+                            }
                             DiagramRelationshipTarget::Unsupported
                         }
                     };
@@ -350,7 +378,15 @@ impl PublishedResolution {
                     source: owner.clone(),
                     target: element.semantic_id.clone(),
                     kind: DiagramEdgeKind::Containment,
-                    provenance: RelationshipProvenance::Authored,
+                    provenance: if all
+                        .get(&element.semantic_id)
+                        .and_then(|entry| entry.owner.as_ref())
+                        == Some(owner)
+                    {
+                        RelationshipProvenance::Authored
+                    } else {
+                        RelationshipProvenance::Implied
+                    },
                     source_location: Some(element.source.clone()),
                 })
             })
@@ -433,13 +469,40 @@ impl PublishedResolution {
             ElementSource::Library,
             ElementSource::External,
         ] {
-            for &kind in ElementKind::ALL {
-                for entry in resolved_values(self.search_elements(ElementSearch { kind, source })) {
-                    entries.insert(entry.identity.clone(), entry);
-                }
+            entries.extend(self.diagram_entries_for(source));
+        }
+        entries
+    }
+
+    fn diagram_entries_for(&self, source: ElementSource) -> BTreeMap<SymbolIdentity, SymbolEntry> {
+        let mut entries = BTreeMap::new();
+        for &kind in ElementKind::ALL {
+            for entry in resolved_values(self.search_elements(ElementSearch { kind, source })) {
+                entries.insert(entry.identity.clone(), entry);
             }
         }
         entries
+    }
+}
+
+fn relationship_is_required(view: DiagramViewKind, kind: &str) -> bool {
+    match view {
+        DiagramViewKind::Interconnection => kind == "connectorEnd",
+        DiagramViewKind::ActionFlow => matches!(kind, "flowSource" | "flowTarget" | "succession"),
+        DiagramViewKind::StateTransition => matches!(
+            kind,
+            "initialState"
+                | "transitionSource"
+                | "transitionTarget"
+                | "transitionTrigger"
+                | "transitionGuard"
+                | "transitionEffect"
+        ),
+        DiagramViewKind::Sequence => matches!(kind, "messageSource" | "messageTarget"),
+        DiagramViewKind::General
+        | DiagramViewKind::Browser
+        | DiagramViewKind::Grid
+        | DiagramViewKind::Geometry => false,
     }
 }
 
@@ -529,16 +592,5 @@ fn resolved_values<T>(outcome: QueryOutcome<Box<[T]>>) -> Box<[T]> {
         | QueryOutcome::Recovered(values)
         | QueryOutcome::UnsupportedWith(values) => values,
         _ => Box::new([]),
-    }
-}
-
-fn publication_reasons(completeness: PublicationCompleteness) -> BTreeSet<DiagramIncompleteReason> {
-    match completeness {
-        PublicationCompleteness::Complete => BTreeSet::new(),
-        PublicationCompleteness::ParseRecovery => [DiagramIncompleteReason::ParseRecovery].into(),
-        PublicationCompleteness::UnsupportedSyntax => {
-            [DiagramIncompleteReason::UnsupportedSyntax].into()
-        }
-        PublicationCompleteness::NonConverged => [DiagramIncompleteReason::NonConverged].into(),
     }
 }

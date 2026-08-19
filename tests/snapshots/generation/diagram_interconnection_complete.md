@@ -229,12 +229,8 @@ package InterconnectionExample {
     "source": 4
   },
   "completeness": {
-    "status": "incomplete",
-    "reasons": [
-      {
-        "code": "parse-recovery"
-      }
-    ]
+    "status": "complete",
+    "reasons": []
   },
   "projection": {
     "edges": [

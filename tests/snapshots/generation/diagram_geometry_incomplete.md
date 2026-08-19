@@ -142,9 +142,6 @@ package GeometryExample {
     "status": "incomplete",
     "reasons": [
       {
-        "code": "parse-recovery"
-      },
-      {
         "code": "geometry-facts-unavailable"
       }
     ]

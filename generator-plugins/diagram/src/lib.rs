@@ -93,7 +93,9 @@ impl Guest for DiagramGenerator {
             .iter()
             .map(|reason| normalized.incomplete_reason(reason))
             .collect::<Result<Vec<_>, _>>()?;
-        let references = normalized.references.iter()
+        let references = normalized
+            .references
+            .iter()
             .map(|reference| normalized.semantic_reference(reference))
             .collect::<Result<Vec<_>, _>>()?;
         let selected_view = SelectedView {
@@ -111,7 +113,11 @@ impl Guest for DiagramGenerator {
             references,
             selected_view,
             completeness: Completeness {
-                status: if reasons.is_empty() { "complete" } else { "incomplete" },
+                status: if reasons.is_empty() {
+                    "complete"
+                } else {
+                    "incomplete"
+                },
                 reasons,
             },
             projection,
@@ -119,7 +125,10 @@ impl Guest for DiagramGenerator {
         let mut contents = serde_json::to_vec_pretty(&product)
             .map_err(|error| format!("could not serialize diagram product: {error}"))?;
         contents.push(b'\n');
-        Ok(vec![Artifact { file_path: ARTIFACT_PATH.to_owned(), contents }])
+        Ok(vec![Artifact {
+            file_path: ARTIFACT_PATH.to_owned(),
+            contents,
+        }])
     }
 }
 
@@ -129,37 +138,60 @@ impl NormalizedProduct {
         let mut sources = BTreeMap::<SourceKey, model::SourceReference>::new();
         collect_reference(&mut references, &typed.view.reference);
         collect_source(&mut sources, &typed.view.source);
-        for reference in &typed.exposed_roots { collect_reference(&mut references, reference); }
+        for reference in &typed.exposed_roots {
+            collect_reference(&mut references, reference);
+        }
         for element in &typed.elements {
             collect_reference(&mut references, &element.reference);
-            if let Some(owner) = &element.owner { collect_reference(&mut references, owner); }
+            if let Some(owner) = &element.owner {
+                collect_reference(&mut references, owner);
+            }
             collect_source(&mut sources, &element.source);
         }
         for relationship in &typed.relationships {
             collect_reference(&mut references, &relationship.reference);
             collect_reference(&mut references, &relationship.source_element);
             match &relationship.target {
-                model::DiagramRelationshipTarget::Resolved(value) => collect_reference(&mut references, value),
-                model::DiagramRelationshipTarget::Ambiguous(values) =>
-                    values.iter().for_each(|value| collect_reference(&mut references, value)),
-                model::DiagramRelationshipTarget::Unresolved | model::DiagramRelationshipTarget::Unsupported => {}
+                model::DiagramRelationshipTarget::Resolved(value) => {
+                    collect_reference(&mut references, value)
+                }
+                model::DiagramRelationshipTarget::Ambiguous(values) => values
+                    .iter()
+                    .for_each(|value| collect_reference(&mut references, value)),
+                model::DiagramRelationshipTarget::Unresolved
+                | model::DiagramRelationshipTarget::Unsupported => {}
             }
-            if let Some(source) = &relationship.source { collect_source(&mut sources, source); }
+            if let Some(source) = &relationship.source {
+                collect_source(&mut sources, source);
+            }
         }
         for edge in &typed.edges {
             collect_reference(&mut references, &edge.reference);
             collect_reference(&mut references, &edge.source_element);
             collect_reference(&mut references, &edge.target_element);
-            if let Some(source) = &edge.source { collect_source(&mut sources, source); }
+            if let Some(source) = &edge.source {
+                collect_source(&mut sources, source);
+            }
         }
         collect_metadata_references(&mut references, &typed.metadata);
-        for reason in &typed.incomplete_reasons { collect_reason_reference(&mut references, reason); }
+        for reason in &typed.incomplete_reasons {
+            collect_reason_reference(&mut references, reason);
+        }
         for reference in references.values() {
-            if let model::DiagramSemanticReference::SourceAnchor { document, source_domain, range, .. } = reference {
-                collect_source(&mut sources, &model::SourceReference {
-                    uri: document.clone(),
-                    range: range.clone(),
-                });
+            if let model::DiagramSemanticReference::SourceAnchor {
+                document,
+                source_domain,
+                range,
+                ..
+            } = reference
+            {
+                collect_source(
+                    &mut sources,
+                    &model::SourceReference {
+                        uri: document.clone(),
+                        range: range.clone(),
+                    },
+                );
                 let _ = source_domain;
             }
         }
@@ -171,29 +203,65 @@ impl NormalizedProduct {
             }
         }
         for source in sources.values() {
-            let domain = references.values().find_map(|reference| {
-                reference_document(reference).and_then(|(uri, domain)| (uri == source.uri).then_some(domain))
-            }).unwrap_or(model::DiagramSourceDomain::Workspace);
+            let domain = references
+                .values()
+                .find_map(|reference| {
+                    reference_document(reference)
+                        .and_then(|(uri, domain)| (uri == source.uri).then_some(domain))
+                })
+                .unwrap_or(model::DiagramSourceDomain::Workspace);
             documents.insert((source.uri.clone(), domain_rank(domain)), domain);
         }
-        let document_indexes: BTreeMap<(String, u8), DocumentIndex> = documents.keys().cloned().enumerate().map(|(index, key)| (key, index)).collect();
-        let document_records = documents.into_iter().map(|((uri, _), domain)| DocumentRecord {
-            uri,
-            source_domain: source_domain(domain),
-        }).collect::<Vec<_>>();
+        let document_indexes: BTreeMap<(String, u8), DocumentIndex> = documents
+            .keys()
+            .cloned()
+            .enumerate()
+            .map(|(index, key)| (key, index))
+            .collect();
+        let document_records = documents
+            .into_iter()
+            .map(|((uri, _), domain)| DocumentRecord {
+                uri,
+                source_domain: source_domain(domain),
+            })
+            .collect::<Vec<_>>();
 
-        let source_indexes = sources.keys().cloned().enumerate().map(|(index, key)| (key, index)).collect::<BTreeMap<_, _>>();
-        let source_records = sources.values().map(|source| {
-            let domain = document_records.iter().find(|document| document.uri == source.uri)
-                .map(|document| source_domain_rank(document.source_domain))
-                .ok_or_else(|| format!("source document `{}` was not interned", source.uri))?;
-            let document = *document_indexes.get(&(source.uri.clone(), domain))
-                .ok_or_else(|| format!("source document `{}` has no index", source.uri))?;
-            Ok(SourceRecord { document, range: range_array(&source.range) })
-        }).collect::<Result<Vec<_>, String>>()?;
-        let reference_indexes = references.keys().cloned().enumerate().map(|(index, key)| (key, index)).collect();
+        let source_indexes = sources
+            .keys()
+            .cloned()
+            .enumerate()
+            .map(|(index, key)| (key, index))
+            .collect::<BTreeMap<_, _>>();
+        let source_records = sources
+            .values()
+            .map(|source| {
+                let domain = document_records
+                    .iter()
+                    .find(|document| document.uri == source.uri)
+                    .map(|document| source_domain_rank(document.source_domain))
+                    .ok_or_else(|| format!("source document `{}` was not interned", source.uri))?;
+                let document = *document_indexes
+                    .get(&(source.uri.clone(), domain))
+                    .ok_or_else(|| format!("source document `{}` has no index", source.uri))?;
+                Ok(SourceRecord {
+                    document,
+                    range: range_array(&source.range),
+                })
+            })
+            .collect::<Result<Vec<_>, String>>()?;
+        let reference_indexes = references
+            .keys()
+            .cloned()
+            .enumerate()
+            .map(|(index, key)| (key, index))
+            .collect();
         let reference_values = references.into_values().collect::<Vec<_>>();
-        let node_indexes = typed.elements.iter().enumerate().map(|(index, element)| (reference_key(&element.reference), index)).collect();
+        let node_indexes = typed
+            .elements
+            .iter()
+            .enumerate()
+            .map(|(index, element)| (reference_key(&element.reference), index))
+            .collect();
         Ok(Self {
             documents: document_records,
             document_indexes,
@@ -261,19 +329,42 @@ impl NormalizedProduct {
     }
 
     fn metadata(&self, value: &model::DiagramViewMetadata) -> Result<Value, String> {
-        let nodes = |values: &[model::DiagramSemanticReference]| values.iter().map(|value| self.node(value)).collect::<Result<Vec<_>, _>>();
+        let nodes = |values: &[model::DiagramSemanticReference]| {
+            values
+                .iter()
+                .map(|value| self.node(value))
+                .collect::<Result<Vec<_>, _>>()
+        };
         Ok(match value {
             model::DiagramViewMetadata::General { roots } => json!({ "roots": nodes(roots)? }),
-            model::DiagramViewMetadata::Interconnection { parts, ports, connectors } =>
-                json!({ "parts": nodes(parts)?, "ports": nodes(ports)?, "connectors": nodes(connectors)? }),
-            model::DiagramViewMetadata::ActionFlow { actions, control_nodes } =>
-                json!({ "actions": nodes(actions)?, "controlNodes": nodes(control_nodes)? }),
-            model::DiagramViewMetadata::StateTransition { states, initial_nodes, final_nodes } =>
-                json!({ "states": nodes(states)?, "initialNodes": nodes(initial_nodes)?, "finalNodes": nodes(final_nodes)? }),
-            model::DiagramViewMetadata::Sequence { participants, messages } =>
-                json!({ "participants": nodes(participants)?, "messages": nodes(messages)? }),
+            model::DiagramViewMetadata::Interconnection {
+                parts,
+                ports,
+                connectors,
+            } => {
+                json!({ "parts": nodes(parts)?, "ports": nodes(ports)?, "connectors": nodes(connectors)? })
+            }
+            model::DiagramViewMetadata::ActionFlow {
+                actions,
+                control_nodes,
+            } => json!({ "actions": nodes(actions)?, "controlNodes": nodes(control_nodes)? }),
+            model::DiagramViewMetadata::StateTransition {
+                states,
+                initial_nodes,
+                final_nodes,
+            } => {
+                json!({ "states": nodes(states)?, "initialNodes": nodes(initial_nodes)?, "finalNodes": nodes(final_nodes)? })
+            }
+            model::DiagramViewMetadata::Sequence {
+                participants,
+                messages,
+            } => json!({ "participants": nodes(participants)?, "messages": nodes(messages)? }),
             model::DiagramViewMetadata::Browser { roots } => json!({ "roots": nodes(roots)? }),
-            model::DiagramViewMetadata::Grid { rows, columns, cells } => json!({
+            model::DiagramViewMetadata::Grid {
+                rows,
+                columns,
+                cells,
+            } => json!({
                 "rows": nodes(rows)?,
                 "columns": columns.iter().map(|column| column.as_str()).collect::<Vec<_>>(),
                 "cells": cells.iter().map(|cell| Ok(json!({
@@ -282,52 +373,86 @@ impl NormalizedProduct {
                     "relationship": self.reference(&cell.relationship)?,
                 }))).collect::<Result<Vec<Value>, String>>()?,
             }),
-            model::DiagramViewMetadata::Geometry { elements, primitives } =>
-                json!({ "elements": nodes(elements)?, "primitives": nodes(primitives)? }),
+            model::DiagramViewMetadata::Geometry {
+                elements,
+                primitives,
+            } => json!({ "elements": nodes(elements)?, "primitives": nodes(primitives)? }),
         })
     }
 
     fn incomplete_reason(&self, value: &model::DiagramIncompleteReason) -> Result<Value, String> {
         Ok(match value {
             model::DiagramIncompleteReason::ParseRecovery => json!({ "code": "parse-recovery" }),
-            model::DiagramIncompleteReason::UnsupportedSyntax => json!({ "code": "unsupported-syntax" }),
+            model::DiagramIncompleteReason::UnsupportedSyntax => {
+                json!({ "code": "unsupported-syntax" })
+            }
             model::DiagramIncompleteReason::NonConverged => json!({ "code": "non-converged" }),
-            model::DiagramIncompleteReason::ExposureUnresolved { exposure } =>
-                json!({ "code": "exposure-unresolved", "exposure": self.reference(exposure)? }),
-            model::DiagramIncompleteReason::ExposureAmbiguous { exposure } =>
-                json!({ "code": "exposure-ambiguous", "exposure": self.reference(exposure)? }),
-            model::DiagramIncompleteReason::ExposureUnsupported { exposure } =>
-                json!({ "code": "exposure-unsupported", "exposure": self.reference(exposure)? }),
-            model::DiagramIncompleteReason::RelationshipUnresolved { relationship_kind } =>
-                json!({ "code": "relationship-unresolved", "relationshipKind": relationship_kind }),
-            model::DiagramIncompleteReason::RelationshipAmbiguous { relationship_kind } =>
-                json!({ "code": "relationship-ambiguous", "relationshipKind": relationship_kind }),
-            model::DiagramIncompleteReason::RelationshipUnsupported { relationship_kind } =>
-                json!({ "code": "relationship-unsupported", "relationshipKind": relationship_kind }),
-            model::DiagramIncompleteReason::GeometryFactsUnavailable => json!({ "code": "geometry-facts-unavailable" }),
+            model::DiagramIncompleteReason::ExposureUnresolved { exposure } => {
+                json!({ "code": "exposure-unresolved", "exposure": self.reference(exposure)? })
+            }
+            model::DiagramIncompleteReason::ExposureAmbiguous { exposure } => {
+                json!({ "code": "exposure-ambiguous", "exposure": self.reference(exposure)? })
+            }
+            model::DiagramIncompleteReason::ExposureUnsupported { exposure } => {
+                json!({ "code": "exposure-unsupported", "exposure": self.reference(exposure)? })
+            }
+            model::DiagramIncompleteReason::RelationshipUnresolved { relationship_kind } => {
+                json!({ "code": "relationship-unresolved", "relationshipKind": relationship_kind })
+            }
+            model::DiagramIncompleteReason::RelationshipAmbiguous { relationship_kind } => {
+                json!({ "code": "relationship-ambiguous", "relationshipKind": relationship_kind })
+            }
+            model::DiagramIncompleteReason::RelationshipUnsupported { relationship_kind } => {
+                json!({ "code": "relationship-unsupported", "relationshipKind": relationship_kind })
+            }
+            model::DiagramIncompleteReason::ViewFilterApplicationUnavailable => {
+                json!({ "code": "view-filter-application-unavailable" })
+            }
+            model::DiagramIncompleteReason::GeometryFactsUnavailable => {
+                json!({ "code": "geometry-facts-unavailable" })
+            }
         })
     }
 
     fn semantic_reference(&self, value: &model::DiagramSemanticReference) -> Result<Value, String> {
         Ok(match value {
-            model::DiagramSemanticReference::Qualified { document, qualified_name, source_domain } => json!({
+            model::DiagramSemanticReference::Qualified {
+                document,
+                qualified_name,
+                source_domain,
+            } => json!({
                 "kind": "qualified-name",
                 "document": self.document(document, *source_domain)?,
                 "qualifiedName": qualified_name,
             }),
-            model::DiagramSemanticReference::ToolingElementId { element_id, source_domain } => json!({
+            model::DiagramSemanticReference::ToolingElementId {
+                element_id,
+                source_domain,
+            } => json!({
                 "kind": "tooling-element-id",
                 "elementId": element_id,
                 "sourceDomain": source_domain_name(*source_domain),
             }),
-            model::DiagramSemanticReference::SourceAnchor { document, owner_qualified_name, metaclass, source_domain, range } => json!({
+            model::DiagramSemanticReference::SourceAnchor {
+                document,
+                owner_qualified_name,
+                metaclass,
+                source_domain,
+                range,
+            } => json!({
                 "kind": "source-anchor",
                 "source": self.source_key(document, range)?,
                 "ownerQualifiedName": owner_qualified_name,
                 "metaclass": metaclass.as_str(),
                 "sourceDomain": source_domain_name(*source_domain),
             }),
-            model::DiagramSemanticReference::Relationship { document, source_qualified_name, relationship_kind, ordinal, source_domain } => json!({
+            model::DiagramSemanticReference::Relationship {
+                document,
+                source_qualified_name,
+                relationship_kind,
+                ordinal,
+                source_domain,
+            } => json!({
                 "kind": "relationship",
                 "source": self.reference(&model::DiagramSemanticReference::Qualified {
                     document: document.clone(),
@@ -340,8 +465,14 @@ impl NormalizedProduct {
         })
     }
 
-    fn document(&self, uri: &str, domain: model::DiagramSourceDomain) -> Result<DocumentIndex, String> {
-        self.document_indexes.get(&(uri.to_owned(), domain_rank(domain))).copied()
+    fn document(
+        &self,
+        uri: &str,
+        domain: model::DiagramSourceDomain,
+    ) -> Result<DocumentIndex, String> {
+        self.document_indexes
+            .get(&(uri.to_owned(), domain_rank(domain)))
+            .copied()
             .ok_or_else(|| format!("diagram document `{uri}` was not interned"))
     }
 
@@ -350,23 +481,40 @@ impl NormalizedProduct {
     }
 
     fn source_key(&self, uri: &str, range: &model::SourceRange) -> Result<SourceIndex, String> {
-        self.source_indexes.get(&SourceKey(uri.to_owned(), range_array(range))).copied()
+        self.source_indexes
+            .get(&SourceKey(uri.to_owned(), range_array(range)))
+            .copied()
             .ok_or_else(|| format!("diagram source `{uri}` was not interned"))
     }
 
     fn reference(&self, value: &model::DiagramSemanticReference) -> Result<ReferenceIndex, String> {
-        self.reference_indexes.get(&reference_key(value)).copied()
+        self.reference_indexes
+            .get(&reference_key(value))
+            .copied()
             .ok_or_else(|| "diagram semantic reference was not interned".to_owned())
     }
 
     fn node(&self, value: &model::DiagramSemanticReference) -> Result<NodeIndex, String> {
-        self.node_indexes.get(&reference_key(value)).copied()
-            .ok_or_else(|| "diagram semantic reference is outside the projected node set".to_owned())
+        self.node_indexes
+            .get(&reference_key(value))
+            .copied()
+            .ok_or_else(|| {
+                "diagram semantic reference is outside the projected node set".to_owned()
+            })
     }
 }
 
-fn collect_reference(values: &mut BTreeMap<ReferenceKey, model::DiagramSemanticReference>, value: &model::DiagramSemanticReference) {
-    if let model::DiagramSemanticReference::Relationship { document, source_qualified_name, source_domain, .. } = value {
+fn collect_reference(
+    values: &mut BTreeMap<ReferenceKey, model::DiagramSemanticReference>,
+    value: &model::DiagramSemanticReference,
+) {
+    if let model::DiagramSemanticReference::Relationship {
+        document,
+        source_qualified_name,
+        source_domain,
+        ..
+    } = value
+    {
         let source = model::DiagramSemanticReference::Qualified {
             document: document.clone(),
             qualified_name: source_qualified_name.clone(),
@@ -374,62 +522,168 @@ fn collect_reference(values: &mut BTreeMap<ReferenceKey, model::DiagramSemanticR
         };
         values.entry(reference_key(&source)).or_insert(source);
     }
-    values.entry(reference_key(value)).or_insert_with(|| value.clone());
+    values
+        .entry(reference_key(value))
+        .or_insert_with(|| value.clone());
 }
 
-fn collect_source(values: &mut BTreeMap<SourceKey, model::SourceReference>, value: &model::SourceReference) {
-    values.entry(SourceKey(value.uri.clone(), range_array(&value.range))).or_insert_with(|| value.clone());
+fn collect_source(
+    values: &mut BTreeMap<SourceKey, model::SourceReference>,
+    value: &model::SourceReference,
+) {
+    values
+        .entry(SourceKey(value.uri.clone(), range_array(&value.range)))
+        .or_insert_with(|| value.clone());
 }
 
-fn collect_reason_reference(values: &mut BTreeMap<ReferenceKey, model::DiagramSemanticReference>, reason: &model::DiagramIncompleteReason) {
+fn collect_reason_reference(
+    values: &mut BTreeMap<ReferenceKey, model::DiagramSemanticReference>,
+    reason: &model::DiagramIncompleteReason,
+) {
     match reason {
         model::DiagramIncompleteReason::ExposureUnresolved { exposure }
         | model::DiagramIncompleteReason::ExposureAmbiguous { exposure }
-        | model::DiagramIncompleteReason::ExposureUnsupported { exposure } => collect_reference(values, exposure),
+        | model::DiagramIncompleteReason::ExposureUnsupported { exposure } => {
+            collect_reference(values, exposure)
+        }
         _ => {}
     }
 }
 
-fn collect_metadata_references(values: &mut BTreeMap<ReferenceKey, model::DiagramSemanticReference>, metadata: &model::DiagramViewMetadata) {
-    let mut add = |refs: &[model::DiagramSemanticReference]| refs.iter().for_each(|value| collect_reference(values, value));
+fn collect_metadata_references(
+    values: &mut BTreeMap<ReferenceKey, model::DiagramSemanticReference>,
+    metadata: &model::DiagramViewMetadata,
+) {
+    let mut add = |refs: &[model::DiagramSemanticReference]| {
+        refs.iter()
+            .for_each(|value| collect_reference(values, value))
+    };
     match metadata {
-        model::DiagramViewMetadata::General { roots } | model::DiagramViewMetadata::Browser { roots } => add(roots),
-        model::DiagramViewMetadata::Interconnection { parts, ports, connectors } => { add(parts); add(ports); add(connectors); }
-        model::DiagramViewMetadata::ActionFlow { actions, control_nodes } => { add(actions); add(control_nodes); }
-        model::DiagramViewMetadata::StateTransition { states, initial_nodes, final_nodes } => { add(states); add(initial_nodes); add(final_nodes); }
-        model::DiagramViewMetadata::Sequence { participants, messages } => { add(participants); add(messages); }
+        model::DiagramViewMetadata::General { roots }
+        | model::DiagramViewMetadata::Browser { roots } => add(roots),
+        model::DiagramViewMetadata::Interconnection {
+            parts,
+            ports,
+            connectors,
+        } => {
+            add(parts);
+            add(ports);
+            add(connectors);
+        }
+        model::DiagramViewMetadata::ActionFlow {
+            actions,
+            control_nodes,
+        } => {
+            add(actions);
+            add(control_nodes);
+        }
+        model::DiagramViewMetadata::StateTransition {
+            states,
+            initial_nodes,
+            final_nodes,
+        } => {
+            add(states);
+            add(initial_nodes);
+            add(final_nodes);
+        }
+        model::DiagramViewMetadata::Sequence {
+            participants,
+            messages,
+        } => {
+            add(participants);
+            add(messages);
+        }
         model::DiagramViewMetadata::Grid { rows, cells, .. } => {
             add(rows);
-            cells.iter().for_each(|cell| { collect_reference(values, &cell.row); collect_reference(values, &cell.relationship); });
+            cells.iter().for_each(|cell| {
+                collect_reference(values, &cell.row);
+                collect_reference(values, &cell.relationship);
+            });
         }
-        model::DiagramViewMetadata::Geometry { elements, primitives } => { add(elements); add(primitives); }
+        model::DiagramViewMetadata::Geometry {
+            elements,
+            primitives,
+        } => {
+            add(elements);
+            add(primitives);
+        }
     }
 }
 
 fn reference_key(value: &model::DiagramSemanticReference) -> ReferenceKey {
     match value {
-        model::DiagramSemanticReference::Qualified { document, qualified_name, source_domain } =>
-            ReferenceKey::Qualified(domain_rank(*source_domain), document.clone(), qualified_name.clone()),
-        model::DiagramSemanticReference::ToolingElementId { element_id, source_domain } =>
-            ReferenceKey::Tooling(domain_rank(*source_domain), element_id.clone()),
-        model::DiagramSemanticReference::SourceAnchor { document, owner_qualified_name, metaclass, source_domain, range } =>
-            ReferenceKey::Anchor(domain_rank(*source_domain), document.clone(), owner_qualified_name.clone(), metaclass.as_str().to_owned(), range_array(range)),
-        model::DiagramSemanticReference::Relationship { document, source_qualified_name, relationship_kind, ordinal, source_domain } =>
-            ReferenceKey::Relationship(domain_rank(*source_domain), document.clone(), source_qualified_name.clone(), relationship_kind.as_str().to_owned(), *ordinal),
+        model::DiagramSemanticReference::Qualified {
+            document,
+            qualified_name,
+            source_domain,
+        } => ReferenceKey::Qualified(
+            domain_rank(*source_domain),
+            document.clone(),
+            qualified_name.clone(),
+        ),
+        model::DiagramSemanticReference::ToolingElementId {
+            element_id,
+            source_domain,
+        } => ReferenceKey::Tooling(domain_rank(*source_domain), element_id.clone()),
+        model::DiagramSemanticReference::SourceAnchor {
+            document,
+            owner_qualified_name,
+            metaclass,
+            source_domain,
+            range,
+        } => ReferenceKey::Anchor(
+            domain_rank(*source_domain),
+            document.clone(),
+            owner_qualified_name.clone(),
+            metaclass.as_str().to_owned(),
+            range_array(range),
+        ),
+        model::DiagramSemanticReference::Relationship {
+            document,
+            source_qualified_name,
+            relationship_kind,
+            ordinal,
+            source_domain,
+        } => ReferenceKey::Relationship(
+            domain_rank(*source_domain),
+            document.clone(),
+            source_qualified_name.clone(),
+            relationship_kind.as_str().to_owned(),
+            *ordinal,
+        ),
     }
 }
 
-fn reference_document(value: &model::DiagramSemanticReference) -> Option<(&str, model::DiagramSourceDomain)> {
+fn reference_document(
+    value: &model::DiagramSemanticReference,
+) -> Option<(&str, model::DiagramSourceDomain)> {
     match value {
-        model::DiagramSemanticReference::Qualified { document, source_domain, .. }
-        | model::DiagramSemanticReference::SourceAnchor { document, source_domain, .. }
-        | model::DiagramSemanticReference::Relationship { document, source_domain, .. } => Some((document, *source_domain)),
+        model::DiagramSemanticReference::Qualified {
+            document,
+            source_domain,
+            ..
+        }
+        | model::DiagramSemanticReference::SourceAnchor {
+            document,
+            source_domain,
+            ..
+        }
+        | model::DiagramSemanticReference::Relationship {
+            document,
+            source_domain,
+            ..
+        } => Some((document, *source_domain)),
         model::DiagramSemanticReference::ToolingElementId { .. } => None,
     }
 }
 
 fn range_array(value: &model::SourceRange) -> [u32; 4] {
-    [value.start_line, value.start_character, value.end_line, value.end_character]
+    [
+        value.start_line,
+        value.start_character,
+        value.end_line,
+        value.end_character,
+    ]
 }
 
 fn domain_rank(value: model::DiagramSourceDomain) -> u8 {
@@ -442,10 +696,18 @@ fn domain_rank(value: model::DiagramSourceDomain) -> u8 {
 }
 
 fn source_domain_rank(value: &str) -> u8 {
-    match value { "workspace" => 0, "standard-library" => 1, "library" => 2, "external" => 3, _ => unreachable!() }
+    match value {
+        "workspace" => 0,
+        "standard-library" => 1,
+        "library" => 2,
+        "external" => 3,
+        _ => unreachable!(),
+    }
 }
 
-fn source_domain(value: model::DiagramSourceDomain) -> &'static str { source_domain_name(value) }
+fn source_domain(value: model::DiagramSourceDomain) -> &'static str {
+    source_domain_name(value)
+}
 fn source_domain_name(value: model::DiagramSourceDomain) -> &'static str {
     match value {
         model::DiagramSourceDomain::Workspace => "workspace",
@@ -456,7 +718,10 @@ fn source_domain_name(value: model::DiagramSourceDomain) -> &'static str {
 }
 
 fn provenance(value: &model::RelationshipProvenance) -> &'static str {
-    match value { model::RelationshipProvenance::Authored => "authored", model::RelationshipProvenance::Implied => "implied" }
+    match value {
+        model::RelationshipProvenance::Authored => "authored",
+        model::RelationshipProvenance::Implied => "implied",
+    }
 }
 
 fn edge_kind(value: &model::DiagramEdgeKind) -> &str {
@@ -527,7 +792,9 @@ mod tests {
             elements,
             relationships: Vec::new(),
             edges: Vec::new(),
-            metadata: model::DiagramViewMetadata::General { roots: vec![qualified("P::root")] },
+            metadata: model::DiagramViewMetadata::General {
+                roots: vec![qualified("P::root")],
+            },
         }
     }
 
@@ -557,8 +824,12 @@ mod tests {
             owner: None,
             source: source(line),
         };
-        let forward = NormalizedProduct::new(&projection(vec![element("P::a", 1), element("P::b", 2)])).unwrap();
-        let reverse = NormalizedProduct::new(&projection(vec![element("P::b", 2), element("P::a", 1)])).unwrap();
+        let forward =
+            NormalizedProduct::new(&projection(vec![element("P::a", 1), element("P::b", 2)]))
+                .unwrap();
+        let reverse =
+            NormalizedProduct::new(&projection(vec![element("P::b", 2), element("P::a", 1)]))
+                .unwrap();
         assert_eq!(forward.reference_indexes, reverse.reference_indexes);
         assert_eq!(forward.source_indexes, reverse.source_indexes);
         assert_eq!(forward.document_indexes, reverse.document_indexes);
@@ -601,8 +872,12 @@ mod tests {
             })
             .collect();
         let normalized = NormalizedProduct::new(&product).expect("large normalized product");
-        let projection = normalized.projection(&product).expect("large graph projection");
-        let references = normalized.references.iter()
+        let projection = normalized
+            .projection(&product)
+            .expect("large graph projection");
+        let references = normalized
+            .references
+            .iter()
             .map(|reference| normalized.semantic_reference(reference))
             .collect::<Result<Vec<_>, _>>()
             .expect("large reference table");
@@ -610,6 +885,10 @@ mod tests {
         assert_eq!(normalized.documents.len(), 1);
         assert_eq!(normalized.node_indexes.len(), 1_000);
         assert_eq!(normalized.reference_indexes.len(), 11_001);
-        assert!(bytes.len() < 2_500_000, "normalized graph was {} bytes", bytes.len());
+        assert!(
+            bytes.len() < 2_500_000,
+            "normalized graph was {} bytes",
+            bytes.len()
+        );
     }
 }

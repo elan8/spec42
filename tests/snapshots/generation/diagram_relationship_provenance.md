@@ -245,12 +245,8 @@ package ProvenanceExample {
     "source": 3
   },
   "completeness": {
-    "status": "incomplete",
-    "reasons": [
-      {
-        "code": "parse-recovery"
-      }
-    ]
+    "status": "complete",
+    "reasons": []
   },
   "projection": {
     "edges": [

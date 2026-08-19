@@ -273,12 +273,8 @@ package ActionFlowExample {
     "source": 6
   },
   "completeness": {
-    "status": "incomplete",
-    "reasons": [
-      {
-        "code": "parse-recovery"
-      }
-    ]
+    "status": "complete",
+    "reasons": []
   },
   "projection": {
     "edges": [

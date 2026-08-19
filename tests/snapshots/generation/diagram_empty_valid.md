@@ -118,12 +118,8 @@ package EmptyExample {
     "source": 0
   },
   "completeness": {
-    "status": "incomplete",
-    "reasons": [
-      {
-        "code": "parse-recovery"
-      }
-    ]
+    "status": "complete",
+    "reasons": []
   },
   "projection": {
     "edges": [],

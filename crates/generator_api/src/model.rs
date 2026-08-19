@@ -1203,6 +1203,9 @@ impl GeneratorModelView {
                     relationship_kind: relationship.to_string(),
                 }
             }
+            Owned::ViewFilterApplicationUnavailable => {
+                DiagramIncompleteReason::ViewFilterApplicationUnavailable
+            }
             Owned::GeometryFactsUnavailable => DiagramIncompleteReason::GeometryFactsUnavailable,
         })
     }

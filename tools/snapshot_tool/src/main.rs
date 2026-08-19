@@ -92,6 +92,7 @@ struct GenerationRequest {
 #[derive(Debug, Clone, PartialEq, Eq)]
 struct FixtureMeta {
     libraries: LibrarySelection,
+    repository_sources: Vec<String>,
     generation: Option<GenerationRequest>,
 }
 
@@ -323,8 +324,17 @@ fn regenerate_snapshot(
         .file_name()
         .and_then(|name| name.to_str())
         .unwrap_or("snapshot.md");
-    let documents = parse_source_documents(fixture, fallback_name)?;
     let meta = parse_fixture_meta(fixture, fallback_name)?;
+    let mut documents = if meta.repository_sources.is_empty()
+        || raw_section(fixture, "SOURCE")
+            .and_then(fenced_block)
+            .is_some()
+    {
+        parse_source_documents(fixture, fallback_name)?
+    } else {
+        Vec::new()
+    };
+    documents.extend(load_repository_sources(&meta.repository_sources, path)?);
     let mut source_documents = documents
         .iter()
         .map(|document| {
@@ -408,6 +418,47 @@ fn regenerate_snapshot(
         fixture
     };
     Ok(canonicalize_sections(&fixture))
+}
+
+fn load_repository_sources(
+    paths: &[String],
+    fixture_path: &Path,
+) -> Result<Vec<SourceDocument>, String> {
+    let repository_root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+    let mut documents = Vec::with_capacity(paths.len());
+    for relative in paths {
+        let relative_path = Path::new(relative);
+        if relative_path.is_absolute()
+            || relative_path.components().any(|component| {
+                matches!(
+                    component,
+                    std::path::Component::ParentDir
+                        | std::path::Component::RootDir
+                        | std::path::Component::Prefix(_)
+                )
+            })
+            || !relative.starts_with("examples/")
+            || relative_path
+                .extension()
+                .is_none_or(|extension| extension != "sysml")
+        {
+            return Err(format!(
+                "{}: repositorySources entry must be a repository-relative examples/*.sysml path: {relative:?}",
+                fixture_path.display()
+            ));
+        }
+        let text = fs::read_to_string(repository_root.join(relative_path)).map_err(|error| {
+            format!(
+                "{}: could not read repository source {relative:?}: {error}",
+                fixture_path.display()
+            )
+        })?;
+        documents.push(SourceDocument {
+            name: relative.clone(),
+            text,
+        });
+    }
+    Ok(documents)
 }
 
 fn execute_generation(
@@ -826,6 +877,7 @@ fn parse_fixture_meta(fixture: &str, fallback_name: &str) -> Result<FixtureMeta,
     let Some(section) = raw_section(fixture, "META") else {
         return Ok(FixtureMeta {
             libraries: LibrarySelection::None,
+            repository_sources: Vec::new(),
             generation: None,
         });
     };
@@ -834,6 +886,7 @@ fn parse_fixture_meta(fixture: &str, fallback_name: &str) -> Result<FixtureMeta,
     };
     let mut selection = LibrarySelection::None;
     let mut fixture_type = None;
+    let mut repository_sources = Vec::new();
     let mut plugin = None;
     let mut view_kind = None;
     let mut view_document = None;
@@ -853,7 +906,13 @@ fn parse_fixture_meta(fixture: &str, fallback_name: &str) -> Result<FixtureMeta,
         let value = value.trim();
         if matches!(
             key,
-            "libraries" | "type" | "plugin" | "viewKind" | "viewDocument" | "viewQualifiedName"
+            "libraries"
+                | "repositorySources"
+                | "type"
+                | "plugin"
+                | "viewKind"
+                | "viewDocument"
+                | "viewQualifiedName"
         ) && !seen.insert(key)
         {
             return Err(format!("{fallback_name}: duplicate META key {key:?}"));
@@ -866,6 +925,17 @@ fn parse_fixture_meta(fixture: &str, fallback_name: &str) -> Result<FixtureMeta,
                     "{fallback_name}: unknown META libraries value {other:?} (expected \"none\" or \"standard\")"
                 )),
             },
+            "repositorySources" => {
+                repository_sources = value
+                    .split(',')
+                    .map(str::trim)
+                    .filter(|value| !value.is_empty())
+                    .map(str::to_owned)
+                    .collect();
+                if repository_sources.is_empty() {
+                    return Err(format!("{fallback_name}: META repositorySources must not be empty"));
+                }
+            }
             "type" => {
                 if value.is_empty() {
                     return Err(format!("{fallback_name}: META type must not be empty"));
@@ -946,6 +1016,7 @@ fn parse_fixture_meta(fixture: &str, fallback_name: &str) -> Result<FixtureMeta,
     };
     Ok(FixtureMeta {
         libraries: selection,
+        repository_sources,
         generation,
     })
 }
@@ -1456,6 +1527,7 @@ mod tests {
             parse_fixture_meta(fixture, "fixture.md").unwrap(),
             FixtureMeta {
                 libraries: LibrarySelection::Standard,
+                repository_sources: Vec::new(),
                 generation: Some(GenerationRequest {
                     plugin: GeneratorPlugin::Conformance("requirements_csv".to_string()),
                     diagram_selection: None,
