@@ -329,7 +329,8 @@ impl NormalizedProduct {
                     scene
                         .transitions
                         .iter()
-                        .map(|transition| {
+                        .enumerate()
+                        .map(|(index, transition)| {
                             let source = vertex_indexes
                                 .get(transition.source.as_str())
                                 .ok_or_else(|| {
@@ -347,7 +348,7 @@ impl NormalizedProduct {
                                     )
                                 })?;
                             Ok(json!({
-                                "id": transition.semantic_id,
+                                "id": format!("transition-{index}"),
                                 "label": transition.label,
                                 "source": source,
                                 "target": target,
@@ -362,12 +363,12 @@ impl NormalizedProduct {
                 json!({
                     "kind": "state-transition",
                     "frame": scene.machine.as_ref().map(|machine| Ok::<Value, String>(json!({
-                        "id": machine.semantic_id,
+                        "id": "state-machine",
                         "label": machine.label,
                         "navigation": self.source(&machine.source)?,
                     }))).transpose()?,
-                    "vertices": scene.vertices.iter().map(|vertex| Ok(json!({
-                        "id": vertex.semantic_id,
+                    "vertices": scene.vertices.iter().enumerate().map(|(index, vertex)| Ok(json!({
+                        "id": format!("state-{index}"),
                         "label": vertex.label,
                         "kind": state_vertex_kind(&vertex.kind),
                         "navigation": self.source(&vertex.source)?,
