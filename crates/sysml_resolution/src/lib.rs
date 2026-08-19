@@ -76,12 +76,22 @@ pub struct BuildMeasurements {
     pub resolution: std::time::Duration,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum SourceKind {
     Workspace,
     StandardLibrary,
     Library,
     External,
+}
+
+/// One admitted document whose settled semantic dependencies reach a changed document.
+///
+/// The source role is carried by the semantic publication so hosts never reconstruct provenance
+/// from URI layout.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct AffectedDocument {
+    pub identity: Box<str>,
+    pub source: ElementSource,
 }
 
 /// Which authored source domain an element search may observe.
@@ -572,6 +582,16 @@ pub fn build_measured(
 impl PublishedResolution {
     pub fn identity(&self) -> &PublicationIdentity {
         &self.identity
+    }
+
+    /// Documents transitively dependent on `changed_document` through settled imports and alias
+    /// bindings. Recovery and unsupported publications are exposed by the typed outcome; callers
+    /// may then deliberately over-invalidate without pretending the dependency graph was settled.
+    pub fn affected_documents(
+        &self,
+        changed_document: &str,
+    ) -> QueryOutcome<Box<[AffectedDocument]>> {
+        self.model.affected_documents(changed_document)
     }
 
     pub fn debug(&self) -> DebugQueries<'_> {
@@ -5416,5 +5436,62 @@ package P {
             },
         ));
         assert_eq!(at.referenced, ReferencedDetails::None);
+    }
+
+    #[test]
+    fn affected_documents_are_transitive_across_public_imports_and_aliases() {
+        let sources = vec![
+            SourceInput::new(
+                "memory://a.sysml",
+                "package A { part def T; }".into(),
+                SourceKind::Workspace,
+            ),
+            SourceInput::new(
+                "memory://b.sysml",
+                "package B { public import A::*; alias AliasT for T; }".into(),
+                SourceKind::Workspace,
+            ),
+            SourceInput::new(
+                "memory://c.sysml",
+                "package C { import B::*; part p : AliasT; }".into(),
+                SourceKind::Workspace,
+            ),
+        ];
+        let published = build(
+            BuildRequest::new(sources, ConstructionSchedule::Sequential, "contract-v1").unwrap(),
+        )
+        .unwrap();
+        let QueryOutcome::Resolved(affected) = published.affected_documents("memory://a.sysml")
+        else {
+            panic!("complete imports must publish a settled dependency outcome")
+        };
+        assert_eq!(
+            affected
+                .iter()
+                .map(|document| document.identity.as_ref())
+                .collect::<Vec<_>>(),
+            vec!["memory://b.sysml", "memory://c.sysml"]
+        );
+    }
+
+    #[test]
+    fn an_unresolved_import_makes_dependency_selection_explicitly_recovered() {
+        let published = build(
+            BuildRequest::new(
+                vec![SourceInput::new(
+                    "memory://a.sysml",
+                    "package A { import Missing::*; }".into(),
+                    SourceKind::Workspace,
+                )],
+                ConstructionSchedule::Sequential,
+                "contract-v1",
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        assert!(matches!(
+            published.affected_documents("memory://a.sysml"),
+            QueryOutcome::Recovered(_)
+        ));
     }
 }

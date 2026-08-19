@@ -3,9 +3,9 @@
 use std::fmt;
 
 pub use sysml_resolution::{
-    AnalysisEvaluation, AnnotationForm, AuthoredUnit, AuthoredValue, BuildMeasurements,
-    Conformance, ConformanceObstacle, ConnectedElement, Diagnostic, DiagnosticCode,
-    DiagnosticLocation, DiagnosticOrigin, DiagnosticSeverity, DiagramCompartment,
+    AffectedDocument, AnalysisEvaluation, AnnotationForm, AuthoredUnit, AuthoredValue,
+    BuildMeasurements, Conformance, ConformanceObstacle, ConnectedElement, Diagnostic,
+    DiagnosticCode, DiagnosticLocation, DiagnosticOrigin, DiagnosticSeverity, DiagramCompartment,
     DiagramCompartmentKind, DiagramCompartmentProvenance, DiagramEdge, DiagramEdgeKind,
     DiagramElement, DiagramElementTyping, DiagramEndpointOccurrence, DiagramIncompleteReason,
     DiagramOccurrenceIdentity, DiagramRelationship, DiagramRelationshipEndpoint,
@@ -254,6 +254,10 @@ impl PublishedModel {
         PublicationQueries { model: &self.inner }
     }
 
+    pub fn dependencies(&self) -> DependencyQueries<'_> {
+        DependencyQueries { model: &self.inner }
+    }
+
     pub fn navigation(&self) -> NavigationQueries<'_> {
         NavigationQueries { model: &self.inner }
     }
@@ -284,6 +288,20 @@ impl PublishedModel {
 
     pub fn diagrams(&self) -> DiagramQueries<'_> {
         DiagramQueries { model: &self.inner }
+    }
+}
+
+/// Publication topology and dependency queries.
+pub struct DependencyQueries<'a> {
+    model: &'a sysml_resolution::PublishedResolution,
+}
+
+impl DependencyQueries<'_> {
+    pub fn affected_documents(
+        &self,
+        changed_document: &str,
+    ) -> QueryOutcome<Box<[AffectedDocument]>> {
+        self.model.affected_documents(changed_document)
     }
 }
 

@@ -1293,6 +1293,116 @@ impl ResolvedSemanticModel {
         }
     }
 
+    pub(crate) fn affected_documents(
+        &self,
+        changed_document: &str,
+    ) -> QueryOutcome<Box<[crate::AffectedDocument]>> {
+        let Some(changed) = self
+            .storage
+            .documents
+            .iter()
+            .position(|document| document.identity.as_ref() == changed_document)
+            .map(|index| DocumentId(index as u32))
+        else {
+            return QueryOutcome::Unresolved;
+        };
+
+        // `provider -> consumer`. Both resolved and ambiguous outcomes are owned facts: every
+        // ambiguous candidate can affect the consumer if it changes. Unresolved/unsupported
+        // dependency-shaping references remain explicit through the publication completeness or
+        // the conservative result below; they are never guessed from authored text.
+        let mut reverse = vec![Vec::<DocumentId>::new(); self.storage.documents.len()];
+        let mut unsettled_dependency = false;
+        for (ordinal, reference) in self.storage.references.iter().enumerate() {
+            if !matches!(
+                reference.kind,
+                ReferenceKind::NamespaceImport
+                    | ReferenceKind::MembershipImport
+                    | ReferenceKind::FilterImport
+                    | ReferenceKind::AliasBinding
+            ) {
+                continue;
+            }
+            let Some(source_document) = self
+                .storage
+                .declaration(reference.source)
+                .map(|declaration| declaration.document)
+            else {
+                unsettled_dependency = true;
+                continue;
+            };
+            let reference_id = AuthoredReferenceId(ordinal as u32);
+            let targets: Vec<DeclarationId> = match self.resolution.outcome(reference_id) {
+                Some(ResolutionStatus::Resolved(target)) => vec![target],
+                Some(ResolutionStatus::Ambiguous(range)) => {
+                    self.resolution.ambiguous_candidates(range).to_vec()
+                }
+                Some(
+                    ResolutionStatus::Unresolved
+                    | ResolutionStatus::Unsupported
+                    | ResolutionStatus::NonConverged,
+                )
+                | None => {
+                    unsettled_dependency = true;
+                    continue;
+                }
+            };
+            for target in targets {
+                if let Some(target_document) = self
+                    .storage
+                    .declaration(target)
+                    .map(|declaration| declaration.document)
+                {
+                    if target_document != source_document {
+                        reverse[target_document.index()].push(source_document);
+                    }
+                }
+            }
+        }
+
+        let mut seen = vec![false; self.storage.documents.len()];
+        let mut pending = vec![changed];
+        seen[changed.index()] = true;
+        while let Some(provider) = pending.pop() {
+            for consumer in reverse[provider.index()].iter().copied() {
+                if !seen[consumer.index()] {
+                    seen[consumer.index()] = true;
+                    pending.push(consumer);
+                }
+            }
+        }
+        let mut affected = seen
+            .into_iter()
+            .enumerate()
+            .filter(|(index, affected)| *affected && *index != changed.index())
+            .filter_map(|(index, _)| self.storage.documents.get(index))
+            .map(|document| crate::AffectedDocument {
+                identity: document.identity.clone(),
+                source: match document.role {
+                    source_identity::SourceRole::Workspace => crate::ElementSource::Workspace,
+                    source_identity::SourceRole::StandardLibrary => {
+                        crate::ElementSource::StandardLibrary
+                    }
+                    source_identity::SourceRole::Library => crate::ElementSource::Library,
+                    source_identity::SourceRole::External => crate::ElementSource::External,
+                },
+            })
+            .collect::<Vec<_>>();
+        affected.sort_by(|left, right| left.identity.cmp(&right.identity));
+        let affected = affected.into_boxed_slice();
+        if unsettled_dependency {
+            match self.metadata.completeness {
+                PublicationCompleteness::NonConverged => QueryOutcome::Incomplete,
+                PublicationCompleteness::UnsupportedSyntax => {
+                    QueryOutcome::UnsupportedWith(affected)
+                }
+                _ => QueryOutcome::Recovered(affected),
+            }
+        } else {
+            self.resolved_outcome(affected)
+        }
+    }
+
     fn resolved_outcome<T>(&self, value: T) -> QueryOutcome<T> {
         match self.metadata.completeness {
             PublicationCompleteness::Complete => QueryOutcome::Resolved(value),
