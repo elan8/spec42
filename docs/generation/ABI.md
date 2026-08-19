@@ -5,7 +5,7 @@ specification; `crates/generator_sdk` is one implementation of it, not its defin
 guest written in any language that can emit the imports and exports below is equally valid.
 
 <!-- generated:abi-header -->
-Current version: **ABI 4**. Compatibility token: `0xa78504676b7c86ee`.
+Current version: **ABI 4**. Compatibility token: `0x9b476a2272794447`.
 <!-- /generated:abi-header -->
 
 The tables below and `generator-abi.json` are generated from the contract declaration in
@@ -115,6 +115,8 @@ impossible and `0` unambiguously means "success, nothing written".
 | 8 | `requirement_typing` | `String` | `RequirementUsageTyping` |
 | 9 | `satisfy_relationships` | `()` | `Vec<SatisfyRelationship>` |
 | 10 | `requirement_verifications` | `()` | `Vec<RequirementVerification>` |
+| 11 | `diagram_views` | `()` | `Vec<DiagramViewSummary>` |
+| 12 | `diagram_view` | `String` | `DiagramViewProjection` |
 <!-- /generated:abi-operations -->
 
 Note that `find` takes `Option<String>`: `None` means "every element". An empty string is
@@ -216,9 +218,14 @@ struct Relationship { kind: RelationshipKind, source: ElementSummary, target: El
 struct Artifact { file_path: String, contents: Vec<u8> }
 ```
 
-`handle` and `semantic_id` are both opaque strings and are **not** interchangeable. A handle
-addresses an element for the duration of one run; `semantic_id` is the stable provenance
-identity and is what to embed in generated output. Do not persist handles between runs.
+`handle` and `semantic_id` are both opaque strings and are **not** interchangeable. They address
+elements within an immutable publication and must not be persisted or embedded in externally
+consumed diagram output. Diagram queries translate them to `DiagramSemanticReference`: a
+document-scoped qualified name, an authoritative tooling/library element ID when one exists, or an
+explicit source anchor for an unnamed element. The diagram product interns these values and source
+documents/ranges into normalized tables. Its numeric indexes are local foreign keys for that one
+artifact and are not another identity domain. Do not persist handles or product-local indexes
+between runs.
 
 `metaclass` and `kind` are closed enumerations, so a guest can match them exhaustively and
 the compiler will point out variants it has not handled. The mapping from Spec42's internal

@@ -4,10 +4,12 @@ use std::sync::{Arc, Mutex};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use spec42_generator_protocol::{
-    ElementIdentity, ProjectionCompleteness, ProjectionFeature, SourceReference,
-    StateMachineIdentity, StateMachineSummary, StateTransitionEdge, StateTransitionNode,
-    StateTransitionNodeKind, StateTransitionViewProjection, StateTransitionViewSummary,
-    TransitionTrigger,
+    DiagramEdge, DiagramEdgeKind, DiagramElement, DiagramIncompleteReason, DiagramRelationship,
+    DiagramRelationshipTarget, DiagramSemanticReference, DiagramSourceDomain, DiagramViewKind,
+    DiagramViewMetadata, DiagramViewProjection, DiagramViewSummary, ElementIdentity,
+    ProjectionCompleteness, ProjectionFeature, SourceReference, StateMachineIdentity,
+    StateMachineSummary, StateTransitionEdge, StateTransitionNode, StateTransitionNodeKind,
+    StateTransitionViewProjection, StateTransitionViewSummary, TransitionTrigger,
 };
 use spec42_generator_protocol::{Metaclass, RelationshipKind as ApiRelationshipKind};
 use sysml_query::resolved_slice::{
@@ -48,27 +50,6 @@ pub struct ElementSummary {
     pub name: Option<String>,
     pub qualified_name: String,
     pub library_element: bool,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "kebab-case")]
-pub enum DiagramViewKind {
-    GeneralView,
-    InterconnectionView,
-    ActionFlowView,
-    StateTransitionView,
-    SequenceView,
-    BrowserView,
-    GridView,
-    GeometryView,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct DiagramViewSummary {
-    pub kind: DiagramViewKind,
-    pub semantic_id: String,
-    pub name: String,
-    pub source: SourceReference,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -669,64 +650,193 @@ impl GeneratorModelView {
     /// Catalogs authored standard view usages from the immutable typing facts. Presentation
     /// clients use this to offer only diagram kinds actually authored in a document.
     pub fn diagram_views(&self) -> Result<Vec<DiagramViewSummary>, ModelQueryError> {
-        const STANDARD_VIEWS: [(&str, DiagramViewKind); 8] = [
-            ("GeneralView", DiagramViewKind::GeneralView),
-            ("InterconnectionView", DiagramViewKind::InterconnectionView),
-            ("ActionFlowView", DiagramViewKind::ActionFlowView),
-            ("StateTransitionView", DiagramViewKind::StateTransitionView),
-            ("SequenceView", DiagramViewKind::SequenceView),
-            ("BrowserView", DiagramViewKind::BrowserView),
-            ("GridView", DiagramViewKind::GridView),
-            ("GeometryView", DiagramViewKind::GeometryView),
-        ];
-        let mut definitions = HashMap::new();
-        for (name, kind) in STANDARD_VIEWS {
-            let matches = self
-                .by_identity
-                .values()
-                .filter(|entry| {
-                    entry.source == ElementSource::StandardLibrary
-                        && entry.entry.kind == ElementKind::ViewDefinition
-                        && entry.entry.name.as_deref() == Some(name)
+        let catalog = outcome(self.model.diagrams().catalog(), "diagram view catalog")?;
+        let mut values = catalog
+            .iter()
+            .map(|entry| {
+                let handle = handle_from_semantic_id(entry.semantic_id.as_str());
+                self.handles
+                    .lock()
+                    .expect("generator handle index poisoned")
+                    .insert(handle.clone(), entry.semantic_id.clone());
+                Ok(DiagramViewSummary {
+                    handle,
+                    kind: diagram_kind(entry.kind),
+                    reference: self.diagram_reference(&entry.semantic_id)?,
+                    name: entry.name.to_string(),
+                    source: source_reference(&entry.source),
                 })
-                .map(|entry| entry.entry.identity.clone())
-                .collect::<Vec<_>>();
-            match matches.as_slice() {
-                [identity] => {
-                    definitions.insert(identity.clone(), kind);
-                }
-                [] => {}
-                _ => {
-                    return Err(ModelQueryError::Ambiguous(format!(
-                        "standard library contains multiple {name} definitions"
-                    )))
-                }
-            }
-        }
-        let mut values = Vec::new();
-        for registered in self.by_identity.values().filter(|value| {
-            value.source == ElementSource::Workspace && value.entry.kind == ElementKind::ViewUsage
-        }) {
-            let types = outcome(
-                self.model.types().direct_types(&registered.entry.identity),
-                "diagram view typing",
-            )?;
-            for ty in types.iter() {
-                let Some(kind) = definitions.get(&ty.symbol).copied() else {
-                    continue;
-                };
-                let inspection = self.inspection(&registered.entry.identity, "diagram view")?;
-                values.push(DiagramViewSummary {
-                    kind,
-                    semantic_id: registered.entry.identity.as_str().to_owned(),
-                    name: display_label(&registered.entry),
-                    source: inspection_source(&inspection),
-                });
-            }
-        }
-        values.sort_by(|a, b| a.semantic_id.cmp(&b.semantic_id));
+            })
+            .collect::<Result<Vec<_>, ModelQueryError>>()?;
+        values.sort_by(|a, b| {
+            a.name
+                .cmp(&b.name)
+                .then_with(|| a.source.uri.cmp(&b.source.uri))
+        });
         self.enforce_limit(values.len())?;
         Ok(values)
+    }
+
+    pub fn diagram_view(&self, handle: &str) -> Result<DiagramViewProjection, ModelQueryError> {
+        let identity = self.resolve_handle(handle)?;
+        let projection = outcome(self.model.diagrams().view(&identity), "diagram view")?;
+        let view = DiagramViewSummary {
+            handle: handle.to_owned(),
+            reference: self.diagram_reference(&projection.view.semantic_id)?,
+            kind: diagram_kind(projection.view.kind),
+            name: projection.view.name.to_string(),
+            source: source_reference(&projection.view.source),
+        };
+        let elements = projection
+            .elements
+            .iter()
+            .map(|element| DiagramElement {
+                reference: self
+                    .diagram_reference(&element.semantic_id)
+                    .expect("published diagram element"),
+                metaclass: api_metaclass(element.kind),
+                name: element.name.as_deref().map(str::to_owned),
+                owner: element.owner.as_ref().map(|owner| {
+                    self.diagram_reference(owner)
+                        .expect("published diagram owner")
+                }),
+                source: source_reference(&element.source),
+            })
+            .collect::<Vec<_>>();
+        let relationships = projection
+            .relationships
+            .iter()
+            .enumerate()
+            .map(|(ordinal, relationship)| {
+                let kind = spec42_generator_protocol::RelationshipKind::parse(
+                    generator_relationship_kind(&relationship.kind),
+                );
+                Ok(DiagramRelationship {
+                    reference: self.diagram_relationship_reference(
+                        &relationship.source,
+                        kind.clone(),
+                        ordinal,
+                    )?,
+                    source_element: self.diagram_reference(&relationship.source)?,
+                    kind,
+                    target: match &relationship.target {
+                        sysml_query::resolved_slice::DiagramRelationshipTarget::Resolved(
+                            target,
+                        ) => DiagramRelationshipTarget::Resolved(self.diagram_reference(target)?),
+                        sysml_query::resolved_slice::DiagramRelationshipTarget::Ambiguous(
+                            values,
+                        ) => DiagramRelationshipTarget::Ambiguous(
+                            values
+                                .iter()
+                                .map(|value| self.diagram_reference(value))
+                                .collect::<Result<Vec<_>, _>>()?,
+                        ),
+                        sysml_query::resolved_slice::DiagramRelationshipTarget::Unresolved => {
+                            DiagramRelationshipTarget::Unresolved
+                        }
+                        sysml_query::resolved_slice::DiagramRelationshipTarget::Unsupported => {
+                            DiagramRelationshipTarget::Unsupported
+                        }
+                    },
+                    provenance: relationship_provenance(relationship.provenance),
+                    source: relationship.source_location.as_ref().map(source_reference),
+                })
+            })
+            .collect::<Result<Vec<_>, ModelQueryError>>()?;
+        let edges = projection
+            .edges
+            .iter()
+            .enumerate()
+            .map(|(ordinal, edge)| {
+                let kind = match &edge.kind {
+                    sysml_query::resolved_slice::DiagramEdgeKind::Containment => {
+                        DiagramEdgeKind::Containment
+                    }
+                    sysml_query::resolved_slice::DiagramEdgeKind::Connector => {
+                        DiagramEdgeKind::Connector
+                    }
+                    sysml_query::resolved_slice::DiagramEdgeKind::Flow => DiagramEdgeKind::Flow,
+                    sysml_query::resolved_slice::DiagramEdgeKind::Succession => {
+                        DiagramEdgeKind::Succession
+                    }
+                    sysml_query::resolved_slice::DiagramEdgeKind::Transition => {
+                        DiagramEdgeKind::Transition
+                    }
+                    sysml_query::resolved_slice::DiagramEdgeKind::InitialState => {
+                        DiagramEdgeKind::InitialState
+                    }
+                    sysml_query::resolved_slice::DiagramEdgeKind::Relationship(kind) => {
+                        DiagramEdgeKind::Relationship(
+                            spec42_generator_protocol::RelationshipKind::parse(kind),
+                        )
+                    }
+                };
+                let reference_kind = match &kind {
+                    DiagramEdgeKind::Containment => {
+                        spec42_generator_protocol::RelationshipKind::Containment
+                    }
+                    DiagramEdgeKind::Connector => {
+                        spec42_generator_protocol::RelationshipKind::Connection
+                    }
+                    DiagramEdgeKind::Flow => spec42_generator_protocol::RelationshipKind::Flow,
+                    DiagramEdgeKind::Succession => {
+                        spec42_generator_protocol::RelationshipKind::Succession
+                    }
+                    DiagramEdgeKind::Transition => {
+                        spec42_generator_protocol::RelationshipKind::Transition
+                    }
+                    DiagramEdgeKind::InitialState => {
+                        spec42_generator_protocol::RelationshipKind::InitialState
+                    }
+                    DiagramEdgeKind::Relationship(kind) => kind.clone(),
+                };
+                Ok(DiagramEdge {
+                    reference: self.diagram_relationship_reference(
+                        &edge.source,
+                        reference_kind,
+                        ordinal,
+                    )?,
+                    source_element: self.diagram_reference(&edge.source)?,
+                    target_element: self.diagram_reference(&edge.target)?,
+                    kind,
+                    provenance: relationship_provenance(edge.provenance),
+                    source: edge.source_location.as_ref().map(source_reference),
+                })
+            })
+            .collect::<Result<Vec<_>, ModelQueryError>>()?;
+        let roots = projection
+            .exposed_roots
+            .iter()
+            .map(|root| self.diagram_reference(root))
+            .collect::<Result<Vec<_>, _>>()?;
+        let reasons = projection
+            .incomplete_reasons
+            .iter()
+            .cloned()
+            .map(|reason| self.diagram_incomplete_reason(reason))
+            .collect::<Result<Vec<_>, _>>()?;
+        let metadata = diagram_metadata(view.kind, &roots, &elements, &relationships);
+        Ok(DiagramViewProjection {
+            schema_version: 1,
+            model_digest: self.model_digest.clone(),
+            view,
+            completeness: if reasons.is_empty() {
+                ProjectionCompleteness::Complete
+            } else {
+                ProjectionCompleteness::Incomplete {
+                    reasons: reasons
+                        .iter()
+                        .map(|reason| unsupported("diagram", &format!("{reason:?}")))
+                        .collect(),
+                }
+            },
+            incomplete_reasons: reasons,
+            exposed_roots: roots,
+            elements,
+            relationships,
+            edges,
+            metadata,
+        })
     }
 
     /// Catalog authored state-transition views whose type and single exposed machine are resolved.
@@ -1004,6 +1114,99 @@ impl GeneratorModelView {
         })
     }
 
+    fn diagram_reference(
+        &self,
+        identity: &SymbolIdentity,
+    ) -> Result<DiagramSemanticReference, ModelQueryError> {
+        let registered = self.by_identity.get(identity).ok_or_else(|| {
+            ModelQueryError::Unresolved(format!(
+                "diagram reference target `{}` is absent from the publication",
+                identity.as_str()
+            ))
+        })?;
+        let source_domain = diagram_source_domain(registered.source);
+        if registered.entry.name.is_some() {
+            Ok(DiagramSemanticReference::Qualified {
+                document: registered.entry.location.document.to_string(),
+                qualified_name: registered.entry.qualified_name.to_string(),
+                source_domain,
+            })
+        } else {
+            Ok(DiagramSemanticReference::SourceAnchor {
+                document: registered.entry.location.document.to_string(),
+                owner_qualified_name: registered
+                    .entry
+                    .owner
+                    .as_ref()
+                    .and_then(|owner| self.by_identity.get(owner))
+                    .map(|owner| owner.entry.qualified_name.to_string()),
+                metaclass: api_metaclass(registered.entry.kind),
+                source_domain,
+                range: protocol_source_range(registered.entry.declaration_range),
+            })
+        }
+    }
+
+    fn diagram_relationship_reference(
+        &self,
+        source: &SymbolIdentity,
+        relationship_kind: spec42_generator_protocol::RelationshipKind,
+        ordinal: usize,
+    ) -> Result<DiagramSemanticReference, ModelQueryError> {
+        let registered = self.by_identity.get(source).ok_or_else(|| {
+            ModelQueryError::Unresolved("diagram relationship source is absent".into())
+        })?;
+        Ok(DiagramSemanticReference::Relationship {
+            document: registered.entry.location.document.to_string(),
+            source_qualified_name: registered.entry.qualified_name.to_string(),
+            relationship_kind,
+            ordinal: u32::try_from(ordinal).map_err(|_| ModelQueryError::ResultLimit {
+                actual: ordinal,
+                limit: u32::MAX as usize,
+            })?,
+            source_domain: diagram_source_domain(registered.source),
+        })
+    }
+
+    fn diagram_incomplete_reason(
+        &self,
+        reason: sysml_query::resolved_slice::DiagramIncompleteReason,
+    ) -> Result<DiagramIncompleteReason, ModelQueryError> {
+        use sysml_query::resolved_slice::DiagramIncompleteReason as Owned;
+        Ok(match reason {
+            Owned::ParseRecovery => DiagramIncompleteReason::ParseRecovery,
+            Owned::UnsupportedSyntax => DiagramIncompleteReason::UnsupportedSyntax,
+            Owned::NonConverged => DiagramIncompleteReason::NonConverged,
+            Owned::ExposureUnresolved { exposure } => DiagramIncompleteReason::ExposureUnresolved {
+                exposure: self.diagram_reference(&exposure)?,
+            },
+            Owned::ExposureAmbiguous { exposure } => DiagramIncompleteReason::ExposureAmbiguous {
+                exposure: self.diagram_reference(&exposure)?,
+            },
+            Owned::ExposureUnsupported { exposure } => {
+                DiagramIncompleteReason::ExposureUnsupported {
+                    exposure: self.diagram_reference(&exposure)?,
+                }
+            }
+            Owned::RelationshipUnresolved { relationship } => {
+                DiagramIncompleteReason::RelationshipUnresolved {
+                    relationship_kind: relationship.to_string(),
+                }
+            }
+            Owned::RelationshipAmbiguous { relationship } => {
+                DiagramIncompleteReason::RelationshipAmbiguous {
+                    relationship_kind: relationship.to_string(),
+                }
+            }
+            Owned::RelationshipUnsupported { relationship } => {
+                DiagramIncompleteReason::RelationshipUnsupported {
+                    relationship_kind: relationship.to_string(),
+                }
+            }
+            Owned::GeometryFactsUnavailable => DiagramIncompleteReason::GeometryFactsUnavailable,
+        })
+    }
+
     pub fn is_valid_handle(&self, handle: &str) -> bool {
         self.handles
             .lock()
@@ -1083,6 +1286,150 @@ fn inspection_source(
             start_character: range.start_character,
             end_line: range.end_line,
             end_character: range.end_character,
+        },
+    }
+}
+
+fn source_reference(location: &sysml_query::resolved_slice::SourceLocation) -> SourceReference {
+    let range = source_range(location.range);
+    SourceReference {
+        uri: location.document.to_string(),
+        range: spec42_generator_protocol::SourceRange {
+            start_line: range.start_line,
+            start_character: range.start_character,
+            end_line: range.end_line,
+            end_character: range.end_character,
+        },
+    }
+}
+
+fn diagram_source_domain(source: ElementSource) -> DiagramSourceDomain {
+    match source {
+        ElementSource::Workspace => DiagramSourceDomain::Workspace,
+        ElementSource::StandardLibrary => DiagramSourceDomain::StandardLibrary,
+        ElementSource::Library => DiagramSourceDomain::Library,
+        ElementSource::External => DiagramSourceDomain::External,
+    }
+}
+
+fn protocol_source_range(
+    range: sysml_query::resolved_slice::TextRange,
+) -> spec42_generator_protocol::SourceRange {
+    spec42_generator_protocol::SourceRange {
+        start_line: range.start.line,
+        start_character: range.start.character,
+        end_line: range.end.line,
+        end_character: range.end.character,
+    }
+}
+
+fn diagram_kind(kind: sysml_query::resolved_slice::DiagramViewKind) -> DiagramViewKind {
+    use sysml_query::resolved_slice::DiagramViewKind as Owned;
+    match kind {
+        Owned::General => DiagramViewKind::GeneralView,
+        Owned::Interconnection => DiagramViewKind::InterconnectionView,
+        Owned::ActionFlow => DiagramViewKind::ActionFlowView,
+        Owned::StateTransition => DiagramViewKind::StateTransitionView,
+        Owned::Sequence => DiagramViewKind::SequenceView,
+        Owned::Browser => DiagramViewKind::BrowserView,
+        Owned::Grid => DiagramViewKind::GridView,
+        Owned::Geometry => DiagramViewKind::GeometryView,
+    }
+}
+
+fn relationship_provenance(
+    provenance: RelationshipProvenance,
+) -> spec42_generator_protocol::RelationshipProvenance {
+    match provenance {
+        RelationshipProvenance::Authored => {
+            spec42_generator_protocol::RelationshipProvenance::Authored
+        }
+        RelationshipProvenance::Implied => {
+            spec42_generator_protocol::RelationshipProvenance::Implied
+        }
+    }
+}
+
+fn diagram_metadata(
+    kind: DiagramViewKind,
+    roots: &[DiagramSemanticReference],
+    elements: &[DiagramElement],
+    relationships: &[DiagramRelationship],
+) -> DiagramViewMetadata {
+    let ids = |classes: &[Metaclass]| {
+        elements
+            .iter()
+            .filter(|element| classes.contains(&element.metaclass))
+            .map(|element| element.reference.clone())
+            .collect::<Vec<_>>()
+    };
+    match kind {
+        DiagramViewKind::GeneralView => DiagramViewMetadata::General {
+            roots: roots.to_vec(),
+        },
+        DiagramViewKind::InterconnectionView => DiagramViewMetadata::Interconnection {
+            parts: ids(&[Metaclass::PartDefinition, Metaclass::PartUsage]),
+            ports: ids(&[
+                Metaclass::PortDefinition,
+                Metaclass::PortUsage,
+                Metaclass::ConjugatedPortDefinition,
+            ]),
+            connectors: ids(&[
+                Metaclass::ConnectionDefinition,
+                Metaclass::ConnectionUsage,
+                Metaclass::BindingConnectorUsage,
+            ]),
+        },
+        DiagramViewKind::ActionFlowView => DiagramViewMetadata::ActionFlow {
+            actions: ids(&[Metaclass::ActionDefinition, Metaclass::ActionUsage]),
+            control_nodes: ids(&[
+                Metaclass::DecisionNodeUsage,
+                Metaclass::MergeNodeUsage,
+                Metaclass::ForkNodeUsage,
+                Metaclass::JoinNodeUsage,
+            ]),
+        },
+        DiagramViewKind::StateTransitionView => DiagramViewMetadata::StateTransition {
+            states: ids(&[Metaclass::StateDefinition, Metaclass::StateUsage]),
+            initial_nodes: relationships
+                .iter()
+                .filter(|relationship| {
+                    relationship.kind == spec42_generator_protocol::RelationshipKind::InitialState
+                })
+                .map(|relationship| relationship.source_element.clone())
+                .collect(),
+            final_nodes: ids(&[Metaclass::FinalState]),
+        },
+        DiagramViewKind::SequenceView => DiagramViewMetadata::Sequence {
+            participants: ids(&[
+                Metaclass::PartUsage,
+                Metaclass::PortUsage,
+                Metaclass::ActorUsage,
+            ]),
+            messages: ids(&[Metaclass::FlowUsage]),
+        },
+        DiagramViewKind::BrowserView => DiagramViewMetadata::Browser {
+            roots: roots.to_vec(),
+        },
+        DiagramViewKind::GridView => DiagramViewMetadata::Grid {
+            rows: elements
+                .iter()
+                .map(|element| element.reference.clone())
+                .collect(),
+            columns: relationships
+                .iter()
+                .map(|relationship| relationship.kind.clone())
+                .collect::<std::collections::BTreeSet<_>>()
+                .into_iter()
+                .collect(),
+            cells: Vec::new(),
+        },
+        DiagramViewKind::GeometryView => DiagramViewMetadata::Geometry {
+            elements: elements
+                .iter()
+                .map(|element| element.reference.clone())
+                .collect(),
+            primitives: Vec::new(),
         },
     }
 }

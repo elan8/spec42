@@ -26,7 +26,7 @@ pub fn published_model_view(source: &str) -> Arc<GeneratorModelView> {
     let publication = Arc::new(build(request).expect("published model"));
     Arc::new(GeneratorModelView::new(
         Arc::clone(&publication),
-        publication.publication().source_digest(),
+        publication.publication().model_digest(),
         env!("CARGO_PKG_VERSION"),
         QueryLimits::default(),
     ))

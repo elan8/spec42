@@ -39,8 +39,8 @@ struct WireSchema {
     satisfy_relationship: SatisfyRelationship,
     satisfy_endpoint: SatisfyEndpoint,
     requirement_verification: RequirementVerification,
-    state_transition_view_summary: StateTransitionViewSummary,
-    state_transition_view_projection: StateTransitionViewProjection,
+    diagram_view_summary: DiagramViewSummary,
+    diagram_view_projection: DiagramViewProjection,
     verification_requirement: VerificationRequirement,
     verification_outcome: VerificationOutcome,
     level: Level,
@@ -399,6 +399,7 @@ impl std::fmt::Display for Metaclass {
 /// string purely to cross the ABI boundary.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Schema)]
 pub enum RelationshipKind {
+    Containment,
     Typing,
     Specializes,
     Subsetting,
@@ -418,6 +419,17 @@ pub enum RelationshipKind {
     Derivation,
     Transition,
     InitialState,
+    ViewExposure,
+    ConnectorEnd,
+    FlowSource,
+    FlowTarget,
+    FlowPayloadType,
+    Succession,
+    TransitionSource,
+    TransitionTarget,
+    TransitionTrigger,
+    TransitionGuard,
+    TransitionEffect,
     Annotation,
     PortConjugation,
     /// A value this Spec42 produced that the enumeration above does not name.
@@ -432,6 +444,7 @@ pub enum RelationshipKind {
 impl RelationshipKind {
     pub fn as_str(&self) -> &str {
         match self {
+            Self::Containment => "containment",
             Self::Typing => "typing",
             Self::Specializes => "specializes",
             Self::Subsetting => "subsetting",
@@ -451,6 +464,17 @@ impl RelationshipKind {
             Self::Derivation => "derivation",
             Self::Transition => "transition",
             Self::InitialState => "initialState",
+            Self::ViewExposure => "viewExpose",
+            Self::ConnectorEnd => "connectorEnd",
+            Self::FlowSource => "flowSource",
+            Self::FlowTarget => "flowTarget",
+            Self::FlowPayloadType => "flowPayloadType",
+            Self::Succession => "succession",
+            Self::TransitionSource => "transitionSource",
+            Self::TransitionTarget => "transitionTarget",
+            Self::TransitionTrigger => "transitionTrigger",
+            Self::TransitionGuard => "transitionGuard",
+            Self::TransitionEffect => "transitionEffect",
             Self::Annotation => "annotation",
             Self::PortConjugation => "portConjugation",
             Self::Unrecognized(value) => value,
@@ -460,6 +484,7 @@ impl RelationshipKind {
     /// Maps a Spec42-internal spelling onto this enumeration.
     pub fn parse(value: &str) -> Self {
         match value {
+            "containment" => Self::Containment,
             "typing" => Self::Typing,
             "specializes" => Self::Specializes,
             "subsetting" => Self::Subsetting,
@@ -479,6 +504,17 @@ impl RelationshipKind {
             "derivation" => Self::Derivation,
             "transition" => Self::Transition,
             "initialState" => Self::InitialState,
+            "viewExpose" => Self::ViewExposure,
+            "connectorEnd" => Self::ConnectorEnd,
+            "flowSource" => Self::FlowSource,
+            "flowTarget" => Self::FlowTarget,
+            "flowPayloadType" => Self::FlowPayloadType,
+            "succession" => Self::Succession,
+            "transitionSource" => Self::TransitionSource,
+            "transitionTarget" => Self::TransitionTarget,
+            "transitionTrigger" => Self::TransitionTrigger,
+            "transitionGuard" => Self::TransitionGuard,
+            "transitionEffect" => Self::TransitionEffect,
             "annotation" => Self::Annotation,
             "portConjugation" => Self::PortConjugation,
             other => Self::Unrecognized(other.to_owned()),
@@ -656,6 +692,184 @@ pub struct RequirementVerification {
 pub struct SourceReference {
     pub uri: String,
     pub range: SourceRange,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Schema)]
+#[serde(rename_all = "kebab-case")]
+pub enum DiagramSourceDomain {
+    Workspace,
+    StandardLibrary,
+    Library,
+    External,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum DiagramSemanticReference {
+    Qualified {
+        document: String,
+        qualified_name: String,
+        source_domain: DiagramSourceDomain,
+    },
+    ToolingElementId {
+        element_id: String,
+        source_domain: DiagramSourceDomain,
+    },
+    SourceAnchor {
+        document: String,
+        owner_qualified_name: Option<String>,
+        metaclass: Metaclass,
+        source_domain: DiagramSourceDomain,
+        range: SourceRange,
+    },
+    Relationship {
+        document: String,
+        source_qualified_name: String,
+        relationship_kind: RelationshipKind,
+        ordinal: u32,
+        source_domain: DiagramSourceDomain,
+    },
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Schema)]
+#[serde(rename_all = "kebab-case")]
+pub enum DiagramViewKind {
+    GeneralView,
+    InterconnectionView,
+    ActionFlowView,
+    StateTransitionView,
+    SequenceView,
+    BrowserView,
+    GridView,
+    GeometryView,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct DiagramViewSummary {
+    pub handle: String,
+    pub reference: DiagramSemanticReference,
+    pub kind: DiagramViewKind,
+    pub name: String,
+    pub source: SourceReference,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum DiagramIncompleteReason {
+    ParseRecovery,
+    UnsupportedSyntax,
+    NonConverged,
+    ExposureUnresolved { exposure: DiagramSemanticReference },
+    ExposureAmbiguous { exposure: DiagramSemanticReference },
+    ExposureUnsupported { exposure: DiagramSemanticReference },
+    RelationshipUnresolved { relationship_kind: String },
+    RelationshipAmbiguous { relationship_kind: String },
+    RelationshipUnsupported { relationship_kind: String },
+    GeometryFactsUnavailable,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct DiagramElement {
+    pub reference: DiagramSemanticReference,
+    pub metaclass: Metaclass,
+    pub name: Option<String>,
+    pub owner: Option<DiagramSemanticReference>,
+    pub source: SourceReference,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum DiagramRelationshipTarget {
+    Resolved(DiagramSemanticReference),
+    Ambiguous(Vec<DiagramSemanticReference>),
+    Unresolved,
+    Unsupported,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct DiagramRelationship {
+    pub reference: DiagramSemanticReference,
+    pub source_element: DiagramSemanticReference,
+    pub kind: RelationshipKind,
+    pub target: DiagramRelationshipTarget,
+    pub provenance: RelationshipProvenance,
+    pub source: Option<SourceReference>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum DiagramEdgeKind {
+    Containment,
+    Connector,
+    Flow,
+    Succession,
+    Transition,
+    InitialState,
+    Relationship(RelationshipKind),
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct DiagramEdge {
+    pub reference: DiagramSemanticReference,
+    pub source_element: DiagramSemanticReference,
+    pub target_element: DiagramSemanticReference,
+    pub kind: DiagramEdgeKind,
+    pub provenance: RelationshipProvenance,
+    pub source: Option<SourceReference>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct DiagramGridCell {
+    pub row: DiagramSemanticReference,
+    pub column: RelationshipKind,
+    pub relationship: DiagramSemanticReference,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum DiagramViewMetadata {
+    General {
+        roots: Vec<DiagramSemanticReference>,
+    },
+    Interconnection {
+        parts: Vec<DiagramSemanticReference>,
+        ports: Vec<DiagramSemanticReference>,
+        connectors: Vec<DiagramSemanticReference>,
+    },
+    ActionFlow {
+        actions: Vec<DiagramSemanticReference>,
+        control_nodes: Vec<DiagramSemanticReference>,
+    },
+    StateTransition {
+        states: Vec<DiagramSemanticReference>,
+        initial_nodes: Vec<DiagramSemanticReference>,
+        final_nodes: Vec<DiagramSemanticReference>,
+    },
+    Sequence {
+        participants: Vec<DiagramSemanticReference>,
+        messages: Vec<DiagramSemanticReference>,
+    },
+    Browser {
+        roots: Vec<DiagramSemanticReference>,
+    },
+    Grid {
+        rows: Vec<DiagramSemanticReference>,
+        columns: Vec<RelationshipKind>,
+        cells: Vec<DiagramGridCell>,
+    },
+    Geometry {
+        elements: Vec<DiagramSemanticReference>,
+        primitives: Vec<DiagramSemanticReference>,
+    },
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct DiagramViewProjection {
+    pub schema_version: u32,
+    pub model_digest: String,
+    pub view: DiagramViewSummary,
+    pub completeness: ProjectionCompleteness,
+    pub incomplete_reasons: Vec<DiagramIncompleteReason>,
+    pub exposed_roots: Vec<DiagramSemanticReference>,
+    pub elements: Vec<DiagramElement>,
+    pub relationships: Vec<DiagramRelationship>,
+    pub edges: Vec<DiagramEdge>,
+    pub metadata: DiagramViewMetadata,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
@@ -848,7 +1062,7 @@ mod tests {
     #[test]
     fn the_wire_schema_fingerprint_is_pinned() {
         assert_eq!(
-            SCHEMA_FINGERPRINT, 0xabe4_ebba_02d9_f5b5,
+            SCHEMA_FINGERPRINT, 0x0a09_25d9_f042_416f,
             "the generator wire schema changed; every guest must be rebuilt"
         );
     }
@@ -856,7 +1070,7 @@ mod tests {
     #[test]
     fn the_compatibility_token_is_pinned() {
         assert_eq!(
-            COMPATIBILITY_TOKEN, 0xff11_6fca_64bb_7b92,
+            COMPATIBILITY_TOKEN, 0x9b47_6a22_7279_4447,
             "the generator ABI contract changed; every guest must be rebuilt"
         );
     }

@@ -187,7 +187,7 @@ fn run_one(
     // masking exactly the unknown-handle behaviour the suite exists to pin.
     let model = Arc::new(GeneratorModelView::new(
         Arc::clone(snapshot),
-        snapshot.publication().source_digest(),
+        snapshot.publication().model_digest(),
         env!("CARGO_PKG_VERSION"),
         QueryLimits::default(),
     ));

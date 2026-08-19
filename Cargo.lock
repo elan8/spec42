@@ -2089,6 +2089,7 @@ dependencies = [
 name = "sysml_resolution"
 version = "0.50.0"
 dependencies = [
+ "blake3",
  "hashbrown 0.17.1",
  "rayon",
  "serde",

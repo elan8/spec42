@@ -265,7 +265,7 @@ pub fn run_generate(cli: &Cli, args: &GenerateArgs) -> Result<ExitCode, String> 
     let publication = snapshot.published_model_arc();
     let model = Arc::new(GeneratorModelView::new(
         Arc::clone(&publication),
-        publication.publication().source_digest(),
+        publication.publication().model_digest(),
         env!("CARGO_PKG_VERSION"),
         QueryLimits::default(),
     ));

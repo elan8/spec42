@@ -1,10 +1,10 @@
 {
   "abiVersion": 4,
-  "semanticApiVersion": "0.1.0",
+  "semanticApiVersion": "0.2.0",
   "namespace": "spec42:generator-abi/4",
   "importModule": "spec42",
-  "schemaFingerprint": "0xabe4ebba02d9f5b5",
-  "compatibilityToken": "0xff116fca64bb7b92",
+  "schemaFingerprint": "0x0a0925d9f042416f",
+  "compatibilityToken": "0x9b476a2272794447",
   "operations": [
     { "name": "Info", "code": 0, "request": "()", "response": "ModelInfo" },
     { "name": "Roots", "code": 1, "request": "()", "response": "Vec<ElementSummary>" },
@@ -17,8 +17,8 @@
     { "name": "RequirementTyping", "code": 8, "request": "String", "response": "RequirementUsageTyping" },
     { "name": "SatisfyRelationships", "code": 9, "request": "()", "response": "Vec<SatisfyRelationship>" },
     { "name": "RequirementVerifications", "code": 10, "request": "()", "response": "Vec<RequirementVerification>" },
-    { "name": "StateTransitionViews", "code": 11, "request": "()", "response": "Vec<StateTransitionViewSummary>" },
-    { "name": "StateTransitionView", "code": 12, "request": "String", "response": "StateTransitionViewProjection" }
+    { "name": "DiagramViews", "code": 11, "request": "()", "response": "Vec<DiagramViewSummary>" },
+    { "name": "DiagramView", "code": 12, "request": "String", "response": "DiagramViewProjection" }
   ],
   "diagnosticLevels": [
     { "name": "Debug", "code": 0 },

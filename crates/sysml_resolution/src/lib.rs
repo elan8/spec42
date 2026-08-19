@@ -11,10 +11,12 @@ use source_identity::{ContentDigest, RootDigest, SourceManifest, SourceManifestE
 
 mod details;
 mod diagnostics;
+mod diagram_query;
 mod element_kind;
 mod evaluation;
 mod inspection;
 mod model;
+mod qualified_reference;
 mod traceability;
 mod type_query;
 mod verification;
@@ -26,6 +28,11 @@ pub use details::{
 pub use diagnostics::{
     Diagnostic, DiagnosticCode, DiagnosticLocation, DiagnosticOrigin, DiagnosticSeverity,
     PublishedDiagnostics, RelatedLocation,
+};
+pub use diagram_query::{
+    DiagramEdge, DiagramEdgeKind, DiagramElement, DiagramIncompleteReason, DiagramRelationship,
+    DiagramRelationshipTarget, DiagramSemanticReference, DiagramViewCatalogEntry, DiagramViewKind,
+    DiagramViewProjection,
 };
 pub use element_kind::{
     ElementKind, MembershipRole, RequirementConstraintKind, StateSubactionKind,
@@ -39,6 +46,9 @@ pub use inspection::{
     ElementModifier, ElementRelationship, FeatureDirection, MembershipFacts, MembershipKind,
     MultiplicityBound, MultiplicityFacts, PortionKind, ReferenceAt, RelationshipProvenance,
     RelationshipTarget, SymbolEntry, ValueKind, Visibility, VisibilityProvenance,
+};
+pub use qualified_reference::{
+    QualifiedElementReference, QualifiedReferenceOutcome, QualifiedReferenceTarget,
 };
 pub use traceability::{SatisfyEndpoint, SatisfyPolarity, SatisfyRelationship};
 pub use type_query::{
@@ -235,6 +245,7 @@ pub enum ConstructionSchedule {
 pub struct PublicationIdentity {
     source_digest: RootDigest,
     semantic_contract_version: Box<str>,
+    evaluation_policy: EvaluationPolicy,
     /// The admitted documents the host asked to have reported beyond its workspace, in canonical
     /// order. Part of the identity because it changes what the publication answers.
     reported_documents: Box<[Box<str>]>,
@@ -247,6 +258,28 @@ impl PublicationIdentity {
 
     pub fn semantic_contract_version(&self) -> &str {
         &self.semantic_contract_version
+    }
+
+    pub fn evaluation_policy(&self) -> EvaluationPolicy {
+        self.evaluation_policy
+    }
+
+    /// Dependency-complete identity of every input that can change published semantic answers.
+    pub fn model_digest(&self) -> String {
+        let mut digest = blake3::Hasher::new();
+        digest.update(b"spec42-publication-model-v1\0");
+        digest.update(self.source_digest.to_string().as_bytes());
+        digest.update(b"\0");
+        digest.update(self.semantic_contract_version.as_bytes());
+        digest.update(&[match self.evaluation_policy {
+            EvaluationPolicy::Evaluate => 0,
+            EvaluationPolicy::Skip => 1,
+        }]);
+        for document in &self.reported_documents {
+            digest.update(&(document.len() as u64).to_le_bytes());
+            digest.update(document.as_bytes());
+        }
+        format!("blake3:{}", digest.finalize().to_hex())
     }
 
     /// The admitted documents reported beyond the workspace, in canonical order.
@@ -372,6 +405,7 @@ impl BuildRequest {
             identity: PublicationIdentity {
                 source_digest,
                 semantic_contract_version,
+                evaluation_policy: EvaluationPolicy::default(),
                 reported_documents: Box::default(),
             },
         })
@@ -434,6 +468,7 @@ impl BuildRequest {
     /// expression or having one that could not be folded.
     pub fn with_evaluation_policy(mut self, policy: EvaluationPolicy) -> Self {
         self.policy = policy;
+        self.identity.evaluation_policy = policy;
         self
     }
 

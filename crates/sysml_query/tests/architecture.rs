@@ -158,6 +158,7 @@ fn immutable_snapshot_runner_has_an_exact_graph_free_dependency_boundary() {
     assert_eq!(
         actual_dependencies,
         BTreeSet::from([
+            "blake3".to_owned(),
             "hashbrown".to_owned(),
             "rayon".to_owned(),
             "serde".to_owned(),

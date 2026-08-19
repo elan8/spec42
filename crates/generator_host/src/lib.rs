@@ -1084,18 +1084,18 @@ fn handle_query(
                     .map_err(|error| error.to_string()),
             )
         }
-        protocol::Operation::StateTransitionViews => encode_result(
+        protocol::Operation::DiagramViews => encode_result(
             state
                 .model
-                .state_transition_views()
+                .diagram_views()
                 .map_err(|error| error.to_string()),
         ),
-        protocol::Operation::StateTransitionView => {
-            let view = decode_for::<protocol::query::StateTransitionView>(request)?;
+        protocol::Operation::DiagramView => {
+            let view = decode_for::<protocol::query::DiagramView>(request)?;
             encode_result(
                 state
                     .model
-                    .state_transition_view(&view)
+                    .diagram_view(&view)
                     .map_err(|error| error.to_string()),
             )
         }

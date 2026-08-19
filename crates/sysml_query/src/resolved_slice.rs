@@ -5,20 +5,24 @@ use std::fmt;
 pub use sysml_resolution::{
     AnalysisEvaluation, AnnotationForm, AuthoredUnit, AuthoredValue, BuildMeasurements,
     Conformance, ConformanceObstacle, ConnectedElement, Diagnostic, DiagnosticCode,
-    DiagnosticLocation, DiagnosticOrigin, DiagnosticSeverity, Documentation, EffectiveType,
-    EffectiveTypeEntry, EffectiveTypeOrigin, EffectiveTyping, ElementDetails, ElementDetailsAt,
-    ElementEvaluation, ElementInspection, ElementInspectionAt, ElementKind, ElementModifier,
-    ElementRelationship, ElementSearch, ElementSource, EvaluatedScalar, EvaluationFailure,
-    EvaluationState, ExpectedMeasurement, FeatureDirection, InheritedFeature, MembershipFacts,
-    MembershipKind, MembershipRole, MultiplicityBound, MultiplicityFacts, NavigationTarget,
-    OccurrenceRole, PortionKind, PublicationCompleteness, PublicationIdentity,
-    PublishedDiagnostics, QueryOutcome, ReferenceAt, ReferencedDetails, RelatedLocation,
-    RelationshipFamily, RelationshipOutcome, RelationshipProvenance, RelationshipTarget,
-    RenameOutcome, RequirementConstraintKind, RequirementUsageTyping, RequirementVerification,
-    ResolvedUnit, SatisfyEndpoint, SatisfyPolarity, SatisfyRelationship, SourceLocation,
-    SpecializationScope, StateSubactionKind, SubsettingConformance, SymbolEntry, SymbolIdentity,
-    TextPosition, TextRange, TypeReference, UnitResolution, ValueKind, VerificationOutcome,
-    VerificationRequirement, Visibility, VisibilityProvenance, VisibleMember,
+    DiagnosticLocation, DiagnosticOrigin, DiagnosticSeverity, DiagramEdge, DiagramEdgeKind,
+    DiagramElement, DiagramIncompleteReason, DiagramRelationship, DiagramRelationshipTarget,
+    DiagramSemanticReference, DiagramViewCatalogEntry, DiagramViewKind, DiagramViewProjection,
+    Documentation, EffectiveType, EffectiveTypeEntry, EffectiveTypeOrigin, EffectiveTyping,
+    ElementDetails, ElementDetailsAt, ElementEvaluation, ElementInspection, ElementInspectionAt,
+    ElementKind, ElementModifier, ElementRelationship, ElementSearch, ElementSource,
+    EvaluatedScalar, EvaluationFailure, EvaluationState, ExpectedMeasurement, FeatureDirection,
+    InheritedFeature, MembershipFacts, MembershipKind, MembershipRole, MultiplicityBound,
+    MultiplicityFacts, NavigationTarget, OccurrenceRole, PortionKind, PublicationCompleteness,
+    PublicationIdentity, PublishedDiagnostics, QualifiedElementReference,
+    QualifiedReferenceOutcome, QualifiedReferenceTarget, QueryOutcome, ReferenceAt,
+    ReferencedDetails, RelatedLocation, RelationshipFamily, RelationshipOutcome,
+    RelationshipProvenance, RelationshipTarget, RenameOutcome, RequirementConstraintKind,
+    RequirementUsageTyping, RequirementVerification, ResolvedUnit, SatisfyEndpoint,
+    SatisfyPolarity, SatisfyRelationship, SourceLocation, SpecializationScope, StateSubactionKind,
+    SubsettingConformance, SymbolEntry, SymbolIdentity, TextPosition, TextRange, TypeReference,
+    UnitResolution, ValueKind, VerificationOutcome, VerificationRequirement, Visibility,
+    VisibilityProvenance, VisibleMember,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -273,6 +277,24 @@ impl PublishedModel {
     pub fn diagnostics(&self) -> DiagnosticQueries<'_> {
         DiagnosticQueries { model: &self.inner }
     }
+
+    pub fn diagrams(&self) -> DiagramQueries<'_> {
+        DiagramQueries { model: &self.inner }
+    }
+}
+
+pub struct DiagramQueries<'a> {
+    model: &'a sysml_resolution::PublishedResolution,
+}
+
+impl DiagramQueries<'_> {
+    pub fn catalog(&self) -> QueryOutcome<Box<[DiagramViewCatalogEntry]>> {
+        self.model.diagram_view_catalog()
+    }
+
+    pub fn view(&self, identity: &SymbolIdentity) -> QueryOutcome<DiagramViewProjection> {
+        self.model.diagram_view(identity)
+    }
 }
 
 /// The resolution-owned diagnostics this publication settled.
@@ -432,6 +454,10 @@ impl<'a> PublicationQueries<'a> {
     pub fn source_digest(&self) -> String {
         self.model.identity().source_digest().to_string()
     }
+
+    pub fn model_digest(&self) -> String {
+        self.model.identity().model_digest()
+    }
 }
 
 pub struct NavigationQueries<'a> {
@@ -496,6 +522,14 @@ pub struct InspectionQueries<'a> {
 }
 
 impl InspectionQueries<'_> {
+    /// Resolves a readable KerML qualified reference through the semantic owner.
+    pub fn resolve_qualified_reference(
+        &self,
+        reference: &QualifiedElementReference,
+    ) -> QualifiedReferenceOutcome {
+        self.model.resolve_qualified_reference(reference)
+    }
+
     /// Everything the publication knows about one element.
     pub fn inspect(&self, symbol: &SymbolIdentity) -> QueryOutcome<ElementInspection> {
         self.model.inspect(symbol)
@@ -566,6 +600,13 @@ pub struct EditorProbe {
     pub position: TextPosition,
     pub qualifier: Option<String>,
     pub rename_to: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct QualifiedReferenceProbe {
+    pub document: Option<String>,
+    pub qualified_name: String,
+    pub expected_kind: Option<ElementKind>,
 }
 
 impl DebugQueries<'_> {
@@ -650,6 +691,92 @@ impl DebugQueries<'_> {
         }
         write!(output, ")")
     }
+
+    pub fn write_qualified_reference_queries_sexpr(
+        &self,
+        probes: &[QualifiedReferenceProbe],
+        output: &mut dyn fmt::Write,
+    ) -> fmt::Result {
+        writeln!(output, "(qualified-reference-queries")?;
+        for probe in probes {
+            write!(output, "  (reference")?;
+            if let Some(document) = &probe.document {
+                write!(output, " (document {document:?})")?;
+            } else {
+                write!(output, " (document any)")?;
+            }
+            write!(output, " (qualified-name {:?})", probe.qualified_name)?;
+            if let Some(kind) = probe.expected_kind {
+                write!(output, " (expected-kind {:?})", kind.as_str())?;
+            }
+            writeln!(output)?;
+            let outcome = self
+                .model
+                .resolve_qualified_reference(&QualifiedElementReference {
+                    document: probe.document.clone().map(Into::into),
+                    qualified_name: probe.qualified_name.clone().into(),
+                    expected_kind: probe.expected_kind,
+                });
+            write_qualified_reference_outcome(output, &outcome)?;
+            writeln!(output, "  )")?;
+        }
+        write!(output, ")")
+    }
+}
+
+fn write_qualified_reference_target(
+    output: &mut dyn fmt::Write,
+    target: &QualifiedReferenceTarget,
+) -> fmt::Result {
+    write!(
+        output,
+        "(candidate (identity {:?}) (kind {:?}) (qualified-name {:?}) ",
+        target.identity.as_str(),
+        target.kind.as_str(),
+        target.qualified_name
+    )?;
+    write_location(output, &target.location)?;
+    write!(output, ")")
+}
+
+fn write_qualified_reference_outcome(
+    output: &mut dyn fmt::Write,
+    outcome: &QualifiedReferenceOutcome,
+) -> fmt::Result {
+    write!(output, "    (outcome")?;
+    match outcome {
+        QualifiedReferenceOutcome::Resolved(target) => {
+            write!(output, " (status resolved) ")?;
+            write_qualified_reference_target(output, target)?;
+        }
+        QualifiedReferenceOutcome::Recovered(target) => {
+            write!(output, " (status recovery) ")?;
+            write_qualified_reference_target(output, target)?;
+        }
+        QualifiedReferenceOutcome::UnsupportedWith(target) => {
+            write!(output, " (status unsupported) ")?;
+            write_qualified_reference_target(output, target)?;
+        }
+        QualifiedReferenceOutcome::Ambiguous(targets)
+        | QualifiedReferenceOutcome::WrongKind(targets) => {
+            let status = if matches!(outcome, QualifiedReferenceOutcome::Ambiguous(_)) {
+                "ambiguous"
+            } else {
+                "wrong-kind"
+            };
+            write!(output, " (status {status}) (candidates")?;
+            for target in targets {
+                write!(output, " ")?;
+                write_qualified_reference_target(output, target)?;
+            }
+            write!(output, ")")?;
+        }
+        QualifiedReferenceOutcome::Unresolved => write!(output, " (status unresolved)")?,
+        QualifiedReferenceOutcome::Unsupported => write!(output, " (status unsupported)")?,
+        QualifiedReferenceOutcome::Recovery => write!(output, " (status recovery)")?,
+        QualifiedReferenceOutcome::Incomplete => write!(output, " (status incomplete)")?,
+    }
+    writeln!(output, ")")
 }
 
 fn write_document_symbols(

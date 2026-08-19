@@ -16,12 +16,13 @@ use std::path::{Path, PathBuf};
 use std::sync::{Arc, OnceLock};
 
 use clap::{Parser, Subcommand};
-use generator_api::{ArtifactLimits, GeneratorModelView, QueryLimits};
+use generator_api::{ArtifactLimits, DiagramSemanticReference, GeneratorModelView, QueryLimits};
 use generator_host::{CancellationHandle, GeneratorRuntime, RuntimeLimits};
 use rayon::prelude::*;
 use sysml_query::resolved_slice::{
-    build as build_published_model, BuildRequest, ConstructionStrategy, EditorProbe,
-    PublishedModel, SourceDocument as QuerySourceDocument, SourceKind, TextPosition,
+    build as build_published_model, BuildRequest, ConstructionStrategy, EditorProbe, ElementKind,
+    PublishedModel, QualifiedElementReference, QualifiedReferenceOutcome, QualifiedReferenceProbe,
+    SourceDocument as QuerySourceDocument, SourceKind, TextPosition,
 };
 
 #[derive(Debug, Parser)]
@@ -75,7 +76,8 @@ enum GeneratorPlugin {
 #[derive(Debug, Clone, PartialEq, Eq)]
 struct DiagramSelection {
     kind: String,
-    semantic_id: String,
+    document: String,
+    qualified_name: String,
 }
 
 /// Generator selection parsed from fixture metadata. Execution is deliberately kept separate from
@@ -337,6 +339,8 @@ fn regenerate_snapshot(
         .map_err(|error| format!("{}: invalid source: {error}", path.display()))?;
     source_documents.extend_from_slice(libraries.sources(meta.libraries)?);
     let probes = parse_editor_probes(fixture, &documents, fallback_name)?;
+    let qualified_reference_probes =
+        parse_qualified_reference_probes(fixture, &documents, fallback_name)?;
     let sequential_model = Arc::new(build_model(
         &source_documents,
         ConstructionStrategy::Sequential,
@@ -347,9 +351,20 @@ fn regenerate_snapshot(
         ConstructionStrategy::Parallel,
         path,
     )?);
-    let sequential =
-        render_owned_sections(&sequential_model, &documents, &source_documents, &probes)?;
-    let parallel = render_owned_sections(&parallel_model, &documents, &source_documents, &probes)?;
+    let sequential = render_owned_sections(
+        &sequential_model,
+        &documents,
+        &source_documents,
+        &probes,
+        &qualified_reference_probes,
+    )?;
+    let parallel = render_owned_sections(
+        &parallel_model,
+        &documents,
+        &source_documents,
+        &probes,
+        &qualified_reference_probes,
+    )?;
     ensure_strategy_parity(path, &sequential, &parallel)?;
     ensure_sections_balanced(&sequential)
         .map_err(|error| format!("{}: {error}", path.display()))?;
@@ -367,6 +382,16 @@ fn regenerate_snapshot(
     } else {
         replace_or_insert_section(&fixture, "EDITOR RESULTS", &sequential.editor_queries)
             .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?
+    };
+    let fixture = if qualified_reference_probes.is_empty() {
+        fixture
+    } else {
+        replace_or_insert_section(
+            &fixture,
+            "QUALIFIED REFERENCE RESULTS",
+            &sequential.qualified_references,
+        )
+        .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?
     };
     let fixture = if let Some(generation) = &meta.generation {
         let sequential_generated =
@@ -399,14 +424,14 @@ fn execute_generation(
             plugin_path.display()
         )
     })?;
-    let model_digest = publication.publication().source_digest();
+    let model_digest = publication.publication().model_digest();
     let model = Arc::new(GeneratorModelView::new(
-        publication,
+        Arc::clone(&publication),
         model_digest,
         env!("CARGO_PKG_VERSION"),
         QueryLimits::default(),
     ));
-    let args = generation_arguments(request, &model, fixture_path)?;
+    let args = generation_arguments(request, &publication, &model, fixture_path)?;
     let runtime = GeneratorRuntime::new().map_err(|error| {
         format!(
             "{}: generator runtime failed: {error}",
@@ -464,16 +489,117 @@ fn generator_plugin_path(plugin: &GeneratorPlugin) -> PathBuf {
 
 fn generation_arguments(
     request: &GenerationRequest,
-    _model: &GeneratorModelView,
+    publication: &PublishedModel,
+    model: &GeneratorModelView,
     fixture_path: &Path,
 ) -> Result<Vec<String>, String> {
-    if request.diagram_selection.is_some() {
-        return Err(format!(
-            "{}: typed diagram selection requires the unified diagram-view query contract",
+    let Some(selection) = &request.diagram_selection else {
+        return Ok(Vec::new());
+    };
+    let expected_kind = diagram_element_kind(&selection.kind).ok_or_else(|| {
+        format!(
+            "{}: unknown diagram view kind {:?}",
+            fixture_path.display(),
+            selection.kind
+        )
+    })?;
+    let document = QuerySourceDocument::from_memory_path(
+        "snapshot",
+        &selection.document,
+        String::new(),
+        SourceKind::Workspace,
+    )
+    .map_err(|error| {
+        format!(
+            "{}: invalid diagram selection document {:?}: {error}",
+            fixture_path.display(),
+            selection.document
+        )
+    })?;
+    let reference = QualifiedElementReference {
+        document: Some(document.identity().into()),
+        qualified_name: selection.qualified_name.clone().into(),
+        expected_kind: Some(expected_kind),
+    };
+    let target = match publication
+        .inspection()
+        .resolve_qualified_reference(&reference)
+    {
+        QualifiedReferenceOutcome::Resolved(target)
+        | QualifiedReferenceOutcome::Recovered(target)
+        | QualifiedReferenceOutcome::UnsupportedWith(target) => target,
+        outcome => {
+            return Err(format!(
+                "{}: diagram view reference {:?} in {:?} did not resolve: {outcome:?}",
+                fixture_path.display(),
+                selection.qualified_name,
+                selection.document
+            ))
+        }
+    };
+    let catalog = model.diagram_views().map_err(|error| {
+        format!(
+            "{}: diagram view catalog failed: {error}",
             fixture_path.display()
-        ));
+        )
+    })?;
+    let matches = catalog
+        .iter()
+        .filter(|view| {
+            matches!(
+                &view.reference,
+                DiagramSemanticReference::Qualified { document, qualified_name, .. }
+                    if document == target.location.document.as_ref()
+                        && qualified_name == target.qualified_name.as_ref()
+            ) && diagram_kind_id(view.kind) == selection.kind
+        })
+        .collect::<Vec<_>>();
+    match matches.as_slice() {
+        [view] => Ok(vec![view.handle.clone()]),
+        [] => Err(format!(
+            "{}: selected diagram view kind {:?} with qualified reference {:?} in {:?} is not in the active publication; authored catalog entries: {}",
+            fixture_path.display(),
+            selection.kind,
+            target.qualified_name,
+            target.location.document,
+            catalog
+                .iter()
+                .map(|view| format!("{}={:?}", diagram_kind_id(view.kind), view.reference))
+                .collect::<Vec<_>>()
+                .join(", ")
+        )),
+        _ => Err(format!(
+            "{}: selected diagram identity is not unique in the active publication",
+            fixture_path.display()
+        )),
     }
-    Ok(Vec::new())
+}
+
+fn diagram_element_kind(kind: &str) -> Option<ElementKind> {
+    match kind {
+        "general-view"
+        | "interconnection-view"
+        | "action-flow-view"
+        | "state-transition-view"
+        | "sequence-view"
+        | "browser-view"
+        | "grid-view"
+        | "geometry-view" => Some(ElementKind::ViewUsage),
+        _ => None,
+    }
+}
+
+fn diagram_kind_id(kind: generator_api::DiagramViewKind) -> &'static str {
+    match kind {
+        generator_api::DiagramViewKind::GeneralView => "general-view",
+        generator_api::DiagramViewKind::InterconnectionView => "interconnection-view",
+        generator_api::DiagramViewKind::ActionFlowView => "action-flow-view",
+        generator_api::DiagramViewKind::StateTransitionView => "state-transition-view",
+        generator_api::DiagramViewKind::SequenceView => "sequence-view",
+        generator_api::DiagramViewKind::BrowserView => "browser-view",
+        generator_api::DiagramViewKind::GridView => "grid-view",
+        generator_api::DiagramViewKind::GeometryView => "geometry-view",
+    }
 }
 
 struct OwnedSections {
@@ -482,6 +608,7 @@ struct OwnedSections {
     diagnostics: String,
     navigation: String,
     editor_queries: String,
+    qualified_references: String,
 }
 
 fn build_model(
@@ -500,6 +627,7 @@ fn render_owned_sections(
     documents: &[SourceDocument],
     source_documents: &[QuerySourceDocument],
     probes: &[EditorProbe],
+    qualified_reference_probes: &[QualifiedReferenceProbe],
 ) -> Result<OwnedSections, String> {
     // Both strings are complete owner-defined projections. The SMG includes publication phase,
     // completeness, evaluation state, and all owned facts; diagnostics includes canonical order.
@@ -520,12 +648,21 @@ fn render_owned_sections(
         .debug()
         .write_editor_queries_sexpr(probes, &mut editor_queries)
         .map_err(|error| format!("editor-query rendering failed: {error}"))?;
+    let mut qualified_references = String::new();
+    model
+        .debug()
+        .write_qualified_reference_queries_sexpr(
+            qualified_reference_probes,
+            &mut qualified_references,
+        )
+        .map_err(|error| format!("qualified-reference rendering failed: {error}"))?;
     Ok(OwnedSections {
         smg,
         types,
         diagnostics,
         navigation,
         editor_queries,
+        qualified_references,
     })
 }
 
@@ -572,7 +709,12 @@ fn ensure_sections_balanced(sections: &OwnedSections) -> Result<(), String> {
     ensure_balanced("TYPES", &sections.types)?;
     ensure_balanced("DIAGNOSTICS", &sections.diagnostics)?;
     ensure_balanced("NAVIGATION", &sections.navigation)?;
-    ensure_balanced("EDITOR RESULTS", &sections.editor_queries)
+    ensure_balanced("EDITOR RESULTS", &sections.editor_queries).and_then(|()| {
+        ensure_balanced(
+            "QUALIFIED REFERENCE RESULTS",
+            &sections.qualified_references,
+        )
+    })
 }
 
 fn ensure_strategy_parity(
@@ -607,6 +749,12 @@ fn ensure_strategy_parity(
     if sequential.editor_queries != parallel.editor_queries {
         return Err(format!(
             "{}: sequential and parallel editor-query outputs differ",
+            path.display()
+        ));
+    }
+    if sequential.qualified_references != parallel.qualified_references {
+        return Err(format!(
+            "{}: sequential and parallel qualified-reference outputs differ",
             path.display()
         ));
     }
@@ -688,7 +836,8 @@ fn parse_fixture_meta(fixture: &str, fallback_name: &str) -> Result<FixtureMeta,
     let mut fixture_type = None;
     let mut plugin = None;
     let mut view_kind = None;
-    let mut view_semantic_id = None;
+    let mut view_document = None;
+    let mut view_qualified_name = None;
     let mut seen = HashSet::new();
     for (line_index, line) in text.lines().enumerate() {
         if line.trim().is_empty() || line.trim_start().starts_with('#') {
@@ -704,7 +853,7 @@ fn parse_fixture_meta(fixture: &str, fallback_name: &str) -> Result<FixtureMeta,
         let value = value.trim();
         if matches!(
             key,
-            "libraries" | "type" | "plugin" | "viewKind" | "viewSemanticId"
+            "libraries" | "type" | "plugin" | "viewKind" | "viewDocument" | "viewQualifiedName"
         ) && !seen.insert(key)
         {
             return Err(format!("{fallback_name}: duplicate META key {key:?}"));
@@ -735,13 +884,19 @@ fn parse_fixture_meta(fixture: &str, fallback_name: &str) -> Result<FixtureMeta,
                 }
                 view_kind = Some(value.to_string());
             }
-            "viewSemanticId" => {
+            "viewDocument" => {
+                if value.is_empty() {
+                    return Err(format!("{fallback_name}: META viewDocument must not be empty"));
+                }
+                view_document = Some(value.to_string());
+            }
+            "viewQualifiedName" => {
                 if value.is_empty() {
                     return Err(format!(
-                        "{fallback_name}: META viewSemanticId must not be empty"
+                        "{fallback_name}: META viewQualifiedName must not be empty"
                     ));
                 }
-                view_semantic_id = Some(value.to_string());
+                view_qualified_name = Some(value.to_string());
             }
             _ => {}
         }
@@ -749,13 +904,17 @@ fn parse_fixture_meta(fixture: &str, fallback_name: &str) -> Result<FixtureMeta,
     let generation = match (fixture_type.as_deref(), plugin) {
         (Some("generate"), Some(plugin)) => {
             let plugin = parse_generator_plugin(&plugin, fallback_name)?;
-            let diagram_selection = match (view_kind, view_semantic_id) {
-                (Some(kind), Some(semantic_id)) => Some(DiagramSelection { kind, semantic_id }),
-                (None, None) => None,
+            let diagram_selection = match (view_kind, view_document, view_qualified_name) {
+                (Some(kind), Some(document), Some(qualified_name)) => Some(DiagramSelection {
+                    kind,
+                    document,
+                    qualified_name,
+                }),
+                (None, None, None) => None,
                 _ => {
                     return Err(format!(
-                    "{fallback_name}: META viewKind and viewSemanticId must be specified together"
-                ))
+                        "{fallback_name}: META viewKind, viewDocument and viewQualifiedName must be specified together"
+                    ))
                 }
             };
             if diagram_selection.is_some() && plugin != GeneratorPlugin::RepositoryDiagram {
@@ -778,7 +937,7 @@ fn parse_fixture_meta(fixture: &str, fallback_name: &str) -> Result<FixtureMeta,
                 "{fallback_name}: META plugin is only valid with type=generate"
             ))
         }
-        _ if view_kind.is_some() || view_semantic_id.is_some() => {
+        _ if view_kind.is_some() || view_document.is_some() || view_qualified_name.is_some() => {
             return Err(format!(
                 "{fallback_name}: view selection is only valid with type=generate"
             ))
@@ -957,6 +1116,86 @@ fn parse_editor_probes(
     Ok(probes)
 }
 
+fn parse_qualified_reference_probes(
+    fixture: &str,
+    documents: &[SourceDocument],
+    fallback_name: &str,
+) -> Result<Vec<QualifiedReferenceProbe>, String> {
+    let Some(section) = raw_section(fixture, "QUALIFIED REFERENCE QUERIES") else {
+        return Ok(Vec::new());
+    };
+    let Some((text, _)) = fenced_block(section) else {
+        return Err(format!(
+            "{fallback_name}: malformed QUALIFIED REFERENCE QUERIES fence"
+        ));
+    };
+    let mut probes = Vec::new();
+    for (line_index, line) in text.lines().enumerate() {
+        let line = line.trim();
+        if line.is_empty() || line.starts_with('#') {
+            continue;
+        }
+        let mut fields = line.split_whitespace();
+        if fields.next() != Some("resolve") {
+            return Err(format!(
+                "{fallback_name}: QUALIFIED REFERENCE QUERIES line {} must start with `resolve`",
+                line_index + 1
+            ));
+        }
+        let document_name = fields
+            .next()
+            .ok_or_else(|| format!("{fallback_name}: missing reference document"))?;
+        let document = if document_name == "*" {
+            None
+        } else {
+            if !documents
+                .iter()
+                .any(|candidate| candidate.name == document_name)
+            {
+                return Err(format!(
+                    "{fallback_name}: unknown reference document {document_name:?}"
+                ));
+            }
+            let source = QuerySourceDocument::from_memory_path(
+                "snapshot",
+                document_name,
+                String::new(),
+                SourceKind::Workspace,
+            )
+            .map_err(|error| format!("{fallback_name}: invalid reference document: {error}"))?;
+            Some(source.identity().to_string())
+        };
+        let qualified_name = fields
+            .next()
+            .ok_or_else(|| format!("{fallback_name}: missing qualified name"))?
+            .to_string();
+        let expected_kind = match fields.next() {
+            None | Some("*") => None,
+            Some(kind) => Some(
+                ElementKind::ALL
+                    .iter()
+                    .copied()
+                    .find(|candidate| candidate.as_str() == kind)
+                    .ok_or_else(|| {
+                        format!("{fallback_name}: unknown expected element kind {kind:?}")
+                    })?,
+            ),
+        };
+        if fields.next().is_some() {
+            return Err(format!(
+                "{fallback_name}: too many qualified-reference fields on line {}",
+                line_index + 1
+            ));
+        }
+        probes.push(QualifiedReferenceProbe {
+            document,
+            qualified_name,
+            expected_kind,
+        });
+    }
+    Ok(probes)
+}
+
 fn raw_section<'a>(fixture: &'a str, name: &str) -> Option<&'a str> {
     let marker = format!("# {name}\n");
     let start = fixture.find(&marker)? + marker.len();
@@ -984,11 +1223,13 @@ const SECTION_ORDER: &[&str] = &[
     "META",
     "SOURCE",
     "EDITOR QUERIES",
+    "QUALIFIED REFERENCE QUERIES",
     "DIAGNOSTICS",
     "SMG",
     "TYPES",
     "NAVIGATION",
     "EDITOR RESULTS",
+    "QUALIFIED REFERENCE RESULTS",
     "GENERATED",
 ];
 
@@ -1123,6 +1364,7 @@ mod tests {
             diagnostics: "same".to_string(),
             navigation: "same".to_string(),
             editor_queries: "same".to_string(),
+            qualified_references: "same".to_string(),
         }
     }
 
@@ -1236,7 +1478,7 @@ mod tests {
 
     #[test]
     fn parses_closed_typed_diagram_selection() {
-        let diagram = "# META\n~~~ini\ntype=generate\nplugin=repository:diagram\nviewKind=general-view\nviewSemanticId=semantic:view:42\n~~~\n";
+        let diagram = "# META\n~~~ini\ntype=generate\nplugin=repository:diagram\nviewKind=general-view\nviewDocument=model.sysml\nviewQualifiedName=Example::selected\n~~~\n";
         assert_eq!(
             parse_fixture_meta(diagram, "fixture.md")
                 .unwrap()
@@ -1245,9 +1487,38 @@ mod tests {
                 plugin: GeneratorPlugin::RepositoryDiagram,
                 diagram_selection: Some(DiagramSelection {
                     kind: "general-view".to_string(),
-                    semantic_id: "semantic:view:42".to_string(),
+                    document: "model.sysml".to_string(),
+                    qualified_name: "Example::selected".to_string(),
                 }),
             })
+        );
+    }
+
+    #[test]
+    fn parses_qualified_reference_probe_mechanics() {
+        let fixture = "# SOURCE\n## model.sysml\n~~~sysml\npackage Example {}\n~~~\n# QUALIFIED REFERENCE QUERIES\n~~~text\nresolve model.sysml Example::selected ViewUsage\nresolve * StandardViewDefinitions::GeneralView *\n~~~\n";
+        assert_eq!(
+            parse_qualified_reference_probes(
+                fixture,
+                &[SourceDocument {
+                    name: "model.sysml".to_string(),
+                    text: "package Example {}".to_string(),
+                }],
+                "fixture.md",
+            )
+            .unwrap(),
+            vec![
+                QualifiedReferenceProbe {
+                    document: Some("memory://snapshot/model.sysml".to_string()),
+                    qualified_name: "Example::selected".to_string(),
+                    expected_kind: Some(ElementKind::ViewUsage),
+                },
+                QualifiedReferenceProbe {
+                    document: None,
+                    qualified_name: "StandardViewDefinitions::GeneralView".to_string(),
+                    expected_kind: None,
+                },
+            ]
         );
     }
 
@@ -1259,12 +1530,12 @@ mod tests {
                 "must be specified together",
             ),
             (
-                "type=generate\nplugin=requirements_csv\nviewKind=general-view\nviewSemanticId=id",
+                "type=generate\nplugin=requirements_csv\nviewKind=general-view\nviewDocument=model.sysml\nviewQualifiedName=Example::selected",
                 "only valid with plugin=repository:diagram",
             ),
             ("type=generate\nplugin=../../escape", "unknown or unsafe"),
             (
-                "type=file\nviewKind=general-view\nviewSemanticId=id",
+                "type=file\nviewKind=general-view\nviewDocument=model.sysml\nviewQualifiedName=Example::selected",
                 "only valid with type=generate",
             ),
         ] {

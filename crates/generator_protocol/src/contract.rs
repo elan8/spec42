@@ -288,7 +288,7 @@ impl std::error::Error for UnknownCode {}
 
 abi_contract! {
     abi_version: 4,
-    semantic_api_version: "0.1.0",
+    semantic_api_version: "0.2.0",
     namespace: "spec42:generator-abi/4",
     import_module: "spec42",
 
@@ -317,10 +317,10 @@ abi_contract! {
         SatisfyRelationships = 9 => ((), Vec<SatisfyRelationship>),
         /// Authoritative verification-to-requirement links and explicit outcome states.
         RequirementVerifications = 10 => ((), Vec<RequirementVerification>),
-        /// Authored views whose canonical semantics select one state machine.
-        StateTransitionViews = 11 => ((), Vec<StateTransitionViewSummary>),
-        /// Notation-ready semantic projection for one catalog handle.
-        StateTransitionView = 12 => (String, StateTransitionViewProjection),
+        /// Authored standard views in the immutable publication.
+        DiagramViews = 11 => ((), Vec<DiagramViewSummary>),
+        /// Typed semantic projection for one catalog handle.
+        DiagramView = 12 => (String, DiagramViewProjection),
     }
 
     /// Severity of a generator diagnostic.
