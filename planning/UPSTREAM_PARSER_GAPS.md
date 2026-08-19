@@ -1,14 +1,117 @@
-# Upstream sysml-v2-parser gaps blocking spec42 snapshot work
+# Upstream sysml-v2-parser gaps
 
-Tracks semantic gaps discovered while closing the snapshot delta on the parser-owned pipeline that
-trace back to the pinned `sysml-v2-parser-next` revision (`7d4fd85`) rather than to
-`sysml_resolution`/`sysml_query`. Each entry carries enough detail to file/update an upstream issue
-against `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+This is the active record of information the parser must preserve or distinguish before spec42 can
+implement the corresponding semantic or syntax-fidelity behavior without guessing. It also records
+the separate, downstream migration required to delete `spec42-sysml-parser`; the two categories must
+not be conflated.
 
-Every entry below was re-verified against `7d4fd85` by direct inspection of the parser checkout, by
-a scratch fixture run through `cargo run -p spec42-snapshot`, or both.
+The canonical parser currently pinned behind `crates/sysml_parser` is
+`lukewilliamboswell/sysml-v2-parser@204ca48000c452970beb7568d84e0ac80898a767`. That revision is a
+descendant of `7d4fd858a65cfcf23296dfd3862fc8646e5224dd`, against which the semantic grammar gaps below
+were last individually exercised. New upstream work must be based on the full pinned identity, not
+the abbreviated historical revision or the old `sysml-v2-parser-next` dependency alias.
 
-## Open
+## Ownership and evidence rules
+
+- An **upstream gap** means the parser rejects legal syntax, accepts it but drops authored
+  information, or represents two semantically distinct authored forms identically. Spec42 must not
+  recover such information by scanning source text or matching display strings.
+- A **spec42 migration** means the pinned parser already exposes the required typed node, source
+  span, recovery state, traversal, or arena lookup, but a consumer still uses the legacy AST API.
+  That work belongs in spec42 and is not grounds for extending the parser with editor or semantic
+  policy.
+- Each upstream fix needs a parser regression test for accepted and malformed/recovery input as
+  appropriate, provenance validation when new spans or arena identities are introduced, and a
+  spec42 owning-layer test proving that no source-text reconstruction remains.
+- Closing a gap requires re-verifying it against the newly pinned full commit and removing the entry
+  from this active plan. Git history, not a completed section here, records the old gap.
+
+## Parser-facade removal audit
+
+On 2026-08-19 a direct workspace pin to `204ca48`, removal of `crates/sysml_parser`, and removal of
+the `sysml_v2_parser::next` namespace were compiled with:
+
+```text
+cargo check --workspace --all-targets --offline
+```
+
+The experiment produced 130 errors in `sysml_tokens`; this is an error count, **not 130 adapters or
+130 upstream gaps**. The edits were reverted after inventorying the failures. The buildable facade
+therefore remains only as a bounded migration boundary: its root re-exports parser 0.54 while
+`next` re-exports `204ca48` for semantic construction.
+
+### Capabilities already present upstream
+
+These must be consumed rather than reimplemented or requested again upstream:
+
+- `ParsedDocument` atomically owns `SourceStorage`, `QualifiedReferenceArena`, and `RootNamespace`.
+- `ParsedDocument::range` is the canonical byte-span to source-range conversion.
+- `ParsedDocument::qualified_reference` and `qualified_declaration_name` resolve document-local
+  arena identities to source-backed views with segment spans and separator provenance.
+- `ast::visit::Visitor` is an exhaustive, source-ordered, pre-order structural traversal generated
+  from the shared traversal inventory. It is appropriate for context-free range/reference
+  collection. Policy-complete semantic lowering retains exhaustive scope matches, as the parser's
+  visitor contract requires.
+- `parse`, `parse_owned`, `parse_for_editor`, and `parse_for_editor_owned` return an atomic document
+  (directly or through `ParseResult.document`) and preserve explicit recovery diagnostics.
+
+Consequently, detached-AST compatibility helpers are not an upstream requirement. In particular,
+the deprecated `Span::to_lsp_range`, textual access through old `TypingRelationship.target` nodes,
+and `ParseResult.root` are APIs spec42 must stop expecting.
+
+### Downstream work required before deletion
+
+1. Change syntax-fidelity APIs to accept `&ParsedDocument`, not a detached `&RootNamespace` plus
+   separately supplied source text. Start with `sysml_tokens::ast_semantic_ranges` and its helpers.
+   Resolve every `QualifiedReferenceId` through the same document and convert every span with
+   `ParsedDocument::range`.
+2. Replace `sysml_tokens/src/ast_ranges.rs`'s legacy recursive descent with the upstream visitor
+   where classification is genuinely per node kind. Keep LSP token categories, precedence, and
+   delta encoding in spec42. Do not move editor presentation policy into the parser.
+3. Migrate the remaining legacy syntax consumers: language-service outline, formatting and code
+   actions; LSP syntax/symbol adapters and workspace parse state; workspace library closure and
+   parse-cache artifacts; KPAR package discovery; server parsing; tests and fuzz targets.
+4. Preserve the canonical semantic path already using `204ca48` in `sysml_resolution`; after the
+   workspace dependency points directly at that revision, remove only the `next` namespace from
+   imports.
+5. Replace the facade-owned manifest guard with a repository-wide guard that permits a parser
+   source/revision only in the root workspace dependency and requires all production manifests to
+   use `workspace = true`.
+6. Delete `crates/sysml_parser`, remove parser 0.54 from `Cargo.lock`, and prove that only one
+   `sysml-v2-parser` package identity remains with `cargo tree -d` and `cargo tree -i
+   sysml-v2-parser`.
+
+Facade deletion is complete only when clean and recovery corpus behavior remains equivalent across
+parser consumers, semantic-token golden tests retain classifications and exact ranges, outline and
+code-action tests retain exact symbols/edits, parse-cache round trips retain source and arena
+provenance, snapshot cold/warm parity passes, and the workspace/all-target check succeeds offline.
+No temporary source scanner, compatibility DTO, second parse, or silent fallback is an acceptable
+migration step.
+
+## Open semantic grammar and provenance gaps
+
+The entries below were verified by direct parser inspection, a scratch fixture run through
+`cargo run -p spec42-snapshot`, or both. Because `204ca48` descends from the recorded `7d4fd85`
+baseline, their tests and required contracts remain the starting point; each must still be rerun
+against the exact replacement revision when fixed.
+
+| Gap | Information unavailable to consumers | Minimum upstream acceptance evidence |
+| --- | --- | --- |
+| 57 | Authored name versus inherited effective name for anonymous specialization shorthand | Parse `:>` and `:>>` shorthand without publishing a declared name; retain the target reference and its provenance; cover repeated shorthand members without identity aliasing |
+| 58 | Authored `abstract` on connection-like definitions | Preserve the modifier and exact token span on connection, flow, allocation, and interface definitions; prove omitted versus authored states |
+| 59 | Direction combined with an end feature | Accept every normative prefix order, preserve direction and `end` independently, and retain stable recovery for invalid combinations |
+| 41 | Lexically distinguished implicit `that` self-reference | Produce a dedicated typed form that cannot collide with a user declaration; cover bare, cast, and member-access expressions |
+| 42 | Legal requirement-body member families | Add typed variants and source-ordered traversal/emission for each legal member; retain malformed members as explicit recovery nodes |
+| 52 | `readonly`, `variable`, and authored `unique` modifiers | Preserve presence and token spans independently from effective/default values; prove authored `unique` differs from omission |
+| 53 | Multiplicity, uniqueness, and short-name fields missing from selected nodes | Bring each named node to sibling-field parity and test authored, omitted, and malformed spellings |
+| 55 | Comment trivia/documentation fidelity | Decide and test whether doc-style trivia is syntax or trivia; if syntax, preserve kind, raw span, and normalized-text policy centrally |
+| 56 | Enumeration-body annotations, literal bodies, and initializers | Widen the body representation without dropping source order; preserve per-enum and per-literal documentation and initializer provenance |
+
+The contribution target is the pinned `lukewilliamboswell/sysml-v2-parser` repository. References
+below to `elan8/sysml-v2-parser#121` record where the arena-backed work originated; they do not
+authorize changing spec42 to follow a moving upstream branch. A fix is consumed only by updating
+the single full revision in spec42 and regenerating the lockfile through the normal dependency
+workflow.
 
 - Gap 57. The anonymous subsetting/redefinition shorthand member -- `:> annotatedElement :
   SysML::Usage;`, `:>> baseType = ...;` -- authors no declared name, but the parser populates the
@@ -25,8 +128,7 @@ a scratch fixture run through `cargo run -p spec42-snapshot`, or both.
   for this reason, and every conformance question about them answers from a self-loop.
 
   `sysml_resolution` cannot correct it locally. Excluding a specialization reference's own source
-  from its scope -- which it does for `Redefinition`, per
-  the reference's own source from redefinition scope -- is not enough here, because a metadata
+  from its scope -- which it does for `Redefinition` -- is not enough here, because a metadata
   definition commonly authors several of these shorthand members and they all acquire the same
   declared name: excluding only the reference's own source makes two of them resolve to each other,
   turning a self-loop into a two-cycle. Distinguishing a declared name from an effective one needs
