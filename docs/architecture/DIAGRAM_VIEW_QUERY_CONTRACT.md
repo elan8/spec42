@@ -35,6 +35,15 @@ publication, absent authoritative geometry, and incomplete relationship endpoint
 typed reasons. An empty resolved exposure is a valid complete empty projection when the view kind
 permits it. Elements outside the transitive semantic scope of resolved exposures are never added.
 
+Projection completeness is scoped to facts the selected query consumes. Publication-wide parser
+recovery or unsupported syntax is not itself a diagram reason: a selected exposure, required
+relationship, filter, or geometry fact must carry the affected outcome. A resolved exposure of a
+typed usage traverses the publication's canonical effective-feature query, preserving authored
+versus implied containment provenance. Until the semantic evaluation layer publishes an
+applicable element-filter result, an authored view filter leaves the non-filtered authoritative
+projection visible with `view-filter-application-unavailable`; no consumer guesses the filter from
+metadata names or element labels.
+
 The JSON product contains `schemaVersion`, dependency-complete `modelDigest`, `selectedView`,
 `documents`, `sources`, `references`, `completeness`, and `projection`. Documents, source ranges,
 and public semantic references are interned once. All integer references are zero-based foreign
