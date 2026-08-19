@@ -16,7 +16,7 @@ use hashbrown::HashTable;
 
 use crate::evaluation::EvaluationPolicy;
 use source_identity::SourceRole;
-use sysml_v2_parser_next::{
+use sysml_v2_parser::next::{
     ast::{
         ActionBranchBody, ActionDef, ActionDefBody, ActionDefBodyElement,
         ActionUsage as ParserActionUsage, ActionUsageBody, ActionUsageBodyElement, ActorUsage,
@@ -1768,7 +1768,7 @@ fn literal_expression_value(node: &Expression) -> Option<EvaluatedValue> {
 
 /// Extracts the raw unit token text authored inside `[...]` for a `value [unit]` quantity literal
 /// (`Expression::LiteralWithUnit`). The parser wraps the token as `Expression::Bracket(Box<
-/// Expression::Unit(String)>)` (see `sysml_v2_parser_next::ast::core::Expression::Unit`'s doc
+/// Expression::Unit(String)>)` (see `sysml_v2_parser::next::ast::core::Expression::Unit`'s doc
 /// comment: "Units may contain operators such as `/` and `^`, so they are not qualified
 /// references"), i.e. the unit is captured as free text, never as a `QualifiedReferenceId` that
 /// could participate in lexical name resolution -- `kg`/`SI::s`/`m/s^2` are all just opaque
@@ -4226,7 +4226,7 @@ impl SemanticModelBuilder {
             span: node.value.target.span.clone(),
             import: None,
         })?;
-        if let sysml_v2_parser_next::ast::Body::Brace { elements, .. } = &node.value.body {
+        if let sysml_v2_parser::next::ast::Body::Brace { elements, .. } = &node.value.body {
             self.lower_relationship_body_elements(document, Some(declaration), elements)?;
         }
         Ok(())
@@ -5264,7 +5264,7 @@ impl SemanticModelBuilder {
         &mut self,
         document: DocumentId,
         owner: DeclarationId,
-        node: &Node<sysml_v2_parser_next::ast::EnumeratedValue>,
+        node: &Node<sysml_v2_parser::next::ast::EnumeratedValue>,
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declared_name(&node.value.name)?;
         let declaration = self.push_typed_declaration(
@@ -7534,7 +7534,7 @@ impl SemanticModelBuilder {
         &mut self,
         document: DocumentId,
         declaration: DeclarationId,
-        clause: &sysml_v2_parser_next::ast::PayloadClause,
+        clause: &sysml_v2_parser::next::ast::PayloadClause,
     ) -> Result<(), ConstructionError> {
         let Some(type_name) = clause.type_name else {
             return Ok(());
@@ -13608,7 +13608,7 @@ impl SemanticModelBuilder {
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
-        node: &Node<sysml_v2_parser_next::ast::IndividualDef>,
+        node: &Node<sysml_v2_parser::next::ast::IndividualDef>,
     ) -> Result<(), ConstructionError> {
         let name = node
             .value
@@ -13663,7 +13663,7 @@ impl SemanticModelBuilder {
         document: DocumentId,
         owner: DeclarationId,
         family: UnsupportedFamily,
-        node: &Node<sysml_v2_parser_next::ast::Connect>,
+        node: &Node<sysml_v2_parser::next::ast::Connect>,
     ) -> Result<(), ConstructionError> {
         let declaration = self.push_typed_declaration(
             document,
@@ -13841,7 +13841,7 @@ impl SemanticModelBuilder {
         &mut self,
         document: DocumentId,
         source: DeclarationId,
-        relationship: &Node<sysml_v2_parser_next::ast::TypingRelationship>,
+        relationship: &Node<sysml_v2_parser::next::ast::TypingRelationship>,
     ) -> Result<(), ConstructionError> {
         self.lower_typing_relationship_impl(document, source, relationship, false)
     }
@@ -13854,12 +13854,12 @@ impl SemanticModelBuilder {
         &mut self,
         document: DocumentId,
         source: DeclarationId,
-        relationship: &Node<sysml_v2_parser_next::ast::TypingRelationship>,
+        relationship: &Node<sysml_v2_parser::next::ast::TypingRelationship>,
         variation: bool,
     ) -> Result<(), ConstructionError> {
         let kind = match relationship.value.kind {
-            sysml_v2_parser_next::ast::TypingKind::Typing => ReferenceKind::FeatureTyping,
-            sysml_v2_parser_next::ast::TypingKind::Subclassification => {
+            sysml_v2_parser::next::ast::TypingKind::Typing => ReferenceKind::FeatureTyping,
+            sysml_v2_parser::next::ast::TypingKind::Subclassification => {
                 ReferenceKind::Subclassification
             }
         };
@@ -14229,7 +14229,7 @@ impl SemanticModelBuildCoordinator {
         }
 
         let parse_started = Instant::now();
-        let parsed: Vec<(Box<str>, SourceRole, sysml_v2_parser_next::ParseResult)> = match schedule
+        let parsed: Vec<(Box<str>, SourceRole, sysml_v2_parser::next::ParseResult)> = match schedule
         {
             BuildSchedule::Sequential => sources
                 .into_iter()
@@ -14292,11 +14292,11 @@ impl SemanticModelBuildCoordinator {
 
     fn parse_source(
         source: OwnedSourceRecord,
-    ) -> Result<(Box<str>, SourceRole, sysml_v2_parser_next::ParseResult), CoordinatorError> {
+    ) -> Result<(Box<str>, SourceRole, sysml_v2_parser::next::ParseResult), CoordinatorError> {
         Ok((
             source.identity,
             source.role,
-            sysml_v2_parser_next::parse_for_editor_owned(source.content),
+            sysml_v2_parser::next::parse_for_editor_owned(source.content),
         ))
     }
 }
@@ -14322,7 +14322,7 @@ pub(crate) mod resolver;
 #[cfg(test)]
 mod tests {
     use super::*;
-    use sysml_v2_parser_next::ast::{QualifiedReferenceArena, RootNamespace, SourceStorage};
+    use sysml_v2_parser::next::ast::{QualifiedReferenceArena, RootNamespace, SourceStorage};
 
     fn empty_document() -> Arc<ParsedDocument> {
         Arc::new(ParsedDocument {

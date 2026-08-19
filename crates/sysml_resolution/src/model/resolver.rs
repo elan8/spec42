@@ -1748,10 +1748,10 @@ impl ResolvedSemanticModel {
                         None => UNCODED_PARSE_ERROR.into(),
                     }),
                     severity: match error.severity {
-                        Some(sysml_v2_parser_next::DiagnosticSeverity::Warning) => {
+                        Some(sysml_v2_parser::next::DiagnosticSeverity::Warning) => {
                             DiagnosticSeverity::Warning
                         }
-                        Some(sysml_v2_parser_next::DiagnosticSeverity::Error) | None => {
+                        Some(sysml_v2_parser::next::DiagnosticSeverity::Error) | None => {
                             DiagnosticSeverity::Error
                         }
                     },

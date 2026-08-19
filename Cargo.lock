@@ -1161,7 +1161,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2",
- "sysml-v2-parser 0.54.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "spec42-sysml-parser",
  "tempfile",
  "thiserror 2.0.19",
  "walkdir",
@@ -1174,7 +1174,7 @@ version = "0.50.0"
 dependencies = [
  "serde",
  "serde_json",
- "sysml-v2-parser 0.54.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "spec42-sysml-parser",
  "sysml_query",
  "sysml_source",
  "tempfile",
@@ -1272,7 +1272,7 @@ dependencies = [
  "server",
  "sha2",
  "spec42-generator-protocol",
- "sysml-v2-parser 0.54.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "spec42-sysml-parser",
  "sysml_diagnostics",
  "sysml_query",
  "sysml_source",
@@ -1840,7 +1840,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2",
- "sysml-v2-parser 0.54.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "spec42-sysml-parser",
  "sysml_query",
  "tempfile",
  "tokio",
@@ -1981,6 +1981,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "spec42-sysml-parser"
+version = "0.50.0"
+dependencies = [
+ "sysml-v2-parser 0.54.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sysml-v2-parser 0.54.0 (git+https://github.com/lukewilliamboswell/sysml-v2-parser.git?rev=204ca48000c452970beb7568d84e0ac80898a767)",
+]
+
+[[package]]
 name = "spin"
 version = "0.9.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2098,7 +2106,7 @@ dependencies = [
  "rayon",
  "serde",
  "source_identity",
- "sysml-v2-parser 0.54.0 (git+https://github.com/lukewilliamboswell/sysml-v2-parser.git?rev=204ca48000c452970beb7568d84e0ac80898a767)",
+ "spec42-sysml-parser",
 ]
 
 [[package]]
@@ -2114,7 +2122,7 @@ name = "sysml_tokens"
 version = "0.50.0"
 dependencies = [
  "serde",
- "sysml-v2-parser 0.54.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "spec42-sysml-parser",
 ]
 
 [[package]]
@@ -2966,8 +2974,8 @@ dependencies = [
  "serde_json",
  "sha2",
  "source_identity",
+ "spec42-sysml-parser",
  "syn 2.0.119",
- "sysml-v2-parser 0.54.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "sysml_diagnostics",
  "sysml_query",
  "sysml_source",

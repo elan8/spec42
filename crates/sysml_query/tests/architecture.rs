@@ -163,7 +163,7 @@ fn immutable_snapshot_runner_has_an_exact_graph_free_dependency_boundary() {
             "rayon".to_owned(),
             "serde".to_owned(),
             "source_identity".to_owned(),
-            "sysml-v2-parser-next".to_owned(),
+            "sysml-v2-parser".to_owned(),
         ]),
         "the immutable resolution owner dependency boundary changed"
     );

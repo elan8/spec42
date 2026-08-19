@@ -11,5 +11,5 @@ blake3.workspace = true
 hashbrown = "0.17"
 rayon = "1.12"
 source_identity = { path = "../source_identity" }
-sysml-v2-parser-next.workspace = true
+sysml-v2-parser.workspace = true
 serde.workspace = true
