@@ -3381,8 +3381,6 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     | ReferenceKind::TransitionEffect
                     | ReferenceKind::SatisfySource
                     | ReferenceKind::SatisfyTarget
-                    | ReferenceKind::AllocateSource
-                    | ReferenceKind::AllocateTarget
                     | ReferenceKind::BindSource
                     | ReferenceKind::BindTarget
                     | ReferenceKind::Variant
@@ -3421,7 +3419,13 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         .enumerate()
         .filter(|(index, _)| *index >= settled)
         .filter_map(|(index, reference)| {
-            (reference.kind() == ReferenceKind::MemberAccessOperand).then_some(index)
+            matches!(
+                reference.kind(),
+                ReferenceKind::MemberAccessOperand
+                    | ReferenceKind::AllocateSource
+                    | ReferenceKind::AllocateTarget
+            )
+            .then_some(index)
         })
         .collect();
     let mut work = ResolutionWork {

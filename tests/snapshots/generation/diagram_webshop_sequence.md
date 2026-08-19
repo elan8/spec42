@@ -24,12 +24,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
   )
   (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml"
     (diagnostics
-      (diagnostic
-        (severity information)
-        (code "missing_final_state")
-        (source "semantic")
-        (range (start 18 4) (end 34 5))
-      )
     )
   )
   (document "memory://snapshot/examples/webshop/WebShopRequirements.sysml"
@@ -38,12 +32,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
   )
   (document "memory://snapshot/examples/webshop/webshop.sysml"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 36 4) (end 36 62))
-      )
     )
   )
 )
@@ -51,7 +39,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:b1208d517edb32b71ea6e2975013c5c3af9157c67de7c198b1bf60798c3d76d7") (contract-version "parser-owned-resolution-v1") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:8a3b70d77e0138f00cb01c83debd335ac4ab024f20d39baf74d5ecd3eee99111") (contract-version "parser-owned-resolution-v1") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/examples/webshop/Views.sysml") (qualified-name "Views"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/Views.sysml") (path (named (kind package) (name "Views")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -331,7 +319,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::InventoryReserved"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine"))) (kind state-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (anonymous (kind initial-state) (ordinal 0))))) (kind initial-state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (initialState (reference "created")))))
-    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::completed"))) (kind state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Completed")))))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::completed"))) (kind final-state) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::created"))) (kind state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Created")))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_inventory"))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionSource (reference "paid")) (transitionTarget (reference "failed")) (transitionTrigger (reference "InventoryRejected")))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_payment"))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionSource (reference "paymentPending")) (transitionTarget (reference "failed")) (transitionTrigger (reference "PaymentDeclined")))))
@@ -376,6 +364,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (declaration (id (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (anonymous (kind satisfy) (ordinal 2))))) (kind satisfy) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (satisfySource (reference "paymentReliability")) (memberAccessOperand (reference "webshopSystem::paymentsService")))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (anonymous (kind satisfy) (ordinal 3))))) (kind satisfy) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (satisfySource (reference "eventDurability")) (memberAccessOperand (reference "webshopSystem::ordersEventsTopic")))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (anonymous (kind satisfy) (ordinal 4))))) (kind satisfy) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (satisfySource (reference "securityBoundary")) (memberAccessOperand (reference "webshopSystem::apiGateway")))))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/webshop.sysml") (qualified-name "WebShopExample::"))) (kind allocate) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (allocateSource (reference "webshopSystem::checkoutService")) (allocateTarget (reference "commerceCluster")))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/webshop.sysml") (qualified-name "WebShopExample::CommerceCluster"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "KubernetesCluster")))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (named (kind part-def) (name "CommerceCluster")) (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "clusterName")))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (named (kind part-def) (name "CommerceCluster")) (anonymous (kind attribute) (ordinal 1))))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "nodeName")))))
@@ -1118,9 +1107,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (reference (id (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (anonymous (kind initial-state) (ordinal 0))))) (kind initialState) (ordinal 0))
       (authored-target "created")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::created")))))
-    (reference (id (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::completed"))) (kind featureTyping) (ordinal 0))
-      (authored-target "Completed")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::Completed")))))
     (reference (id (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::created"))) (kind featureTyping) (ordinal 0))
       (authored-target "Created")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::Created")))))
@@ -1235,6 +1221,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (reference (id (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (anonymous (kind satisfy) (ordinal 4))))) (kind satisfySource) (ordinal 0))
       (authored-target "securityBoundary")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/webshop/webshop.sysml") (qualified-name "WebShopExample::securityBoundary")))))
+    (reference (id (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (qualified-name "WebShopExample::"))) (kind allocateSource) (ordinal 0))
+      (authored-target "webshopSystem::checkoutService")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::WebShopSystem::checkoutService")))))
+    (reference (id (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (qualified-name "WebShopExample::"))) (kind allocateTarget) (ordinal 0))
+      (authored-target "commerceCluster")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/webshop/webshop.sysml") (qualified-name "WebShopExample::commerceCluster")))))
     (reference (id (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (anonymous (kind satisfy) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0))
       (authored-target "webshopSystem::checkoutService")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::WebShopSystem::checkoutService")))))
@@ -1533,7 +1525,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind typing) (direction out) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::CheckoutPipeline::reserveInventory::stockReserved"))) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Boolean"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::CheckoutPipeline::reserveInventory::stockReserved"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (direction out) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::CheckoutPipeline::validateCart::cartValid"))) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Boolean"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::CheckoutPipeline::validateCart::cartValid"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind initialState) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (anonymous (kind initial-state) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::created"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (anonymous (kind initial-state) (ordinal 0))))) (kind initialState) (ordinal 0)))
-    (relationship (kind typing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::completed"))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::Completed"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::completed"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::created"))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::Created"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::created"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind transitionSource) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_inventory"))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::paid"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_inventory"))) (kind transitionSource) (ordinal 0)))
     (relationship (kind transitionTarget) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_inventory"))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::failed"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_inventory"))) (kind transitionTarget) (ordinal 0)))
@@ -1567,6 +1558,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind satisfySource) (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (anonymous (kind satisfy) (ordinal 2))))) (target (node (document "memory://snapshot/examples/webshop/webshop.sysml") (qualified-name "WebShopExample::paymentReliability"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (anonymous (kind satisfy) (ordinal 2))))) (kind satisfySource) (ordinal 0)))
     (relationship (kind satisfySource) (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (anonymous (kind satisfy) (ordinal 3))))) (target (node (document "memory://snapshot/examples/webshop/webshop.sysml") (qualified-name "WebShopExample::eventDurability"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (anonymous (kind satisfy) (ordinal 3))))) (kind satisfySource) (ordinal 0)))
     (relationship (kind satisfySource) (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (anonymous (kind satisfy) (ordinal 4))))) (target (node (document "memory://snapshot/examples/webshop/webshop.sysml") (qualified-name "WebShopExample::securityBoundary"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (anonymous (kind satisfy) (ordinal 4))))) (kind satisfySource) (ordinal 0)))
+    (relationship (kind allocateSource) (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (qualified-name "WebShopExample::"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::WebShopSystem::checkoutService"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (qualified-name "WebShopExample::"))) (kind allocateSource) (ordinal 0)))
+    (relationship (kind allocateTarget) (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (qualified-name "WebShopExample::"))) (target (node (document "memory://snapshot/examples/webshop/webshop.sysml") (qualified-name "WebShopExample::commerceCluster"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (qualified-name "WebShopExample::"))) (kind allocateTarget) (ordinal 0)))
     (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (anonymous (kind satisfy) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::WebShopSystem::checkoutService"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (anonymous (kind satisfy) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0)))
     (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (anonymous (kind satisfy) (ordinal 1))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::WebShopSystem::apiGateway"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (anonymous (kind satisfy) (ordinal 1))))) (kind memberAccessOperand) (ordinal 0)))
     (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (anonymous (kind satisfy) (ordinal 2))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::WebShopSystem::paymentsService"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (anonymous (kind satisfy) (ordinal 2))))) (kind memberAccessOperand) (ordinal 0)))
@@ -3258,9 +3251,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Boolean")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::ScalarValue")) (scopes any))
     )
-    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::Completed")))
-      (subtype (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::completed")) (scopes any))
-    )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::Created")))
       (subtype (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::created")) (scopes any))
     )
@@ -3278,9 +3268,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::completed")))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine")))
-      (type (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::Completed")) (provenance authored))
-      (effective-type (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::Completed")) (source direct))
-      (supertype (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::Completed")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::created")))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine")))
@@ -4727,11 +4714,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::created")))))
     )
   )
-  (query (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (range (start 25 26) (end 25 35)) (probe (position 25 26))
-    (reference (id (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::completed"))) (kind featureTyping) (ordinal 0) (authored-target "Completed")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::Completed")))))
-    )
-  )
   (query (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (range (start 21 24) (end 21 31)) (probe (position 21 24))
     (reference (id (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::created"))) (kind featureTyping) (ordinal 0) (authored-target "Created")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::Created")))))
@@ -4922,6 +4904,16 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/webshop/webshop.sysml") (qualified-name "WebShopExample::securityBoundary")))))
     )
   )
+  (query (document "memory://snapshot/examples/webshop/webshop.sysml") (range (start 36 13) (end 36 42)) (probe (position 36 13))
+    (reference (id (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (qualified-name "WebShopExample::"))) (kind allocateSource) (ordinal 0) (authored-target "webshopSystem::checkoutService")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::WebShopSystem::checkoutService")))))
+    )
+  )
+  (query (document "memory://snapshot/examples/webshop/webshop.sysml") (range (start 36 46) (end 36 61)) (probe (position 36 46))
+    (reference (id (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (qualified-name "WebShopExample::"))) (kind allocateTarget) (ordinal 0) (authored-target "commerceCluster")
+      (outcome (status resolved) (target (node (document "memory://snapshot/examples/webshop/webshop.sysml") (qualified-name "WebShopExample::commerceCluster")))))
+    )
+  )
   (query (document "memory://snapshot/examples/webshop/webshop.sysml") (range (start 30 31) (end 30 60)) (probe (position 30 31))
     (reference (id (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (anonymous (kind satisfy) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0) (authored-target "webshopSystem::checkoutService")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::WebShopSystem::checkoutService")))))
@@ -5034,7 +5026,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
 ~~~json
 {
   "schemaVersion": 2,
-  "modelDigest": "blake3:cc14a04713846ae0857e1d5ca2425c64c71864b23c16612830a1695834d4dcb4",
+  "modelDigest": "blake3:d8dc237e10b754859db9a2a7c2491a288769ebdd76c7c18a5ae8c37ba9d10fbe",
   "documents": [
     {
       "uri": "memory://snapshot/examples/webshop/Views.sysml",

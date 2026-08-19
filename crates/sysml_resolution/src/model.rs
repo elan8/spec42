@@ -20,27 +20,29 @@ use sysml_v2_parser_next::{
     ast::{
         ActionBranchBody, ActionDef, ActionDefBody, ActionDefBodyElement,
         ActionUsage as ParserActionUsage, ActionUsageBody, ActionUsageBodyElement, ActorUsage,
-        AliasBody, AliasDef, Allocate, AllocationDef, AnalysisCaseDef,
-        AnalysisCaseUsage as ParserAnalysisCaseUsage, AnnotatingMember, AssertConstraintMember,
-        AssignStmt, AttributeBody, AttributeBodyElement, AttributeDef, AttributeUsage,
-        BinaryOperator, Bind, BindingConnectorUsage, CalcDef, CalcDefBody, CalcDefBodyElement,
-        CalcUsage as ParserCalcUsage, CaseDef, CaseReturnDecl, CaseUsage as ParserCaseUsage,
-        ClassDef, CommentAnnotation, ConcernUsage as ParserConcernUsage, ConnectStmt,
-        ConnectionDef, ConnectionDefBody, ConnectionDefBodyElement, ConnectionEnd,
-        ConnectionUsageMember as ParserConnectionUsage, ConstraintDef, ConstraintDefBody,
-        ConstraintDefBodyElement, ConstraintUsage as ParserConstraintUsage, DefaultReferenceUsage,
-        DefinitionBody, DefinitionBodyElement, DefinitionPrefix, Dependency, DoAction, DocComment,
-        EndDecl, EndIdentity, EntryAction, EnumDef, EnumerationBody, EnumerationBodyElement,
-        EnumerationUsage as ParserEnumerationUsage, ExitAction, ExposeMember, Expression,
-        ExtendedDefinition, FeatureValue, FeatureValueKind as ParserFeatureValueKind, FinalState,
-        FirstMergeBody, FirstMergeBodyElement, FirstStmt, FlowDef, FlowUsage, ForLoop, FrameMember,
-        IfStmt, Import, ImportShape, InOut, InOutDecl, IncludeUseCase, InterfaceDef,
-        InterfaceDefBody, InterfaceDefBodyElement, InterfaceUsage as ParserInterfaceUsage,
-        InterfaceUsageBodyElement, ItemDef, ItemUsage as ParserItemUsage, KermlBindingMember,
-        KermlClassifierDecl, KermlClassifierKeyword, KermlConnectorEnd, KermlConnectorMember,
-        KermlEndMember, KermlFeatureKind, KermlFeatureMember, KermlInvariantMember,
-        KermlSuccessionMember, KermlTypeRelationship, KermlTypeRelationshipKeyword, LibraryPackage,
-        Membership, MembershipKind as ParserMembershipKind, MetadataAnnotation, MetadataDef,
+        AliasBody, AliasDef, Allocate, AllocationDef, AllocationUsage as ParserAllocationUsage,
+        AnalysisCaseDef, AnalysisCaseUsage as ParserAnalysisCaseUsage, AnnotatingMember,
+        AssertConstraintMember, AssignStmt, AttributeBody, AttributeBodyElement, AttributeDef,
+        AttributeUsage, BinaryOperator, Bind, BindingConnectorUsage, CalcDef, CalcDefBody,
+        CalcDefBodyElement, CalcUsage as ParserCalcUsage, CaseDef, CaseReturnDecl,
+        CaseUsage as ParserCaseUsage, ClassDef, CommentAnnotation,
+        ConcernUsage as ParserConcernUsage, ConnectStmt, ConnectionDef, ConnectionDefBody,
+        ConnectionDefBodyElement, ConnectionEnd, ConnectionUsageMember as ParserConnectionUsage,
+        ConstraintDef, ConstraintDefBody, ConstraintDefBodyElement,
+        ConstraintUsage as ParserConstraintUsage, DefaultReferenceUsage, DefinitionBody,
+        DefinitionBodyElement, DefinitionPrefix, Dependency, DoAction, DocComment, EndDecl,
+        EndIdentity, EntryAction, EnumDef, EnumerationBody, EnumerationBodyElement,
+        EnumerationUsage as ParserEnumerationUsage, ExhibitState as ParserExhibitState, ExitAction,
+        ExposeMember, Expression, ExtendedDefinition, FeatureValue,
+        FeatureValueKind as ParserFeatureValueKind, FinalState, FirstMergeBody,
+        FirstMergeBodyElement, FirstStmt, FlowDef, FlowUsage, ForLoop, FrameMember, IfStmt, Import,
+        ImportShape, InOut, InOutDecl, IncludeUseCase, InterfaceDef, InterfaceDefBody,
+        InterfaceDefBodyElement, InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement,
+        ItemDef, ItemUsage as ParserItemUsage, KermlBindingMember, KermlClassifierDecl,
+        KermlClassifierKeyword, KermlConnectorEnd, KermlConnectorMember, KermlEndMember,
+        KermlFeatureKind, KermlFeatureMember, KermlInvariantMember, KermlSuccessionMember,
+        KermlTypeRelationship, KermlTypeRelationshipKeyword, LibraryPackage, Membership,
+        MembershipKind as ParserMembershipKind, MetadataAnnotation, MetadataDef,
         MetadataUsage as ParserMetadataUsage, Multiplicity, NamespaceDecl, Node,
         OccurrenceBodyElement, OccurrenceDef, OccurrencePortionKind as ParserOccurrencePortionKind,
         OccurrenceUsage as ParserOccurrenceUsage, OccurrenceUsageBody, Package, PackageBody,
@@ -3287,6 +3289,23 @@ impl SemanticModelBuilder {
         chain: &[QualifiedReferenceId],
         span: Span,
     ) -> Result<AuthoredReferenceId, ConstructionError> {
+        self.push_member_access_reference_with_kind(
+            source,
+            document,
+            ReferenceKind::MemberAccessOperand,
+            chain,
+            span,
+        )
+    }
+
+    fn push_member_access_reference_with_kind(
+        &mut self,
+        source: DeclarationId,
+        document: DocumentId,
+        kind: ReferenceKind,
+        chain: &[QualifiedReferenceId],
+        span: Span,
+    ) -> Result<AuthoredReferenceId, ConstructionError> {
         if chain.is_empty()
             || source.index() >= self.declarations.len()
             || document.index() >= self.documents.len()
@@ -3316,7 +3335,6 @@ impl SemanticModelBuilder {
         segments.clear();
         self.path_scratch = segments;
         let path = path?;
-        let kind = ReferenceKind::MemberAccessOperand;
         let ordinal = self
             .next_reference_ordinals
             .entry((source, kind))
@@ -3873,11 +3891,9 @@ impl SemanticModelBuilder {
             PackageBodyElement::AllocationDef(node) => {
                 self.lower_allocation_def(document, owner, node)?
             }
-            PackageBodyElement::AllocationUsage(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::AllocationUsage(node) => {
+                self.lower_allocation_usage(document, owner, node)?
+            }
             PackageBodyElement::FlowDef(node) => self.lower_flow_def(document, owner, node)?,
             PackageBodyElement::FlowUsage(node) => self.push_unsupported(
                 document,
@@ -4039,11 +4055,9 @@ impl SemanticModelBuilder {
                     node.span.clone(),
                 ),
             },
-            PackageBodyElement::ExhibitState(node) => self.push_unsupported(
-                document,
-                UnsupportedFamily::PackageMember,
-                node.span.clone(),
-            ),
+            PackageBodyElement::ExhibitState(node) => {
+                self.lower_exhibit_state(document, owner, UnsupportedFamily::PackageMember, node)?
+            }
             PackageBodyElement::IncludeUseCase(node) => self.push_unsupported(
                 document,
                 UnsupportedFamily::PackageMember,
@@ -4462,10 +4476,19 @@ impl SemanticModelBuilder {
                     PartDefBodyElement::KermlClassifier(node) => {
                         self.lower_kerml_classifier_decl(document, Some(declaration), node)?;
                     }
+                    PartDefBodyElement::ExhibitState(node) => {
+                        self.lower_exhibit_state(
+                            document,
+                            Some(declaration),
+                            UnsupportedFamily::PartDefinitionMember,
+                            node,
+                        )?;
+                    }
+                    PartDefBodyElement::AllocationUsage(node) => {
+                        self.lower_allocation_usage(document, Some(declaration), node)?;
+                    }
                     PartDefBodyElement::MetadataKeywordUsage(_)
-                    | PartDefBodyElement::FlowUsage(_)
-                    | PartDefBodyElement::ExhibitState(_)
-                    | PartDefBodyElement::AllocationUsage(_) => self.push_unsupported(
+                    | PartDefBodyElement::FlowUsage(_) => self.push_unsupported(
                         document,
                         UnsupportedFamily::PartDefinitionMember,
                         element.span.clone(),
@@ -5667,11 +5690,10 @@ impl SemanticModelBuilder {
     /// Lowers one `KermlConnectorEnd` -- the connector-end shape shared by KerML connector,
     /// binding and succession members and by a `flow`/`allocation` usage's `from`/`to` clauses --
     /// as an authored reference of `kind`, mirroring `lower_binding_connector_operand` but
-    /// operating on `KermlConnectorEnd.target` rather than a bare `QualifiedReferenceId` directly.
-    /// The target is already a structured `QualifiedReferenceId` (not a general `Expression`,
-    /// unlike `ConnectionEnd`), so it resolves through the same `DeclarationDomain::Any` lexical
-    /// lookup. The end's own `multiplicity` and `references` chain are not modeled as distinct
-    /// facts here.
+    /// operating on `KermlConnectorEnd.target` rather than a general expression. Allocation ends
+    /// preserve their directional kind while dotted paths use the canonical type-directed member
+    /// resolver; other KerML end kinds retain their established qualified lookup. The end's own
+    /// `multiplicity` and `references` chain are not modeled as distinct facts here.
     fn lower_kerml_connector_end(
         &mut self,
         document: DocumentId,
@@ -5679,6 +5701,12 @@ impl SemanticModelBuilder {
         kind: ReferenceKind,
         end: &Node<KermlConnectorEnd>,
     ) -> Result<(), ConstructionError> {
+        if matches!(
+            kind,
+            ReferenceKind::AllocateSource | ReferenceKind::AllocateTarget
+        ) {
+            return self.push_satisfy_reference(document, owner, kind, end.value.target);
+        }
         let span = self.documents[document.index()]
             .parsed
             .qualified_reference(end.value.target)
@@ -9530,7 +9558,20 @@ impl SemanticModelBuilder {
             .iter()
             .any(|segment| segment.separator_before == Some(ReferenceSeparator::Dot))
         {
-            self.push_member_access_reference(declaration, document, &[reference], span)?;
+            if matches!(
+                kind,
+                ReferenceKind::AllocateSource | ReferenceKind::AllocateTarget
+            ) {
+                self.push_member_access_reference_with_kind(
+                    declaration,
+                    document,
+                    kind,
+                    &[reference],
+                    span,
+                )?;
+            } else {
+                self.push_member_access_reference(declaration, document, &[reference], span)?;
+            }
             return Ok(());
         }
         self.push_reference(PendingReference {
@@ -9851,6 +9892,62 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<ParserStateUsage>,
     ) -> Result<(), ConstructionError> {
+        let name = self.intern_declared_name(&node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::StateUsage,
+            name,
+            node.span.clone(),
+            DeclarationFacts {
+                modifiers: DeclarationModifiers {
+                    is_abstract: node.value.is_abstract,
+                    individual: node.value.is_individual,
+                    derived: node.value.is_derived,
+                    reference: node.value.is_reference,
+                    ..DeclarationModifiers::default()
+                },
+                direction: direction_fact(node.value.direction.as_ref()),
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::FeatureMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(relationship) = &node.value.typing {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.subsets {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.redefines {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        self.lower_state_def_body(document, declaration, &node.value.body)
+    }
+
+    /// Lowers the declaration-shaped `exhibit state name : Type` form using the parser's typed
+    /// state-usage facts. The reference-only `exhibit qualified::state` form denotes a distinct
+    /// exhibit relationship which this publication does not yet own, so it remains explicitly
+    /// unsupported rather than being misrepresented as feature typing.
+    fn lower_exhibit_state(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        unsupported_family: UnsupportedFamily,
+        node: &Node<ParserExhibitState>,
+    ) -> Result<(), ConstructionError> {
+        if node.value.state_reference.is_some() {
+            self.push_unsupported(document, unsupported_family, node.span.clone());
+            return Ok(());
+        }
         let name = self.intern_declared_name(&node.value.name)?;
         let declaration = self.push_typed_declaration(
             document,
@@ -13169,6 +13266,97 @@ impl SemanticModelBuilder {
         )?;
         if let Some(relationship) = &node.value.specializes {
             self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        let DefinitionBody::Brace { elements, .. } = &node.value.body else {
+            return Ok(());
+        };
+        for element in elements {
+            match &element.value {
+                DefinitionBodyElement::Error(error) => {
+                    self.push_recovery(document, error.span.clone());
+                }
+                DefinitionBodyElement::OccurrenceMember(member) => {
+                    self.lower_occurrence_body_element(document, declaration, member)?;
+                }
+                DefinitionBodyElement::Unsupported(node) => self.push_unsupported(
+                    document,
+                    UnsupportedFamily::ParserUnsupported,
+                    node.span.clone(),
+                ),
+            }
+        }
+        Ok(())
+    }
+
+    /// Lowers a named `allocation` usage from the parser-owned usage header and connector ends.
+    /// This is distinct from the anonymous `allocate source to target` statement lowered by
+    /// `lower_allocate`, but publishes the same directional endpoint kinds.
+    fn lower_allocation_usage(
+        &mut self,
+        document: DocumentId,
+        owner: Option<DeclarationId>,
+        node: &Node<ParserAllocationUsage>,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_name(&node.value.name)?;
+        let declaration = self.push_typed_declaration(
+            document,
+            owner,
+            DeclarationKind::Allocate,
+            Some(name),
+            node.span.clone(),
+            DeclarationFacts::none(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::FeatureMembership,
+            )?,
+            node.value.membership.span.clone(),
+        )?;
+        if let Some(target) = node.value.type_name {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(target)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span
+                .clone();
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::FeatureTyping,
+                document,
+                local: target,
+                flags: RelationshipFlags {
+                    conjugated: node.value.type_is_conjugated,
+                    ..RelationshipFlags::default()
+                },
+                span,
+                import: None,
+            })?;
+        }
+        if let Some(relationship) = &node.value.subsets {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.redefines {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(source) = &node.value.source {
+            self.lower_kerml_connector_end(
+                document,
+                declaration,
+                ReferenceKind::AllocateSource,
+                source,
+            )?;
+        }
+        if let Some(target) = &node.value.target {
+            self.lower_kerml_connector_end(
+                document,
+                declaration,
+                ReferenceKind::AllocateTarget,
+                target,
+            )?;
         }
         let DefinitionBody::Brace { elements, .. } = &node.value.body else {
             return Ok(());
