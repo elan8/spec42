@@ -3227,11 +3227,15 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     if let Some(seed) = seed {
         outcomes[..settled].copy_from_slice(seed);
     }
-    let import_slots: Vec<usize> = references
+    let all_import_slots: Vec<usize> = references
         .iter()
         .enumerate()
-        .filter(|(index, _)| *index >= settled)
         .filter_map(|(index, reference)| supported_import_domain(reference).map(|_| index))
+        .collect();
+    let import_slots: Vec<usize> = all_import_slots
+        .iter()
+        .copied()
+        .filter(|index| *index >= settled)
         .collect();
     // Subclassification is resolved first because the ancestor-scoped inherited-member lookup used
     // by FeatureTyping is built directly from settled Subclassification outcomes; splitting the two
@@ -3477,7 +3481,7 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             declarations,
             &memberships,
             references,
-            &import_slots,
+            &all_import_slots,
             &exported_names,
             &exported_imports,
             &outcomes,

@@ -4118,7 +4118,17 @@ package P {
         )
     }
 
-    fn seeded_and_unseeded(workspace: &str) -> (String, String) {
+    fn seeded_and_unseeded_with_library(library_source: &str, workspace: &str) -> (String, String) {
+        let library = || {
+            std::sync::Arc::new(
+                build_library_stratum(vec![SourceInput::new(
+                    "memory://lib.sysml",
+                    library_source.to_string(),
+                    SourceKind::StandardLibrary,
+                )])
+                .expect("library stratum"),
+            )
+        };
         let seeded = build(
             BuildRequest::with_library(
                 vec![SourceInput::new(
@@ -4128,7 +4138,7 @@ package P {
                 )],
                 ConstructionSchedule::Sequential,
                 "contract-v1",
-                library_stratum(),
+                library(),
             )
             .expect("seeded request"),
         )
@@ -4143,7 +4153,7 @@ package P {
                     ),
                     SourceInput::new(
                         "memory://lib.sysml",
-                        LIBRARY_SOURCE.to_string(),
+                        library_source.to_string(),
                         SourceKind::StandardLibrary,
                     ),
                 ],
@@ -4174,6 +4184,10 @@ package P {
         (render(&seeded), render(&unseeded))
     }
 
+    fn seeded_and_unseeded(workspace: &str) -> (String, String) {
+        seeded_and_unseeded_with_library(LIBRARY_SOURCE, workspace)
+    }
+
     /// Reusing settled outcomes is an optimisation, so it has to be invisible. Everything the
     /// publication owns -- facts, type answers and diagnostics -- must come out identical.
     #[test]
@@ -4188,6 +4202,39 @@ package P {
         assert!(
             seeded.contains("Lib::Base"),
             "the workspace should reach the library's own supertypes, got: {seeded}"
+        );
+    }
+
+    /// A settled library contributes its resolved import references to the effective import
+    /// indexes rebuilt for a workspace publication. Omitting the settled prefix makes a public
+    /// import disappear only on the warm path, so a qualified metadata filter becomes unresolved
+    /// even though the same source resolves in a cold/full build.
+    #[test]
+    fn a_seeded_publication_preserves_publicly_reexported_filter_metadata() {
+        let library = concat!(
+            "standard library package Lib { ",
+            "public import Systems::*; ",
+            "package Systems { metadata def PartUsage; } ",
+            "}"
+        );
+        let workspace = concat!(
+            "package W { ",
+            "part candidate; ",
+            "view selected { expose candidate; filter @Lib::PartUsage; } ",
+            "}"
+        );
+        let (seeded, unseeded) = seeded_and_unseeded_with_library(library, workspace);
+        assert_eq!(
+            seeded, unseeded,
+            "publicly re-exported metadata must resolve identically with a library stratum"
+        );
+        assert!(
+            seeded.contains("(filterMetadataTest (reference \"Lib::PartUsage\"))"),
+            "the parity fixture must exercise the metadata filter reference: {seeded}"
+        );
+        assert!(
+            !seeded.contains("(unresolved (reference \"Lib::PartUsage\"))"),
+            "the publicly re-exported metadata reference must settle: {seeded}"
         );
     }
 
