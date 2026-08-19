@@ -155,7 +155,7 @@ impl WorkspaceHandle {
 
     /// Runs canonical semantic construction outside the ServerState actor, then publishes only
     /// through SemanticPublicationAuthority and mirrors its immutable reader snapshot atomically.
-    async fn rebuild_publication(&self) -> Result<bool, MutatePanicked> {
+    pub(crate) async fn rebuild_publication(&self) -> Result<bool, MutatePanicked> {
         let state = self.snapshot();
         let expected_revision = state.semantic_revision;
         let (documents, reported) = crate::workspace::state::publication_inputs(state.as_ref());
@@ -348,6 +348,14 @@ impl WorkspaceHandle {
                 let library = crate::common::util::uri_under_any_library(&uri, &s.library_paths)
                     || crate::common::util::uri_under_any_library(&uri, &s.standard_library_paths);
                 if library {
+                    // Opening a configured library document promotes its indexed source from the
+                    // search-only corpus into the admitted model. Provenance remains Library;
+                    // only admission changes, and the canonical publication owns its semantics.
+                    if open {
+                        if let Some(entry) = s.index.get_mut(&uri) {
+                            entry.admitted_to_publication = true;
+                        }
+                    }
                     s.semantic_revision = s.semantic_revision.wrapping_add(1);
                     s.session.bump_version();
                 }

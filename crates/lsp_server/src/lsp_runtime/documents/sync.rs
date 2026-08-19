@@ -49,13 +49,11 @@ pub(crate) async fn did_open(
         let lock_wait_ms = lock_start.elapsed().as_millis();
         let scheduled_relink = token.is_some();
         if let Some(token) = token {
-            schedule_semantic_relink_after_change(
-                client,
-                handle,
-                runtime_config,
-                uri_norm.clone(),
-                token,
-            );
+            publish_semantic_change(client, handle, runtime_config, uri_norm.clone(), token).await;
+        } else {
+            // Startup may not yet permit a relink token for the first loose/library document.
+            // It must still enter the canonical publication before this notification completes.
+            let _ = handle.rebuild_publication().await;
         }
         (warning, lock_wait_ms, scheduled_relink)
     };
@@ -176,13 +174,7 @@ pub(crate) async fn did_change(
     // evaluation haven't run yet; the relink task publishes diagnostics after
     // committing the fully-resolved graph.
     if let Some(token) = token {
-        schedule_semantic_relink_after_change(
-            client,
-            handle,
-            runtime_config,
-            uri_norm.clone(),
-            token,
-        );
+        publish_semantic_change(client, handle, runtime_config, uri_norm.clone(), token).await;
     }
     log_perf(
         client,

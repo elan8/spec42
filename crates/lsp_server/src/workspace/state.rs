@@ -308,6 +308,31 @@ mod tests {
         );
     }
 
+    #[tokio::test]
+    async fn the_live_authority_resolves_against_a_generic_library() {
+        let mut state = state_with(
+            "library package Domain { part def Wheel; }",
+            "package App { part w : Domain::Wheel; }",
+        );
+        state.library_paths = std::mem::take(&mut state.standard_library_paths);
+        publish(&mut state).await;
+        let model = state.published_model.clone().into_model();
+        let symbols = match model.inspection().document_symbols("file:///model.sysml") {
+            sysml_query::resolved_slice::QueryOutcome::Resolved(symbols)
+            | sysml_query::resolved_slice::QueryOutcome::Recovered(symbols)
+            | sysml_query::resolved_slice::QueryOutcome::UnsupportedWith(symbols) => symbols,
+            other => panic!("workspace usage: {other:?}"),
+        };
+        let symbol = symbols
+            .iter()
+            .find(|symbol| symbol.qualified_name.as_ref() == "App::w")
+            .unwrap();
+        assert!(matches!(
+            model.types().direct_types(&symbol.identity),
+            sysml_query::resolved_slice::QueryOutcome::Resolved(ref types) if types.len() == 1
+        ));
+    }
+
     /// The configured-library path is the path used by the live editor. It must preserve public
     /// imports settled inside the reused library stratum, not merely direct library declarations.
     #[tokio::test]
