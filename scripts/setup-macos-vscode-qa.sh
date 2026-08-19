@@ -141,8 +141,8 @@ echo "  Workspace: $workspace_path"
 echo
 echo "In VS Code, run: Spec42: Open Diagram"
 echo "The workspace contains every repository example; open an example's Views.sysml first."
-echo "For a working projection, open timer/Views.sysml and choose State Transition View."
-echo "General and Interconnection are authored there and should report their typed queries as incomplete."
+echo "Open timer/Views.sysml and choose any authored diagram view to inspect its typed projection."
+echo "Incomplete products now identify only concrete unsupported or unavailable semantic facts."
 
 if [[ "$open_vscode" -eq 1 ]]; then
 	echo "Opening the isolated VS Code QA instance..."
