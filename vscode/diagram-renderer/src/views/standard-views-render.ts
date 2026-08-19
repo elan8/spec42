@@ -192,14 +192,15 @@ export function renderGridView(ctx: BehaviorSceneContext): { minX: number; minY:
       ? columnViews.map((column) => ({
           key: asString(column.key, "name"),
           label: asString(column.label, "Column"),
+          notationStatus: asString(column.notationStatus),
           width: 220,
         }))
       : [
-          { key: "name", label: "Name", width: 220 },
-          { key: "kind", label: "Kind", width: 150 },
-          { key: "attributeCount", label: "Attrs", width: 80 },
-          { key: "partCount", label: "Parts", width: 80 },
-          { key: "portCount", label: "Ports", width: 80 },
+          { key: "name", label: "Name", notationStatus: "", width: 220 },
+          { key: "kind", label: "Kind", notationStatus: "", width: 150 },
+          { key: "attributeCount", label: "Attrs", notationStatus: "", width: 80 },
+          { key: "partCount", label: "Parts", notationStatus: "", width: 80 },
+          { key: "portCount", label: "Ports", notationStatus: "", width: 80 },
         ];
   const tableWidth = columns.reduce((sum, column) => sum + column.width, 0);
   const rowHeight = 30;
@@ -256,6 +257,7 @@ export function renderGridView(ctx: BehaviorSceneContext): { minX: number; minY:
         .style("stroke-width", "1px");
       group
         .append("text")
+        .attr("data-notation-status", column.notationStatus || null)
         .attr("x", x + 10)
         .attr("y", 20)
         .style("font-size", "10px")

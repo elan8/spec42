@@ -5857,6 +5857,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "metaclass": "ActionDefinition",
         "name": "CheckoutPipeline",
+        "notationRole": "definition",
         "owner": null,
         "reference": 1,
         "source": 1
@@ -5864,6 +5865,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "metaclass": "SuccessionAsUsage",
         "name": null,
+        "notationRole": "unsupported",
         "owner": 0,
         "reference": 17,
         "source": 21
@@ -5871,6 +5873,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "metaclass": "SuccessionAsUsage",
         "name": null,
+        "notationRole": "unsupported",
         "owner": 0,
         "reference": 18,
         "source": 24
@@ -5878,6 +5881,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "metaclass": "SuccessionAsUsage",
         "name": null,
+        "notationRole": "unsupported",
         "owner": 0,
         "reference": 19,
         "source": 27
@@ -5885,6 +5889,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "metaclass": "SuccessionAsUsage",
         "name": null,
+        "notationRole": "unsupported",
         "owner": 0,
         "reference": 20,
         "source": 30
@@ -5892,6 +5897,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "metaclass": "ActionUsage",
         "name": "validateCart",
+        "notationRole": "usage",
         "owner": 0,
         "reference": 13,
         "source": 6
@@ -5899,6 +5905,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "metaclass": "ReferenceUsage",
         "name": "cartValid",
+        "notationRole": "reference-usage",
         "owner": 5,
         "reference": 14,
         "source": 7
@@ -5906,6 +5913,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "metaclass": "ActionUsage",
         "name": "authorizePayment",
+        "notationRole": "usage",
         "owner": 0,
         "reference": 3,
         "source": 9
@@ -5913,6 +5921,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "metaclass": "ReferenceUsage",
         "name": "paymentOk",
+        "notationRole": "reference-usage",
         "owner": 7,
         "reference": 4,
         "source": 10
@@ -5920,6 +5929,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "metaclass": "ActionUsage",
         "name": "completeCheckout",
+        "notationRole": "usage",
         "owner": 0,
         "reference": 7,
         "source": 18
@@ -5927,6 +5937,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "metaclass": "ReferenceUsage",
         "name": "done",
+        "notationRole": "reference-usage",
         "owner": 9,
         "reference": 8,
         "source": 19
@@ -5934,6 +5945,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "metaclass": "ActionUsage",
         "name": "reserveInventory",
+        "notationRole": "usage",
         "owner": 0,
         "reference": 11,
         "source": 12
@@ -5941,6 +5953,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "metaclass": "ReferenceUsage",
         "name": "stockReserved",
+        "notationRole": "reference-usage",
         "owner": 11,
         "reference": 12,
         "source": 13
@@ -5948,6 +5961,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "metaclass": "ActionUsage",
         "name": "publishOrderCreated",
+        "notationRole": "usage",
         "owner": 0,
         "reference": 9,
         "source": 15
@@ -5955,6 +5969,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "metaclass": "ReferenceUsage",
         "name": "orderEventPublished",
+        "notationRole": "reference-usage",
         "owner": 13,
         "reference": 10,
         "source": 16
@@ -5962,6 +5977,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "metaclass": "ReferenceUsage",
         "name": "checkoutStatus",
+        "notationRole": "reference-usage",
         "owner": 0,
         "reference": 6,
         "source": 4
@@ -5969,6 +5985,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "metaclass": "ReferenceUsage",
         "name": "cartId",
+        "notationRole": "reference-usage",
         "owner": 0,
         "reference": 5,
         "source": 2

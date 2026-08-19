@@ -41,8 +41,11 @@ Hosts that embed exported SVG outside VS Code should use `light` or `dark`, not 
 - `viz-node--usage` — solid border, rounded corners
 - `viz-node--reference` — dotted border (`2,4`), rounded corners
 - `viz-node--container` — dashed border `4,4` (IBD part usage frames)
+- `viz-node--unsupported` — deliberately non-normative dashed chrome
 
-Logic lives in `src/node-notation.ts` (`resolveNodeChrome`).
+The schema-v2 diagram product publishes the closed notation role consumed by
+`src/node-notation.ts` (`resolveNodeChrome`). String decoding is confined to the legacy payload
+adapter.
 
 ### Rebuild VS Code webview
 

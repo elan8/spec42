@@ -21,7 +21,7 @@ export {
   interconnectionPreparedForLayout,
   isInterconnectionPreparedView,
 } from "./types";
-export { isDefinitionKind, isReferenceKind, resolveNodeChrome } from "../node-notation";
+export { resolveNodeChrome } from "../node-notation";
 
 /** Structure-only CSS classes (definition / usage / reference / container); no per-kind color. */
 export function nodeStructureClass(
@@ -29,7 +29,7 @@ export function nodeStructureClass(
   isDefinition?: boolean,
   isReference?: boolean,
 ): string {
-  return resolveNodeChrome(kind, { isDefinition, isReference }).structureClass;
+  return resolveNodeChrome(isReference ? "reference-usage" : isDefinition ? "definition" : "usage").structureClass;
 }
 
 export function rendererLabel(view: string): string {
@@ -109,6 +109,7 @@ function prepareTypedDiagramProduct(input: unknown): PreparedView | null {
       uri: source.uri,
       range: source.range as PreparedNode["range"],
       attributes: {
+        notationRole: element.notationRole,
         semanticReference: typeof element.reference === "number" ? references[element.reference] : undefined,
         owner: element.owner,
       },
@@ -129,6 +130,24 @@ function prepareTypedDiagramProduct(input: unknown): PreparedView | null {
       },
     };
   });
+  const metadata = asRecord(projection.metadata);
+  const gridRows = Array.isArray(metadata.rows)
+    ? metadata.rows.filter((value): value is number => typeof value === "number" && nodes[value] !== undefined)
+    : [];
+  const gridColumns = Array.isArray(metadata.columns)
+    ? metadata.columns.filter((value): value is string => typeof value === "string")
+    : [];
+  const gridRelationships = Array.isArray(metadata.cells) ? metadata.cells.map(asRecord) : [];
+  const gridCells = selected.kind === "grid-view"
+    ? gridRows.map((nodeIndex) => {
+        const node = nodes[nodeIndex];
+        const values = Object.fromEntries(gridColumns.map((column) => [
+          `relationship:${column}`,
+          gridRelationships.some((cell) => cell.row === nodeIndex && cell.column === column) ? "✓" : "",
+        ]));
+        return { id: node.id, name: node.label, kind: node.kind, ...values };
+      })
+    : undefined;
   return {
     title: selected.name,
     view: selected.kind,
@@ -138,6 +157,18 @@ function prepareTypedDiagramProduct(input: unknown): PreparedView | null {
       selectedDiagramReference: typeof selected.reference === "number" ? references[selected.reference] : undefined,
       exposedRoots: projection.exposedRoots,
       viewMetadata: projection.metadata,
+      ...(selected.kind === "grid-view" ? {
+        cells: gridCells,
+        columns: [
+          { key: "name", label: "Element", notationStatus: "normative" },
+          ...gridColumns.map((column) => ({
+            key: `relationship:${column}`,
+            label: column,
+            notationStatus: "normative",
+          })),
+        ],
+        provisional: false,
+      } : {}),
     },
   };
 }

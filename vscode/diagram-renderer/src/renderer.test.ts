@@ -104,6 +104,7 @@ describe("shared renderer", () => {
           label: "Definitions",
           kind: "package",
           attributes: {
+            notationRole: "namespace",
             packageMembers: ["Vehicle", "Engine"],
             imports: ["SysML::*"],
           },
@@ -113,6 +114,7 @@ describe("shared renderer", () => {
           label: "Vehicle",
           kind: "part def",
           attributes: {
+            notationRole: "definition",
             attributes: ["mass: Mass"],
             parts: ["engine: Engine"],
             ports: ["pwr: PowerPort"],
@@ -124,6 +126,7 @@ describe("shared renderer", () => {
           label: "vehicle",
           kind: "part",
           attributes: {
+            notationRole: "usage",
             partType: "Vehicle",
             attributes: ["dryMass = 42 [kg]"],
           },
@@ -269,6 +272,25 @@ describe("shared renderer", () => {
     expect(target.querySelector("svg")?.getAttribute("data-color-scheme")).toBe("dark");
   });
 
+  it("marks unsupported relationships without a normative arrow", async () => {
+    const target = document.createElement("div");
+    Object.defineProperty(target, "clientWidth", { value: 900, configurable: true });
+    Object.defineProperty(target, "clientHeight", { value: 600, configurable: true });
+    await renderVisualization(target, {
+      title: "Unsupported edge",
+      view: "general-view",
+      nodes: [
+        { id: "a", label: "A", kind: "part", attributes: { notationRole: "usage" } },
+        { id: "b", label: "B", kind: "part", attributes: { notationRole: "usage" } },
+      ],
+      edges: [{ id: "unknown", source: "a", target: "b", label: "future-kind", edgeKind: "future-kind" }],
+    });
+    const edge = target.querySelector('[data-connector-id="unknown"]') as SVGPathElement | null;
+    expect(edge?.getAttribute("data-notation-status")).toBe("unsupported");
+    expect(edge?.style.markerEnd).toBe("none");
+    expect(edge?.style.strokeDasharray).toBe("2,4");
+  });
+
   it("renders parts tree reference usage with dotted chrome", async () => {
     const target = document.createElement("div");
     Object.defineProperty(target, "clientWidth", { value: 1200, configurable: true });
@@ -278,9 +300,9 @@ describe("shared renderer", () => {
       title: "General",
       view: "general-view",
       nodes: [
-        { id: "def", label: "HitchBall", kind: "part def" },
-        { id: "ref", label: "hitchBall", kind: "ref", attributes: { isReference: true } },
-        { id: "usage", label: "mount", kind: "part" },
+        { id: "def", label: "HitchBall", kind: "part def", attributes: { notationRole: "definition" } },
+        { id: "ref", label: "hitchBall", kind: "ref", attributes: { notationRole: "reference-usage" } },
+        { id: "usage", label: "mount", kind: "part", attributes: { notationRole: "usage" } },
       ],
       edges: [],
     });
@@ -570,25 +592,25 @@ describe("shared renderer", () => {
           id: "instance",
           label: "droneInstance",
           kind: "part",
-          attributes: { containerId: "drone", partType: "SurveillanceDrone", ports: ["mainPwr"] },
+          attributes: { notationRole: "usage", containerId: "drone", partType: "SurveillanceDrone", ports: ["mainPwr"] },
         },
         {
           id: "power",
           label: "power",
           kind: "part",
-          attributes: { containerId: "instance", ports: ["pwrOut"] },
+          attributes: { notationRole: "usage", containerId: "instance", ports: ["pwrOut"] },
         },
         {
           id: "flight",
           label: "FlightControl",
           kind: "part",
-          attributes: { containerId: "instance", ports: ["pwrIn", "cmdOut"] },
+          attributes: { notationRole: "usage", containerId: "instance", ports: ["pwrIn", "cmdOut"] },
         },
         {
           id: "propulsion",
           label: "propulsion",
           kind: "part",
-          attributes: { containerId: "instance", ports: ["pwrIn"] },
+          attributes: { notationRole: "usage", containerId: "instance", ports: ["pwrIn"] },
         },
       ],
       edges: [

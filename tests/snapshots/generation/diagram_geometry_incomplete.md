@@ -162,6 +162,7 @@ package GeometryExample {
       {
         "metaclass": "PartDefinition",
         "name": "Shape",
+        "notationRole": "definition",
         "owner": null,
         "reference": 0,
         "source": 0

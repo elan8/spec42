@@ -1,5 +1,5 @@
 import { normalizeEdgeKind } from "../graph-normalization";
-import { isDefinitionKind, isReferenceKind } from "../node-notation";
+import { legacyNotationRole } from "./legacy-notation";
 import type {
   InterconnectionPreparedEdge,
   InterconnectionPreparedNode,
@@ -75,8 +75,7 @@ export function prepareInterconnectionScene(
         partType: node.typeName,
         ports: portDetails.map((port) => port.name),
         portDetails,
-        isDefinition: isDefinitionKind(node.kind),
-        isReference: isReferenceKind(node.kind) || node.kind === "ref",
+        notationRole: legacyNotationRole(node.kind),
         sceneNodeId: node.id,
       },
     };

@@ -278,6 +278,7 @@ package InterconnectionExample {
       {
         "metaclass": "PartDefinition",
         "name": "Assembly",
+        "notationRole": "definition",
         "owner": null,
         "reference": 0,
         "source": 0
@@ -285,6 +286,7 @@ package InterconnectionExample {
       {
         "metaclass": "PartUsage",
         "name": "nested",
+        "notationRole": "usage",
         "owner": 0,
         "reference": 2,
         "source": 3
@@ -292,6 +294,7 @@ package InterconnectionExample {
       {
         "metaclass": "PortUsage",
         "name": "input",
+        "notationRole": "usage",
         "owner": 0,
         "reference": 1,
         "source": 1
@@ -299,6 +302,7 @@ package InterconnectionExample {
       {
         "metaclass": "PortUsage",
         "name": "output",
+        "notationRole": "usage",
         "owner": 0,
         "reference": 3,
         "source": 2

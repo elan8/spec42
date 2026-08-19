@@ -196,6 +196,7 @@ package GeneralExample {
       {
         "metaclass": "PartDefinition",
         "name": "System",
+        "notationRole": "definition",
         "owner": null,
         "reference": 0,
         "source": 0
@@ -203,6 +204,7 @@ package GeneralExample {
       {
         "metaclass": "PartUsage",
         "name": "child",
+        "notationRole": "usage",
         "owner": 0,
         "reference": 1,
         "source": 1

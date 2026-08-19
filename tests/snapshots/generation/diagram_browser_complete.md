@@ -234,6 +234,7 @@ package BrowserExample {
       {
         "metaclass": "PartDefinition",
         "name": "Root",
+        "notationRole": "definition",
         "owner": null,
         "reference": 0,
         "source": 0
@@ -241,6 +242,7 @@ package BrowserExample {
       {
         "metaclass": "PartUsage",
         "name": "branch",
+        "notationRole": "usage",
         "owner": 0,
         "reference": 1,
         "source": 1
@@ -248,6 +250,7 @@ package BrowserExample {
       {
         "metaclass": "PartUsage",
         "name": "leaf",
+        "notationRole": "usage",
         "owner": 1,
         "reference": 2,
         "source": 2

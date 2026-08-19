@@ -771,9 +771,24 @@ pub enum DiagramIncompleteReason {
 pub struct DiagramElement {
     pub reference: DiagramSemanticReference,
     pub metaclass: Metaclass,
+    pub notation_role: DiagramNotationRole,
     pub name: Option<String>,
     pub owner: Option<DiagramSemanticReference>,
     pub source: SourceReference,
+}
+
+/// Structural notation role owned by the diagram projection.
+///
+/// Renderers consume this value directly instead of rediscovering semantics from a metaclass's
+/// display spelling.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum DiagramNotationRole {
+    Definition,
+    Usage,
+    ReferenceUsage,
+    Namespace,
+    Annotation,
+    Unsupported,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
@@ -1063,7 +1078,7 @@ mod tests {
     #[test]
     fn the_wire_schema_fingerprint_is_pinned() {
         assert_eq!(
-            SCHEMA_FINGERPRINT, 0x029d_a1b1_0889_5b49,
+            SCHEMA_FINGERPRINT, 0x9929_c60e_52ba_1eac,
             "the generator wire schema changed; every guest must be rebuilt"
         );
     }
@@ -1071,7 +1086,7 @@ mod tests {
     #[test]
     fn the_compatibility_token_is_pinned() {
         assert_eq!(
-            COMPATIBILITY_TOKEN, 0x95bf_4e0b_bbc8_6820,
+            COMPATIBILITY_TOKEN, 0xb5b9_30b4_c338_39f8,
             "the generator ABI contract changed; every guest must be rebuilt"
         );
     }

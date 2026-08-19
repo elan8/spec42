@@ -472,10 +472,7 @@ export function renderSysMLNode(
   const highlight = theme?.highlight ?? "#FFD700";
   const chrome =
     options.chrome ??
-    resolveNodeChrome(options.kind ?? "", {
-      isDefinition: options.isDefinition,
-      isReference: options.isReference,
-    });
+    resolveNodeChrome(options.isReference ? "reference-usage" : options.isDefinition ? "definition" : "unsupported");
   const node = parent
     .append("g")
     .attr(

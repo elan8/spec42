@@ -33,8 +33,8 @@ describe("shared prepareViewData", () => {
         kind: "general-view",
         exposedRoots: [0],
         nodes: [
-          { reference: 1, metaclass: "PartUsage", name: "a", owner: null, source: 0 },
-          { reference: 2, metaclass: "PartUsage", name: "b", owner: null, source: 0 },
+          { reference: 1, metaclass: "PartUsage", notationRole: "usage", name: "a", owner: null, source: 0 },
+          { reference: 2, metaclass: "PartUsage", notationRole: "usage", name: "b", owner: null, source: 0 },
         ],
         relationships: [],
         edges: [{ reference: 3, source: 0, target: 1, kind: "flow", provenance: "authored", navigation: 0 }],
@@ -45,6 +45,32 @@ describe("shared prepareViewData", () => {
     expect(prepared.edges[0]).toMatchObject({ id: "e:0", source: "n:0", target: "n:1", edgeKind: "flow" });
     expect(prepared.nodes[0]).toMatchObject({ uri: "file:///model.sysml", range: { start: { line: 1, character: 2 } } });
     expect(prepared.nodes[0]?.attributes?.semanticReference).toEqual({ kind: "qualified-name", document: 0, qualifiedName: "P::a" });
+    expect(prepared.nodes[0]?.attributes?.notationRole).toBe("usage");
+  });
+
+  it("uses typed grid metadata for relationship-valued columns", () => {
+    const prepared = prepareViewData({
+      schemaVersion: 2,
+      documents: [{ uri: "file:///model.sysml" }],
+      sources: [{ document: 0, range: [0, 0, 0, 1] }],
+      references: [{ kind: "qualified-name" }, { kind: "qualified-name" }, { kind: "relationship" }],
+      selectedView: { reference: 0, kind: "grid-view", name: "Trace", source: 0 },
+      projection: {
+        kind: "grid-view",
+        exposedRoots: [0],
+        nodes: [
+          { reference: 1, metaclass: "PartUsage", notationRole: "usage", name: "a", owner: null, source: 0 },
+        ],
+        relationships: [],
+        edges: [],
+        metadata: { rows: [0], columns: ["dependency"], cells: [{ row: 0, column: "dependency", relationship: 2 }] },
+      },
+    });
+    expect(prepared.meta?.cells).toEqual([{ id: "n:0", name: "a", kind: "PartUsage", "relationship:dependency": "✓" }]);
+    expect(prepared.meta?.columns).toEqual([
+      { key: "name", label: "Element", notationStatus: "normative" },
+      { key: "relationship:dependency", label: "dependency", notationStatus: "normative" },
+    ]);
   });
 
   it("maps general graph payload and omits package namespace nodes", () => {
@@ -64,8 +90,7 @@ describe("shared prepareViewData", () => {
       },
     });
     expect(prepared.nodes.map((n) => n.id)).toEqual(["a", "b"]);
-    expect(prepared.nodes.find((n) => n.id === "a")?.attributes?.isDefinition).toBe(true);
-    expect(prepared.nodes.find((n) => n.id === "a")?.attributes?.isReference).toBe(false);
+    expect(prepared.nodes.find((n) => n.id === "a")?.attributes?.notationRole).toBe("definition");
     expect(prepared.edges).toHaveLength(1);
     expect(prepared.edges[0].edgeKind).toBe("typing");
   });
@@ -147,8 +172,7 @@ describe("shared prepareViewData", () => {
         edges: [],
       },
     });
-    expect(prepared.nodes.find((n) => n.id === "ref")?.attributes?.isReference).toBe(true);
-    expect(prepared.nodes.find((n) => n.id === "ref")?.attributes?.isDefinition).toBe(false);
+    expect(prepared.nodes.find((n) => n.id === "ref")?.attributes?.notationRole).toBe("reference-usage");
   });
 
   it("omits library package nodes from general graphs", () => {
@@ -329,7 +353,12 @@ describe("shared prepareViewData", () => {
       },
     });
     const columns = prepared.meta?.columns as Array<{ key: string; label: string }>;
-    expect(columns).toEqual([{ key: "name", label: "columnView[1]" }]);
+    expect(columns).toEqual([{
+      key: "name",
+      label: "columnView[1]",
+      renderingType: "asTextualNotation",
+      notationStatus: "normative",
+    }]);
   });
 
   it("falls back to default Grid View columns when no columnView hints are present", () => {
@@ -341,6 +370,21 @@ describe("shared prepareViewData", () => {
       },
     });
     expect(prepared.meta?.columns).toBeUndefined();
+  });
+
+  it("keeps an unsupported column rendering explicitly incomplete", () => {
+    const prepared = prepareViewData({
+      view: "grid-view",
+      projectionHints: { columnViews: [{ label: "Diagram", renderingType: "asGraphicalNotation" }] },
+      generalViewGraph: { nodes: [{ id: "a", name: "a", type: "part" }], edges: [] },
+    });
+    expect(prepared.meta?.provisional).toBe(true);
+    expect(prepared.meta?.columns).toEqual([{
+      key: "unsupportedRendering",
+      label: "Diagram",
+      renderingType: "asGraphicalNotation",
+      notationStatus: "unsupported",
+    }]);
   });
 
   it("prepares an ordinary GridView as a standard element table", () => {

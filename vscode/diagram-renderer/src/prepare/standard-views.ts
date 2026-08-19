@@ -32,16 +32,19 @@ function treeRootHints(visualization: VisualizationPayload): string[] {
   return asArray(projectionHints(visualization).treeRoots).map((value) => asString(value)).filter(Boolean);
 }
 
-// GridView `asElementTable` columns resolved server-side from a `columnView` redefinition
-// (SysML v2 `Views.sysml`'s `view columnView[0..*] ordered { ... }`). Each entry currently
-// renders via `asTextualNotation` -- the only rendering confirmed in real usage -- shown as the
-// row element's own name, matching how `renderingType` other than `asTextualNotation` isn't yet
-// interpreted server-side either (deferred, not silently wrong: the column still appears, just
-// with the same textual-notation content every column currently knows how to produce).
-function columnViewsHint(visualization: VisualizationPayload): Array<{ label: string }> {
+interface ColumnViewHint { label: string; renderingType: string; supported: boolean }
+
+function columnViewsHint(visualization: VisualizationPayload): ColumnViewHint[] {
   return asArray(projectionHints(visualization).columnViews)
     .map(asRecord)
-    .map((entry) => ({ label: asString(entry.label, "Column") }));
+    .map((entry) => {
+      const renderingType = asString(entry.renderingType);
+      return {
+        label: asString(entry.label, "Column"),
+        renderingType,
+        supported: renderingType === "asTextualNotation",
+      };
+    });
 }
 
 // Standard-view payloads normalize nullable graph fields to `undefined`
@@ -194,6 +197,7 @@ export function prepareGrid(visualization: VisualizationPayload): PreparedView {
         attributeCount: asArray(attrs.attributes).length,
         partCount: asArray(attrs.parts).length,
         portCount: asArray(attrs.ports).length,
+        unsupportedRendering: "Unsupported rendering",
         uri: optionalUri(node),
         range: optionalRange(node),
       };
@@ -222,11 +226,16 @@ export function prepareGrid(visualization: VisualizationPayload): PreparedView {
       matrixCells,
       columns:
         columnViews.length > 0
-          ? columnViews.map((column) => ({ key: "name", label: column.label }))
+          ? columnViews.map((column) => ({
+              key: column.supported ? "name" : "unsupportedRendering",
+              label: column.label,
+              renderingType: column.renderingType,
+              notationStatus: column.supported ? "normative" : "unsupported",
+            }))
           : undefined,
       // Both an element table and a relationship matrix are rectangular GridView
       // presentations described by §9.2.20.2.5.
-      provisional: false,
+      provisional: columnViews.some((column) => !column.supported),
     },
   };
 }

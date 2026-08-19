@@ -1,5 +1,5 @@
 import { isOverviewVisualElementType, normalizeEdgeKind } from "../graph-normalization";
-import { isDefinitionKind, isReferenceKind } from "../node-notation";
+import { legacyNotationRole } from "./legacy-notation";
 import type { PreparedNode, PreparedView, UnknownRecord, VisualizationPayload } from "./types";
 import { asArray, asRecord, asString, elementTypeOf, isPackage, isSyntheticPackage, nodeUri } from "./util";
 
@@ -51,8 +51,7 @@ export function prepareGraph(graphInput: unknown, visualization: VisualizationPa
       ...asRecord(node.attributes),
       qualifiedName: asString(node.qualifiedName ?? asRecord(node.attributes).qualifiedName),
       isPackage: isPackage(node),
-      isDefinition: isDefinitionKind(asString(node.type ?? node.element_type, "")),
-      isReference: isReferenceKind(asString(node.type ?? node.element_type, "")),
+      notationRole: legacyNotationRole(asString(node.type ?? node.element_type, "")),
     },
   }));
   const edges = asArray(graph.edges)

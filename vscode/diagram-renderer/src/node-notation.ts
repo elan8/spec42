@@ -4,7 +4,16 @@ export type NodeStructureClass =
   | "viz-node--definition"
   | "viz-node--usage"
   | "viz-node--reference"
-  | "viz-node--container";
+  | "viz-node--container"
+  | "viz-node--unsupported";
+
+export type NodeNotationRole =
+  | "definition"
+  | "usage"
+  | "reference-usage"
+  | "namespace"
+  | "annotation"
+  | "unsupported";
 
 export interface NodeChrome {
   isDefinition: boolean;
@@ -16,66 +25,6 @@ export interface NodeChrome {
   structureClass: NodeStructureClass;
   /** CSS class suffix for legacy renderers, e.g. ` definition-node` */
   nodeClassSuffix: string;
-}
-
-export function isDefinitionKind(kind: string): boolean {
-  const normalized = kind.trim().toLowerCase();
-  return (
-    normalized.includes(" def") ||
-    normalized.includes("_def") ||
-    normalized.endsWith(" def") ||
-    normalized.includes("definition")
-  );
-}
-
-export function isReferenceKind(kind: string): boolean {
-  const k = kind.trim().toLowerCase();
-  if (k === "ref") return true;
-  if (k.endsWith("-ref")) return true;
-  if (k.endsWith(" ref")) return true;
-  if (/\bref\b/.test(k) && !k.includes("refine")) return true;
-  return false;
-}
-
-type NodeCategory = "structural" | "requirement" | "behavior" | "other";
-
-function nodeCategory(kind: string): NodeCategory {
-  const k = kind.toLowerCase();
-  if (
-    k.includes("requirement") ||
-    k.includes("concern") ||
-    k.includes("viewpoint") ||
-    k.includes("stakeholder")
-  ) {
-    return "requirement";
-  }
-  if (
-    k.includes("action") ||
-    k.includes("state") ||
-    k.includes("calc") ||
-    k.includes("analysis") ||
-    k.includes("enumeration")
-  ) {
-    return "behavior";
-  }
-  if (
-    k.includes("part") ||
-    k.includes("port") ||
-    k.includes("item") ||
-    k.includes("attribute") ||
-    k.includes("interface") ||
-    k.includes("occurrence")
-  ) {
-    return "structural";
-  }
-  return "other";
-}
-
-function usageCornerRadius(kind: string): number {
-  const cat = nodeCategory(kind);
-  if (cat === "requirement") return 16;
-  if (cat === "behavior") return 12;
-  return 8;
 }
 
 export interface NodeBodyChromeStyle {
@@ -119,18 +68,13 @@ export function nodeBodyChromeStyle(
 }
 
 export function resolveNodeChrome(
-  kind: string,
+  role: NodeNotationRole,
   opts?: {
-    isDefinition?: boolean;
-    isReference?: boolean;
     isContainer?: boolean;
     isPackageContainer?: boolean;
   },
 ): NodeChrome {
-  const normalized = kind.toLowerCase();
-  const isContainer =
-    opts?.isContainer ??
-    (normalized.includes("container") || normalized.includes("part_usage"));
+  const isContainer = opts?.isContainer ?? role === "namespace";
 
   if (isContainer) {
     const isPackageContainer = opts?.isPackageContainer ?? false;
@@ -145,22 +89,19 @@ export function resolveNodeChrome(
     };
   }
 
-  const isReference = opts?.isReference ?? isReferenceKind(kind);
-  const isDefinition = !isReference && (opts?.isDefinition ?? isDefinitionKind(kind));
-
-  if (isReference) {
+  if (role === "reference-usage") {
     return {
       isDefinition: false,
       isReference: true,
       isContainer: false,
-      cornerRadius: usageCornerRadius(kind),
+      cornerRadius: 8,
       strokeDasharray: "2,4",
       structureClass: "viz-node--reference",
       nodeClassSuffix: " reference-node",
     };
   }
 
-  if (isDefinition) {
+  if (role === "definition") {
     return {
       isDefinition: true,
       isReference: false,
@@ -172,11 +113,23 @@ export function resolveNodeChrome(
     };
   }
 
+  if (role === "unsupported") {
+    return {
+      isDefinition: false,
+      isReference: false,
+      isContainer: false,
+      cornerRadius: 4,
+      strokeDasharray: "3,3",
+      structureClass: "viz-node--unsupported",
+      nodeClassSuffix: " unsupported-node",
+    };
+  }
+
   return {
     isDefinition: false,
     isReference: false,
     isContainer: false,
-    cornerRadius: usageCornerRadius(kind),
+    cornerRadius: 8,
     strokeDasharray: null,
     structureClass: "viz-node--usage",
     nodeClassSuffix: " usage-node",

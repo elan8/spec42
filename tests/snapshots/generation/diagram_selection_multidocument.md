@@ -253,6 +253,7 @@ package BehaviorModel {
       {
         "metaclass": "PartDefinition",
         "name": "SelectedRoot",
+        "notationRole": "definition",
         "owner": null,
         "reference": 0,
         "source": 0
@@ -260,6 +261,7 @@ package BehaviorModel {
       {
         "metaclass": "PartUsage",
         "name": "included",
+        "notationRole": "usage",
         "owner": 0,
         "reference": 1,
         "source": 1

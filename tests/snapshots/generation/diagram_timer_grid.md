@@ -6348,6 +6348,7 @@ package TimerGrid {
       {
         "metaclass": "PartUsage",
         "name": "timerInstance",
+        "notationRole": "usage",
         "owner": null,
         "reference": 1,
         "source": 1
@@ -6355,6 +6356,7 @@ package TimerGrid {
       {
         "metaclass": "AttributeUsage",
         "name": "maxCurrent",
+        "notationRole": "usage",
         "owner": 53,
         "reference": 27,
         "source": 48
@@ -6362,6 +6364,7 @@ package TimerGrid {
       {
         "metaclass": "AttributeUsage",
         "name": "voltage",
+        "notationRole": "usage",
         "owner": 53,
         "reference": 29,
         "source": 47
@@ -6369,6 +6372,7 @@ package TimerGrid {
       {
         "metaclass": "ReferenceUsage",
         "name": "power",
+        "notationRole": "reference-usage",
         "owner": 53,
         "reference": 28,
         "source": 45
@@ -6376,6 +6380,7 @@ package TimerGrid {
       {
         "metaclass": "ReferenceUsage",
         "name": "stopPressed",
+        "notationRole": "reference-usage",
         "owner": 43,
         "reference": 35,
         "source": 51
@@ -6383,6 +6388,7 @@ package TimerGrid {
       {
         "metaclass": "ReferenceUsage",
         "name": "resetPressed",
+        "notationRole": "reference-usage",
         "owner": 43,
         "reference": 33,
         "source": 53
@@ -6390,6 +6396,7 @@ package TimerGrid {
       {
         "metaclass": "ReferenceUsage",
         "name": "startPressed",
+        "notationRole": "reference-usage",
         "owner": 43,
         "reference": 34,
         "source": 49
@@ -6397,6 +6404,7 @@ package TimerGrid {
       {
         "metaclass": "ReferenceUsage",
         "name": "decrementPressed",
+        "notationRole": "reference-usage",
         "owner": 43,
         "reference": 31,
         "source": 57
@@ -6404,6 +6412,7 @@ package TimerGrid {
       {
         "metaclass": "ReferenceUsage",
         "name": "incrementPressed",
+        "notationRole": "reference-usage",
         "owner": 43,
         "reference": 32,
         "source": 55
@@ -6411,6 +6420,7 @@ package TimerGrid {
       {
         "metaclass": "ReferenceUsage",
         "name": "buzzerOn",
+        "notationRole": "reference-usage",
         "owner": 45,
         "reference": 37,
         "source": 63
@@ -6418,6 +6428,7 @@ package TimerGrid {
       {
         "metaclass": "ReferenceUsage",
         "name": "displayValue",
+        "notationRole": "reference-usage",
         "owner": 40,
         "reference": 39,
         "source": 59
@@ -6425,6 +6436,7 @@ package TimerGrid {
       {
         "metaclass": "ReferenceUsage",
         "name": "comSegDrive",
+        "notationRole": "reference-usage",
         "owner": 44,
         "reference": 41,
         "source": 61
@@ -6432,6 +6444,7 @@ package TimerGrid {
       {
         "metaclass": "TransitionUsage",
         "name": "to_expired",
+        "notationRole": "usage",
         "owner": 46,
         "reference": 20,
         "source": 29
@@ -6439,6 +6452,7 @@ package TimerGrid {
       {
         "metaclass": "TransitionUsage",
         "name": "to_running",
+        "notationRole": "usage",
         "owner": 46,
         "reference": 24,
         "source": 13
@@ -6446,6 +6460,7 @@ package TimerGrid {
       {
         "metaclass": "TransitionUsage",
         "name": "decrement_idle",
+        "notationRole": "usage",
         "owner": 46,
         "reference": 14,
         "source": 21
@@ -6453,6 +6468,7 @@ package TimerGrid {
       {
         "metaclass": "TransitionUsage",
         "name": "increment_idle",
+        "notationRole": "usage",
         "owner": 46,
         "reference": 17,
         "source": 17
@@ -6460,6 +6476,7 @@ package TimerGrid {
       {
         "metaclass": "TransitionUsage",
         "name": "to_running_resume",
+        "notationRole": "usage",
         "owner": 46,
         "reference": 25,
         "source": 33
@@ -6467,6 +6484,7 @@ package TimerGrid {
       {
         "metaclass": "TransitionUsage",
         "name": "to_idle_from_paused",
+        "notationRole": "usage",
         "owner": 46,
         "reference": 22,
         "source": 37
@@ -6474,6 +6492,7 @@ package TimerGrid {
       {
         "metaclass": "TransitionUsage",
         "name": "to_idle_from_expired",
+        "notationRole": "usage",
         "owner": 46,
         "reference": 21,
         "source": 41
@@ -6481,6 +6500,7 @@ package TimerGrid {
       {
         "metaclass": "TransitionUsage",
         "name": "to_paused",
+        "notationRole": "usage",
         "owner": 46,
         "reference": 23,
         "source": 25
@@ -6488,6 +6508,7 @@ package TimerGrid {
       {
         "metaclass": "SuccessionAsUsage",
         "name": null,
+        "notationRole": "unsupported",
         "owner": 46,
         "reference": 96,
         "source": 3
@@ -6495,6 +6516,7 @@ package TimerGrid {
       {
         "metaclass": "StateUsage",
         "name": "idle",
+        "notationRole": "usage",
         "owner": 46,
         "reference": 16,
         "source": 5
@@ -6502,6 +6524,7 @@ package TimerGrid {
       {
         "metaclass": "StateUsage",
         "name": "paused",
+        "notationRole": "usage",
         "owner": 46,
         "reference": 18,
         "source": 9
@@ -6509,6 +6532,7 @@ package TimerGrid {
       {
         "metaclass": "StateUsage",
         "name": "expired",
+        "notationRole": "usage",
         "owner": 46,
         "reference": 15,
         "source": 11
@@ -6516,6 +6540,7 @@ package TimerGrid {
       {
         "metaclass": "StateUsage",
         "name": "running",
+        "notationRole": "usage",
         "owner": 46,
         "reference": 19,
         "source": 7
@@ -6523,6 +6548,7 @@ package TimerGrid {
       {
         "metaclass": "PortUsage",
         "name": "buzzerPwrOut",
+        "notationRole": "usage",
         "owner": 66,
         "reference": 56,
         "source": 91
@@ -6530,6 +6556,7 @@ package TimerGrid {
       {
         "metaclass": "PortUsage",
         "name": "pwrIn",
+        "notationRole": "usage",
         "owner": 66,
         "reference": 58,
         "source": 87
@@ -6537,6 +6564,7 @@ package TimerGrid {
       {
         "metaclass": "AttributeUsage",
         "name": null,
+        "notationRole": "usage",
         "owner": 26,
         "reference": 99,
         "source": 89
@@ -6544,6 +6572,7 @@ package TimerGrid {
       {
         "metaclass": "PortUsage",
         "name": "ctrlIn",
+        "notationRole": "usage",
         "owner": 66,
         "reference": 57,
         "source": 85
@@ -6551,6 +6580,7 @@ package TimerGrid {
       {
         "metaclass": "ConnectionUsage",
         "name": null,
+        "notationRole": "usage",
         "owner": 0,
         "reference": 101,
         "source": 149
@@ -6558,6 +6588,7 @@ package TimerGrid {
       {
         "metaclass": "ConnectionUsage",
         "name": null,
+        "notationRole": "usage",
         "owner": 0,
         "reference": 102,
         "source": 152
@@ -6565,6 +6596,7 @@ package TimerGrid {
       {
         "metaclass": "ConnectionUsage",
         "name": null,
+        "notationRole": "usage",
         "owner": 0,
         "reference": 103,
         "source": 155
@@ -6572,6 +6604,7 @@ package TimerGrid {
       {
         "metaclass": "ConnectionUsage",
         "name": null,
+        "notationRole": "usage",
         "owner": 0,
         "reference": 104,
         "source": 158
@@ -6579,6 +6612,7 @@ package TimerGrid {
       {
         "metaclass": "ConnectionUsage",
         "name": null,
+        "notationRole": "usage",
         "owner": 0,
         "reference": 105,
         "source": 161
@@ -6586,6 +6620,7 @@ package TimerGrid {
       {
         "metaclass": "PartUsage",
         "name": "pcb",
+        "notationRole": "usage",
         "owner": 0,
         "reference": 70,
         "source": 143
@@ -6593,6 +6628,7 @@ package TimerGrid {
       {
         "metaclass": "PartUsage",
         "name": "buzzer",
+        "notationRole": "usage",
         "owner": 0,
         "reference": 69,
         "source": 147
@@ -6600,6 +6636,7 @@ package TimerGrid {
       {
         "metaclass": "PartUsage",
         "name": "battery",
+        "notationRole": "usage",
         "owner": 0,
         "reference": 68,
         "source": 145
@@ -6607,6 +6644,7 @@ package TimerGrid {
       {
         "metaclass": "PortUsage",
         "name": "pwr",
+        "notationRole": "usage",
         "owner": 68,
         "reference": 49,
         "source": 105
@@ -6614,6 +6652,7 @@ package TimerGrid {
       {
         "metaclass": "AttributeUsage",
         "name": null,
+        "notationRole": "usage",
         "owner": 37,
         "reference": 97,
         "source": 107
@@ -6621,6 +6660,7 @@ package TimerGrid {
       {
         "metaclass": "PortUsage",
         "name": "output",
+        "notationRole": "usage",
         "owner": 68,
         "reference": 48,
         "source": 103
@@ -6628,6 +6668,7 @@ package TimerGrid {
       {
         "metaclass": "PortUsage",
         "name": "displayOut",
+        "notationRole": "usage",
         "owner": 67,
         "reference": 75,
         "source": 73
@@ -6635,6 +6676,7 @@ package TimerGrid {
       {
         "metaclass": "PortUsage",
         "name": "pwr",
+        "notationRole": "usage",
         "owner": 67,
         "reference": 78,
         "source": 79
@@ -6642,6 +6684,7 @@ package TimerGrid {
       {
         "metaclass": "AttributeUsage",
         "name": null,
+        "notationRole": "usage",
         "owner": 41,
         "reference": 106,
         "source": 81
@@ -6649,6 +6692,7 @@ package TimerGrid {
       {
         "metaclass": "PortUsage",
         "name": "buttonIn",
+        "notationRole": "usage",
         "owner": 67,
         "reference": 72,
         "source": 71
@@ -6656,6 +6700,7 @@ package TimerGrid {
       {
         "metaclass": "PortUsage",
         "name": "lcdDrive",
+        "notationRole": "usage",
         "owner": 67,
         "reference": 77,
         "source": 75
@@ -6663,6 +6708,7 @@ package TimerGrid {
       {
         "metaclass": "PortUsage",
         "name": "buzzerOut",
+        "notationRole": "usage",
         "owner": 67,
         "reference": 73,
         "source": 77
@@ -6670,6 +6716,7 @@ package TimerGrid {
       {
         "metaclass": "StateUsage",
         "name": "timerMode",
+        "notationRole": "usage",
         "owner": 67,
         "reference": 81,
         "source": 83
@@ -6677,6 +6724,7 @@ package TimerGrid {
       {
         "metaclass": "AttributeUsage",
         "name": "clockFrequency",
+        "notationRole": "usage",
         "owner": 67,
         "reference": 74,
         "source": 65
@@ -6684,6 +6732,7 @@ package TimerGrid {
       {
         "metaclass": "AttributeUsage",
         "name": "ramSize",
+        "notationRole": "usage",
         "owner": 67,
         "reference": 80,
         "source": 69
@@ -6691,6 +6740,7 @@ package TimerGrid {
       {
         "metaclass": "AttributeUsage",
         "name": "flashSize",
+        "notationRole": "usage",
         "owner": 67,
         "reference": 76,
         "source": 67
@@ -6698,6 +6748,7 @@ package TimerGrid {
       {
         "metaclass": "PortUsage",
         "name": "pwr",
+        "notationRole": "usage",
         "owner": 35,
         "reference": 53,
         "source": 111
@@ -6705,6 +6756,7 @@ package TimerGrid {
       {
         "metaclass": "AttributeUsage",
         "name": null,
+        "notationRole": "usage",
         "owner": 50,
         "reference": 98,
         "source": 113
@@ -6712,6 +6764,7 @@ package TimerGrid {
       {
         "metaclass": "AttributeUsage",
         "name": "duration",
+        "notationRole": "usage",
         "owner": 35,
         "reference": 52,
         "source": 109
@@ -6719,6 +6772,7 @@ package TimerGrid {
       {
         "metaclass": "PortUsage",
         "name": "powerOut",
+        "notationRole": "usage",
         "owner": 36,
         "reference": 45,
         "source": 141
@@ -6726,6 +6780,7 @@ package TimerGrid {
       {
         "metaclass": "AttributeUsage",
         "name": "nominalVoltage",
+        "notationRole": "usage",
         "owner": 36,
         "reference": 44,
         "source": 137
@@ -6733,6 +6788,7 @@ package TimerGrid {
       {
         "metaclass": "AttributeUsage",
         "name": "runtimeEstimate",
+        "notationRole": "usage",
         "owner": 36,
         "reference": 46,
         "source": 139
@@ -6740,6 +6796,7 @@ package TimerGrid {
       {
         "metaclass": "AttributeUsage",
         "name": "capacity",
+        "notationRole": "usage",
         "owner": 36,
         "reference": 43,
         "source": 135
@@ -6747,6 +6804,7 @@ package TimerGrid {
       {
         "metaclass": "PortUsage",
         "name": "cmd",
+        "notationRole": "usage",
         "owner": 69,
         "reference": 61,
         "source": 95
@@ -6754,6 +6812,7 @@ package TimerGrid {
       {
         "metaclass": "PortUsage",
         "name": "pwr",
+        "notationRole": "usage",
         "owner": 69,
         "reference": 64,
         "source": 99
@@ -6761,6 +6820,7 @@ package TimerGrid {
       {
         "metaclass": "AttributeUsage",
         "name": null,
+        "notationRole": "usage",
         "owner": 58,
         "reference": 100,
         "source": 101
@@ -6768,6 +6828,7 @@ package TimerGrid {
       {
         "metaclass": "PortUsage",
         "name": "lcdIn",
+        "notationRole": "usage",
         "owner": 69,
         "reference": 63,
         "source": 97
@@ -6775,6 +6836,7 @@ package TimerGrid {
       {
         "metaclass": "AttributeUsage",
         "name": "format",
+        "notationRole": "usage",
         "owner": 69,
         "reference": 62,
         "source": 93
@@ -6782,6 +6844,7 @@ package TimerGrid {
       {
         "metaclass": "ConnectionUsage",
         "name": null,
+        "notationRole": "usage",
         "owner": 34,
         "reference": 107,
         "source": 123
@@ -6789,6 +6852,7 @@ package TimerGrid {
       {
         "metaclass": "ConnectionUsage",
         "name": null,
+        "notationRole": "usage",
         "owner": 34,
         "reference": 108,
         "source": 126
@@ -6796,6 +6860,7 @@ package TimerGrid {
       {
         "metaclass": "ConnectionUsage",
         "name": null,
+        "notationRole": "usage",
         "owner": 34,
         "reference": 109,
         "source": 129
@@ -6803,6 +6868,7 @@ package TimerGrid {
       {
         "metaclass": "ConnectionUsage",
         "name": null,
+        "notationRole": "usage",
         "owner": 34,
         "reference": 110,
         "source": 132
@@ -6810,6 +6876,7 @@ package TimerGrid {
       {
         "metaclass": "PartUsage",
         "name": "buzzerDriver",
+        "notationRole": "usage",
         "owner": 34,
         "reference": 85,
         "source": 121
@@ -6817,6 +6884,7 @@ package TimerGrid {
       {
         "metaclass": "PartUsage",
         "name": "mcu",
+        "notationRole": "usage",
         "owner": 34,
         "reference": 87,
         "source": 115
@@ -6824,6 +6892,7 @@ package TimerGrid {
       {
         "metaclass": "PartUsage",
         "name": "buttons",
+        "notationRole": "usage",
         "owner": 34,
         "reference": 84,
         "source": 119
@@ -6831,6 +6900,7 @@ package TimerGrid {
       {
         "metaclass": "PartUsage",
         "name": "display",
+        "notationRole": "usage",
         "owner": 34,
         "reference": 86,
         "source": 117

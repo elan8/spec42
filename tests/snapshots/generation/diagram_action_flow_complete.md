@@ -327,6 +327,7 @@ package ActionFlowExample {
       {
         "metaclass": "ActionDefinition",
         "name": "Process",
+        "notationRole": "definition",
         "owner": null,
         "reference": 0,
         "source": 0
@@ -334,6 +335,7 @@ package ActionFlowExample {
       {
         "metaclass": "SuccessionAsUsage",
         "name": null,
+        "notationRole": "unsupported",
         "owner": 0,
         "reference": 5,
         "source": 3
@@ -341,6 +343,7 @@ package ActionFlowExample {
       {
         "metaclass": "ActionUsage",
         "name": "execute",
+        "notationRole": "usage",
         "owner": 0,
         "reference": 2,
         "source": 2
@@ -348,6 +351,7 @@ package ActionFlowExample {
       {
         "metaclass": "ActionUsage",
         "name": "prepare",
+        "notationRole": "usage",
         "owner": 0,
         "reference": 3,
         "source": 1

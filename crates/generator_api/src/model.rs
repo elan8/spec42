@@ -4,12 +4,13 @@ use std::sync::{Arc, Mutex};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use spec42_generator_protocol::{
-    DiagramEdge, DiagramEdgeKind, DiagramElement, DiagramIncompleteReason, DiagramRelationship,
-    DiagramRelationshipTarget, DiagramSemanticReference, DiagramSourceDomain, DiagramViewKind,
-    DiagramViewMetadata, DiagramViewProjection, DiagramViewSummary, ElementIdentity,
-    ProjectionCompleteness, ProjectionFeature, SourceReference, StateMachineIdentity,
-    StateMachineSummary, StateTransitionEdge, StateTransitionNode, StateTransitionNodeKind,
-    StateTransitionViewProjection, StateTransitionViewSummary, TransitionTrigger,
+    DiagramEdge, DiagramEdgeKind, DiagramElement, DiagramIncompleteReason, DiagramNotationRole,
+    DiagramRelationship, DiagramRelationshipTarget, DiagramSemanticReference, DiagramSourceDomain,
+    DiagramViewKind, DiagramViewMetadata, DiagramViewProjection, DiagramViewSummary,
+    ElementIdentity, ProjectionCompleteness, ProjectionFeature, SourceReference,
+    StateMachineIdentity, StateMachineSummary, StateTransitionEdge, StateTransitionNode,
+    StateTransitionNodeKind, StateTransitionViewProjection, StateTransitionViewSummary,
+    TransitionTrigger,
 };
 use spec42_generator_protocol::{Metaclass, RelationshipKind as ApiRelationshipKind};
 use sysml_query::resolved_slice::{
@@ -695,6 +696,7 @@ impl GeneratorModelView {
                     .diagram_reference(&element.semantic_id)
                     .expect("published diagram element"),
                 metaclass: api_metaclass(element.kind),
+                notation_role: diagram_notation_role(element.kind),
                 name: element.name.as_deref().map(str::to_owned),
                 owner: element.owner.as_ref().map(|owner| {
                     self.diagram_reference(owner)
@@ -1503,6 +1505,108 @@ fn api_metaclass(kind: ElementKind) -> Metaclass {
         Metaclass::Unrecognized(kind.as_str().to_owned())
     } else {
         parsed
+    }
+}
+
+fn diagram_notation_role(kind: ElementKind) -> DiagramNotationRole {
+    let metaclass = api_metaclass(kind);
+    match metaclass {
+        Metaclass::ActionDefinition
+        | Metaclass::AllocationDefinition
+        | Metaclass::AnalysisCaseDefinition
+        | Metaclass::AttributeDefinition
+        | Metaclass::CalculationDefinition
+        | Metaclass::CaseDefinition
+        | Metaclass::ConcernDefinition
+        | Metaclass::ConnectionDefinition
+        | Metaclass::ConstraintDefinition
+        | Metaclass::EnumerationDefinition
+        | Metaclass::FlowDefinition
+        | Metaclass::IndividualDefinition
+        | Metaclass::InterfaceDefinition
+        | Metaclass::ItemDefinition
+        | Metaclass::MetadataDefinition
+        | Metaclass::OccurrenceDefinition
+        | Metaclass::PartDefinition
+        | Metaclass::PortDefinition
+        | Metaclass::RenderingDefinition
+        | Metaclass::RequirementDefinition
+        | Metaclass::StateDefinition
+        | Metaclass::UseCaseDefinition
+        | Metaclass::VerificationCaseDefinition
+        | Metaclass::ViewDefinition
+        | Metaclass::ViewpointDefinition
+        | Metaclass::ConjugatedPortDefinition => DiagramNotationRole::Definition,
+        Metaclass::ReferenceUsage => DiagramNotationRole::ReferenceUsage,
+        Metaclass::Package | Metaclass::Alias | Metaclass::Import => DiagramNotationRole::Namespace,
+        Metaclass::Documentation
+        | Metaclass::MetadataUsage
+        | Metaclass::TextualRepresentation
+        | Metaclass::Diagnostic => DiagramNotationRole::Annotation,
+        Metaclass::ActionUsage
+        | Metaclass::AllocationUsage
+        | Metaclass::AnalysisCaseUsage
+        | Metaclass::AttributeUsage
+        | Metaclass::CalculationUsage
+        | Metaclass::CaseUsage
+        | Metaclass::ConcernUsage
+        | Metaclass::ConnectionUsage
+        | Metaclass::ConstraintUsage
+        | Metaclass::EnumerationUsage
+        | Metaclass::FlowUsage
+        | Metaclass::IndividualUsage
+        | Metaclass::InterfaceUsage
+        | Metaclass::ItemUsage
+        | Metaclass::OccurrenceUsage
+        | Metaclass::PartUsage
+        | Metaclass::PortUsage
+        | Metaclass::RenderingUsage
+        | Metaclass::RequirementUsage
+        | Metaclass::StateUsage
+        | Metaclass::UseCaseUsage
+        | Metaclass::VerificationCaseUsage
+        | Metaclass::ViewUsage
+        | Metaclass::ViewpointUsage
+        | Metaclass::TransitionUsage
+        | Metaclass::TransitionTrigger
+        | Metaclass::TransitionGuard
+        | Metaclass::TransitionEffect
+        | Metaclass::FinalState
+        | Metaclass::ActorUsage
+        | Metaclass::StakeholderUsage
+        | Metaclass::SubjectUsage
+        | Metaclass::PerformUsage
+        | Metaclass::IncludeUseCaseUsage
+        | Metaclass::ViewRendering
+        | Metaclass::ViewColumn
+        | Metaclass::KermlDeclaration
+        | Metaclass::AnalysisResultUsage
+        | Metaclass::AssertConstraintUsage
+        | Metaclass::AssertUsage
+        | Metaclass::AssignmentActionUsage
+        | Metaclass::BindingConnectorUsage
+        | Metaclass::DecisionNodeUsage
+        | Metaclass::Dependency
+        | Metaclass::DerivationConnectorUsage
+        | Metaclass::ElseActionUsage
+        | Metaclass::FilterUsage
+        | Metaclass::FlowPayload
+        | Metaclass::ForLoopActionUsage
+        | Metaclass::ForkNodeUsage
+        | Metaclass::IfActionUsage
+        | Metaclass::InterfaceEndUsage
+        | Metaclass::JoinNodeUsage
+        | Metaclass::MergeNodeUsage
+        | Metaclass::NeedUsage
+        | Metaclass::ObjectiveUsage
+        | Metaclass::ParameterUsage
+        | Metaclass::PurposeUsage
+        | Metaclass::RequireConstraintUsage
+        | Metaclass::TerminateActionUsage
+        | Metaclass::VerdictUsage
+        | Metaclass::VerifyUsage
+        | Metaclass::WhileLoopActionUsage => DiagramNotationRole::Usage,
+        Metaclass::Unrecognized(_) => DiagramNotationRole::Unsupported,
     }
 }
 fn source_range(range: sysml_query::resolved_slice::TextRange) -> SourceRange {

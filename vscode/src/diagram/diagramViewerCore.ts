@@ -60,6 +60,10 @@ export type DiagramProduct = {
   };
 };
 
+const NOTATION_ROLES = new Set([
+  "definition", "usage", "reference-usage", "namespace", "annotation", "unsupported",
+]);
+
 export type LspGenerationResult = {
   modelDigest: string;
   generatorDigest: string;
@@ -316,6 +320,7 @@ function isDiagramNode(value: unknown, referenceCount: number, sourceCount: numb
   if (!value || typeof value !== "object") return false;
   const node = value as Record<string, unknown>;
   return indexIn(node.reference, referenceCount) && indexIn(node.source, sourceCount) && typeof node.metaclass === "string" &&
+    typeof node.notationRole === "string" && NOTATION_ROLES.has(node.notationRole) &&
     (node.name === null || typeof node.name === "string") && (node.owner === null || indexIn(node.owner, nodeCount));
 }
 

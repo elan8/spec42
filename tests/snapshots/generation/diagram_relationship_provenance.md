@@ -272,6 +272,7 @@ package ProvenanceExample {
       {
         "metaclass": "PartDefinition",
         "name": "Child",
+        "notationRole": "definition",
         "owner": null,
         "reference": 2,
         "source": 0
@@ -279,6 +280,7 @@ package ProvenanceExample {
       {
         "metaclass": "AttributeUsage",
         "name": "mass",
+        "notationRole": "usage",
         "owner": 0,
         "reference": 3,
         "source": 2

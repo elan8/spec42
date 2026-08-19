@@ -3645,6 +3645,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "metaclass": "StateDefinition",
         "name": "TimerStateMachine",
+        "notationRole": "definition",
         "owner": null,
         "reference": 10,
         "source": 0
@@ -3652,6 +3653,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "metaclass": "TransitionUsage",
         "name": "to_expired",
+        "notationRole": "usage",
         "owner": 0,
         "reference": 18,
         "source": 27
@@ -3659,6 +3661,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "metaclass": "TransitionUsage",
         "name": "to_running",
+        "notationRole": "usage",
         "owner": 0,
         "reference": 22,
         "source": 11
@@ -3666,6 +3669,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "metaclass": "TransitionUsage",
         "name": "decrement_idle",
+        "notationRole": "usage",
         "owner": 0,
         "reference": 12,
         "source": 19
@@ -3673,6 +3677,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "metaclass": "TransitionUsage",
         "name": "increment_idle",
+        "notationRole": "usage",
         "owner": 0,
         "reference": 15,
         "source": 15
@@ -3680,6 +3685,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "metaclass": "TransitionUsage",
         "name": "to_running_resume",
+        "notationRole": "usage",
         "owner": 0,
         "reference": 23,
         "source": 31
@@ -3687,6 +3693,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "metaclass": "TransitionUsage",
         "name": "to_idle_from_paused",
+        "notationRole": "usage",
         "owner": 0,
         "reference": 20,
         "source": 35
@@ -3694,6 +3701,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "metaclass": "TransitionUsage",
         "name": "to_idle_from_expired",
+        "notationRole": "usage",
         "owner": 0,
         "reference": 19,
         "source": 39
@@ -3701,6 +3709,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "metaclass": "TransitionUsage",
         "name": "to_paused",
+        "notationRole": "usage",
         "owner": 0,
         "reference": 21,
         "source": 23
@@ -3708,6 +3717,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "metaclass": "SuccessionAsUsage",
         "name": null,
+        "notationRole": "unsupported",
         "owner": 0,
         "reference": 25,
         "source": 1
@@ -3715,6 +3725,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "metaclass": "StateUsage",
         "name": "idle",
+        "notationRole": "usage",
         "owner": 0,
         "reference": 14,
         "source": 3
@@ -3722,6 +3733,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "metaclass": "StateUsage",
         "name": "paused",
+        "notationRole": "usage",
         "owner": 0,
         "reference": 16,
         "source": 7
@@ -3729,6 +3741,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "metaclass": "StateUsage",
         "name": "expired",
+        "notationRole": "usage",
         "owner": 0,
         "reference": 13,
         "source": 9
@@ -3736,6 +3749,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "metaclass": "StateUsage",
         "name": "running",
+        "notationRole": "usage",
         "owner": 0,
         "reference": 17,
         "source": 5

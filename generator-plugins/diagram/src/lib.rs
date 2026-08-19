@@ -288,6 +288,7 @@ impl NormalizedProduct {
         Ok(json!({
             "reference": self.reference(&value.reference)?,
             "metaclass": value.metaclass.as_str(),
+            "notationRole": notation_role(value.notation_role),
             "name": value.name,
             "owner": value.owner.as_ref().map(|owner| self.node(owner)).transpose()?,
             "source": self.source(&value.source)?,
@@ -736,6 +737,17 @@ fn edge_kind(value: &model::DiagramEdgeKind) -> &str {
     }
 }
 
+fn notation_role(value: model::DiagramNotationRole) -> &'static str {
+    match value {
+        model::DiagramNotationRole::Definition => "definition",
+        model::DiagramNotationRole::Usage => "usage",
+        model::DiagramNotationRole::ReferenceUsage => "reference-usage",
+        model::DiagramNotationRole::Namespace => "namespace",
+        model::DiagramNotationRole::Annotation => "annotation",
+        model::DiagramNotationRole::Unsupported => "unsupported",
+    }
+}
+
 fn kind_id(kind: model::DiagramViewKind) -> &'static str {
     match kind {
         model::DiagramViewKind::GeneralView => "general-view",
@@ -803,6 +815,7 @@ mod tests {
         let product = projection(vec![model::DiagramElement {
             reference: qualified("P::root"),
             metaclass: model::Metaclass::PartDefinition,
+            notation_role: model::DiagramNotationRole::Definition,
             name: Some("root".to_owned()),
             owner: None,
             source: source(1),
@@ -813,6 +826,10 @@ mod tests {
         assert_eq!(normalized.references.len(), 2);
         assert_eq!(normalized.reference(&qualified("P::root")).unwrap(), 0);
         assert_eq!(normalized.node(&qualified("P::root")).unwrap(), 0);
+        assert_eq!(
+            normalized.element(&product.elements[0]).unwrap()["notationRole"],
+            "definition"
+        );
     }
 
     #[test]
@@ -820,6 +837,7 @@ mod tests {
         let element = |name: &str, line| model::DiagramElement {
             reference: qualified(name),
             metaclass: model::Metaclass::PartDefinition,
+            notation_role: model::DiagramNotationRole::Definition,
             name: Some(name.to_owned()),
             owner: None,
             source: source(line),
@@ -841,6 +859,7 @@ mod tests {
             .map(|index| model::DiagramElement {
                 reference: qualified(&format!("P::n{index:04}")),
                 metaclass: model::Metaclass::PartUsage,
+                notation_role: model::DiagramNotationRole::Usage,
                 name: Some(format!("n{index}")),
                 owner: None,
                 source: source(index),

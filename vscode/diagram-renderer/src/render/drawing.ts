@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import { normalizeEdgeKind } from "../graph-normalization";
-import { nodeBodyChromeStyle, resolveNodeChrome } from "../node-notation";
+import { nodeBodyChromeStyle, resolveNodeChrome, type NodeNotationRole } from "../node-notation";
 import { collectCompartments, computeNodeHeight, renderSysMLNode } from "../sysml-node-builder";
 import { strokeColorForEdge, strokeColorForNode, type DiagramTheme } from "../theme";
 import type { InterconnectionLayoutDto } from "../prepare";
@@ -29,6 +29,17 @@ import {
 function truncate(value: string, max: number): string {
   const text = String(value || "");
   return text.length > max ? `${text.slice(0, max - 1)}...` : text;
+}
+
+function notationRole(attributes: Record<string, unknown>): NodeNotationRole {
+  const role = attributes.notationRole;
+  if (role === "definition" || role === "usage" || role === "reference-usage" ||
+      role === "namespace" || role === "annotation" || role === "unsupported") return role;
+  // Compatibility DTOs predate the typed role. Their boolean fields are decoded only here and
+  // never inferred from the display kind.
+  if (attributes.isReference === true) return "reference-usage";
+  if (attributes.isDefinition === true) return "definition";
+  return "unsupported";
 }
 
 export function drawEdges(
@@ -186,9 +197,7 @@ export function drawNodes(
       const isLayoutContainer = Boolean(
         attrs.isSyntheticContainer || attrs.isPackageContainer || attrs._isLayoutContainer,
       );
-      const structureClass = resolveNodeChrome(d.kind || "part", {
-        ...(typeof attrs.isDefinition === "boolean" ? { isDefinition: attrs.isDefinition } : {}),
-        ...(typeof attrs.isReference === "boolean" ? { isReference: attrs.isReference } : {}),
+      const structureClass = resolveNodeChrome(notationRole(attrs), {
         isContainer: isLayoutContainer,
         isPackageContainer: Boolean(attrs.isPackageContainer),
       }).structureClass;
@@ -217,10 +226,7 @@ export function drawNodes(
       group.selectAll("*").remove();
       const compartments = d.compartments ?? collectCompartments(d);
       const attrs = (d.attributes ?? {}) as Record<string, unknown>;
-      const chrome = resolveNodeChrome(d.kind, {
-        ...(typeof attrs.isDefinition === "boolean" ? { isDefinition: attrs.isDefinition } : {}),
-        ...(typeof attrs.isReference === "boolean" ? { isReference: attrs.isReference } : {}),
-      });
+      const chrome = resolveNodeChrome(notationRole(attrs));
       renderSysMLNode(group as any, compartments, {
         x: 0,
         y: 0,
@@ -416,7 +422,10 @@ function applyEdgeMarker(
     } else if (edgeKind === "connection" || edgeKind === "relationship") {
       path.attr("stroke", strokeColorForEdge("connection", theme)).attr("stroke-width", 2).style("marker-start", "url(#ibd-connection-dot)").style("marker-end", "url(#ibd-connection-dot)");
     } else {
-      path.style("marker-start", "url(#ibd-connection-dot)").style("marker-end", "url(#ibd-connection-dot)");
+      path.attr("data-notation-status", "unsupported")
+        .style("stroke-dasharray", "2,4")
+        .style("marker-start", "none")
+        .style("marker-end", "none");
     }
     return;
   }
@@ -439,7 +448,10 @@ function applyEdgeMarker(
   } else if (edgeKind === "satisfy" || edgeKind === "verify" || edgeKind === "derivation") {
     path.attr("stroke", strokeColorForEdge(edgeKind, theme)).style("marker-end", "url(#general-d3-arrow-open)").style("stroke-dasharray", "7,4");
   } else {
-    path.style("marker-end", "url(#general-d3-arrow)");
+    path.attr("data-notation-status", "unsupported")
+      .style("stroke-dasharray", "2,4")
+      .style("marker-start", "none")
+      .style("marker-end", "none");
   }
 }
 
@@ -451,13 +463,10 @@ function renderIbdNode(
   layoutNode?: InterconnectionLayoutDto["nodes"][number],
 ): void {
   const attrs = (node.attributes ?? {}) as Record<string, unknown>;
-  const kind = (node.kind || "part").toLowerCase();
   const isContainer = Boolean(attrs.isSyntheticContainer) || Boolean(attrs.isPackageContainer) || Boolean(attrs._isLayoutContainer);
   const width = node.width ?? ibdNodeWidth;
   const height = node.height ?? ibdNodeHeight;
-  const chrome = resolveNodeChrome(kind, {
-    ...(typeof attrs.isDefinition === "boolean" ? { isDefinition: attrs.isDefinition } : {}),
-    ...(typeof attrs.isReference === "boolean" ? { isReference: attrs.isReference } : {}),
+  const chrome = resolveNodeChrome(notationRole(attrs), {
     isContainer,
     isPackageContainer: Boolean(attrs.isPackageContainer),
   });
@@ -504,7 +513,7 @@ function renderIbdNode(
     return;
   }
 
-  const stereo = kind.includes("part def") ? "part def" : kind.includes("part") ? "part" : (node.kind || "part").replace(/_/g, " ");
+  const stereo = (node.kind || "part").replace(/_/g, " ");
   group
     .append("text")
     .attr("x", width / 2)
