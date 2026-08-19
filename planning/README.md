@@ -4,8 +4,6 @@ Active planning material lives here so the root remains reserved for general pro
 
 ## Active authority
 
-- [GENERATOR_STATE_TRANSITION_VIEW_SPIKE.md](GENERATOR_STATE_TRANSITION_VIEW_SPIKE.md) — exploratory
-  typed-query and generator-ABI design for a normative state-transition rendering vertical slice.
 - [UPSTREAM_PARSER_GAPS.md](UPSTREAM_PARSER_GAPS.md) — open parser limitations blocking semantic
   coverage.
 
