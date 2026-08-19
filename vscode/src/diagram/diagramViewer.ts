@@ -4,15 +4,14 @@ import * as vscode from "vscode";
 import type { LspClientHandles } from "../activation/lspClient";
 import {
   type DiagramProduct,
+  type DiagramViewCatalog,
   type DiagramViewId,
-  type StateTransitionViewCatalog,
   diagramViewsForDocument,
   isPathInsideWorkspace,
   parseDiagramProduct,
   parseDiagramViewCatalog,
   parseLspGenerationResult,
   parseSourceNavigation,
-  parseStateTransitionViewCatalog,
   selectSingleDiagramJson,
 } from "./diagramViewerCore";
 
@@ -107,19 +106,12 @@ export class DiagramViewer {
     );
     if (!selectedView) return;
 
-    const catalog = selectedView.view.id === "state-transition-view"
-      ? parseStateTransitionViewCatalog(await this.handles.client.sendRequest(
-          "spec42/stateTransitionViews",
-          { modelUri: document.uri.toString() }
-        ))
-      : { modelDigest: diagramCatalog.modelDigest, views: [] };
-
     this.activeAbort?.abort();
     const abort = new AbortController();
     this.activeAbort = abort;
     const current = ++this.generation;
     try {
-      const selection = await this.resolveSelection(document, selectedView.view.id, catalog);
+      const selection = await this.resolveSelection(document, selectedView.view.id, diagramCatalog);
       if (!selection || abort.signal.aborted || current !== this.generation) return;
       const artifact = await this.generate(document, selectedView.view.id, selection.modelDigest, selection.handle, abort.signal);
       if (current !== this.generation) return;
@@ -136,20 +128,22 @@ export class DiagramViewer {
   private async resolveSelection(
     document: vscode.TextDocument,
     view: DiagramViewId,
-    catalog: StateTransitionViewCatalog
-  ): Promise<{ modelDigest?: string; handle?: string } | undefined> {
-    if (view !== "state-transition-view") return { modelDigest: catalog.modelDigest };
-    const choices = catalog.views.filter((candidate) => candidate.source.uri === document.uri.toString());
-    if (choices.length === 0) throw new Error("The active file does not author a StateTransitionView.");
+    catalog: DiagramViewCatalog
+  ): Promise<{ modelDigest: string; handle: string } | undefined> {
+    const choices = catalog.views.filter((candidate) =>
+      candidate.kind === view && candidate.source.uri === document.uri.toString());
+    if (choices.length === 0) throw new Error("The active file does not author the selected diagram view kind.");
     if (choices.length === 1) return { modelDigest: catalog.modelDigest, handle: choices[0].handle };
     const picked = await vscode.window.showQuickPick(
       choices.map((candidate) => ({
         label: candidate.name,
-        description: candidate.exposedMachine.label,
-        detail: candidate.semanticId,
+        description: candidate.kind,
+        detail: candidate.reference.kind === "qualified-name"
+          ? `${candidate.reference.document}#${candidate.reference.qualifiedName}`
+          : candidate.reference.kind,
         candidate,
       })),
-      { placeHolder: "Select a state-transition view", matchOnDescription: true, matchOnDetail: true }
+      { placeHolder: "Select an authored diagram view", matchOnDescription: true, matchOnDetail: true }
     );
     return picked ? { modelDigest: catalog.modelDigest, handle: picked.candidate.handle } : undefined;
   }
@@ -169,7 +163,7 @@ export class DiagramViewer {
     const result = parseLspGenerationResult(await this.handles.client.sendRequest("spec42/generate", {
       generatorBase64: module.toString("base64"),
       modelUri: document.uri.toString(),
-      args: handle ? [view, handle] : [view],
+      args: handle ? [handle] : [],
       ...(expectedModelDigest ? { expectedModelDigest } : {}),
     }));
     if (signal.aborted) throw new Error("generation was cancelled");
@@ -180,7 +174,7 @@ export class DiagramViewer {
     if (product.modelDigest !== result.modelDigest) {
       throw new Error("Generated diagram model digest does not match the current LSP publication.");
     }
-    if (product.view.id !== view) throw new Error("Generated diagram view does not match the requested view.");
+    if (product.selectedView.kind !== view) throw new Error("Generated diagram view does not match the requested view.");
     return { product, ...result.timings };
   }
 
@@ -195,7 +189,7 @@ export class DiagramViewer {
       this.panel.onDidDispose(() => { this.panel = undefined; });
       this.panel.webview.onDidReceiveMessage((message) => this.navigate(message));
     }
-    this.panel.title = artifact.product.view.name;
+    this.panel.title = artifact.product.selectedView.name;
     this.panel.webview.html = this.html(this.panel.webview, artifact, error);
     this.panel.reveal(vscode.ViewColumn.Beside, true);
   }
@@ -230,7 +224,7 @@ export class DiagramViewer {
     return `<!doctype html><html><head><meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}' ${webview.cspSource};">
 <style>html,body{height:100%}body{padding:0;margin:0;color:var(--vscode-foreground);background:var(--vscode-editor-background);display:flex;flex-direction:column}header{padding:8px 12px;border-bottom:1px solid var(--vscode-panel-border);font:12px var(--vscode-font-family)}.error{color:var(--vscode-errorForeground);font-weight:600}.canvas{flex:1;min-height:0;position:relative}.empty{padding:32px;max-width:720px;color:var(--vscode-descriptionForeground);font:14px var(--vscode-font-family)}.canvas svg{display:block;width:100%;height:100%}</style></head><body>
-<header><strong>${escaped(artifact.product.view.name)}</strong> · ${escaped(status)} · model ${escaped(artifact.product.modelDigest)} · prepare ${artifact.modulePrepareMs} ms${prepareCacheLabel(artifact)} · execute ${(artifact.guestExecutionUs / 1000).toFixed(2)} ms${error ? ` · <span class="error">stale: ${escaped(error)}</span>` : ""}</header>
+<header><strong>${escaped(artifact.product.selectedView.name)}</strong> · ${escaped(status)} · model ${escaped(artifact.product.modelDigest)} · prepare ${artifact.modulePrepareMs} ms${prepareCacheLabel(artifact)} · execute ${(artifact.guestExecutionUs / 1000).toFixed(2)} ms${error ? ` · <span class="error">stale: ${escaped(error)}</span>` : ""}</header>
 <main id="diagram" class="canvas"></main><script id="diagram-product" type="application/json">${productJson}</script>
 <script nonce="${nonce}" src="${script}"></script></body></html>`;
   }

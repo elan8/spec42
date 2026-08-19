@@ -3,7 +3,9 @@ use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
 use base64::Engine as _;
-use generator_api::{ArtifactLimits, DiagramViewKind, GeneratorModelView, QueryLimits};
+use generator_api::{
+    ArtifactLimits, DiagramSemanticReference, DiagramViewKind, GeneratorModelView, QueryLimits,
+};
 use generator_host::{
     CancellationHandle, GeneratorRuntime, PreparedGenerator, RuntimeLimits, RuntimeOptions,
 };
@@ -40,7 +42,7 @@ impl GenerateParams {
     }
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub(crate) struct GeneratedArtifact {
     pub(crate) path: String,
@@ -49,7 +51,7 @@ pub(crate) struct GeneratedArtifact {
     pub(crate) content: Vec<u8>,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub(crate) struct GenerationTimings {
     pub(crate) module_prepare_ms: u128,
@@ -88,10 +90,114 @@ pub(crate) struct DiagramViewsResult {
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub(crate) struct DiagramViewChoice {
+    pub(crate) handle: String,
     pub(crate) kind: DiagramViewKind,
-    pub(crate) semantic_id: String,
+    pub(crate) reference: DiagramReferenceChoice,
     pub(crate) name: String,
     pub(crate) source: StateTransitionSourceChoice,
+}
+
+#[derive(Debug, PartialEq, Eq, Serialize)]
+#[serde(
+    tag = "kind",
+    rename_all = "kebab-case",
+    rename_all_fields = "camelCase"
+)]
+pub(crate) enum DiagramReferenceChoice {
+    QualifiedName {
+        document: String,
+        qualified_name: String,
+        source_domain: String,
+    },
+    ToolingElementId {
+        element_id: String,
+        source_domain: String,
+    },
+    SourceAnchor {
+        document: String,
+        owner_qualified_name: Option<String>,
+        metaclass: String,
+        source_domain: String,
+        range: DiagramRangeChoice,
+    },
+    Relationship {
+        document: String,
+        source_qualified_name: String,
+        relationship_kind: String,
+        ordinal: u32,
+        source_domain: String,
+    },
+}
+
+#[derive(Debug, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub(crate) struct DiagramRangeChoice {
+    start_line: u32,
+    start_character: u32,
+    end_line: u32,
+    end_character: u32,
+}
+
+fn diagram_source_domain(value: generator_api::DiagramSourceDomain) -> String {
+    match value {
+        generator_api::DiagramSourceDomain::Workspace => "workspace",
+        generator_api::DiagramSourceDomain::StandardLibrary => "standard-library",
+        generator_api::DiagramSourceDomain::Library => "library",
+        generator_api::DiagramSourceDomain::External => "external",
+    }
+    .to_owned()
+}
+
+fn diagram_reference(value: DiagramSemanticReference) -> DiagramReferenceChoice {
+    match value {
+        DiagramSemanticReference::Qualified {
+            document,
+            qualified_name,
+            source_domain,
+        } => DiagramReferenceChoice::QualifiedName {
+            document,
+            qualified_name,
+            source_domain: diagram_source_domain(source_domain),
+        },
+        DiagramSemanticReference::ToolingElementId {
+            element_id,
+            source_domain,
+        } => DiagramReferenceChoice::ToolingElementId {
+            element_id,
+            source_domain: diagram_source_domain(source_domain),
+        },
+        DiagramSemanticReference::SourceAnchor {
+            document,
+            owner_qualified_name,
+            metaclass,
+            source_domain,
+            range,
+        } => DiagramReferenceChoice::SourceAnchor {
+            document,
+            owner_qualified_name,
+            metaclass: metaclass.as_str().to_owned(),
+            source_domain: diagram_source_domain(source_domain),
+            range: DiagramRangeChoice {
+                start_line: range.start_line,
+                start_character: range.start_character,
+                end_line: range.end_line,
+                end_character: range.end_character,
+            },
+        },
+        DiagramSemanticReference::Relationship {
+            document,
+            source_qualified_name,
+            relationship_kind,
+            ordinal,
+            source_domain,
+        } => DiagramReferenceChoice::Relationship {
+            document,
+            source_qualified_name,
+            relationship_kind: relationship_kind.as_str().to_owned(),
+            ordinal,
+            source_domain: diagram_source_domain(source_domain),
+        },
+    }
 }
 
 #[derive(Debug, Serialize)]
@@ -153,7 +259,7 @@ impl GeneratorService {
         &self,
         publication: Arc<PublishedModel>,
     ) -> Result<Arc<GeneratorModelView>, String> {
-        let publication_identity = publication.publication().source_digest().to_owned();
+        let publication_identity = publication.publication().model_digest();
         let mut models = self
             .models
             .lock()
@@ -297,8 +403,9 @@ impl GeneratorService {
             .map_err(|error| error.to_string())?
             .into_iter()
             .map(|view| DiagramViewChoice {
+                handle: view.handle,
                 kind: view.kind,
-                semantic_id: view.semantic_id,
+                reference: diagram_reference(view.reference),
                 name: view.name,
                 source: StateTransitionSourceChoice {
                     uri: view.source.uri,
@@ -420,9 +527,6 @@ mod tests {
         let service = GeneratorService::new().expect("generator service");
         let publication = state_transition_publication();
         let catalog = service
-            .state_transition_views(Arc::clone(&publication))
-            .expect("state-transition catalog");
-        let diagram_catalog = service
             .diagram_views(Arc::clone(&publication))
             .expect("diagram catalog");
         let [view] = catalog.views.as_slice() else {
@@ -436,14 +540,14 @@ mod tests {
             .model_for(Arc::clone(&publication))
             .expect("generation model adapter");
         let projection = generation_model
-            .state_transition_view(&view.handle)
+            .diagram_view(&view.handle)
             .expect("catalog handle must remain valid for guest generation");
 
         let generated = service
             .generate(
                 &packaged_diagram_generator(),
                 Arc::clone(&publication),
-                &["state-transition-view".to_owned(), view.handle.clone()],
+                std::slice::from_ref(&view.handle),
                 Some(&catalog.model_digest),
             )
             .expect("catalog handle must survive through actual guest execution");
@@ -456,20 +560,23 @@ mod tests {
             serde_json::from_slice(&artifact.content).expect("diagram JSON product");
 
         assert_eq!(projection.model_digest, catalog.model_digest);
-        assert_eq!(diagram_catalog.model_digest, catalog.model_digest);
-        assert_eq!(diagram_catalog.views.len(), 1);
+        assert_eq!(catalog.views.len(), 1);
+        assert_eq!(catalog.views[0].kind, DiagramViewKind::StateTransitionView);
         assert_eq!(
-            diagram_catalog.views[0].kind,
-            DiagramViewKind::StateTransitionView
-        );
-        assert_eq!(projection.view.semantic_id, view.semantic_id);
-        assert_eq!(
-            projection.machine.semantic_id,
-            view.exposed_machine.semantic_id
+            diagram_reference(projection.view.reference.clone()),
+            view.reference
         );
         assert_eq!(product["modelDigest"], catalog.model_digest);
-        assert_eq!(product["view"]["id"], "state-transition-view");
-        assert!(product["preparedView"]["nodes"]
+        assert_eq!(product["selectedView"]["kind"], "state-transition-view");
+        let selected_reference = product["selectedView"]["reference"]
+            .as_u64()
+            .expect("selected reference index") as usize;
+        assert_eq!(
+            product["references"][selected_reference]["kind"],
+            "qualified-name"
+        );
+        assert!(!String::from_utf8_lossy(&artifact.content).contains("element/v1"));
+        assert!(product["projection"]["nodes"]
             .as_array()
             .is_some_and(|nodes| !nodes.is_empty()));
     }

@@ -15,6 +15,38 @@ describe("shared graph normalization", () => {
 });
 
 describe("shared prepareViewData", () => {
+  it("expands normalized diagram indexes without deriving semantics", () => {
+    const prepared = prepareViewData({
+      schemaVersion: 2,
+      modelDigest: "blake3:model",
+      documents: [{ uri: "file:///model.sysml", sourceDomain: "workspace" }],
+      sources: [{ document: 0, range: [1, 2, 1, 6] }],
+      references: [
+        { kind: "qualified-name", document: 0, qualifiedName: "P::view" },
+        { kind: "qualified-name", document: 0, qualifiedName: "P::a" },
+        { kind: "qualified-name", document: 0, qualifiedName: "P::b" },
+        { kind: "relationship", source: 1, relationshipKind: "flow", ordinal: 0 },
+      ],
+      selectedView: { reference: 0, kind: "general-view", name: "view", source: 0 },
+      completeness: { status: "complete", reasons: [] },
+      projection: {
+        kind: "general-view",
+        exposedRoots: [0],
+        nodes: [
+          { reference: 1, metaclass: "PartUsage", name: "a", owner: null, source: 0 },
+          { reference: 2, metaclass: "PartUsage", name: "b", owner: null, source: 0 },
+        ],
+        relationships: [],
+        edges: [{ reference: 3, source: 0, target: 1, kind: "flow", provenance: "authored", navigation: 0 }],
+        metadata: { roots: [0] },
+      },
+    });
+    expect(prepared.nodes.map((node) => node.id)).toEqual(["n:0", "n:1"]);
+    expect(prepared.edges[0]).toMatchObject({ id: "e:0", source: "n:0", target: "n:1", edgeKind: "flow" });
+    expect(prepared.nodes[0]).toMatchObject({ uri: "file:///model.sysml", range: { start: { line: 1, character: 2 } } });
+    expect(prepared.nodes[0]?.attributes?.semanticReference).toEqual({ kind: "qualified-name", document: 0, qualifiedName: "P::a" });
+  });
+
   it("maps general graph payload and omits package namespace nodes", () => {
     const prepared = prepareViewData({
       view: "general-view",

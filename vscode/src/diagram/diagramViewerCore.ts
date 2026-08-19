@@ -14,32 +14,42 @@ export type SourceNavigation = {
 };
 
 export const DIAGRAM_VIEWS = [
-  { id: "general-view", label: "General View", queryStatus: "stubbed" },
-  { id: "interconnection-view", label: "Interconnection View", queryStatus: "stubbed" },
-  { id: "action-flow-view", label: "Action Flow View", queryStatus: "stubbed" },
+  { id: "general-view", label: "General View", queryStatus: "implemented" },
+  { id: "interconnection-view", label: "Interconnection View", queryStatus: "implemented" },
+  { id: "action-flow-view", label: "Action Flow View", queryStatus: "implemented" },
   { id: "state-transition-view", label: "State Transition View", queryStatus: "implemented" },
-  { id: "sequence-view", label: "Sequence View", queryStatus: "stubbed" },
-  { id: "browser-view", label: "Browser View", queryStatus: "stubbed" },
-  { id: "grid-view", label: "Grid View", queryStatus: "stubbed" },
-  { id: "geometry-view", label: "Geometry View", queryStatus: "stubbed" },
+  { id: "sequence-view", label: "Sequence View", queryStatus: "implemented" },
+  { id: "browser-view", label: "Browser View", queryStatus: "implemented" },
+  { id: "grid-view", label: "Grid View", queryStatus: "implemented" },
+  { id: "geometry-view", label: "Geometry View", queryStatus: "implemented" },
 ] as const;
 
 export type DiagramViewId = typeof DIAGRAM_VIEWS[number]["id"];
 
+export type DiagramSemanticReference =
+  | { kind: "qualified-name"; document: string; qualifiedName: string; sourceDomain: string }
+  | { kind: "tooling-element-id"; elementId: string; sourceDomain: string }
+  | { kind: "source-anchor"; document: string; ownerQualifiedName: string | null; metaclass: string; sourceDomain: string; range: unknown }
+  | { kind: "relationship"; document: string; sourceQualifiedName: string; relationshipKind: string; ordinal: number; sourceDomain: string };
+
 export type DiagramProduct = {
-  schemaVersion: 1;
+  schemaVersion: 2;
   modelDigest: string;
-  view: { id: DiagramViewId; name: string };
+  documents: Array<{ uri: string; sourceDomain: string }>;
+  sources: Array<{ document: number; range: [number, number, number, number] }>;
+  references: Array<Record<string, unknown>>;
+  selectedView: { reference: number; kind: DiagramViewId; name: string; source: number };
   completeness: {
     status: "complete" | "incomplete";
-    reasons: Array<{ code: string; message: string; requiredQuery: string }>;
+    reasons: Array<{ code: string; [key: string]: unknown }>;
   };
-  preparedView: {
-    title: string;
-    view: DiagramViewId;
+  projection: {
+    kind: DiagramViewId;
+    exposedRoots: number[];
     nodes: unknown[];
+    relationships: unknown[];
     edges: unknown[];
-    meta?: Record<string, unknown>;
+    metadata: Record<string, unknown>;
   };
 };
 
@@ -74,8 +84,9 @@ export type StateTransitionViewCatalog = {
 export type DiagramViewCatalog = {
   modelDigest: string;
   views: Array<{
+    handle: string;
     kind: DiagramViewId;
-    semanticId: string;
+    reference: DiagramSemanticReference;
     name: string;
     source: { uri: string };
   }>;
@@ -91,11 +102,11 @@ export function parseDiagramViewCatalog(value: unknown): DiagramViewCatalog {
     if (!entry || typeof entry !== "object") throw new Error("Spec42 returned an invalid diagram view.");
     const view = entry as Record<string, unknown>;
     const source = view.source as Record<string, unknown> | undefined;
-    if (!DIAGRAM_VIEWS.some((known) => known.id === view.kind) || typeof view.semanticId !== "string" ||
+    if (typeof view.handle !== "string" || !DIAGRAM_VIEWS.some((known) => known.id === view.kind) || !isDiagramSemanticReference(view.reference) ||
         typeof view.name !== "string" || !source || typeof source.uri !== "string") {
       throw new Error("Spec42 returned malformed diagram view identity.");
     }
-    return { kind: view.kind as DiagramViewId, semanticId: view.semanticId, name: view.name, source: { uri: source.uri } };
+    return { handle: view.handle, kind: view.kind as DiagramViewId, reference: view.reference, name: view.name, source: { uri: source.uri } };
   });
   return { modelDigest: candidate.modelDigest, views };
 }
@@ -228,24 +239,112 @@ export function parseDiagramProduct(text: string): DiagramProduct {
   catch { throw new Error("Generated diagram product is not valid JSON."); }
   if (!value || typeof value !== "object") throw new Error("Generated diagram product is not an object.");
   const product = value as Record<string, unknown>;
-  const view = product.view as Record<string, unknown> | undefined;
+  const view = product.selectedView as Record<string, unknown> | undefined;
   const completeness = product.completeness as Record<string, unknown> | undefined;
-  const prepared = product.preparedView as Record<string, unknown> | undefined;
-  if (product.schemaVersion !== 1 || typeof product.modelDigest !== "string" ||
-      !view || !DIAGRAM_VIEWS.some((candidate) => candidate.id === view.id) || typeof view.name !== "string" ||
+  const projection = product.projection as Record<string, unknown> | undefined;
+  const documents = product.documents;
+  const sources = product.sources;
+  const references = product.references;
+  if (product.schemaVersion !== 2 || typeof product.modelDigest !== "string" ||
+      !Array.isArray(documents) || !documents.every(isDiagramDocument) ||
+      !Array.isArray(sources) || !sources.every((source) => isDiagramSource(source, documents.length)) ||
+      !Array.isArray(references) || !references.every((reference) => isProductReference(reference, documents.length, sources.length, references.length)) ||
+      !view || !DIAGRAM_VIEWS.some((candidate) => candidate.id === view.kind) ||
+      !indexIn(view.reference, references.length) || !indexIn(view.source, sources.length) || typeof view.name !== "string" ||
       !completeness || !["complete", "incomplete"].includes(String(completeness.status)) || !Array.isArray(completeness.reasons) ||
-      !prepared || prepared.view !== view.id || typeof prepared.title !== "string" ||
-      !Array.isArray(prepared.nodes) || !Array.isArray(prepared.edges)) {
-    throw new Error("Generated diagram product does not match schema version 1.");
+      !projection || projection.kind !== view.kind || !Array.isArray(projection.exposedRoots) ||
+      !Array.isArray(projection.nodes) || !projection.exposedRoots.every((index) => indexIn(index, (projection.nodes as unknown[]).length)) ||
+      !projection.nodes.every((node) => isDiagramNode(node, references.length, sources.length, (projection.nodes as unknown[]).length)) ||
+      !Array.isArray(projection.relationships) ||
+      !Array.isArray(projection.edges) || !projection.metadata || typeof projection.metadata !== "object") {
+    throw new Error("Generated diagram product does not match schema version 2.");
   }
   for (const reason of completeness.reasons) {
     if (!reason || typeof reason !== "object") throw new Error("Generated diagram product has a malformed completeness reason.");
     const candidate = reason as Record<string, unknown>;
-    if (typeof candidate.code !== "string" || typeof candidate.message !== "string" || typeof candidate.requiredQuery !== "string") {
+    if (typeof candidate.code !== "string") {
       throw new Error("Generated diagram product has a malformed completeness reason.");
     }
+    if (candidate.exposure !== undefined && !indexIn(candidate.exposure, references.length)) {
+      throw new Error("Generated diagram product has an out-of-range completeness reference.");
+    }
+  }
+  if (!(projection.edges as unknown[]).every((edge) => isDiagramEdge(edge, references.length, sources.length, (projection.nodes as unknown[]).length)) ||
+      !(projection.relationships as unknown[]).every((relationship) => isDiagramRelationship(relationship, references.length, sources.length, (projection.nodes as unknown[]).length))) {
+    throw new Error("Generated diagram product contains an invalid graph index.");
   }
   return value as DiagramProduct;
+}
+
+function indexIn(value: unknown, length: number): value is number {
+  return nonNegativeInteger(value) && value < length;
+}
+
+function isDiagramDocument(value: unknown): boolean {
+  if (!value || typeof value !== "object") return false;
+  const document = value as Record<string, unknown>;
+  return typeof document.uri === "string" && typeof document.sourceDomain === "string";
+}
+
+function isDiagramSource(value: unknown, documentCount: number): boolean {
+  if (!value || typeof value !== "object") return false;
+  const source = value as Record<string, unknown>;
+  return indexIn(source.document, documentCount) && Array.isArray(source.range) && source.range.length === 4 &&
+    source.range.every(nonNegativeInteger) && (source.range[2] > source.range[0] ||
+      (source.range[2] === source.range[0] && source.range[3] >= source.range[1]));
+}
+
+function isProductReference(value: unknown, documentCount: number, sourceCount: number, referenceCount: number): boolean {
+  if (!value || typeof value !== "object") return false;
+  const reference = value as Record<string, unknown>;
+  if (reference.kind === "qualified-name") return indexIn(reference.document, documentCount) && typeof reference.qualifiedName === "string";
+  if (reference.kind === "tooling-element-id") return typeof reference.elementId === "string" && typeof reference.sourceDomain === "string";
+  if (reference.kind === "source-anchor") return indexIn(reference.source, sourceCount) && typeof reference.metaclass === "string" &&
+    (reference.ownerQualifiedName === null || typeof reference.ownerQualifiedName === "string");
+  return reference.kind === "relationship" && indexIn(reference.source, referenceCount) &&
+    typeof reference.relationshipKind === "string" && nonNegativeInteger(reference.ordinal);
+}
+
+function isDiagramNode(value: unknown, referenceCount: number, sourceCount: number, nodeCount: number): boolean {
+  if (!value || typeof value !== "object") return false;
+  const node = value as Record<string, unknown>;
+  return indexIn(node.reference, referenceCount) && indexIn(node.source, sourceCount) && typeof node.metaclass === "string" &&
+    (node.name === null || typeof node.name === "string") && (node.owner === null || indexIn(node.owner, nodeCount));
+}
+
+function isDiagramEdge(value: unknown, referenceCount: number, sourceCount: number, nodeCount: number): boolean {
+  if (!value || typeof value !== "object") return false;
+  const edge = value as Record<string, unknown>;
+  return indexIn(edge.reference, referenceCount) && indexIn(edge.source, nodeCount) && indexIn(edge.target, nodeCount) &&
+    typeof edge.kind === "string" && typeof edge.provenance === "string" &&
+    (edge.navigation === null || indexIn(edge.navigation, sourceCount));
+}
+
+function isDiagramRelationship(value: unknown, referenceCount: number, sourceCount: number, nodeCount: number): boolean {
+  if (!value || typeof value !== "object") return false;
+  const relationship = value as Record<string, unknown>;
+  return indexIn(relationship.reference, referenceCount) && indexIn(relationship.source, nodeCount) &&
+    typeof relationship.kind === "string" && typeof relationship.provenance === "string" &&
+    (relationship.navigation === null || indexIn(relationship.navigation, sourceCount)) &&
+    !!relationship.target && typeof relationship.target === "object";
+}
+
+export function isDiagramSemanticReference(value: unknown): value is DiagramSemanticReference {
+  if (!value || typeof value !== "object") return false;
+  const reference = value as Record<string, unknown>;
+  if (typeof reference.kind !== "string" || typeof reference.sourceDomain !== "string") return false;
+  if (reference.kind === "qualified-name") {
+    return typeof reference.document === "string" && typeof reference.qualifiedName === "string";
+  }
+  if (reference.kind === "tooling-element-id") return typeof reference.elementId === "string";
+  if (reference.kind === "source-anchor") {
+    return typeof reference.document === "string" && typeof reference.metaclass === "string" &&
+      (reference.ownerQualifiedName === null || typeof reference.ownerQualifiedName === "string") &&
+      !!reference.range && typeof reference.range === "object";
+  }
+  return reference.kind === "relationship" && typeof reference.document === "string" &&
+    typeof reference.sourceQualifiedName === "string" && typeof reference.relationshipKind === "string" &&
+    nonNegativeInteger(reference.ordinal);
 }
 
 function nonNegativeInteger(value: unknown): value is number {

@@ -4,11 +4,8 @@ import { renderVisualization } from "../../diagram-renderer/src/renderer";
 declare function acquireVsCodeApi(): { postMessage(message: unknown): void };
 
 type Product = {
-  completeness: { status: string; reasons: Array<{ message: string }> };
-  preparedView: {
-    nodes: unknown[];
-    meta?: Record<string, unknown>;
-  };
+  completeness: { status: string; reasons: Array<{ code: string }> };
+  projection: { elements: unknown[] };
 };
 
 async function main(): Promise<void> {
@@ -16,14 +13,14 @@ async function main(): Promise<void> {
   const source = document.getElementById("diagram-product");
   if (!(target instanceof HTMLElement) || !source?.textContent) return;
   const product = JSON.parse(source.textContent) as Product;
-  if (product.preparedView.nodes.length === 0 && product.completeness.status !== "complete") {
+  if (product.projection.elements.length === 0 && product.completeness.status !== "complete") {
     const empty = document.createElement("div");
     empty.className = "empty";
-    empty.textContent = product.completeness.reasons.map((reason) => reason.message).join(" ");
+    empty.textContent = product.completeness.reasons.map((reason) => reason.code).join(" ");
     target.appendChild(empty);
     return;
   }
-  const prepared = prepareViewData({ preparedView: product.preparedView });
+  const prepared = prepareViewData(product);
   const vscode = acquireVsCodeApi();
   await renderVisualization(target, prepared, {
     theme: { colorScheme: "vscode" },

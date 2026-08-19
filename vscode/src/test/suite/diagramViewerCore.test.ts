@@ -94,18 +94,21 @@ describe("diagram viewer core", () => {
     const catalog = parseDiagramViewCatalog({
       modelDigest: "blake3:model",
       views: [{
+        handle: "view:state",
         kind: "state-transition-view",
-        semanticId: "P::lifecycle",
+        reference: { kind: "qualified-name", document: "file:///workspace/views.sysml", qualifiedName: "P::lifecycle", sourceDomain: "workspace" },
         name: "lifecycle",
         source: { uri: "file:///workspace/views.sysml" },
       }, {
+        handle: "view:general",
         kind: "general-view",
-        semanticId: "P::structure",
+        reference: { kind: "qualified-name", document: "file:///workspace/views.sysml", qualifiedName: "P::structure", sourceDomain: "workspace" },
         name: "structure",
         source: { uri: "file:///workspace/views.sysml" },
       }, {
+        handle: "view:grid",
         kind: "grid-view",
-        semanticId: "Q::matrix",
+        reference: { kind: "qualified-name", document: "file:///workspace/other.sysml", qualifiedName: "Q::matrix", sourceDomain: "workspace" },
         name: "matrix",
         source: { uri: "file:///workspace/other.sysml" },
       }],
@@ -119,18 +122,35 @@ describe("diagram viewer core", () => {
 
   it("validates the versioned render product and explicit incompleteness", () => {
     const value = {
-      schemaVersion: 1,
+      schemaVersion: 2,
       modelDigest: "blake3:model",
-      view: { id: "general-view", name: "General View" },
+      documents: [{ uri: "file:///workspace/model.sysml", sourceDomain: "workspace" }],
+      sources: [{ document: 0, range: [0, 0, 0, 1] }],
+      references: [{ kind: "qualified-name", document: 0, qualifiedName: "P::general" }],
+      selectedView: {
+        reference: 0,
+        kind: "general-view",
+        name: "General View",
+        source: 0,
+      },
       completeness: {
         status: "incomplete",
-        reasons: [{ code: "diagram.query.unsupported", message: "not implemented", requiredQuery: "general_view" }],
+        reasons: [{ code: "parse-recovery" }],
       },
-      preparedView: { title: "General View", view: "general-view", nodes: [], edges: [] },
+      projection: {
+        kind: "general-view",
+        exposedRoots: [],
+        nodes: [],
+        relationships: [],
+        edges: [],
+        metadata: { roots: [] },
+      },
     };
     assert.deepEqual(parseDiagramProduct(JSON.stringify(value)), value);
-    assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, schemaVersion: 2 })));
-    assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, preparedView: { ...value.preparedView, view: "grid-view" } })));
+    assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, schemaVersion: 1 })));
+    assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, projection: { ...value.projection, kind: "grid-view" } })));
+    assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, selectedView: { ...value.selectedView, reference: 1 } })));
+    assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, sources: [{ document: 1, range: [0, 0, 0, 1] }] })));
   });
 
   it("validates bounded source navigation", () => {

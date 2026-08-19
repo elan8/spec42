@@ -54,6 +54,8 @@ export function rendererLabel(view: string): string {
 }
 
 export function prepareViewData(visualizationInput: unknown): PreparedView {
+  const typed = prepareTypedDiagramProduct(visualizationInput);
+  if (typed) return typed;
   const passthrough = asRecord(visualizationInput).preparedView;
   if (passthrough && typeof passthrough === "object") {
     const candidate = asRecord(passthrough) as unknown as PreparedView;
@@ -72,4 +74,70 @@ export function prepareViewData(visualizationInput: unknown): PreparedView {
   if (view === "grid-view") return prepareGrid(visualization);
   if (view === "geometry-view") return prepareGeometry(visualization);
   return prepareGraph(visualization?.generalViewGraph ?? visualization?.graph, visualization);
+}
+
+function prepareTypedDiagramProduct(input: unknown): PreparedView | null {
+  const product = asRecord(input);
+  if (product.schemaVersion !== 2) return null;
+  const selected = asRecord(product.selectedView);
+  const projection = asRecord(product.projection);
+  const documents = Array.isArray(product.documents) ? product.documents.map(asRecord) : [];
+  const sources = Array.isArray(product.sources) ? product.sources.map(asRecord) : [];
+  const references = Array.isArray(product.references) ? product.references : [];
+  if (typeof selected.kind !== "string" || projection.kind !== selected.kind ||
+      typeof selected.name !== "string" || !Array.isArray(projection.nodes) ||
+      !Array.isArray(projection.edges)) return null;
+  const navigation = (index: unknown) => {
+    const source = typeof index === "number" ? sources[index] : undefined;
+    const document = source && typeof source.document === "number" ? documents[source.document] : undefined;
+    const range = source && Array.isArray(source.range) ? source.range : [];
+    return {
+      uri: document && typeof document.uri === "string" ? document.uri : null,
+      range: range.length === 4 ? {
+        start: { line: range[0], character: range[1] },
+        end: { line: range[2], character: range[3] },
+      } : {},
+    };
+  };
+  const nodes = projection.nodes.map((raw, index): PreparedNode => {
+    const element = asRecord(raw);
+    const source = navigation(element.source);
+    return {
+      id: `n:${index}`,
+      label: typeof element.name === "string" ? element.name : String(element.metaclass ?? ""),
+      kind: String(element.metaclass ?? "Unrecognized"),
+      uri: source.uri,
+      range: source.range as PreparedNode["range"],
+      attributes: {
+        semanticReference: typeof element.reference === "number" ? references[element.reference] : undefined,
+        owner: element.owner,
+      },
+    };
+  });
+  const edges = projection.edges.map((raw, index): PreparedEdge => {
+    const edge = asRecord(raw);
+    return {
+      id: `e:${index}`,
+      source: `n:${String(edge.source ?? "")}`,
+      target: `n:${String(edge.target ?? "")}`,
+      label: "",
+      edgeKind: String(edge.kind ?? "relationship"),
+      attributes: {
+        semanticReference: typeof edge.reference === "number" ? references[edge.reference] : undefined,
+        provenance: edge.provenance,
+        sourceNavigation: edge.navigation === null ? null : navigation(edge.navigation),
+      },
+    };
+  });
+  return {
+    title: selected.name,
+    view: selected.kind,
+    nodes,
+    edges,
+    meta: {
+      selectedDiagramReference: typeof selected.reference === "number" ? references[selected.reference] : undefined,
+      exposedRoots: projection.exposedRoots,
+      viewMetadata: projection.metadata,
+    },
+  };
 }
