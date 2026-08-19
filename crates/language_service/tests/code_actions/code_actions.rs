@@ -4,10 +4,10 @@ use language_service::{
     suggest_create_matching_part_def_quick_fix, suggest_create_usage_from_definition,
     suggest_create_verification_case, suggest_explicit_redefinition_quick_fix,
     suggest_qualify_ambiguous_name_quick_fixes, suggest_wrap_in_package, DiagnosticLine,
-    InMemoryWorkspace, WorkspaceSnapshot,
+    WorkspaceSnapshot,
 };
 
-use crate::support::{document, multi_doc};
+use crate::support::{document, multi_doc, workspace_from_docs};
 
 const PATH: &str = "test.sysml";
 
@@ -292,11 +292,10 @@ fn suggest_add_import_is_disabled_without_typed_import_query() {
 
 #[test]
 fn suggest_add_import_empty_when_no_candidates() {
-    let workspace = InMemoryWorkspace::from_documents(vec![document(
+    let workspace = workspace_from_docs(vec![document(
         "lonely.sysml",
         "package Lonely {\n  part car : MissingType;\n}\n",
-    )])
-    .expect("workspace");
+    )]);
     let uri = workspace.resolve_uri_for_path("lonely.sysml").expect("uri");
     let source = workspace.document_text(&uri).expect("text").to_string();
     let suggestions = suggest_add_import_quick_fixes(

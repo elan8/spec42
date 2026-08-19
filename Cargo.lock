@@ -829,8 +829,10 @@ dependencies = [
  "serde",
  "serde_json",
  "sysml_query",
+ "sysml_source",
  "tempfile",
  "toml 0.8.23",
+ "workspace",
 ]
 
 [[package]]
@@ -1973,7 +1975,9 @@ dependencies = [
  "generator_host",
  "rayon",
  "sysml_query",
+ "sysml_source",
  "tempfile",
+ "workspace",
 ]
 
 [[package]]
@@ -2982,9 +2986,11 @@ name = "workspace_session"
 version = "0.50.0"
 dependencies = [
  "sysml_query",
+ "sysml_source",
  "thiserror 2.0.19",
  "tokio",
  "tracing",
+ "url",
  "workspace",
 ]
 

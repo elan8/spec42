@@ -13,3 +13,27 @@ fn language_service_does_not_depend_on_kernel_tower_lsp_or_tokio() {
         );
     }
 }
+
+#[test]
+fn language_service_consumes_an_injected_publication_instead_of_building_one() {
+    let source_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("src");
+    let mut pending = vec![source_dir];
+    while let Some(path) = pending.pop() {
+        for entry in fs::read_dir(path).expect("read source directory") {
+            let path = entry.expect("source entry").path();
+            if path.is_dir() {
+                pending.push(path);
+            } else if path.extension().is_some_and(|extension| extension == "rs") {
+                let source = fs::read_to_string(&path).expect("read Rust source");
+                let production_source = source.split("#[cfg(test)]").next().unwrap_or(&source);
+                for forbidden in ["BuildRequest::resolved", "resolved_with_library"] {
+                    assert!(
+                        !production_source.contains(forbidden),
+                        "language_service must consume the host publication; found {forbidden} in {}",
+                        path.display()
+                    );
+                }
+            }
+        }
+    }
+}

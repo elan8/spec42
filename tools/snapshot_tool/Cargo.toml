@@ -15,6 +15,8 @@ rayon = "1.12"
 generator_api = { path = "../../crates/generator_api" }
 generator_host = { path = "../../crates/generator_host" }
 sysml_query = { path = "../../crates/sysml_query" }
+sysml_source = { path = "../../crates/sysml_source" }
+workspace = { path = "../../crates/workspace" }
 
 [dev-dependencies]
 tempfile = "3"

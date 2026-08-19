@@ -21,9 +21,11 @@ use generator_host::{CancellationHandle, GeneratorRuntime, RuntimeLimits};
 use rayon::prelude::*;
 use sysml_query::resolved_slice::{
     build as build_published_model, BuildRequest, ConstructionStrategy, EditorProbe, ElementKind,
-    PublishedModel, QualifiedElementReference, QualifiedReferenceOutcome, QualifiedReferenceProbe,
-    SourceDocument as QuerySourceDocument, SourceKind, TextPosition,
+    LibraryStratum, PublishedModel, QualifiedElementReference, QualifiedReferenceOutcome,
+    QualifiedReferenceProbe, SourceDocument as QuerySourceDocument, SourceKind, TextPosition,
 };
+use sysml_source::{SysmlDocument, SysmlDocumentSourceKind};
+use workspace::PublicationCoordinator;
 
 #[derive(Debug, Parser)]
 #[command(
@@ -127,6 +129,8 @@ const STANDARD_LIBRARY_DIRECTORY: &str = "sysml.library";
 struct LibraryCorpus {
     root: PathBuf,
     standard: OnceLock<Result<Vec<QuerySourceDocument>, String>>,
+    standard_stratum: OnceLock<Result<LibraryStratum, String>>,
+    standard_documents: OnceLock<Result<Vec<SysmlDocument>, String>>,
 }
 
 impl LibraryCorpus {
@@ -134,6 +138,19 @@ impl LibraryCorpus {
         Self {
             root,
             standard: OnceLock::new(),
+            standard_stratum: OnceLock::new(),
+            standard_documents: OnceLock::new(),
+        }
+    }
+
+    fn documents(&self, selection: LibrarySelection) -> Result<&[SysmlDocument], String> {
+        match selection {
+            LibrarySelection::None => Ok(&[]),
+            LibrarySelection::Standard => self
+                .standard_documents
+                .get_or_init(|| load_standard_library_documents(&self.root))
+                .as_deref()
+                .map_err(Clone::clone),
         }
     }
 
@@ -142,14 +159,41 @@ impl LibraryCorpus {
             LibrarySelection::None => Ok(&[]),
             LibrarySelection::Standard => self
                 .standard
-                .get_or_init(|| load_standard_library(&self.root))
+                .get_or_init(|| {
+                    self.documents(LibrarySelection::Standard)?
+                        .iter()
+                        .map(|document| {
+                            QuerySourceDocument::from_uri(
+                                document.uri.as_str(),
+                                document.content.clone(),
+                                SourceKind::StandardLibrary,
+                            )
+                            .map_err(|error| format!("invalid library source: {error}"))
+                        })
+                        .collect()
+                })
                 .as_deref()
                 .map_err(|error| error.clone()),
         }
     }
+
+    fn stratum(&self, selection: LibrarySelection) -> Result<Option<&LibraryStratum>, String> {
+        match selection {
+            LibrarySelection::None => Ok(None),
+            LibrarySelection::Standard => self
+                .standard_stratum
+                .get_or_init(|| {
+                    LibraryStratum::build(self.sources(LibrarySelection::Standard)?.to_vec())
+                        .map_err(|error| format!("standard-library stratum: {error}"))
+                })
+                .as_ref()
+                .map(Some)
+                .map_err(Clone::clone),
+        }
+    }
 }
 
-fn load_standard_library(root: &Path) -> Result<Vec<QuerySourceDocument>, String> {
+fn load_standard_library_documents(root: &Path) -> Result<Vec<SysmlDocument>, String> {
     let directory = root.join(STANDARD_LIBRARY_DIRECTORY);
     let mut paths = Vec::new();
     visit_markdown(&directory, &mut paths)?;
@@ -160,7 +204,7 @@ fn load_standard_library(root: &Path) -> Result<Vec<QuerySourceDocument>, String
             directory.display()
         ));
     }
-    let mut sources = Vec::with_capacity(paths.len());
+    let mut documents = Vec::new();
     for path in paths {
         let fallback_name = path
             .file_name()
@@ -168,21 +212,19 @@ fn load_standard_library(root: &Path) -> Result<Vec<QuerySourceDocument>, String
             .unwrap_or("library.md");
         let text = fs::read_to_string(&path)
             .map_err(|error| format!("{}: read failed: {error}", path.display()))?;
-        let documents = parse_source_documents(&text, fallback_name)?;
-        for document in documents {
+        for document in parse_source_documents(&text, fallback_name)? {
             let name = format!("{STANDARD_LIBRARY_DIRECTORY}/{}", document.name);
-            sources.push(
-                QuerySourceDocument::from_memory_path(
-                    "snapshot",
-                    &name,
-                    document.text,
-                    SourceKind::StandardLibrary,
-                )
-                .map_err(|error| format!("{}: invalid library source: {error}", path.display()))?,
-            );
+            documents.push(SysmlDocument::from_memory_path(
+                "snapshot",
+                &name,
+                document.text,
+                SysmlDocumentSourceKind::StandardLibrary,
+                None,
+                None,
+            )?);
         }
     }
-    Ok(sources)
+    Ok(documents)
 }
 
 fn main() -> Result<(), String> {
@@ -335,7 +377,7 @@ fn regenerate_snapshot(
         Vec::new()
     };
     documents.extend(load_repository_sources(&meta.repository_sources, path)?);
-    let mut source_documents = documents
+    let workspace_source_documents = documents
         .iter()
         .map(|document| {
             QuerySourceDocument::from_memory_path(
@@ -347,10 +389,35 @@ fn regenerate_snapshot(
         })
         .collect::<Result<Vec<_>, _>>()
         .map_err(|error| format!("{}: invalid source: {error}", path.display()))?;
+    let mut source_documents = workspace_source_documents.clone();
     source_documents.extend_from_slice(libraries.sources(meta.libraries)?);
+    let mut admitted_documents = documents
+        .iter()
+        .map(|document| {
+            SysmlDocument::from_memory_path(
+                "snapshot",
+                &document.name,
+                document.text.clone(),
+                SysmlDocumentSourceKind::Workspace,
+                None,
+                None,
+            )
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    admitted_documents.extend_from_slice(libraries.documents(meta.libraries)?);
     let probes = parse_editor_probes(fixture, &documents, fallback_name)?;
     let qualified_reference_probes =
         parse_qualified_reference_probes(fixture, &documents, fallback_name)?;
+    let canonical_model = PublicationCoordinator::new()
+        .publish(&admitted_documents, std::iter::empty::<Box<str>>())
+        .map_err(|error| {
+            format!(
+                "{}: canonical semantic build failed: {error}",
+                path.display()
+            )
+        })?;
+    // These direct builds are owner-internal equivalence lanes. Snapshot artifacts consume only
+    // `canonical_model`, exactly as production hosts do.
     let sequential_model = Arc::new(build_model(
         &source_documents,
         ConstructionStrategy::Sequential,
@@ -376,21 +443,65 @@ fn regenerate_snapshot(
         &qualified_reference_probes,
     )?;
     ensure_strategy_parity(path, &sequential, &parallel)?;
-    ensure_sections_balanced(&sequential)
-        .map_err(|error| format!("{}: {error}", path.display()))?;
+    let canonical = render_owned_sections(
+        &canonical_model,
+        &documents,
+        &source_documents,
+        &probes,
+        &qualified_reference_probes,
+    )?;
+    ensure_strategy_parity(path, &canonical, &sequential).map_err(|error| {
+        format!("{error}; canonical publication and direct equivalence lane differ")
+    })?;
+    let warm_models = if let Some(stratum) = libraries.stratum(meta.libraries)? {
+        let warm_sequential = Arc::new(build_model_with_library(
+            &workspace_source_documents,
+            ConstructionStrategy::Sequential,
+            stratum,
+            path,
+        )?);
+        let warm_parallel = Arc::new(build_model_with_library(
+            &workspace_source_documents,
+            ConstructionStrategy::Parallel,
+            stratum,
+            path,
+        )?);
+        let warm_sequential_sections = render_owned_sections(
+            &warm_sequential,
+            &documents,
+            &source_documents,
+            &probes,
+            &qualified_reference_probes,
+        )?;
+        let warm_parallel_sections = render_owned_sections(
+            &warm_parallel,
+            &documents,
+            &source_documents,
+            &probes,
+            &qualified_reference_probes,
+        )?;
+        ensure_strategy_parity(path, &warm_sequential_sections, &warm_parallel_sections)?;
+        ensure_strategy_parity(path, &sequential, &warm_sequential_sections).map_err(|error| {
+            format!("{error}; cold/full and warm/library-stratum publications differ")
+        })?;
+        Some((warm_sequential, warm_parallel))
+    } else {
+        None
+    };
+    ensure_sections_balanced(&canonical).map_err(|error| format!("{}: {error}", path.display()))?;
 
-    let fixture = replace_or_insert_section(fixture, "SMG", &sequential.smg)
+    let fixture = replace_or_insert_section(fixture, "SMG", &canonical.smg)
         .ok_or_else(|| format!("{}: missing SOURCE/SMG section", path.display()))?;
-    let fixture = replace_or_insert_section(&fixture, "DIAGNOSTICS", &sequential.diagnostics)
+    let fixture = replace_or_insert_section(&fixture, "DIAGNOSTICS", &canonical.diagnostics)
         .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?;
-    let fixture = replace_or_insert_section(&fixture, "TYPES", &sequential.types)
+    let fixture = replace_or_insert_section(&fixture, "TYPES", &canonical.types)
         .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?;
-    let fixture = replace_or_insert_section(&fixture, "NAVIGATION", &sequential.navigation)
+    let fixture = replace_or_insert_section(&fixture, "NAVIGATION", &canonical.navigation)
         .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?;
     let fixture = if probes.is_empty() {
         fixture
     } else {
-        replace_or_insert_section(&fixture, "EDITOR RESULTS", &sequential.editor_queries)
+        replace_or_insert_section(&fixture, "EDITOR RESULTS", &canonical.editor_queries)
             .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?
     };
     let fixture = if qualified_reference_probes.is_empty() {
@@ -399,21 +510,38 @@ fn regenerate_snapshot(
         replace_or_insert_section(
             &fixture,
             "QUALIFIED REFERENCE RESULTS",
-            &sequential.qualified_references,
+            &canonical.qualified_references,
         )
         .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?
     };
     let fixture = if let Some(generation) = &meta.generation {
+        let canonical_generated =
+            execute_generation(Arc::clone(&canonical_model), generation, path)?;
         let sequential_generated =
             execute_generation(Arc::clone(&sequential_model), generation, path)?;
         let parallel_generated = execute_generation(Arc::clone(&parallel_model), generation, path)?;
-        if sequential_generated != parallel_generated {
+        if canonical_generated != sequential_generated || sequential_generated != parallel_generated
+        {
             return Err(format!(
                 "{}: sequential and parallel generation differ",
                 path.display()
             ));
         }
-        replace_or_insert_generated_section(&fixture, &sequential_generated)
+        if let Some((warm_sequential, warm_parallel)) = &warm_models {
+            let warm_sequential_generated =
+                execute_generation(Arc::clone(warm_sequential), generation, path)?;
+            let warm_parallel_generated =
+                execute_generation(Arc::clone(warm_parallel), generation, path)?;
+            if sequential_generated != warm_sequential_generated
+                || sequential_generated != warm_parallel_generated
+            {
+                return Err(format!(
+                    "{}: cold/full and warm/library-stratum generation differ",
+                    path.display()
+                ));
+            }
+        }
+        replace_or_insert_generated_section(&fixture, &canonical_generated)
     } else {
         fixture
     };
@@ -671,6 +799,19 @@ fn build_model(
         .map_err(|error| format!("{}: invalid semantic input: {error}", path.display()))?;
     build_published_model(request)
         .map_err(|error| format!("{}: semantic build failed: {error}", path.display()))
+}
+
+fn build_model_with_library(
+    workspace_documents: &[QuerySourceDocument],
+    construction: ConstructionStrategy,
+    library: &LibraryStratum,
+    path: &Path,
+) -> Result<PublishedModel, String> {
+    let request =
+        BuildRequest::resolved_with_library(workspace_documents.to_vec(), construction, library)
+            .map_err(|error| format!("{}: invalid warm semantic input: {error}", path.display()))?;
+    build_published_model(request)
+        .map_err(|error| format!("{}: warm semantic build failed: {error}", path.display()))
 }
 
 fn render_owned_sections(
