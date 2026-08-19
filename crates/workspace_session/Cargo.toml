@@ -18,6 +18,8 @@ tracing = "0.1"
 
 [dev-dependencies]
 tokio = { version = "1", features = ["rt", "rt-multi-thread", "sync", "macros", "time", "test-util"] }
+sysml_source = { path = "../sysml_source" }
+url = "2"
 
 [[test]]
 name = "dependency_guardrails"

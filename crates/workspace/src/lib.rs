@@ -10,6 +10,7 @@ pub mod error;
 pub mod library;
 pub mod parse_cache;
 pub mod provider;
+pub mod publication;
 pub mod session;
 pub mod snapshot;
 pub mod version;
@@ -40,11 +41,13 @@ pub use provider::{
     ChangesetDocumentProvider, FileSystemDocumentProvider, HostFilesystemProvider,
     InMemoryDocumentProvider, SysmlDocument, SysmlDocumentProvider, SysmlDocumentSourceKind,
 };
+pub use publication::{
+    PreparedPublication, PublicationBuildFailure, PublicationCoordinator, PublicationFailureStage,
+};
 pub use source_identity::{ContentDigest, RootDigest};
 
 pub use session::{PublicationToken, RelinkToken, SessionLifecycle, WorkspaceSession};
 pub use snapshot::discovery::{discover_target_files, path_to_file_url, resolve_workspace_root};
-pub use snapshot::publish_documents;
 pub use snapshot::{
     apply_document_changes, enrich_document_hashes, CancellationToken, DocumentChanges,
     HostContext, HostPipelinePhase, HostResourceLimits, HostValidatedDocument,

@@ -8,10 +8,11 @@
 
 use std::sync::Arc;
 
-use sysml_query::resolved_slice::{
-    BuildRequest, PublicationCompleteness, PublicationIdentity, PublishedModel,
+use sysml_query::resolved_slice::{BuildRequest, PublicationIdentity, PublishedModel};
+use workspace::{
+    PreparedPublication, PublicationBuildFailure, PublicationCoordinator, SessionLifecycle,
+    SysmlDocument, WorkspaceSession,
 };
-use workspace::{SessionLifecycle, WorkspaceSession};
 
 use crate::{MutatePanicked, Mutation, SessionActor, SnapshotHandle, TracksRelink};
 
@@ -33,19 +34,11 @@ impl<P> TracksRelink for PublicationOwnerState<P> {
 
 trait PublicationValue<I> {
     fn identity(&self) -> &I;
-    fn is_complete(&self) -> bool;
 }
 
 impl PublicationValue<PublicationIdentity> for Arc<PublishedModel> {
     fn identity(&self) -> &PublicationIdentity {
         self.publication().identity()
-    }
-
-    /// Only a `Complete` publication is admitted. Parse recovery, unsupported syntax, and a
-    /// non-converged solve are each a distinct reason the build did not settle, and none of them
-    /// may quietly replace the last coherent model a reader is using.
-    fn is_complete(&self) -> bool {
-        self.publication().completeness() == PublicationCompleteness::Complete
     }
 }
 
@@ -68,10 +61,6 @@ where
     I: Clone + Eq + Send + 'static,
 {
     fn new(initial: P) -> Self {
-        assert!(
-            initial.is_complete(),
-            "the initial semantic publication must be complete"
-        );
         let mut session = WorkspaceSession::new();
         session.complete_startup();
         let (actor, snapshot) = SessionActor::spawn(PublicationOwnerState {
@@ -117,10 +106,6 @@ where
                     Err(SemanticBuildFailureKind::Cancelled) => {
                         assert!(state.session.commit_relink(&token.relink));
                         SemanticPublicationOutcome::DiscardedCancelled
-                    }
-                    Ok(publication) if !publication.is_complete() => {
-                        assert!(state.session.commit_relink(&token.relink));
-                        SemanticPublicationOutcome::DiscardedIncomplete
                     }
                     Ok(publication) if publication.identity() != &token.identity => {
                         assert!(state.session.commit_relink(&token.relink));
@@ -168,7 +153,6 @@ pub enum SemanticPublicationOutcome {
     Published,
     DiscardedFailed,
     DiscardedCancelled,
-    DiscardedIncomplete,
     DiscardedIdentityMismatch,
     Stale,
 }
@@ -192,8 +176,9 @@ impl PublishedModelSnapshot {
 /// Owns the current immutable semantic publication and serializes its publication barrier.
 ///
 /// Readers clone an [`Arc`] to the model without waiting for a build.  A build result is visible
-/// only after the actor has checked the complete identity and owner-scoped token.  The owner does
-/// not expose mutable graph state or a partial model.
+/// only after the actor has checked the exact identity and owner-scoped token. Explicit parser
+/// recovery, unsupported syntax, and non-convergence are coherent publication states and are
+/// published normally; the owner does not turn expected incompleteness into stale semantics.
 #[derive(Clone)]
 pub struct SemanticPublicationSession {
     core: PublicationSessionCore<Arc<PublishedModel>, PublicationIdentity>,
@@ -202,6 +187,24 @@ pub struct SemanticPublicationSession {
 impl SemanticPublicationSession {
     /// Starts a ready session with an already settled model.
     pub fn new(initial: Arc<PublishedModel>) -> Self {
+        // Protocol-neutral embedders may assemble an initial immutable state before entering
+        // their async serving runtime. Keep this owner alive on one shared runtime in that case;
+        // live calls made inside a runtime continue using the caller's executor.
+        if tokio::runtime::Handle::try_current().is_err() {
+            static OWNER_RUNTIME: std::sync::OnceLock<tokio::runtime::Runtime> =
+                std::sync::OnceLock::new();
+            let runtime = OWNER_RUNTIME.get_or_init(|| {
+                tokio::runtime::Builder::new_multi_thread()
+                    .enable_all()
+                    .thread_name("spec42-publication-owner")
+                    .build()
+                    .expect("semantic publication owner runtime")
+            });
+            let _entered = runtime.enter();
+            return Self {
+                core: PublicationSessionCore::new(initial),
+            };
+        }
         Self {
             core: PublicationSessionCore::new(initial),
         }
@@ -238,8 +241,10 @@ impl SemanticPublicationSession {
     /// Completes a build at the publication barrier.
     ///
     /// Errors and cancellation are explicit outcomes and retain the previous model.  A stale
-    /// result is ignored without changing the newer build's lifecycle.  A current result that is
-    /// incomplete or has a different identity is rejected and leaves the previous model in place.
+    /// result is ignored without changing the newer build's lifecycle. A current result with a
+    /// different identity is rejected and leaves the previous model in place. Explicitly
+    /// incomplete publications are committed because their completeness is part of the typed
+    /// result every consumer must handle.
     pub async fn finish_build(
         &self,
         token: SemanticBuildToken,
@@ -261,11 +266,129 @@ pub enum SemanticBuildFailureKind {
     Cancelled,
 }
 
+/// A scheduled canonical build. Its request and publication token capture the same identity.
+#[derive(Debug)]
+pub struct SemanticAuthorityBuild {
+    token: SemanticBuildToken,
+    prepared: PreparedPublication,
+}
+
+/// Isolated construction output waiting at the authority's publication barrier.
+#[derive(Debug)]
+pub struct SemanticAuthorityCompletion {
+    token: SemanticBuildToken,
+    result: Result<Arc<PublishedModel>, PublicationBuildFailure>,
+}
+
+impl SemanticAuthorityBuild {
+    /// Performs the expensive semantic construction without holding either publication actor.
+    pub fn construct(self) -> SemanticAuthorityCompletion {
+        SemanticAuthorityCompletion {
+            token: self.token,
+            result: self.prepared.build(),
+        }
+    }
+}
+
+/// Result of the canonical build and atomic publication barrier.
+#[derive(Debug)]
+pub struct SemanticAuthorityResult {
+    pub outcome: SemanticPublicationOutcome,
+    pub failure: Option<PublicationBuildFailure>,
+}
+
+/// The complete semantic publication authority for an engine environment.
+///
+/// It composes the one cache/request builder with the one atomic current-publication owner. Hosts
+/// may schedule construction concurrently, but can only commit through [`Self::finish_build`].
+#[derive(Clone)]
+pub struct SemanticPublicationAuthority {
+    coordinator: Arc<PublicationCoordinator>,
+    session: SemanticPublicationSession,
+}
+
+impl SemanticPublicationAuthority {
+    pub fn new(coordinator: Arc<PublicationCoordinator>, initial: Arc<PublishedModel>) -> Self {
+        Self {
+            coordinator,
+            session: SemanticPublicationSession::new(initial),
+        }
+    }
+
+    pub fn current(&self) -> Arc<PublishedModel> {
+        self.session.current()
+    }
+
+    pub fn snapshot(&self) -> PublishedModelSnapshot {
+        self.session.snapshot()
+    }
+
+    /// Canonically partitions the immutable source set, selects/reuses its library stratum, and
+    /// captures the resulting request identity in an owner-scoped supersession token.
+    pub async fn begin_build(
+        &self,
+        documents: &[SysmlDocument],
+        reported_documents: impl IntoIterator<Item = Box<str>>,
+    ) -> Result<SemanticAuthorityBuild, SemanticAuthorityBeginError> {
+        let prepared = self
+            .coordinator
+            .prepare(documents, reported_documents)
+            .map_err(SemanticAuthorityBeginError::Construction)?;
+        let token = self
+            .session
+            .begin_build(prepared.request())
+            .await
+            .map_err(SemanticAuthorityBeginError::Owner)?;
+        Ok(SemanticAuthorityBuild { token, prepared })
+    }
+
+    /// Builds and atomically commits a scheduled request. Failed construction retains the last
+    /// coherent publication and is returned with its typed phase and message.
+    pub async fn finish_build(
+        &self,
+        completion: SemanticAuthorityCompletion,
+    ) -> Result<SemanticAuthorityResult, MutatePanicked> {
+        let SemanticAuthorityCompletion { token, result } = completion;
+        match result {
+            Ok(model) => self
+                .session
+                .finish_build(token, Ok(model))
+                .await
+                .map(|outcome| SemanticAuthorityResult {
+                    outcome,
+                    failure: None,
+                }),
+            Err(failure) => self
+                .session
+                .finish_build(token, Err(SemanticBuildFailureKind::Failed))
+                .await
+                .map(|outcome| SemanticAuthorityResult {
+                    outcome,
+                    failure: Some(failure),
+                }),
+        }
+    }
+
+    pub fn lifecycle(&self) -> SessionLifecycle {
+        self.session.lifecycle()
+    }
+}
+
+#[derive(Debug, thiserror::Error)]
+pub enum SemanticAuthorityBeginError {
+    #[error("publication construction failed: {0}")]
+    Construction(#[source] PublicationBuildFailure),
+    #[error("publication owner failed: {0}")]
+    Owner(#[source] MutatePanicked),
+}
+
 #[cfg(test)]
 mod tests {
     use std::time::Duration;
 
     use super::*;
+    use sysml_source::SysmlDocumentSourceKind;
+    use url::Url;
 
     #[derive(Debug)]
     struct FakePublication {
@@ -276,10 +399,6 @@ mod tests {
     impl PublicationValue<u64> for Arc<FakePublication> {
         fn identity(&self) -> &u64 {
             &self.identity
-        }
-
-        fn is_complete(&self) -> bool {
-            self.complete
         }
     }
 
@@ -321,7 +440,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn failed_cancelled_incomplete_and_mismatched_builds_keep_prior_publication() {
+    async fn failures_keep_prior_publication_but_explicit_incompleteness_is_published() {
         let first = publication(1);
         let session = PublicationSessionCore::new(first.clone());
 
@@ -349,20 +468,21 @@ mod tests {
                 .finish_build(incomplete, Ok(incomplete_publication(2)))
                 .await
                 .unwrap(),
-            SemanticPublicationOutcome::DiscardedIncomplete
+            SemanticPublicationOutcome::Published
         );
+        assert!(!session.current().complete);
 
-        let mismatch = session.begin_build(2).await.unwrap();
+        let mismatch = session.begin_build(3).await.unwrap();
         assert_eq!(
             session
-                .finish_build(mismatch, Ok(publication(3)))
+                .finish_build(mismatch, Ok(publication(4)))
                 .await
                 .unwrap(),
             SemanticPublicationOutcome::DiscardedIdentityMismatch
         );
 
         assert_eq!(session.lifecycle(), SessionLifecycle::Ready);
-        assert!(Arc::ptr_eq(&session.current(), &first));
+        assert_eq!(session.current().identity, 2);
     }
 
     #[tokio::test]
@@ -431,5 +551,83 @@ mod tests {
             .await
             .expect("readers must not block on publication")
             .unwrap();
+    }
+
+    fn document(uri: &str, content: &str) -> SysmlDocument {
+        SysmlDocument {
+            uri: Url::parse(uri).unwrap(),
+            content: content.to_owned(),
+            path_hint: None,
+            source_kind: SysmlDocumentSourceKind::Workspace,
+            content_digest: None,
+            byte_size: None,
+        }
+    }
+
+    #[tokio::test]
+    async fn authority_rejects_out_of_order_builds_at_its_atomic_barrier() {
+        let coordinator = Arc::new(PublicationCoordinator::new());
+        let initial_documents = [document(
+            "memory://workspace/model.sysml",
+            "package Initial;",
+        )];
+        let initial = coordinator.publish(&initial_documents, []).unwrap();
+        let authority = SemanticPublicationAuthority::new(coordinator, initial);
+
+        let older = authority
+            .begin_build(
+                &[document("memory://workspace/model.sysml", "package Older;")],
+                [],
+            )
+            .await
+            .unwrap();
+        let newer = authority
+            .begin_build(
+                &[document("memory://workspace/model.sysml", "package Newer;")],
+                [],
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(
+            authority
+                .finish_build(older.construct())
+                .await
+                .unwrap()
+                .outcome,
+            SemanticPublicationOutcome::Stale
+        );
+        assert_eq!(
+            authority
+                .finish_build(newer.construct())
+                .await
+                .unwrap()
+                .outcome,
+            SemanticPublicationOutcome::Published
+        );
+        assert_eq!(authority.lifecycle(), SessionLifecycle::Ready);
+    }
+
+    #[tokio::test]
+    async fn request_failure_is_typed_and_keeps_the_current_publication() {
+        let coordinator = Arc::new(PublicationCoordinator::new());
+        let initial_documents = [document(
+            "memory://workspace/model.sysml",
+            "package Initial;",
+        )];
+        let initial = coordinator.publish(&initial_documents, []).unwrap();
+        let authority = SemanticPublicationAuthority::new(coordinator, Arc::clone(&initial));
+        let duplicate = document("memory://workspace/duplicate.sysml", "package First;");
+        let result = authority
+            .begin_build(&[duplicate.clone(), duplicate], [])
+            .await;
+
+        let error = result.expect_err("duplicate source identities must be rejected");
+        assert!(matches!(
+            error,
+            SemanticAuthorityBeginError::Construction(_)
+        ));
+        assert!(Arc::ptr_eq(&authority.current(), &initial));
+        assert_eq!(authority.lifecycle(), SessionLifecycle::Ready);
     }
 }
