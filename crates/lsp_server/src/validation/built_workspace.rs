@@ -164,10 +164,12 @@ fn server_state_from_built(
     ServerState {
         workspace_roots: workspace_root_url.iter().cloned().collect(),
         library_paths: built.library_urls.clone(),
-        published_model: Some(built.published_model.clone()),
         index,
         session,
-        ..ServerState::default()
+        ..ServerState::with_initial_publication(
+            Arc::new(workspace::PublicationCoordinator::new()),
+            built.published_model.clone(),
+        )
     }
 }
 
@@ -224,7 +226,7 @@ fn collect_diagnostics_for_document(
     strict_diagnostics: bool,
 ) -> Vec<Diagnostic> {
     diagnostics_core::collect_document_diagnostics(
-        state.published_model.as_deref(),
+        Some(state.published_model.model()),
         uri,
         diagnostics_core::validation_reporting(strict_diagnostics),
         diagnostics_core::validation_postprocess_options(strict_diagnostics),

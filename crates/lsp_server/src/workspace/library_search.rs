@@ -2,8 +2,6 @@ use std::collections::BTreeMap;
 
 use tower_lsp::lsp_types::{Range, SymbolKind, Url};
 
-use crate::workspace::IndexEntry;
-
 #[derive(Debug, Clone)]
 pub(crate) struct LibrarySearchItem {
     pub(crate) name: String,
@@ -60,59 +58,6 @@ pub(crate) fn symbol_kind_label(kind: SymbolKind) -> &'static str {
         SymbolKind::TYPE_PARAMETER => "typeParameter",
         _ => "symbol",
     }
-}
-
-pub(crate) fn normalized_library_symbol_name(
-    entry: &crate::language::SymbolEntry,
-    index_entry: Option<&IndexEntry>,
-) -> String {
-    if !is_generic_symbol_name(&entry.name) {
-        return entry.name.clone();
-    }
-    if let Some(content) = index_entry.map(|idx| idx.content.as_str()) {
-        if let Some(name) =
-            extract_declared_name_from_line(content, entry.range.start.line as usize)
-        {
-            return name;
-        }
-    }
-    entry.name.clone()
-}
-
-fn is_generic_symbol_name(name: &str) -> bool {
-    matches!(
-        name.trim().to_ascii_lowercase().as_str(),
-        "" | "def" | "usage"
-    )
-}
-
-pub(crate) fn extract_declared_name_from_line(content: &str, line_idx: usize) -> Option<String> {
-    let line = content.lines().nth(line_idx)?.trim();
-    if line.is_empty() {
-        return None;
-    }
-    // Normalize punctuation so "allocation def Allocation :>" tokenizes predictably.
-    let normalized = line
-        .chars()
-        .map(|c| {
-            if c.is_ascii_alphanumeric() || c == '_' || c == '\'' || c == '-' {
-                c
-            } else {
-                ' '
-            }
-        })
-        .collect::<String>();
-    let tokens: Vec<&str> = normalized.split_whitespace().collect();
-    if tokens.len() < 2 {
-        return None;
-    }
-    for i in 0..(tokens.len() - 1) {
-        let tok = tokens[i].to_ascii_lowercase();
-        if (tok == "def" || tok == "usage") && is_valid_decl_name(tokens[i + 1]) {
-            return Some(tokens[i + 1].to_string());
-        }
-    }
-    None
 }
 
 fn is_valid_decl_name(token: &str) -> bool {
@@ -220,13 +165,23 @@ pub(crate) fn library_search_score(name: &str, query_lc: &str) -> Option<i64> {
     fuzzy_subsequence_score(&name_lc, query_lc).map(|s| 4_000 + s)
 }
 
-pub(crate) fn add_short_name_symbol_entries(
-    entries: &mut Vec<crate::language::SymbolEntry>,
+/// A syntax-recovery search candidate for a document deliberately excluded from semantic
+/// publication. This is not a resolved symbol and must never be used by semantic consumers.
+#[derive(Debug, Clone)]
+pub(crate) struct RecoverySearchSymbol(crate::language::SymbolEntry);
+
+impl RecoverySearchSymbol {
+    pub(crate) fn into_search_only_symbol(self) -> crate::language::SymbolEntry {
+        self.0
+    }
+}
+
+pub(crate) fn recover_short_name_search_symbols(
     content: &str,
     uri: &Url,
-) {
-    let mut existing_names: std::collections::HashSet<String> =
-        entries.iter().map(|e| e.name.clone()).collect();
+) -> Vec<RecoverySearchSymbol> {
+    let mut entries: Vec<RecoverySearchSymbol> = Vec::new();
+    let mut existing_names = std::collections::HashSet::new();
     for (line_idx, line) in content.lines().enumerate() {
         let mut cursor = 0usize;
         while let Some(open_rel) = line[cursor..].find('<') {
@@ -246,13 +201,13 @@ pub(crate) fn add_short_name_symbol_entries(
             let end_char = start_char + token.chars().count() as u32;
             let anchor = entries
                 .iter()
-                .find(|e| e.range.start.line == line_idx as u32 && !e.name.trim().is_empty());
+                .find(|e| e.0.range.start.line == line_idx as u32 && !e.0.name.trim().is_empty());
             let (kind, container_name, detail, description) = match anchor {
                 Some(a) => (
-                    a.kind,
-                    a.container_name.clone(),
-                    a.detail.clone(),
-                    Some(format!("short name for {}", a.name)),
+                    a.0.kind,
+                    a.0.container_name.clone(),
+                    a.0.detail.clone(),
+                    Some(format!("short name for {}", a.0.name)),
                 ),
                 None => (
                     SymbolKind::VARIABLE,
@@ -261,7 +216,7 @@ pub(crate) fn add_short_name_symbol_entries(
                     Some("short name from declaration".to_string()),
                 ),
             };
-            entries.push(crate::language::SymbolEntry {
+            entries.push(RecoverySearchSymbol(crate::language::SymbolEntry {
                 name: token.to_string(),
                 uri: uri.clone(),
                 range: Range::new(
@@ -273,10 +228,11 @@ pub(crate) fn add_short_name_symbol_entries(
                 detail,
                 description,
                 signature: None,
-            });
+            }));
             existing_names.insert(token.to_string());
         }
     }
+    entries
 }
 
 fn fuzzy_subsequence_score(text: &str, query: &str) -> Option<i64> {
@@ -303,15 +259,8 @@ fn fuzzy_subsequence_score(text: &str, query: &str) -> Option<i64> {
 
 #[cfg(test)]
 mod tests {
-    use super::{extract_declared_name_from_line, library_search_score, library_source_label};
+    use super::{library_search_score, library_source_label};
     use tower_lsp::lsp_types::Url;
-
-    #[test]
-    fn extract_declared_name_handles_specialization_line() {
-        let line = "standard library package Allocations { allocation def Allocation :> BinaryConnection; }";
-        let name = extract_declared_name_from_line(line, 0);
-        assert_eq!(name.as_deref(), Some("Allocation"));
-    }
 
     #[test]
     fn library_search_score_prefers_exact_match() {

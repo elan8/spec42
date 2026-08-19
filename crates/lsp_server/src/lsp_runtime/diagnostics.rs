@@ -63,7 +63,9 @@ pub(crate) async fn publish_document_diagnostics(
     // whether it is still *current*. A slower computation for an older edit would otherwise land
     // after a newer one and leave the editor showing diagnostics for text the author has replaced.
     let publication = snap.session.publication();
-    let diagnostics = collect_diagnostics_for_document(snap.published_model.clone(), &uri).await;
+    let diagnostics =
+        collect_diagnostics_for_document(Some(snap.published_model.clone().into_model()), &uri)
+            .await;
     if !publish_if_current(client, handle, publication, uri.clone(), diagnostics).await {
         if perf_logging_enabled(runtime_config) {
             info!(
@@ -173,7 +175,7 @@ pub(crate) async fn publish_workspace_diagnostics(
     let publication = snap.session.publication();
     let mut join_set = tokio::task::JoinSet::new();
     for uri in docs {
-        let model = snap.published_model.clone();
+        let model = Some(snap.published_model.clone().into_model());
         let client = client.clone();
         let handle = handle.clone();
         join_set.spawn(async move {

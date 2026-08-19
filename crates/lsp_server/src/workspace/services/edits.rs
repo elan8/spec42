@@ -58,7 +58,6 @@ pub(crate) fn apply_parsed_document_update(
         ));
     }
     refresh_symbols_for_uri(state, uri_norm);
-    crate::workspace::state::refresh_published_model(state);
     warnings
 }
 
@@ -67,5 +66,4 @@ pub(crate) fn remove_document(state: &mut impl DocumentStore, uri_norm: &Url) {
     state
         .symbol_table_mut()
         .retain(|entry| entry.uri != *uri_norm);
-    crate::workspace::state::refresh_published_model(state);
 }

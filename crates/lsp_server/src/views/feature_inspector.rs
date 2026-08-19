@@ -573,20 +573,21 @@ pub fn build_sysml_feature_inspector_response(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use sysml_query::resolved_slice::{
-        build, BuildRequest, ConstructionStrategy, SourceDocument, SourceKind,
-    };
+    use sysml_source::{SysmlDocument, SysmlDocumentSourceKind};
 
     fn inspect(source: &str, line: u32, character: u32) -> SysmlFeatureInspectorResultDto {
         let uri = Url::parse("file:///inspector.sysml").expect("uri");
-        let document =
-            SourceDocument::from_uri(uri.as_str(), source.to_string(), SourceKind::Workspace)
-                .expect("document");
-        let model = build(
-            BuildRequest::resolved(vec![document], ConstructionStrategy::Sequential)
-                .expect("request"),
-        )
-        .expect("publication");
+        let document = SysmlDocument {
+            uri: uri.clone(),
+            content: source.to_string(),
+            path_hint: None,
+            source_kind: SysmlDocumentSourceKind::Workspace,
+            content_digest: None,
+            byte_size: None,
+        };
+        let model = workspace::PublicationCoordinator::default()
+            .publish(&[document], [])
+            .expect("publication");
         build_sysml_feature_inspector_response(
             &model,
             &uri,

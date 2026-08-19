@@ -199,7 +199,7 @@ fn element_at(
 ) -> Option<sysml_query::resolved_slice::ElementInspection> {
     use sysml_query::resolved_slice::{QueryOutcome, TextPosition};
 
-    let model = state.published_model.as_deref()?;
+    let model = state.published_model.model();
     let at = match model.inspection().inspect_at(
         uri.as_str(),
         TextPosition {
@@ -227,7 +227,7 @@ fn hierarchy_step(
 ) -> Option<Vec<TypeHierarchyItem>> {
     use sysml_query::resolved_slice::{QueryOutcome, SpecializationScope};
 
-    let model = state.published_model.as_deref()?;
+    let model = state.published_model.model();
     let element = element_at(state, uri, position)?;
     let outcome = if ascending {
         model

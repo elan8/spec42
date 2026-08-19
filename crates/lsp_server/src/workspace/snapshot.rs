@@ -26,7 +26,7 @@ impl<'a> ServerStateSnapshot<'a> {
             state,
             symbol_table,
             perf_logging_enabled,
-            published_model: state.published_model.clone(),
+            published_model: Some(state.published_model.clone().into_model()),
         }
     }
 }

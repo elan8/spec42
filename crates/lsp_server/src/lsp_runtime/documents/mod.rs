@@ -105,16 +105,28 @@ fn schedule_semantic_relink_after_change(
             return;
         };
 
-        // Compute diagnostics URIs from the locally-known (pre-commit) index/library_paths.
-        // This function only ever reads raw source/parsed data, never published semantics, so
-        // the pre-relink snapshot's index is exactly as good as a post-commit read would be.
+        // Ask the previous coherent publication which documents depend on the changed provider.
+        // If recovery made that topology incomplete, the typed query explicitly requests broad
+        // invalidation; this host never reconstructs import semantics from source text.
         let snap_for_diag = handle.snapshot();
-        let mut diag_uris =
-            crate::workspace::import_graph::workspace_uris_importing_declarations_from(
-                &snap_for_diag.index,
-                &snap_for_diag.library_paths,
-                &changed_uri,
-            );
+        let workspace_uris = snap_for_diag
+            .index
+            .keys()
+            .filter(|uri| {
+                !crate::common::util::uri_under_any_library(uri, &snap_for_diag.library_paths)
+                    && !crate::common::util::uri_under_any_library(
+                        uri,
+                        &snap_for_diag.standard_library_paths,
+                    )
+            })
+            .cloned()
+            .collect::<Vec<_>>();
+        let mut diag_uris = crate::workspace::import_graph::affected_diagnostic_documents(
+            snap_for_diag.published_model.model(),
+            workspace_uris,
+            &changed_uri,
+        )
+        .into_uris();
         drop(snap_for_diag);
         // Always include the changed file — it was skipped during the fast
         // graph update and needs diagnostics from the fully-resolved graph.

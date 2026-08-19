@@ -22,11 +22,7 @@ pub(crate) fn sysml_feature_inspector_result(
             &uri, position,
         ));
     };
-    let Some(model) = state.published_model.as_deref() else {
-        return Ok(crate::views::empty_feature_inspector_response(
-            &uri, position,
-        ));
-    };
+    let model = state.published_model.model();
     let text = entry.content.clone();
     // Queried once: the response and the selection classification below are two readings of the
     // same settled answer, and asking twice would suggest they could differ.
@@ -130,11 +126,20 @@ pub(crate) fn sysml_library_search_result(
         {
             continue;
         }
-        crate::workspace::library_search::add_short_name_symbol_entries(
-            &mut search_symbols,
-            &index_entry.content,
-            uri,
-        );
+        // Only non-admitted corpus documents may use syntax recovery for search. Admitted
+        // documents are represented exclusively by the committed publication query.
+        if !index_entry.admitted_to_publication {
+            search_symbols.extend(
+                crate::workspace::library_search::recover_short_name_search_symbols(
+                    &index_entry.content,
+                    uri,
+                )
+                .into_iter()
+                .map(
+                    crate::workspace::library_search::RecoverySearchSymbol::into_search_only_symbol,
+                ),
+            );
+        }
     }
 
     let mut ranked: Vec<(i64, &crate::language::SymbolEntry)> = search_symbols
@@ -143,14 +148,10 @@ pub(crate) fn sysml_library_search_result(
             crate::common::util::uri_under_any_library(&entry.uri, &state.library_paths)
         })
         .filter_map(|entry| {
-            let normalized_name = crate::workspace::library_search::normalized_library_symbol_name(
-                entry,
-                state.index.get(&entry.uri),
-            );
             let score = if query.is_empty() {
                 1_000
             } else {
-                crate::workspace::library_search::library_search_score(&normalized_name, &query)?
+                crate::workspace::library_search::library_search_score(&entry.name, &query)?
             };
             Some((score, entry))
         })
@@ -180,10 +181,7 @@ pub(crate) fn sysml_library_search_result(
         .take(effective_limit)
         .map(
             |(score, entry)| crate::workspace::library_search::LibrarySearchItem {
-                name: crate::workspace::library_search::normalized_library_symbol_name(
-                    entry,
-                    state.index.get(&entry.uri),
-                ),
+                name: entry.name.clone(),
                 kind: crate::workspace::library_search::symbol_kind_label(entry.kind).to_string(),
                 container: entry.container_name.clone(),
                 uri: entry.uri.to_string(),
@@ -237,7 +235,6 @@ pub(crate) fn clear_document_store_state(state: &mut impl DocumentStore) -> (usi
     let syms = state.symbol_table_mut().len();
     state.index_mut().clear();
     state.symbol_table_mut().clear();
-    *state.published_model_mut() = None;
     (docs, syms)
 }
 

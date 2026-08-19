@@ -459,11 +459,7 @@ impl Backend {
                 "model URI is not part of the current workspace publication",
             ));
         }
-        let publication = state.published_model.clone().ok_or_else(|| {
-            tower_lsp::jsonrpc::Error::invalid_params(
-                "the workspace has no current immutable semantic publication",
-            )
-        })?;
+        let publication = state.published_model.clone().into_model();
         let module_bytes = params
             .module_bytes()
             .map_err(tower_lsp::jsonrpc::Error::invalid_params)?;
@@ -505,11 +501,7 @@ impl Backend {
                 "model URI is not part of the current workspace publication",
             ));
         }
-        let publication = state.published_model.clone().ok_or_else(|| {
-            tower_lsp::jsonrpc::Error::invalid_params(
-                "the workspace has no current immutable semantic publication",
-            )
-        })?;
+        let publication = state.published_model.clone().into_model();
         let service = Arc::clone(&self.generator_service);
         tokio::task::spawn_blocking(move || {
             let service = service
@@ -540,11 +532,7 @@ impl Backend {
                 "model URI is not part of the current workspace publication",
             ));
         }
-        let publication = state.published_model.clone().ok_or_else(|| {
-            tower_lsp::jsonrpc::Error::invalid_params(
-                "the workspace has no current immutable semantic publication",
-            )
-        })?;
+        let publication = state.published_model.clone().into_model();
         let service = Arc::clone(&self.generator_service);
         tokio::task::spawn_blocking(move || {
             let service = service
@@ -605,7 +593,9 @@ fn make_custom_rpc_handler(
 pub async fn run(config: Arc<Spec42Config>, server_name: &str) {
     crate::host::logging::init_tracing();
     let (stdin, stdout) = (tokio::io::stdin(), tokio::io::stdout());
-    let handle = WorkspaceHandle::spawn(ServerState::default());
+    let handle = WorkspaceHandle::spawn(ServerState::with_publication_coordinator(Arc::clone(
+        &config.publication_coordinator,
+    )));
     let start_time = Instant::now();
     let server_name = server_name.to_string();
     let custom_rpc_methods = config.custom_rpc_method_names();

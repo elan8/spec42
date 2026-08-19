@@ -423,48 +423,51 @@ impl GeneratorService {
 mod tests {
     use super::*;
     use spec42_generator_protocol::COMPATIBILITY_TOKEN;
-    use sysml_query::resolved_slice::{
-        build, BuildRequest, ConstructionStrategy, SourceDocument, SourceKind,
-    };
+    use sysml_source::{SysmlDocument, SysmlDocumentSourceKind};
+    use tower_lsp::lsp_types::Url;
 
     fn publication() -> Arc<PublishedModel> {
-        let document = SourceDocument::from_memory_path(
-            "lsp-generator-tests",
-            "model.sysml",
-            "package P { part def Widget; }\n".to_owned(),
-            SourceKind::Workspace,
-        )
-        .expect("source document");
-        let request = BuildRequest::resolved(vec![document], ConstructionStrategy::Sequential)
-            .expect("build request");
-        Arc::new(build(request).expect("published model"))
+        workspace::PublicationCoordinator::default()
+            .publish(
+                &[SysmlDocument {
+                    uri: Url::parse("file:///lsp-generator-tests/model.sysml").expect("uri"),
+                    content: "package P { part def Widget; }\n".to_owned(),
+                    path_hint: None,
+                    source_kind: SysmlDocumentSourceKind::Workspace,
+                    content_digest: None,
+                    byte_size: None,
+                }],
+                [],
+            )
+            .expect("published model")
     }
 
     fn state_transition_publication() -> Arc<PublishedModel> {
-        let standard = SourceDocument::from_memory_path(
-            "lsp-generator-tests",
-            "standard.sysml",
-            "standard library package StandardViewDefinitions { view def StateTransitionView; }\n"
+        let standard = SysmlDocument {
+            uri: Url::parse("file:///lsp-generator-tests/standard.sysml").expect("standard uri"),
+            content: "standard library package StandardViewDefinitions { view def StateTransitionView; }\n"
                 .to_owned(),
-            SourceKind::StandardLibrary,
-        )
-        .expect("standard view document");
-        let workspace = SourceDocument::from_memory_path(
-            "lsp-generator-tests",
-            "views.sysml",
-            "package P {\n\
+            path_hint: None,
+            source_kind: SysmlDocumentSourceKind::StandardLibrary,
+            content_digest: None,
+            byte_size: None,
+        };
+        let workspace = SysmlDocument {
+            uri: Url::parse("file:///lsp-generator-tests/views.sysml").expect("workspace uri"),
+            content: "package P {\n\
              \tprivate import StandardViewDefinitions::*;\n\
              \tstate def Machine { then ready; state ready; final done; transition finish first ready then done; }\n\
              \tview lifecycle : StateTransitionView { expose Machine; }\n\
              }\n"
                 .to_owned(),
-            SourceKind::Workspace,
-        )
-        .expect("workspace view document");
-        let request =
-            BuildRequest::resolved(vec![standard, workspace], ConstructionStrategy::Sequential)
-                .expect("build request");
-        Arc::new(build(request).expect("published state-transition model"))
+            path_hint: None,
+            source_kind: SysmlDocumentSourceKind::Workspace,
+            content_digest: None,
+            byte_size: None,
+        };
+        workspace::PublicationCoordinator::default()
+            .publish(&[standard, workspace], [])
+            .expect("published state-transition model")
     }
 
     fn empty_generator(name: &str) -> Vec<u8> {
