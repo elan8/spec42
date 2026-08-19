@@ -311,7 +311,7 @@ fn migrated_validation_paths_cannot_return_to_the_graph() {
     let root = repository_root();
     let migrated = [
         "crates/workspace/src/snapshot/validation.rs",
-        "crates/workspace/src/snapshot/publication.rs",
+        "crates/semantic_publication/src/lib.rs",
         "crates/lsp_server/src/analysis/diagnostics_core.rs",
         "crates/lsp_server/src/analysis/diagnostics_adapter.rs",
         "crates/lsp_server/src/lsp_runtime/diagnostics.rs",

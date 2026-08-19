@@ -14,10 +14,10 @@ use generator_host::{
     CancellationHandle, GeneratorRuntime, PreparedGenerator, RuntimeLimits, RuntimeOptions,
 };
 use rayon::prelude::*;
+use semantic_publication::PublicationCoordinator;
 use serde::Serialize;
 use sysml_query::resolved_slice::PublishedModel;
 use sysml_source::{SysmlDocument, SysmlDocumentSourceKind};
-use workspace::PublicationCoordinator;
 
 use crate::case::{Case, Expectation};
 

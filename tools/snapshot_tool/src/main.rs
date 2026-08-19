@@ -19,13 +19,13 @@ use clap::{Parser, Subcommand};
 use generator_api::{ArtifactLimits, DiagramSemanticReference, GeneratorModelView, QueryLimits};
 use generator_host::{CancellationHandle, GeneratorRuntime, RuntimeLimits};
 use rayon::prelude::*;
+use semantic_publication::PublicationCoordinator;
 use sysml_query::resolved_slice::{
     build as build_published_model, BuildRequest, ConstructionStrategy, EditorProbe, ElementKind,
     LibraryStratum, PublishedModel, QualifiedElementReference, QualifiedReferenceOutcome,
     QualifiedReferenceProbe, SourceDocument as QuerySourceDocument, SourceKind, TextPosition,
 };
 use sysml_source::{SysmlDocument, SysmlDocumentSourceKind};
-use workspace::PublicationCoordinator;
 
 #[derive(Debug, Parser)]
 #[command(

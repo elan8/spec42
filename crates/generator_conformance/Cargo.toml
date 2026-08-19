@@ -17,7 +17,7 @@ generator_api = { path = "../generator_api" }
 generator_host = { path = "../generator_host" }
 sysml_query = { path = "../sysml_query" }
 sysml_source = { path = "../sysml_source" }
-workspace = { path = "../workspace" }
+semantic_publication.workspace = true
 serde = { workspace = true }
 serde_json = { workspace = true }
 toml = "0.8"

@@ -13,8 +13,6 @@ use sysml_query::resolved_slice::{
 };
 use sysml_source::{SysmlDocument, SysmlDocumentSourceKind};
 
-use crate::error::{WorkspaceError, WorkspaceResult};
-
 /// The semantic phase which rejected a publication request.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum PublicationFailureStage {
@@ -97,10 +95,9 @@ impl PublicationCoordinator {
         &self,
         documents: &[SysmlDocument],
         reported_documents: impl IntoIterator<Item = Box<str>>,
-    ) -> WorkspaceResult<Arc<PublishedModel>> {
+    ) -> Result<Arc<PublishedModel>, PublicationBuildFailure> {
         self.prepare(documents, reported_documents)
             .and_then(PreparedPublication::build)
-            .map_err(|error| WorkspaceError::internal_invariant_failure(error.to_string()))
     }
 
     /// Prepares the canonical request without building it, allowing an atomic publication owner

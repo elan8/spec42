@@ -12,6 +12,7 @@ default = []
 [dependencies]
 sysml_query = { path = "../sysml_query" }
 workspace = { path = "../workspace", default-features = false }
+semantic_publication.workspace = true
 tokio = { version = "1", features = ["rt", "rt-multi-thread", "sync", "macros", "time"] }
 thiserror = { workspace = true }
 tracing = "0.1"

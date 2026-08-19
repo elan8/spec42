@@ -26,6 +26,7 @@ sysml_query = { path = "../sysml_query" }
 sysml_source = { path = "../sysml_source" }
 source_identity = { path = "../source_identity" }
 language_service = { path = "../language_service" }
+semantic_publication.workspace = true
 serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }

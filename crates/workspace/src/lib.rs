@@ -10,7 +10,6 @@ pub mod error;
 pub mod library;
 pub mod parse_cache;
 pub mod provider;
-pub mod publication;
 pub mod session;
 pub mod snapshot;
 pub mod version;
@@ -41,7 +40,7 @@ pub use provider::{
     ChangesetDocumentProvider, FileSystemDocumentProvider, HostFilesystemProvider,
     InMemoryDocumentProvider, SysmlDocument, SysmlDocumentProvider, SysmlDocumentSourceKind,
 };
-pub use publication::{
+pub use semantic_publication::{
     PreparedPublication, PublicationBuildFailure, PublicationCoordinator, PublicationFailureStage,
 };
 pub use source_identity::{ContentDigest, RootDigest};

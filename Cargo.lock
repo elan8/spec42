@@ -826,13 +826,13 @@ dependencies = [
  "generator_api",
  "generator_host",
  "rayon",
+ "semantic_publication",
  "serde",
  "serde_json",
  "sysml_query",
  "sysml_source",
  "tempfile",
  "toml 0.8.23",
- "workspace",
 ]
 
 [[package]]
@@ -1744,6 +1744,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "94143f37725109f92c262ed2cf5e59bce7498c01bcc1502d7b9afe439a4e9f49"
 
 [[package]]
+name = "semantic_publication"
+version = "0.50.0"
+dependencies = [
+ "blake3",
+ "sysml_query",
+ "sysml_source",
+]
+
+[[package]]
 name = "semver"
 version = "1.0.28"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1974,10 +1983,10 @@ dependencies = [
  "generator_api",
  "generator_host",
  "rayon",
+ "semantic_publication",
  "sysml_query",
  "sysml_source",
  "tempfile",
- "workspace",
 ]
 
 [[package]]
@@ -2970,6 +2979,7 @@ dependencies = [
  "postcard",
  "proc-macro2",
  "rayon",
+ "semantic_publication",
  "serde",
  "serde_json",
  "sha2",
@@ -2993,6 +3003,7 @@ dependencies = [
 name = "workspace_session"
 version = "0.50.0"
 dependencies = [
+ "semantic_publication",
  "sysml_query",
  "sysml_source",
  "thiserror 2.0.19",

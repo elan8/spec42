@@ -8,11 +8,9 @@
 
 use std::sync::Arc;
 
+use semantic_publication::{PreparedPublication, PublicationBuildFailure, PublicationCoordinator};
 use sysml_query::resolved_slice::{BuildRequest, PublicationIdentity, PublishedModel};
-use workspace::{
-    PreparedPublication, PublicationBuildFailure, PublicationCoordinator, SessionLifecycle,
-    SysmlDocument, WorkspaceSession,
-};
+use workspace::{SessionLifecycle, SysmlDocument, WorkspaceSession};
 
 use crate::{MutatePanicked, Mutation, SessionActor, SnapshotHandle, TracksRelink};
 
