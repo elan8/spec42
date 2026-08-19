@@ -10,3 +10,6 @@ description = "Canonical SysML semantic publication construction and cache autho
 blake3.workspace = true
 sysml_query = { path = "../sysml_query" }
 sysml_source = { path = "../sysml_source" }
+
+[dev-dependencies]
+url = "2"

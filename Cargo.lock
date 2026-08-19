@@ -1750,6 +1750,7 @@ dependencies = [
  "blake3",
  "sysml_query",
  "sysml_source",
+ "url",
 ]
 
 [[package]]
