@@ -13,6 +13,7 @@ import {
   parseLspGenerationResult,
   parseSourceNavigation,
   selectSingleDiagramJson,
+  visibleSourceColumn,
 } from "./diagramViewerCore";
 
 type RenderedArtifact = {
@@ -207,7 +208,17 @@ export class DiagramViewer {
       const maxLine = Math.max(0, document.lineCount - 1);
       if (target.startLine > maxLine || target.endLine > maxLine) return;
       const range = new vscode.Range(target.startLine, target.startCharacter, target.endLine, target.endCharacter);
-      const editor = await vscode.window.showTextDocument(document, { preview: true });
+      const existingColumn = visibleSourceColumn(
+        uri.toString(),
+        vscode.window.visibleTextEditors.map((editor) => ({
+          uri: editor.document.uri.toString(),
+          viewColumn: editor.viewColumn,
+        })),
+      );
+      const editor = await vscode.window.showTextDocument(document, {
+        viewColumn: existingColumn ?? vscode.ViewColumn.Beside,
+        preview: false,
+      });
       editor.selection = new vscode.Selection(range.start, range.start);
       editor.revealRange(range, vscode.TextEditorRevealType.InCenterIfOutsideViewport);
     } catch { /* Invalid or unavailable provenance remains inert. */ }

@@ -13,6 +13,13 @@ export type SourceNavigation = {
   endCharacter: number;
 };
 
+export function visibleSourceColumn(
+  uri: string,
+  editors: readonly { uri: string; viewColumn?: number }[],
+): number | undefined {
+  return editors.find((editor) => editor.uri === uri)?.viewColumn;
+}
+
 export const DIAGRAM_VIEWS = [
   { id: "general-view", label: "General View", queryStatus: "implemented" },
   { id: "interconnection-view", label: "Interconnection View", queryStatus: "implemented" },

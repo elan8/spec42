@@ -12,10 +12,20 @@ import {
   parseStateTransitionViewCatalog,
   parseSourceNavigation,
   selectSingleDiagramJson,
+  visibleSourceColumn,
 } from "../../diagram/diagramViewerCore";
 import { isEmptyIncompleteDiagramProduct } from "../../diagram/diagramProductState";
 
 describe("diagram viewer core", () => {
+  it("reuses an already-visible source column and otherwise requests a new one", () => {
+    const editors = [
+      { uri: "file:///workspace/other.sysml", viewColumn: 1 },
+      { uri: "file:///workspace/model.sysml", viewColumn: 3 },
+    ];
+    assert.equal(visibleSourceColumn("file:///workspace/model.sysml", editors), 3);
+    assert.equal(visibleSourceColumn("file:///workspace/missing.sysml", editors), undefined);
+  });
+
   it("builds a bounded saved-file generation invocation", () => {
     assert.deepEqual(buildGenerateArgv("/plugin.wasm", "/w/model.sysml", "/tmp/out", "/w", ["/lib"]), [
       "generate", "/plugin.wasm", "/w/model.sysml", "--output", "/tmp/out", "--format", "json",
