@@ -53,7 +53,10 @@ describe("resolveNodeChrome", () => {
 
   it("nodeBodyChromeStyle matches general vs ibd stroke widths", () => {
     const def = resolveNodeChrome("definition");
-    expect(nodeBodyChromeStyle(def, { generalView: true }).strokeWidthPx).toBe(3);
+    const usage = resolveNodeChrome("usage");
+    expect(nodeBodyChromeStyle(def, { generalView: true }).strokeWidthPx).toBe(2);
+    expect(nodeBodyChromeStyle(usage, { generalView: true }).strokeWidthPx).toBe(1.5);
     expect(nodeBodyChromeStyle(def, { generalView: false }).strokeWidthPx).toBe(2);
+    expect(nodeBodyChromeStyle(def, { generalView: true, selected: true }).strokeWidthPx).toBe(3);
   });
 });

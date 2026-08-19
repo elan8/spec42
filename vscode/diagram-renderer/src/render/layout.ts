@@ -1,6 +1,11 @@
 import ELK from "elkjs/lib/elk.bundled.js";
 import { isOverviewVisualElementType, normalizeEdgeKind } from "../graph-normalization";
-import { collectCompartments, computeNodeHeight } from "../sysml-node-builder";
+import {
+  collectCompartments,
+  computeNodeHeight,
+  computeNodeWidth,
+  nodeChromeStateFromAttributes,
+} from "../sysml-node-builder";
 import {
   interconnectionPreparedForLayout,
   type PreparedNode,
@@ -29,6 +34,23 @@ import {
 
 const elk = new ELK();
 
+/**
+ * Measured height of a General View node. Height is whatever the node chrome layout needs for the
+ * header plus its compartment blocks -- there is no fixed minimum box, so a node without
+ * compartments is exactly its own header instead of a header plus dead space.
+ */
+function generalNodeBox(
+  node: PreparedNode,
+  compartments: ReturnType<typeof collectCompartments>,
+): { width: number; height: number } {
+  const state = nodeChromeStateFromAttributes(node.attributes);
+  const width = computeNodeWidth(compartments, { maxLinesPerCompartment: 8 }, state);
+  return {
+    width,
+    height: computeNodeHeight(compartments, { maxLinesPerCompartment: 8 }, { width, state }),
+  };
+}
+
 function fallbackGeneralLayout(
   nodes: PreparedNode[],
   edges: PreparedView["edges"],
@@ -38,20 +60,17 @@ function fallbackGeneralLayout(
   const verticalGap = 90;
   const nodeData = nodes.map((node) => {
     const compartments = collectCompartments(node);
-    const height = Math.max(
-      nodeHeight,
-      computeNodeHeight(compartments, { maxLinesPerCompartment: 8 }),
-    );
-    return { node, compartments, height };
+    return { node, compartments, ...generalNodeBox(node, compartments) };
   });
   const rowHeight = Math.max(nodeHeight, ...nodeData.map(({ height }) => height));
-  const laidOutNodes: LaidOutNode[] = nodeData.map(({ node, compartments, height }, index) => {
+  const columnWidth = Math.max(nodeWidth, ...nodeData.map(({ width }) => width));
+  const laidOutNodes: LaidOutNode[] = nodeData.map(({ node, compartments, width, height }, index) => {
     return {
       ...node,
       compartments,
-      x: (index % columns) * (nodeWidth + horizontalGap),
+      x: (index % columns) * (columnWidth + horizontalGap),
       y: Math.floor(index / columns) * (rowHeight + verticalGap),
-      width: nodeWidth,
+      width,
       height,
     };
   });
@@ -113,16 +132,11 @@ export async function layoutPrepared(prepared: PreparedView): Promise<LayoutResu
     (edge) => visibleIds.has(edge.source) && visibleIds.has(edge.target),
   );
   if (!diagramNodes.length) return { nodes: [], edges: [] };
-  const width = nodeWidth;
-  const height = nodeHeight;
 
   const leafElkNode = (node: PreparedNode) => {
     const compartments = collectCompartments(node);
-    return {
-      id: node.id,
-      width,
-      height: Math.max(height, computeNodeHeight(compartments, { maxLinesPerCompartment: 8 })),
-    };
+    const box = generalNodeBox(node, compartments);
+    return { id: node.id, width: box.width, height: box.height };
   };
 
   // O-4: a same-depth sibling set large enough to dominate a single ELK layer (e.g. a def with

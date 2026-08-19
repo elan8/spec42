@@ -1,7 +1,12 @@
 import * as d3 from "d3";
 import { normalizeEdgeKind } from "../graph-normalization";
-import { nodeBodyChromeStyle, resolveNodeChrome, type NodeNotationRole } from "../node-notation";
-import { collectCompartments, computeNodeHeight, renderSysMLNode } from "../sysml-node-builder";
+import { nodeBodyChromeStyle, notationRoleFromAttributes, resolveNodeChrome } from "../node-notation";
+import {
+  collectCompartments,
+  computeNodeHeight,
+  nodeChromeStateFromAttributes,
+  renderSysMLNode,
+} from "../sysml-node-builder";
 import { strokeColorForEdge, strokeColorForNode, type DiagramTheme } from "../theme";
 import type { InterconnectionLayoutDto } from "../prepare";
 import type { PreparedView } from "../prepare";
@@ -26,20 +31,12 @@ import {
   type RenderOptions,
 } from "./types";
 
+/** General View nodes cap each compartment at this many rows and show a `+n more` line. */
+export const GENERAL_NODE_CONFIG = { maxLinesPerCompartment: 8 } as const;
+
 function truncate(value: string, max: number): string {
   const text = String(value || "");
   return text.length > max ? `${text.slice(0, max - 1)}...` : text;
-}
-
-function notationRole(attributes: Record<string, unknown>): NodeNotationRole {
-  const role = attributes.notationRole;
-  if (role === "definition" || role === "usage" || role === "reference-usage" ||
-      role === "namespace" || role === "annotation" || role === "unsupported") return role;
-  // Compatibility DTOs predate the typed role. Their boolean fields are decoded only here and
-  // never inferred from the display kind.
-  if (attributes.isReference === true) return "reference-usage";
-  if (attributes.isDefinition === true) return "definition";
-  return "unsupported";
 }
 
 export function drawEdges(
@@ -197,7 +194,7 @@ export function drawNodes(
       const isLayoutContainer = Boolean(
         attrs.isSyntheticContainer || attrs.isPackageContainer || attrs._isLayoutContainer,
       );
-      const structureClass = resolveNodeChrome(notationRole(attrs), {
+      const structureClass = resolveNodeChrome(notationRoleFromAttributes(attrs), {
         isContainer: isLayoutContainer,
         isPackageContainer: Boolean(attrs.isPackageContainer),
       }).structureClass;
@@ -226,20 +223,51 @@ export function drawNodes(
       group.selectAll("*").remove();
       const compartments = d.compartments ?? collectCompartments(d);
       const attrs = (d.attributes ?? {}) as Record<string, unknown>;
-      const chrome = resolveNodeChrome(notationRole(attrs));
+      const chrome = resolveNodeChrome(notationRoleFromAttributes(attrs));
+      const state = nodeChromeStateFromAttributes(attrs);
+      const width = d.width || nodeWidth;
+      const hiddenCount = state.hiddenRelationshipCount ?? 0;
+      const disclosure = options.disclosure;
       renderSysMLNode(group as any, compartments, {
         x: 0,
         y: 0,
-        width: d.width || nodeWidth,
-        height: d.height || computeNodeHeight(compartments, { maxLinesPerCompartment: 8 }),
+        width,
+        height:
+          d.height
+          ?? computeNodeHeight(compartments, GENERAL_NODE_CONFIG, { width, state }),
         nodeClass: "",
         dataElementName: d.label,
         strokeColor: strokeColorForNode(theme),
         kind: d.kind,
         chrome,
         selected: Boolean(options.selectedNodeId && d.id === options.selectedNodeId),
-        config: { maxLinesPerCompartment: 8 },
+        config: GENERAL_NODE_CONFIG,
         theme,
+        state,
+        disclosure:
+          state.disclosure && disclosure
+            ? {
+                expanded: state.disclosure === "expanded",
+                label: `${state.disclosure === "expanded" ? "Collapse" : "Expand"} ${d.label}`,
+                tooltip:
+                  state.disclosure === "expanded"
+                    ? `Collapse ${d.label}: hide its nested elements and their relationships.`
+                    : `Expand ${d.label}: show its nested elements and their relationships.`,
+                onToggle: () => disclosure.toggleNode(d.id),
+              }
+            : null,
+        compartmentDisclosure: disclosure
+          ? {
+              label: (block) =>
+                `${block.collapsed ? "Show" : "Hide"} ${block.title} of ${d.label} (${block.totalItems})`,
+              onToggle: (sectionKey, _event, currentlyExpanded) =>
+                disclosure.toggleSection(d.id, sectionKey, currentlyExpanded),
+            }
+          : null,
+        hiddenRelationshipTooltip:
+          hiddenCount > 0
+            ? `${hiddenCount} relationship${hiddenCount === 1 ? "" : "s"} of nested elements are hidden while ${d.label} is collapsed. Expand it to show them.`
+            : undefined,
       });
     });
     return;
@@ -466,7 +494,7 @@ function renderIbdNode(
   const isContainer = Boolean(attrs.isSyntheticContainer) || Boolean(attrs.isPackageContainer) || Boolean(attrs._isLayoutContainer);
   const width = node.width ?? ibdNodeWidth;
   const height = node.height ?? ibdNodeHeight;
-  const chrome = resolveNodeChrome(notationRole(attrs), {
+  const chrome = resolveNodeChrome(notationRoleFromAttributes(attrs), {
     isContainer,
     isPackageContainer: Boolean(attrs.isPackageContainer),
   });

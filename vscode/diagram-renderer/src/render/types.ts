@@ -2,8 +2,20 @@ import type { InterconnectionLayoutDto, PreparedNode } from "../prepare/types";
 import type { DiagramThemeOverrides } from "../theme";
 import { collectCompartments } from "../sysml-node-builder";
 
+/**
+ * Expansion is renderer-owned presentation state. The projection carries the resulting state on
+ * each node (`disclosure`, `hiddenRelationshipCount`, `compartmentSectionState`); these actions are
+ * how the drawn controls hand a toggle back to the owner.
+ */
+export interface DisclosureActions {
+  toggleNode: (nodeId: string) => void;
+  /** `currentlyExpanded` is the drawn state, so the owner never re-derives the default. */
+  toggleSection: (nodeId: string, sectionKey: string, currentlyExpanded: boolean) => void;
+}
+
 export interface RenderOptions {
   onNodeClick?: (node: PreparedNode) => void;
+  disclosure?: DisclosureActions;
   selectedNodeId?: string | null;
   theme?: DiagramThemeOverrides;
   delegateZoom?: boolean;

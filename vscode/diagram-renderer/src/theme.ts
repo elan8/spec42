@@ -9,6 +9,14 @@ export interface DiagramTheme {
   textSecondary: string;
   divider: string;
   highlight: string;
+  /** Disclosure-control chrome. Kept as tokens so controls stay legible in every scheme. */
+  controlFill: string;
+  controlStroke: string;
+  controlForeground: string;
+  controlHoverFill: string;
+  focusRing: string;
+  badgeFill: string;
+  badgeText: string;
   edge: {
     default: string;
   };
@@ -26,27 +34,41 @@ export type DiagramThemeOverrides = Partial<Omit<DiagramTheme, "edge" | "frame">
 };
 
 const NOTATION_THEME_LIGHT: Omit<DiagramTheme, "colorScheme"> = {
-  canvasBackground: "#ffffff",
-  panelBackground: "#f3f4f6",
+  canvasBackground: "#f6f7f9",
+  panelBackground: "#eef0f4",
   nodeFill: "#ffffff",
   nodeBorder: "#374151",
   textPrimary: "#111827",
   textSecondary: "#6b7280",
   divider: "#d1d5db",
   highlight: "#d97706",
+  controlFill: "#ffffff",
+  controlStroke: "#6b7280",
+  controlForeground: "#374151",
+  controlHoverFill: "#e5e7eb",
+  focusRing: "#2563eb",
+  badgeFill: "#e5e7eb",
+  badgeText: "#374151",
   edge: { default: "#374151" },
   frame: { stroke: "#9ca3af", text: "#374151" },
 };
 
 const NOTATION_THEME_DARK: Omit<DiagramTheme, "colorScheme"> = {
-  canvasBackground: "#1e1e1e",
-  panelBackground: "#2d2d2d",
-  nodeFill: "#1e1e1e",
+  canvasBackground: "#1a1a1a",
+  panelBackground: "#2c2c2c",
+  nodeFill: "#232323",
   nodeBorder: "#d4d4d4",
   textPrimary: "#e5e5e5",
   textSecondary: "#a3a3a3",
   divider: "#525252",
   highlight: "#fbbf24",
+  controlFill: "#232323",
+  controlStroke: "#a3a3a3",
+  controlForeground: "#e5e5e5",
+  controlHoverFill: "#3f3f3f",
+  focusRing: "#60a5fa",
+  badgeFill: "#3a3a3a",
+  badgeText: "#e5e5e5",
   edge: { default: "#d4d4d4" },
   frame: { stroke: "#737373", text: "#e5e5e5" },
 };
@@ -60,6 +82,13 @@ const NOTATION_THEME_VSCODE: Omit<DiagramTheme, "colorScheme"> = {
   textSecondary: "var(--vscode-descriptionForeground)",
   divider: "var(--vscode-panel-border)",
   highlight: "var(--vscode-focusBorder, #d97706)",
+  controlFill: "var(--vscode-editor-background)",
+  controlStroke: "var(--vscode-descriptionForeground)",
+  controlForeground: "var(--vscode-editor-foreground)",
+  controlHoverFill: "var(--vscode-toolbar-hoverBackground, var(--vscode-button-secondaryBackground))",
+  focusRing: "var(--vscode-focusBorder)",
+  badgeFill: "var(--vscode-badge-background, var(--vscode-button-secondaryBackground))",
+  badgeText: "var(--vscode-badge-foreground, var(--vscode-editor-foreground))",
   edge: { default: "var(--vscode-editor-foreground)" },
   frame: {
     stroke: "var(--vscode-panel-border)",

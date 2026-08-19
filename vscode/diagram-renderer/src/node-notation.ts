@@ -31,7 +31,6 @@ export interface NodeBodyChromeStyle {
   cornerRadius: number;
   strokeDasharray: string;
   strokeWidthPx: number;
-  headerCornerRadius: number;
 }
 
 /** Resolved stroke dash for a node body rect (package containers stay solid). */
@@ -54,17 +53,36 @@ export function nodeBodyChromeStyle(
   const selected = opts?.selected ?? false;
   const isContainer = opts?.isContainer ?? chrome.isContainer;
   let strokeWidthPx = 2;
-  if (selected) strokeWidthPx = 4;
-  else if (isContainer) strokeWidthPx = 2;
-  else if (opts?.generalView) strokeWidthPx = chrome.isDefinition ? 3 : 2;
+  if (selected) strokeWidthPx = 3;
+  else if (isContainer) strokeWidthPx = 1.5;
+  // General view keeps one restrained ink weight with only a slight definition emphasis; the
+  // normative definition/usage distinction is carried by corner shape and dash, not by weight.
+  else if (opts?.generalView) strokeWidthPx = chrome.isDefinition ? 2 : 1.5;
   else strokeWidthPx = chrome.isDefinition ? 2 : 3;
 
   return {
     cornerRadius: chrome.cornerRadius,
     strokeDasharray: nodeBodyStrokeDasharray(chrome, opts?.isPackageContainer),
     strokeWidthPx,
-    headerCornerRadius: chrome.isDefinition ? 0 : Math.max(2, chrome.cornerRadius - 2),
   };
+}
+
+/**
+ * Decode the typed notation role a prepared node carries. Compatibility DTOs predate the typed
+ * role and are decoded here only; the role is never inferred from the display kind or the label.
+ */
+export function notationRoleFromAttributes(attributes: Record<string, unknown> | undefined): NodeNotationRole {
+  const attrs = attributes ?? {};
+  const role = attrs.notationRole;
+  if (
+    role === "definition" || role === "usage" || role === "reference-usage" ||
+    role === "namespace" || role === "annotation" || role === "unsupported"
+  ) {
+    return role;
+  }
+  if (attrs.isReference === true) return "reference-usage";
+  if (attrs.isDefinition === true) return "definition";
+  return "unsupported";
 }
 
 export function resolveNodeChrome(
@@ -134,4 +152,74 @@ export function resolveNodeChrome(
     structureClass: "viz-node--usage",
     nodeClassSuffix: " usage-node",
   };
+}
+
+/**
+ * Rounded-rectangle outline for a node body, inset from the laid-out box by `inset`.
+ *
+ * The body rect strokes on its own path, so half the stroke width falls inside the box. Any fill
+ * that must stay *inside* the border -- the header compartment fill in particular -- has to be
+ * inset by that half width and use a concentric corner radius, otherwise it paints over the inner
+ * half of the border and the outline reads as broken around the rounded corners.
+ */
+export function nodeOutlinePath(width: number, height: number, radius: number, inset = 0): string {
+  const left = inset;
+  const top = inset;
+  const right = Math.max(left, width - inset);
+  const bottom = Math.max(top, height - inset);
+  const maxRadius = Math.min((right - left) / 2, (bottom - top) / 2);
+  const r = Math.max(0, Math.min(radius - inset, maxRadius));
+  if (r <= 0) {
+    return `M${left},${top}H${right}V${bottom}H${left}Z`;
+  }
+  return [
+    `M${left + r},${top}`,
+    `H${right - r}`,
+    `A${r},${r} 0 0 1 ${right},${top + r}`,
+    `V${bottom - r}`,
+    `A${r},${r} 0 0 1 ${right - r},${bottom}`,
+    `H${left + r}`,
+    `A${r},${r} 0 0 1 ${left},${bottom - r}`,
+    `V${top + r}`,
+    `A${r},${r} 0 0 1 ${left + r},${top}`,
+    "Z",
+  ].join("");
+}
+
+/**
+ * Fill region for the header compartment: follows the node's own top corners concentrically and
+ * stops on a straight edge at `headerBottom`, entirely inside the body stroke. Never introduces
+ * independently rounded header corners that would cut across the outer border.
+ */
+export function headerFillPath(
+  width: number,
+  headerBottom: number,
+  radius: number,
+  strokeWidthPx: number,
+): string {
+  const inset = strokeWidthPx / 2;
+  const left = inset;
+  const top = inset;
+  const right = Math.max(left, width - inset);
+  const bottom = Math.max(top, headerBottom - inset);
+  const r = Math.max(0, Math.min(radius - inset, (right - left) / 2, bottom - top));
+  if (r <= 0) {
+    return `M${left},${top}H${right}V${bottom}H${left}Z`;
+  }
+  return [
+    `M${left + r},${top}`,
+    `H${right - r}`,
+    `A${r},${r} 0 0 1 ${right},${top + r}`,
+    `V${bottom}`,
+    `H${left}`,
+    `V${top + r}`,
+    `A${r},${r} 0 0 1 ${left + r},${top}`,
+    "Z",
+  ].join("");
+}
+
+/** Horizontal extent a compartment divider may span without crossing the body stroke. */
+export function nodeInnerSpan(width: number, strokeWidthPx: number): { x1: number; x2: number } {
+  const inset = strokeWidthPx / 2;
+  return { x1: inset, x2: Math.max(inset, width - inset) };
 }

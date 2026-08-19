@@ -41,6 +41,49 @@ function expectFiniteRootTransform(target: HTMLElement): void {
 }
 
 describe("shared renderer", () => {
+  it("starts General view roots collapsed and expands nested elements from the disclosure control", async () => {
+    const target = document.createElement("div");
+    Object.defineProperty(target, "clientWidth", { value: 1200, configurable: true });
+    Object.defineProperty(target, "clientHeight", { value: 800, configurable: true });
+
+    await renderVisualization(target, {
+      title: "General",
+      view: "general-view",
+      meta: { exposedRoots: ["n:0", "n:2"] },
+      nodes: [
+        {
+          id: "n:0",
+          label: "Vehicle",
+          kind: "PartDefinition",
+          attributes: {
+            notationRole: "definition",
+            owner: null,
+            typedCompartments: [{ kind: "parts", provenance: "direct", members: [{ id: "n:1", name: "engine", kind: "PartUsage" }] }],
+          },
+        },
+        { id: "n:1", label: "engine", kind: "PartUsage", attributes: { notationRole: "usage", owner: 0 } },
+        { id: "n:2", label: "Engine", kind: "PartDefinition", attributes: { notationRole: "definition", owner: null } },
+      ],
+      edges: [{ id: "e:0", source: "n:1", target: "n:2", label: "", edgeKind: "typing" }],
+    }, { theme: LIGHT_THEME });
+
+    expect(target.querySelector('[data-node-id="n:0"]')).toBeTruthy();
+    expect(target.querySelector('[data-node-id="n:1"]')).toBeNull();
+    expect(target.textContent).toContain("engine");
+    expect(target.querySelector(".general-hidden-relationships")?.textContent).toContain("1");
+    expect(target.querySelector(".general-hidden-relationships title")?.textContent).toContain("hidden");
+    expect(target.querySelector(".general-hidden-relationships")?.getAttribute("aria-label")).toContain("1 relationship");
+
+    target.querySelector<SVGTextElement>('[data-node-id="n:0"] .general-node-toggle')?.dispatchEvent(
+      new MouseEvent("click", { bubbles: true }),
+    );
+    for (let attempt = 0; attempt < 50 && !target.querySelector('[data-node-id="n:1"]'); attempt += 1) {
+      await new Promise((resolve) => setTimeout(resolve, 5));
+    }
+    expect(target.querySelector('[data-node-id="n:1"]')).toBeTruthy();
+    expect(target.querySelector(".general-hidden-relationships")).toBeNull();
+  });
+
   it("uses notation-neutral ink for all kinds", () => {
     const theme = resolveDiagramTheme({ colorScheme: "light" });
     expect(strokeColorForNode(theme)).toBe(theme.nodeBorder);
@@ -147,7 +190,11 @@ describe("shared renderer", () => {
     expect(target.textContent).toContain("Attributes");
     expect(target.textContent).toContain("Parts");
     expect(target.textContent).toContain("Ports");
-    expect(target.textContent).toContain("> Inherited Attributes");
+    expect(target.textContent).toContain("Inherited Attributes");
+    expect(
+      target.querySelector('[data-node-id="vehicle-def"] [data-compartment-key="inherited-attributes"]')
+        ?.getAttribute("aria-expanded"),
+    ).toBe("false");
     const definitionBg = target.querySelector('[data-node-id="vehicle-def"] .sysml-node-bg') as SVGRectElement | null;
     const usageBg = target.querySelector('[data-node-id="vehicle-usage"] .sysml-node-bg') as SVGRectElement | null;
     expect(definitionBg?.style.strokeDasharray).toBe("none");
@@ -230,9 +277,9 @@ describe("shared renderer", () => {
       },
     );
 
-    const partStereotype = target.querySelector('[data-node-id="a"] text');
+    const nodeBackground = target.querySelector('[data-node-id="a"] .sysml-node-bg') as SVGRectElement | null;
     const edge = target.querySelector('[data-connector-id="satisfy"]') as SVGPathElement | null;
-    expect((partStereotype as SVGTextElement | null)?.style.fill).toBe("#123456");
+    expect(nodeBackground?.style.stroke).toBe("#123456");
     expect(edge?.getAttribute("stroke")).toBe("#abcdef");
   });
 
