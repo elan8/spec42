@@ -66,7 +66,13 @@ package 'Verification Case Definition Example' {
       )
       (diagnostic
         (severity error)
-        (code "unexpected_keyword_in_scope")
+        (code "recovered_requirement_body_element")
+        (source "parser")
+        (range (start 8 2) (end 9 2))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
         (source "parser")
         (range (start 8 2) (end 9 2))
       )
@@ -81,12 +87,6 @@ package 'Verification Case Definition Example' {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 13 6) (end 13 16))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_use_case_body_element")
-        (source "parser")
-        (range (start 18 2) (end 18 38))
       )
       (diagnostic
         (severity warning)

@@ -78,7 +78,7 @@ library package 'Model Library Example' {
         (related-information
           (related
             (uri "memory://snapshot/41_model_library_example.md")
-            (range (start 6 21) (end 6 57))
+            (range (start 6 1) (end 6 57))
           )
         )
       )
@@ -96,7 +96,7 @@ library package 'Model Library Example' {
         (related-information
           (related
             (uri "memory://snapshot/41_model_library_example.md")
-            (range (start 6 21) (end 6 57))
+            (range (start 6 1) (end 6 57))
           )
         )
       )
@@ -114,7 +114,7 @@ library package 'Model Library Example' {
         (related-information
           (related
             (uri "memory://snapshot/41_model_library_example.md")
-            (range (start 6 21) (end 6 57))
+            (range (start 6 1) (end 6 57))
           )
         )
       )
@@ -126,7 +126,7 @@ library package 'Model Library Example' {
         (related-information
           (related
             (uri "memory://snapshot/41_model_library_example.md")
-            (range (start 6 21) (end 6 57))
+            (range (start 6 1) (end 6 57))
           )
         )
       )

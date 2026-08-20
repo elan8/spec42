@@ -18,6 +18,18 @@ package ConjugatedTypingCoverage {
 (fixture-diagnostics
   (document "memory://snapshot/conjugated_typing.md"
     (diagnostics
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 3 4) (end 3 29))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 4 4) (end 4 30))
+      )
     )
   )
 )
@@ -30,8 +42,8 @@ package ConjugatedTypingCoverage {
     (declaration (id (node (document "memory://snapshot/conjugated_typing.md") (qualified-name "ConjugatedTypingCoverage"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/conjugated_typing.md") (qualified-name "ConjugatedTypingCoverage::InputPort"))) (kind port-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/conjugated_typing.md") (qualified-name "ConjugatedTypingCoverage::OutputPort"))) (kind port-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/conjugated_typing.md") (qualified-name "ConjugatedTypingCoverage::source"))) (kind port-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "InputPort") (conjugated true)))))
-    (declaration (id (node (document "memory://snapshot/conjugated_typing.md") (qualified-name "ConjugatedTypingCoverage::target"))) (kind port-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "OutputPort") (conjugated true)))))
+    (declaration (id (node (document "memory://snapshot/conjugated_typing.md") (qualified-name "ConjugatedTypingCoverage::source"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "InputPort") (conjugated true)))))
+    (declaration (id (node (document "memory://snapshot/conjugated_typing.md") (qualified-name "ConjugatedTypingCoverage::target"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "OutputPort") (conjugated true)))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/conjugated_typing.md") (qualified-name "ConjugatedTypingCoverage::source"))) (kind featureTyping) (ordinal 0))

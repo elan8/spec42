@@ -72,6 +72,12 @@ package ServerSequenceModel {
         (range (start 6 24) (end 6 30))
       )
       (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "semantic")
+        (range (start 7 6) (end 7 26))
+      )
+      (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
@@ -142,7 +148,7 @@ package ServerSequenceModel {
     (declaration (id (node (document "memory://snapshot/server_sequence_model.md") (qualified-name "ServerSequenceModel::SignalDefinitions::Publish::publication"))) (kind ref) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/server_sequence_model.md") (qualified-name "ServerSequenceModel::SignalDefinitions::Publish::topic"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "String")))))
     (declaration (id (node (document "memory://snapshot/server_sequence_model.md") (qualified-name "ServerSequenceModel::SignalDefinitions::Subscribe"))) (kind item-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/server_sequence_model.md") (qualified-name "ServerSequenceModel::SignalDefinitions::Subscribe::subscriber"))) (kind ref) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/server_sequence_model.md") (qualified-name "ServerSequenceModel::SignalDefinitions::Subscribe::subscriber"))) (kind part) (membership (kind feature) (visibility default)) (facts (modifiers reference)))
     (declaration (id (node (document "memory://snapshot/server_sequence_model.md") (qualified-name "ServerSequenceModel::SignalDefinitions::Subscribe::topic"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "String")))))
   )
   (references

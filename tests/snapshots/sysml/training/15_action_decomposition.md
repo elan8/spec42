@@ -44,12 +44,6 @@ package 'Action Decomposition' {
         (source "semantic")
         (range (start 18 27) (end 18 38))
       )
-      (diagnostic
-        (severity error)
-        (code "recovered_action_body_element")
-        (source "parser")
-        (range (start 21 3) (end 22 3))
-      )
     )
   )
 )
@@ -57,7 +51,7 @@ package 'Action Decomposition' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:14d4c1946452dfb045a84b0e50fe40918ac1df8967d1a71bc634f5d4487a5d1a") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:14d4c1946452dfb045a84b0e50fe40918ac1df8967d1a71bc634f5d4487a5d1a") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::Focus"))) (kind action-def) (membership (kind owning) (visibility default)))
@@ -80,6 +74,7 @@ package 'Action Decomposition' {
     (declaration (id (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::takePicture::picture"))) (kind item) (membership (kind feature) (visibility default)) (facts (direction out)))
     (declaration (id (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::takePicture::scene"))) (kind item) (membership (kind feature) (visibility default)) (facts (direction in)))
     (declaration (id (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::takePicture::shoot"))) (kind action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Shoot")))))
+    (declaration (id (node (document "memory://snapshot/15_action_decomposition.md") (path (named (kind package) (name "Action Decomposition")) (named (kind action) (name "takePicture")) (named (kind action) (name "shoot")) (anonymous (kind item) (ordinal 0))))) (kind item) (membership (kind feature) (visibility default)) (facts (direction in)))
     (declaration (id (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::takePicture::shoot::picture"))) (kind item) (membership (kind feature) (visibility default)) (facts (direction out)) (feature-value (kind bind)))
   )
   (references
@@ -224,6 +219,9 @@ package 'Action Decomposition' {
       (type (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::Shoot")) (provenance authored))
       (effective-type (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::Shoot")) (source direct))
       (supertype (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::Shoot")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/15_action_decomposition.md") (path (named (kind package) (name "Action Decomposition")) (named (kind action) (name "takePicture")) (named (kind action) (name "shoot")) (anonymous (kind item) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::takePicture::shoot")))
     )
     (declaration (id (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::takePicture::shoot::picture")))
       (featured-by (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::takePicture::shoot")))

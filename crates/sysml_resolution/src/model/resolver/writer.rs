@@ -1321,7 +1321,6 @@ pub(crate) fn declaration_kind(kind: DeclarationKind) -> &'static str {
         // One name per KerML metaclass; see `DeclarationKind`'s own doc comments for why the
         // keyword spellings are distinct metaclasses rather than one bucket.
         DeclarationKind::KermlClassifier => "kerml-classifier",
-        DeclarationKind::KermlClass => "kerml-class",
         DeclarationKind::KermlStructure => "kerml-structure",
         DeclarationKind::KermlAssociation => "kerml-association",
         DeclarationKind::KermlAssociationStructure => "kerml-association-structure",

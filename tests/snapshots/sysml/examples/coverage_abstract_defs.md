@@ -44,12 +44,6 @@ abstract part def Container {
         (range (start 4 0) (end 4 35))
       )
       (diagnostic
-        (severity error)
-        (code "expected_keyword")
-        (source "parser")
-        (range (start 5 0) (end 5 39))
-      )
-      (diagnostic
         (severity warning)
         (code "unsupported_part_definition_member")
         (source "semantic")
@@ -77,6 +71,7 @@ abstract part def Container {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:78b35de4d04c636bb29de5b8d361ee7022e2ce9eb901ed20f63f349bfb04f71d") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "AbstractEvent"))) (kind occurrence-def) (membership (kind owning) (visibility default)) (facts (modifiers abstract)))
+    (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "AbstractPerson"))) (kind individual-definition) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "AbstractPort"))) (kind port-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "AbstractVehicle"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (modifiers abstract)))
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "AbstractWidget"))) (kind item-def) (membership (kind owning) (visibility default)))

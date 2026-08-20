@@ -23,47 +23,47 @@ use sysml_v2_parser::next::{
         AliasBody, AliasDef, Allocate, AllocationDef, AllocationUsage as ParserAllocationUsage,
         AnalysisCaseDef, AnalysisCaseUsage as ParserAnalysisCaseUsage, AnnotatingMember,
         AssertConstraintMember, AssignStmt, AttributeBody, AttributeBodyElement, AttributeDef,
-        AttributeUsage, BinaryOperator, Bind, BindingConnectorUsage, CalcDef, CalcDefBody,
-        CalcDefBodyElement, CalcUsage as ParserCalcUsage, CaseDef, CaseReturnDecl,
-        CaseUsage as ParserCaseUsage, ClassDef, CommentAnnotation,
-        ConcernUsage as ParserConcernUsage, ConnectStmt, ConnectionDef, ConnectionDefBody,
-        ConnectionDefBodyElement, ConnectionEnd, ConnectionUsageMember as ParserConnectionUsage,
-        ConstraintDef, ConstraintDefBody, ConstraintDefBodyElement,
-        ConstraintUsage as ParserConstraintUsage, DefaultReferenceUsage, DefinitionBody,
-        DefinitionBodyElement, DefinitionPrefix, Dependency, DoAction, DocComment, EndDecl,
-        EndIdentity, EntryAction, EnumDef, EnumerationBody, EnumerationBodyElement,
+        AttributeUsage, BasicFeaturePrefix, BinaryOperator, Bind, BindingConnectorUsage, CalcDef,
+        CalcDefBody, CalcDefBodyElement, CalcUsage as ParserCalcUsage, CaseDef, CaseReturnDecl,
+        CaseUsage as ParserCaseUsage, CommentAnnotation, ConcernUsage as ParserConcernUsage,
+        ConnectStmt, ConnectionDef, ConnectionDefBody, ConnectionDefBodyElement, ConnectionEnd,
+        ConnectionUsageMember as ParserConnectionUsage, ConstraintDef, ConstraintDefBody,
+        ConstraintDefBodyElement, ConstraintUsage as ParserConstraintUsage, DefaultReferenceUsage,
+        DefinitionBody, DefinitionBodyElement, DefinitionPrefix, Dependency, DoAction, DocComment,
+        EndDecl, EndIdentity, EntryAction, EnumDef, EnumerationBody, EnumerationBodyElement,
         EnumerationUsage as ParserEnumerationUsage, ExhibitState as ParserExhibitState, ExitAction,
-        ExposeMember, Expression, ExtendedDefinition, FeatureValue,
-        FeatureValueKind as ParserFeatureValueKind, FinalState, FirstMergeBody,
-        FirstMergeBodyElement, FirstStmt, FlowDef, FlowUsage, ForLoop, FrameMember, IfStmt, Import,
-        ImportShape, InOut, InOutDecl, IncludeUseCase, InterfaceDef, InterfaceDefBody,
-        InterfaceDefBodyElement, InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement,
-        ItemDef, ItemUsage as ParserItemUsage, KermlBindingMember, KermlClassifierDecl,
-        KermlClassifierKeyword, KermlConnectorEnd, KermlConnectorMember, KermlEndMember,
-        KermlFeatureKind, KermlFeatureMember, KermlInvariantMember, KermlSuccessionMember,
+        ExposeMember, Expression, ExtendedDefinition, FeaturePrefix, FeaturePrefixHead,
+        FeatureValue, FeatureValueKind as ParserFeatureValueKind, FeatureVariability, FinalState,
+        FirstMergeBody, FirstMergeBodyElement, FirstStmt, FlowDef, FlowUsage, ForLoop, FrameMember,
+        IfStmt, Import, ImportShape, InOut, InOutDecl, IncludeUseCase, InterfaceDef,
+        InterfaceDefBody, InterfaceDefBodyElement, InterfaceUsage as ParserInterfaceUsage,
+        InterfaceUsageBodyElement, ItemDef, ItemUsage as ParserItemUsage, KermlBindingMember,
+        KermlClassifierDecl, KermlClassifierKeyword, KermlConnectorEnd, KermlConnectorMember,
+        KermlFeature, KermlFeatureKind, KermlInvariantMember, KermlSuccessionMember,
         KermlTypeRelationship, KermlTypeRelationshipKeyword, LibraryPackage, Membership,
         MembershipKind as ParserMembershipKind, MetadataAnnotation, MetadataDef,
         MetadataUsage as ParserMetadataUsage, Multiplicity, NamespaceDecl, Node,
         OccurrenceBodyElement, OccurrenceDef, OccurrencePortionKind as ParserOccurrencePortionKind,
-        OccurrenceUsage as ParserOccurrenceUsage, OccurrenceUsageBody, Package, PackageBody,
-        PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement, PartUsage, PartUsageBody,
-        PartUsageBodyElement, Perform as ParserPerform, PerformBody, PerformBodyElement,
-        PerformInOutBinding, PortBody, PortBodyElement, PortDef, PortDefBody, PortDefBodyElement,
-        PortUsage as ParserPortUsage, PurposeMember, QualifiedIdentification, QualifiedReferenceId,
-        RefDecl, ReferenceSeparator, RelationshipBodyElement, RenderingDef, RenderingDefBody,
-        RenderingDefBodyElement, RenderingUsage as ParserRenderingUsage, RenderingUsageBody,
-        RenderingUsageBodyElement, RequireConstraint, RequirementActorDecl, RequirementDef,
-        RequirementDefBody, RequirementDefBodyElement, RequirementUsage as ParserRequirementUsage,
-        ReturnDecl, RootElement, SatisfiedRequirement, SatisfyRequirementUsage, SendPayload, Span,
+        OccurrenceUsage as ParserOccurrenceUsage, OccurrenceUsageBody, OccurrenceUsagePrefix,
+        OwnedCrossFeature, Package, PackageBody, PackageBodyElement, PartDef, PartDefBody,
+        PartDefBodyElement, PartUsage, PartUsageBody, PartUsageBodyElement,
+        Perform as ParserPerform, PerformBody, PerformBodyElement, PerformInOutBinding, PortBody,
+        PortBodyElement, PortDef, PortDefBody, PortDefBodyElement, PortUsage as ParserPortUsage,
+        PurposeMember, QualifiedIdentification, QualifiedReferenceId, RefDecl, ReferenceSeparator,
+        RelationshipBodyElement, RenderingDef, RenderingDefBody, RenderingDefBodyElement,
+        RenderingUsage as ParserRenderingUsage, RenderingUsageBody, RenderingUsageBodyElement,
+        RequireConstraint, RequirementActorDecl, RequirementDef, RequirementDefBody,
+        RequirementDefBodyElement, RequirementUsage as ParserRequirementUsage, ReturnDecl,
+        RootElement, SatisfiedRequirement, SatisfyRequirementUsage, SendPayload, Span,
         StakeholderMember, StateDef, StateDefBody, StateDefBodyElement,
         StateUsage as ParserStateUsage, SubjectDecl, SubsettingKind, SubsettingRelationship,
         TerminateStmt, TextualRepresentation, ThenAction, ThenStmt, ThenTarget, Transition,
-        TransitionAccept, TransitionEffect, TypedParameterMember, UnaryOperator, UseCaseDef,
-        UseCaseDefBody, UseCaseDefBodyElement, UseCaseUsage as ParserUseCaseUsage,
-        VariantTypedUsage, VariantUsage, VerificationCaseDef,
-        VerificationCaseUsage as ParserVerificationCaseUsage, VerifyRequirementMember, ViewBody,
-        ViewBodyElement, ViewDef, ViewDefBody, ViewDefBodyElement, ViewUsage as ParserViewUsage,
-        ViewpointDef, ViewpointUsage as ParserViewpointUsage, Visibility as ParserVisibility,
+        TransitionAccept, TransitionEffect, UnaryOperator, UseCaseDef, UseCaseDefBody,
+        UseCaseDefBodyElement, UseCaseUsage as ParserUseCaseUsage, VariantTypedUsage, VariantUsage,
+        VerificationCaseDef, VerificationCaseUsage as ParserVerificationCaseUsage,
+        VerifyRequirementMember, ViewBody, ViewBodyElement, ViewDef, ViewDefBody,
+        ViewDefBodyElement, ViewUsage as ParserViewUsage, ViewpointDef,
+        ViewpointUsage as ParserViewpointUsage, Visibility as ParserVisibility,
     },
     ParseError, ParsedDocument,
 };
@@ -694,8 +694,6 @@ pub(crate) enum DeclarationKind {
     KermlType,
     /// `classifier C { ... }`. KerML `Classifier`.
     KermlClassifier,
-    /// `class C { ... }` in the KerML fallback grammar. KerML `Class`.
-    KermlClass,
     /// `struct S { ... }`. KerML `Structure`.
     KermlStructure,
     /// `assoc A { ... }`. KerML `Association`.
@@ -2517,6 +2515,45 @@ fn definition_prefix_modifiers(prefix: Option<&DefinitionPrefix>) -> (bool, bool
     }
 }
 
+/// The [`Node`]-wrapped spelling of [`definition_prefix_modifiers`], for the definition kinds
+/// whose `definition_prefix` slot carries the authored keyword's own span.
+fn definition_prefix_node_modifiers(prefix: Option<&Node<DefinitionPrefix>>) -> (bool, bool) {
+    definition_prefix_modifiers(prefix.map(|prefix| &prefix.value))
+}
+
+/// Splits the shared `OccurrenceUsagePrefix` (BNF `OccurrenceUsagePrefix`, SysML 564) into the
+/// independent modifier facts this model records.
+///
+/// The occurrence-usage families (`PartUsage`/`ItemUsage`/`PortUsage`/`OccurrenceUsage`) used to
+/// carry `usage_prefix`/`is_individual`/`is_reference`/`is_derived`/`is_constant` as five separate
+/// fields; upstream folded them into the one component the grammar spells, where presence of the
+/// authored keyword's span *is* the property. Callers add the multiplicity keyword facts on top
+/// through struct update syntax, since those come from `MultiplicityPart` rather than the prefix.
+fn occurrence_prefix_modifiers(prefix: &OccurrenceUsagePrefix) -> DeclarationModifiers {
+    let (is_abstract, variation) =
+        definition_prefix_node_modifiers(prefix.basic.ref_prefix.variance.as_ref());
+    DeclarationModifiers {
+        is_abstract,
+        variation,
+        individual: prefix.individual_span.is_some(),
+        derived: prefix.basic.ref_prefix.derived_span.is_some(),
+        reference: prefix.basic.reference_span.is_some(),
+        constant: prefix.basic.ref_prefix.constant_span.is_some(),
+        ..DeclarationModifiers::default()
+    }
+}
+
+/// The [`Node`]-wrapped spelling of [`direction_fact`], for the prefix components that carry the
+/// authored `in`/`out`/`inout` keyword's own span.
+fn direction_node_fact(direction: Option<&Node<InOut>>) -> Option<ParameterDirection> {
+    direction_fact(direction.map(|direction| &direction.value))
+}
+
+/// The [`Node`]-wrapped spelling of [`portion_kind_fact`], for `OccurrenceUsagePrefix::portion`.
+fn portion_kind_node_fact(kind: Option<&Node<ParserOccurrencePortionKind>>) -> Option<PortionKind> {
+    portion_kind_fact(kind.map(|kind| &kind.value))
+}
+
 fn portion_kind_fact(kind: Option<&ParserOccurrencePortionKind>) -> Option<PortionKind> {
     match kind? {
         ParserOccurrencePortionKind::Snapshot => Some(PortionKind::Snapshot),
@@ -2533,7 +2570,11 @@ fn kerml_classifier_kind(keyword: &KermlClassifierKeyword) -> DeclarationKind {
     match keyword {
         KermlClassifierKeyword::Type => DeclarationKind::KermlType,
         KermlClassifierKeyword::Classifier => DeclarationKind::KermlClassifier,
-        KermlClassifierKeyword::Class => DeclarationKind::KermlClass,
+        // Upstream routed `class` through the shared KerML classifier declaration, deleting the
+        // dedicated `ClassDef` node, so this keyword is now the only spelling a `class` reaches
+        // and it keeps the `ClassDefinition` kind the dedicated production used to publish.
+        // `DeclarationKind::KermlClass` is consequently unreachable.
+        KermlClassifierKeyword::Class => DeclarationKind::ClassDefinition,
         KermlClassifierKeyword::Struct => DeclarationKind::KermlStructure,
         KermlClassifierKeyword::Assoc | KermlClassifierKeyword::Association => {
             DeclarationKind::KermlAssociation
@@ -2550,12 +2591,56 @@ fn kerml_classifier_kind(keyword: &KermlClassifierKeyword) -> DeclarationKind {
 }
 
 /// Maps a KerML feature member's kind keyword to the metaclass it denotes.
-fn kerml_feature_kind(kind: &KermlFeatureKind) -> DeclarationKind {
-    match kind {
-        KermlFeatureKind::Feature => DeclarationKind::KermlFeature,
-        KermlFeatureKind::Step => DeclarationKind::KermlStep,
-        KermlFeatureKind::Expr => DeclarationKind::KermlExpression,
-        KermlFeatureKind::Bool => DeclarationKind::KermlBooleanExpression,
+/// The declaration kind a KerML feature member's authored kind keyword names.
+///
+/// `None` is the keyword-less prefixed spelling (`portion redefines portionOfLife = ...;`), where
+/// the grammar implies `Feature`, so it maps to the same kind a written `feature` does.
+fn kerml_feature_kind(kind: Option<&Node<KermlFeatureKind>>) -> DeclarationKind {
+    match kind.map(|kind| kind.value) {
+        None | Some(KermlFeatureKind::Feature) => DeclarationKind::KermlFeature,
+        Some(KermlFeatureKind::Step) => DeclarationKind::KermlStep,
+        Some(KermlFeatureKind::Expr) => DeclarationKind::KermlExpression,
+        Some(KermlFeatureKind::Bool) => DeclarationKind::KermlBooleanExpression,
+    }
+}
+
+/// Splits `BasicFeaturePrefix` (KerML BNF 577) into the independent modifier facts this model
+/// records.
+///
+/// `var` stays the authored `var` keyword rather than the metamodel's derived `isVariable` (which
+/// `const` also sets), matching what [`DeclarationModifiers::var`] has always meant; `const` now
+/// lands on `constant`, which the old `is_const` field never reached.
+fn basic_feature_prefix_modifiers(prefix: &BasicFeaturePrefix) -> DeclarationModifiers {
+    DeclarationModifiers {
+        is_abstract: prefix.is_abstract(),
+        derived: prefix.is_derived(),
+        composite: prefix.is_composite(),
+        portion: prefix.is_portion(),
+        var: matches!(
+            prefix.variability.as_ref().map(|slot| slot.value),
+            Some(FeatureVariability::Var)
+        ),
+        constant: prefix.is_constant(),
+        ..DeclarationModifiers::default()
+    }
+}
+
+/// Splits the shared KerML `FeaturePrefix` (KerML BNF 584) into the independent modifier facts
+/// this model records.
+///
+/// Upstream folded the seven booleans `KermlFeatureMember` used to carry into the choice the
+/// grammar writes, so `end`-ness is the alternative taken rather than a flag beside it, and
+/// `composite`/`portion` and `var`/`const` are each one slot. The `EndFeaturePrefix` alternative
+/// carries no direction, abstractness or portioning at all, which is what makes `in end feature
+/// x;` unauthorable rather than merely unparsed (gap 59).
+fn kerml_feature_prefix_modifiers(prefix: &FeaturePrefix) -> DeclarationModifiers {
+    match &prefix.head {
+        FeaturePrefixHead::Basic(basic) => basic_feature_prefix_modifiers(basic),
+        FeaturePrefixHead::End { prefix, .. } => DeclarationModifiers {
+            end: true,
+            constant: prefix.is_constant(),
+            ..DeclarationModifiers::default()
+        },
     }
 }
 
@@ -3909,6 +3994,7 @@ impl SemanticModelBuilder {
                 self.lower_constraint_usage(document, owner, node)?
             }
             PackageBodyElement::CalcDef(node) => self.lower_calc_def(document, owner, node)?,
+            PackageBodyElement::CalcUsage(node) => self.lower_calc_usage(document, owner, node)?,
             PackageBodyElement::ViewDef(node) => self.lower_view_def(document, owner, node)?,
             PackageBodyElement::ViewpointDef(node) => {
                 self.lower_viewpoint_def(document, owner, node)?
@@ -4007,7 +4093,7 @@ impl SemanticModelBuilder {
                 UnsupportedFamily::PackageMember,
                 node.span.clone(),
             ),
-            PackageBodyElement::KermlFeatureMember(node) => self.lower_kerml_feature_member(
+            PackageBodyElement::KermlFeature(node) => self.lower_kerml_feature_member(
                 document,
                 owner,
                 UnsupportedFamily::PackageMember,
@@ -4089,7 +4175,6 @@ impl SemanticModelBuilder {
                     node.span.clone(),
                 ),
             },
-            PackageBodyElement::ClassDef(node) => self.lower_class_def(document, owner, node)?,
             PackageBodyElement::Succession(node) => match owner {
                 Some(owner) => {
                     self.lower_first_stmt(document, owner, UnsupportedFamily::PackageMember, node)?
@@ -4248,7 +4333,7 @@ impl SemanticModelBuilder {
             .transpose()?;
         let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
         let (is_abstract, variation) =
-            definition_prefix_modifiers(node.value.definition_prefix.as_ref());
+            definition_prefix_node_modifiers(node.value.definition_prefix.as_ref());
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -4557,23 +4642,14 @@ impl SemanticModelBuilder {
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declared_name(&node.value.name)?;
         let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
-        let (is_abstract, variation) =
-            definition_prefix_modifiers(node.value.usage_prefix.as_ref());
         let facts = DeclarationFacts {
             short_name,
             modifiers: DeclarationModifiers {
-                is_abstract,
-                variation,
-                individual: node.value.is_individual,
-                derived: node.value.is_derived,
-                reference: node.value.is_reference,
-                constant: node.value.is_constant,
-                ordered: node.value.ordered,
-                // `ast::PartUsage` has no `nonunique` field, unlike its sibling usages; see
-                // planning/UPSTREAM_PARSER_GAPS.md.
-                ..DeclarationModifiers::default()
+                ordered: node.value.multiplicity_modifiers.is_ordered(),
+                nonunique: !node.value.multiplicity_modifiers.is_unique(),
+                ..occurrence_prefix_modifiers(&node.value.prefix)
             },
-            direction: direction_fact(node.value.direction.as_ref()),
+            direction: direction_node_fact(node.value.prefix.basic.ref_prefix.direction.as_ref()),
             multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
             ..DeclarationFacts::none()
         };
@@ -4605,7 +4681,17 @@ impl SemanticModelBuilder {
                 document,
                 declaration,
                 relationship,
-                matches!(node.value.usage_prefix, Some(DefinitionPrefix::Variation)),
+                matches!(
+                    node.value
+                        .prefix
+                        .basic
+                        .ref_prefix
+                        .variance
+                        .as_ref()
+                        .map(|prefix| prefix.value),
+                    Some(DefinitionPrefix::Variation)
+                ),
+                None,
             )?;
         }
         if let Some((relationship, _)) = &node.value.subsets {
@@ -4881,8 +4967,8 @@ impl SemanticModelBuilder {
                     variation,
                     derived: node.value.is_derived,
                     constant: node.value.is_constant,
-                    ordered: node.value.ordered,
-                    nonunique: node.value.nonunique,
+                    ordered: node.value.multiplicity_modifiers.is_ordered(),
+                    nonunique: !node.value.multiplicity_modifiers.is_unique(),
                     // The `ref` keyword is this declaration's own form, not a prefix modifier on
                     // some other usage, so `reference` stays false here.
                     ..DeclarationModifiers::default()
@@ -4946,8 +5032,8 @@ impl SemanticModelBuilder {
                 end: node.value.is_end,
                 reference: node.value.is_reference,
                 constant: node.value.is_constant,
-                ordered: node.value.ordered,
-                nonunique: node.value.nonunique,
+                ordered: node.value.multiplicity_modifiers.is_ordered(),
+                nonunique: !node.value.multiplicity_modifiers.is_unique(),
                 ..DeclarationModifiers::default()
             },
             direction: direction_fact(node.value.direction.as_ref()),
@@ -5061,12 +5147,13 @@ impl SemanticModelBuilder {
             DeclarationFacts {
                 short_name,
                 modifiers: DeclarationModifiers {
-                    ordered: node.value.ordered,
-                    nonunique: node.value.nonunique,
+                    ordered: node.value.multiplicity_modifiers.is_ordered(),
+                    nonunique: !node.value.multiplicity_modifiers.is_unique(),
                     ..DeclarationModifiers::default()
                 },
-                // `ast::AttributeDef` carries no `multiplicity` field at all, unlike
-                // `AttributeUsage`; see planning/UPSTREAM_PARSER_GAPS.md.
+                // `ast::AttributeDef` gained the `multiplicity` field its `AttributeUsage`
+                // sibling has (planning/UPSTREAM_PARSER_GAPS.md gap 53a, closed upstream); reading
+                // it here is the separate lowering step that entry now tracks.
                 ..DeclarationFacts::none()
             },
         )?;
@@ -5155,9 +5242,6 @@ impl SemanticModelBuilder {
                 }
                 AttributeBodyElement::CalcUsage(node) => {
                     self.lower_calc_usage(document, Some(owner), node)?;
-                }
-                AttributeBodyElement::ClassDef(node) => {
-                    self.lower_class_def(document, Some(owner), node)?;
                 }
                 AttributeBodyElement::KermlClassifier(node) => {
                     self.lower_kerml_classifier_decl(document, Some(owner), node)?;
@@ -5273,7 +5357,9 @@ impl SemanticModelBuilder {
             DeclarationKind::EnumerationLiteral,
             name,
             node.span.clone(),
-            // `ast::EnumeratedValue` retains only a name and its span.
+            // `ast::EnumeratedValue` gained `short_name`, a `FeatureValue` initializer and a
+            // full `PartUsageBody` when the enumeration body was widened upstream; reading
+            // them is the separate lowering step planning/UPSTREAM_PARSER_GAPS.md tracks.
             DeclarationFacts::none(),
         )?;
         self.push_membership(
@@ -5372,52 +5458,6 @@ impl SemanticModelBuilder {
                     individual: node.value.is_individual,
                     ..DeclarationModifiers::default()
                 },
-                ..DeclarationFacts::none()
-            },
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Owning,
-            self.member_visibility(
-                &node.value.membership,
-                ParserMembershipKind::OwningMembership,
-            )?,
-            node.value.membership.span.clone(),
-        )?;
-        if let Some(relationship) = &node.value.specializes {
-            self.lower_typing_relationship(document, declaration, relationship)?;
-        }
-        self.lower_attribute_body(document, declaration, &node.value.body)
-    }
-
-    /// Lowers a KerML `class def` (BNF ClassDefinition), mirroring `lower_item_def`: ownership,
-    /// membership, and an optional `:>` specialization relationship. `ClassDef`'s body is a plain
-    /// `AttributeBody`, exactly the same shape `ItemDef` has, so owned members are lowered through
-    /// the existing `lower_attribute_body`. There is no separate KerML "class usage" form in the
-    /// grammar -- only this def-level construct exists.
-    fn lower_class_def(
-        &mut self,
-        document: DocumentId,
-        owner: Option<DeclarationId>,
-        node: &Node<ClassDef>,
-    ) -> Result<(), ConstructionError> {
-        let name = node
-            .value
-            .identification
-            .name
-            .as_deref()
-            .filter(|name| !name.is_empty())
-            .map(|name| self.intern_name(name))
-            .transpose()?;
-        let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
-        let declaration = self.push_typed_declaration(
-            document,
-            owner,
-            DeclarationKind::ClassDefinition,
-            name,
-            node.span.clone(),
-            DeclarationFacts {
-                short_name,
                 ..DeclarationFacts::none()
             },
         )?;
@@ -5544,7 +5584,7 @@ impl SemanticModelBuilder {
         self.lower_calc_def_body(document, declaration, &node.value.body)
     }
 
-    /// Lowers a bare/bodied KerML feature member (`KermlFeatureMember`, gap #14: previously an
+    /// Lowers a bare/bodied KerML feature member (`KermlFeature`, gap #14: previously an
     /// opaque `FeatureDecl { keyword, text }` raw-text fallback, now a fully typed shape),
     /// mirroring `lower_ref_decl`: ownership, membership, an optional `:` typing target, and
     /// `subsets`/`redefines` relationships. Its `= expr` value, when present, is classified and
@@ -5552,34 +5592,37 @@ impl SemanticModelBuilder {
     /// `lower_parameter_declaration`/`lower_return_decl` use. Its body shares the `CalcDefBody`
     /// grammar, so owned members are walked through the existing `lower_calc_def_body`. See
     /// `DeclarationKind::KermlFeature` for the facts intentionally left unmodeled.
+    ///
+    /// This is now also the entry point for the two nodes upstream folded into it: the directed
+    /// kinded parameter (`in expr p : Boolean = a;`, formerly `TypedParameterMember`), whose
+    /// direction is the `BasicFeaturePrefix` slot read below, and the association end with an
+    /// owned cross feature (`end happensDuring [1..*] subsets ... feature thatOccurrence : ...;`,
+    /// formerly `KermlEndMember`), whose cross feature the grammar owns from the `EndFeaturePrefix`
+    /// alternative -- so it is lowered here as an owned child through
+    /// `lower_kerml_owned_cross_feature` rather than as this feature's owner.
     fn lower_kerml_feature_member(
         &mut self,
         document: DocumentId,
         owner: Option<DeclarationId>,
         family: UnsupportedFamily,
-        node: &Node<KermlFeatureMember>,
+        node: &Node<KermlFeature>,
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declared_name(&node.value.name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
-            kerml_feature_kind(&node.value.kind),
+            kerml_feature_kind(node.value.kind.as_ref()),
             name,
             node.span.clone(),
             DeclarationFacts {
                 modifiers: DeclarationModifiers {
-                    is_abstract: node.value.is_abstract,
-                    derived: node.value.is_derived,
-                    end: node.value.is_end,
                     all: node.value.is_all,
-                    composite: node.value.is_composite,
-                    portion: node.value.is_portion,
-                    var: node.value.is_var,
                     member: node.value.is_member,
-                    ordered: node.value.ordered,
-                    nonunique: node.value.nonunique,
-                    ..DeclarationModifiers::default()
+                    ordered: node.value.multiplicity_modifiers.is_ordered(),
+                    nonunique: !node.value.multiplicity_modifiers.is_unique(),
+                    ..kerml_feature_prefix_modifiers(&node.value.prefix)
                 },
+                direction: direction_node_fact(node.value.prefix.direction()),
                 multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
                 ..DeclarationFacts::none()
             },
@@ -5593,8 +5636,20 @@ impl SemanticModelBuilder {
             )?,
             node.value.membership.span.clone(),
         )?;
+        if let FeaturePrefixHead::End {
+            cross: Some(cross), ..
+        } = &node.value.prefix.head
+        {
+            self.lower_kerml_owned_cross_feature(document, declaration, cross)?;
+        }
         if let Some(relationship) = &node.value.typing {
-            self.lower_typing_relationship(document, declaration, relationship)?;
+            self.lower_typing_relationship_impl(
+                document,
+                declaration,
+                relationship,
+                false,
+                direction_node_fact(node.value.prefix.direction()),
+            )?;
         }
         if let Some(relationship) = &node.value.subsets {
             self.lower_subsetting_relationship(document, declaration, relationship)?;
@@ -5825,92 +5880,6 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
-    /// Lowers a KerML kinded parameter member (`TypedParameterMember`), e.g. `in expr
-    /// thenValue[0..1] { return : Anything[0..*] ordered nonunique; }` or `in bool onOccurrence =
-    /// changeSignal.signalCondition;` (Kernel Function/Semantic Libraries, `CalcDefBodyElement`'s
-    /// distinct kind-keyword sibling of `InOutDecl`). Mirrors `lower_parameter_declaration`'s
-    /// shape exactly (declared name folding to `None` for the redefinition-only anonymous form,
-    /// a direction-tagged `FeatureTyping` reference, a `redefines` relationship, and `= expr`
-    /// value evaluation through `lower_calc_expression`), plus recurses into `body` -- the same
-    /// `CalcDefBody` shape `lower_calc_def_body` already walks for nested parameters/`return`
-    /// declarations -- which `InOutDecl` has no field for at all. `kind` (`expr`/`bool`/
-    /// `feature`/`calc`/`step`), `is_abstract`, `multiplicity`, `ordered`, and `nonunique` are not
-    /// modeled as distinct facts here, mirroring `lower_parameter_declaration`'s own unmodeled
-    /// `InOutDecl.ordered`/`InOutDecl.nonunique`.
-    fn lower_typed_parameter_member(
-        &mut self,
-        document: DocumentId,
-        owner: DeclarationId,
-        node: &Node<TypedParameterMember>,
-    ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
-        let declaration = self.push_typed_declaration(
-            document,
-            Some(owner),
-            DeclarationKind::ParameterUsage,
-            name,
-            node.span.clone(),
-            DeclarationFacts {
-                modifiers: DeclarationModifiers {
-                    is_abstract: node.value.is_abstract,
-                    ordered: node.value.ordered,
-                    nonunique: node.value.nonunique,
-                    ..DeclarationModifiers::default()
-                },
-                direction: direction_fact(Some(&node.value.direction)),
-                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
-                ..DeclarationFacts::none()
-            },
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            Visibility::Default,
-            node.span.clone(),
-        )?;
-        if let Some(type_name) = node.value.type_name {
-            let span = self.documents[document.index()]
-                .parsed
-                .qualified_reference(type_name)
-                .ok_or(ConstructionError::InvalidParserReference)?
-                .metadata
-                .span
-                .clone();
-            let direction = Some(match node.value.direction {
-                InOut::In => ParameterDirection::In,
-                InOut::Out => ParameterDirection::Out,
-                InOut::InOut => ParameterDirection::InOut,
-            });
-            self.push_reference(PendingReference {
-                source: declaration,
-                kind: ReferenceKind::FeatureTyping,
-                document,
-                local: type_name,
-                flags: RelationshipFlags {
-                    direction,
-                    ..RelationshipFlags::default()
-                },
-                span,
-                import: None,
-            })?;
-        }
-        if let Some(relationship) = &node.value.redefines {
-            self.lower_subsetting_relationship(document, declaration, relationship)?;
-        }
-        if let Some(feature_value) = &node.value.value {
-            self.record_feature_value(declaration, feature_value)?;
-            let expression = feature_value.value.expression.clone();
-            self.push_evaluation_fact(declaration, classify_calc_expression(&expression.value));
-            self.lower_calc_expression(
-                document,
-                declaration,
-                UnsupportedFamily::CalcDefinitionMember,
-                &expression,
-            )?;
-        }
-        self.lower_calc_def_body(document, declaration, &node.value.body)
-    }
-
     /// Lowers a KerML invariant member (`KermlInvariantMember`), e.g. `inv unitBound { -1.0 <=
     /// that & that <= 1.0 }` or the anonymous `inv { isClosed == true }` (KerML Spec §8.2.7, gap:
     /// previously entirely unlowered -- see `DeclarationKind::KermlInvariant`). Its body shares
@@ -5946,24 +5915,23 @@ impl SemanticModelBuilder {
         self.lower_calc_def_body(document, declaration, &node.value.body)
     }
 
-    /// Lowers a KerML end member with an owned cross feature (`KermlEndMember`), e.g. `end
+    /// Lowers the cross feature an `end`-prefixed KerML feature owns (`OwnedCrossFeature`, KerML
+    /// BNF 595), e.g. the `happensDuring [1..*] subsets timeCoincidentOccurrences` in `end
     /// happensDuring [1..*] subsets timeCoincidentOccurrences feature thatOccurrence: Occurrence
-    /// redefines longerOccurrence;` (KerML Spec Annex A-3, association-end form, gap: previously
-    /// entirely unlowered -- see `DeclarationKind::KermlEnd`). Mirrors
-    /// `lower_kerml_connector_member`'s ownership/membership shape: ownership, membership, and an
-    /// optional `subsets` relationship on the end itself resolved through the existing
-    /// `lower_subsetting_relationship` (the same `SubsettingKind`-dispatched reference machinery
-    /// `KermlFeatureMember`'s own `subsets`/`redefines` clauses use). The owned nested feature is
-    /// lowered through the existing `lower_kerml_feature_member`, owned by this end declaration
-    /// rather than the enclosing `assoc`/type, so its own `subsets`/`redefines`/typing/value/body
-    /// resolve exactly as a bare `KermlFeatureMember` would. The end's own `multiplicity` is not
-    /// modeled as a distinct fact here (matches `KermlConnectorMember`'s own end multiplicity
-    /// scope boundary).
-    fn lower_kerml_end_member(
+    /// redefines longerOccurrence;` (KerML Spec Annex A-3, association-end form).
+    ///
+    /// Upstream folded `KermlEndMember` into `FeaturePrefix`'s own `OwnedCrossFeatureMember`, which
+    /// inverts the ownership this used to publish: the cross feature is owned *by* the end-prefixed
+    /// feature, as `FeaturePrefix` spells it, not the other way round. It keeps
+    /// `DeclarationKind::KermlEnd`, and its `subsets` clause resolves through the same
+    /// `SubsettingKind`-dispatched machinery every sibling clause uses. `OwnedCrossFeature` carries
+    /// only the slots the corpus authors in cross position, so there is no typing, value or body to
+    /// walk here.
+    fn lower_kerml_owned_cross_feature(
         &mut self,
         document: DocumentId,
         owner: DeclarationId,
-        node: &Node<KermlEndMember>,
+        node: &Node<OwnedCrossFeature>,
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declared_name(&node.value.name)?;
         let declaration = self.push_typed_declaration(
@@ -5973,6 +5941,12 @@ impl SemanticModelBuilder {
             name,
             node.span.clone(),
             DeclarationFacts {
+                modifiers: DeclarationModifiers {
+                    ordered: node.value.multiplicity_modifiers.is_ordered(),
+                    nonunique: !node.value.multiplicity_modifiers.is_unique(),
+                    ..basic_feature_prefix_modifiers(&node.value.prefix)
+                },
+                direction: direction_node_fact(node.value.prefix.direction.as_ref()),
                 multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
                 ..DeclarationFacts::none()
             },
@@ -5986,12 +5960,7 @@ impl SemanticModelBuilder {
         if let Some(relationship) = &node.value.subsets {
             self.lower_subsetting_relationship(document, declaration, relationship)?;
         }
-        self.lower_kerml_feature_member(
-            document,
-            Some(declaration),
-            UnsupportedFamily::CalcDefinitionMember,
-            &node.value.feature,
-        )
+        Ok(())
     }
 
     /// Lowers a keyword-less `<name> = <expr>;` / `<name> : <Type>;` binding
@@ -6065,8 +6034,6 @@ impl SemanticModelBuilder {
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declared_name(&node.value.name)?;
         let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
-        let (is_abstract, variation) =
-            definition_prefix_modifiers(node.value.usage_prefix.as_ref());
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -6076,16 +6043,13 @@ impl SemanticModelBuilder {
             DeclarationFacts {
                 short_name,
                 modifiers: DeclarationModifiers {
-                    is_abstract,
-                    variation,
-                    individual: node.value.is_individual,
-                    derived: node.value.is_derived,
-                    constant: node.value.is_constant,
-                    ordered: node.value.ordered,
-                    nonunique: node.value.nonunique,
-                    ..DeclarationModifiers::default()
+                    ordered: node.value.multiplicity_modifiers.is_ordered(),
+                    nonunique: !node.value.multiplicity_modifiers.is_unique(),
+                    ..occurrence_prefix_modifiers(&node.value.prefix)
                 },
-                direction: direction_fact(node.value.direction.as_ref()),
+                direction: direction_node_fact(
+                    node.value.prefix.basic.ref_prefix.direction.as_ref(),
+                ),
                 multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
                 ..DeclarationFacts::none()
             },
@@ -6119,7 +6083,16 @@ impl SemanticModelBuilder {
                 document,
                 local: type_name,
                 flags: RelationshipFlags {
-                    variation,
+                    variation: matches!(
+                        node.value
+                            .prefix
+                            .basic
+                            .ref_prefix
+                            .variance
+                            .as_ref()
+                            .map(|prefix| prefix.value),
+                        Some(DefinitionPrefix::Variation)
+                    ),
                     ..RelationshipFlags::default()
                 },
                 span,
@@ -6169,8 +6142,8 @@ impl SemanticModelBuilder {
                 modifiers: DeclarationModifiers {
                     reference: node.value.is_reference,
                     var: node.value.is_var,
-                    ordered: node.value.ordered,
-                    nonunique: node.value.nonunique,
+                    ordered: node.value.multiplicity_modifiers.is_ordered(),
+                    nonunique: !node.value.multiplicity_modifiers.is_unique(),
                     ..DeclarationModifiers::default()
                 },
                 direction: direction_fact(Some(&node.value.direction)),
@@ -6269,8 +6242,8 @@ impl SemanticModelBuilder {
             node.span.clone(),
             DeclarationFacts {
                 modifiers: DeclarationModifiers {
-                    ordered: node.value.ordered,
-                    nonunique: node.value.nonunique,
+                    ordered: node.value.multiplicity_modifiers.is_ordered(),
+                    nonunique: !node.value.multiplicity_modifiers.is_unique(),
                     ..DeclarationModifiers::default()
                 },
                 multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
@@ -7941,10 +7914,10 @@ impl SemanticModelBuilder {
         family: UnsupportedFamily,
         body: &FirstMergeBody,
     ) -> Result<(), ConstructionError> {
-        let FirstMergeBody::Brace(brace) = body else {
+        let FirstMergeBody::Brace { elements, .. } = body else {
             return Ok(());
         };
-        for element in &brace.value.elements {
+        for element in elements {
             match &element.value {
                 FirstMergeBodyElement::Error(error) => {
                     self.push_recovery(document, error.span.clone());
@@ -10067,6 +10040,8 @@ impl SemanticModelBuilder {
             .map(|name| self.intern_name(name))
             .transpose()?;
         let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
+        let (is_abstract, variation) =
+            definition_prefix_node_modifiers(node.value.definition_prefix.as_ref());
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -10076,7 +10051,8 @@ impl SemanticModelBuilder {
             DeclarationFacts {
                 short_name,
                 modifiers: DeclarationModifiers {
-                    is_abstract: node.value.is_abstract,
+                    is_abstract,
+                    variation,
                     ..DeclarationModifiers::default()
                 },
                 ..DeclarationFacts::none()
@@ -10259,6 +10235,48 @@ impl SemanticModelBuilder {
                 }
                 RequirementDefBodyElement::RefDecl(node) => {
                     self.lower_ref_decl(document, Some(owner), node)?;
+                }
+                // The usage families a `requirement def` body inherits from the general member
+                // grammar, admitted upstream in `ec47463` (planning/UPSTREAM_PARSER_GAPS.md gap 42).
+                // Each dispatches to the lowering its package- or part-level spelling already uses;
+                // `SuccessionUsage` has no lowering in any scope, so it reports unsupported here
+                // exactly as it does in part-usage and state-def bodies.
+                RequirementDefBodyElement::ActionUsage(node) => {
+                    self.lower_action_usage(document, Some(owner), node)?;
+                }
+                RequirementDefBodyElement::Perform(node) => {
+                    self.lower_perform(document, Some(owner), node)?;
+                }
+                RequirementDefBodyElement::StateUsage(node) => {
+                    self.lower_state_usage(document, Some(owner), node)?;
+                }
+                RequirementDefBodyElement::ItemUsage(node) => {
+                    self.lower_item_usage(document, Some(owner), node)?;
+                }
+                RequirementDefBodyElement::PartUsage(node) => {
+                    self.lower_part_usage(document, Some(owner), node)?;
+                }
+                RequirementDefBodyElement::ConnectionUsage(node) => {
+                    self.lower_connection_usage(document, Some(owner), node)?;
+                }
+                RequirementDefBodyElement::Connect(node) => {
+                    self.lower_bare_connect(document, owner, unsupported, node)?;
+                }
+                RequirementDefBodyElement::SuccessionUsage(_) => {
+                    self.push_unsupported(document, unsupported, element.span.clone())
+                }
+                // The three member families upstream added to close the `requirement def` half of
+                // planning/UPSTREAM_PARSER_GAPS.md gap 42: a nested definition of the body's own
+                // kind, and the `port`/`allocate` members the SysML v2 spec annex authors. Each
+                // dispatches to the lowering its package-level spelling already uses.
+                RequirementDefBodyElement::RequirementDef(node) => {
+                    self.lower_requirement_def(document, Some(owner), node)?;
+                }
+                RequirementDefBodyElement::PortUsage(node) => {
+                    self.lower_port_usage(document, Some(owner), node)?;
+                }
+                RequirementDefBodyElement::AllocationUsage(node) => {
+                    self.lower_allocation_usage(document, Some(owner), node)?;
                 }
                 RequirementDefBodyElement::ConcernUsage(node) => {
                     self.lower_concern_usage(document, Some(owner), node)?;
@@ -10503,6 +10521,8 @@ impl SemanticModelBuilder {
             .map(|name| self.intern_name(name))
             .transpose()?;
         let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
+        let (is_abstract, variation) =
+            definition_prefix_node_modifiers(node.value.definition_prefix.as_ref());
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -10512,7 +10532,8 @@ impl SemanticModelBuilder {
             DeclarationFacts {
                 short_name,
                 modifiers: DeclarationModifiers {
-                    is_abstract: node.value.is_abstract,
+                    is_abstract,
+                    variation,
                     individual: node.value.is_individual,
                     ..DeclarationModifiers::default()
                 },
@@ -10574,6 +10595,8 @@ impl SemanticModelBuilder {
             .map(|name| self.intern_name(name))
             .transpose()?;
         let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
+        let (is_abstract, variation) =
+            definition_prefix_node_modifiers(node.value.definition_prefix.as_ref());
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -10583,7 +10606,8 @@ impl SemanticModelBuilder {
             DeclarationFacts {
                 short_name,
                 modifiers: DeclarationModifiers {
-                    is_abstract: node.value.is_abstract,
+                    is_abstract,
+                    variation,
                     ..DeclarationModifiers::default()
                 },
                 ..DeclarationFacts::none()
@@ -10897,6 +10921,8 @@ impl SemanticModelBuilder {
             .map(|name| self.intern_name(name))
             .transpose()?;
         let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
+        let (is_abstract, variation) =
+            definition_prefix_node_modifiers(node.value.definition_prefix.as_ref());
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -10906,7 +10932,8 @@ impl SemanticModelBuilder {
             DeclarationFacts {
                 short_name,
                 modifiers: DeclarationModifiers {
-                    is_abstract: node.value.is_abstract,
+                    is_abstract,
+                    variation,
                     ..DeclarationModifiers::default()
                 },
                 ..DeclarationFacts::none()
@@ -10952,6 +10979,8 @@ impl SemanticModelBuilder {
             .map(|name| self.intern_name(name))
             .transpose()?;
         let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
+        let (is_abstract, variation) =
+            definition_prefix_node_modifiers(node.value.definition_prefix.as_ref());
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -10961,7 +10990,8 @@ impl SemanticModelBuilder {
             DeclarationFacts {
                 short_name,
                 modifiers: DeclarationModifiers {
-                    is_abstract: node.value.is_abstract,
+                    is_abstract,
+                    variation,
                     ..DeclarationModifiers::default()
                 },
                 ..DeclarationFacts::none()
@@ -11258,13 +11288,13 @@ impl SemanticModelBuilder {
             DeclarationFacts {
                 short_name,
                 modifiers: DeclarationModifiers {
-                    is_abstract: node.value.is_abstract,
-                    individual: node.value.is_individual,
-                    derived: node.value.is_derived,
-                    constant: node.value.is_constant,
-                    ..DeclarationModifiers::default()
+                    ordered: node.value.multiplicity_modifiers.is_ordered(),
+                    nonunique: !node.value.multiplicity_modifiers.is_unique(),
+                    ..occurrence_prefix_modifiers(&node.value.prefix)
                 },
-                direction: direction_fact(node.value.direction.as_ref()),
+                direction: direction_node_fact(
+                    node.value.prefix.basic.ref_prefix.direction.as_ref(),
+                ),
                 multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
                 ..DeclarationFacts::none()
             },
@@ -11313,6 +11343,9 @@ impl SemanticModelBuilder {
                     }
                     PortBodyElement::PortUsage(port_usage) => {
                         self.lower_port_usage(document, Some(declaration), port_usage)?;
+                    }
+                    PortBodyElement::RefDecl(ref_decl) => {
+                        self.lower_ref_decl(document, Some(declaration), ref_decl)?;
                     }
                     PortBodyElement::ItemUsage(item_usage) => {
                         self.lower_item_usage(document, Some(declaration), item_usage)?;
@@ -12020,6 +12053,8 @@ impl SemanticModelBuilder {
             .map(|name| self.intern_name(name))
             .transpose()?;
         let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
+        let (is_abstract, variation) =
+            definition_prefix_node_modifiers(node.value.definition_prefix.as_ref());
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -12029,7 +12064,8 @@ impl SemanticModelBuilder {
             DeclarationFacts {
                 short_name,
                 modifiers: DeclarationModifiers {
-                    is_abstract: node.value.is_abstract,
+                    is_abstract,
+                    variation,
                     ..DeclarationModifiers::default()
                 },
                 ..DeclarationFacts::none()
@@ -12136,8 +12172,8 @@ impl SemanticModelBuilder {
             node.span.clone(),
             DeclarationFacts {
                 modifiers: DeclarationModifiers {
-                    ordered: node.value.ordered,
-                    nonunique: node.value.nonunique,
+                    ordered: node.value.multiplicity_modifiers.is_ordered(),
+                    nonunique: !node.value.multiplicity_modifiers.is_unique(),
                     ..DeclarationModifiers::default()
                 },
                 multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
@@ -12258,8 +12294,8 @@ impl SemanticModelBuilder {
             DeclarationFacts {
                 modifiers: DeclarationModifiers {
                     is_abstract: node.value.is_abstract,
-                    ordered: node.value.ordered,
-                    nonunique: node.value.nonunique,
+                    ordered: node.value.multiplicity_modifiers.is_ordered(),
+                    nonunique: !node.value.multiplicity_modifiers.is_unique(),
                     ..DeclarationModifiers::default()
                 },
                 multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
@@ -12413,6 +12449,9 @@ impl SemanticModelBuilder {
                     }
                     ConstraintDefBodyElement::Constraint(constraint) => {
                         self.lower_constraint_usage(document, Some(declaration), constraint)?;
+                    }
+                    ConstraintDefBodyElement::PartUsage(part_usage) => {
+                        self.lower_part_usage(document, Some(declaration), part_usage)?;
                     }
                     ConstraintDefBodyElement::InOutDecl(param) => {
                         self.lower_parameter_declaration(
@@ -12812,12 +12851,6 @@ impl SemanticModelBuilder {
                     CalcDefBodyElement::Binding(node) => {
                         self.lower_kerml_binding_member(document, declaration, node)?;
                     }
-                    CalcDefBodyElement::EndMember(node) => {
-                        self.lower_kerml_end_member(document, declaration, node)?;
-                    }
-                    CalcDefBodyElement::TypedParameter(node) => {
-                        self.lower_typed_parameter_member(document, declaration, node)?;
-                    }
                     CalcDefBodyElement::Succession(node) => {
                         self.lower_kerml_succession_member(document, declaration, node)?;
                     }
@@ -12953,6 +12986,8 @@ impl SemanticModelBuilder {
             .map(|name| self.intern_name(name))
             .transpose()?;
         let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
+        let (is_abstract, variation) =
+            definition_prefix_node_modifiers(node.value.definition_prefix.as_ref());
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -12962,7 +12997,8 @@ impl SemanticModelBuilder {
             DeclarationFacts {
                 short_name,
                 modifiers: DeclarationModifiers {
-                    is_abstract: node.value.is_abstract,
+                    is_abstract,
+                    variation,
                     ..DeclarationModifiers::default()
                 },
                 ..DeclarationFacts::none()
@@ -13047,6 +13083,8 @@ impl SemanticModelBuilder {
             .map(|name| self.intern_name(name))
             .transpose()?;
         let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
+        let (is_abstract, variation) =
+            definition_prefix_node_modifiers(node.value.definition_prefix.as_ref());
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -13056,7 +13094,8 @@ impl SemanticModelBuilder {
             DeclarationFacts {
                 short_name,
                 modifiers: DeclarationModifiers {
-                    is_abstract: node.value.is_abstract,
+                    is_abstract,
+                    variation,
                     individual: node.value.is_individual,
                     ..DeclarationModifiers::default()
                 },
@@ -13207,15 +13246,13 @@ impl SemanticModelBuilder {
             node.span.clone(),
             DeclarationFacts {
                 modifiers: DeclarationModifiers {
-                    is_abstract: node.value.is_abstract,
-                    individual: node.value.is_individual,
-                    reference: node.value.is_reference,
-                    constant: node.value.is_constant,
                     event: node.value.is_event,
-                    ..DeclarationModifiers::default()
+                    ..occurrence_prefix_modifiers(&node.value.prefix)
                 },
-                portion_kind: portion_kind_fact(node.value.portion_kind.as_ref()),
-                direction: direction_fact(node.value.direction.as_ref()),
+                portion_kind: portion_kind_node_fact(node.value.prefix.portion.as_ref()),
+                direction: direction_node_fact(
+                    node.value.prefix.basic.ref_prefix.direction.as_ref(),
+                ),
                 multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
                 ..DeclarationFacts::none()
             },
@@ -13718,7 +13755,7 @@ impl SemanticModelBuilder {
             .transpose()?;
         let short_name = self.intern_short_name(node.identification.short_name.as_ref())?;
         let (is_abstract, variation) =
-            definition_prefix_modifiers(node.value.definition_prefix.as_ref());
+            definition_prefix_node_modifiers(node.value.definition_prefix.as_ref());
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -13843,19 +13880,25 @@ impl SemanticModelBuilder {
         source: DeclarationId,
         relationship: &Node<sysml_v2_parser::next::ast::TypingRelationship>,
     ) -> Result<(), ConstructionError> {
-        self.lower_typing_relationship_impl(document, source, relationship, false)
+        self.lower_typing_relationship_impl(document, source, relationship, false, None)
     }
 
-    /// Shared implementation behind `lower_typing_relationship`, with an extra `variation` flag
-    /// only `lower_part_usage` sets (when its `usage_prefix` is `DefinitionPrefix::Variation`),
-    /// mirroring the `conjugated` flag convention on a port's typing target: every other caller
-    /// goes through the `lower_typing_relationship` wrapper above with `variation: false`.
+    /// Shared implementation behind `lower_typing_relationship`, with two extra flags.
+    ///
+    /// `variation` is set only by `lower_part_usage` (when its prefix's variance slot is
+    /// `DefinitionPrefix::Variation`), mirroring the `conjugated` flag convention on a port's
+    /// typing target. `direction` is set only by `lower_kerml_feature_member`, whose node absorbed
+    /// the directed kinded parameter (`in expr p : Boolean`) upstream: that declaration's typing
+    /// reference has always carried its direction, so it keeps doing so now that the declaration
+    /// reaches this shared path instead of pushing its own reference. Every other caller goes
+    /// through the `lower_typing_relationship` wrapper above.
     fn lower_typing_relationship_impl(
         &mut self,
         document: DocumentId,
         source: DeclarationId,
         relationship: &Node<sysml_v2_parser::next::ast::TypingRelationship>,
         variation: bool,
+        direction: Option<ParameterDirection>,
     ) -> Result<(), ConstructionError> {
         let kind = match relationship.value.kind {
             sysml_v2_parser::next::ast::TypingKind::Typing => ReferenceKind::FeatureTyping,
@@ -13880,6 +13923,7 @@ impl SemanticModelBuilder {
                     conjugated: relationship.value.is_conjugated,
                     implied: relationship.value.is_implied,
                     variation,
+                    direction,
                     ..RelationshipFlags::default()
                 },
                 span,
@@ -17620,7 +17664,10 @@ mod tests {
     }
 
     #[test]
-    fn kerml_end_member_lowers_its_subsets_and_nested_feature() {
+    fn end_prefixed_feature_lowers_its_cross_feature_and_subsets() {
+        // Upstream folded `KermlEndMember` into `FeaturePrefix`'s `OwnedCrossFeatureMember`, which
+        // inverts the ownership: the `end`-prefixed feature (`thatOccurrence`) owns the cross
+        // feature (`happensDuring`), as KerML BNF 584/592/595 spell it, rather than the reverse.
         let output = build_semantic_sexpr(
             "package Demo {\n\
              \tassoc HappensDuring {\n\
@@ -17633,25 +17680,26 @@ mod tests {
         );
         assert!(
             output.contains(
-                "(qualified-name \"Demo::HappensDuring::happensDuring\"))) (kind kerml-end)"
+                "(qualified-name \"Demo::HappensDuring::thatOccurrence\"))) (kind kerml-feature) \
+                 (membership (kind feature) (visibility default)) (facts (modifiers end))"
             ),
-            "expected a kerml-end declaration for happensDuring, got:\n{output}"
+            "expected thatOccurrence to lower as an end-prefixed kerml-feature, got:\n{output}"
         );
         assert!(
             output.contains(
-                "(kind subsetting) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::HappensDuring::happensDuring\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::HappensDuring::timeCoincidentOccurrences\")))"
+                "(qualified-name \"Demo::HappensDuring::thatOccurrence::happensDuring\"))) (kind kerml-end)"
             ),
-            "expected happensDuring's end-level subsets to resolve to timeCoincidentOccurrences, got:\n{output}"
+            "expected the cross feature happensDuring to be owned by thatOccurrence, got:\n{output}"
         );
         assert!(
             output.contains(
-                "(qualified-name \"Demo::HappensDuring::happensDuring::thatOccurrence\"))) (kind kerml-feature)"
+                "(kind subsetting) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::HappensDuring::thatOccurrence::happensDuring\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::HappensDuring::timeCoincidentOccurrences\")))"
             ),
-            "expected the nested feature thatOccurrence to be owned by the happensDuring end, got:\n{output}"
+            "expected the cross feature's subsets to resolve to timeCoincidentOccurrences, got:\n{output}"
         );
         assert!(
             output.contains(
-                "(kind redefinition) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::HappensDuring::happensDuring::thatOccurrence\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::HappensDuring::longerOccurrence\")))"
+                "(kind redefinition) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::HappensDuring::thatOccurrence\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::HappensDuring::longerOccurrence\")))"
             ),
             "expected thatOccurrence's redefines to resolve to longerOccurrence, got:\n{output}"
         );
@@ -17741,11 +17789,13 @@ mod tests {
     }
 
     #[test]
-    fn calc_def_body_typed_parameter_member_lowers_typing_and_value() {
-        // `CalcDefBodyElement::TypedParameter` (`TypedParameterMember`) was previously
-        // unconditionally unsupported; mirrors `lower_parameter_declaration`'s shape (a
-        // direction-tagged `FeatureTyping` reference plus `= expr` value evaluation), e.g. Kernel
-        // Function Library `ControlFunctions.kerml`'s `in bool onOccurrence = ...;`.
+    fn calc_def_body_kinded_parameter_lowers_typing_and_value() {
+        // Upstream merged `TypedParameterMember` into the feature its production spells, so the
+        // kinded parameter is now a `KermlFeature` carrying the direction in its
+        // `BasicFeaturePrefix`: it lowers under the kind its keyword names (`expr` ->
+        // `kerml-expression`) rather than the generic `parameter`, and keeps its direction as a
+        // declaration fact. E.g. Kernel Function Library `ControlFunctions.kerml`'s `in bool
+        // onOccurrence = ...;`.
         let output = build_semantic_sexpr(
             "package Demo {\n\
              \tcalc def C {\n\
@@ -17755,8 +17805,11 @@ mod tests {
              }\n",
         );
         assert!(
-            output.contains("(qualified-name \"Demo::C::p\"))) (kind parameter)"),
-            "expected a parameter declaration for p, got:\n{output}"
+            output.contains(
+                "(qualified-name \"Demo::C::p\"))) (kind kerml-expression) (membership (kind \
+                 feature) (visibility default)) (facts (direction in))"
+            ),
+            "expected an `in`-directed kerml-expression declaration for p, got:\n{output}"
         );
         assert!(
             output.contains(
@@ -17777,11 +17830,12 @@ mod tests {
     }
 
     #[test]
-    fn calc_def_body_typed_parameter_member_redefines_and_nested_body() {
+    fn calc_def_body_kinded_parameter_redefines_and_nested_body() {
         // The anonymous redefinition-only form (`in bool redefines onOccurrence { ... }`, Kernel
-        // Semantic Library `Observation.kerml`) folds its empty `name` to `None` (mirroring
-        // `lower_return_decl`'s identical `ReturnDecl.name` handling) and recurses into its own
-        // nested `CalcDefBody` (a field `InOutDecl` has no equivalent for at all).
+        // Semantic Library `Observation.kerml`) folds its empty `name` to `None` and recurses into
+        // its own nested `CalcDefBody`. Since the upstream merge it is a `KermlFeature`, so the
+        // `bool` keyword names its kind (`kerml-boolean-expression`) while the nested `return`
+        // declaration stays an anonymous `parameter`.
         let output = build_semantic_sexpr(
             "package Demo {\n\
              \tcalc def C {\n\
@@ -17794,13 +17848,13 @@ mod tests {
         );
         assert!(
             output.contains(
-                "(kind redefinition) (source (node (document \"memory://test/enum.sysml\") (path (named (kind package) (name \"Demo\")) (named (kind calc-def) (name \"C\")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::C::a\")))"
+                "(kind redefinition) (source (node (document \"memory://test/enum.sysml\") (path (named (kind package) (name \"Demo\")) (named (kind calc-def) (name \"C\")) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::C::a\")))"
             ),
-            "expected the anonymous parameter's redefines to resolve to a, got:\n{output}"
+            "expected the anonymous boolean expression's redefines to resolve to a, got:\n{output}"
         );
         assert!(
             output.contains(
-                "(path (named (kind package) (name \"Demo\")) (named (kind calc-def) (name \"C\")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference \"Boolean\"))))"
+                "(path (named (kind package) (name \"Demo\")) (named (kind calc-def) (name \"C\")) (anonymous (kind kerml-boolean-expression) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference \"Boolean\"))))"
             ),
             "expected the nested anonymous return declaration (typed `: Boolean`, no direction/\
              redefines) to lower too, got:\n{output}"

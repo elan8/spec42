@@ -65,16 +65,16 @@ package VariabilityTest {
         (range (start 15 2) (end 17 3))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
+        (severity error)
+        (code "unexpected_keyword_in_scope")
         (source "parser")
-        (range (start 22 1) (end 25 2))
+        (range (start 23 2) (end 24 2))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 22 1) (end 25 2))
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "parser")
+        (range (start 24 2) (end 25 1))
       )
       (diagnostic
         (severity warning)
@@ -128,6 +128,7 @@ package VariabilityTest {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:16b888c6815444dfd8aaff94acf942263750ae25ffaac0a3d4031275a0720967") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::A"))) (kind action-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::B"))) (kind attribute-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::P"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::P::a"))) (kind attribute) (membership (kind feature) (visibility default)))

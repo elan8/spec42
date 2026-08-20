@@ -181,7 +181,6 @@ pub(super) fn classify(kind: DeclarationKind) -> Option<(Family, Role)> {
         | K::PerformParameterBinding
         | K::KermlType
         | K::KermlClassifier
-        | K::KermlClass
         | K::KermlStructure
         | K::KermlAssociation
         | K::KermlAssociationStructure

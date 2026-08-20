@@ -552,7 +552,7 @@ package StateExample {
     ],
     "scene": {
       "frame": {
-        "id": "element/v154:memory://snapshot/diagram_state_transition_complete.md7:packagen12:StateExample1:09:state-defn7:Machine1:0",
+        "id": "state-machine",
         "label": "Machine",
         "navigation": 0
       },
@@ -565,7 +565,7 @@ package StateExample {
           "guard": {
             "status": "absent"
           },
-          "id": "119:element/v154:memory://snapshot/diagram_state_transition_complete.md7:packagen12:StateExample1:09:state-defn7:Machine1:0139:element/v154:memory://snapshot/diagram_state_transition_complete.md7:packagen12:StateExample1:09:state-defn7:Machine1:013:initial-statea1:0#initial",
+          "id": "transition-0",
           "label": null,
           "navigation": 2,
           "provenance": "authored",
@@ -582,7 +582,7 @@ package StateExample {
           "guard": {
             "status": "absent"
           },
-          "id": "119:element/v154:memory://snapshot/diagram_state_transition_complete.md7:packagen12:StateExample1:09:state-defn7:Machine1:0144:element/v154:memory://snapshot/diagram_state_transition_complete.md7:packagen12:StateExample1:09:state-defn7:Machine1:010:transitionn6:finish1:0#edge",
+          "id": "transition-1",
           "label": "finish",
           "navigation": 6,
           "provenance": "authored",
@@ -601,19 +601,19 @@ package StateExample {
       ],
       "vertices": [
         {
-          "id": "element/v154:memory://snapshot/diagram_state_transition_complete.md7:packagen12:StateExample1:09:state-defn7:Machine1:011:final-staten4:done1:0",
+          "id": "state-0",
           "kind": "final",
           "label": "done",
           "navigation": 4
         },
         {
-          "id": "element/v154:memory://snapshot/diagram_state_transition_complete.md7:packagen12:StateExample1:09:state-defn7:Machine1:013:initial-statea1:0",
+          "id": "state-1",
           "kind": "initial",
           "label": "",
           "navigation": 1
         },
         {
-          "id": "element/v154:memory://snapshot/diagram_state_transition_complete.md7:packagen12:StateExample1:09:state-defn7:Machine1:05:staten4:idle1:0",
+          "id": "state-2",
           "kind": "state",
           "label": "idle",
           "navigation": 3

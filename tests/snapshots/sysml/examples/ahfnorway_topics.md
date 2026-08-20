@@ -226,22 +226,10 @@ package AHFNorway {
         (range (start 18 1) (end 18 11))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_port_definition_member")
-        (source "semantic")
-        (range (start 21 2) (end 21 6))
-      )
-      (diagnostic
         (severity information)
         (code "unconnected_port")
         (source "semantic")
-        (range (start 21 7) (end 25 3))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_port_definition_member")
-        (source "semantic")
-        (range (start 27 2) (end 27 6))
+        (range (start 21 2) (end 25 3))
       )
       (diagnostic
         (severity warning)
@@ -590,7 +578,7 @@ package AHFNorway {
     (declaration (id (node (document "memory://snapshot/ahfnorway_topics.md") (path (named (kind package) (name "AHFNorway")) (named (kind extended-definition) (name "AHFNorway_LocalCloudDD")) (named (kind extended-definition) (name "APISProducer")) (named (kind state) (name "APISPbehavior")) (anonymous (kind transition) (ordinal 0))))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionTarget (reference "WaitOnData")) (transitionEffect (reference "action")))))
     (declaration (id (node (document "memory://snapshot/ahfnorway_topics.md") (qualified-name "AHFNorway::AHFNorway_LocalCloudDD::APISProducer::APISPbehavior::WaitOnData"))) (kind state) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/ahfnorway_topics.md") (qualified-name "AHFNorway::AHFNorway_LocalCloudDD::APISProducer::apisc"))) (kind default-reference) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "APIS_DD")))))
-    (declaration (id (node (document "memory://snapshot/ahfnorway_topics.md") (qualified-name "AHFNorway::AHFNorway_LocalCloudDD::APISProducer::giveItems"))) (kind action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "ServiceMethod")))))
+    (declaration (id (node (document "memory://snapshot/ahfnorway_topics.md") (qualified-name "AHFNorway::AHFNorway_LocalCloudDD::APISProducer::giveItems"))) (kind action) (membership (kind feature) (visibility default)) (documentation (comment (text " Forward itms and return an ack "))) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "ServiceMethod")))))
     (declaration (id (node (document "memory://snapshot/ahfnorway_topics.md") (path (named (kind package) (name "AHFNorway")) (named (kind extended-definition) (name "AHFNorway_LocalCloudDD")) (named (kind extended-definition) (name "APISProducer")) (named (kind action) (name "giveItems")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (succession (reference "start")))))
     (declaration (id (node (document "memory://snapshot/ahfnorway_topics.md") (path (named (kind package) (name "AHFNorway")) (named (kind extended-definition) (name "AHFNorway_LocalCloudDD")) (named (kind extended-definition) (name "APISProducer")) (named (kind action) (name "giveItems")) (anonymous (kind bind) (ordinal 0))))) (kind bind) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (bindSource (reference "ack")) (bindTarget (reference "success")))))
     (declaration (id (node (document "memory://snapshot/ahfnorway_topics.md") (qualified-name "AHFNorway::AHFNorway_LocalCloudDD::APISProducer::giveItems::ack"))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction out)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Boolean") (direction out)))))
