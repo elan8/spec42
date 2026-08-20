@@ -4955,6 +4955,7 @@ impl SemanticModelBuilder {
         let name = self.intern_declared_name(&node.value.name)?;
         let (is_abstract, variation) =
             definition_prefix_modifiers(node.value.usage_prefix.as_ref());
+        let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -4962,6 +4963,7 @@ impl SemanticModelBuilder {
             name,
             node.span.clone(),
             DeclarationFacts {
+                short_name,
                 modifiers: DeclarationModifiers {
                     is_abstract,
                     variation,
@@ -5351,16 +5353,20 @@ impl SemanticModelBuilder {
         node: &Node<sysml_v2_parser::next::ast::EnumeratedValue>,
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declared_name(&node.value.name)?;
+        let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
             DeclarationKind::EnumerationLiteral,
             name,
             node.span.clone(),
-            // `ast::EnumeratedValue` gained `short_name`, a `FeatureValue` initializer and a
-            // full `PartUsageBody` when the enumeration body was widened upstream; reading
-            // them is the separate lowering step planning/UPSTREAM_PARSER_GAPS.md tracks.
-            DeclarationFacts::none(),
+            // `ast::EnumeratedValue` also gained a `FeatureValue` initializer and a full
+            // `PartUsageBody` when the enumeration body was widened upstream; reading those is
+            // the separate lowering step planning/UPSTREAM_PARSER_GAPS.md tracks.
+            DeclarationFacts {
+                short_name,
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -6234,6 +6240,7 @@ impl SemanticModelBuilder {
         node: &Node<ReturnDecl>,
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declared_name(&node.value.name)?;
+        let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -6241,6 +6248,7 @@ impl SemanticModelBuilder {
             name,
             node.span.clone(),
             DeclarationFacts {
+                short_name,
                 modifiers: DeclarationModifiers {
                     ordered: node.value.multiplicity_modifiers.is_ordered(),
                     nonunique: !node.value.multiplicity_modifiers.is_unique(),
@@ -6397,6 +6405,7 @@ impl SemanticModelBuilder {
         node: &Node<SubjectDecl>,
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declared_name(&node.value.name)?;
+        let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -6404,6 +6413,7 @@ impl SemanticModelBuilder {
             name,
             node.span.clone(),
             DeclarationFacts {
+                short_name,
                 multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
                 ..DeclarationFacts::none()
             },
@@ -7400,6 +7410,7 @@ impl SemanticModelBuilder {
         node: &Node<ParserActionUsage>,
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declared_name(&node.value.name)?;
+        let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -7407,6 +7418,7 @@ impl SemanticModelBuilder {
             name,
             node.span.clone(),
             DeclarationFacts {
+                short_name,
                 modifiers: DeclarationModifiers {
                     is_abstract: node.value.is_abstract,
                     variation: node.value.is_variation,
@@ -11600,6 +11612,7 @@ impl SemanticModelBuilder {
             EndIdentity::Derivation(_) => None,
         };
         let positional_end = self.next_positional_end_ordinal(owner)?;
+        let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
@@ -11607,6 +11620,7 @@ impl SemanticModelBuilder {
             name,
             node.span.clone(),
             DeclarationFacts {
+                short_name,
                 multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
                 positional_end: Some(positional_end),
                 ..DeclarationFacts::none()
@@ -12164,6 +12178,7 @@ impl SemanticModelBuilder {
         node: &Node<ParserViewUsage>,
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declared_name(&node.value.name)?;
+        let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -12171,6 +12186,7 @@ impl SemanticModelBuilder {
             name,
             node.span.clone(),
             DeclarationFacts {
+                short_name,
                 modifiers: DeclarationModifiers {
                     ordered: node.value.multiplicity_modifiers.is_ordered(),
                     nonunique: !node.value.multiplicity_modifiers.is_unique(),
@@ -12521,15 +12537,20 @@ impl SemanticModelBuilder {
         node: &Node<ParserConstraintUsage>,
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declared_name(&node.value.name)?;
+        let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::ConstraintUsage,
             name,
             node.span.clone(),
-            // `ast::ConstraintUsage` carries no modifier, multiplicity, direction, or short name;
-            // see planning/UPSTREAM_PARSER_GAPS.md for its missing multiplicity field.
-            DeclarationFacts::none(),
+            // `ast::ConstraintUsage` carries no modifier or direction field. It does carry a
+            // `multiplicity` now; reading it is the separate step
+            // planning/UPSTREAM_PARSER_GAPS.md tracks.
+            DeclarationFacts {
+                short_name,
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -13238,6 +13259,7 @@ impl SemanticModelBuilder {
         node: &Node<ParserOccurrenceUsage>,
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declared_name(&node.value.name)?;
+        let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -13245,6 +13267,7 @@ impl SemanticModelBuilder {
             name,
             node.span.clone(),
             DeclarationFacts {
+                short_name,
                 modifiers: DeclarationModifiers {
                     event: node.value.is_event,
                     ..occurrence_prefix_modifiers(&node.value.prefix)
@@ -14539,6 +14562,83 @@ mod tests {
         let mut output = String::new();
         published.debug().write_semantic_sexpr(&mut output).unwrap();
         output
+    }
+
+    /// Every declaration kind whose parser node carries a `short_name` publishes it.
+    ///
+    /// Nine lowerings dropped the `<short>` spelling even though their nodes had the field. The
+    /// corpus never exercises these seven keywords with a short name, so `spec42-snapshot` cannot
+    /// pin them and this table is the only coverage.
+    #[test]
+    fn every_short_name_carrying_declaration_publishes_it() {
+        for (label, source, qualified_name, short_name) in [
+            (
+                "action usage",
+                "package Demo {\n\taction <a> act;\n}\n",
+                "Demo::act",
+                "a",
+            ),
+            (
+                "occurrence usage",
+                "package Demo {\n\toccurrence <o> occ;\n}\n",
+                "Demo::occ",
+                "o",
+            ),
+            (
+                "constraint usage",
+                "package Demo {\n\tconstraint <c> con;\n}\n",
+                "Demo::con",
+                "c",
+            ),
+            (
+                "ref declaration",
+                "package Demo {\n\tref <r> refUsage;\n}\n",
+                "Demo::refUsage",
+                "r",
+            ),
+            (
+                "return declaration",
+                "package Demo {\n\tcalc def C {\n\t\treturn <r> res : Boolean;\n\t}\n}\n",
+                "Demo::C::res",
+                "r",
+            ),
+            (
+                "view usage",
+                "package Demo {\n\tview <v> viewUsage;\n}\n",
+                "Demo::viewUsage",
+                "v",
+            ),
+            (
+                "subject declaration",
+                "package Demo {\n\trequirement def R {\n\t\tsubject <s> subj;\n\t}\n}\n",
+                "Demo::R::subj",
+                "s",
+            ),
+            (
+                "end declaration",
+                "package Demo {\n\tconnection def C {\n\t\tend <e> source;\n\t\tend <t> target;\n\t}\n}\n",
+                "Demo::C::source",
+                "e",
+            ),
+            (
+                "enumerated value",
+                "package Demo {\n\tenum def E {\n\t\tenum <r> red;\n\t}\n}\n",
+                "Demo::E::red",
+                "r",
+            ),
+        ] {
+            let output = build_semantic_sexpr(source);
+            let expected = format!("(qualified-name \"{qualified_name}\")");
+            let fact = format!("(short-name \"{short_name}\")");
+            let line = output
+                .lines()
+                .find(|line| line.contains(&expected) && line.contains("(declaration "))
+                .unwrap_or_else(|| panic!("no declaration for {label}, got:\n{output}"));
+            assert!(
+                line.contains(&fact),
+                "expected {label} to publish {fact}, got:\n{line}"
+            );
+        }
     }
 
     #[test]
