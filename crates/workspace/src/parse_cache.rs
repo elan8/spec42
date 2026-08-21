@@ -23,7 +23,7 @@ use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 
 use sha2::{Digest, Sha256};
-use sysml_v2_parser::next::ParsedDocument;
+use sysml_v2_parser::ParsedDocument;
 
 const MAGIC: &[u8; 4] = b"KPC\0";
 const VERSION_FIELD_LEN: usize = 20;
@@ -45,7 +45,7 @@ fn version_field() -> [u8; VERSION_FIELD_LEN] {
     let mut field = [0u8; VERSION_FIELD_LEN];
     let spec42_len = spec42.len().min(12);
     field[..spec42_len].copy_from_slice(&spec42[..spec42_len]);
-    field[12..16].copy_from_slice(&sysml_v2_parser::next::PARSE_AST_VERSION.to_le_bytes());
+    field[12..16].copy_from_slice(&sysml_v2_parser::PARSE_AST_VERSION.to_le_bytes());
     field[16..20].copy_from_slice(&PARSE_CACHE_ENCODING_VERSION.to_le_bytes());
     field
 }
@@ -103,7 +103,7 @@ pub fn store(cache_dir: &Path, hash: &[u8; 32], root: &ParsedDocument) {
 }
 
 /// Delete cache entries whose `ast_version` header does not match the current
-/// binary's [`sysml_v2_parser::next::PARSE_AST_VERSION`]. Call once at startup on a background thread.
+/// binary's [`sysml_v2_parser::PARSE_AST_VERSION`]. Call once at startup on a background thread.
 /// Non-fatal — errors are silently ignored.
 pub fn evict_stale_entries(cache_dir: &Path) {
     let Ok(entries) = std::fs::read_dir(cache_dir) else {
@@ -172,11 +172,11 @@ fn is_stale(path: &Path) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use sysml_v2_parser::next::ParsedDocument;
+    use sysml_v2_parser::ParsedDocument;
     use tempfile::tempdir;
 
     fn parse(src: &str) -> ParsedDocument {
-        sysml_v2_parser::next::parse(src).expect("parse")
+        sysml_v2_parser::parse(src).expect("parse")
     }
 
     #[test]

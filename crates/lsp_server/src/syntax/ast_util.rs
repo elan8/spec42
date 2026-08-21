@@ -1,8 +1,8 @@
 //! Helpers for working with sysml-v2-parser AST: span/range conversion and name extraction.
 
-use sysml_v2_parser::next::ast::{Identification, QualifiedIdentification};
-use sysml_v2_parser::next::ParsedDocument;
-use sysml_v2_parser::next::Span;
+use sysml_v2_parser::ast::{Identification, QualifiedIdentification};
+use sysml_v2_parser::ParsedDocument;
+use sysml_v2_parser::Span;
 use tower_lsp::lsp_types::{Position, Range};
 
 /// 0-based source range (LSP convention) for semantic tokens and range checks.
@@ -52,7 +52,7 @@ pub fn qualified_identification_name(
     document: &ParsedDocument,
     identification: &QualifiedIdentification,
 ) -> String {
-    use sysml_v2_parser::next::ast::DeclarationName;
+    use sysml_v2_parser::ast::DeclarationName;
     match identification.name.as_ref() {
         Some(DeclarationName::Simple(name)) => name.clone(),
         Some(DeclarationName::Qualified(name)) => document

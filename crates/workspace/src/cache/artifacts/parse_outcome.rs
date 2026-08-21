@@ -1,7 +1,7 @@
 //! `ParseOutcome` cache artifact.
 //!
 //! Key inputs: the raw [`ContentDigest`] of the source text; the [`ParseMode`]; the parser
-//! package/AST version (`sysml_v2_parser::next::PARSE_AST_VERSION`); the parse diagnostic schema and
+//! package/AST version (`sysml_v2_parser::PARSE_AST_VERSION`); the parse diagnostic schema and
 //! parse algorithm versions owned by this module; and any relevant parser options (there are
 //! none exposed by `sysml_v2_parser` today, but [`PARSE_OPTIONS_VERSION`] is committed into the
 //! key so that adding one later is a natural invalidation rather than a silent key collision).
@@ -22,7 +22,7 @@
 use serde::{Deserialize, Serialize};
 
 use source_identity::{ArtifactKey, CanonicalEncoder, ContentDigest};
-use sysml_v2_parser::next::{
+use sysml_v2_parser::{
     DiagnosticCategory as ParserDiagnosticCategory, DiagnosticSeverity as ParserDiagnosticSeverity,
     ParseError as ParserParseError, ParseResult as ParserParseResult, ParsedDocument,
 };
@@ -45,9 +45,9 @@ pub const PARSE_OPTIONS_VERSION: u32 = 1;
 /// The two parse entry points `sysml_v2_parser` exposes (plan §6.2).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum ParseMode {
-    /// `sysml_v2_parser::next::parse`: all-or-nothing, no AST on failure.
+    /// `sysml_v2_parser::parse`: all-or-nothing, no AST on failure.
     StrictSemantic,
-    /// `sysml_v2_parser::next::parse_for_editor`: always produces an AST, diagnostics are additive.
+    /// `sysml_v2_parser::parse_for_editor`: always produces an AST, diagnostics are additive.
     EditorRecovery,
 }
 
@@ -73,7 +73,7 @@ impl ArtifactIdentity for ParseOutcomeIdentity {
         enc.field(b"parse-outcome.v1");
         enc.field(self.content_digest.as_bytes());
         enc.field(&[self.mode.tag()]);
-        enc.field_u64(sysml_v2_parser::next::PARSE_AST_VERSION as u64);
+        enc.field_u64(sysml_v2_parser::PARSE_AST_VERSION as u64);
         enc.field_u64(PARSE_DIAGNOSTIC_SCHEMA_VERSION as u64);
         enc.field_u64(PARSE_ALGORITHM_VERSION as u64);
         enc.field_u64(PARSE_OPTIONS_VERSION as u64);
@@ -93,7 +93,7 @@ pub enum ParseStatus {
     ExpectedSyntaxFailure,
 }
 
-/// Serializable mirror of `sysml_v2_parser::next::DiagnosticSeverity`, which itself derives
+/// Serializable mirror of `sysml_v2_parser::DiagnosticSeverity`, which itself derives
 /// `Serialize`/`Deserialize` under the `serde` feature but is re-declared here so this module's
 /// on-disk payload shape does not silently change if the upstream crate's derive is dropped.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -111,7 +111,7 @@ impl From<ParserDiagnosticSeverity> for ParseDiagnosticSeverity {
     }
 }
 
-/// Serializable mirror of `sysml_v2_parser::next::DiagnosticCategory`.
+/// Serializable mirror of `sysml_v2_parser::DiagnosticCategory`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum ParseDiagnosticCategory {
     ParseError,
@@ -141,7 +141,7 @@ pub struct ParseDiagnosticRange {
     pub end_character: u32,
 }
 
-/// A complete, structured parser diagnostic (plan §6.2): every field `sysml_v2_parser::next::ParseError`
+/// A complete, structured parser diagnostic (plan §6.2): every field `sysml_v2_parser::ParseError`
 /// carries, since `ParseError` itself is not `Serialize`. This is the fix for the pre-existing
 /// bug where a warm parse-cache hit silently dropped diagnostics.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -193,7 +193,7 @@ pub struct ParseOutcome {
 }
 
 impl ParseOutcome {
-    /// Builds a [`ParseOutcome`] from a completed `sysml_v2_parser::next::parse` result. Never call
+    /// Builds a [`ParseOutcome`] from a completed `sysml_v2_parser::parse` result. Never call
     /// this with a result that represents a cancelled, panicked, or otherwise incomplete parse —
     /// there is no such state representable here by design.
     pub fn from_strict(result: &Result<ParsedDocument, ParserParseError>) -> Self {
@@ -211,7 +211,7 @@ impl ParseOutcome {
         }
     }
 
-    /// Builds a [`ParseOutcome`] from a completed `sysml_v2_parser::next::parse_for_editor` result.
+    /// Builds a [`ParseOutcome`] from a completed `sysml_v2_parser::parse_for_editor` result.
     /// `parse_for_editor` never fails outright; it always returns an AST, so `ast` is always
     /// `Some`.
     pub fn from_editor_recovery(result: &ParserParseResult) -> Self {
@@ -281,12 +281,12 @@ mod tests {
     // its size, so its `Result` is allowed to be "large" in these test-only helpers.
     #[allow(clippy::result_large_err)]
     fn strict_ok() -> Result<ParsedDocument, ParserParseError> {
-        sysml_v2_parser::next::parse("package P;")
+        sysml_v2_parser::parse("package P;")
     }
 
     #[allow(clippy::result_large_err)]
     fn strict_err() -> Result<ParsedDocument, ParserParseError> {
-        sysml_v2_parser::next::parse("package P { this is not valid sysml @@@ ")
+        sysml_v2_parser::parse("package P { this is not valid sysml @@@ ")
     }
 
     #[test]
@@ -314,7 +314,7 @@ mod tests {
     #[test]
     fn editor_recovery_retains_all_diagnostics() {
         let recovered =
-            sysml_v2_parser::next::parse_for_editor("package P { this is not valid sysml @@@ ");
+            sysml_v2_parser::parse_for_editor("package P { this is not valid sysml @@@ ");
         let outcome = ParseOutcome::from_editor_recovery(&recovered);
         assert!(
             outcome.ast.is_some(),

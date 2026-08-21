@@ -1,5 +1,5 @@
 use language_service::{document_symbols, folding_ranges, FoldingRangeKindDto, OutlineSymbol};
-use sysml_v2_parser::next::{parse, ParsedDocument};
+use sysml_v2_parser::{parse, ParsedDocument};
 
 fn multiline_outline_regions(symbols: &[OutlineSymbol]) -> Vec<(u32, u32)> {
     let mut out = Vec::new();

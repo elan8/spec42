@@ -4,7 +4,7 @@ use sysml_tokens::{
     ast_semantic_ranges, semantic_tokens_full, TYPE_CLASS, TYPE_INTERFACE, TYPE_KEYWORD,
     TYPE_PROPERTY, TYPE_TYPE,
 };
-use sysml_v2_parser::next::parse_for_editor;
+use sysml_v2_parser::parse_for_editor;
 
 fn decode_semantic_tokens(data: &[u32]) -> Vec<(u32, u32, u32, u32)> {
     let mut line: u32 = 0;

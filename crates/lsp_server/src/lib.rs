@@ -47,4 +47,3 @@ pub use views::dto::{
     TextDocumentIdentifierDto,
 };
 pub use views::{empty_feature_inspector_response, parse_sysml_feature_inspector_params};
-

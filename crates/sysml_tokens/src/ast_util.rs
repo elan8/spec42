@@ -1,7 +1,7 @@
 //! Helpers for working with sysml-v2-parser AST: span/range conversion and name extraction.
 
-use sysml_v2_parser::next::ast::Identification;
-use sysml_v2_parser::next::Span;
+use sysml_v2_parser::ast::Identification;
+use sysml_v2_parser::Span;
 
 /// Accept both legacy textual type names and parser 0.35 typed relationships.
 pub trait TypeNameRef {
@@ -315,10 +315,10 @@ pub fn push_word_token(
 ///
 /// A package name may be a qualified path, which the document's arena owns rather than the node.
 pub fn qualified_identification_name(
-    document: &sysml_v2_parser::next::ParsedDocument,
-    identification: &sysml_v2_parser::next::ast::QualifiedIdentification,
+    document: &sysml_v2_parser::ParsedDocument,
+    identification: &sysml_v2_parser::ast::QualifiedIdentification,
 ) -> String {
-    use sysml_v2_parser::next::ast::DeclarationName;
+    use sysml_v2_parser::ast::DeclarationName;
     match identification.name.as_ref() {
         Some(DeclarationName::Simple(name)) => name.clone(),
         Some(DeclarationName::Qualified(name)) => document

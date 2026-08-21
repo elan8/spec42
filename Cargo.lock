@@ -1161,7 +1161,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2",
- "spec42-sysml-parser",
+ "sysml_resolution",
  "tempfile",
  "thiserror 2.0.19",
  "walkdir",
@@ -1174,7 +1174,7 @@ version = "0.50.0"
 dependencies = [
  "serde",
  "serde_json",
- "spec42-sysml-parser",
+ "sysml-v2-parser",
  "sysml_query",
  "sysml_source",
  "tempfile",
@@ -1272,7 +1272,7 @@ dependencies = [
  "server",
  "sha2",
  "spec42-generator-protocol",
- "spec42-sysml-parser",
+ "sysml-v2-parser",
  "sysml_diagnostics",
  "sysml_query",
  "sysml_source",
@@ -1990,13 +1990,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "spec42-sysml-parser"
-version = "0.50.0"
-dependencies = [
- "sysml-v2-parser",
-]
-
-[[package]]
 name = "spin"
 version = "0.9.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2101,7 +2094,7 @@ dependencies = [
  "rayon",
  "serde",
  "source_identity",
- "spec42-sysml-parser",
+ "sysml-v2-parser",
 ]
 
 [[package]]
@@ -2117,7 +2110,7 @@ name = "sysml_tokens"
 version = "0.50.0"
 dependencies = [
  "serde",
- "spec42-sysml-parser",
+ "sysml-v2-parser",
 ]
 
 [[package]]
@@ -2970,8 +2963,8 @@ dependencies = [
  "serde_json",
  "sha2",
  "source_identity",
- "spec42-sysml-parser",
  "syn 2.0.119",
+ "sysml-v2-parser",
  "sysml_diagnostics",
  "sysml_query",
  "sysml_source",

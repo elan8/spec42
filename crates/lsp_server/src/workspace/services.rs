@@ -5,7 +5,7 @@ use crate::workspace::state::{DocumentStore, IndexEntry, ParseMetadata};
 use rayon::prelude::*;
 use std::path::Path;
 use std::time::Instant;
-use sysml_v2_parser::next::ParsedDocument;
+use sysml_v2_parser::ParsedDocument;
 use tower_lsp::lsp_types::{MessageType, TextDocumentContentChangeEvent, Url};
 
 fn elapsed_ms(start: Instant) -> u32 {

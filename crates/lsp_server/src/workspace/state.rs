@@ -1,6 +1,6 @@
 use crate::language::SymbolEntry;
 use std::sync::Arc;
-use sysml_v2_parser::next::ParsedDocument;
+use sysml_v2_parser::ParsedDocument;
 use tower_lsp::lsp_types::Url;
 use workspace_session::{
     PublishedModelSnapshot, RelinkToken, SemanticPublicationAuthority, TracksRelink,

@@ -3,7 +3,7 @@ use super::*;
 /// An arena-backed type reference, as authored.
 fn reference_text(
     document: &ParsedRoot,
-    reference: Option<sysml_v2_parser::next::QualifiedReferenceId>,
+    reference: Option<sysml_v2_parser::QualifiedReferenceId>,
 ) -> Option<String> {
     document
         .qualified_reference(reference?)
@@ -16,7 +16,7 @@ fn reference_text(
 /// without the document that owns the arena.
 fn subsetting_target<'a>(
     document: &'a ParsedRoot,
-    relationship: Option<&sysml_v2_parser::next::ast::SubsettingRelationship>,
+    relationship: Option<&sysml_v2_parser::ast::SubsettingRelationship>,
 ) -> Option<&'a str> {
     let target = relationship?.target.first().copied()?;
     document
@@ -26,7 +26,7 @@ fn subsetting_target<'a>(
 
 fn typing_target_display(
     document: &ParsedRoot,
-    relationship: Option<&sysml_v2_parser::next::ast::TypingRelationship>,
+    relationship: Option<&sysml_v2_parser::ast::TypingRelationship>,
 ) -> Option<String> {
     let target = relationship?.target.first().copied()?;
     document
@@ -35,7 +35,7 @@ fn typing_target_display(
 }
 
 pub(crate) fn collect_type_reference_targets_from_content(content: &str) -> Vec<String> {
-    let Ok(parsed) = sysml_v2_parser::next::parse(content) else {
+    let Ok(parsed) = sysml_v2_parser::parse(content) else {
         return Vec::new();
     };
     let mut out = Vec::new();
@@ -405,7 +405,7 @@ pub(crate) fn walk_metadata_usage_type_refs(
 
 fn push_optional_typing_reference(
     document: &ParsedRoot,
-    relationship: Option<&sysml_v2_parser::next::ast::TypingRelationship>,
+    relationship: Option<&sysml_v2_parser::ast::TypingRelationship>,
     out: &mut Vec<String>,
 ) {
     if let Some(target) = typing_target_display(document, relationship) {

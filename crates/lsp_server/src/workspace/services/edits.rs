@@ -36,7 +36,7 @@ pub(crate) fn apply_parsed_document_update(
     state: &mut impl DocumentStore,
     uri_norm: &Url,
     version: i32,
-    parsed_result: sysml_v2_parser::next::ParseResult,
+    parsed_result: sysml_v2_parser::ParseResult,
     _parse_time_ms: u32,
     _evaluate: bool,
 ) -> Vec<(MessageType, String)> {

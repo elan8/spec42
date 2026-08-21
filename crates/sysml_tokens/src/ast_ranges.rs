@@ -1,6 +1,6 @@
 //! AST-driven semantic token ranges: collects (SourceRange, type_index) from parsed AST.
 
-use sysml_v2_parser::next::ast::{
+use sysml_v2_parser::ast::{
     ActionDefBody, ActionDefBodyElement, ActionUsage, ActionUsageBody, ActionUsageBodyElement,
     AttributeBody, AttributeBodyElement, CalcDefBody, ConnectionDefBody, ConnectionDefBodyElement,
     ConstraintDefBody, ConstraintDefBodyElement, DefinitionBody, DefinitionBodyElement,
@@ -11,7 +11,7 @@ use sysml_v2_parser::next::ast::{
     PortDefBodyElement, RequirementDefBody, RequirementDefBodyElement, RootElement, StateDefBody,
     StateDefBodyElement, StateUsage, ThenStmt, Transition, TransitionAccept,
 };
-use sysml_v2_parser::next::{ParsedDocument, QualifiedReferenceId};
+use sysml_v2_parser::{ParsedDocument, QualifiedReferenceId};
 
 use crate::ast_util::{
     identification_name, modeled_decl_name, push_ident_definition_spans,
@@ -19,17 +19,17 @@ use crate::ast_util::{
     span_to_source_range, SourceRange,
 };
 use crate::types::*;
-use sysml_v2_parser::next::ast::{Dependency, SatisfyRequirementUsage as Satisfy};
+use sysml_v2_parser::ast::{Dependency, SatisfyRequirementUsage as Satisfy};
 
 /// The four annotating members the grammar folds into one `AnnotatingMember` production.
 ///
 /// `Doc`, `Comment` and `TextualRep` classify as ordinary comment trivia and contribute no
 /// semantic-token ranges; only a metadata annotation names elements worth highlighting.
 fn collect_semantic_ranges_annotating(
-    member: &sysml_v2_parser::next::ast::AnnotatingMember,
+    member: &sysml_v2_parser::ast::AnnotatingMember,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
-    use sysml_v2_parser::next::ast::AnnotatingMember as AM;
+    use sysml_v2_parser::ast::AnnotatingMember as AM;
     match member {
         AM::MetadataAnnotation(meta) => collect_semantic_ranges_metadata_annotation(meta, out),
         AM::Doc(_) | AM::Comment(_) | AM::TextualRep(_) => {}
@@ -40,10 +40,10 @@ fn collect_semantic_ranges_annotating(
 /// expression. The accept half keeps its own `PayloadClause` collector.
 fn collect_semantic_ranges_send_payload(
     ctx: &RangeCtx<'_>,
-    payload: &sysml_v2_parser::next::ast::SendPayload,
+    payload: &sysml_v2_parser::ast::SendPayload,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
-    use sysml_v2_parser::next::ast::SendPayload as SP;
+    use sysml_v2_parser::ast::SendPayload as SP;
     match payload {
         SP::Typed(clause) => collect_semantic_ranges_payload_clause(clause, out),
         SP::Expression(expression) => {
@@ -70,7 +70,7 @@ impl<'a> RangeCtx<'a> {
     /// cannot answer "what type is this" on its own -- it needs the document that owns the arena.
     fn typing_text(
         &self,
-        relationship: Option<&sysml_v2_parser::next::ast::TypingRelationship>,
+        relationship: Option<&sysml_v2_parser::ast::TypingRelationship>,
     ) -> Option<&'a str> {
         self.type_text(relationship?.target.first().copied())
     }
@@ -112,10 +112,10 @@ pub fn ast_semantic_ranges(document: &ParsedDocument, source: &str) -> Vec<(Sour
 
 fn collect_semantic_ranges_package_body_element(
     ctx: &RangeCtx<'_>,
-    node: &sysml_v2_parser::next::Node<PackageBodyElement>,
+    node: &sysml_v2_parser::Node<PackageBodyElement>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
-    use sysml_v2_parser::next::ast::PackageBodyElement as PBE;
+    use sysml_v2_parser::ast::PackageBodyElement as PBE;
     match &node.value {
         PBE::Package(pkg_node) => {
             let name = qualified_identification_name(ctx.document, &pkg_node.identification);
@@ -480,7 +480,7 @@ fn collect_semantic_ranges_package_body_element(
             // constants, same as `EnumerationUsage`'s own name elsewhere in this file, so give
             // them the matching token instead of leaving them accidentally uncolored.
             if let EnumerationBody::Brace { elements, .. } = &enum_node.value.body {
-                use sysml_v2_parser::next::ast::EnumerationBodyElement as EBE;
+                use sysml_v2_parser::ast::EnumerationBodyElement as EBE;
                 for element in elements {
                     match &element.value {
                         EBE::Value(value) => {
@@ -723,12 +723,12 @@ fn collect_semantic_ranges_package_body_element(
 
 fn collect_semantic_ranges_satisfy(
     ctx: &RangeCtx<'_>,
-    satisfy: &sysml_v2_parser::next::Node<Satisfy>,
+    satisfy: &sysml_v2_parser::Node<Satisfy>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
     // The production's two mutually exclusive requirement clauses: a reference to an existing
     // requirement, or an inline declaration of one. The `by` subject is a separate optional clause.
-    use sysml_v2_parser::next::ast::SatisfiedRequirement;
+    use sysml_v2_parser::ast::SatisfiedRequirement;
     match &satisfy.value.requirement {
         SatisfiedRequirement::Reference { reference } => {
             if let Some(view) = ctx.document.qualified_reference(*reference) {
@@ -757,7 +757,7 @@ fn collect_semantic_ranges_satisfy(
 
 fn collect_semantic_ranges_dependency(
     ctx: &RangeCtx<'_>,
-    dependency: &sysml_v2_parser::next::Node<Dependency>,
+    dependency: &sysml_v2_parser::Node<Dependency>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
     if let Some(ident) = &dependency.value.identification {
@@ -778,7 +778,7 @@ fn collect_semantic_ranges_dependency(
 
 fn collect_semantic_ranges_modeled_decl(
     ctx: &RangeCtx<'_>,
-    span: &sysml_v2_parser::next::Span,
+    span: &sysml_v2_parser::Span,
     keyword: &str,
     text: &str,
     token_type: u32,
@@ -891,7 +891,7 @@ fn collect_semantic_ranges_attribute_body(
 
 fn collect_semantic_ranges_metadata_keyword_usage(
     ctx: &RangeCtx<'_>,
-    node: &sysml_v2_parser::next::Node<MetadataKeywordUsage>,
+    node: &sysml_v2_parser::Node<MetadataKeywordUsage>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
     out.push((span_to_source_range(&node.value.hash_span), TYPE_PROPERTY));
@@ -901,10 +901,10 @@ fn collect_semantic_ranges_metadata_keyword_usage(
 }
 
 fn collect_semantic_ranges_metadata_annotation(
-    node: &sysml_v2_parser::next::Node<MetadataAnnotation>,
+    node: &sysml_v2_parser::Node<MetadataAnnotation>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
-    use sysml_v2_parser::next::ast::MetadataFeatureIntroducer as MFI;
+    use sysml_v2_parser::ast::MetadataFeatureIntroducer as MFI;
     let introducer = match &node.value.introducer {
         MFI::At { span } | MFI::Metadata { span } => span,
     };
@@ -957,7 +957,7 @@ fn collect_semantic_ranges_final_state(
 }
 
 fn collect_semantic_ranges_transition(
-    transition: &sysml_v2_parser::next::Node<Transition>,
+    transition: &sysml_v2_parser::Node<Transition>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
     out.push((span_to_source_range(&transition.span), TYPE_PROPERTY));
@@ -970,7 +970,7 @@ fn collect_semantic_ranges_transition(
 
 fn collect_semantic_ranges_state_def_body_element(
     ctx: &RangeCtx<'_>,
-    node: &sysml_v2_parser::next::Node<StateDefBodyElement>,
+    node: &sysml_v2_parser::Node<StateDefBodyElement>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
     use StateDefBodyElement as SDBE;
@@ -1014,7 +1014,7 @@ fn collect_semantic_ranges_state_def_body_element(
 
 fn collect_semantic_ranges_occurrence_body_element(
     ctx: &RangeCtx<'_>,
-    node: &sysml_v2_parser::next::Node<OccurrenceBodyElement>,
+    node: &sysml_v2_parser::Node<OccurrenceBodyElement>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
     use OccurrenceBodyElement as OBE;
@@ -1078,7 +1078,7 @@ fn collect_semantic_ranges_occurrence_body_element(
 }
 
 fn collect_semantic_ranges_connection_def_body_element(
-    node: &sysml_v2_parser::next::Node<ConnectionDefBodyElement>,
+    node: &sysml_v2_parser::Node<ConnectionDefBodyElement>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
     use ConnectionDefBodyElement as CDBE;
@@ -1099,10 +1099,10 @@ fn collect_semantic_ranges_connection_def_body_element(
 
 fn collect_semantic_ranges_part_def_body_element(
     ctx: &RangeCtx<'_>,
-    node: &sysml_v2_parser::next::Node<PartDefBodyElement>,
+    node: &sysml_v2_parser::Node<PartDefBodyElement>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
-    use sysml_v2_parser::next::ast::PartDefBodyElement as PDBE;
+    use sysml_v2_parser::ast::PartDefBodyElement as PDBE;
     match &node.value {
         PDBE::AttributeDef(n) => {
             push_usage_name_type_spans(
@@ -1283,10 +1283,10 @@ fn collect_semantic_ranges_part_def_body_element(
 
 fn collect_semantic_ranges_part_usage_body_element(
     ctx: &RangeCtx<'_>,
-    node: &sysml_v2_parser::next::Node<PartUsageBodyElement>,
+    node: &sysml_v2_parser::Node<PartUsageBodyElement>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
-    use sysml_v2_parser::next::ast::PartUsageBodyElement as PUBE;
+    use sysml_v2_parser::ast::PartUsageBodyElement as PUBE;
     match &node.value {
         PUBE::AttributeUsage(n) => {
             push_usage_name_type_spans(
@@ -1331,7 +1331,7 @@ fn collect_semantic_ranges_part_usage_body_element(
 }
 
 fn collect_semantic_ranges_port_usage(
-    n: &sysml_v2_parser::next::Node<sysml_v2_parser::next::ast::PortUsage>,
+    n: &sysml_v2_parser::Node<sysml_v2_parser::ast::PortUsage>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
     if let Some(ref s) = n.value.name_span {
@@ -1348,7 +1348,7 @@ fn collect_semantic_ranges_port_usage(
 }
 
 fn collect_semantic_ranges_port_body_element(
-    node: &sysml_v2_parser::next::Node<PortBodyElement>,
+    node: &sysml_v2_parser::Node<PortBodyElement>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
     use PortBodyElement as PBE;
@@ -1363,10 +1363,10 @@ fn collect_semantic_ranges_port_body_element(
 }
 
 fn collect_semantic_ranges_port_def_body_element(
-    node: &sysml_v2_parser::next::Node<PortDefBodyElement>,
+    node: &sysml_v2_parser::Node<PortDefBodyElement>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
-    use sysml_v2_parser::next::ast::PortDefBodyElement as PDBE;
+    use sysml_v2_parser::ast::PortDefBodyElement as PDBE;
     match &node.value {
         PDBE::PortUsage(n) => collect_semantic_ranges_port_usage(n, out),
         PDBE::InOutDecl(w) => {
@@ -1377,10 +1377,10 @@ fn collect_semantic_ranges_port_def_body_element(
 }
 
 fn collect_semantic_ranges_interface_def_body_element(
-    node: &sysml_v2_parser::next::Node<InterfaceDefBodyElement>,
+    node: &sysml_v2_parser::Node<InterfaceDefBodyElement>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
-    use sysml_v2_parser::next::ast::InterfaceDefBodyElement as IDBE;
+    use sysml_v2_parser::ast::InterfaceDefBodyElement as IDBE;
     match &node.value {
         IDBE::EndDecl(n) => {
             if let EndIdentity::Declaration(label) = &n.value.identity {
@@ -1428,7 +1428,7 @@ fn collect_semantic_ranges_action_usage(
 }
 
 fn collect_semantic_ranges_ref_decl(
-    node: &sysml_v2_parser::next::Node<sysml_v2_parser::next::ast::RefDecl>,
+    node: &sysml_v2_parser::Node<sysml_v2_parser::ast::RefDecl>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
     let value = &node.value;
@@ -1444,7 +1444,7 @@ fn collect_semantic_ranges_ref_decl(
 
 fn collect_semantic_ranges_state_usage(
     ctx: &RangeCtx<'_>,
-    node: &sysml_v2_parser::next::Node<StateUsage>,
+    node: &sysml_v2_parser::Node<StateUsage>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
     push_usage_name_type_spans(
@@ -1465,7 +1465,7 @@ fn collect_semantic_ranges_state_usage(
 
 fn collect_semantic_ranges_requirement_def_body_element(
     ctx: &RangeCtx<'_>,
-    node: &sysml_v2_parser::next::Node<RequirementDefBodyElement>,
+    node: &sysml_v2_parser::Node<RequirementDefBodyElement>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
     use RequirementDefBodyElement as RDBE;
@@ -1598,7 +1598,7 @@ fn collect_semantic_ranges_requirement_def_body_element(
 
 fn collect_semantic_ranges_action_def_body_element(
     ctx: &RangeCtx<'_>,
-    node: &sysml_v2_parser::next::Node<ActionDefBodyElement>,
+    node: &sysml_v2_parser::Node<ActionDefBodyElement>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
     use ActionDefBodyElement as ADBE;
@@ -1608,8 +1608,7 @@ fn collect_semantic_ranges_action_def_body_element(
         ADBE::ThenAction(then_action) => {
             // `then merge <name>;`/`then <name>;` (§6 G23) aren't action-usage declarations --
             // nothing to highlight beyond what's already emitted for the enclosing statement.
-            if let sysml_v2_parser::next::ast::ThenTarget::Action(action_node) =
-                &then_action.value.target
+            if let sysml_v2_parser::ast::ThenTarget::Action(action_node) = &then_action.value.target
             {
                 collect_semantic_ranges_action_usage(ctx, &action_node.value, out);
             }
@@ -1690,17 +1689,16 @@ fn collect_semantic_ranges_action_def_body_element(
 
 fn collect_semantic_ranges_action_usage_body_element(
     ctx: &RangeCtx<'_>,
-    node: &sysml_v2_parser::next::Node<ActionUsageBodyElement>,
+    node: &sysml_v2_parser::Node<ActionUsageBodyElement>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
-    use sysml_v2_parser::next::ast::ActionUsageBodyElement as AUBE;
+    use sysml_v2_parser::ast::ActionUsageBodyElement as AUBE;
     match &node.value {
         AUBE::InOutDecl(in_out) => out.push((span_to_source_range(&in_out.span), TYPE_PROPERTY)),
         AUBE::ActionUsage(usage) => collect_semantic_ranges_action_usage(ctx, usage.as_ref(), out),
         AUBE::ThenAction(then_action) => {
             // See ADBE::ThenAction above.
-            if let sysml_v2_parser::next::ast::ThenTarget::Action(action_node) =
-                &then_action.value.target
+            if let sysml_v2_parser::ast::ThenTarget::Action(action_node) = &then_action.value.target
             {
                 collect_semantic_ranges_action_usage(ctx, &action_node.value, out);
             }

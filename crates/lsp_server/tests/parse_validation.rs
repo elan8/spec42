@@ -32,7 +32,7 @@ fn parse_clean_fixture_path() -> PathBuf {
 fn parse_with_diagnostics_clean_fixture_has_no_errors() {
     let path = parse_clean_fixture_path();
     let content = std::fs::read_to_string(&path).expect("read parse_clean.sysml");
-    let result = sysml_v2_parser::next::parse_with_diagnostics(&content);
+    let result = sysml_v2_parser::parse_with_diagnostics(&content);
 
     if !result.errors.is_empty() {
         eprintln!(
@@ -85,7 +85,7 @@ fn parse_with_diagnostics_invalid_returns_errors() {
     ];
     let mut any_has_errors = false;
     for content in invalid_inputs {
-        let result = sysml_v2_parser::next::parse_with_diagnostics(content);
+        let result = sysml_v2_parser::parse_with_diagnostics(content);
         if !result.errors.is_empty() {
             any_has_errors = true;
             break;
@@ -106,7 +106,7 @@ fn parse_with_diagnostics_common_invalid_inputs_have_codes_and_ranges() {
     ];
 
     for (label, content) in invalid_inputs {
-        let result = sysml_v2_parser::next::parse_with_diagnostics(content);
+        let result = sysml_v2_parser::parse_with_diagnostics(content);
         assert!(
             !result.errors.is_empty(),
             "{label}: expected at least one parser diagnostic"

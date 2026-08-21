@@ -1,7 +1,7 @@
 //! Neutral quick-fix text edit suggesters.
 
 use sysml_query::resolved_slice::{PublishedModel, TextPosition, TextRange};
-use sysml_v2_parser::next::ast::{PackageBody, RootElement};
+use sysml_v2_parser::ast::{PackageBody, RootElement};
 use url::Url;
 
 use crate::dto::{TextEditDto, TextEditSuggestion};
@@ -629,7 +629,7 @@ fn suggest_create_usage_from_definition_impl(
 }
 
 pub fn suggest_wrap_in_package(source: &str, path: &str) -> Option<TextEditSuggestion> {
-    let root = sysml_v2_parser::next::parse(source).ok()?;
+    let root = sysml_v2_parser::parse(source).ok()?;
     let packages: Vec<_> = root
         .elements
         .iter()

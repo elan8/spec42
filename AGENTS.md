@@ -127,6 +127,11 @@ copy or extend them, but do not broaden an unrelated change solely to remove the
   pipeline; regenerate and review its checked-in snapshots for pipeline behavior changes.
 - Specification and conformance claims require traceable normative evidence plus executable tests.
   Unsupported coverage stays visible; it does not disappear behind omission or optimistic labels.
+- Encode each researched KerML or SysML validation rule in the snapshot corpus with conforming and
+  violating source examples, explicit specification document and clause metadata, and an authored
+  `EXPECTED DIAGNOSTICS` assertion. If the canonical compiler does not yet satisfy that assertion,
+  use `skip_validation` with a concrete reason so the case remains visible as `SKIPPED`; remove the
+  skip when it becomes stale. The snapshot-tool README owns the fixture syntax and skip semantics.
 - For behavior changes and bug fixes, add the narrowest regression test at the owning layer, then
   verify affected consumers. Test both sides of the rule as appropriate: accepted/rejected,
   resolved/unresolved, same/cross source, full/incremental, cold/warm, or current/superseded. A pure

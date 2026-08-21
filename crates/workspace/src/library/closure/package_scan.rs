@@ -1,5 +1,5 @@
 use super::*;
-use sysml_v2_parser::next::ParsedDocument;
+use sysml_v2_parser::ParsedDocument;
 
 pub(crate) struct PackageIndex {
     pub(crate) packages: HashMap<PackageKey, Vec<IndexedFile>>,
@@ -174,7 +174,7 @@ pub fn declared_packages_from_parsed(parsed: &ParsedRoot) -> HashSet<String> {
 
 /// Qualified names of packages declared in SysML source (includes nested packages).
 pub fn declared_packages_in_content(content: &str) -> HashSet<String> {
-    let Ok(parsed) = sysml_v2_parser::next::parse(content) else {
+    let Ok(parsed) = sysml_v2_parser::parse(content) else {
         return HashSet::new();
     };
     declared_packages_from_parsed(&parsed)
@@ -203,7 +203,7 @@ pub(crate) fn for_each_package_in_content(
     content: &str,
     mut visit: impl FnMut(&ParsedDocument, String, &PackageBody),
 ) {
-    let Ok(parsed) = sysml_v2_parser::next::parse(content) else {
+    let Ok(parsed) = sysml_v2_parser::parse(content) else {
         return;
     };
     for_each_package_in_parsed(&parsed, |qualified, body| visit(&parsed, qualified, body));
@@ -389,7 +389,7 @@ pub(crate) fn enqueue_imports_from_workspace_package(
 }
 
 pub(crate) fn collect_import_targets_from_content(content: &str) -> Vec<String> {
-    let Ok(parsed) = sysml_v2_parser::next::parse(content) else {
+    let Ok(parsed) = sysml_v2_parser::parse(content) else {
         return Vec::new();
     };
     let mut out = Vec::new();
@@ -459,7 +459,7 @@ pub(crate) fn push_import_target(
     }
     // The arena owns the qualified name; the `::*` / `::**` suffix is the *shape* of the import,
     // not part of the name. The seed key spells the authored form, so reattach it.
-    use sysml_v2_parser::next::ast::ImportShape;
+    use sysml_v2_parser::ast::ImportShape;
     let suffix = match &import.value.target.shape {
         ImportShape::Membership {
             recursive_suffix: Some(_),

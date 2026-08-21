@@ -247,7 +247,7 @@ pub fn semantic_tokens_full(
 /// classification when the AST contributes no ranges.
 #[must_use]
 pub fn semantic_tokens_for_text(text: &str) -> SemanticTokensDto {
-    let parsed = sysml_v2_parser::next::parse_for_editor(text);
+    let parsed = sysml_v2_parser::parse_for_editor(text);
     let ranges = ast_semantic_ranges(&parsed.document, text);
     let (dto, _) = if ranges.is_empty() {
         semantic_tokens_full(text, None)

@@ -1,8 +1,8 @@
 //! Syntax-fidelity helpers owned by the language service.
 
 use sysml_query::resolved_slice::{TextPosition, TextRange};
-use sysml_v2_parser::next::ast::{Identification, QualifiedIdentification, Span};
-use sysml_v2_parser::next::ParsedDocument;
+use sysml_v2_parser::ast::{Identification, QualifiedIdentification, Span};
+use sysml_v2_parser::ParsedDocument;
 
 pub(crate) fn span_to_range(span: &Span) -> TextRange {
     let (start_line, start_character, end_line, end_character) = span.to_lsp_range();
@@ -31,7 +31,7 @@ pub(crate) fn qualified_identification_name(
     document: &ParsedDocument,
     identification: &QualifiedIdentification,
 ) -> String {
-    use sysml_v2_parser::next::ast::DeclarationName;
+    use sysml_v2_parser::ast::DeclarationName;
     match identification.name.as_ref() {
         Some(DeclarationName::Simple(name)) => name.clone(),
         Some(DeclarationName::Qualified(name)) => document

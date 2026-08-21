@@ -7,7 +7,7 @@ use sysml_tokens::{
     ast_semantic_ranges, semantic_tokens_full, TYPE_CLASS, TYPE_FUNCTION, TYPE_KEYWORD,
     TYPE_PROPERTY, TYPE_TYPE,
 };
-use sysml_v2_parser::next::parse_for_editor;
+use sysml_v2_parser::parse_for_editor;
 
 fn fixture_path(relative: &str) -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR"))

@@ -256,7 +256,10 @@ fn main() -> Result<(), String> {
     let mut skipped = Vec::new();
     for result in results {
         match result.result {
-            Ok(FixtureOutcome { updated, validation_skip }) => {
+            Ok(FixtureOutcome {
+                updated,
+                validation_skip,
+            }) => {
                 if let Some(reason) = validation_skip {
                     skipped.push((result.path.clone(), reason));
                 }
@@ -1766,6 +1769,59 @@ mod tests {
             let error = parse_fixture_meta(&fixture, "fixture.md").unwrap_err();
             assert!(error.contains(expected), "unexpected error: {error}");
         }
+    }
+
+    #[test]
+    fn expected_diagnostics_are_authored_exact_assertions_with_self_expiring_skips() {
+        let fixture = "# EXPECTED DIAGNOSTICS\n~~~sexpr\n(diagnostics expected)\n~~~\n";
+        assert_eq!(
+            check_expected_diagnostics(fixture, "(diagnostics expected)\n", None, "fixture.md")
+                .unwrap(),
+            None
+        );
+        assert!(
+            check_expected_diagnostics(fixture, "(diagnostics actual)", None, "fixture.md")
+                .unwrap_err()
+                .contains("do not match")
+        );
+        assert_eq!(
+            check_expected_diagnostics(
+                fixture,
+                "(diagnostics actual)",
+                Some("rule is not implemented"),
+                "fixture.md"
+            )
+            .unwrap(),
+            Some("rule is not implemented".to_string())
+        );
+        assert!(check_expected_diagnostics(
+            fixture,
+            "(diagnostics expected)",
+            Some("stale skip"),
+            "fixture.md"
+        )
+        .unwrap_err()
+        .contains("remove META skip_validation"));
+    }
+
+    #[test]
+    fn validation_skip_requires_an_expectation_and_a_reason() {
+        let fixture = "# META\n~~~ini\nskip_validation=not implemented\n~~~\n";
+        let meta = parse_fixture_meta(fixture, "fixture.md").unwrap();
+        assert_eq!(meta.skip_validation.as_deref(), Some("not implemented"));
+        assert!(check_expected_diagnostics(
+            fixture,
+            "(fixture-diagnostics)",
+            meta.skip_validation.as_deref(),
+            "fixture.md"
+        )
+        .unwrap_err()
+        .contains("requires an EXPECTED DIAGNOSTICS section"));
+
+        let empty = "# META\n~~~ini\nskip_validation=\n~~~\n";
+        assert!(parse_fixture_meta(empty, "fixture.md")
+            .unwrap_err()
+            .contains("non-empty reason"));
     }
 
     #[test]

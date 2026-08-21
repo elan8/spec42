@@ -1,10 +1,10 @@
 //! Document outline and folding ranges from parsed AST.
 
-use sysml_v2_parser::next::ast::{
+use sysml_v2_parser::ast::{
     PackageBody, PackageBodyElement, PartDefBody, PartDefBodyElement, PartUsageBody,
     PartUsageBodyElement, PortDefBody, PortDefBodyElement, RootElement,
 };
-use sysml_v2_parser::next::ParsedDocument;
+use sysml_v2_parser::ParsedDocument;
 
 use crate::dto::{FoldingRangeDto, FoldingRangeKindDto, OutlineSymbol};
 use crate::syntax::{identification_name, qualified_identification_name, span_to_range};
@@ -175,9 +175,9 @@ fn sanitize_identifier(s: &str) -> String {
 
 fn outline_symbol_from_element(
     document: &ParsedDocument,
-    node: &sysml_v2_parser::next::Node<PackageBodyElement>,
+    node: &sysml_v2_parser::Node<PackageBodyElement>,
 ) -> Option<OutlineSymbol> {
-    use sysml_v2_parser::next::ast::PackageBodyElement as PBE;
+    use sysml_v2_parser::ast::PackageBodyElement as PBE;
     let range = span_to_range(&node.span);
     match &node.value {
         PBE::Package(p) => {
@@ -411,11 +411,11 @@ fn outline_symbol_from_element(
 }
 
 fn outline_symbols_from_part_def_body(
-    elements: &[sysml_v2_parser::next::Node<PartDefBodyElement>],
+    elements: &[sysml_v2_parser::Node<PartDefBodyElement>],
 ) -> Vec<OutlineSymbol> {
     let mut out = Vec::new();
     for node in elements {
-        use sysml_v2_parser::next::ast::PartDefBodyElement as PDBE;
+        use sysml_v2_parser::ast::PartDefBodyElement as PDBE;
         let range = span_to_range(&node.span);
         match &node.value {
             PDBE::AttributeDef(n) => out.push(OutlineSymbol {
@@ -439,11 +439,11 @@ fn outline_symbols_from_part_def_body(
 }
 
 fn outline_symbols_from_part_usage_body(
-    elements: &[sysml_v2_parser::next::Node<PartUsageBodyElement>],
+    elements: &[sysml_v2_parser::Node<PartUsageBodyElement>],
 ) -> Vec<OutlineSymbol> {
     let mut out = Vec::new();
     for node in elements {
-        use sysml_v2_parser::next::ast::PartUsageBodyElement as PUBE;
+        use sysml_v2_parser::ast::PartUsageBodyElement as PUBE;
         let range = span_to_range(&node.span);
         match &node.value {
             PUBE::AttributeUsage(n) => out.push(OutlineSymbol {
@@ -489,11 +489,11 @@ fn outline_symbols_from_part_usage_body(
 }
 
 fn outline_symbols_from_port_def_body(
-    elements: &[sysml_v2_parser::next::Node<PortDefBodyElement>],
+    elements: &[sysml_v2_parser::Node<PortDefBodyElement>],
 ) -> Vec<OutlineSymbol> {
     let mut out = Vec::new();
     for node in elements {
-        use sysml_v2_parser::next::ast::PortDefBodyElement as PDBE;
+        use sysml_v2_parser::ast::PortDefBodyElement as PDBE;
         let range = span_to_range(&node.span);
         if let PDBE::PortUsage(n) = &node.value {
             out.push(OutlineSymbol {

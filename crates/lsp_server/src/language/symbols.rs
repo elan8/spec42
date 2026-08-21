@@ -8,11 +8,11 @@ use language_service::{
     document_symbols as ls_document_symbols, folding_ranges as ls_folding_ranges, OutlineSymbol,
 };
 #[cfg(test)]
-use sysml_v2_parser::next::ast::{
+use sysml_v2_parser::ast::{
     PackageBody, PackageBodyElement, PartDefBody, PartDefBodyElement, PartUsageBody,
     PartUsageBodyElement, RootElement,
 };
-use sysml_v2_parser::next::ParsedDocument;
+use sysml_v2_parser::ParsedDocument;
 use tower_lsp::lsp_types::{
     DocumentSymbol, FoldingRange, FoldingRangeKind, Range, SymbolKind, Url,
 };
@@ -191,10 +191,10 @@ pub fn collect_named_elements(root: &ParsedDocument) -> Vec<(String, String)> {
 #[cfg(test)]
 fn collect_named_from_element(
     document: &ParsedDocument,
-    node: &sysml_v2_parser::next::Node<PackageBodyElement>,
+    node: &sysml_v2_parser::Node<PackageBodyElement>,
     out: &mut Vec<(String, String)>,
 ) {
-    use sysml_v2_parser::next::ast::PackageBodyElement as PBE;
+    use sysml_v2_parser::ast::PackageBodyElement as PBE;
     match &node.value {
         PBE::Package(p) => {
             let name = qualified_identification_name(document, &p.identification);
@@ -305,10 +305,10 @@ fn collect_named_from_element(
 
 #[cfg(test)]
 fn collect_named_from_part_def_body(
-    node: &sysml_v2_parser::next::Node<PartDefBodyElement>,
+    node: &sysml_v2_parser::Node<PartDefBodyElement>,
     out: &mut Vec<(String, String)>,
 ) {
-    use sysml_v2_parser::next::ast::PartDefBodyElement as PDBE;
+    use sysml_v2_parser::ast::PartDefBodyElement as PDBE;
     match &node.value {
         PDBE::AttributeDef(n) => out.push((n.name.clone(), format!("attribute def '{}'", n.name))),
         PDBE::PortUsage(n) => out.push((n.name.clone(), format!("port usage '{}'", n.name))),
@@ -318,10 +318,10 @@ fn collect_named_from_part_def_body(
 
 #[cfg(test)]
 fn collect_named_from_part_usage_body(
-    node: &sysml_v2_parser::next::Node<PartUsageBodyElement>,
+    node: &sysml_v2_parser::Node<PartUsageBodyElement>,
     out: &mut Vec<(String, String)>,
 ) {
-    use sysml_v2_parser::next::ast::PartUsageBodyElement as PUBE;
+    use sysml_v2_parser::ast::PartUsageBodyElement as PUBE;
     match &node.value {
         PUBE::AttributeUsage(n) => out.push((n.name.clone(), format!("attribute '{}'", n.name))),
         PUBE::PartUsage(n) => {
