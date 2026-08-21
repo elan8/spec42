@@ -139,10 +139,10 @@ package 'Time Constraints' {
         (range (start 28 52) (end 28 63))
       )
       (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "parser")
-        (range (start 34 2) (end 35 1))
+        (severity warning)
+        (code "unsupported_state_definition_member")
+        (source "semantic")
+        (range (start 34 2) (end 34 50))
       )
     )
   )
@@ -151,7 +151,7 @@ package 'Time Constraints' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:0162c5a148ec814d505bd1d3f39a960a673b833c10a6374b970ca83ff1c66f1d") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:0162c5a148ec814d505bd1d3f39a960a673b833c10a6374b970ca83ff1c66f1d") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/31_time_constraints.md") (path (named (kind package) (name "Time Constraints")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ISQ::TemperatureValue") (import (shape membership) (recursive false))))))

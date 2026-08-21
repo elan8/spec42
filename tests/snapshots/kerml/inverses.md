@@ -28,6 +28,12 @@ package Inverses {
     (diagnostics
       (diagnostic
         (severity warning)
+        (code "unsupported_calc_definition_member")
+        (source "semantic")
+        (range (start 2 16) (end 2 31))
+      )
+      (diagnostic
+        (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
         (range (start 10 1) (end 10 22))
@@ -40,15 +46,15 @@ package Inverses {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 13 1) (end 13 46))
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 13 16) (end 13 29))
       )
       (diagnostic
         (severity warning)
         (code "unsupported_package_member")
         (source "semantic")
-        (range (start 13 1) (end 13 46))
+        (range (start 13 30) (end 13 45))
       )
     )
   )
@@ -57,7 +63,7 @@ package Inverses {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:9b8082649edd57d5c889bad34e80d0ba66845a57081bcb129570c18006dcadd4") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:9b8082649edd57d5c889bad34e80d0ba66845a57081bcb129570c18006dcadd4") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::A"))) (kind class-def) (membership (kind owning) (visibility default)))
@@ -65,6 +71,7 @@ package Inverses {
     (declaration (id (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::A::h"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "B")))))
     (declaration (id (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::B"))) (kind class-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::B::g"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "A")))))
+    (declaration (id (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::gg"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "A")))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::A::f"))) (kind featureTyping) (ordinal 0))
@@ -79,12 +86,16 @@ package Inverses {
     (reference (id (source (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::B::g"))) (kind featureTyping) (ordinal 0))
       (authored-target "A")
       (outcome (status resolved) (target (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::A")))))
+    (reference (id (source (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::gg"))) (kind featureTyping) (ordinal 0))
+      (authored-target "A")
+      (outcome (status resolved) (target (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::A")))))
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::A::f"))) (target (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::B"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::A::f"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind disjoining) (source (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::A::f"))) (target (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::A::h"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::A::f"))) (kind disjoining) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::A::h"))) (target (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::B"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::A::h"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::B::g"))) (target (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::A"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::B::g"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::gg"))) (target (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::A"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::gg"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )
@@ -95,6 +106,7 @@ package Inverses {
 (types
     (declaration (id (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::A")))
       (subtype (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::B::g")) (scopes any))
+      (subtype (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::gg")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::A::f")))
       (featured-by (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::A")))
@@ -115,6 +127,11 @@ package Inverses {
     )
     (declaration (id (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::B::g")))
       (featured-by (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::B")))
+      (type (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::A")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::A")) (source direct))
+      (supertype (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::A")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::gg")))
       (type (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::A")) (provenance authored))
       (effective-type (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::A")) (source direct))
       (supertype (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::A")) (scopes any))
@@ -141,6 +158,11 @@ package Inverses {
   )
   (query (document "memory://snapshot/inverses.md") (range (start 7 14) (end 7 15)) (probe (position 7 14))
     (reference (id (source (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::B::g"))) (kind featureTyping) (ordinal 0) (authored-target "A")
+      (outcome (status resolved) (target (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::A")))))
+    )
+  )
+  (query (document "memory://snapshot/inverses.md") (range (start 13 14) (end 13 15)) (probe (position 13 14))
+    (reference (id (source (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::gg"))) (kind featureTyping) (ordinal 0) (authored-target "A")
       (outcome (status resolved) (target (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::A")))))
     )
   )

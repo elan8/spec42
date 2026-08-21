@@ -1,9 +1,9 @@
 # META
 ~~~ini
-description=KerML 8.3.3.3.1 forbids an end feature from having a direction
+description=KerML 8.3.3.3.4 validateFeatureEndNoDirection forbids a Feature with isEnd = true from having a direction
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
-validation_rule=8.3.3.3.1
+validation_rule=8.3.3.3.4 validateFeatureEndNoDirection
 type=file
 skip_validation=parser gap 59 cannot represent an authored directed end feature
 ~~~

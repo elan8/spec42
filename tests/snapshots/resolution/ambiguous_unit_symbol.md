@@ -47,7 +47,7 @@ package Ambiguity {
   (declarations
     (declaration (id (node (document "memory://snapshot/ambiguous_unit_symbol.md") (qualified-name "Ambiguity"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/ambiguous_unit_symbol.md") (qualified-name "Ambiguity::Local"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/ambiguous_unit_symbol.md") (qualified-name "Ambiguity::Local::kilogramme"))) (kind attribute-def) (membership (kind owning) (visibility default)) (facts (short-name "kg")) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "ISQ::MassUnit")))))
+    (declaration (id (node (document "memory://snapshot/ambiguous_unit_symbol.md") (qualified-name "Ambiguity::Local::kilogramme"))) (kind attribute) (membership (kind feature) (visibility default)) (facts (short-name "kg")) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ISQ::MassUnit")))))
     (declaration (id (node (document "memory://snapshot/ambiguous_unit_symbol.md") (qualified-name "Ambiguity::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/ambiguous_unit_symbol.md") (qualified-name "Ambiguity::Vehicle::mass"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ISQ::MassValue")))))
   )

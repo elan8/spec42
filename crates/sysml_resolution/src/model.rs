@@ -27,6 +27,8 @@ use sysml_v2_parser::{
         CalcDefBody, CalcDefBodyElement, CalcUsage as ParserCalcUsage, CaseDef, CaseReturnDecl,
         CaseUsage as ParserCaseUsage, CommentAnnotation, ConcernUsage as ParserConcernUsage,
         ConnectStmt, ConnectionDef, ConnectionDefBody, ConnectionDefBodyElement, ConnectionEnd,
+        ControlNodeDeclaration, FeatureRelationshipPart, SequenceExpressionList,
+        VariantUsageForm,
         ConnectionUsageMember as ParserConnectionUsage, ConstraintDef, ConstraintDefBody,
         ConstraintDefBodyElement, ConstraintUsage as ParserConstraintUsage, DefaultReferenceUsage,
         DefinitionBody, DefinitionBodyElement, DefinitionPrefix, Dependency, DoAction, DocComment,
@@ -1204,26 +1206,6 @@ pub(crate) enum ReferenceKind {
     /// itself an invocation result -- is out of scope and left unresolved by `lower_invocation_
     /// callee`.
     InvocationCallee,
-    /// The required `decide` operand of a `decide <expr>;` control node (BNF `DecisionStmt.
-    /// decide`), resolved through the same `DeclarationDomain::Any` lexical lookup as
-    /// `Succession`/`TransitionSource`: the decision input can be any owned sibling action
-    /// feature, not just a Type. Sourced at an anonymous `DeclarationKind::Decide` feature owned
-    /// by the enclosing action def/usage declaration, mirroring `Transition`'s nested-declaration
-    /// shape. Only a simple/qualified name (`Expression::FeatureRef`) or a dotted feature-chain
-    /// (`Expression::MemberAccess`, via `MemberAccessOperand`) is resolved.
-    DecisionInput,
-    /// The required `merge` operand of a `merge <expr>;` control node (BNF `MergeStmt.merge`),
-    /// same shape and scope as `DecisionInput`, sourced at an anonymous
-    /// `DeclarationKind::Merge` feature.
-    MergeInput,
-    /// The required `fork` operand of a `fork <expr>;` control node (BNF `ForkStmt.fork`), same
-    /// shape and scope as `DecisionInput`, sourced at an anonymous `DeclarationKind::Fork`
-    /// feature.
-    ForkInput,
-    /// The required `join` operand of a `join <expr>;` control node (BNF `JoinStmt.join`), same
-    /// shape and scope as `DecisionInput`, sourced at an anonymous `DeclarationKind::Join`
-    /// feature.
-    JoinInput,
     /// The target of a bare `then <target>;` continuation statement (BNF `ThenAction`,
     /// `ThenTarget::Feature`) found in an action def/usage body -- a reference to an
     /// already-declared sibling control-flow node (an action, decide/merge/fork/join node, or the
@@ -1749,61 +1731,88 @@ fn fold_unary(op: &UnaryOperator, value: EvaluatedValue) -> EvaluatedValue {
     }
 }
 
-fn literal_expression_value(node: &Expression) -> Option<EvaluatedValue> {
+fn literal_expression_value(parsed: &ParsedDocument, node: &Expression) -> Option<EvaluatedValue> {
     match node {
         Expression::LiteralBoolean(value) => Some(EvaluatedValue::Boolean(*value)),
         Expression::LiteralInteger(value) => Some(EvaluatedValue::Integer(*value)),
         Expression::LiteralReal(text) => text.parse::<f64>().ok().map(EvaluatedValue::Real),
         Expression::LiteralString(value) => Some(EvaluatedValue::String(value.clone())),
-        Expression::LiteralWithUnit { value, unit } => {
-            let magnitude = literal_expression_value(&value.value)?;
-            let unit_text = quantity_unit_text(&unit.value)?;
+        Expression::Bracket { base, operands, .. } => {
+            let magnitude = literal_expression_value(parsed, &base.value)?;
+            let unit_text = quantity_unit_text(parsed, &operands.value)?;
             Some(EvaluatedValue::Quantity(Box::new(magnitude), unit_text))
         }
         _ => None,
     }
 }
 
-/// Extracts the raw unit token text authored inside `[...]` for a `value [unit]` quantity literal
-/// (`Expression::LiteralWithUnit`). The parser wraps the token as `Expression::Bracket(Box<
-/// Expression::Unit(String)>)` (see `sysml_v2_parser::ast::core::Expression::Unit`'s doc
-/// comment: "Units may contain operators such as `/` and `^`, so they are not qualified
-/// references"), i.e. the unit is captured as free text, never as a `QualifiedReferenceId` that
-/// could participate in lexical name resolution -- `kg`/`SI::s`/`m/s^2` are all just opaque
-/// strings at this layer, not resolved declaration references. `None` defensively covers any
-/// other shape (unreachable via `literal_with_unit` in the parser today, but this stays a private
-/// helper feeding an `Option`-returning classifier, so a mismatched shape falls through to
-/// `Unsupported`/`NonConstant` rather than panicking).
-fn quantity_unit_text(node: &Expression) -> Option<String> {
-    match node {
-        Expression::Bracket(inner) => quantity_unit_text(&inner.value),
-        Expression::Unit(text) => Some(text.clone()),
-        _ => None,
+/// The unit identity authored inside `[...]` for a `value [unit]` quantity literal.
+///
+/// The pinned parser models `27316[K]` as `Expression::Bracket`, whose operands are ordinary
+/// typed expressions rather than a copied unit string: a unit-looking `SI::mm` stays a
+/// source-backed qualified reference. This reads that reference's decoded segments, so the unit
+/// identity comes from the arena rather than from re-serializing source text. Any other operand
+/// shape -- a computed unit such as `N * m`, or a multi-operand list -- returns `None`, so the
+/// caller falls through to `NonConstant`/`Unsupported` exactly as before rather than inventing a
+/// unit.
+fn quantity_unit_text(parsed: &ParsedDocument, operands: &SequenceExpressionList) -> Option<String> {
+    let [element] = operands.elements.as_slice() else {
+        return None;
+    };
+    let (Expression::FeatureRef(target) | Expression::FeatureChainRef(target)) =
+        &element.expression.value
+    else {
+        return None;
+    };
+    let reference = parsed.qualified_reference(*target)?;
+    let mut text = String::new();
+    for index in 0..reference.segments.len() {
+        if index > 0 {
+            text.push_str("::");
+        }
+        text.push_str(reference.segment_decoded_text(index)?.as_ref());
     }
+    Some(text)
 }
 
 /// Recursively builds the `EvalNode` mirror for a constraint-body expression, threading an
 /// operand-ordinal counter that increments exactly where `lower_constraint_expression` would push
 /// an `ExpressionOperand` reference, so the two traversals stay index-aligned. Returns `None` for
 /// any shape `lower_constraint_expression` does not recognize (`Unsupported`).
-fn classify_constraint_node(node: &Expression, ordinal: &mut u32) -> Option<EvalNode> {
+fn classify_constraint_node(
+    parsed: &ParsedDocument,
+    node: &Expression,
+    ordinal: &mut u32,
+) -> Option<EvalNode> {
     match node {
         Expression::LiteralInteger(_)
         | Expression::LiteralReal(_)
         | Expression::LiteralBoolean(_)
         | Expression::LiteralString(_)
-        | Expression::LiteralWithUnit { .. } => {
-            literal_expression_value(node).map(EvalNode::Literal)
+        | Expression::Bracket { .. } => {
+            literal_expression_value(parsed, node).map(EvalNode::Literal)
         }
         Expression::FeatureRef(_) | Expression::FeatureChainRef(_) => {
             let leaf = EvalNode::Operand(*ordinal);
             *ordinal += 1;
             Some(leaf)
         }
-        Expression::Parenthesized(inner) => classify_constraint_node(&inner.value, ordinal),
+        Expression::Sequence { operands, .. } => {
+            // A singleton sequence is the grouping spelling the old `Parenthesized` variant
+            // carried; a multi-element one is the tuple spelling. Both are one production now.
+            let elements = &operands.value.elements;
+            if let [only] = elements.as_slice() {
+                return classify_constraint_node(parsed, &only.expression.value, ordinal);
+            }
+            let mut children = Vec::with_capacity(elements.len());
+            for element in elements {
+                children.push(classify_constraint_node(parsed, &element.expression.value, ordinal)?);
+            }
+            Some(EvalNode::Invocation(children))
+        }
         Expression::BinaryOp { op, left, right } if is_comparison_operator(op) => {
-            let left = classify_constraint_node(&left.value, ordinal)?;
-            let right = classify_constraint_node(&right.value, ordinal)?;
+            let left = classify_constraint_node(parsed, &left.value, ordinal)?;
+            let right = classify_constraint_node(parsed, &right.value, ordinal)?;
             Some(EvalNode::Comparison(
                 op.clone(),
                 Box::new(left),
@@ -1811,8 +1820,8 @@ fn classify_constraint_node(node: &Expression, ordinal: &mut u32) -> Option<Eval
             ))
         }
         Expression::BinaryOp { op, left, right } if is_arithmetic_operator(op) => {
-            let left = classify_constraint_node(&left.value, ordinal)?;
-            let right = classify_constraint_node(&right.value, ordinal)?;
+            let left = classify_constraint_node(parsed, &left.value, ordinal)?;
+            let right = classify_constraint_node(parsed, &right.value, ordinal)?;
             Some(EvalNode::Arithmetic(
                 op.clone(),
                 Box::new(left),
@@ -1820,8 +1829,8 @@ fn classify_constraint_node(node: &Expression, ordinal: &mut u32) -> Option<Eval
             ))
         }
         Expression::BinaryOp { op, left, right } if is_logical_operator(op) => {
-            let left = classify_constraint_node(&left.value, ordinal)?;
-            let right = classify_constraint_node(&right.value, ordinal)?;
+            let left = classify_constraint_node(parsed, &left.value, ordinal)?;
+            let right = classify_constraint_node(parsed, &right.value, ordinal)?;
             Some(EvalNode::Logical(
                 op.clone(),
                 Box::new(left),
@@ -1831,45 +1840,38 @@ fn classify_constraint_node(node: &Expression, ordinal: &mut u32) -> Option<Eval
         Expression::Invocation { args, .. } => {
             let mut children = Vec::with_capacity(args.len());
             for arg in args {
-                children.push(classify_constraint_node(&arg.value, ordinal)?);
+                children.push(classify_constraint_node(parsed, &arg.value, ordinal)?);
             }
             Some(EvalNode::Invocation(children))
         }
         Expression::Constructor { args, .. } => {
             let mut children = Vec::with_capacity(args.len());
             for arg in args {
-                children.push(classify_constraint_node(&arg.value, ordinal)?);
+                children.push(classify_constraint_node(parsed, &arg.value, ordinal)?);
             }
             Some(EvalNode::Invocation(children))
         }
         Expression::CollectionOp { base, args, .. } => {
             let mut children = Vec::with_capacity(args.len() + 1);
-            children.push(classify_constraint_node(&base.value, ordinal)?);
+            children.push(classify_constraint_node(parsed, &base.value, ordinal)?);
             for arg in args {
-                children.push(classify_constraint_node(&arg.value, ordinal)?);
-            }
-            Some(EvalNode::Invocation(children))
-        }
-        Expression::Tuple(items) => {
-            let mut children = Vec::with_capacity(items.len());
-            for item in items {
-                children.push(classify_constraint_node(&item.value, ordinal)?);
+                children.push(classify_constraint_node(parsed, &arg.value, ordinal)?);
             }
             Some(EvalNode::Invocation(children))
         }
         Expression::UnaryOp { op, operand } if is_unary_operator(op) => {
-            let operand = classify_constraint_node(&operand.value, ordinal)?;
+            let operand = classify_constraint_node(parsed, &operand.value, ordinal)?;
             Some(EvalNode::Unary(op.clone(), Box::new(operand)))
         }
         Expression::TypeCheck { operand, .. } => {
             let mut children = Vec::with_capacity(1);
             if let Some(operand) = operand {
-                children.push(classify_constraint_node(&operand.value, ordinal)?);
+                children.push(classify_constraint_node(parsed, &operand.value, ordinal)?);
             }
             Some(EvalNode::Invocation(children))
         }
         Expression::MetaCast { base, .. } => {
-            let base = classify_constraint_node(&base.value, ordinal)?;
+            let base = classify_constraint_node(parsed, &base.value, ordinal)?;
             Some(EvalNode::Invocation(vec![base]))
         }
         _ => None,
@@ -1884,8 +1886,13 @@ fn classify_filter_predicate(node: &Expression, metadata_ordinal: &mut u32) -> F
             *metadata_ordinal = metadata_ordinal.saturating_add(1);
             FilterPredicate::Metadata(ordinal)
         }
-        Expression::Parenthesized(inner) => {
-            classify_filter_predicate(&inner.value, metadata_ordinal)
+        Expression::Sequence { operands, .. }
+            if matches!(operands.value.elements.as_slice(), [_]) =>
+        {
+            classify_filter_predicate(
+                &operands.value.elements[0].expression.value,
+                metadata_ordinal,
+            )
         }
         Expression::BinaryOp { op, left, right }
             if matches!(op, BinaryOperator::And | BinaryOperator::BitAnd) =>
@@ -1911,24 +1918,40 @@ fn classify_filter_predicate(node: &Expression, metadata_ordinal: &mut u32) -> F
 /// `lower_calc_expression`'s supported shapes: no comparison-operator support (calc bodies stay
 /// comparison-free, per slice 1), plus slice 4's arithmetic `BinaryOp` (`Add`/`Sub`/`Mul`/`Div`/
 /// `Mod`) support.
-fn classify_calc_node(node: &Expression, ordinal: &mut u32) -> Option<EvalNode> {
+fn classify_calc_node(
+    parsed: &ParsedDocument,
+    node: &Expression,
+    ordinal: &mut u32,
+) -> Option<EvalNode> {
     match node {
         Expression::LiteralInteger(_)
         | Expression::LiteralReal(_)
         | Expression::LiteralBoolean(_)
         | Expression::LiteralString(_)
-        | Expression::LiteralWithUnit { .. } => {
-            literal_expression_value(node).map(EvalNode::Literal)
+        | Expression::Bracket { .. } => {
+            literal_expression_value(parsed, node).map(EvalNode::Literal)
         }
         Expression::FeatureRef(_) | Expression::FeatureChainRef(_) => {
             let leaf = EvalNode::Operand(*ordinal);
             *ordinal += 1;
             Some(leaf)
         }
-        Expression::Parenthesized(inner) => classify_calc_node(&inner.value, ordinal),
+        Expression::Sequence { operands, .. } => {
+            // A singleton sequence is the grouping spelling the old `Parenthesized` variant
+            // carried; a multi-element one is the tuple spelling. Both are one production now.
+            let elements = &operands.value.elements;
+            if let [only] = elements.as_slice() {
+                return classify_calc_node(parsed, &only.expression.value, ordinal);
+            }
+            let mut children = Vec::with_capacity(elements.len());
+            for element in elements {
+                children.push(classify_calc_node(parsed, &element.expression.value, ordinal)?);
+            }
+            Some(EvalNode::Invocation(children))
+        }
         Expression::BinaryOp { op, left, right } if is_arithmetic_operator(op) => {
-            let left = classify_calc_node(&left.value, ordinal)?;
-            let right = classify_calc_node(&right.value, ordinal)?;
+            let left = classify_calc_node(parsed, &left.value, ordinal)?;
+            let right = classify_calc_node(parsed, &right.value, ordinal)?;
             Some(EvalNode::Arithmetic(
                 op.clone(),
                 Box::new(left),
@@ -1938,45 +1961,38 @@ fn classify_calc_node(node: &Expression, ordinal: &mut u32) -> Option<EvalNode> 
         Expression::Invocation { args, .. } => {
             let mut children = Vec::with_capacity(args.len());
             for arg in args {
-                children.push(classify_calc_node(&arg.value, ordinal)?);
+                children.push(classify_calc_node(parsed, &arg.value, ordinal)?);
             }
             Some(EvalNode::Invocation(children))
         }
         Expression::Constructor { args, .. } => {
             let mut children = Vec::with_capacity(args.len());
             for arg in args {
-                children.push(classify_calc_node(&arg.value, ordinal)?);
+                children.push(classify_calc_node(parsed, &arg.value, ordinal)?);
             }
             Some(EvalNode::Invocation(children))
         }
         Expression::CollectionOp { base, args, .. } => {
             let mut children = Vec::with_capacity(args.len() + 1);
-            children.push(classify_calc_node(&base.value, ordinal)?);
+            children.push(classify_calc_node(parsed, &base.value, ordinal)?);
             for arg in args {
-                children.push(classify_calc_node(&arg.value, ordinal)?);
-            }
-            Some(EvalNode::Invocation(children))
-        }
-        Expression::Tuple(items) => {
-            let mut children = Vec::with_capacity(items.len());
-            for item in items {
-                children.push(classify_calc_node(&item.value, ordinal)?);
+                children.push(classify_calc_node(parsed, &arg.value, ordinal)?);
             }
             Some(EvalNode::Invocation(children))
         }
         Expression::UnaryOp { op, operand } if is_unary_operator(op) => {
-            let operand = classify_calc_node(&operand.value, ordinal)?;
+            let operand = classify_calc_node(parsed, &operand.value, ordinal)?;
             Some(EvalNode::Unary(op.clone(), Box::new(operand)))
         }
         Expression::TypeCheck { operand, .. } => {
             let mut children = Vec::with_capacity(1);
             if let Some(operand) = operand {
-                children.push(classify_calc_node(&operand.value, ordinal)?);
+                children.push(classify_calc_node(parsed, &operand.value, ordinal)?);
             }
             Some(EvalNode::Invocation(children))
         }
         Expression::MetaCast { base, .. } => {
-            let base = classify_calc_node(&base.value, ordinal)?;
+            let base = classify_calc_node(parsed, &base.value, ordinal)?;
             Some(EvalNode::Invocation(vec![base]))
         }
         _ => None,
@@ -2072,8 +2088,8 @@ fn state_action_body_has_content(body: &StateDefBody) -> bool {
 /// Classifies a constraint-body expression exactly along `lower_constraint_expression`'s
 /// supported-shape boundary, without pushing any reference or diagnostic (a pure, side-effect-free
 /// mirror used only to decide whether/how to publish an evaluation fact). See `EvaluatedValue`.
-fn classify_constraint_expression(node: &Expression) -> ExpressionEvalShape {
-    classify_constraint_expression_from(node, 0)
+fn classify_constraint_expression(parsed: &ParsedDocument, node: &Expression) -> ExpressionEvalShape {
+    classify_constraint_expression_from(parsed, node, 0)
 }
 
 /// Classifies a constraint-body expression whose operand ordinals continue an earlier expression's.
@@ -2082,9 +2098,13 @@ fn classify_constraint_expression(node: &Expression) -> ExpressionEvalShape {
 /// two `filter` statements is the exception: both conditions are lowered against the view, so the
 /// second one's operand references are numbered after the first one's, and classifying it from zero
 /// would pair every leaf with the wrong reference.
-fn classify_constraint_expression_from(node: &Expression, start: u32) -> ExpressionEvalShape {
+fn classify_constraint_expression_from(
+    parsed: &ParsedDocument,
+    node: &Expression,
+    start: u32,
+) -> ExpressionEvalShape {
     let mut ordinal = start;
-    match classify_constraint_node(node, &mut ordinal) {
+    match classify_constraint_node(parsed, node, &mut ordinal) {
         None => ExpressionEvalShape::Unsupported,
         Some(tree) if eval_node_is_pure_literal(&tree) => {
             let value = fold_eval_node(&tree, &mut |_| {
@@ -2104,9 +2124,9 @@ fn classify_constraint_expression_from(node: &Expression, start: u32) -> Express
 /// boundary (the same leaf/reference/parenthesized shapes as `classify_constraint_expression`,
 /// minus comparison-operator support, plus slice 4's arithmetic `BinaryOp` support -- see
 /// `classify_calc_node`).
-fn classify_calc_expression(node: &Expression) -> ExpressionEvalShape {
+fn classify_calc_expression(parsed: &ParsedDocument, node: &Expression) -> ExpressionEvalShape {
     let mut ordinal = 0u32;
-    match classify_calc_node(node, &mut ordinal) {
+    match classify_calc_node(parsed, node, &mut ordinal) {
         None => ExpressionEvalShape::Unsupported,
         Some(tree) if eval_node_is_pure_literal(&tree) => {
             let value = fold_eval_node(&tree, &mut |_| {
@@ -2247,7 +2267,10 @@ fn flatten_member_access_chain(node: &Node<Expression>) -> Option<Vec<QualifiedR
             chain.push(*member);
             Some(chain)
         }
-        Expression::Parenthesized(inner) => flatten_member_access_chain(inner),
+        Expression::Sequence { operands, .. } => match operands.value.elements.as_slice() {
+            [only] => flatten_member_access_chain(&only.expression),
+            _ => None,
+        },
         Expression::TypeCheck {
             operand: Some(operand),
             ..
@@ -2501,7 +2524,10 @@ fn multiplicity_bound(expression: Option<&Node<Expression>>) -> MultiplicityBoun
 fn literal_bound_value(expression: &Expression) -> Option<i64> {
     match expression {
         Expression::LiteralInteger(value) => Some(*value),
-        Expression::Parenthesized(inner) => literal_bound_value(&inner.value),
+        Expression::Sequence { operands, .. } => match operands.value.elements.as_slice() {
+            [only] => literal_bound_value(&only.expression.value),
+            _ => None,
+        },
         _ => None,
     }
 }
@@ -3622,6 +3648,25 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
+    /// The evaluation shape of a constraint-body expression, classified against the owning
+    /// document's parser arena. The arena is required because a quantity literal's unit is a
+    /// source-backed qualified reference rather than copied text.
+    fn constraint_evaluation_shape(
+        &self,
+        document: DocumentId,
+        node: &Expression,
+    ) -> ExpressionEvalShape {
+        let parsed = Arc::clone(&self.documents[document.index()].parsed);
+        classify_constraint_expression(&parsed, node)
+    }
+
+    /// The evaluation shape of a calculation-body expression. See
+    /// [`Self::constraint_evaluation_shape`] for why the arena is threaded through.
+    fn calc_evaluation_shape(&self, document: DocumentId, node: &Expression) -> ExpressionEvalShape {
+        let parsed = Arc::clone(&self.documents[document.index()].parsed);
+        classify_calc_expression(&parsed, node)
+    }
+
     fn push_unsupported(&mut self, document: DocumentId, family: UnsupportedFamily, span: Span) {
         self.unsupported.push(UnsupportedRecord {
             document,
@@ -4369,6 +4414,14 @@ impl SemanticModelBuilder {
                     PartDefBodyElement::Error(error) => {
                         self.push_recovery(document, error.span.clone());
                     }
+                    PartDefBodyElement::Package(node) => {
+                        // New upstream member kind: kept visible as unsupported rather than dropped.
+                        self.push_unsupported(document, UnsupportedFamily::PartDefinitionMember, node.span.clone());
+                    }
+                    PartDefBodyElement::LibraryPackage(node) => {
+                        // New upstream member kind: kept visible as unsupported rather than dropped.
+                        self.push_unsupported(document, UnsupportedFamily::PartDefinitionMember, node.span.clone());
+                    }
                     PartDefBodyElement::AttributeDef(attribute) => {
                         self.lower_attribute_def(document, Some(declaration), attribute)?;
                     }
@@ -5113,7 +5166,7 @@ impl SemanticModelBuilder {
         let expression = &feature_value.value.expression;
         self.push_evaluation_fact(
             declaration,
-            classify_constraint_expression(&expression.value),
+            self.constraint_evaluation_shape(document, &expression.value),
         );
         self.lower_constraint_expression(document, declaration, family, expression)
     }
@@ -5186,6 +5239,14 @@ impl SemanticModelBuilder {
             match &element.value {
                 AttributeBodyElement::Error(error) => {
                     self.push_recovery(document, error.span.clone());
+                }
+                AttributeBodyElement::DefaultReferenceUsage(node) => {
+                    // New upstream member kind: kept visible as unsupported rather than dropped.
+                    self.push_unsupported(document, UnsupportedFamily::AttributeMember, node.span.clone());
+                }
+                AttributeBodyElement::VariantUsage(node) => {
+                    // New upstream member kind: kept visible as unsupported rather than dropped.
+                    self.push_unsupported(document, UnsupportedFamily::AttributeMember, node.span.clone());
                 }
                 AttributeBodyElement::Annotating(member) => {
                     self.lower_annotating_member(
@@ -5352,8 +5413,11 @@ impl SemanticModelBuilder {
         owner: DeclarationId,
         node: &Node<sysml_v2_parser::ast::EnumeratedValue>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declared_name(&node.value.name)?;
-        let short_name = self.intern_short_name(node.value.short_name.as_ref())?;
+        let name = match node.value.identification.name.as_deref() {
+            Some(name) => self.intern_declared_name(name)?,
+            None => None,
+        };
+        let short_name = self.intern_short_name(node.value.identification.short_name.as_ref())?;
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
@@ -5521,6 +5585,37 @@ impl SemanticModelBuilder {
     ///
     /// Shared by the classifier and feature owners so the two cannot drift; the parser gives both
     /// the same `Vec<Node<KermlTypeRelationship>>`.
+    /// Lowers the `FeatureRelationshipPart` list a KerML feature declaration carries.
+    ///
+    /// `unions`/`intersects`/`disjoint from`/`differences` reuse the existing type-relationship
+    /// lowering. `chains`, `inverse of` and `featured by` are typed upstream but have no semantic
+    /// fact here yet, so each stays visible as an unsupported member instead of being dropped.
+    fn lower_kerml_feature_relationship_parts(
+        &mut self,
+        document: DocumentId,
+        source: DeclarationId,
+        family: UnsupportedFamily,
+        parts: &[Node<FeatureRelationshipPart>],
+    ) -> Result<(), ConstructionError> {
+        for part in parts {
+            match &part.value {
+                FeatureRelationshipPart::TypeRelationship(relationship) => {
+                    self.lower_kerml_type_relationships(
+                        document,
+                        source,
+                        std::slice::from_ref(relationship),
+                    )?;
+                }
+                FeatureRelationshipPart::Chaining { .. }
+                | FeatureRelationshipPart::Inverting { .. }
+                | FeatureRelationshipPart::TypeFeaturing(_) => {
+                    self.push_unsupported(document, family, part.span.clone());
+                }
+            }
+        }
+        Ok(())
+    }
+
     fn lower_kerml_type_relationships(
         &mut self,
         document: DocumentId,
@@ -5683,11 +5778,16 @@ impl SemanticModelBuilder {
         if let Some(relationship) = &node.value.crosses {
             self.lower_subsetting_relationship(document, declaration, relationship)?;
         }
-        self.lower_kerml_type_relationships(document, declaration, &node.value.type_relationships)?;
+        self.lower_kerml_feature_relationship_parts(
+            document,
+            declaration,
+            family,
+            &node.value.relationship_parts,
+        )?;
         if let Some(feature_value) = &node.value.value {
             self.record_feature_value(declaration, feature_value)?;
             let expression = feature_value.value.expression.clone();
-            self.push_evaluation_fact(declaration, classify_calc_expression(&expression.value));
+            self.push_evaluation_fact(declaration, self.calc_evaluation_shape(document, &expression.value));
             self.lower_calc_expression(document, declaration, family, &expression)?;
         }
         self.lower_calc_def_body(document, declaration, &node.value.body)
@@ -6040,7 +6140,7 @@ impl SemanticModelBuilder {
         if let Some(feature_value) = &node.value.value {
             self.record_feature_value(declaration, feature_value)?;
             let expression = feature_value.value.expression.clone();
-            self.push_evaluation_fact(declaration, classify_calc_expression(&expression.value));
+            self.push_evaluation_fact(declaration, self.calc_evaluation_shape(document, &expression.value));
             self.lower_calc_expression(document, declaration, family, &expression)?;
         }
         Ok(())
@@ -6228,7 +6328,7 @@ impl SemanticModelBuilder {
         if let Some(feature_value) = &node.value.value {
             self.record_feature_value(declaration, feature_value)?;
             let expression = feature_value.value.expression.clone();
-            self.push_evaluation_fact(declaration, classify_calc_expression(&expression.value));
+            self.push_evaluation_fact(declaration, self.calc_evaluation_shape(document, &expression.value));
             self.lower_calc_expression(document, declaration, family, &expression)?;
         }
         Ok(())
@@ -6308,7 +6408,7 @@ impl SemanticModelBuilder {
         if let Some(feature_value) = &node.value.value {
             self.record_feature_value(declaration, feature_value)?;
             let expression = feature_value.value.expression.clone();
-            self.push_evaluation_fact(declaration, classify_calc_expression(&expression.value));
+            self.push_evaluation_fact(declaration, self.calc_evaluation_shape(document, &expression.value));
             self.lower_calc_expression(
                 document,
                 declaration,
@@ -6409,7 +6509,7 @@ impl SemanticModelBuilder {
         if let Some(feature_value) = &node.value.value {
             self.record_feature_value(declaration, feature_value)?;
             let expression = feature_value.value.expression.clone();
-            self.push_evaluation_fact(declaration, classify_calc_expression(&expression.value));
+            self.push_evaluation_fact(declaration, self.calc_evaluation_shape(document, &expression.value));
             self.lower_calc_expression(document, declaration, family, &expression)?;
         }
         Ok(())
@@ -6447,23 +6547,8 @@ impl SemanticModelBuilder {
             Visibility::Default,
             node.span.clone(),
         )?;
-        if let Some(type_name) = node.value.type_name {
-            let span = self.documents[document.index()]
-                .parsed
-                .qualified_reference(type_name)
-                .ok_or(ConstructionError::InvalidParserReference)?
-                .metadata
-                .span
-                .clone();
-            self.push_reference(PendingReference {
-                source: declaration,
-                kind: ReferenceKind::FeatureTyping,
-                document,
-                local: type_name,
-                flags: RelationshipFlags::default(),
-                span,
-                import: None,
-            })?;
+        if let Some(relationship) = &node.value.typing {
+            self.lower_typing_relationship(document, declaration, relationship)?;
         }
         // Records the authored value spelling (`=`/`:=`/`default`) for this declaration. The
         // value expression itself is not lowered here -- expression coverage for this usage
@@ -6954,7 +7039,7 @@ impl SemanticModelBuilder {
         })?;
         self.push_evaluation_fact(
             declaration,
-            classify_constraint_expression(&node.value.value.value),
+            self.constraint_evaluation_shape(document, &node.value.value.value),
         );
         self.lower_constraint_expression(
             document,
@@ -7238,6 +7323,14 @@ impl SemanticModelBuilder {
             ActionDefBodyElement::Error(error) => {
                 self.push_recovery(document, error.span.clone());
             }
+            ActionDefBodyElement::Import(node) => {
+                // New upstream member kind: kept visible as unsupported rather than dropped.
+                self.push_unsupported(document, UnsupportedFamily::ActionDefinitionMember, node.span.clone());
+            }
+            ActionDefBodyElement::VariantUsage(node) => {
+                // New upstream member kind: kept visible as unsupported rather than dropped.
+                self.push_unsupported(document, UnsupportedFamily::ActionDefinitionMember, node.span.clone());
+            }
             ActionDefBodyElement::ActionUsage(action_usage) => {
                 self.lower_action_usage(document, Some(owner), action_usage)?;
             }
@@ -7305,9 +7398,8 @@ impl SemanticModelBuilder {
                 owner,
                 UnsupportedFamily::ActionDefinitionMember,
                 DeclarationKind::Merge,
-                ReferenceKind::MergeInput,
                 node.span.clone(),
-                &node.value.merge,
+                &node.value.declaration,
                 &node.value.body,
             )?,
             ActionDefBodyElement::DecisionStmt(node) => self.lower_first_merge_stmt(
@@ -7315,9 +7407,8 @@ impl SemanticModelBuilder {
                 owner,
                 UnsupportedFamily::ActionDefinitionMember,
                 DeclarationKind::Decide,
-                ReferenceKind::DecisionInput,
                 node.span.clone(),
-                &node.value.decide,
+                &node.value.declaration,
                 &node.value.body,
             )?,
             ActionDefBodyElement::JoinStmt(node) => self.lower_first_merge_stmt(
@@ -7325,9 +7416,8 @@ impl SemanticModelBuilder {
                 owner,
                 UnsupportedFamily::ActionDefinitionMember,
                 DeclarationKind::Join,
-                ReferenceKind::JoinInput,
                 node.span.clone(),
-                &node.value.join,
+                &node.value.declaration,
                 &node.value.body,
             )?,
             ActionDefBodyElement::ForkStmt(node) => self.lower_first_merge_stmt(
@@ -7335,9 +7425,8 @@ impl SemanticModelBuilder {
                 owner,
                 UnsupportedFamily::ActionDefinitionMember,
                 DeclarationKind::Fork,
-                ReferenceKind::ForkInput,
                 node.span.clone(),
-                &node.value.fork,
+                &node.value.declaration,
                 &node.value.body,
             )?,
             ActionDefBodyElement::ThenAction(node) => {
@@ -7375,7 +7464,7 @@ impl SemanticModelBuilder {
                 DeclarationKind::While,
                 node.span.clone(),
                 Some(&node.value.condition),
-                &node.value.body,
+                &node.value.body.body,
             )?,
             ActionDefBodyElement::LoopStmt(node) => self.lower_while_or_loop_stmt(
                 document,
@@ -7384,7 +7473,7 @@ impl SemanticModelBuilder {
                 DeclarationKind::Loop,
                 node.span.clone(),
                 None,
-                &node.value.body,
+                &node.value.body.body,
             )?,
             ActionDefBodyElement::IfStmt(node) => self.lower_if_stmt(
                 document,
@@ -7612,6 +7701,10 @@ impl SemanticModelBuilder {
             ActionUsageBodyElement::Error(error) => {
                 self.push_recovery(document, error.span.clone());
             }
+            ActionUsageBodyElement::Import(node) => {
+                // New upstream member kind: kept visible as unsupported rather than dropped.
+                self.push_unsupported(document, UnsupportedFamily::ActionUsageMember, node.span.clone());
+            }
             ActionUsageBodyElement::ActionUsage(action_usage) => {
                 self.lower_action_usage(document, Some(owner), action_usage)?;
             }
@@ -7671,9 +7764,8 @@ impl SemanticModelBuilder {
                 owner,
                 UnsupportedFamily::ActionUsageMember,
                 DeclarationKind::Merge,
-                ReferenceKind::MergeInput,
                 node.span.clone(),
-                &node.value.merge,
+                &node.value.declaration,
                 &node.value.body,
             )?,
             ActionUsageBodyElement::DecisionStmt(node) => self.lower_first_merge_stmt(
@@ -7681,9 +7773,8 @@ impl SemanticModelBuilder {
                 owner,
                 UnsupportedFamily::ActionUsageMember,
                 DeclarationKind::Decide,
-                ReferenceKind::DecisionInput,
                 node.span.clone(),
-                &node.value.decide,
+                &node.value.declaration,
                 &node.value.body,
             )?,
             ActionUsageBodyElement::JoinStmt(node) => self.lower_first_merge_stmt(
@@ -7691,9 +7782,8 @@ impl SemanticModelBuilder {
                 owner,
                 UnsupportedFamily::ActionUsageMember,
                 DeclarationKind::Join,
-                ReferenceKind::JoinInput,
                 node.span.clone(),
-                &node.value.join,
+                &node.value.declaration,
                 &node.value.body,
             )?,
             ActionUsageBodyElement::ForkStmt(node) => self.lower_first_merge_stmt(
@@ -7701,9 +7791,8 @@ impl SemanticModelBuilder {
                 owner,
                 UnsupportedFamily::ActionUsageMember,
                 DeclarationKind::Fork,
-                ReferenceKind::ForkInput,
                 node.span.clone(),
-                &node.value.fork,
+                &node.value.declaration,
                 &node.value.body,
             )?,
             ActionUsageBodyElement::ThenAction(node) => {
@@ -7738,7 +7827,7 @@ impl SemanticModelBuilder {
                 DeclarationKind::While,
                 node.span.clone(),
                 Some(&node.value.condition),
-                &node.value.body,
+                &node.value.body.body,
             )?,
             ActionUsageBodyElement::LoopStmt(node) => self.lower_while_or_loop_stmt(
                 document,
@@ -7747,7 +7836,7 @@ impl SemanticModelBuilder {
                 DeclarationKind::Loop,
                 node.span.clone(),
                 None,
-                &node.value.body,
+                &node.value.body.body,
             )?,
             ActionUsageBodyElement::IfStmt(node) => self.lower_if_stmt(
                 document,
@@ -7921,17 +8010,31 @@ impl SemanticModelBuilder {
         owner: DeclarationId,
         family: UnsupportedFamily,
         decl_kind: DeclarationKind,
-        ref_kind: ReferenceKind,
         span: Span,
-        operand: &Node<Expression>,
+        control_declaration: &ControlNodeDeclaration,
         body: &FirstMergeBody,
     ) -> Result<(), ConstructionError> {
-        // A synthesized control-flow scope with no authored declaration syntax of its own.
+        // `ControlNodeDeclaration` is the node's own declaration, not a reference to another
+        // element: `merge continue;` declares a MergeNode named `continue`, while `merge;`
+        // declares an anonymous one. An unsupported declaration surface stays visible as an
+        // unsupported member rather than being lowered as though it named something.
+        let name = match control_declaration {
+            ControlNodeDeclaration::Anonymous => None,
+            ControlNodeDeclaration::Named(expression) => {
+                match self.control_node_declared_name(document, expression)? {
+                    Some(name) => Some(name),
+                    None => {
+                        self.push_unsupported(document, family, expression.span.clone());
+                        None
+                    }
+                }
+            }
+        };
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
             decl_kind,
-            None,
+            name,
             span.clone(),
             DeclarationFacts::none(),
         )?;
@@ -7941,8 +8044,31 @@ impl SemanticModelBuilder {
             Visibility::Default,
             span,
         )?;
-        self.lower_succession_end(document, declaration, family, ref_kind, operand)?;
         self.lower_first_merge_body(document, declaration, family, body)
+    }
+
+    /// The declared name of a control node, when its declaration is the simple identifier the
+    /// SysML control-node surface admits. A qualified or computed expression is not a declaration
+    /// this lowering can honor, and returns `None` so the caller can report it explicitly.
+    fn control_node_declared_name(
+        &mut self,
+        document: DocumentId,
+        expression: &Node<Expression>,
+    ) -> Result<Option<SymbolId>, ConstructionError> {
+        let Expression::FeatureRef(target) = &expression.value else {
+            return Ok(None);
+        };
+        let parsed = Arc::clone(&self.documents[document.index()].parsed);
+        let reference = parsed
+            .qualified_reference(*target)
+            .ok_or(ConstructionError::InvalidParserReference)?;
+        if reference.segments.len() != 1 || reference.metadata.is_absolute {
+            return Ok(None);
+        }
+        let decoded = reference
+            .segment_decoded_text(0)
+            .ok_or(ConstructionError::InvalidParserReference)?;
+        self.intern_declared_name(decoded.as_ref())
     }
 
     /// Lowers a `decide`/`merge`/`fork`/`join` node's optional braced body (BNF
@@ -7988,9 +8114,8 @@ impl SemanticModelBuilder {
                         owner,
                         family,
                         DeclarationKind::Merge,
-                        ReferenceKind::MergeInput,
                         node.span.clone(),
-                        &node.value.merge,
+                        &node.value.declaration,
                         &node.value.body,
                     )?,
                     ActionDefBodyElement::DecisionStmt(node) => self.lower_first_merge_stmt(
@@ -7998,9 +8123,8 @@ impl SemanticModelBuilder {
                         owner,
                         family,
                         DeclarationKind::Decide,
-                        ReferenceKind::DecisionInput,
                         node.span.clone(),
-                        &node.value.decide,
+                        &node.value.declaration,
                         &node.value.body,
                     )?,
                     ActionDefBodyElement::JoinStmt(node) => self.lower_first_merge_stmt(
@@ -8008,9 +8132,8 @@ impl SemanticModelBuilder {
                         owner,
                         family,
                         DeclarationKind::Join,
-                        ReferenceKind::JoinInput,
                         node.span.clone(),
-                        &node.value.join,
+                        &node.value.declaration,
                         &node.value.body,
                     )?,
                     ActionDefBodyElement::ForkStmt(node) => self.lower_first_merge_stmt(
@@ -8018,9 +8141,8 @@ impl SemanticModelBuilder {
                         owner,
                         family,
                         DeclarationKind::Fork,
-                        ReferenceKind::ForkInput,
                         node.span.clone(),
-                        &node.value.fork,
+                        &node.value.declaration,
                         &node.value.body,
                     )?,
                     _ => self.push_unsupported(document, family, element.span.clone()),
@@ -8061,9 +8183,8 @@ impl SemanticModelBuilder {
                 owner,
                 family,
                 DeclarationKind::Merge,
-                ReferenceKind::MergeInput,
                 merge_stmt.span.clone(),
-                &merge_stmt.value.merge,
+                &merge_stmt.value.declaration,
                 &merge_stmt.value.body,
             )?,
             ThenTarget::Fork(fork_stmt) => self.lower_first_merge_stmt(
@@ -8071,19 +8192,26 @@ impl SemanticModelBuilder {
                 owner,
                 family,
                 DeclarationKind::Fork,
-                ReferenceKind::ForkInput,
                 fork_stmt.span.clone(),
-                &fork_stmt.value.fork,
+                &fork_stmt.value.declaration,
                 &fork_stmt.value.body,
+            )?,
+            ThenTarget::Join(join_stmt) => self.lower_first_merge_stmt(
+                document,
+                owner,
+                family,
+                DeclarationKind::Join,
+                join_stmt.span.clone(),
+                &join_stmt.value.declaration,
+                &join_stmt.value.body,
             )?,
             ThenTarget::Decide(decision_stmt) => self.lower_first_merge_stmt(
                 document,
                 owner,
                 family,
                 DeclarationKind::Decide,
-                ReferenceKind::DecisionInput,
                 decision_stmt.span.clone(),
-                &decision_stmt.value.decide,
+                &decision_stmt.value.declaration,
                 &decision_stmt.value.body,
             )?,
             ThenTarget::Feature(expression) => {
@@ -8156,7 +8284,7 @@ impl SemanticModelBuilder {
             ReferenceKind::AssignTarget,
             &node.lhs,
         )?;
-        self.push_evaluation_fact(declaration, classify_constraint_expression(&node.rhs.value));
+        self.push_evaluation_fact(declaration, self.constraint_evaluation_shape(document, &node.rhs.value));
         self.lower_constraint_expression(document, declaration, family, &node.rhs)
     }
 
@@ -8199,7 +8327,7 @@ impl SemanticModelBuilder {
         if let Some(condition) = condition {
             self.push_evaluation_fact(
                 declaration,
-                classify_constraint_expression(&condition.value),
+                self.constraint_evaluation_shape(document, &condition.value),
             );
             self.lower_constraint_expression(document, declaration, family, condition)?;
         }
@@ -8237,7 +8365,7 @@ impl SemanticModelBuilder {
         )?;
         self.push_evaluation_fact(
             declaration,
-            classify_constraint_expression(&node.condition.value),
+            self.constraint_evaluation_shape(document, &node.condition.value),
         );
         self.lower_constraint_expression(document, declaration, family, &node.condition)?;
         self.lower_action_branch_body(document, declaration, &node.then_body)?;
@@ -8304,10 +8432,18 @@ impl SemanticModelBuilder {
         )?;
         self.push_evaluation_fact(
             declaration,
-            classify_constraint_expression(&node.range.value),
+            self.constraint_evaluation_shape(document, &node.in_parameter.expression.value),
         );
-        self.lower_constraint_expression(document, declaration, family, &node.range)?;
-        let var_name = self.intern_declared_name(&node.var)?;
+        self.lower_constraint_expression(
+            document,
+            declaration,
+            family,
+            &node.in_parameter.expression,
+        )?;
+        let var_name = match node.variable.value.identification.name.as_deref() {
+            Some(name) => self.intern_declared_name(name)?,
+            None => None,
+        };
         let var_declaration = self.push_typed_declaration(
             document,
             Some(declaration),
@@ -8324,7 +8460,7 @@ impl SemanticModelBuilder {
             Visibility::Default,
             span,
         )?;
-        self.lower_action_def_body(document, declaration, &node.body)
+        self.lower_action_def_body(document, declaration, &node.body.body)
     }
 
     /// Lowers a `then accept ...;` shorthand trigger (BNF `ThenTarget::Accept`, `ast::
@@ -8514,12 +8650,21 @@ impl SemanticModelBuilder {
             | Expression::LiteralBoolean(_)
             | Expression::LiteralString(_)
             | Expression::Null => Ok(()),
-            Expression::LiteralWithUnit { unit, .. } => {
-                self.lower_unit_token(document, declaration, unit)
+            Expression::Bracket { base, operands, .. } => {
+                self.lower_unit_token(document, declaration, operands)?;
+                self.lower_constraint_expression(document, declaration, family, base)
             }
-            Expression::Index { base, index } => {
+            Expression::Index { base, operands, .. } => {
                 self.lower_constraint_expression(document, declaration, family, base)?;
-                self.lower_constraint_expression(document, declaration, family, index)
+                for element in &operands.value.elements {
+                    self.lower_constraint_expression(
+                        document,
+                        declaration,
+                        family,
+                        &element.expression,
+                    )?;
+                }
+                Ok(())
             }
             Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => {
                 let span = self.documents[document.index()]
@@ -8553,8 +8698,13 @@ impl SemanticModelBuilder {
                 }
                 Ok(())
             }
-            Expression::Parenthesized(inner) => {
-                self.lower_constraint_expression(document, declaration, family, inner)
+            Expression::Sequence { operands, .. } => {
+                // Grouping and comma-list spelling share one production; lowering recurses into
+                // each operand either way.
+                for element in &operands.value.elements {
+                    self.lower_constraint_expression(document, declaration, family, &element.expression)?;
+                }
+                Ok(())
             }
             Expression::BinaryOp { op, left, right }
                 if is_comparison_operator(op)
@@ -8589,12 +8739,6 @@ impl SemanticModelBuilder {
                 self.lower_constraint_expression(document, declaration, family, base)?;
                 for arg in args {
                     self.lower_constraint_expression(document, declaration, family, &arg.value)?;
-                }
-                Ok(())
-            }
-            Expression::Tuple(items) => {
-                for item in items {
-                    self.lower_constraint_expression(document, declaration, family, item)?;
                 }
                 Ok(())
             }
@@ -8667,12 +8811,16 @@ impl SemanticModelBuilder {
             | Expression::LiteralBoolean(_)
             | Expression::LiteralString(_)
             | Expression::Null => Ok(()),
-            Expression::LiteralWithUnit { unit, .. } => {
-                self.lower_unit_token(document, declaration, unit)
+            Expression::Bracket { base, operands, .. } => {
+                self.lower_unit_token(document, declaration, operands)?;
+                self.lower_calc_expression(document, declaration, family, base)
             }
-            Expression::Index { base, index } => {
+            Expression::Index { base, operands, .. } => {
                 self.lower_calc_expression(document, declaration, family, base)?;
-                self.lower_calc_expression(document, declaration, family, index)
+                for element in &operands.value.elements {
+                    self.lower_calc_expression(document, declaration, family, &element.expression)?;
+                }
+                Ok(())
             }
             Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => {
                 let span = self.documents[document.index()]
@@ -8706,8 +8854,13 @@ impl SemanticModelBuilder {
                 }
                 Ok(())
             }
-            Expression::Parenthesized(inner) => {
-                self.lower_calc_expression(document, declaration, family, inner)
+            Expression::Sequence { operands, .. } => {
+                // Grouping and comma-list spelling share one production; lowering recurses into
+                // each operand either way.
+                for element in &operands.value.elements {
+                    self.lower_calc_expression(document, declaration, family, &element.expression)?;
+                }
+                Ok(())
             }
             Expression::BinaryOp { op, left, right }
                 if is_arithmetic_operator(op)
@@ -8742,12 +8895,6 @@ impl SemanticModelBuilder {
                 self.lower_calc_expression(document, declaration, family, base)?;
                 for arg in args {
                     self.lower_calc_expression(document, declaration, family, &arg.value)?;
-                }
-                Ok(())
-            }
-            Expression::Tuple(items) => {
-                for item in items {
-                    self.lower_calc_expression(document, declaration, family, item)?;
                 }
                 Ok(())
             }
@@ -8817,12 +8964,13 @@ impl SemanticModelBuilder {
         &mut self,
         document: DocumentId,
         declaration: DeclarationId,
-        unit: &Node<Expression>,
+        operands: &Node<SequenceExpressionList>,
     ) -> Result<(), ConstructionError> {
-        let Some(text) = quantity_unit_text(&unit.value) else {
+        let parsed = Arc::clone(&self.documents[document.index()].parsed);
+        let Some(text) = quantity_unit_text(&parsed, &operands.value) else {
             return Ok(());
         };
-        self.push_unit_token(declaration, document, &text, unit.span.clone())
+        self.push_unit_token(declaration, document, &text, operands.span.clone())
     }
 
     /// Lowers one authored `filter` condition: its references, and the classified expression that
@@ -8834,7 +8982,9 @@ impl SemanticModelBuilder {
         form: FilterForm,
         condition: &Node<Expression>,
     ) -> Result<(), ConstructionError> {
+        let parsed = Arc::clone(&self.documents[document.index()].parsed);
         let shape = classify_constraint_expression_from(
+            &parsed,
             &condition.value,
             self.expression_operand_offset(owner),
         );
@@ -8866,8 +9016,9 @@ impl SemanticModelBuilder {
             | Expression::LiteralReal(_)
             | Expression::LiteralBoolean(_)
             | Expression::LiteralString(_) => Ok(()),
-            Expression::LiteralWithUnit { unit, .. } => {
-                self.lower_unit_token(document, declaration, unit)
+            Expression::Bracket { base, operands, .. } => {
+                self.lower_unit_token(document, declaration, operands)?;
+                self.lower_filter_expression(document, declaration, base)
             }
             Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => {
                 let span = self.documents[document.index()]
@@ -8924,8 +9075,13 @@ impl SemanticModelBuilder {
                 }
                 Ok(())
             }
-            Expression::Parenthesized(inner) => {
-                self.lower_filter_expression(document, declaration, inner)
+            Expression::Sequence { operands, .. } => {
+                // Grouping and comma-list spelling share one production; lowering recurses into
+                // each operand either way.
+                for element in &operands.value.elements {
+                    self.lower_filter_expression(document, declaration, &element.expression)?;
+                }
+                Ok(())
             }
             Expression::BinaryOp { op, left, right }
                 if is_comparison_operator(op) || is_logical_operator(op) =>
@@ -8957,12 +9113,6 @@ impl SemanticModelBuilder {
                 self.lower_filter_expression(document, declaration, base)?;
                 for arg in args {
                     self.lower_filter_expression(document, declaration, &arg.value)?;
-                }
-                Ok(())
-            }
-            Expression::Tuple(items) => {
-                for item in items {
-                    self.lower_filter_expression(document, declaration, item)?;
                 }
                 Ok(())
             }
@@ -9061,6 +9211,14 @@ impl SemanticModelBuilder {
             match &element.value {
                 StateDefBodyElement::Error(error) => {
                     self.push_recovery(document, error.span.clone());
+                }
+                StateDefBodyElement::PartUsage(node) => {
+                    // New upstream member kind: kept visible as unsupported rather than dropped.
+                    self.push_unsupported(document, UnsupportedFamily::StateDefinitionMember, node.span.clone());
+                }
+                StateDefBodyElement::ConstraintUsage(node) => {
+                    // New upstream member kind: kept visible as unsupported rather than dropped.
+                    self.push_unsupported(document, UnsupportedFamily::StateDefinitionMember, node.span.clone());
                 }
                 StateDefBodyElement::StateUsage(state_usage) => {
                     self.lower_state_usage(document, Some(owner), state_usage)?;
@@ -9412,7 +9570,7 @@ impl SemanticModelBuilder {
             &node.value.target,
         )?;
         if let Some(guard) = &node.value.guard {
-            self.push_evaluation_fact(declaration, classify_constraint_expression(&guard.value));
+            self.push_evaluation_fact(declaration, self.constraint_evaluation_shape(document, &guard.value));
             self.lower_constraint_expression(
                 document,
                 declaration,
@@ -10701,11 +10859,7 @@ impl SemanticModelBuilder {
             name,
             node.span.clone(),
             DeclarationFacts {
-                modifiers: DeclarationModifiers {
-                    is_abstract: node.value.is_abstract,
-                    individual: node.value.is_individual,
-                    ..DeclarationModifiers::default()
-                },
+                modifiers: occurrence_prefix_modifiers(&node.value.prefix),
                 ..DeclarationFacts::none()
             },
         )?;
@@ -11192,7 +11346,7 @@ impl SemanticModelBuilder {
                 // the same `classify_calc_expression`/`lower_calc_expression` pipeline a calc def's
                 // bare body expression uses.
                 UseCaseDefBodyElement::Expression(expression) => {
-                    self.push_evaluation_fact(owner, classify_calc_expression(&expression.value));
+                    self.push_evaluation_fact(owner, self.calc_evaluation_shape(document, &expression.value));
                     self.lower_calc_expression(document, owner, unsupported, expression)?;
                 }
                 UseCaseDefBodyElement::MetadataKeywordUsage(_)
@@ -11258,6 +11412,10 @@ impl SemanticModelBuilder {
                 match &element.value {
                     PortDefBodyElement::Error(error) => {
                         self.push_recovery(document, error.span.clone());
+                    }
+                    PortDefBodyElement::VariantUsage(node) => {
+                        // New upstream member kind: kept visible as unsupported rather than dropped.
+                        self.push_unsupported(document, UnsupportedFamily::PortDefinitionMember, node.span.clone());
                     }
                     PortDefBodyElement::AttributeDef(attribute) => {
                         self.lower_attribute_def(document, Some(declaration), attribute)?;
@@ -11385,6 +11543,14 @@ impl SemanticModelBuilder {
                 match &element.value {
                     PortBodyElement::Error(error) => {
                         self.push_recovery(document, error.span.clone());
+                    }
+                    PortBodyElement::OccurrenceUsage(node) => {
+                        // New upstream member kind: kept visible as unsupported rather than dropped.
+                        self.push_unsupported(document, UnsupportedFamily::PortUsageMember, node.span.clone());
+                    }
+                    PortBodyElement::VariantUsage(node) => {
+                        // New upstream member kind: kept visible as unsupported rather than dropped.
+                        self.push_unsupported(document, UnsupportedFamily::PortUsageMember, node.span.clone());
                     }
                     PortBodyElement::AttributeUsage(attribute) => {
                         self.lower_attribute_usage(document, Some(declaration), attribute)?;
@@ -11862,6 +12028,10 @@ impl SemanticModelBuilder {
                     InterfaceDefBodyElement::Error(error) => {
                         self.push_recovery(document, error.span.clone());
                     }
+                    InterfaceDefBodyElement::ConstraintUsage(node) => {
+                        // New upstream member kind: kept visible as unsupported rather than dropped.
+                        self.push_unsupported(document, UnsupportedFamily::InterfaceDefinitionMember, node.span.clone());
+                    }
                     InterfaceDefBodyElement::MetadataKeywordUsage(_) => self.push_unsupported(
                         document,
                         UnsupportedFamily::InterfaceDefinitionMember,
@@ -12162,6 +12332,14 @@ impl SemanticModelBuilder {
                     ViewDefBodyElement::Error(error) => {
                         self.push_recovery(document, error.span.clone());
                     }
+                    ViewDefBodyElement::AliasDef(node) => {
+                        // New upstream member kind: kept visible as unsupported rather than dropped.
+                        self.push_unsupported(document, UnsupportedFamily::ViewDefinitionMember, node.span.clone());
+                    }
+                    ViewDefBodyElement::RenderingUsage(node) => {
+                        // New upstream member kind: kept visible as unsupported rather than dropped.
+                        self.push_unsupported(document, UnsupportedFamily::ViewDefinitionMember, node.span.clone());
+                    }
                     ViewDefBodyElement::MetadataKeywordUsage(_) => self.push_unsupported(
                         document,
                         UnsupportedFamily::ViewDefinitionMember,
@@ -12293,6 +12471,14 @@ impl SemanticModelBuilder {
                 match &element.value {
                     ViewBodyElement::Error(error) => {
                         self.push_recovery(document, error.span.clone());
+                    }
+                    ViewBodyElement::AliasDef(node) => {
+                        // New upstream member kind: kept visible as unsupported rather than dropped.
+                        self.push_unsupported(document, UnsupportedFamily::ViewDefinitionMember, node.span.clone());
+                    }
+                    ViewBodyElement::RenderingUsage(node) => {
+                        // New upstream member kind: kept visible as unsupported rather than dropped.
+                        self.push_unsupported(document, UnsupportedFamily::ViewDefinitionMember, node.span.clone());
                     }
                     ViewBodyElement::Annotating(member) => {
                         self.lower_annotating_member(
@@ -12510,6 +12696,14 @@ impl SemanticModelBuilder {
                     ConstraintDefBodyElement::Error(error) => {
                         self.push_recovery(document, error.span.clone());
                     }
+                    ConstraintDefBodyElement::AliasDef(node) => {
+                        // New upstream member kind: kept visible as unsupported rather than dropped.
+                        self.push_unsupported(document, UnsupportedFamily::ConstraintDefinitionMember, node.span.clone());
+                    }
+                    ConstraintDefBodyElement::ReturnDecl(node) => {
+                        // New upstream member kind: kept visible as unsupported rather than dropped.
+                        self.push_unsupported(document, UnsupportedFamily::ConstraintDefinitionMember, node.span.clone());
+                    }
                     ConstraintDefBodyElement::Constraint(constraint) => {
                         self.lower_constraint_usage(document, Some(declaration), constraint)?;
                     }
@@ -12540,7 +12734,7 @@ impl SemanticModelBuilder {
                     ConstraintDefBodyElement::Expression(expression) => {
                         self.push_evaluation_fact(
                             declaration,
-                            classify_constraint_expression(&expression.value),
+                            self.constraint_evaluation_shape(document, &expression.value),
                         );
                         self.lower_constraint_expression(
                             document,
@@ -12835,6 +13029,14 @@ impl SemanticModelBuilder {
                     CalcDefBodyElement::Error(error) => {
                         self.push_recovery(document, error.span.clone());
                     }
+                    CalcDefBodyElement::FlowUsage(node) => {
+                        // New upstream member kind: kept visible as unsupported rather than dropped.
+                        self.push_unsupported(document, UnsupportedFamily::CalcDefinitionMember, node.span.clone());
+                    }
+                    CalcDefBodyElement::AliasDef(node) => {
+                        // New upstream member kind: kept visible as unsupported rather than dropped.
+                        self.push_unsupported(document, UnsupportedFamily::CalcDefinitionMember, node.span.clone());
+                    }
                     CalcDefBodyElement::CalcUsage(calc_usage) => {
                         self.lower_calc_usage(document, Some(declaration), calc_usage)?;
                     }
@@ -12875,7 +13077,7 @@ impl SemanticModelBuilder {
                     CalcDefBodyElement::Expression(expression) => {
                         self.push_evaluation_fact(
                             declaration,
-                            classify_calc_expression(&expression.value),
+                            self.calc_evaluation_shape(document, &expression.value),
                         );
                         self.lower_calc_expression(
                             document,
@@ -13222,6 +13424,10 @@ impl SemanticModelBuilder {
             OccurrenceBodyElement::Error(error) => {
                 self.push_recovery(document, error.span.clone());
             }
+                    OccurrenceBodyElement::Bind(node) => {
+                        // New upstream member kind: kept visible as unsupported rather than dropped.
+                        self.push_unsupported(document, UnsupportedFamily::OccurrenceDefinitionMember, node.span.clone());
+                    }
             OccurrenceBodyElement::Annotating(member) => {
                 self.lower_annotating_member(
                     document,
@@ -14045,32 +14251,37 @@ impl SemanticModelBuilder {
         family: UnsupportedFamily,
         node: &Node<VariantUsage>,
     ) -> Result<(), ConstructionError> {
-        if let Some(typed) = &node.value.typed {
-            if node.value.body.is_none() {
+        // `VariantUsageForm` makes the two authored shapes exclusive: an inline typed usage, or
+        // a reference to an existing element with an optional body. A body on the reference form
+        // is not lowered yet and stays visible as an unsupported member.
+        let target = match &node.value.form {
+            VariantUsageForm::Typed(typed) => {
                 let owner = Some(owner);
                 return match typed {
                     VariantTypedUsage::Perform(perform) => {
-                        self.lower_perform(document, owner, perform)
+                        self.lower_perform(document, owner, perform.as_ref())
                     }
-                    VariantTypedUsage::Part(part) => self.lower_part_usage(document, owner, part),
+                    VariantTypedUsage::Part(part) => self.lower_part_usage(document, owner, part.as_ref()),
                     VariantTypedUsage::Attribute(attribute) => {
-                        self.lower_attribute_usage(document, owner, attribute)
+                        self.lower_attribute_usage(document, owner, attribute.as_ref())
                     }
-                    VariantTypedUsage::Item(item) => self.lower_item_usage(document, owner, item),
-                    VariantTypedUsage::Port(port) => self.lower_port_usage(document, owner, port),
+                    VariantTypedUsage::Item(item) => self.lower_item_usage(document, owner, item.as_ref()),
+                    VariantTypedUsage::Port(port) => self.lower_port_usage(document, owner, port.as_ref()),
+                    VariantTypedUsage::Action(action) => {
+                        self.lower_action_usage(document, owner, action.as_ref())
+                    }
                     VariantTypedUsage::Requirement(requirement) => {
-                        self.lower_requirement_usage(document, owner, requirement)
+                        self.lower_requirement_usage(document, owner, requirement.as_ref())
                     }
                 };
             }
-        }
-        if node.value.typed.is_some() || node.value.body.is_some() {
-            self.push_unsupported(document, family, node.span.clone());
-            return Ok(());
-        }
-        let Some(target) = node.value.reference else {
-            self.push_unsupported(document, family, node.span.clone());
-            return Ok(());
+            VariantUsageForm::Reference { reference, body } => {
+                if body.is_some() {
+                    self.push_unsupported(document, family, node.span.clone());
+                    return Ok(());
+                }
+                *reference
+            }
         };
         let span = self.documents[document.index()]
             .parsed

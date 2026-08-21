@@ -76,10 +76,10 @@ package AssignmentTest {
         (range (start 17 1) (end 36 2))
       )
       (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "parser")
-        (range (start 18 2) (end 19 2))
+        (severity warning)
+        (code "unsupported_state_definition_member")
+        (source "semantic")
+        (range (start 18 2) (end 18 25))
       )
       (diagnostic
         (severity error)

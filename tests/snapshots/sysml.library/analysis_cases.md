@@ -95,12 +95,6 @@ standard library package AnalysisCases {
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
-        (range (start 20 2) (end 20 5))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
         (range (start 20 39) (end 20 49))
       )
       (diagnostic
@@ -128,7 +122,7 @@ standard library package AnalysisCases {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:c11a3c112b83e4c61ac39761582e70e13eb004e653100913dd189b04f87cfb16") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:c11a3c112b83e4c61ac39761582e70e13eb004e653100913dd189b04f87cfb16") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/analysis_cases.md") (qualified-name "AnalysisCases"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package defines the base types for analysis cases and related behavioral elements \n\t * in the SysML language.\n\t "))))
     (declaration (id (node (document "memory://snapshot/analysis_cases.md") (path (named (kind library-package) (name "AnalysisCases")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Performances::Evaluation") (import (shape membership) (recursive false))))))
@@ -136,8 +130,8 @@ standard library package AnalysisCases {
     (declaration (id (node (document "memory://snapshot/analysis_cases.md") (path (named (kind library-package) (name "AnalysisCases")) (anonymous (kind import) (ordinal 2))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Calculations::Calculation") (import (shape membership) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/analysis_cases.md") (path (named (kind library-package) (name "AnalysisCases")) (anonymous (kind import) (ordinal 3))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Cases::Case") (import (shape membership) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/analysis_cases.md") (path (named (kind library-package) (name "AnalysisCases")) (anonymous (kind import) (ordinal 4))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Cases::cases") (import (shape membership) (recursive false))))))
-    (declaration (id (node (document "memory://snapshot/analysis_cases.md") (qualified-name "AnalysisCases::AnalysisCase"))) (kind analysis-def) (membership (kind owning) (visibility default)) (facts (modifiers abstract)) (documentation (doc (text "\n\t\t * AnalysisCase is the most general class of performances of AnalysisCaseDefinitions. \n\t\t * AnalysisCase is the base class of all AnalysisCaseDefinitions.\n\t\t "))) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Case")) (expressionOperand (reference "ref")))))
-    (declaration (id (node (document "memory://snapshot/analysis_cases.md") (qualified-name "AnalysisCases::AnalysisCase::self"))) (kind analysis) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "AnalysisCase")) (redefinition (reference "Case::self")))))
+    (declaration (id (node (document "memory://snapshot/analysis_cases.md") (qualified-name "AnalysisCases::AnalysisCase"))) (kind analysis-def) (membership (kind owning) (visibility default)) (facts (modifiers abstract)) (documentation (doc (text "\n\t\t * AnalysisCase is the most general class of performances of AnalysisCaseDefinitions. \n\t\t * AnalysisCase is the base class of all AnalysisCaseDefinitions.\n\t\t "))) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Case")))))
+    (declaration (id (node (document "memory://snapshot/analysis_cases.md") (qualified-name "AnalysisCases::AnalysisCase::self"))) (kind analysis) (membership (kind feature) (visibility default)) (facts (modifiers reference)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "AnalysisCase")) (redefinition (reference "Case::self")))))
     (declaration (id (node (document "memory://snapshot/analysis_cases.md") (qualified-name "AnalysisCases::AnalysisCase::subAnalysisCases"))) (kind analysis) (membership (kind feature) (visibility default)) (facts (modifiers abstract)) (documentation (doc (text "\n\t\t\t * Other AnalysisCases carried out as part of the performance of this AnalysisCase.\n\t\t\t "))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "AnalysisCase")) (subsetting (reference "analysisCases")) (subsetting (reference "subcases")))))
     (declaration (id (node (document "memory://snapshot/analysis_cases.md") (qualified-name "AnalysisCases::AnalysisCase::subj"))) (kind subject) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "Case::subj")))))
     (declaration (id (node (document "memory://snapshot/analysis_cases.md") (qualified-name "AnalysisCases::analysisCases"))) (kind analysis) (membership (kind feature) (visibility default)) (facts (modifiers abstract)) (documentation (doc (text "\n\t\t * analysisCases is the base feature of all AnalysisCaseUsages.\n\t\t "))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "AnalysisCase")) (subsetting (reference "cases")))))
@@ -160,9 +154,6 @@ standard library package AnalysisCases {
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/analysis_cases.md") (qualified-name "AnalysisCases::AnalysisCase"))) (kind specialization) (ordinal 0))
       (authored-target "Case")
-      (outcome (status unresolved)))
-    (reference (id (source (node (document "memory://snapshot/analysis_cases.md") (qualified-name "AnalysisCases::AnalysisCase"))) (kind expressionOperand) (ordinal 0))
-      (authored-target "ref")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/analysis_cases.md") (qualified-name "AnalysisCases::AnalysisCase::self"))) (kind featureTyping) (ordinal 0))
       (authored-target "AnalysisCase")
@@ -196,7 +187,6 @@ standard library package AnalysisCases {
     (relationship (kind typing) (source (node (document "memory://snapshot/analysis_cases.md") (qualified-name "AnalysisCases::analysisCases"))) (target (node (document "memory://snapshot/analysis_cases.md") (qualified-name "AnalysisCases::AnalysisCase"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/analysis_cases.md") (qualified-name "AnalysisCases::analysisCases"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/analysis_cases.md") (qualified-name "AnalysisCases::AnalysisCase"))) (state unresolved-operand))
   )
 )
 ~~~
@@ -263,11 +253,6 @@ standard library package AnalysisCases {
   )
   (query (document "memory://snapshot/analysis_cases.md") (range (start 13 39) (end 13 43)) (probe (position 13 39))
     (reference (id (source (node (document "memory://snapshot/analysis_cases.md") (qualified-name "AnalysisCases::AnalysisCase"))) (kind specialization) (ordinal 0) (authored-target "Case")
-      (outcome (status unresolved)))
-    )
-  )
-  (query (document "memory://snapshot/analysis_cases.md") (range (start 20 2) (end 20 5)) (probe (position 20 2))
-    (reference (id (source (node (document "memory://snapshot/analysis_cases.md") (qualified-name "AnalysisCases::AnalysisCase"))) (kind expressionOperand) (ordinal 0) (authored-target "ref")
       (outcome (status unresolved)))
     )
   )

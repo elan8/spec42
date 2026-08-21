@@ -3502,10 +3502,6 @@ fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     | ReferenceKind::IncludeUseCase
                     | ReferenceKind::ViewExpose
                     | ReferenceKind::InvocationCallee
-                    | ReferenceKind::DecisionInput
-                    | ReferenceKind::MergeInput
-                    | ReferenceKind::ForkInput
-                    | ReferenceKind::JoinInput
                     | ReferenceKind::ThenTarget
                     | ReferenceKind::AcceptVia
                     | ReferenceKind::SendTarget
@@ -4455,10 +4451,6 @@ fn supported_import_domain(reference: &impl ResolutionReferenceFact) -> Option<D
         | ReferenceKind::IncludeUseCase
         | ReferenceKind::MemberAccessOperand
         | ReferenceKind::InvocationCallee
-        | ReferenceKind::DecisionInput
-        | ReferenceKind::MergeInput
-        | ReferenceKind::ForkInput
-        | ReferenceKind::JoinInput
         | ReferenceKind::ThenTarget
         | ReferenceKind::AcceptVia
         | ReferenceKind::SendTarget
@@ -4679,10 +4671,6 @@ fn build_effective_import_indexes<R: ResolutionReferenceFact>(
             | ReferenceKind::ViewExpose
             | ReferenceKind::MemberAccessOperand
             | ReferenceKind::InvocationCallee
-            | ReferenceKind::DecisionInput
-            | ReferenceKind::MergeInput
-            | ReferenceKind::ForkInput
-            | ReferenceKind::JoinInput
             | ReferenceKind::ThenTarget
             | ReferenceKind::AcceptVia
             | ReferenceKind::SendTarget

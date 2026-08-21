@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **The normative KerML and SysML validation constraints are now a traceable snapshot corpus.**
+  `tests/snapshots/validation` covers all 180 constraints the two specifications name `validate*`
+  -- 88 in KerML 1.0 and 92 in SysML 2.0 -- across 179 fixtures, each carrying its specification,
+  OMG document identifier, exact clause, constraint name, a conforming and a violating example, and
+  an authored `EXPECTED DIAGNOSTICS`. Rules the compiler does not enforce yet stay visible as
+  `SKIPPED` with a concrete reason naming the layer that declines the construct.
+  `planning/VALIDATION_RULE_INVENTORY.md` records the reconciliation, and why the corpus is 180
+  rules rather than the 415 constraint names the documents contain: `derive*` defines derived
+  properties and `check*` is the semantic-constraint family a tool may satisfy by implication, so
+  neither is the validation contract a conformant tool must report.
+
+- **Bumped the pinned `sysml-v2-parser` revision `ec47463` -> `49bdf3f`.** Control nodes are the
+  visible behavior change: `ControlNodeDeclaration` makes `merge continue;` a *declaration* rather
+  than a reference to an existing element, so a named control node publishes as a named
+  declaration instead of an anonymous node with an unresolved `joinInput`-style input reference.
+  `Expression` folds `Parenthesized` and `Tuple` into one `Sequence` production and replaces
+  `LiteralWithUnit` with `Bracket`, whose unit operand is a source-backed qualified reference
+  rather than copied text, so unit identity is now read from the arena. `KermlFeature` moves its
+  `chains`/`inverse of`/`featured by` clauses into `relationship_parts`, and `VariantUsage` gains
+  an explicit `Reference`/`Typed` form discriminant. Sixteen new body-element variants across the
+  usage families are reported as unsupported members rather than dropped.
+
+
 - **Diagrams now cross the generator boundary.** The repository-owned Rust WASM diagram plugin
   emits a versioned JSON render product from the immutable model query API, and the VS Code webview
   renders it with the relocated D3/ELK package. All eight view kinds are selectable from the start:

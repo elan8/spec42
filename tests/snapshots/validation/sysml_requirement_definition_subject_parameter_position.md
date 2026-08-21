@@ -1,0 +1,149 @@
+# META
+~~~ini
+description=SysML 8.3.21.8 validateRequirementDefinitionSubjectParameterPosition requires the subjectParameter of a RequirementDefinition to be its first input
+specification=OMG SysML 2.0 Language (formal/26-03-02)
+specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
+validation_rule=8.3.21.8 validateRequirementDefinitionSubjectParameterPosition
+type=file
+skip_validation=subject_member_not_first is not reported when a directed reference usage precedes the subject membership, so this manifestation of the rule is unenforced
+~~~
+# SOURCE
+~~~sysml
+package Roles {
+    part def Component;
+
+    // Conforming: the subject parameter comes first.
+    requirement def Good {
+        subject first : Component;
+        in ref part other : Component;
+    }
+
+    // Invalid: another input precedes the subject parameter.
+    requirement def Bad {
+        in ref part other : Component;
+        subject later : Component;
+    }
+}
+~~~
+# EXPECTED DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "subject_member_not_first")
+        (source "semantic")
+        (range (start 12 8) (end 12 34))
+      )
+    )
+  )
+)
+~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md"
+    (diagnostics
+    )
+  )
+)
+~~~
+# SMG
+~~~sexpr
+(semantic-model
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:f6c8f187488cc1dac4955669e0f60b83e3875b6e41153115e4425e0e192c6c2a") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Bad"))) (kind requirement-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Bad::later"))) (kind subject) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Component")))))
+    (declaration (id (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Bad::other"))) (kind ref) (membership (kind feature) (visibility default)) (facts (direction in)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Component")))))
+    (declaration (id (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Component"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Good"))) (kind requirement-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Good::first"))) (kind subject) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Component")))))
+    (declaration (id (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Good::other"))) (kind ref) (membership (kind feature) (visibility default)) (facts (direction in)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Component")))))
+  )
+  (references
+    (reference (id (source (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Bad::later"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Component")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Component")))))
+    (reference (id (source (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Bad::other"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Component")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Component")))))
+    (reference (id (source (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Good::first"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Component")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Component")))))
+    (reference (id (source (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Good::other"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Component")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Component")))))
+  )
+  (relationships
+    (relationship (kind typing) (source (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Bad::later"))) (target (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Component"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Bad::later"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Bad::other"))) (target (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Component"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Bad::other"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Good::first"))) (target (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Component"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Good::first"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Good::other"))) (target (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Component"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Good::other"))) (kind featureTyping) (ordinal 0)))
+  )
+  (evaluation
+  )
+)
+~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Bad::later")))
+      (featured-by (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Bad")))
+      (type (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Component")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Component")) (source direct))
+      (supertype (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Component")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Bad::other")))
+      (featured-by (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Bad")))
+      (type (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Component")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Component")) (source direct))
+      (supertype (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Component")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Component")))
+      (subtype (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Bad::later")) (scopes any))
+      (subtype (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Bad::other")) (scopes any))
+      (subtype (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Good::first")) (scopes any))
+      (subtype (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Good::other")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Good::first")))
+      (featured-by (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Good")))
+      (type (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Component")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Component")) (source direct))
+      (supertype (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Component")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Good::other")))
+      (featured-by (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Good")))
+      (type (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Component")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Component")) (source direct))
+      (supertype (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Component")) (scopes any))
+    )
+)
+~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (query (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (range (start 12 24) (end 12 33)) (probe (position 12 24))
+    (reference (id (source (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Bad::later"))) (kind featureTyping) (ordinal 0) (authored-target "Component")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Component")))))
+    )
+  )
+  (query (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (range (start 11 28) (end 11 37)) (probe (position 11 28))
+    (reference (id (source (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Bad::other"))) (kind featureTyping) (ordinal 0) (authored-target "Component")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Component")))))
+    )
+  )
+  (query (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (range (start 5 24) (end 5 33)) (probe (position 5 24))
+    (reference (id (source (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Good::first"))) (kind featureTyping) (ordinal 0) (authored-target "Component")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Component")))))
+    )
+  )
+  (query (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (range (start 6 28) (end 6 37)) (probe (position 6 28))
+    (reference (id (source (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Good::other"))) (kind featureTyping) (ordinal 0) (authored-target "Component")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Component")))))
+    )
+  )
+)
+~~~

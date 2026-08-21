@@ -108,6 +108,12 @@ standard library package Base {
     (diagnostics
       (diagnostic
         (severity warning)
+        (code "unsupported_calc_definition_member")
+        (source "semantic")
+        (range (start 13 43) (end 13 61))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 56 28) (end 56 49))
@@ -119,7 +125,7 @@ standard library package Base {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:93cb44b718e717a9ba8a8c5c0b69f4a8013cd7a555d270b1145d5fed5e3fc8dd") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:93cb44b718e717a9ba8a8c5c0b69f4a8013cd7a555d270b1145d5fed5e3fc8dd") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/base.md") (qualified-name "Base"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (documentation (doc (text "\n\t * This package defines the classifiers and features that provide the bases for the typing\n\t * of all elements in the language.\n\t "))))
     (declaration (id (node (document "memory://snapshot/base.md") (qualified-name "Base::Anything"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (facts (modifiers abstract)) (documentation (doc (text "\n\t     * Anything is the top level generalized type in the language. \n\t     "))))

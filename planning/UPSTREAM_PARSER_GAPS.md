@@ -6,8 +6,8 @@ the separate, downstream migration required to delete `spec42-sysml-parser`; the
 not be conflated.
 
 The canonical parser currently pinned behind `crates/sysml_parser` is
-`lukewilliamboswell/sysml-v2-parser@ec47463f86829bc7caebd44b8ad7db6eea677691`. Every gap below was
-re-exercised against that exact revision on 2026-08-20, by parsing a probe fixture with it directly
+`lukewilliamboswell/sysml-v2-parser@49bdf3f8b8a90b64048acfe1244c2c140c4e5b08`. Every gap below was
+re-exercised against that exact revision, by parsing a probe fixture with it directly
 and by re-reading the owning `sysml_resolution` lowering; the entries the bump closed were removed
 rather than annotated. New upstream work must be based on the full pinned identity, not an
 abbreviated revision or the old `sysml-v2-parser-next` dependency alias.
@@ -56,6 +56,12 @@ rerun against the exact replacement revision when fixed.
 | Gap | Information unavailable to consumers | Minimum upstream acceptance evidence |
 | --- | --- | --- |
 | 61 | Calc-shaped bodies silently shred `flow`, `message` and anonymous `redefines` members into bare expressions | Give each a typed member variant in the calc-shaped body grammar; prove `flow a.y to b.x1;`, `message m of T;` and `redefines predecessors [0];` produce one node each, and that no keyword reaches the AST as a feature reference |
+| 62 | KerML `flow` declarations: no production at all, so `Flow`/`FlowEnd` are unreachable | Add a KerML flow member node and production; prove `flow of T from a to b;` produces one Flow with two FlowEnds and no unresolved-reference cascade |
+| 64 | Conjugation *declarations* (`conjugates`/`ConjugationPart`), as opposed to the `~T` typing flag | Add a `Conjugation` relationship node and a type-declaration `ConjugationPart`; prove `classifier C conjugates A;` produces one conjugation, and two produce two |
+| 65 | The `parallel` body modifier on a `state def` | Accept the modifier on the state-def body as `StateDefBody` specifies; prove `state def S parallel { ... }` parses and records isParallel |
+| 66 | A second `crosses`/`references` clause on one feature, currently discarded silently | Model each clause as a list, or diagnose the second occurrence; prove `feature f crosses a crosses b;` is either represented or reported, never dropped |
+| 67 | Restriction modifiers alongside `end` (`derived`/`abstract`/`composite`/`portion`/`var`) | Accept each prefix with `end` in the spelled order; prove all parse and lower, restoring the `end_feature_invalid_restrictions` coverage this revision made unreachable |
+| 68 | Debug-build stack exhaustion parsing a small nested action body | Split the `action_usage_body_element` alternative set so no single combinator frame is this large; prove the nested `for`/`perform action` probe parses on a 2 MiB thread stack in a debug build |
 | 41 | Lexically distinguished implicit `that` self-reference | Produce a dedicated typed form that cannot collide with a user declaration; cover bare, cast, and member-access expressions |
 | 52 | `readonly` and `variable` modifiers | Preserve presence and token spans independently from effective/default values |
 | 55 | `//` and `/** ... */` comment fidelity, and `DocComment` text normalization | Decide and test whether doc-style trivia is syntax; if syntax, preserve kind, raw span, and one normalized-text policy centrally |
@@ -96,6 +102,92 @@ workflow.
 
   A fix needs typed member variants for all three spellings in the calc-shaped body grammar. It
   would also restore `class`-body parity with `204ca48` as a side effect.
+
+- Gap 62. KerML has no `flow` production at all. `src/ast/kerml_fallback.rs` defines no flow node
+  and `src/parser` no flow member for KerML scope (a repo-wide grep for `flow` in
+  `kerml_fallback.rs` finds nothing; every `b"flow"` hit belongs to the SysML `flow def`/`flow`
+  usage). KerML 8.2's `Flow`/`FlowDeclaration`/`PayloadFeatureMember`/`FlowEndMember` productions
+  are therefore unreachable: `behavior Moving { feature a : Thing; feature b : Thing; flow of Thing
+  from a to b; }` lowers as a cascade of `unresolved_reference`, one per token of the flow
+  declaration, with no Flow or FlowEnd declaration published. Verified at `49bdf3f` with a scratch
+  fixture through `cargo run -p spec42-snapshot`.
+
+  This makes all four KerML flow constraints unreachable --
+  `tests/snapshots/validation/kerml_flow_payload_feature.md`, `kerml_flow_end_is_end.md`,
+  `kerml_flow_end_nested_feature.md` and `kerml_flow_end_owning_type.md` are all `SKIPPED` for this
+  reason. Needs a KerML flow member node and production, filed upstream against
+  `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+
+- Gap 64. There is no conjugation-*declaration* production. The parser models conjugation only as
+  the `~T` conjugated-typing flag -- `ast::TypingRelationship.is_conjugated` (`src/ast/core.rs`)
+  and the `type_is_conjugated` field on several usage nodes -- so KerML 8.2.4.1.3's `Conjugation`
+  and the `ConjugationPart` of a type declaration have no node. `classifier One conjugates A;` is
+  reported as `unsupported_grammar_form`. Verified at `49bdf3f` by direct inspection plus a scratch
+  fixture.
+
+  Both KerML conjugation constraints are unreachable for this reason
+  (`tests/snapshots/validation/kerml_type_at_most_one_conjugator.md`,
+  `kerml_specialization_specific_not_conjugated.md`). Needs a `Conjugation` relationship node and a
+  `ConjugationPart` production on type declarations, filed upstream against
+  `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+
+- Gap 65. The `parallel` state-body modifier is accepted on a state *usage* but not on a `state
+  def`. `src/parser/state.rs` consumes an optional `parallel`/`initial` modifier before a state
+  usage body, and `src/parser/part/body.rs` does the same for an exhibited state, but no
+  `state def` body parser does: `state def Machine parallel { state a; state b; }` -- exactly the
+  SysML `StateDefBody` production, `';' | ( isParallel ?= 'parallel' )? '{' StateBodyItem* '}'` --
+  fails with `missing_body_or_semicolon` across the whole declaration, while the usage form
+  `state machine parallel { ... }` parses and lowers. Verified at `49bdf3f` with a scratch fixture.
+
+  `tests/snapshots/validation/sysml_state_definition_parallel_subactions.md` is `SKIPPED` for this
+  reason while its usage sibling is skipped only for the missing semantic rule. Needs the same
+  optional modifier on the state-def body production, filed upstream against
+  `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+
+- Gap 66. `KermlFeature.crosses` and `.references` (`src/ast/kerml_fallback.rs`) are each a single
+  `Option<Node<SubsettingRelationship>>`, so a feature carrying two such clauses cannot be
+  represented and the second is silently discarded rather than reported: `feature two crosses a
+  crosses b;` and `feature tworef references a references b;` both parse with no diagnostic at all.
+  Verified at `49bdf3f` by direct inspection plus a scratch fixture.
+
+  KerML 8.3.3.3.4 states both `validateFeatureOwnedCrossSubsetting` and
+  `validateFeatureOwnedReferenceSubsetting` as "at most one" rules, so silently dropping the excess
+  clause makes the violation unobservable rather than merely unenforced -- the model the author
+  wrote and the model published disagree, with nothing recording the difference. Either a `Vec` per
+  clause, matching how `relationship_parts` already models repeatable clauses, or an explicit
+  diagnostic on the second occurrence. `tests/snapshots/validation/`'s
+  `kerml_feature_owned_cross_subsetting.md` and `kerml_feature_owned_reference_subsetting.md` are
+  `SKIPPED` for this reason.
+
+- Gap 67. No restriction modifier is accepted alongside `end` on a KerML feature, in either order.
+  `derived`, `abstract`, `composite`, `portion` and `var` all fail before or after `end`
+  (`unexpected_keyword_in_scope` or `unrecognized_declaration_in_scope`); only `const end feature`
+  parses. Verified at `49bdf3f` with a scratch fixture covering all eight spellings. This is a
+  regression against `204ca48`, where `derived end feature`, `abstract end feature` and
+  `composite end feature` all parsed and lowered, and where
+  `sysml_resolution`'s `end_feature_invalid_restrictions` fired for them.
+
+  That diagnostic is now unreachable: it appears nowhere in the regenerated corpus's generated
+  `DIAGNOSTICS`, only in the authored expectations of
+  `tests/snapshots/validation/kerml_feature_end_restrictions.md` and
+  `kerml_end_feature_direction.md`. KerML 8.3.3.3.4
+  `validateFeatureEndNotDerivedAbstractCompositeOrPortion` therefore has no authorable violation.
+  Needs the restriction prefixes accepted alongside `end`, filed upstream against
+  `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
+
+- Gap 68. Debug builds overflow a 2 MiB thread stack while parsing a small, legal nested action
+  body. `package P { action def A { for x in seq { perform action doStuff : DoStuff { for y in
+  items { } } } } }` (`tests/snapshots/fuzz/fuzz_perform_action_keyword.md`) crashes with
+  `EXC_BAD_ACCESS` on a Rayon worker; the backtrace bottoms out in the `nom::branch::Choice` chain
+  of `parser::action::action_usage_body_element`. Release builds are unaffected, and a
+  single-fixture run is unaffected because Rayon executes it on the 8 MiB main thread, so this only
+  bites a debug `cargo run -p spec42-snapshot -- check` over a directory. Verified at `49bdf3f`
+  under `lldb`; not reproducible at `ec47463`.
+
+  The alternative chain gained an `Import` arm in this revision, and each `alt` tuple element costs
+  stack in an unoptimized build. Needs the action-body alternative set split so no single
+  combinator frame is this large, filed upstream against
+  `feat/gh-119-arena-backed-references` (elan8/sysml-v2-parser#121).
 
 - Gap 41. KerML's implicit self-reference identifier `that` (e.g.
   `tests/snapshots/sysml/examples`'s `trig_functions.md`: `inv unitBound { -1.0 <= that & that <=
@@ -212,6 +304,16 @@ disappearing with the gap entries they closed. Each was re-checked against the o
 - **`CommentAnnotation.keyword_span`.** Whether a comment member was written with the `comment`
   keyword is now a grammatical fact with its own span (see Gap 55). `sysml_tokens` reads it for
   semantic ranges; `sysml_resolution` does not record it, so the two spellings publish identically.
+
+- **`KermlFeatureMember.crosses`, `references`, `chains`, `inverse_of` and `is_const`.** All five
+  are typed on the node; `lower_kerml_feature_member` (`crates/sysml_resolution/src/model.rs`)
+  reads only `typing`, `subsets`, `redefines`, `type_relationships`, `value` and `body`, and
+  copies every sibling modifier flag except `is_const`. So an authored `crosses`/`references`/
+  `chains`/`inverse of` clause and an authored `const` are all dropped between parse and
+  publication. Eleven validation fixtures are `SKIPPED` on exactly this
+  (`tests/snapshots/validation/kerml_feature_owned_cross_subsetting.md`,
+  `kerml_feature_chaining_*.md`, `kerml_feature_end_is_constant.md`, and others); each names the
+  field it is waiting on.
 
 - **`CollectionOperatorBody.doc`.** A collection operator body's `doc /* ... */` annotation is
   typed upstream, but the whole collection-operator expression family is still unlowered here

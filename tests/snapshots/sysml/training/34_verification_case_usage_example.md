@@ -88,12 +88,6 @@ package 'Verification Case Usage Example' {
         (range (start 10 32) (end 10 47))
       )
       (diagnostic
-        (severity error)
-        (code "recovered_use_case_body_element")
-        (source "parser")
-        (range (start 11 2) (end 11 43))
-      )
-      (diagnostic
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
@@ -162,6 +156,7 @@ package 'Verification Case Usage Example' {
     (declaration (id (node (document "memory://snapshot/34_verification_case_usage_example.md") (qualified-name "Verification Case Usage Example::testSystem::test1"))) (kind occurrence) (membership (kind feature) (visibility default)) (facts (portion timeslice)))
     (declaration (id (node (document "memory://snapshot/34_verification_case_usage_example.md") (qualified-name "Verification Case Usage Example::testSystem::test2"))) (kind occurrence) (membership (kind feature) (visibility default)) (facts (portion timeslice)))
     (declaration (id (node (document "memory://snapshot/34_verification_case_usage_example.md") (qualified-name "Verification Case Usage Example::vehicleMassTest"))) (kind verification) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "VehicleMassTest")))))
+    (declaration (id (node (document "memory://snapshot/34_verification_case_usage_example.md") (qualified-name "Verification Case Usage Example::vehicleMassTest::testVehicle"))) (kind subject) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/34_verification_case_usage_example.md") (qualified-name "Verification Case Usage Example::vehicleTestConfig"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Vehicle")))))
   )
   (references
@@ -276,6 +271,9 @@ package 'Verification Case Usage Example' {
     )
     (declaration (id (node (document "memory://snapshot/34_verification_case_usage_example.md") (qualified-name "Verification Case Usage Example::testSystem::test2")))
       (featured-by (node (document "memory://snapshot/34_verification_case_usage_example.md") (qualified-name "Verification Case Usage Example::testSystem")))
+    )
+    (declaration (id (node (document "memory://snapshot/34_verification_case_usage_example.md") (qualified-name "Verification Case Usage Example::vehicleMassTest::testVehicle")))
+      (featured-by (node (document "memory://snapshot/34_verification_case_usage_example.md") (qualified-name "Verification Case Usage Example::vehicleMassTest")))
     )
 )
 ~~~

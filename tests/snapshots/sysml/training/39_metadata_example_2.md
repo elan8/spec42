@@ -32,10 +32,10 @@ package 'Metadata Example-2' {
   (document "memory://snapshot/39_metadata_example_2.md"
     (diagnostics
       (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "parser")
-        (range (start 3 2) (end 5 2))
+        (severity warning)
+        (code "unsupported_action_usage_member")
+        (source "semantic")
+        (range (start 3 2) (end 3 36))
       )
       (diagnostic
         (severity warning)
@@ -80,7 +80,7 @@ package 'Metadata Example-2' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:1060f239698c5b61e563660055c923f98689acb8ba03aa99a7aef412a683a192") (contract-version "parser-owned-resolution-v1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:1060f239698c5b61e563660055c923f98689acb8ba03aa99a7aef412a683a192") (contract-version "parser-owned-resolution-v1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/39_metadata_example_2.md") (qualified-name "Metadata Example-2"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/39_metadata_example_2.md") (qualified-name "Metadata Example-2::computeDynamics"))) (kind action) (membership (kind feature) (visibility default)))

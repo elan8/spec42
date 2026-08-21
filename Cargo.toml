@@ -45,6 +45,6 @@ petgraph = { version = "0.8", features = ["serde-1"] }
 sha2 = "0.10"
 blake3 = "1"
 semantic_publication = { path = "crates/semantic_publication" }
-sysml-v2-parser = { git = "https://github.com/lukewilliamboswell/sysml-v2-parser.git", rev = "ec47463f86829bc7caebd44b8ad7db6eea677691", features = ["serde"] }
+sysml-v2-parser = { git = "https://github.com/lukewilliamboswell/sysml-v2-parser.git", rev = "49bdf3f8b8a90b64048acfe1244c2c140c4e5b08", features = ["serde"] }
 ts-rs = { version = "11", features = ["serde-compat", "serde-json-impl"] }
 zstd = "0.13"
