@@ -43,7 +43,8 @@ effective_features(Coverage::Component): 1 element(s)
 children(Coverage::Component::mass): 0 element(s)
 element(Coverage::Component::mass): definition=false abstract=false derived=false end=false multiplicity=<none>
 typed_by(Coverage::Component::mass): Coverage::Mass
-relationships(Coverage::Component::mass): 1 edge(s)
+relationships(Coverage::Component::mass): 2 edge(s)
+  typeFeaturing Coverage::Component::mass -> Coverage::Component implied=true
   typing Coverage::Component::mass -> Coverage::Mass implied=false
 effective_features(Coverage::Component::mass): 0 element(s)
 children(Coverage::Engine): 2 element(s)
@@ -60,13 +61,15 @@ effective_features(Coverage::Engine): 3 element(s)
 children(Coverage::Engine::mass): 0 element(s)
 element(Coverage::Engine::mass): definition=false abstract=false derived=false end=false multiplicity=<none>
 typed_by(Coverage::Engine::mass): Coverage::Mass
-relationships(Coverage::Engine::mass): 1 edge(s)
+relationships(Coverage::Engine::mass): 2 edge(s)
+  typeFeaturing Coverage::Engine::mass -> Coverage::Engine implied=true
   typing Coverage::Engine::mass -> Coverage::Mass implied=false
 effective_features(Coverage::Engine::mass): 0 element(s)
 children(Coverage::Engine::speed): 0 element(s)
 element(Coverage::Engine::speed): definition=false abstract=false derived=false end=false multiplicity=0..?
 typed_by(Coverage::Engine::speed): Coverage::Speed
-relationships(Coverage::Engine::speed): 1 edge(s)
+relationships(Coverage::Engine::speed): 2 edge(s)
+  typeFeaturing Coverage::Engine::speed -> Coverage::Engine implied=true
   typing Coverage::Engine::speed -> Coverage::Speed implied=false
 effective_features(Coverage::Engine::speed): 0 element(s)
 children(Coverage::Mass): 0 element(s)
@@ -86,7 +89,8 @@ effective_features(Coverage::Powered): 2 element(s)
 children(Coverage::Powered::power): 0 element(s)
 element(Coverage::Powered::power): definition=false abstract=false derived=false end=false multiplicity=<none>
 typed_by(Coverage::Powered::power): <untyped>
-relationships(Coverage::Powered::power): 0 edge(s)
+relationships(Coverage::Powered::power): 1 edge(s)
+  typeFeaturing Coverage::Powered::power -> Coverage::Powered implied=true
 effective_features(Coverage::Powered::power): 0 element(s)
 children(Coverage::Speed): 0 element(s)
 element(Coverage::Speed): definition=true abstract=false derived=false end=false multiplicity=<none>
@@ -107,7 +111,8 @@ effective_features(Coverage::Vehicle): 3 element(s)
 children(Coverage::Vehicle::engine): 0 element(s)
 element(Coverage::Vehicle::engine): definition=false abstract=false derived=false end=false multiplicity=1..1
 typed_by(Coverage::Vehicle::engine): Coverage::Engine
-relationships(Coverage::Vehicle::engine): 1 edge(s)
+relationships(Coverage::Vehicle::engine): 2 edge(s)
+  typeFeaturing Coverage::Vehicle::engine -> Coverage::Vehicle implied=true
   typing Coverage::Vehicle::engine -> Coverage::Engine implied=false
 effective_features(Coverage::Vehicle::engine): 3 element(s)
   Coverage::Engine::mass [AttributeUsage] name=mass library=false
@@ -116,7 +121,8 @@ effective_features(Coverage::Vehicle::engine): 3 element(s)
 children(Coverage::Vehicle::spare): 0 element(s)
 element(Coverage::Vehicle::spare): definition=false abstract=false derived=false end=false multiplicity=0..1
 typed_by(Coverage::Vehicle::spare): Coverage::Engine
-relationships(Coverage::Vehicle::spare): 1 edge(s)
+relationships(Coverage::Vehicle::spare): 2 edge(s)
+  typeFeaturing Coverage::Vehicle::spare -> Coverage::Vehicle implied=true
   typing Coverage::Vehicle::spare -> Coverage::Engine implied=false
 effective_features(Coverage::Vehicle::spare): 3 element(s)
   Coverage::Engine::mass [AttributeUsage] name=mass library=false
