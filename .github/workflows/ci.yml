@@ -125,6 +125,8 @@ jobs:
           cargo test -p lsp_server --test lsp_integration integration::diagnostics::unresolved_satisfy_reference_emits_semantic_diagnostic
 
       - name: cargo test (core workspace)
+        env:
+          RUST_MIN_STACK: 16777216
         run: |
           cargo test --workspace --exclude server --exclude lsp_server
           cargo test -p lsp_server --lib --test debt_guardrails --test parse_validation
