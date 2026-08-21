@@ -16,10 +16,6 @@ else
 	qa_dir="$root_dir/.cache/vscode-qa-$abi_token"
 fi
 target_dir="$qa_dir/cargo-target"
-vsix_path="$qa_dir/spec42-local-qa.vsix"
-workspace_path="$qa_dir/spec42-diagram-qa.code-workspace"
-extensions_dir="$qa_dir/extensions"
-user_data_dir="$qa_dir/user-data"
 model_dir="$root_dir/examples"
 model_path="$model_dir/timer/Views.sysml"
 plugin_path="$root_dir/vscode/generators/diagram.wasm"
@@ -35,7 +31,7 @@ Spec42 server, Rust diagram generator, and D3/ELK diagram webview. It does not
 change global VS Code settings or the normal extension directory.
 
 Environment override:
-  SPEC42_VSCODE_QA_DIR   use a different QA state directory
+  SPEC42_VSCODE_QA_DIR   use a different QA state root
 EOF
 }
 
@@ -82,7 +78,20 @@ for required_path in \
 	fi
 done
 
-mkdir -p "$qa_dir" "$extensions_dir" "$user_data_dir"
+mkdir -p "$qa_dir"
+# VS Code routes another invocation with the same user-data directory to the already-running
+# process. Give every QA launch a fresh process and extension installation so a rebuilt server or
+# packaged plugin cannot be shadowed by the previous extension host. The Cargo target directory
+# remains above this per-run directory so repeated QA builds still reuse compiled dependencies.
+run_dir=$(mktemp -d "$qa_dir/run.XXXXXX")
+vsix_path="$run_dir/spec42-local-qa.vsix"
+workspace_path="$run_dir/spec42-diagram-qa.code-workspace"
+extensions_dir="$run_dir/extensions"
+# VS Code appends its IPC socket name to the user-data path. Keep this disposable profile under
+# the short macOS temporary-directory alias so the resulting Unix socket stays below macOS's
+# 104-byte sockaddr_un limit even when the repository checkout path is long.
+user_data_dir=$(mktemp -d /tmp/spec42-vscode-qa.XXXXXX)
+mkdir -p "$extensions_dir"
 
 stdlib_cache="$root_dir/.cache/sysml-stdlib-kpar-2026-04"
 if [[ ! -d "$stdlib_cache" ]]; then
@@ -150,6 +159,8 @@ echo "  VSIX:      $vsix_path"
 echo "  Spec42:    $server_path"
 echo "  Plugin:    $plugin_path"
 echo "  Workspace: $workspace_path"
+echo "  Runtime:   $run_dir"
+echo "  Profile:   $user_data_dir"
 echo
 echo "In VS Code, run: Spec42: Open Diagram"
 echo "The workspace contains every repository example; open an example's Views.sysml first."
@@ -162,11 +173,11 @@ if [[ "$open_vscode" -eq 1 ]]; then
 		--new-window \
 		--extensions-dir "$extensions_dir" \
 		--user-data-dir "$user_data_dir" \
-		"$workspace_path" \
-		--goto "$model_path:1:1"
+		--goto "$model_path:1:1" \
+		"$workspace_path"
 else
 	echo
 	echo "Open it later with:"
-	printf '  %q --new-window --extensions-dir %q --user-data-dir %q %q --goto %q\n' \
-		"$code_bin" "$extensions_dir" "$user_data_dir" "$workspace_path" "$model_path:1:1"
+	printf '  %q --new-window --extensions-dir %q --user-data-dir %q --goto %q %q\n' \
+		"$code_bin" "$extensions_dir" "$user_data_dir" "$model_path:1:1" "$workspace_path"
 fi
