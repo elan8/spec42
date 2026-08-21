@@ -1,0 +1,125 @@
+# META
+~~~ini
+description=SysML 8.3.17.17 validateTriggerInvocationExpressionAfterArgument requires an after TriggerInvocationExpression to have an argument whose result conforms to Quantities::ScalarQuantityValue with a time reference
+specification=OMG SysML 2.0 Language (formal/26-03-02)
+specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
+validation_rule=8.3.17.17 validateTriggerInvocationExpressionAfterArgument
+type=file
+skip_validation=no semantic rule checks the argument of an after trigger; the canonical code trigger_after_argument_not_duration does not exist yet
+~~~
+# SOURCE
+~~~sysml
+package Triggers {
+    attribute def Reading;
+    action def Act {
+        ref attribute duration : ISQ::DurationValue;
+        ref attribute reading : Reading;
+
+        // Conforming: the after argument is a scalar quantity value measured against time.
+        accept after duration;
+
+        // Invalid: the after argument is not a scalar quantity value.
+        accept after reading;
+    }
+}
+~~~
+# EXPECTED DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "trigger_after_argument_not_duration")
+        (source "semantic")
+        (range (start 10 8) (end 10 29))
+      )
+    )
+  )
+)
+~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 3 33) (end 3 51))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_action_body_element")
+        (source "parser")
+        (range (start 7 8) (end 10 8))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "parser")
+        (range (start 7 8) (end 10 8))
+      )
+    )
+  )
+)
+~~~
+# SMG
+~~~sexpr
+(semantic-model
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:b1d63eb15740fff6262b52f62e626ee1735c6d4ddfce53bec94aa94fad63744b") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Act"))) (kind action-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Act::duration"))) (kind attribute) (membership (kind feature) (visibility default)) (facts (modifiers reference)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ISQ::DurationValue")))))
+    (declaration (id (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Act::reading"))) (kind attribute) (membership (kind feature) (visibility default)) (facts (modifiers reference)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Reading")))))
+    (declaration (id (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Reading"))) (kind attribute-def) (membership (kind owning) (visibility default)))
+  )
+  (references
+    (reference (id (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Act::duration"))) (kind featureTyping) (ordinal 0))
+      (authored-target "ISQ::DurationValue")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Act::reading"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Reading")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Reading")))))
+  )
+  (relationships
+    (relationship (kind typing) (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Act::reading"))) (target (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Reading"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Act::reading"))) (kind featureTyping) (ordinal 0)))
+  )
+  (evaluation
+  )
+)
+~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Act::duration")))
+      (featured-by (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Act")))
+    )
+    (declaration (id (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Act::reading")))
+      (featured-by (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Act")))
+      (type (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Reading")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Reading")) (source direct))
+      (supertype (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Reading")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Reading")))
+      (subtype (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Act::reading")) (scopes any))
+    )
+)
+~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (query (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (range (start 3 33) (end 3 51)) (probe (position 3 33))
+    (reference (id (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Act::duration"))) (kind featureTyping) (ordinal 0) (authored-target "ISQ::DurationValue")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (range (start 4 32) (end 4 39)) (probe (position 4 32))
+    (reference (id (source (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Act::reading"))) (kind featureTyping) (ordinal 0) (authored-target "Reading")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Reading")))))
+    )
+  )
+)
+~~~

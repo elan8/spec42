@@ -79,53 +79,18 @@ stable inventory identity, qualified by its clause number.
 
 
 
-- 8.3.17.2 AcceptActionUsage
-  - `validateAcceptActionUsageParameters`
 
-- 8.3.17.5 AssignmentActionUsage
-  - `validateAssignmentActionUsage`
-  - `validateAssignmentActionUsageReferent`
 
-- 8.3.17.6 ControlNode
-  - `validateControlNodeIncomingSuccessions`
-  - `validateControlNodeIsComposite`
-  - `validateControlNodeOutgoingSuccessions`
-  - `validateControlNodeOwningType`
 
-- 8.3.17.7 DecisionNode
-  - `validateDecisionNodeIncomingSuccessions`
-  - `validateDecisionNodeOutgoingSuccessions`
 
-- 8.3.17.8 ForkNode
-  - `validateForkNodeIncomingSuccessions`
 
-- 8.3.17.9 ForLoopActionUsage
-  - `validateForLoopActionUsageLoopVariable`
-  - `validateForLoopActionUsageParameters`
 
-- 8.3.17.10 IfActionUsage
-  - `validateIfActionUsageParameters`
 
-- 8.3.17.11 JoinNode
-  - `validateJoinNodeOutgoingSuccessions`
 
-- 8.3.17.13 MergeNode
-  - `validateMergeNodeIncomingSuccessions`
-  - `validateMergeNodeOutgoingSuccessions`
 
-- 8.3.17.14 PerformActionUsage
-  - `validatePerformActionUsageReference`
 
-- 8.3.17.15 SendActionUsage
-  - `validateSendActionParameters`
 
-- 8.3.17.17 TriggerInvocationExpression
-  - `validateTriggerInvocationExpressionAfterArgument`
-  - `validateTriggerInvocationExpressionAtArgument`
-  - `validateTriggerInvocationExpressionWhenArgument`
 
-- 8.3.17.19 WhileLoopActionUsage
-  - `validateWhileLoopActionUsage`
 
 - 8.3.18.2 ExhibitStateUsage
   - `validateExhibitStateUsageReference`
