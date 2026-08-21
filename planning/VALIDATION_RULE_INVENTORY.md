@@ -92,30 +92,11 @@ stable inventory identity, qualified by its clause number.
 
 
 
-- 8.3.18.2 ExhibitStateUsage
-  - `validateExhibitStateUsageReference`
 
-- 8.3.18.4 StateSubactionMembership
-  - `validateStateSubactionMembershipOwningType`
 
-- 8.3.18.5 StateDefinition
-  - `validateStateDefinitionParallelSubactions`
-  - `validateStateDefinitionStateSubactionKind`
 
-- 8.3.18.6 StateUsage
-  - `validateStateUsageParallelSubactions`
-  - `validateStateUsageStateSubactionKind`
 
-- 8.3.18.8 TransitionFeatureMembership
-  - `validateTransitionFeatureMembershipEffectAction`
-  - `validateTransitionFeatureMembershipGuardExpression`
-  - `validateTransitionFeatureMembershipOwningType`
-  - `validateTransitionFeatureMembershipTriggerAction`
 
-- 8.3.18.9 TransitionUsage
-  - `validateTransitionUsageParameters`
-  - `validateTransitionUsageSuccession`
-  - `validateTransitionUsageTriggerActions`
 
 - 8.3.20.2 AssertConstraintUsage
   - `validateAssertConstraintUsageReference`
