@@ -134,7 +134,22 @@ npm run compile
 The workspace pins `sysml-v2-parser` in the root `Cargo.toml` as a **git revision**, and exactly
 one crate may depend on it: `crates/sysml_resolution`, which lowers the AST to the semantic graph.
 Everything else reaches syntax through `sysml_resolution::syntax`, which returns plain data rather
-than parser types. `crates/source_identity/tests/parser_authority.rs` enforces both rules.
+than parser types. Two independent things enforce this, and both are meant to stay:
+
+- **`deny.toml`**, checked by `cargo deny check bans` in CI. The parser is banned outright except
+  as a direct dependency of `sysml_resolution` (`wrappers`). This reads the resolved dependency
+  graph, so a rename or a transitive path is caught by construction. Only the `bans` check runs;
+  the licence and advisory gates are deliberately off.
+- **`crates/source_identity/tests/parser_authority.rs`**, which covers what the graph cannot see:
+  manifest *shape* (the pin must be a bare 40-hex git rev with no `version`/`branch`/`tag`/`path`,
+  and the authority must inherit it with `workspace = true`), the `fuzz/` nested workspace, and
+  reintroducing a repository-local parser facade under a different package name.
+
+Neither subsumes the other. Run `cargo deny check bans` locally before changing any manifest.
+
+The boundary itself is a compile error, not a convention: `SyntaxDocument` wraps the parser
+document in a private field with a `pub(crate)` accessor, so a crate without the dependency cannot
+hold, walk, cache, or serialize a `ParsedDocument` even while holding a document.
 
 To update the parser:
 
@@ -149,7 +164,12 @@ To update the parser:
 4. Re-verify the entries in `planning/UPSTREAM_PARSER_GAPS.md` against the new revision and remove
    the ones it closes.
 5. `cargo tree -i sysml-v2-parser` must print a single tree with `sysml_resolution` as its only
-   dependent.
+   dependent, and `cargo deny check bans` must pass.
+
+To build against a local parser checkout, uncomment the `[patch."https://…"]` block in
+`.cargo/config.toml`. The patch key is the git URL -- a `[patch.crates-io]` entry resolves nothing,
+because the workspace no longer depends on the published crate. Comment it out again before
+producing evidence for a bump; an active patch changes what the graph resolves.
 
 ## Diagnostic quality workflow
 

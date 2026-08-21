@@ -6,6 +6,14 @@
 //! *spelling* check: it rejected `git =`, `version =`, and `package = "sysml-v2-parser"`, so
 //! `fuzz/Cargo.toml`'s `package = "spec42-sysml-parser", path = ...` slipped straight through it.
 //! The rules below are stated positively instead, which is what closes that class of hole.
+//!
+//! `deny.toml` states the same authority rule natively -- `cargo deny check bans` bans the parser
+//! except as a direct dependency of `sysml_resolution`, and fails outside the test suite. This file
+//! is not redundant with it and covers what a dependency graph cannot express: manifest *shape*
+//! (rule 1), the `fuzz/` nested workspace that the root graph does not reach (rules 2 and 3), and
+//! reintroducing a local facade under a different package name, which a ban on the upstream name
+//! cannot see (rule 3). Rule 5 overlaps `cargo deny` deliberately, so the rule still holds if the
+//! CI step is ever dropped.
 
 use std::fs;
 use std::path::{Path, PathBuf};

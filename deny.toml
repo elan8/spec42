@@ -1,0 +1,34 @@
+# Dependency policy, checked by `cargo deny check bans`.
+#
+# The rule this file exists for is the parser ban below. Everything else here is deliberately
+# permissive: this is not a licence or advisory gate, and CI runs only the `bans` check so that
+# turning one on later is a decision rather than an accident.
+
+[graph]
+all-features = true
+
+[bans]
+multiple-versions = "allow"
+wildcards = "allow"
+
+# One crate may depend on the parser, and it is the one that lowers the AST to the semantic graph.
+#
+# `wrappers` is the whole point: the parser is banned outright *except* as a direct dependency of
+# `sysml_resolution`. Cargo has no native way to forbid a dependency, so before this the rule lived
+# only in `crates/source_identity/tests/parser_authority.rs` and could not fail until the test
+# suite ran. Here it fails at `cargo deny check bans`, against the resolved dependency graph --
+# so a rename (`parser = { package = "sysml-v2-parser" }`) or a transitive path through a crate
+# that never names the parser is caught by construction, not by anticipating its spelling.
+#
+# Every other crate reaches syntax through `sysml_resolution::syntax`, which hands out plain data.
+# A crate without this dependency cannot hold, walk, cache, or serialize a `ParsedDocument`.
+#
+# The guard test is NOT redundant with this and must stay:
+#   * it checks manifest *shape* -- that the pin is a bare 40-hex git rev with no
+#     `version`/`branch`/`tag`/`path`, and that the authority inherits it with `workspace = true`;
+#   * it covers `fuzz/Cargo.toml`, a nested workspace this file's graph does not reach;
+#   * it rejects reintroducing a repository-local parser facade, which is a path dependency on a
+#     differently-named package and so is invisible to a ban on the upstream name.
+[[bans.deny]]
+name = "sysml-v2-parser"
+wrappers = ["sysml_resolution"]

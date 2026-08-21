@@ -36,6 +36,13 @@ jobs:
       - name: cargo fmt --check
         run: cargo fmt --all -- --check
 
+      # Only `bans` runs. deny.toml carries the parser-authority rule and nothing else; the
+      # licence and advisory gates stay off so enabling one is a decision, not a surprise.
+      - name: Dependency policy (only the lowering authority may depend on the parser)
+        uses: EmbarkStudios/cargo-deny-action@v2
+        with:
+          command: check bans
+
       - name: Standard library config is current
         run: node scripts/sync-standard-library-config.mjs --check
 
