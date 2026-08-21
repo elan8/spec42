@@ -36,30 +36,12 @@ stable inventory identity, qualified by its clause number.
 
 
 
-- 8.3.4.1.2 DataType
-  - `validateDataTypeSpecialization`
 
-- 8.3.4.2.2 Class
-  - `validateClassSpecialization`
 
-- 8.3.4.3.2 Structure
-  - `validateStructureSpecialization`
 
-- 8.3.4.4.2 Association
-  - `validateAssociationBinarySpecialization`
-  - `validateAssociationEndTypes`
-  - `validateAssociationRelatedTypes`
-  - `validateAssociationStructureIntersection`
 
-- 8.3.4.5.2 Binding Connector
-  - `validateBindingConnectorIsBinary`
 
-- 8.3.4.5.3 Connector
-  - `validateConnectorBinarySpecialization`
-  - `validateConnectorRelatedFeatures`
 
-- 8.3.4.6.2 Behavior
-  - `validateBehaviorSpecialization`
 
 - 8.3.4.6.4 ParameterMembership
   - `validateParameterMembershipOwningType`
