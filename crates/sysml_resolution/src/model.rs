@@ -5342,8 +5342,10 @@ impl SemanticModelBuilder {
     }
 
     /// Lowers one `enum <name>;` value owned by an `enum def` body (BNF EnumeratedValue) into its
-    /// own declaration. Any inline body / `= expr` initializer is discarded by the parser itself
-    /// (only the name and its span survive), so there is no nested body to lower here.
+    /// own declaration. An enumerated value is a full SysML `Usage`, so it carries an
+    /// identification, an optional `= expr` initializer, and a `PartUsageBody` of its own -- the
+    /// same body shape `lower_part_usage` walks, so its owned members go through the same
+    /// `lower_part_usage_body_element`.
     fn lower_enumerated_value(
         &mut self,
         document: DocumentId,
@@ -5358,9 +5360,6 @@ impl SemanticModelBuilder {
             DeclarationKind::EnumerationLiteral,
             name,
             node.span.clone(),
-            // `ast::EnumeratedValue` also gained a full `PartUsageBody` when the enumeration
-            // body was widened upstream; walking it is the separate lowering step
-            // planning/UPSTREAM_PARSER_GAPS.md tracks.
             DeclarationFacts {
                 short_name,
                 ..DeclarationFacts::none()
@@ -5377,7 +5376,18 @@ impl SemanticModelBuilder {
             MembershipKind::Feature,
             Visibility::Default,
             node.span.clone(),
-        )
+        )?;
+        if let PartUsageBody::Brace { elements, .. } = &node.value.body {
+            for element in elements {
+                self.lower_part_usage_body_element(
+                    document,
+                    declaration,
+                    UnsupportedFamily::AttributeMember,
+                    element,
+                )?;
+            }
+        }
+        Ok(())
     }
 
     /// Lowers a package/definition/usage-level `enum` feature member (BNF EnumerationUsage), e.g.
@@ -14612,6 +14622,48 @@ mod tests {
         let mut output = String::new();
         published.debug().write_semantic_sexpr(&mut output).unwrap();
         output
+    }
+
+    /// An enumeration literal owns the members and documentation authored in its body.
+    ///
+    /// `EnumeratedValue.body` is a full `PartUsageBody`, the same shape `lower_part_usage` walks,
+    /// so its members go through the same `lower_part_usage_body_element`. Before it was walked, a
+    /// literal's redefinitions and its own doc comment were both unreachable -- the per-literal
+    /// half of the old Gap 56.
+    #[test]
+    fn enumeration_literal_bodies_publish_their_members_and_documentation() {
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tattribute def Level {\n\
+             \t\tattribute code : String;\n\
+             \t}\n\
+             \tenum def Kind specializes Level {\n\
+             \t\tsecret {\n\
+             \t\t\tdoc /* The secret level. */\n\
+             \t\t\t:>> code = \"secr\";\n\
+             \t\t}\n\
+             \t}\n\
+             }\n",
+        );
+        let line = output
+            .lines()
+            .find(|line| {
+                line.contains("(qualified-name \"Demo::Kind::secret\")")
+                    && line.contains("(declaration ")
+            })
+            .unwrap_or_else(|| panic!("no enum literal declaration, got:\n{output}"));
+        assert!(
+            line.contains("(documentation (doc (text \" The secret level. \")))"),
+            "expected the literal to publish its own doc comment, got:\n{line}"
+        );
+        assert!(
+            output.contains("(named (kind enum-literal) (name \"secret\"))"),
+            "expected the literal to own the members authored in its body, got:\n{output}"
+        );
+        assert!(
+            output.contains("(redefinition (reference \"code\"))"),
+            "expected the literal body's `:>>` redefinition to reach the model, got:\n{output}"
+        );
     }
 
     /// The authored value spelling on a requirement subject and an enumeration literal.
