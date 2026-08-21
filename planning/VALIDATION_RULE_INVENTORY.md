@@ -38,21 +38,6 @@ stable inventory identity, qualified by its clause number.
 - 8.3.3.3.3 EndFeatureMembership
   - `validateEndFeatureMembershipIsEnd`
 
-- 8.3.3.3.4 Feature
-  - `validateFeatureChainingFeatureConformance`
-  - `validateFeatureChainingFeatureNotOne`
-  - `validateFeatureChainingFeaturesNotSelf`
-  - `validateFeatureConstantIsVariable`
-  - `validateFeatureCrossFeatureSpecialization`
-  - `validateFeatureCrossFeatureType`
-  - `validateFeatureEndIsConstant`
-  - `validateFeatureEndMultiplicity`
-  - `validateFeatureEndNotDerivedAbstractCompositeOrPortion`
-  - `validateFeatureIsVariable`
-  - `validateFeatureMultiplicityDomain`
-  - `validateFeatureOwnedCrossSubsetting`
-  - `validateFeatureOwnedReferenceSubsetting`
-  - `validateFeaturePortionNotVariable`
 
 - 8.3.3.3.8 Redefinition
   - `validateRedefinitionDirectionConformance`

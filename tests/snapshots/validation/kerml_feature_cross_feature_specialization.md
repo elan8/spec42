@@ -1,0 +1,311 @@
+# META
+~~~ini
+description=KerML 8.3.3.3.4 validateFeatureCrossFeatureSpecialization requires the crossFeature of a Feature to specialize the crossFeature of every end Feature the Feature redefines
+specification=OMG KerML 1.0 (formal/26-03-01)
+specification_url=https://www.omg.org/spec/KerML/1.0/PDF
+validation_rule=8.3.3.3.4 validateFeatureCrossFeatureSpecialization
+type=file
+skip_validation=the pinned parser drops the `crosses` clause, so no CrossSubsetting relationship is published and the rule has nothing to count
+~~~
+# SOURCE
+~~~kerml
+package Crossings {
+    classifier Thing;
+    classifier Special specializes Thing;
+    assoc Base {
+        end feature source : Thing;
+        end feature target : Thing;
+        feature crossing : Thing crosses source;
+    }
+    assoc Conforming specializes Base {
+        end feature source : Special;
+        end feature target : Thing;
+
+        // Conforming: the redefining crossFeature specializes the redefined crossFeature.
+        feature crossing : Special crosses source;
+    }
+    assoc Invalid specializes Base {
+        end feature source : Thing;
+        end feature target : Thing;
+
+        // Invalid: the crossFeature does not specialize Base::crossing's crossFeature.
+        feature crossing : Thing crosses target;
+    }
+}
+~~~
+# EXPECTED DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "memory://snapshot/kerml_feature_cross_feature_specialization.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "cross_feature_specialization_incompatible")
+        (source "semantic")
+        (range (start 20 8) (end 20 48))
+      )
+    )
+  )
+)
+~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "memory://snapshot/kerml_feature_cross_feature_specialization.md"
+    (diagnostics
+    )
+  )
+)
+~~~
+# SMG
+~~~sexpr
+(semantic-model
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:1a032c71c3e77257236fd325a05557473f9a513c6f3943332564d796663adaa8") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base"))) (kind kerml-association) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base::crossing"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
+    (declaration (id (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base::source"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
+    (declaration (id (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base::target"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
+    (declaration (id (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Conforming"))) (kind kerml-association) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Base")))))
+    (declaration (id (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Conforming::crossing"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Special")))))
+    (declaration (id (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Conforming::source"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Special")))))
+    (declaration (id (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Conforming::target"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
+    (declaration (id (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Invalid"))) (kind kerml-association) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Base")))))
+    (declaration (id (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Invalid::crossing"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
+    (declaration (id (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Invalid::source"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
+    (declaration (id (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Invalid::target"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
+    (declaration (id (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Special"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Thing")))))
+    (declaration (id (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
+  )
+  (references
+    (reference (id (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base::crossing"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")))))
+    (reference (id (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base::source"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")))))
+    (reference (id (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base::target"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")))))
+    (reference (id (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Conforming"))) (kind specialization) (ordinal 0))
+      (authored-target "Base")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base")))))
+    (reference (id (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Conforming::crossing"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Special")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Special")))))
+    (reference (id (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Conforming::source"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Special")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Special")))))
+    (reference (id (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Conforming::target"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")))))
+    (reference (id (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Invalid"))) (kind specialization) (ordinal 0))
+      (authored-target "Base")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base")))))
+    (reference (id (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Invalid::crossing"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")))))
+    (reference (id (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Invalid::source"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")))))
+    (reference (id (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Invalid::target"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")))))
+    (reference (id (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Special"))) (kind specialization) (ordinal 0))
+      (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")))))
+  )
+  (relationships
+    (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base::crossing"))) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base::crossing"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base::source"))) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base::source"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base::target"))) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base::target"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Conforming"))) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Conforming"))) (kind specialization) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Conforming::crossing"))) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Special"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Conforming::crossing"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Conforming::source"))) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Special"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Conforming::source"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Conforming::target"))) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Conforming::target"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Invalid"))) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Invalid"))) (kind specialization) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Invalid::crossing"))) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Invalid::crossing"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Invalid::source"))) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Invalid::source"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Invalid::target"))) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Invalid::target"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Special"))) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Special"))) (kind specialization) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Conforming::crossing"))) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base::crossing"))) (provenance implied))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Conforming::source"))) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base::source"))) (provenance implied))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Conforming::target"))) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base::target"))) (provenance implied))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Invalid::crossing"))) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base::crossing"))) (provenance implied))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Invalid::source"))) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base::source"))) (provenance implied))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Invalid::target"))) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base::target"))) (provenance implied))
+  )
+  (evaluation
+  )
+)
+~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base")))
+      (subtype (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Conforming")) (scopes any subclassification))
+      (subtype (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Invalid")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base::crossing")))
+      (featured-by (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base")))
+      (type (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")) (source direct))
+      (supertype (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")) (scopes any))
+      (subtype (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Conforming::crossing")) (scopes any feature))
+      (subtype (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Invalid::crossing")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base::source")))
+      (featured-by (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base")))
+      (type (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")) (source direct))
+      (supertype (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")) (scopes any))
+      (subtype (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Conforming::source")) (scopes any feature))
+      (subtype (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Invalid::source")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base::target")))
+      (featured-by (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base")))
+      (type (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")) (source direct))
+      (supertype (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")) (scopes any))
+      (subtype (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Conforming::target")) (scopes any feature))
+      (subtype (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Invalid::target")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Conforming")))
+      (supertype (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Conforming::crossing")))
+      (featured-by (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Conforming")))
+      (type (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Special")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Special")) (source direct))
+      (effective-type (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")) (source inherited) (from (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base::crossing"))))
+      (supertype (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base::crossing")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Special")) (scopes any))
+      (supertype (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Conforming::source")))
+      (featured-by (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Conforming")))
+      (type (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Special")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Special")) (source direct))
+      (effective-type (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")) (source inherited) (from (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base::source"))))
+      (supertype (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base::source")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Special")) (scopes any))
+      (supertype (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Conforming::target")))
+      (featured-by (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Conforming")))
+      (type (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")) (source direct))
+      (effective-type (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")) (source inherited) (from (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base::target"))))
+      (supertype (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base::target")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Invalid")))
+      (supertype (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Invalid::crossing")))
+      (featured-by (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Invalid")))
+      (type (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")) (source direct))
+      (effective-type (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")) (source inherited) (from (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base::crossing"))))
+      (supertype (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base::crossing")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Invalid::source")))
+      (featured-by (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Invalid")))
+      (type (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")) (source direct))
+      (effective-type (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")) (source inherited) (from (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base::source"))))
+      (supertype (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base::source")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Invalid::target")))
+      (featured-by (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Invalid")))
+      (type (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")) (source direct))
+      (effective-type (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")) (source inherited) (from (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base::target"))))
+      (supertype (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base::target")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Special")))
+      (supertype (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")) (scopes any subclassification))
+      (subtype (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Conforming::crossing")) (scopes any))
+      (subtype (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Conforming::source")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")))
+      (subtype (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base::crossing")) (scopes any))
+      (subtype (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base::source")) (scopes any))
+      (subtype (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base::target")) (scopes any))
+      (subtype (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Conforming::target")) (scopes any))
+      (subtype (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Invalid::crossing")) (scopes any))
+      (subtype (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Invalid::source")) (scopes any))
+      (subtype (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Invalid::target")) (scopes any))
+      (subtype (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Special")) (scopes any subclassification))
+    )
+)
+~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (query (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (range (start 6 27) (end 6 32)) (probe (position 6 27))
+    (reference (id (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base::crossing"))) (kind featureTyping) (ordinal 0) (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")))))
+    )
+  )
+  (query (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (range (start 4 29) (end 4 34)) (probe (position 4 29))
+    (reference (id (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base::source"))) (kind featureTyping) (ordinal 0) (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")))))
+    )
+  )
+  (query (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (range (start 5 29) (end 5 34)) (probe (position 5 29))
+    (reference (id (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base::target"))) (kind featureTyping) (ordinal 0) (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")))))
+    )
+  )
+  (query (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (range (start 8 33) (end 8 37)) (probe (position 8 33))
+    (reference (id (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Conforming"))) (kind specialization) (ordinal 0) (authored-target "Base")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base")))))
+    )
+  )
+  (query (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (range (start 13 27) (end 13 34)) (probe (position 13 27))
+    (reference (id (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Conforming::crossing"))) (kind featureTyping) (ordinal 0) (authored-target "Special")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Special")))))
+    )
+  )
+  (query (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (range (start 9 29) (end 9 36)) (probe (position 9 29))
+    (reference (id (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Conforming::source"))) (kind featureTyping) (ordinal 0) (authored-target "Special")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Special")))))
+    )
+  )
+  (query (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (range (start 10 29) (end 10 34)) (probe (position 10 29))
+    (reference (id (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Conforming::target"))) (kind featureTyping) (ordinal 0) (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")))))
+    )
+  )
+  (query (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (range (start 15 30) (end 15 34)) (probe (position 15 30))
+    (reference (id (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Invalid"))) (kind specialization) (ordinal 0) (authored-target "Base")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Base")))))
+    )
+  )
+  (query (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (range (start 20 27) (end 20 32)) (probe (position 20 27))
+    (reference (id (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Invalid::crossing"))) (kind featureTyping) (ordinal 0) (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")))))
+    )
+  )
+  (query (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (range (start 16 29) (end 16 34)) (probe (position 16 29))
+    (reference (id (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Invalid::source"))) (kind featureTyping) (ordinal 0) (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")))))
+    )
+  )
+  (query (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (range (start 17 29) (end 17 34)) (probe (position 17 29))
+    (reference (id (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Invalid::target"))) (kind featureTyping) (ordinal 0) (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")))))
+    )
+  )
+  (query (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (range (start 2 35) (end 2 40)) (probe (position 2 35))
+    (reference (id (source (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Special"))) (kind specialization) (ordinal 0) (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_cross_feature_specialization.md") (qualified-name "Crossings::Thing")))))
+    )
+  )
+)
+~~~
