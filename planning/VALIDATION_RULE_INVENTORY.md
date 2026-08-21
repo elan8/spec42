@@ -28,21 +28,8 @@ stable inventory identity, qualified by its clause number.
 ### KerML 1.0 (formal/26-03-01)
 
 
-- 8.3.3.1.8 Specialization
-  - `validateSpecificationSpecificNotConjugated`
 
-- 8.3.3.1.10 Type
-  - `validateTypeAtMostOneConjugator`
-  - `validateTypeDifferencingTypesNotSelf`
-  - `validateTypeIntersectingTypesNotSelf`
-  - `validateTypeOwnedDifferencingNotOne`
-  - `validateTypeOwnedIntersectingNotOne`
-  - `validateTypeOwnedMultiplicity`
-  - `validateTypeOwnedUnioningNotOne`
-  - `validateTypeUnioningTypesNotSelf`
 
-- 8.3.3.2.2 Classifier
-  - `validateClassifierMultiplicityDomain`
 
 - 8.3.3.3.2 CrossSubsetting
   - `validateCrossSubsettingCrossedFeature`
