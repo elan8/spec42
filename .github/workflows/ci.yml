@@ -434,6 +434,9 @@ jobs:
       - name: npm ci (vscode)
         run: cd vscode && npm ci
 
+      - name: npm ci (diagram renderer)
+        run: cd vscode/diagram-renderer && npm ci
+
       - name: Build extension
         run: cd vscode && npm run compile
 
@@ -550,6 +553,9 @@ jobs:
 
       - name: npm ci (vscode)
         run: cd vscode && npm ci
+
+      - name: npm ci (diagram renderer)
+        run: cd vscode/diagram-renderer && npm ci
 
       - name: Build extension
         run: cd vscode && npm run compile
