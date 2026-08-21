@@ -19049,8 +19049,8 @@ mod tests {
             "expected an extended-definition declaration, got:\n{output}"
         );
         assert!(
-            output.contains("(qualified-name \"Demo::Failure::cause\"))) (kind attribute-def)"),
-            "expected Failure's nested attribute usage declaration, got:\n{output}"
+            output.contains("(qualified-name \"Demo::Failure::cause\"))) (kind attribute)"),
+            "expected Failure's nested attribute usage, got:\n{output}"
         );
         assert!(
             output.contains(

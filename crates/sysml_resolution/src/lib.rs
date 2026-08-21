@@ -1964,54 +1964,45 @@ mod tests {
         );
     }
 
-    /// A standalone `decide <expr>;` decision control node (BNF `DecisionStmt`) must lower as a
-    /// `DeclarationKind::Decide` feature whose `decide` operand resolves as a `decisionInput`
-    /// reference to its sibling action, not fall through to `unsupported_action_definition_member`.
+    /// A standalone `decide <name>;` decision control node (BNF `DecisionStmt`) lowers its
+    /// `ControlNodeDeclaration` as a named `DeclarationKind::Decide` feature. The name is not an
+    /// input reference to a sibling action.
     #[test]
-    fn decide_stmt_input_resolves() {
-        let sexpr = semantic_sexpr_for("package P { action def A { action x; decide x; } }");
+    fn decide_stmt_lowers_a_named_control_node() {
+        let sexpr = semantic_sexpr_for("package P { action def A { decide choice; } }");
         assert!(
-            sexpr.contains("(kind decide)"),
-            "expected a decide declaration, got: {sexpr}"
-        );
-        assert!(
-            sexpr.contains("(kind decisionInput)"),
-            "expected a decisionInput relationship kind, got: {sexpr}"
+            sexpr.contains("(qualified-name \"P::A::choice\"))) (kind decide)"),
+            "expected a named decide declaration, got: {sexpr}"
         );
         assert!(
             !sexpr.contains("unsupported_action_definition_member"),
             "did not expect unsupported_action_definition_member, got: {sexpr}"
         );
-        assert!(
-            !sexpr.contains("(status unresolved)"),
-            "expected the decide operand to resolve to its sibling action, got: {sexpr}"
-        );
+        assert!(!sexpr.contains("(kind decisionInput)"));
     }
 
-    /// A `decide <expr>;` node whose operand is not declared anywhere in the model must stay an
-    /// explicit unresolved reference fact, not a fabricated or guessed target.
+    /// A control-node declaration does not fabricate an unresolved input reference from its name.
     #[test]
-    fn decide_stmt_unresolvable_input_stays_unresolved() {
+    fn decide_stmt_name_is_not_an_input_reference() {
         let sexpr = semantic_sexpr_for("package P { action def A { decide missing; } }");
         assert!(
-            sexpr.contains("(kind decisionInput)"),
-            "expected a decisionInput reference to be authored, got: {sexpr}"
+            sexpr.contains("(qualified-name \"P::A::missing\"))) (kind decide)"),
+            "expected the authored control-node name, got: {sexpr}"
         );
         assert!(
-            sexpr.contains("(status unresolved)"),
-            "expected the unresolvable decide operand to remain explicitly unresolved, got: {sexpr}"
+            !sexpr.contains("(kind decisionInput)") && !sexpr.contains("(status unresolved)"),
+            "did not expect a declaration name to become a reference, got: {sexpr}"
         );
     }
 
     /// A `then decide <expr>;` continuation (`ThenTarget::Decide`) inside an action body must
-    /// lower through the same `lower_first_merge_stmt` dispatch as a standalone `decide`
-    /// statement, not fall through to `unsupported_action_definition_member`.
+    /// lower through the same named-control-node dispatch as a standalone `decide` statement.
     #[test]
     fn then_decide_target_lowers_as_decide_declaration() {
-        let sexpr = semantic_sexpr_for("package P { action def A { action x; then decide x; } }");
+        let sexpr = semantic_sexpr_for("package P { action def A { then decide choice; } }");
         assert!(
-            sexpr.contains("(kind decide)") && sexpr.contains("(kind decisionInput)"),
-            "expected a decide declaration reached via `then decide`, got: {sexpr}"
+            sexpr.contains("(qualified-name \"P::A::choice\"))) (kind decide)"),
+            "expected a named decide declaration reached via `then decide`, got: {sexpr}"
         );
         assert!(
             !sexpr.contains("unsupported_action_definition_member"),
@@ -2019,30 +2010,25 @@ mod tests {
         );
     }
 
-    /// A standalone `merge <expr>;`/`fork <expr>;`/`join <expr>;` control node must each lower as
-    /// their own anonymous declaration kind with a resolved input reference, mirroring `decide`.
+    /// Standalone `merge`/`fork`/`join` declarations retain their authored names and kinds.
     #[test]
     fn merge_fork_join_stmts_resolve() {
-        let sexpr =
-            semantic_sexpr_for("package P { action def A { action x; merge x; fork x; join x; } }");
-        for kind in ["merge", "fork", "join"] {
+        let sexpr = semantic_sexpr_for("package P { action def A { merge m; fork f; join j; } }");
+        for (kind, name) in [("merge", "m"), ("fork", "f"), ("join", "j")] {
             assert!(
-                sexpr.contains(&format!("(kind {kind})")),
-                "expected a {kind} declaration, got: {sexpr}"
-            );
-            assert!(
-                sexpr.contains(&format!("(kind {kind}Input)")),
-                "expected a {kind}Input relationship kind, got: {sexpr}"
+                sexpr.contains(&format!(
+                    "(qualified-name \"P::A::{name}\"))) (kind {kind})"
+                )),
+                "expected a named {kind} declaration, got: {sexpr}"
             );
         }
         assert!(
             !sexpr.contains("unsupported_action_definition_member"),
             "did not expect unsupported_action_definition_member, got: {sexpr}"
         );
-        assert!(
-            !sexpr.contains("(status unresolved)"),
-            "expected every control node's input to resolve to the sibling action, got: {sexpr}"
-        );
+        assert!(!sexpr.contains("(kind mergeInput)"));
+        assert!(!sexpr.contains("(kind forkInput)"));
+        assert!(!sexpr.contains("(kind joinInput)"));
     }
 
     /// A bare `then <target>;` continuation (`ThenTarget::Feature`) referencing an
