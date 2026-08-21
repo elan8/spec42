@@ -14025,14 +14025,21 @@ impl SemanticModelBuilder {
     /// declaration scope shift, since (unlike `Succession`/`Satisfy`) there is only one operand.
     /// The typed inline form (`VariantUsage.typed`, e.g. `variant part name : Type { ... }`)
     /// introduces a new usage rather than referencing an existing one -- out of scope, like
-    /// `Satisfy.inline_requirement` -- for every `VariantTypedUsage` kind except `Perform`
-    /// (`variant perform doX;` inside a `variation perform action ... { ... }` body): that kind
-    /// wraps the exact same `ast::structure::Perform` node `lower_perform` already lowers for an
-    /// ordinary `perform action ...;` usage, so it delegates there directly rather than staying
-    /// unsupported -- there is no new lowering logic, just reuse. Every other `VariantTypedUsage`
-    /// kind (`Part`/`Attribute`/`Item`/`Port`), the untyped form's optional nested body
-    /// (`VariantUsage.body`), and the case where neither `reference` nor `typed` is present all
-    /// fall through to an explicit unsupported-member diagnostic.
+    /// `Satisfy.inline_requirement`.
+    ///
+    /// Every `VariantTypedUsage` kind wraps the exact same node its ordinary spelling uses, so
+    /// each delegates to the lowering that already exists for it -- there is no new lowering
+    /// logic, just reuse. The `body.is_none()` guard is kept on all six: `VariantUsage.body` is a
+    /// second, *outer* body that the inner node's own lowering never sees, so lowering the inner
+    /// declaration while silently dropping that body would publish a partial model that looks
+    /// complete. The untyped form with a body, and the case where neither `reference` nor `typed`
+    /// is present, stay explicit unsupported-member diagnostics.
+    ///
+    /// A delegated `variant part p : T;` publishes an ordinary `PartUsage` and therefore loses the
+    /// `VariantMembership` role that `DeclarationKind::EnumerationLiteral` publishes as
+    /// `MembershipRole::Variant`. That loss is pre-existing -- the `Perform` arm has always had it
+    /// -- and recovering it means returning the new `DeclarationId` from five hot lowerings, so it
+    /// is recorded in planning/UPSTREAM_PARSER_GAPS.md rather than widened into this change.
     fn lower_variant_usage(
         &mut self,
         document: DocumentId,
@@ -14040,9 +14047,23 @@ impl SemanticModelBuilder {
         family: UnsupportedFamily,
         node: &Node<VariantUsage>,
     ) -> Result<(), ConstructionError> {
-        if let Some(VariantTypedUsage::Perform(perform)) = &node.value.typed {
+        if let Some(typed) = &node.value.typed {
             if node.value.body.is_none() {
-                return self.lower_perform(document, Some(owner), perform);
+                let owner = Some(owner);
+                return match typed {
+                    VariantTypedUsage::Perform(perform) => {
+                        self.lower_perform(document, owner, perform)
+                    }
+                    VariantTypedUsage::Part(part) => self.lower_part_usage(document, owner, part),
+                    VariantTypedUsage::Attribute(attribute) => {
+                        self.lower_attribute_usage(document, owner, attribute)
+                    }
+                    VariantTypedUsage::Item(item) => self.lower_item_usage(document, owner, item),
+                    VariantTypedUsage::Port(port) => self.lower_port_usage(document, owner, port),
+                    VariantTypedUsage::Requirement(requirement) => {
+                        self.lower_requirement_usage(document, owner, requirement)
+                    }
+                };
             }
         }
         if node.value.typed.is_some() || node.value.body.is_some() {
@@ -14622,6 +14643,75 @@ mod tests {
         let mut output = String::new();
         published.debug().write_semantic_sexpr(&mut output).unwrap();
         output
+    }
+
+    /// Every `variant` spelling delegates to the lowering its ordinary spelling already uses.
+    ///
+    /// Only `variant perform` was dispatched; the other five kinds wrap exactly the node their
+    /// plain spelling does, so each reuses that lowering. The `body.is_none()` guard stays on all
+    /// six -- an outer `VariantUsage.body` is invisible to the inner lowering, so lowering the
+    /// inner declaration while dropping it would look complete while being partial.
+    #[test]
+    fn every_variant_typed_usage_delegates_to_its_ordinary_lowering() {
+        // Every kind is placed in a `variation part def` body, whose `PartDefBodyElement` is one of
+        // the member sets that carries a `VariantUsage` variant at all.
+        let output = build_semantic_sexpr(
+            "package Demo {\n\
+             \tpart def Engine;\n\
+             \titem def Widget;\n\
+             \tport def Plug;\n\
+             \trequirement def Req;\n\
+             \tvariation part def V {\n\
+             \t\tvariant part e : Engine;\n\
+             \t\tvariant item w : Widget;\n\
+             \t\tvariant port p : Plug;\n\
+             \t\tvariant requirement r : Req;\n\
+             \t}\n\
+             }\n",
+        );
+        for (label, qualified_name, kind) in [
+            ("variant part", "Demo::V::e", "(kind part)"),
+            ("variant item", "Demo::V::w", "(kind item)"),
+            ("variant port", "Demo::V::p", "(kind port)"),
+            ("variant requirement", "Demo::V::r", "(kind requirement)"),
+        ] {
+            let expected = format!("(qualified-name \"{qualified_name}\")");
+            let line = output
+                .lines()
+                .find(|line| line.contains(&expected) && line.contains("(declaration "));
+            let line = match line {
+                Some(line) => line,
+                None => panic!("no declaration for {label}, got:\n{output}"),
+            };
+            assert!(
+                line.contains(kind),
+                "expected {label} to lower as {kind}, got:\n{line}"
+            );
+        }
+
+        // `variant attribute` inside a `variation attribute def` body never reaches this lowering:
+        // `ast::AttributeBodyElement` has no `VariantUsage` variant at all, so the member is
+        // dropped upstream. Pinned here so the silence is visible rather than mistaken for
+        // coverage; see planning/UPSTREAM_PARSER_GAPS.md.
+        let attribute_variant = build_semantic_sexpr(
+            "package Demo {\n\tattribute def Size;\n\tvariation attribute def V :> Size {\n\t\tvariant attribute a;\n\t}\n}\n",
+        );
+        assert!(
+            !attribute_variant.contains("(qualified-name \"Demo::V::a\")"),
+            "a `variant attribute` member became representable upstream; dispatch it here and \
+             retire the gap entry, got:\n{attribute_variant}"
+        );
+
+        // A brace after the typing belongs to the *inner* usage, so `VariantUsage.body` is None and
+        // the member lowers in full, owned members and all. The `body.is_none()` guard is about the
+        // untyped `variant x { ... }` spelling, where the body has no inner node to belong to.
+        let bodied = build_semantic_sexpr(
+            "package Demo {\n\tpart def Engine;\n\tvariation part def V {\n\t\tvariant part e : Engine {\n\t\t\tattribute x;\n\t\t}\n\t}\n}\n",
+        );
+        assert!(
+            bodied.contains("(qualified-name \"Demo::V::e::x\")"),
+            "expected a typed variant's brace body to lower as the inner usage's own, got:\n{bodied}"
+        );
     }
 
     /// An enumeration literal owns the members and documentation authored in its body.

@@ -231,8 +231,23 @@ disappearing with the gap entries they closed. Each was re-checked against the o
   `action_reference` and `body`, so `entry action entryAction :>> 'entry';` lowers as the reference
   form.
 
-- **`VariantTypedUsage::Requirement`.** `lower_variant_usage` dispatches only the `Perform` arm; a
-  `variant requirement r1;` inside a `variation requirement` body stays unsupported.
+- **The `VariantMembership` role on a delegated variant.** `lower_variant_usage` now dispatches
+  every `VariantTypedUsage` kind to the lowering its ordinary spelling uses, so a `variant part p :
+  T;` publishes a real `PartUsage`. What it does not publish is the *role*: an enumeration literal
+  carries `MembershipRole::Variant` (`model/element_kind.rs`), a delegated variant does not,
+  because the five `lower_*_usage` functions return `()` and the caller has no `DeclarationId` to
+  set it on. Pre-existing -- the `Perform` arm always had it -- and recovering it means changing
+  five hot signatures.
+
+- **`variant attribute` in a `variation attribute def` body is dropped upstream, silently.**
+  `ast::AttributeBodyElement` has no `VariantUsage` variant at all, so
+  `variation attribute def DiameterChoices :> Diameter { variant attribute diameterSmall; }`
+  (`tests/snapshots/sysml/training/36_variation_definitions.md:26`) publishes **no member and no
+  diagnostic** -- the fixture's `DiameterChoices` has zero owned declarations. This is an upstream
+  gap rather than a dispatch gap: there is no typed node to dispatch. The same spelling inside a
+  `variation part def` body works, because `PartDefBodyElement` does carry the variant. Pinned by
+  `every_variant_typed_usage_delegates_to_its_ordinary_lowering`, which fails if it ever starts
+  publishing.
 
 - **`MetadataKeywordUsage.type_reference`.** The `#<Name>` shorthand now carries a resolvable
   `QualifiedReferenceId` alongside its keyword spelling, but every scope still reports the member
