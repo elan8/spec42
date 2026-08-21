@@ -1,0 +1,337 @@
+# META
+~~~ini
+description=KerML 8.3.4.9.2 validateFlowPayloadFeature allows a Flow at most one ownedFeature that is a PayloadFeature
+specification=OMG KerML 1.0 (formal/26-03-01)
+specification_url=https://www.omg.org/spec/KerML/1.0/PDF
+validation_rule=8.3.4.9.2 validateFlowPayloadFeature
+type=file
+skip_validation=the pinned parser has no KerML flow production -- `flow of Thing from a to b;` resolves none of its tokens and is reported as a cascade of unresolved_reference -- so no Flow or FlowEnd reaches semantics
+~~~
+# SOURCE
+~~~kerml
+package Flows {
+    classifier Thing;
+    behavior Moving {
+        feature source : Thing;
+        feature target : Thing;
+
+        // Conforming: a single payload feature.
+        flow of Thing from source to target;
+
+        // Invalid: two payload features on one flow.
+        flow of Thing of Thing from source to target;
+    }
+}
+~~~
+# EXPECTED DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "memory://snapshot/kerml_flow_payload_feature.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "flow_multiple_payload_features")
+        (source "semantic")
+        (range (start 10 8) (end 10 53))
+      )
+    )
+  )
+)
+~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "memory://snapshot/kerml_flow_payload_feature.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 7 8) (end 7 12))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 7 13) (end 7 15))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 7 22) (end 7 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 7 27) (end 7 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 7 34) (end 7 36))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 7 37) (end 7 43))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 10 8) (end 10 12))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 10 13) (end 10 15))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 10 22) (end 10 24))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 10 31) (end 10 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 10 36) (end 10 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 10 43) (end 10 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 10 46) (end 10 52))
+      )
+    )
+  )
+)
+~~~
+# SMG
+~~~sexpr
+(semantic-model
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:73c254581b289ebf821351c109c56924c016a399439cffdce63de00bb3a17cf4") (contract-version "parser-owned-resolution-v1"))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (kind kerml-behavior) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (expressionOperand (reference "flow")) (expressionOperand (reference "of")) (expressionOperand (reference "Thing")) (expressionOperand (reference "from")) (expressionOperand (reference "source")) (expressionOperand (reference "to")) (expressionOperand (reference "target")) (expressionOperand (reference "flow")) (expressionOperand (reference "of")) (expressionOperand (reference "Thing")) (expressionOperand (reference "of")) (expressionOperand (reference "Thing")) (expressionOperand (reference "from")) (expressionOperand (reference "source")) (expressionOperand (reference "to")) (expressionOperand (reference "target")))))
+    (declaration (id (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving::source"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
+    (declaration (id (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving::target"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
+    (declaration (id (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Thing"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
+  )
+  (references
+    (reference (id (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (kind expressionOperand) (ordinal 0))
+      (authored-target "flow")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (kind expressionOperand) (ordinal 1))
+      (authored-target "of")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (kind expressionOperand) (ordinal 2))
+      (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Thing")))))
+    (reference (id (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (kind expressionOperand) (ordinal 3))
+      (authored-target "from")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (kind expressionOperand) (ordinal 4))
+      (authored-target "source")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (kind expressionOperand) (ordinal 5))
+      (authored-target "to")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (kind expressionOperand) (ordinal 6))
+      (authored-target "target")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (kind expressionOperand) (ordinal 7))
+      (authored-target "flow")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (kind expressionOperand) (ordinal 8))
+      (authored-target "of")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (kind expressionOperand) (ordinal 9))
+      (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Thing")))))
+    (reference (id (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (kind expressionOperand) (ordinal 10))
+      (authored-target "of")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (kind expressionOperand) (ordinal 11))
+      (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Thing")))))
+    (reference (id (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (kind expressionOperand) (ordinal 12))
+      (authored-target "from")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (kind expressionOperand) (ordinal 13))
+      (authored-target "source")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (kind expressionOperand) (ordinal 14))
+      (authored-target "to")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (kind expressionOperand) (ordinal 15))
+      (authored-target "target")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving::source"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Thing")))))
+    (reference (id (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving::target"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Thing")))))
+  )
+  (relationships
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (target (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (kind expressionOperand) (ordinal 2)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (target (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (kind expressionOperand) (ordinal 9)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (target (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (kind expressionOperand) (ordinal 11)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving::source"))) (target (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving::source"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving::target"))) (target (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving::target"))) (kind featureTyping) (ordinal 0)))
+  )
+  (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (state unresolved-operand))
+  )
+)
+~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving::source")))
+      (featured-by (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving")))
+      (type (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Thing")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Thing")) (source direct))
+      (supertype (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Thing")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving::target")))
+      (featured-by (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving")))
+      (type (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Thing")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Thing")) (source direct))
+      (supertype (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Thing")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Thing")))
+      (subtype (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving::source")) (scopes any))
+      (subtype (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving::target")) (scopes any))
+    )
+)
+~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (query (document "memory://snapshot/kerml_flow_payload_feature.md") (range (start 7 8) (end 7 12)) (probe (position 7 8))
+    (reference (id (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (kind expressionOperand) (ordinal 0) (authored-target "flow")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/kerml_flow_payload_feature.md") (range (start 7 13) (end 7 15)) (probe (position 7 13))
+    (reference (id (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (kind expressionOperand) (ordinal 1) (authored-target "of")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/kerml_flow_payload_feature.md") (range (start 7 16) (end 7 21)) (probe (position 7 16))
+    (reference (id (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (kind expressionOperand) (ordinal 2) (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Thing")))))
+    )
+  )
+  (query (document "memory://snapshot/kerml_flow_payload_feature.md") (range (start 7 22) (end 7 26)) (probe (position 7 22))
+    (reference (id (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (kind expressionOperand) (ordinal 3) (authored-target "from")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/kerml_flow_payload_feature.md") (range (start 7 27) (end 7 33)) (probe (position 7 27))
+    (reference (id (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (kind expressionOperand) (ordinal 4) (authored-target "source")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/kerml_flow_payload_feature.md") (range (start 7 34) (end 7 36)) (probe (position 7 34))
+    (reference (id (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (kind expressionOperand) (ordinal 5) (authored-target "to")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/kerml_flow_payload_feature.md") (range (start 7 37) (end 7 43)) (probe (position 7 37))
+    (reference (id (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (kind expressionOperand) (ordinal 6) (authored-target "target")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/kerml_flow_payload_feature.md") (range (start 10 8) (end 10 12)) (probe (position 10 8))
+    (reference (id (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (kind expressionOperand) (ordinal 7) (authored-target "flow")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/kerml_flow_payload_feature.md") (range (start 10 13) (end 10 15)) (probe (position 10 13))
+    (reference (id (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (kind expressionOperand) (ordinal 8) (authored-target "of")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/kerml_flow_payload_feature.md") (range (start 10 16) (end 10 21)) (probe (position 10 16))
+    (reference (id (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (kind expressionOperand) (ordinal 9) (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Thing")))))
+    )
+  )
+  (query (document "memory://snapshot/kerml_flow_payload_feature.md") (range (start 10 22) (end 10 24)) (probe (position 10 22))
+    (reference (id (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (kind expressionOperand) (ordinal 10) (authored-target "of")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/kerml_flow_payload_feature.md") (range (start 10 25) (end 10 30)) (probe (position 10 25))
+    (reference (id (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (kind expressionOperand) (ordinal 11) (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Thing")))))
+    )
+  )
+  (query (document "memory://snapshot/kerml_flow_payload_feature.md") (range (start 10 31) (end 10 35)) (probe (position 10 31))
+    (reference (id (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (kind expressionOperand) (ordinal 12) (authored-target "from")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/kerml_flow_payload_feature.md") (range (start 10 36) (end 10 42)) (probe (position 10 36))
+    (reference (id (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (kind expressionOperand) (ordinal 13) (authored-target "source")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/kerml_flow_payload_feature.md") (range (start 10 43) (end 10 45)) (probe (position 10 43))
+    (reference (id (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (kind expressionOperand) (ordinal 14) (authored-target "to")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/kerml_flow_payload_feature.md") (range (start 10 46) (end 10 52)) (probe (position 10 46))
+    (reference (id (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (kind expressionOperand) (ordinal 15) (authored-target "target")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/kerml_flow_payload_feature.md") (range (start 3 25) (end 3 30)) (probe (position 3 25))
+    (reference (id (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving::source"))) (kind featureTyping) (ordinal 0) (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Thing")))))
+    )
+  )
+  (query (document "memory://snapshot/kerml_flow_payload_feature.md") (range (start 4 25) (end 4 30)) (probe (position 4 25))
+    (reference (id (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving::target"))) (kind featureTyping) (ordinal 0) (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Thing")))))
+    )
+  )
+)
+~~~

@@ -57,31 +57,11 @@ stable inventory identity, qualified by its clause number.
 
 
 
-- 8.3.4.9.2 Flow
-  - `validateFlowPayloadFeature`
 
-- 8.3.4.9.3 FlowEnd
-  - `validateFlowEndIsEnd`
-  - `validateFlowEndNestedFeature`
-  - `validateFlowEndOwningType`
 
-- 8.3.4.10.2 FeatureValue
-  - `validateFeatureValueIsInitial`
-  - `validateFeatureValueOverriding`
 
-- 8.3.4.11.2 MultiplicityRange
-  - `validateMultiplicityRangeBoundResultTypes`
-  - `validateMultiplicityRangeBounds`
 
-- 8.3.4.12.3 MetadataFeature
-  - `validateMetadataFeatureAnnotatedElement`
-  - `validateMetadataFeatureBody`
-  - `validateMetadataFeatureMetaclass`
-  - `validateMetadataFeatureMetaclassNotAbstract`
 
-- 8.3.4.13.2 ElementFilterMembership
-  - `validateElementFilterMembershipConditionIsBoolean`
-  - `validateElementFilterMembershipConditionIsModelLevelEvaluable`
 
 ### SysML 2.0 Language (formal/26-03-02)
 
