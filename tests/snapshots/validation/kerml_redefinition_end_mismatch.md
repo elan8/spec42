@@ -1,9 +1,9 @@
 # META
 ~~~ini
-description=KerML 8.3.3.3.8 requires a feature redefining an end feature to also be an end feature
+description=KerML 8.3.3.3.8 validateRedefinitionEndConformance requires a Feature redefining an end Feature to also be an end Feature
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
-validation_rule=8.3.3.3.8
+validation_rule=8.3.3.3.8 validateRedefinitionEndConformance
 type=file
 ~~~
 # SOURCE
